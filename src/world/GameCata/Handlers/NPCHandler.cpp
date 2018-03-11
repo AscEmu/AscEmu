@@ -571,7 +571,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recvData)
     LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
 
     recvData >> targetGuid;
-    GetPlayer()->SetTargetGUID(targetGuid);
+    GetPlayer()->setTargetGuid(targetGuid);
 
     MySQLStructure::NpcText const* pGossip = sMySQLStore.getNpcText(textID);
     MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;

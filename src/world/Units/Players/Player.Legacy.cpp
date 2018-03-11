@@ -3310,7 +3310,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // set the rest of the stuff
     setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
-    SetChosenTitle(get_next_field.GetUInt32());
+#if VERSION_STRING > Classic
+    setChosenTitle(get_next_field.GetUInt32());
+#endif
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
 
     get_next_field; //skip available_pvp_titles1
@@ -4054,7 +4056,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // set the rest of the stuff
     setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
-    SetChosenTitle(get_next_field.GetUInt32());
+#if VERSION_STRING > Classic
+    setChosenTitle(get_next_field.GetUInt32());
+#endif
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
 #if VERSION_STRING > TBC
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
@@ -6929,7 +6933,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                 return false;
 
             // always see our units
-            if (getGuid() == uObj->GetCreatedByGUID())
+            if (getGuid() == uObj->getCreatedByGuid())
                 return true;
 
             // unit is invisible
@@ -7057,7 +7061,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
         }
     }
 
-    if (pObj->getGuid() == GetSummonedUnitGUID())
+    if (pObj->getGuid() == getSummonGuid())
         sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::RemoveFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
 }
 
@@ -14063,7 +14067,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         /////////////////////////////////////////////////////////// Experience /////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (pVictim->GetCreatedByGUID() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
+        if (pVictim->getCreatedByGuid() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
         {
             auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
 

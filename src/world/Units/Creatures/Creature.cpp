@@ -717,7 +717,7 @@ void Creature::setDeathState(DeathState s)
         }
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
-        if ((GetCreatedByGUID() == 0) && (GetSummonedByGUID() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
+        if ((getCreatedByGuid() == 0) && (getSummonedByGuid() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
             addUnitFlags(UNIT_FLAG_SKINNABLE);
 
 
@@ -797,13 +797,13 @@ void Creature::EnslaveExpire()
 {
     m_enslaveCount++;
 
-    uint64 charmer = GetCharmedByGUID();
+    uint64 charmer = getCharmedByGuid();
 
     Player* caster = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
     if (caster)
     {
-        caster->SetCharmedUnitGUID(0);
-        caster->SetSummonedUnitGUID(0);
+        caster->setCharmGuid(0);
+        caster->setSummonGuid(0);
 
         WorldPacket data(SMSG_PET_SPELLS, 8);
 
@@ -812,8 +812,8 @@ void Creature::EnslaveExpire()
 
         caster->SendPacket(&data);
     }
-    SetCharmedByGUID(0);
-    SetSummonedByGUID(0);
+    setCharmedByGuid(0);
+    setSummonedByGuid(0);
 
     resetCurrentSpeed();
 
@@ -2235,14 +2235,16 @@ void Creature::PrepareForRemove()
     if (!IsInWorld())
         return;
 
-    if (GetCreatedByGUID() != 0)
+    if (getCreatedByGuid() != 0)
     {
 
-        Unit* summoner = GetMapMgrUnit(GetCreatedByGUID());
+        Unit* summoner = GetMapMgrUnit(getCreatedByGuid());
         if (summoner != NULL)
         {
-            if (summoner->GetSummonedCritterGUID() == getGuid())
-                summoner->SetSummonedCritterGUID(0);
+#if VERSION_STRING > TBC
+            if (summoner->getCritterGuid() == getGuid())
+                summoner->setCritterGuid(0);
+#endif
 
             if (GetCreatedBySpell() != 0)
                 summoner->RemoveAura(GetCreatedBySpell());
@@ -2459,7 +2461,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Add Kills if Player is in Vehicle
     if (pAttacker->IsVehicle())
     {
-        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->GetCharmedByGUID());
+        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
 
         if (vehicle_owner != nullptr && vehicle_owner->IsPlayer())
         {
@@ -2469,7 +2471,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     addUnitFlags(UNIT_FLAG_DEAD);
 
-    if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
+    if ((getCreatedByGuid() == 0) && (GetTaggerGUID() != 0))
     {
         Unit* owner = m_mapMgr->GetUnit(GetTaggerGUID());
 
@@ -2477,18 +2479,18 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             generateLoot();
     }
 
-    if (GetCharmedByGUID())
+    if (getCharmedByGuid())
     {
         //remove owner warlock soul link from caster
-        Unit* owner = GetMapMgr()->GetUnit(GetCharmedByGUID());
+        Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
 
         if (owner != NULL && owner->IsPlayer())
             static_cast<Player*>(owner)->EventDismissPet();
     }
 
-    if (GetCharmedByGUID() != 0)
+    if (getCharmedByGuid() != 0)
     {
-        Unit* charmer = m_mapMgr->GetUnit(GetCharmedByGUID());
+        Unit* charmer = m_mapMgr->GetUnit(getCharmedByGuid());
         if (charmer != NULL)
             charmer->UnPossess();
     }

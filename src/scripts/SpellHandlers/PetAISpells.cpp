@@ -86,7 +86,7 @@ public:
             s->BaseDamage[0] += owner_bonus;
             s->BaseDamage[1] += owner_bonus;
 
-            Unit* uTarget = s->GetMapMgr()->GetUnit(owner->GetTargetGUID());
+            Unit* uTarget = s->GetMapMgr()->GetUnit(owner->getTargetGuid());
             if ((uTarget != NULL) && isAttackable(owner, uTarget))
             {
                 s->GetAIInterface()->AttackReaction(uTarget, 1);
@@ -324,7 +324,7 @@ public:
 
     void OnLastPassengerLeft(Unit *passenger)
     {
-        if (getCreature()->GetSummonedByGUID() == passenger->getGuid())
+        if (getCreature()->getSummonedByGuid() == passenger->getGuid())
             getCreature()->Despawn(1 * 1000, 0);
     }
 };

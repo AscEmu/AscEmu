@@ -34,11 +34,11 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == 1) // Script Effect that has been identified to handle the spread of diseases.
     {
-        if (!pSpell->u_caster || !pSpell->u_caster->GetTargetGUID() || !pSpell->u_caster->IsInWorld())
+        if (!pSpell->u_caster || !pSpell->u_caster->getTargetGuid() || !pSpell->u_caster->IsInWorld())
             return true;
 
         Unit* u_caster = pSpell->u_caster;
-        Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+        Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
         if (Main == NULL)
             return true;
         bool blood = Main->HasAura(BLOOD_PLAGUE);

@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
 {
-    uint64 currentVehicleGuid = _player->GetCharmedUnitGUID();
+    uint64 currentVehicleGuid = _player->getCharmGuid();
 
     // wait what no vehicle
     if (currentVehicleGuid == 0)

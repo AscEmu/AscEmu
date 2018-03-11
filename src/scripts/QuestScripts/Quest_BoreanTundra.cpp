@@ -472,7 +472,7 @@ public:
         }
 
         Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
-        GearmasterMechazod->SetTargetGUID(pPlayer->getGuid());
+        GearmasterMechazod->setTargetGuid(pPlayer->getGuid());
         if (GearmasterMechazod->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else

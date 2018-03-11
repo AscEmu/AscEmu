@@ -326,7 +326,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
     bool moved = true;
 
-    if (/*_player->GetCharmedByGUID() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
+    if (/*_player->getCharmedByGuid() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
         return;
 
     // spell cancel on movement, for now only fishing is added
@@ -470,7 +470,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
 
 
-    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->GetCharmedUnitGUID())
+    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->getCharmGuid())
     {
         /************************************************************************/
         /* Anti-Teleport                                                        */
@@ -795,7 +795,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 
     //movement_info.init(recvData);
 
-    if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
+    if ((guid != uint64(0)) && (guid == _player->getCharmGuid()))
         m_MoverWoWGuid = guid;
     else
         m_MoverWoWGuid.Init(_player->getGuid());

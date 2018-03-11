@@ -77,6 +77,11 @@ void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp
 uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
 void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
 
+#if VERSION_STRING > Classic
+uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
+void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }
+#endif
+
 uint32_t Player::getXp() const { return playerData()->xp; }
 void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 

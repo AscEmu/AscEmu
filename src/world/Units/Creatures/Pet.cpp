@@ -416,8 +416,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     SetDisplayId(ci->Male_DisplayID);
     SetNativeDisplayId(ci->Male_DisplayID);
     EventModelChange();
-    SetSummonedByGUID(owner->getGuid());
-    SetCreatedByGUID(owner->getGuid());
+    setSummonedByGuid(owner->getGuid());
+    setCreatedByGuid(owner->getGuid());
 
     setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
@@ -958,8 +958,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     EventModelChange();
 
-    SetSummonedByGUID(owner->getGuid());
-    SetCreatedByGUID(owner->getGuid());
+    setSummonedByGuid(owner->getGuid());
+    setCreatedByGuid(owner->getGuid());
     SetCreatedBySpell(mPi->spellid);
     SetFaction(owner->GetFaction());
 
@@ -1009,7 +1009,7 @@ void Pet::InitializeMe(bool first)
         return;
 
     m_Owner->AddSummon(this);
-    m_Owner->SetSummonedUnitGUID(getGuid());
+    m_Owner->setSummonGuid(getGuid());
 
     setUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
     setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
@@ -1224,12 +1224,12 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
 
     if (m_Owner->GetSummon() == NULL)   //we have no more summons, required by spells summoning more than 1.
     {
-        m_Owner->SetSummonedUnitGUID(0);
+        m_Owner->setSummonGuid(0);
         m_Owner->SendEmptyPetSpellList();
     }
     else if (main_summon)               //we just removed the summon displayed in the portrait so we need to update it with another one.
     {
-        m_Owner->SetSummonedUnitGUID(m_Owner->GetSummon()->getGuid());      //set the summon still alive
+        m_Owner->setSummonGuid(m_Owner->GetSummon()->getGuid());      //set the summon still alive
         m_Owner->GetSummon()->SendSpellsToOwner();
     }
 
@@ -2253,7 +2253,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //Experience
-        if (pVictim->GetCreatedByGUID() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
+        if (pVictim->getCreatedByGuid() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
         {
             auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
 

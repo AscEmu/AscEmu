@@ -982,7 +982,7 @@ void Aura::Remove()
 
     if ((caster != nullptr) && caster->IsPlayer() && m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON))
     {
-        Unit* charm = caster->GetMapMgr()->GetUnit(caster->GetCharmedUnitGUID());
+        Unit* charm = caster->GetMapMgr()->GetUnit(caster->getCharmGuid());
         if ((charm != nullptr) && (charm->GetCreatedBySpell() == m_spellInfo->getId()))
             static_cast< Player* >(caster)->UnPossess();
     }
@@ -1588,7 +1588,7 @@ void Aura::ClearAATargets()
 
     if (m_spellInfo->HasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
     {
-        Unit* u = m_target->GetMapMgr()->GetUnit(m_target->GetCreatedByGUID());
+        Unit* u = m_target->GetMapMgr()->GetUnit(m_target->getCreatedByGuid());
 
         if (u != nullptr)
             u->RemoveAura(spellid);
@@ -1682,7 +1682,7 @@ void Aura::SpellAuraModPossess(bool apply)
         }
 
         // make sure Player::UnPossess() didn't fail, if it did we will just free the target here
-        if (m_target->GetCharmedByGUID() != 0)
+        if (m_target->getCharmedByGuid() != 0)
         {
             if (m_target->IsCreature())
             {
@@ -1690,7 +1690,7 @@ void Aura::SpellAuraModPossess(bool apply)
                 m_target->m_redirectSpellPackets = nullptr;
             }
 
-            m_target->SetCharmedByGUID(0);
+            m_target->setCharmedByGuid(0);
             m_target->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
             m_target->SetFaction(m_target->GetCharmTempVal());
             m_target->updateInRangeOppositeFactionSet();
@@ -2069,7 +2069,7 @@ void Aura::SpellAuraModCharm(bool apply)
         if (target->GetEnslaveCount() >= 10)
             return;
 
-        if (caster->GetCharmedUnitGUID() != 0)
+        if (caster->getCharmGuid() != 0)
             return;
 
         m_target->addUnitStateFlag(UNIT_STATE_CHARM);
@@ -2077,8 +2077,8 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->SetFaction(caster->GetFaction());
         m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
-        m_target->SetCharmedByGUID(caster->getGuid());
-        caster->SetCharmedUnitGUID(target->getGuid());
+        m_target->setCharmedByGuid(caster->getGuid());
+        caster->setCharmGuid(target->getGuid());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
@@ -2113,11 +2113,11 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->GetAIInterface()->WipeTargetList();
         m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
-        m_target->SetCharmedByGUID(0);
+        m_target->setCharmedByGuid(0);
 
         if (caster->GetSession() != nullptr)   // crashfix
         {
-            caster->SetCharmedUnitGUID(0);
+            caster->setCharmGuid(0);
             WorldPacket data(SMSG_PET_SPELLS, 8);
             data << uint64(0);
             caster->GetSession()->SendPacket(&data);
@@ -9617,7 +9617,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
     if (m_target == nullptr || !m_target->IsCreature())
         return;
 
-    if (apply && m_target->IsSummon() && (m_target->GetCreatedByGUID() == GetCasterGUID()))
+    if (apply && m_target->IsSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
     {
         Summon* s = static_cast< Summon* >(m_target);
 
@@ -9635,7 +9635,7 @@ void Aura::SpellAuraMirrorImage2(bool apply)
     if (m_target == nullptr)
         return;
 
-    if (apply && m_target->IsSummon() && (m_target->GetCreatedByGUID() == GetCasterGUID()))
+    if (apply && m_target->IsSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
     {
         if (GetCaster()->IsPlayer())
         {

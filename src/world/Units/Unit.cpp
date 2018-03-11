@@ -16,6 +16,26 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
+uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
+void Unit::setCharmGuid(uint64_t guid) { write(unitData()->charm_guid.guid, guid); }
+
+uint64_t Unit::getSummonGuid() const { return unitData()->summon_guid.guid; };
+void Unit::setSummonGuid(uint64_t guid) { write(unitData()->summon_guid.guid, guid); }
+
+#if VERSION_STRING > TBC
+uint64_t Unit::getCritterGuid() const { return unitData()->critter_guid.guid; };
+void Unit::setCritterGuid(uint64_t guid) { write(unitData()->critter_guid.guid, guid); }
+#endif
+
+uint64_t Unit::getCharmedByGuid() const { return unitData()->charmed_by_guid.guid; };
+void Unit::setCharmedByGuid(uint64_t guid) { write(unitData()->charmed_by_guid.guid, guid); }
+
+uint64_t Unit::getSummonedByGuid() const { return unitData()->summoned_by_guid.guid; };
+void Unit::setSummonedByGuid(uint64_t guid) { write(unitData()->summoned_by_guid.guid, guid); }
+
+uint64_t Unit::getCreatedByGuid() const { return unitData()->created_by_guid.guid; };
+void Unit::setCreatedByGuid(uint64_t guid) { write(unitData()->created_by_guid.guid, guid); }
+
 uint64_t Unit::getTargetGuid() const { return unitData()->target_guid.guid; };
 void Unit::setTargetGuid(uint64_t guid) { write(unitData()->target_guid.guid, guid); }
 
@@ -764,7 +784,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
         } break;
     }
 
-    Player* player_mover = GetMapMgrPlayer(GetCharmedByGUID());
+    Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
     {
         if (IsPlayer())

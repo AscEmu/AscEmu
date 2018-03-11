@@ -185,7 +185,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     }
     if (u_caster && m_spellInfo->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
-        Unit* u = u_caster->GetMapMgrUnit(u_caster->GetCharmedByGUID());
+        Unit* u = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
         if (u)
         {
             u_caster = u;
@@ -1882,7 +1882,7 @@ void Spell::finish(bool successful)
         if (!sEventMgr.HasEvent(u_caster, EVENT_CREATURE_RESPAWN))
         {
             // call script
-            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
             if (target != nullptr)
             {
                 if (target->IsCreature())
@@ -2214,7 +2214,7 @@ void Spell::finish(bool successful)
             }
             if (numTargets == 0)
             {
-                uint64 guid = p_caster->GetTargetGUID();
+                uint64 guid = p_caster->getTargetGuid();
                 sQuestMgr.OnPlayerCast(p_caster, GetSpellInfo()->getId(), guid);
             }
         }
@@ -2778,9 +2778,9 @@ void Spell::SendChannelUpdate(uint32 time)
 
         if (p_caster != nullptr)
         {
-            if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->GetCharmedUnitGUID() != 0))
+            if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->getCharmGuid() != 0))
             {
-                Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->GetCharmedUnitGUID());
+                Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->getCharmGuid());
                 if ((u != nullptr) && (u->GetCreatedBySpell() == m_spellInfo->getId()))
                     p_caster->UnPossess();
             }
@@ -3926,7 +3926,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case 48743:
                 case 51956:
                 {
-                    if (target->GetSummonedByGUID() != m_caster->getGuid())
+                    if (target->getSummonedByGuid() != m_caster->getGuid())
                         return SPELL_FAILED_BAD_TARGETS;
                 } break;
             }
@@ -5024,7 +5024,7 @@ uint8 Spell::CanCast(bool tolerate)
                     return SPELL_FAILED_BAD_TARGETS;
                 }
 
-                target->SetTargetGUID(p_caster->getGuid());
+                target->setTargetGuid(p_caster->getGuid());
                 return SPELL_FAILED_SUCCESS;
             }
             ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////

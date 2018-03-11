@@ -138,7 +138,7 @@ bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster != NULL && apply && effectIndex == 2)
-        if (caster->getGuid() == pAura->GetTarget()->GetCreatedByGUID())
+        if (caster->getGuid() == pAura->GetTarget()->getCreatedByGuid())
             caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
 
     return true;

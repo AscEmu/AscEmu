@@ -23,10 +23,12 @@ void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recvData)
     CHECK_PACKET_SIZE(recvData, 4);
     uint32_t ChosenRank;
     recvData >> ChosenRank;
+#if VERSION_STRING > Classic
     if (ChosenRank == 0xFFFFFFFF)
-        _player->SetChosenTitle(0);
+        _player->setChosenTitle(0);
     else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
-        _player->SetChosenTitle(ChosenRank);
+        _player->setChosenTitle(ChosenRank);
+#endif
 }
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)

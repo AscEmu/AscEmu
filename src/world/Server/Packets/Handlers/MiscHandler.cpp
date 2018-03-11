@@ -212,7 +212,7 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
     if (_player->m_comboPoints)
         _player->UpdateComboPoints();
 
-    _player->SetTargetGUID(recv_packet.guid);
+    _player->setTargetGuid(recv_packet.guid);
     if (recv_packet.guid == 0)
     {
         if (_player->IsInWorld())
@@ -2061,7 +2061,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         return;
     }
 
-    _player->SetTargetGUID(guid);
+    _player->setTargetGuid(guid);
     _player->SetSelection(guid);
 
     if (_player->m_comboPoints)

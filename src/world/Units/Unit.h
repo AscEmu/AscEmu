@@ -229,6 +229,26 @@ class SERVER_DECL Unit : public Object
 
 public:
 
+    uint64_t getCharmGuid() const;
+    void setCharmGuid(uint64_t guid);
+
+    uint64_t getSummonGuid() const;
+    void setSummonGuid(uint64_t guid);
+
+#if VERSION_STRING > TBC
+    uint64_t getCritterGuid() const;
+    void setCritterGuid(uint64_t guid);
+#endif
+
+    uint64_t getCharmedByGuid() const;
+    void setCharmedByGuid(uint64_t guid);
+
+    uint64_t getSummonedByGuid() const;
+    void setSummonedByGuid(uint64_t guid);
+
+    uint64_t getCreatedByGuid() const;
+    void setCreatedByGuid(uint64_t guid);
+
     uint64_t getTargetGuid() const;
     void setTargetGuid(uint64_t guid);
 
@@ -1081,40 +1101,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
-    void SetCharmedUnitGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHARM, GUID); }
-    void SetSummonedUnitGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_SUMMON, GUID); }
-    void SetSummonedCritterGUID(uint64 GUID)
-    {
-        //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING > TBC
-        setUInt64Value(UNIT_FIELD_CRITTER, GUID);
-#endif
-    }
-
-    void SetCharmedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHARMEDBY, GUID); }
-    void SetSummonedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_SUMMONEDBY, GUID); }
-    void SetCreatedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CREATEDBY, GUID); }
-
-
-    uint64 GetCharmedUnitGUID() { return getUInt64Value(UNIT_FIELD_CHARM); }
-    uint64 GetSummonedUnitGUID() { return getUInt64Value(UNIT_FIELD_SUMMON); }
-    uint64 GetSummonedCritterGUID()
-    {
-        //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING > TBC
-        return getUInt64Value(UNIT_FIELD_CRITTER);
-#else
-        return 0;
-#endif
-    }
-
-    uint64 GetCharmedByGUID() { return getUInt64Value(UNIT_FIELD_CHARMEDBY); }
-    uint64 GetSummonedByGUID() { return getUInt64Value(UNIT_FIELD_SUMMONEDBY); }
-    uint64 GetCreatedByGUID() { return getUInt64Value(UNIT_FIELD_CREATEDBY); }
-
-    void SetTargetGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_TARGET, GUID); }
-    uint64 GetTargetGUID() { return getUInt64Value(UNIT_FIELD_TARGET); }
-
     void SetChannelSpellTargetGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, GUID); }
     void SetChannelSpellId(uint32 SpellId) { setUInt32Value(UNIT_CHANNEL_SPELL, SpellId); }
 

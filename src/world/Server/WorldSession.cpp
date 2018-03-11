@@ -1180,10 +1180,10 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Image == NULL)
         return;					// ups no unit found with that GUID on the map. Spoofed packet?
 
-    if (Image->GetCreatedByGUID() == 0)
+    if (Image->getCreatedByGuid() == 0)
         return;
 
-    uint64 CasterGUID = Image->GetCreatedByGUID();
+    uint64 CasterGUID = Image->getCreatedByGuid();
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
     if (Caster == NULL)
@@ -1283,17 +1283,18 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 
 void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     uint64 GUID;
 
     recv_data >> GUID;
 
-    if (_player->GetSummonedCritterGUID() == 0)
+    if (_player->getCritterGuid() == 0)
     {
         LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
-    if (_player->GetSummonedCritterGUID() != GUID)
+    if (_player->getCritterGuid() != GUID)
     {
         LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
@@ -1306,7 +1307,8 @@ void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
         companion->Delete();
     }
 
-    _player->SetSummonedCritterGUID(0);
+    _player->setCritterGuid(0);
+#endif
 }
 
 #if VERSION_STRING > TBC

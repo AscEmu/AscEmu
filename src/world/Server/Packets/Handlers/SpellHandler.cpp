@@ -617,7 +617,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->GetCharmedUnitGUID() == 0)
+    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->getCharmGuid() == 0)
     {
         LogError("HandlePetCastSpell: Received opcode but player %u has no pet.", _player->getGuidLow());
         return;
@@ -645,7 +645,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         }
     }
     // If pet is charmed or possessed by player
-    else if (_player->m_CurrentCharm == petGuid || _player->GetCharmedUnitGUID() == petGuid)
+    else if (_player->m_CurrentCharm == petGuid || _player->getCharmGuid() == petGuid)
     {
         // TODO: find less uglier way for this... using Arcemu's solution for now
         bool found = false;

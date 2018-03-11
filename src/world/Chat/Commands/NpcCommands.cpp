@@ -472,8 +472,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
         owner_header_set = true;
     }
 
-    if (creature_target->GetCreatedByGUID() || creature_target->GetSummonedByGUID() ||
-        creature_target->GetCharmedByGUID() || creature_target->GetCreatedBySpell())
+    if (creature_target->getCreatedByGuid() || creature_target->getSummonedByGuid() ||
+        creature_target->getCharmedByGuid() || creature_target->GetCreatedBySpell())
     {
         if (!owner_header_set)
         {
@@ -481,12 +481,12 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
             owner_header_set = true;
         }
 
-        if (creature_target->GetCreatedByGUID())
-            SystemMessage(m_session, "Creator GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCreatedByGUID()));
-        if (creature_target->GetSummonedByGUID())
-            SystemMessage(m_session, "Summoner GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetSummonedByGUID()));
-        if (creature_target->GetCharmedByGUID())
-            SystemMessage(m_session, "Charmer GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCharmedByGUID()));
+        if (creature_target->getCreatedByGuid())
+            SystemMessage(m_session, "Creator GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->getCreatedByGuid()));
+        if (creature_target->getSummonedByGuid())
+            SystemMessage(m_session, "Summoner GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->getSummonedByGuid()));
+        if (creature_target->getCharmedByGuid())
+            SystemMessage(m_session, "Charmer GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->getCharmedByGuid()));
         if (creature_target->GetCreatedBySpell())
             SystemMessage(m_session, "Creator Spell: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCreatedBySpell()));
     }
@@ -774,7 +774,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
     auto unit_target = GetSelectedUnit(m_session);
     if (unit_target != nullptr)
     {
-        if (unit_target->IsPet() || unit_target->GetCreatedByGUID() != 0)
+        if (unit_target->IsPet() || unit_target->getCreatedByGuid() != 0)
         {
             RedSystemMessage(m_session, "You can not possess a pet!");
             return false;

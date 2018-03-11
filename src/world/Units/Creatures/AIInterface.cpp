@@ -2215,7 +2215,7 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
         return false;
 
     //don't attack owner
-    if (m_Unit->GetCreatedByGUID() == pUnit->getGuid())
+    if (m_Unit->getCreatedByGuid() == pUnit->getGuid())
         return false;
 
     //don't agro neutrals
@@ -2434,9 +2434,9 @@ Unit* AIInterface::FindTarget()
 
         m_Unit->SendAIReaction();
 
-        if (target->GetCreatedByGUID() != 0)
+        if (target->getCreatedByGuid() != 0)
         {
-            uint64 charmer = target->GetCharmedByGUID();
+            uint64 charmer = target->getCharmedByGuid();
 
             Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
 
@@ -2457,7 +2457,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
         {
             if (m_Unit->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
             {
-                m_Unit->SetTargetGUID(0);
+                m_Unit->setTargetGuid(0);
                 return m_Unit;
             }
             for (AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
@@ -2468,7 +2468,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
                 }
                 if ((*i)->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
                 {
-                    m_Unit->SetTargetGUID((*i)->getGuid());
+                    m_Unit->setTargetGuid((*i)->getGuid());
                     return (*i); // heal Assist Target which has low HP
                 }
             }
@@ -2476,7 +2476,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
 
         if (sp->spellType == STYPE_BUFF)
         {
-            m_Unit->SetTargetGUID(0);
+            m_Unit->setTargetGuid(0);
             return m_Unit;
         }
     }
@@ -3827,13 +3827,13 @@ void AIInterface::setNextTarget(Unit* nextTarget)
 void AIInterface::setNextTarget(uint64 nextTarget)
 {
     m_nextTarget = nextTarget;
-    m_Unit->SetTargetGUID(m_nextTarget);
+    m_Unit->setTargetGuid(m_nextTarget);
 }
 
 void AIInterface::resetNextTarget()
 {
     m_nextTarget = 0;
-    m_Unit->SetTargetGUID(0);
+    m_Unit->setTargetGuid(0);
 }
 
 Unit* AIInterface::getUnitToFollow()
@@ -4354,7 +4354,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     // set the target first
     if (pUnit->GetInstanceID() == m_Unit->GetInstanceID())
     {
-        m_Unit->SetTargetGUID(pUnit->getGuid());
+        m_Unit->setTargetGuid(pUnit->getGuid());
     }
 
     /* send the message */

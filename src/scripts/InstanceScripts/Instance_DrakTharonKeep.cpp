@@ -256,7 +256,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         //position is guessed
                         c->Load(cp, -379.101227f, -824.835449f, 60.0f, 0.0f);
                         c->PushToWorld(getCreature()->GetMapMgr());
-                        c->SetSummonedByGUID(getCreature()->getGuid());
+                        c->setSummonedByGuid(getCreature()->getGuid());
                         //path finding would be usefull :)
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
@@ -369,7 +369,7 @@ class CrystalHandlerAI : public CreatureAIScript
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
+            Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->getSummonedByGuid());
             if (Novos)
             {
                 for (uint8 i = 0; i < 4; i++)

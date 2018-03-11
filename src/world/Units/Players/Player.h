@@ -478,6 +478,11 @@ public:
     uint32_t getDuelTeam() const;
     void setDuelTeam(uint32_t team);
 
+#if VERSION_STRING > Classic
+    uint32_t getChosenTitle() const;
+    void setChosenTitle(uint32_t title);
+#endif
+
     uint32_t getXp() const;
     void setXp(uint32_t xp);
 
@@ -1716,13 +1721,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        void SetChosenTitle(uint32 id)
-        {
-#if VERSION_STRING > Classic
-            setUInt32Value(PLAYER_CHOSEN_TITLE, id);
-#endif
-        }
 
         void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 

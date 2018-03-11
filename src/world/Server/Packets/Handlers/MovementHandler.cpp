@@ -159,7 +159,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         {
             // TODO Fix for charmed units
             // TODO Fix for transports
-            if (_player->GetCharmedUnitGUID() == 0)
+            if (_player->getCharmGuid() == 0)
             {
                 if (_player->m_position.Distance2DSq(movement_info.position) > 3025.f)
                 {

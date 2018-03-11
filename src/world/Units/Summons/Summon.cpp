@@ -58,12 +58,12 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
     else
         RemoveSanctuaryFlag();
 
-    SetCreatedByGUID(pOwner->getGuid());
+    setCreatedByGuid(pOwner->getGuid());
 
-    if (pOwner->GetSummonedByGUID() == 0)
-        SetSummonedByGUID(pOwner->getGuid());
+    if (pOwner->getSummonedByGuid() == 0)
+        setSummonedByGuid(pOwner->getGuid());
     else
-        SetSummonedByGUID(pOwner->GetSummonedByGUID());
+        setSummonedByGuid(pOwner->getSummonedByGuid());
 
     this->owner = pOwner;
 

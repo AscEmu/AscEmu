@@ -1244,7 +1244,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
         if (IsType(TYPE_UNIT))
         {
-            if (((Unit*)this)->GetTargetGUID() != 0)
+            if (((Unit*)this)->getTargetGuid() != 0)
                 updateflags |= UPDATEFLAG_HAS_TARGET;
         }
     }
@@ -1282,7 +1282,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
     if (IsUnit())
     {
-        if (static_cast< Unit* >(this)->GetTargetGUID())
+        if (static_cast< Unit* >(this)->getTargetGuid())
             updateflags |= UPDATEFLAG_HAS_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
     }
 #endif
@@ -1806,7 +1806,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (IsUnit())
-            FastGUIDPack(*data, static_cast<Unit*>(this)->GetTargetGUID());	//some compressed GUID
+            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid());	//some compressed GUID
         else
             *data << uint64(0);
     }
@@ -1977,7 +1977,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
     {
         if (IsUnit())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->GetTargetGUID();
+            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->writeBit(victimGuid[2]);
             data->writeBit(victimGuid[7]);
@@ -2191,7 +2191,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
     {
         if (IsUnit())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->GetTargetGUID();
+            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->WriteByteSeq(victimGuid[4]);
             data->WriteByteSeq(victimGuid[0]);
@@ -2877,7 +2877,7 @@ bool Object::isInBack(Object* target)
     angle = (angle >= 0.0) ? angle : 2.0 * M_PI + angle;
 
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
-    if (IsCreature() && static_cast<Creature*>(this)->GetTargetGUID() != 0)
+    if (IsCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
     {
         Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
         if (pTarget != nullptr)
@@ -3706,7 +3706,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$r");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3719,7 +3719,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$n");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget && CurrentTarget->IsPlayer())
                     {
@@ -3732,7 +3732,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$c");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3745,7 +3745,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$g");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {

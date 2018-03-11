@@ -720,7 +720,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
                     Unit* u = static_cast<Unit*>(o);
 
-                    if (u->GetTargetGUID() != s->p_caster->getGuid())
+                    if (u->getTargetGuid() != s->p_caster->getGuid())
                         continue;
 
                     if (!isAttackable(s->p_caster, u))

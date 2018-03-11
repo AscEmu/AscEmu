@@ -128,7 +128,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64 caster)
                 auto player = objmgr.GetPlayer(static_cast<uint32_t>(caster));
                 if (player)
                 {
-                    m_unitTarget = player->GetTargetGUID();
+                    m_unitTarget = player->getTargetGuid();
                 }
             }
             break;

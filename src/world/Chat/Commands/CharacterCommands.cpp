@@ -1759,7 +1759,9 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
         player_target->SetKnownTitle(static_cast<RankTitles>(-title), false);
     }
 
-    player_target->SetChosenTitle(0);  // better remove chosen one
+#if VERSION_STRING > Classic
+    player_target->setChosenTitle(0);  // better remove chosen one
+#endif
     SystemMessage(m_session, "Title has been %s.", title > 0 ? "set" : "reset");
 
     std::stringstream logtext;

@@ -8131,9 +8131,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
 
         //ugly hack for shadowfiend restoring mana
-        if (GetSummonedByGUID() != 0 && GetEntry() == 19668)
+        if (getSummonedByGuid() != 0 && GetEntry() == 19668)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)GetSummonedByGUID());
+            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             uint32 amount = static_cast<uint32>(owner->GetMaxPower(POWER_TYPE_MANA) * 0.05f);
             if (owner != NULL)
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
@@ -10246,7 +10246,7 @@ void Unit::onRemoveInRangeObject(Object* pObj)
         Unit* pUnit = static_cast<Unit*>(pObj);
         GetAIInterface()->CheckTarget(pUnit);
 
-        if (GetCharmedUnitGUID() == pObj->getGuid())
+        if (getCharmGuid() == pObj->getGuid())
             interruptSpell();
     }
 }
@@ -10502,7 +10502,7 @@ void Unit::DropAurasOnDeath()
 
 bool Unit::IsControlledByPlayer()
 {
-    if (IS_PLAYER_GUID(GetCharmedByGUID()) || IsPlayer())
+    if (IS_PLAYER_GUID(getCharmedByGuid()) || IsPlayer())
         return true;
     return false;
 }
@@ -10820,14 +10820,16 @@ void Unit::RemoveFromWorld(bool free_guid)
     RemoveVehicleComponent();
 
     CombatStatus.OnRemoveFromWorld();
-    if (GetSummonedCritterGUID() != 0)
+#if VERSION_STRING > TBC
+    if (getCritterGuid() != 0)
     {
-        SetSummonedCritterGUID(0);
+        setCritterGuid(0);
 
-        Unit* u = m_mapMgr->GetUnit(GetSummonedCritterGUID());
+        Unit* u = m_mapMgr->GetUnit(getCritterGuid());
         if (u != NULL)
             u->Delete();
     }
+#endif
 
     if (dynObj != 0)
         dynObj->Remove();
@@ -13249,7 +13251,7 @@ void Unit::EventModelChange()
 
 void Unit::RemoveFieldSummon()
 {
-    uint64 guid = GetSummonedUnitGUID();
+    uint64 guid = getSummonGuid();
     if (guid && GetMapMgr())
     {
         Creature* summon = static_cast<Creature*>(GetMapMgr()->GetUnit(guid));
@@ -13257,7 +13259,7 @@ void Unit::RemoveFieldSummon()
         {
             summon->RemoveFromWorld(false, true);
         }
-        SetSummonedUnitGUID(0);
+        setSummonGuid(0);
     }
 }
 
@@ -13680,7 +13682,7 @@ uint64 Unit::GetTaggerGUID()
 
 bool Unit::isLootable()
 {
-    if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (GetCreatedByGUID() == 0) && !IsVehicle())
+    if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !IsVehicle())
     {
         auto creature_prop = sMySQLStore.getCreatureProperties(GetEntry());
         if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
@@ -14128,7 +14130,7 @@ void Unit::CastOnMeleeSpell()
     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
     spell->extra_cast_number = GetOnMeleeSpellEcn();
     SpellCastTargets targets;
-    targets.m_unitTarget = GetTargetGUID();
+    targets.m_unitTarget = getTargetGuid();
     spell->prepare(&targets);
     SetOnMeleeSpell(0);
 }
@@ -14472,7 +14474,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
         return;
     if (!pThis)
         return;
-    if (GetCharmedUnitGUID())
+    if (getCharmGuid())
         return;
 
     setMoveRoot(true);
@@ -14499,8 +14501,8 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     }
 
     m_noInterrupt++;
-    SetCharmedUnitGUID(pTarget->getGuid());
-    pTarget->SetCharmedByGUID(getGuid());
+    setCharmGuid(pTarget->getGuid());
+    pTarget->setCharmedByGuid(getGuid());
     pTarget->SetCharmTempVal(pTarget->GetFaction());
     pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
@@ -14532,10 +14534,10 @@ void Unit::UnPossess()
         return;
     if (!pThis)
         return;
-    if (!GetCharmedUnitGUID())
+    if (!getCharmGuid())
         return;
 
-    Unit* pTarget = GetMapMgr()->GetUnit(GetCharmedUnitGUID());
+    Unit* pTarget = GetMapMgr()->GetUnit(getCharmGuid());
     if (!pTarget)
         return;
 
@@ -14554,9 +14556,9 @@ void Unit::UnPossess()
     m_noInterrupt--;
     pThis->SetFarsightTarget(0);
     pThis->mControledUnit = this;
-    SetCharmedUnitGUID(0);
-    pTarget->SetCharmedByGUID(0);
-    SetCharmedUnitGUID(0);
+    setCharmGuid(0);
+    pTarget->setCharmedByGuid(0);
+    setCharmGuid(0);
 
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     pTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -14571,7 +14573,7 @@ void Unit::UnPossess()
 
     setMoveRoot(false);
 
-    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == getGuid()))
+    if (!pTarget->IsPet() && (pTarget->getCreatedByGuid() == getGuid()))
     {
         sEventMgr.AddEvent(static_cast< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
         return;

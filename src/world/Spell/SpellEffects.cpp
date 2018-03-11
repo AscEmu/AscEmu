@@ -1496,7 +1496,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
 
         if (unitTarget->IsCreature())
         {
-            if (unitTarget->GetTargetGUID() != 0)
+            if (unitTarget->getTargetGuid() != 0)
             {
                 /* We're chasing a target. We have to calculate the angle to this target, this is our orientation. */
                 ang = m_caster->calcAngle(m_caster->GetPositionX(), m_caster->GetPositionY(), unitTarget->GetPositionX(), unitTarget->GetPositionY());
@@ -2997,8 +2997,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
 
         if (p->GetCreatureProperties()->Faction == 35)
         {
-            p->SetSummonedByGUID(m_caster->getGuid());
-            p->SetCreatedByGUID(m_caster->getGuid());
+            p->setSummonedByGuid(m_caster->getGuid());
+            p->setCreatedByGuid(m_caster->getGuid());
 
             if (m_caster->IsGameObject())
                 p->SetFaction(static_cast<GameObject*>(m_caster)->GetFaction());
@@ -3165,9 +3165,10 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     if (u_caster == nullptr)
         return;
 
-    if (u_caster->GetSummonedCritterGUID() != 0)
+#if VERSION_STRING > TBC
+    if (u_caster->getCritterGuid() != 0)
     {
-        auto critter = u_caster->GetMapMgr()->GetUnit(u_caster->GetSummonedCritterGUID());
+        auto critter = u_caster->GetMapMgr()->GetUnit(u_caster->getCritterGuid());
         if (critter == nullptr)
             return;
 
@@ -3176,7 +3177,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
         uint32 currententry = creature->GetCreatureProperties()->Id;
 
         creature->RemoveFromWorld(false, true);
-        u_caster->SetSummonedCritterGUID(0);
+        u_caster->setCritterGuid(0);
 
         // Before WOTLK when you casted the companion summon spell the second time it removed the companion
         // Customized servers or old databases could still use this method
@@ -3192,7 +3193,8 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     summon->SetCreatedBySpell(m_spellInfo->getId());
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
     summon->PushToWorld(u_caster->GetMapMgr());
-    u_caster->SetSummonedCritterGUID(summon->getGuid());
+    u_caster->setCritterGuid(summon->getGuid());
+#endif
 }
 
 void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* /*spe*/, CreatureProperties const* properties_, LocationVector& v)
@@ -3208,8 +3210,8 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->Load(properties_, v.x, v.y, v.z, v.o);
     c->Phase(PHASE_SET, u_caster->GetPhase());
     c->SetCreatedBySpell(m_spellInfo->getId());
-    c->SetCreatedByGUID(u_caster->getGuid());
-    c->SetSummonedByGUID(u_caster->getGuid());
+    c->setCreatedByGuid(u_caster->getGuid());
+    c->setSummonedByGuid(u_caster->getGuid());
     c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
 
@@ -5017,7 +5019,7 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
     Unit* controller = nullptr;
 
     if (u_caster->GetVehicleComponent() != nullptr)
-        controller = u_caster->GetMapMgr()->GetUnit(u_caster->GetCharmedByGUID());
+        controller = u_caster->GetMapMgr()->GetUnit(u_caster->getCharmedByGuid());
 
     if (controller == nullptr)
         controller = u_caster;

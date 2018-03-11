@@ -138,7 +138,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         return 0;
 
     // No xp reward for killing summons
-    if (pVictim->GetCreatedByGUID() != 0)
+    if (pVictim->getCreatedByGuid() != 0)
         return 0;
 
     CreatureProperties const* victimI = static_cast<Creature*>(pVictim)->GetCreatureProperties();
