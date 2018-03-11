@@ -90,8 +90,8 @@ union
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;
-    uint64_t unk2;
+    uint32_t unk1;  // id
+    uint64_t unk2;  // 4 x uint16_t mob_or_go_count
 };
 
 struct WoWPlayer_VisibleItem
@@ -187,10 +187,9 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;
-    uint32_t unk2;
-    uint32_t unk3;
-    uint32_t unk4;
+    uint32_t unk1;  // id
+    uint32_t unk2;  // state
+    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
 };
 
 struct WoWPlayer_VisibleItem
@@ -296,11 +295,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;
-    uint32_t unk2;
-    uint32_t unk3;
-    uint32_t unk4;
-    uint32_t unk5;
+    uint32_t unk1;  // id
+    uint32_t unk2;  // state
+    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
+    uint32_t unk5;  // time
 };
 
 struct WoWPlayer_VisibleItem
@@ -407,11 +405,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;
-    uint32_t unk2;
-    uint32_t unk3;
-    uint32_t unk4;
-    uint32_t unk5;
+    uint32_t unk1;  // id
+    uint32_t unk2;  // state
+    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
+    uint32_t unk5;  // time
 };
 
 struct WoWPlayer_VisibleItem
