@@ -869,19 +869,14 @@ public:
         std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
-        /*! \deprecated This function returns a uint32 (the underlying type of the enum) instead of a PlayerTeam (the enum itself)
-         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam
-         *  \sa Player::GetTeamReal */
-        uint32 GetTeam() { return m_team; }
 
-        PlayerTeam GetTeamReal();
-
+        PlayerTeam GetTeam();
         uint32 GetTeamInitial();
         void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
 
         void ResetTeam();
-        bool IsTeamHorde() { return m_team == TEAM_HORDE; }
-        bool IsTeamAlliance() { return m_team == TEAM_ALLIANCE; }
+        bool IsTeamHorde() { return GetTeam() == TEAM_HORDE; }
+        bool IsTeamAlliance() { return GetTeam() == TEAM_ALLIANCE; }
 
         bool IsInFeralForm()
         {

@@ -11187,11 +11187,7 @@ void Player::EventPortToGM(Player* p)
     SafeTeleport(p->GetMapId(), p->GetInstanceID(), p->GetPosition());
 }
 
-/*! \returns TEAM_ALLIANCE if m_team equals 0, and TEAM_HORDE otherwise
- *  \note Use this function instead of Player::GetTeam for any new code
- *  \todo Refactor m_team to be a PlayerTeam instead of a uint32 and return m_team directly
- *  \sa Player::GetTeam */
-PlayerTeam Player::GetTeamReal()
+PlayerTeam Player::GetTeam()
 {
     return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE;
 }
@@ -15412,7 +15408,8 @@ uint32 Player::GetTeamInitial()
 
 void Player::ResetTeam()
 {
-    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; m_bgTeam = m_team;
+    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+    m_bgTeam = m_team;
 }
 
 bool Player::IsBanned()

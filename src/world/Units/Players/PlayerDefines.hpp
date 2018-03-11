@@ -19,18 +19,18 @@ enum PlayerTeam : uint8_t
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// DBC_PLAYER_LEVEL_CAP
-///
-/// \param level cap
-///
-/// Vanilla = 60
-/// The Burning Crusade = 70
-/// Wrath of the Lich King = 80
-/// Cataclysm = 85
-/// Mists of Pandaria = 90
-/// Warlords of Draenor = 100
-/// Legion = 110
-///
+// DBC_PLAYER_LEVEL_CAP
+//
+// \param level cap
+//
+// Vanilla = 60
+// The Burning Crusade = 70
+// Wrath of the Lich King = 80
+// Cataclysm = 85
+// Mists of Pandaria = 90
+// Warlords of Draenor = 100
+// Legion = 110
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
@@ -44,18 +44,18 @@ enum PlayerTeam : uint8_t
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// DBC_PLAYER_SKILL_MAX
-///
-/// \param skill max
-///
-/// Vanilla = 300
-/// The Burning Crusade = 375
-/// Wrath of the Lich King = 450
-/// Cataclysm = 525
-/// Mists of Pandaria = 600
-/// Warlords of Draenor = 700
-/// Legion = 800
-///
+// DBC_PLAYER_SKILL_MAX
+//
+// \param skill max
+//
+// Vanilla = 300
+// The Burning Crusade = 375
+// Wrath of the Lich King = 450
+// Cataclysm = 525
+// Mists of Pandaria = 600
+// Warlords of Draenor = 700
+// Legion = 800
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
@@ -70,13 +70,13 @@ enum PlayerTeam : uint8_t
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Minimum level required arena
+// Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
 
-#define ACHIEVEMENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
-#define LOGIN_CIENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
+#define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
+#define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 
 enum Gender
 {
@@ -348,8 +348,8 @@ enum CustomizeFlags
 {
     CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
     CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    ///\todo Implement      * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   //\todo Implement      * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    //\todo Implement      * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
