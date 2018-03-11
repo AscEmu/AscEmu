@@ -143,7 +143,7 @@ class SERVER_DECL ItemInterface
         void BuildInventoryChangeError(Item* SrcItem, Item* DstItem, uint8 Error);
         void SwapItemSlots(int8 srcslot, int8 dstslot);
 
-        int8 GetInternalBankSlotFromPlayer(int8 islot);         // converts inventory slots into 0-x numbers
+        uint8 GetInternalBankSlotFromPlayer(int8 islot);         // converts inventory slots into 0-x numbers
 
         // buyback stuff
         inline Item* GetBuyBack(int32 slot)

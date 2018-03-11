@@ -317,6 +317,7 @@ public:
     uint32_t getEntry() const;
 
     bool write(const uint8_t& member, uint8_t val);
+    bool write(const uint16_t& member, uint16_t val);
     bool write(const float_t& member, float_t val);
     bool write(const int32_t& member, int32_t val);
     bool write(const uint32_t& member, uint32_t val);

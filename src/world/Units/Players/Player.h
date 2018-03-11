@@ -421,12 +421,56 @@ public:
     uint64_t getDuelArbiter() const;
     void setDuelArbiter(uint64_t guid);
 
-    //bytes
-    //bytes2
-    //bytes3
+    //bytes begin
+    uint32_t getPlayerBytes() const;
+    void setPlayerBytes(uint32_t bytes);
 
-    void setPlayerFlags(uint32_t flags);
+    uint8_t getSkinColor() const;
+    void setSkinColor(uint8_t color);
+
+    uint8_t getFace() const;
+    void setFace(uint8_t face);
+
+    uint8_t getHairStyle() const;
+    void setHairStyle(uint8_t style);
+
+    uint8_t getHairColor() const;
+    void setHairColor(uint8_t color);
+    //bytes end
+
+    //bytes2 begin
+    uint32_t getPlayerBytes2() const;
+    void setPlayerBytes2(uint32_t bytes2);
+
+    uint8_t getFacialFeatures() const;
+    void setFacialFeatures(uint8_t feature);
+
+    //unk1
+
+    uint8_t getBankSlots() const;
+    void setBankSlots(uint8_t slots);
+
+    uint8_t getRestState() const;
+    void setRestState(uint8_t state);
+    //bytes2 end
+
+    //bytes3 begin
+    uint32_t getPlayerBytes3() const;
+    void setPlayerBytes3(uint32_t bytes3);
+
+    //\note already available in unit data
+    uint8_t getPlayerGender() const;
+    void setPlayerGender(uint8_t gender);
+
+    uint16_t getDrunkValue() const;
+    void setDrunkValue(uint16_t value);
+
+    uint8_t getPvpRank() const;
+    void setPvpRank(uint8_t rank);
+    //bytes3 end
+
     uint32_t getPlayerFlags() const;
+    void setPlayerFlags(uint32_t flags);
     void addPlayerFlags(uint32_t flags);
     void removePlayerFlags(uint32_t flags);
     bool hasPlayerFlags(uint32_t flags) const;
@@ -958,14 +1002,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint8 GetPVPRank()
-        {
-            return (uint8)((getUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
-        }
-        void SetPVPRank(int newrank)
-        {
-            setUInt32Value(PLAYER_BYTES_3, ((getUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
-        }
         uint32 GetMaxPersonalRating();
 
         bool HasTitle(RankTitles title)

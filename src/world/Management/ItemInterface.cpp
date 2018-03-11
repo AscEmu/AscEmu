@@ -1869,7 +1869,7 @@ uint8 ItemInterface::FindFreeBackPackSlotMax()
 }
 
 /// Converts bank bags slot ids into player bank byte slots(0-5)
-int8 ItemInterface::GetInternalBankSlotFromPlayer(int8 islot)
+uint8 ItemInterface::GetInternalBankSlotFromPlayer(int8 islot)
 {
     switch (islot)
     {
@@ -2219,14 +2219,10 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
         case BANK_SLOT_BAG_6:
         case BANK_SLOT_BAG_7:
         {
-            int32 bytes, slots;
-            int8 islot;
-
             if (!GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot))        //check if player got that slot.
             {
-                bytes = m_pOwner->getUInt32Value(PLAYER_BYTES_2);
-                slots = (uint8)(bytes >> 16);
-                islot = GetInternalBankSlotFromPlayer(slot);
+                const uint8_t slots = m_pOwner->getBankSlots();
+                const uint8_t islot = GetInternalBankSlotFromPlayer(slot);
                 if (slots < islot)
                 {
                     return INV_ERR_MUST_PURCHASE_THAT_BAG_SLOT;

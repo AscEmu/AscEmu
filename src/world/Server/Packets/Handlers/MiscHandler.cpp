@@ -1521,10 +1521,10 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     recv_data >> facialhairorpiercing;
     recv_data >> skincolor;
 
-    uint32 oldhair = _player->getByteValue(PLAYER_BYTES, 2);
-    uint32 oldhaircolor = _player->getByteValue(PLAYER_BYTES, 3);
-    uint32 oldfacial = _player->getByteValue(PLAYER_BYTES_2, 0);
-    // uint32 oldskincolor = _player->getByteValue(PLAYER_BYTES, 0);
+    uint32 oldhair = _player->getHairStyle();
+    uint32 oldhaircolor = _player->getHairColor();
+    uint32 oldfacial = _player->getFacialFeatures();
+    // uint32 oldskincolor = _player->getSkinColor();
 
     uint32 newhair, newhaircolor, newfacial;
 
@@ -1580,11 +1580,11 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     data << uint32(0);                                  // ok
     SendPacket(&data);
 
-    _player->setByteValue(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
-    _player->setByteValue(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
-    _player->setByteValue(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
+    _player->setHairStyle(static_cast<uint8>(newhair));
+    _player->setHairColor(static_cast<uint8>(newhaircolor));
+    _player->setFacialFeatures(static_cast<uint8>(newfacial));
     if (barberShopSkinColor)
-        _player->setByteValue(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
+        _player->setSkinColor(static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
     _player->setStandState(STANDSTATE_STAND);                              // stand up

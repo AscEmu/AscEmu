@@ -15,6 +15,60 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWUnit.h"
 #pragma pack(push, 1)
 
+union
+{
+    struct
+    {
+        uint8_t skin_color;
+        uint8_t face;
+        union
+        {
+            uint8_t hair_style;
+            uint8_t horn_style;     //tauren
+        };
+        union
+        {
+            uint8_t hair_color;
+            uint8_t horn_color;     //tauren
+        };
+    } s;
+    uint32_t raw;
+} typedef player_bytes_union;
+
+union
+{
+    struct
+    {
+        union
+        {
+            uint8_t facial_hair;    //human m, orc m, dwarf m, night elf m, tauren m, gnome m, draenei m, blood elf m, worgen m
+            uint8_t piercings;      //human f, orc f, dwarf f
+            uint8_t features;       //undead m + f
+            uint8_t markings;       //night elf f
+            uint8_t hair;           //tauren f
+            uint8_t earrings;       //gnome f, blood elf f
+            uint8_t tusks;          //troll (m+f)
+            uint8_t horn_style;     //draenei f
+            uint8_t ears;           //worgen f, goblin (m+f)
+        };
+        uint8_t unk1;           //gm?
+        uint8_t bank_slots;
+        uint8_t rest_state;
+    } s;
+    uint32_t raw;
+} typedef player_bytes_2_union;
+
+union
+{
+    struct
+    {
+        uint8_t gender;
+        uint16_t drunk_value;   // not sure
+        uint8_t pvp_rank;
+    } s;
+    uint32_t raw;
+} typedef player_bytes_3_union;
+
 // Adjusted values.
 #if VERSION_STRING == Classic
 #define WOWPLAYER_QUEST_COUNT 20
@@ -54,9 +108,9 @@ struct WoWPlayer : WoWUnit
     uint32_t player_flags;
     uint32_t guild_id;
     uint32_t guild_rank;
-    uint32_t player_bytes;
-    uint32_t player_bytes_2;
-    uint32_t player_bytes_3;
+    player_bytes_union player_bytes;
+    player_bytes_2_union player_bytes_2;
+    player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
     WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
@@ -153,9 +207,9 @@ struct WoWPlayer : WoWUnit
     uint32_t player_flags;
     uint32_t guild_id;
     uint32_t guild_rank;
-    uint32_t player_bytes;
-    uint32_t player_bytes_2;
-    uint32_t player_bytes_3;
+    player_bytes_union player_bytes;
+    player_bytes_2_union player_bytes_2;
+    player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
     WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
@@ -261,9 +315,9 @@ struct WoWPlayer : WoWUnit
     uint32_t player_flags;
     uint32_t guild_id;
     uint32_t guild_rank;
-    uint32_t player_bytes;
-    uint32_t player_bytes_2;
-    uint32_t player_bytes_3;
+    player_bytes_union player_bytes;
+    player_bytes_2_union player_bytes_2;
+    player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
     WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
@@ -373,9 +427,9 @@ struct WoWPlayer : WoWUnit
     uint32_t guild_rank;
     uint32_t guild_delete_date;
     uint32_t guild_level;
-    uint32_t player_bytes;
-    uint32_t player_bytes_2;
-    uint32_t player_bytes_3;
+    player_bytes_union player_bytes;
+    player_bytes_2_union player_bytes_2;
+    player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
     WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];

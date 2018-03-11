@@ -1008,32 +1008,25 @@ bool Player::Create(WorldPacket& data)
     //SetMinDamage(info->mindmg);
     //SetMaxDamage(info->maxdmg);
     SetAttackPower(info->attackpower);
-#if VERSION_STRING != Cata
-    setUInt32Value(PLAYER_BYTES, ((skin) | (face << 8) | (hairStyle << 16) | (hairColor << 24)));
-    //PLAYER_BYTES_2                               GM ON/OFF     BANKBAGSLOTS   RESTEDSTATE
-    setUInt32Value(PLAYER_BYTES_2, (facialHair /*| (0xEE << 8)*/ | (0x02 << 24)));//no bank slot by default!
 
-    //PLAYER_BYTES_3                           DRUNKENSTATE                 PVPRANK
-    setUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
-#else
-    // Set Byte Values
-    setByteValue(PLAYER_BYTES, 0, skin);
-    setByteValue(PLAYER_BYTES, 1, face);
-    setByteValue(PLAYER_BYTES, 2, hairStyle);
-    setByteValue(PLAYER_BYTES, 3, hairColor);
+    // PLAYER_BYTES
+    setSkinColor(skin);
+    setFace(face);
+    setHairStyle(hairStyle);
+    setHairColor(hairColor);
 
-    //Set Byte2 Values
-    setByteValue(PLAYER_BYTES_2, 0, facialHair);
+    // PLAYER_BYTES_2
+    setFacialFeatures(facialHair);
     //SetByte(PLAYER_BYTES_2, 1, 0);  // unknown
-    //SetByte(PLAYER_BYTES_2, 2, 0);  // unknown
-    setByteValue(PLAYER_BYTES_2, 3, RESTSTATE_NORMAL);
+    //SetByte(PLAYER_BYTES_2, 2, 0);  // bank_slots
+    setRestState(RESTSTATE_NORMAL);
 
-    //Set Byte3 Values
-    setByteValue(PLAYER_BYTES_3, 0, gender);
-    setByteValue(PLAYER_BYTES_3, 1, 0);  // drunkenstate?
-    setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
-    setByteValue(PLAYER_BYTES_3, 3, GetPVPRank());  // pvp rank
-#endif
+    // PLAYER_BYTES_3
+    setPlayerGender(gender);
+    //setByteValue(PLAYER_BYTES_3, 1, 0);  // drunkvalue?
+    //setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
+    setPvpRank(getPvpRank());   //useless
+
     setNextLevelXp(400);
     setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
@@ -2749,9 +2742,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << load_health << ","
         << load_mana << ","
-        << uint32(GetPVPRank()) << ","
-        << m_uint32Values[PLAYER_BYTES] << ","
-        << m_uint32Values[PLAYER_BYTES_2] << ",";
+        << uint32(getPvpRank()) << ","
+        << getPlayerBytes() << ","
+        << getPlayerBytes2() << ",";
 
     // Remove un-needed and problematic player flags from being saved :p
     if (hasPlayerFlags(PLAYER_FLAG_PARTY_LEADER))
@@ -2933,7 +2926,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << m_honorYesterday << ", ";
     ss << m_honorPoints << ", ";
 
-    ss << (m_uint32Values[PLAYER_BYTES_3] & 0xFFFE) << ", ";
+    ss << getDrunkValue() << ", ";
 
     // TODO Remove
 #ifdef FT_DUAL_SPEC
@@ -3332,10 +3325,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
     setHealth(load_health);
-    uint8 pvprank = get_next_field.GetUInt8();
-    setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
+    setPvpRank(get_next_field.GetUInt8());
+    setPlayerBytes(get_next_field.GetUInt32());
+    setPlayerBytes2(get_next_field.GetUInt32());
+    setPlayerGender(getGender());
     setPlayerFlags(get_next_field.GetUInt32());
     setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
 
@@ -4081,10 +4074,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
     setHealth(load_health);
-    uint8 pvprank = get_next_field.GetUInt8();
-    setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
+    setPvpRank(get_next_field.GetUInt8());
+    setPlayerBytes(get_next_field.GetUInt32());
+    setPlayerBytes2(get_next_field.GetUInt32());
+    setPlayerGender(getGender());
     setPlayerFlags(get_next_field.GetUInt32());
     setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
     //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
@@ -5845,7 +5838,7 @@ void Player::KillPlayer()
 void Player::CreateCorpse()
 {
     Corpse* pCorpse;
-    uint32 _pb, _pb2, _cfb1, _cfb2;
+    uint32 _cfb1, _cfb2;
 
     objmgr.DelinkPlayerCorpses(this);
     if (!bCorpseCreateable)
@@ -5856,18 +5849,14 @@ void Player::CreateCorpse()
 
     pCorpse = objmgr.CreateCorpse();
     pCorpse->SetInstanceID(GetInstanceID());
-    pCorpse->Create(this, GetMapId(), GetPositionX(),
-                    GetPositionY(), GetPositionZ(), GetOrientation());
-
-    _pb = getUInt32Value(PLAYER_BYTES);
-    _pb2 = getUInt32Value(PLAYER_BYTES_2);
+    pCorpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
     uint8 race = getRace();
-    uint8 skin = (uint8)(_pb);
-    uint8 face = (uint8)(_pb >> 8);
-    uint8 hairstyle = (uint8)(_pb >> 16);
-    uint8 haircolor = (uint8)(_pb >> 24);
-    uint8 facialhair = (uint8)(_pb2);
+    uint8 skin = getSkinColor();
+    uint8 face = getFace();
+    uint8 hairstyle = getHairStyle();
+    uint8 haircolor = getHairColor();
+    uint8 facialhair = getFacialFeatures();
 
     _cfb1 = ((0x00) | (race << 8) | (0x00 << 16) | (skin << 24));
     _cfb2 = ((face) | (hairstyle << 8) | (haircolor << 16) | (facialhair << 24));
@@ -6798,7 +6787,7 @@ void Player::UpdateRestState()
         m_restState = RESTSTATE_NORMAL;
 
     // Update RestState 100%/200%
-    setUInt32Value(PLAYER_BYTES_2, ((getUInt32Value(PLAYER_BYTES_2) & 0x00FFFFFF) | (m_restState << 24)));
+    setRestState(m_restState);
 
     //update needle (weird, works at 1/2 rate)
     setUInt32Value(PLAYER_REST_STATE_EXPERIENCE, m_restAmount >> 1);
@@ -7124,12 +7113,12 @@ DrunkenState Player::GetDrunkenstateByValue(uint16 value)
 
 void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 {
-    uint32 oldDrunkenState = Player::GetDrunkenstateByValue(m_drunk);
+    uint32 oldDrunkenState = GetDrunkenstateByValue(m_drunk);
 
     m_drunk = newDrunkenValue;
-    setUInt32Value(PLAYER_BYTES_3, (getUInt32Value(PLAYER_BYTES_3) & 0xFFFF0001) | (m_drunk & 0xFFFE));
+    setDrunkValue(m_drunk);
 
-    uint32 newDrunkenState = Player::GetDrunkenstateByValue(m_drunk);
+    uint32 newDrunkenState = GetDrunkenstateByValue(m_drunk);
 
     if (newDrunkenState == oldDrunkenState)
         return;

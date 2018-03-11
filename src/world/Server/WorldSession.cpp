@@ -1202,12 +1202,12 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->getGender());
         data << uint8(pcaster->getClass());
 
-        // facial features, like big nose, piercings, bonehead, etc
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 0));	// skin color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 1));	// face
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 2));	// hair style
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 3));	// hair color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES_2, 0));	// facial hair
+        // facial features
+        data << uint8(pcaster->getSkinColor());
+        data << uint8(pcaster->getFace());
+        data << uint8(pcaster->getHairStyle());
+        data << uint8(pcaster->getHairColor());
+        data << uint8(pcaster->getFacialFeatures());
 
 #if VERSION_STRING != Cata
         if (pcaster->IsInGuild())

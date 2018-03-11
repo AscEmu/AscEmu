@@ -122,7 +122,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         uint32 pvppoints = pts * 10;
                         data << pvppoints;
                         data << pVictim->getGuid();
-                        data << uint32(pVictim->GetPVPRank());
+                        data << uint32(pVictim->getPvpRank());
                         (*vtr)->GetSession()->SendPacket(&data);
                     }
                 }
@@ -187,7 +187,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 uint32 pvppoints = contributorpts * 10; // Why *10?
                 data << pvppoints;
                 data << pVictim->getGuid();
-                data << uint32(pVictim->GetPVPRank());
+                data << uint32(pVictim->getPvpRank());
                 pAffectedPlayer->GetSession()->SendPacket(&data);
 
                 int PvPToken = Config.MainConfig.getIntDefault("Player", "EnablePvPToken", 0);

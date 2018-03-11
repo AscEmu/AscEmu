@@ -162,6 +162,27 @@ bool Object::write(const uint8_t& member, uint8_t val)
     return true;
 }
 
+bool Object::write(const uint16_t& member, uint16_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint16_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
 bool Object::write(const float_t& member, float_t val)
 {
     if (member == val)

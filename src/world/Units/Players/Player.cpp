@@ -21,9 +21,52 @@ This file is released under the MIT license. See README-MIT for more information
 uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
 void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
 
-//bytes
-//bytes2
-//bytes3
+//bytes begin
+uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
+void Player::setPlayerBytes(uint32_t bytes) { write(playerData()->player_bytes.raw, bytes); }
+
+uint8_t Player::getSkinColor() const { return playerData()->player_bytes.s.skin_color; }
+void Player::setSkinColor(uint8_t color) { write(playerData()->player_bytes.s.skin_color, color); }
+
+uint8_t Player::getFace() const { return playerData()->player_bytes.s.face; }
+void Player::setFace(uint8_t face) { write(playerData()->player_bytes.s.face, face); }
+
+uint8_t Player::getHairStyle() const { return playerData()->player_bytes.s.hair_style; }
+void Player::setHairStyle(uint8_t style) { write(playerData()->player_bytes.s.hair_style, style); }
+
+uint8_t Player::getHairColor() const { return playerData()->player_bytes.s.hair_color; }
+void Player::setHairColor(uint8_t color) { write(playerData()->player_bytes.s.hair_color, color); }
+//bytes end
+
+//bytes2 begin
+uint32_t Player::getPlayerBytes2() const { return playerData()->player_bytes_2.raw; }
+void Player::setPlayerBytes2(uint32_t bytes2) { write(playerData()->player_bytes_2.raw, bytes2); }
+
+uint8_t Player::getFacialFeatures() const { return playerData()->player_bytes_2.s.facial_hair; }
+void Player::setFacialFeatures(uint8_t feature) { write(playerData()->player_bytes_2.s.facial_hair, feature); }
+
+//unk1
+
+uint8_t Player::getBankSlots() const { return playerData()->player_bytes_2.s.bank_slots; }
+void Player::setBankSlots(uint8_t slots) { write(playerData()->player_bytes_2.s.bank_slots, slots); }
+
+uint8_t Player::getRestState() const { return playerData()->player_bytes_2.s.rest_state; }
+void Player::setRestState(uint8_t state) { write(playerData()->player_bytes_2.s.rest_state, state); }
+//bytes2 end
+
+//bytes3 begin
+uint32_t Player::getPlayerBytes3() const { return playerData()->player_bytes_3.raw; }
+void Player::setPlayerBytes3(uint32_t bytes3) { write(playerData()->player_bytes_3.raw, bytes3); }
+
+uint8_t Player::getPlayerGender() const { return playerData()->player_bytes_3.s.gender; }
+void Player::setPlayerGender(uint8_t gender) { write(playerData()->player_bytes_3.s.gender, gender); }
+
+uint16_t Player::getDrunkValue() const { return playerData()->player_bytes_3.s.drunk_value; }
+void Player::setDrunkValue(uint16_t value) { write(playerData()->player_bytes_3.s.drunk_value, value); }
+
+uint8_t Player::getPvpRank() const { return playerData()->player_bytes_3.s.pvp_rank; }
+void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp_rank, rank); }
+//bytes3 end
 
 uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
 void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
