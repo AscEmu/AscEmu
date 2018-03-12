@@ -81,8 +81,8 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setClass(1);
     setGender(2);
     setPowerType(1);
-    SetBaseAttackTime(MELEE, 2000);
-    SetBaseAttackTime(OFFHAND, 2000);
+    setBaseAttackTime(MELEE, 2000);
+    setBaseAttackTime(OFFHAND, 2000);
     setBoundingRadius(1.0f);
     setCombatReach(1.0f);
     setDisplayId(displayID);

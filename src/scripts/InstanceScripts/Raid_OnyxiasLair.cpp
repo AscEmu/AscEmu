@@ -78,7 +78,7 @@ class OnyxiaAI : public CreatureAIScript
             getCreature()->setStandState(STANDSTATE_STAND);
             sendDBChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             m_fBreath = false;
             m_kAway = false;

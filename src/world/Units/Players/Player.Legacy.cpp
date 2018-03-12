@@ -6444,14 +6444,14 @@ void Player::UpdateAttackSpeed()
         if (weap != nullptr)
             speed = weap->getItemProperties()->Delay;
     }
-    SetBaseAttackTime(MELEE,
+    setBaseAttackTime(MELEE,
                       (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->getItemProperties()->Delay;
-        SetBaseAttackTime(OFFHAND,
+        setBaseAttackTime(OFFHAND,
                           (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
     }
 
@@ -6459,7 +6459,7 @@ void Player::UpdateAttackSpeed()
     if (weap != nullptr)
     {
         speed = weap->getItemProperties()->Delay;
-        SetBaseAttackTime(RANGED,
+        setBaseAttackTime(RANGED,
                           (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
     }
 }

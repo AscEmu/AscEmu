@@ -421,8 +421,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
-    SetBaseAttackTime(MELEE, 2000);
-    SetBaseAttackTime(OFFHAND, 2000);
+    setBaseAttackTime(MELEE, 2000);
+    setBaseAttackTime(OFFHAND, 2000);
     SetFaction(owner->GetFaction());
     SetCastSpeedMod(1.0f);    // better set this one
 
@@ -906,8 +906,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     //Preventing overbuffs
     SetAttackPower(0);
     SetAttackPowerMods(0);
-    SetBaseAttackTime(MELEE, 2000);
-    SetBaseAttackTime(OFFHAND, 2000);
+    setBaseAttackTime(MELEE, 2000);
+    setBaseAttackTime(OFFHAND, 2000);
     SetCastSpeedMod(1.0f);          // better set this one
 
     setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));

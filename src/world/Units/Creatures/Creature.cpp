@@ -1358,12 +1358,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, creature_properties->Resistances[i]);
 
-    SetBaseAttackTime(MELEE, creature_properties->AttackTime);
+    setBaseAttackTime(MELEE, creature_properties->AttackTime);
 
     SetMinDamage(creature_properties->MinDamage);
     SetMaxDamage(creature_properties->MaxDamage);
 
-    SetBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
+    setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
     SetMinRangedDamage(creature_properties->RangedMinDamage);
     SetMaxRangedDamage(creature_properties->RangedMaxDamage);
 
@@ -1606,7 +1606,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, creature_properties->Resistances[i]);
 
-    SetBaseAttackTime(MELEE, creature_properties->AttackTime);
+    setBaseAttackTime(MELEE, creature_properties->AttackTime);
     SetMinDamage(creature_properties->MinDamage);
     SetMaxDamage(creature_properties->MaxDamage);
 

@@ -301,6 +301,10 @@ public:
     void removeUnitFlags2(uint32_t unitFlags2);
 #endif
 
+    uint32_t getBaseAttackTime(uint8_t slot) const;
+    void setBaseAttackTime(uint8_t slot, uint32_t time);
+    void modBaseAttackTime(uint8_t slot, int32_t modTime);
+
     float_t getBoundingRadius() const;
     void setBoundingRadius(float_t radius);
 
@@ -1122,11 +1126,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
-    void SetBaseAttackTime(uint8 slot, uint32 time) { setUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, time); }
-    uint32 GetBaseAttackTime(uint8 slot) { return getUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot); }
-    void ModBaseAttackTime(uint8 slot, int32 mod) { modUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void SetMinDamage(float amt) { setFloatValue(UNIT_FIELD_MINDAMAGE, amt); }
     float GetMinDamage() { return getFloatValue(UNIT_FIELD_MINDAMAGE); }

@@ -1273,7 +1273,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 25742:
             {
                 if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->getUInt32Value(UNIT_FIELD_BASEATTACKTIME) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->getEffectBasePoints(effectIndex)));
+                    dmg = static_cast<uint32>(std::round(p_caster->getBaseAttackTime(MELEE) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->getEffectBasePoints(effectIndex)));
             }break;
             case 9799:
             case 25988:

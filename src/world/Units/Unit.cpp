@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
-#include <corecrt_io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -91,6 +90,19 @@ void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, 
 void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 #endif
+
+uint32_t Unit::getBaseAttackTime(uint8_t slot) const { return unitData()->base_attack_time[slot]; }
+void Unit::setBaseAttackTime(uint8_t slot, uint32_t time) { write(unitData()->base_attack_time[slot], time); }
+void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
+{
+    int32_t newAttackTime = getBaseAttackTime(slot);
+    newAttackTime += modTime;
+
+    if (newAttackTime < 0)
+        newAttackTime = 0;
+
+    setBaseAttackTime(slot, newAttackTime);
+}
 
 float_t Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
 void Unit::setBoundingRadius(float_t radius) { write(unitData()->bounding_radius, radius); }

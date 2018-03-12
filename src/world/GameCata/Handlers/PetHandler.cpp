@@ -45,7 +45,7 @@ void WorldSession::HandlePetAction(WorldPacket& recvData)
             {
                 if (!sEventMgr.HasEvent(_player, EVENT_PLAYER_CHARM_ATTACK))
                 {
-                    uint32 timer = pCharm->GetBaseAttackTime(MELEE);
+                    uint32 timer = pCharm->getBaseAttackTime(MELEE);
                     if (!timer) timer = 2000;
 
                     sEventMgr.AddEvent(_player, &Player::_EventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

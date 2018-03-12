@@ -8279,9 +8279,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (weapon == nullptr)
         {
             if (weapon_damage_type == OFFHAND)
-                s = getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) / 1000.0f;
+                s = getBaseAttackTime(OFFHAND) / 1000.0f;
             else
-                s = GetBaseAttackTime(MELEE) / 1000.0f;
+                s = getBaseAttackTime(MELEE) / 1000.0f;
         }
         else
         {
@@ -10303,7 +10303,7 @@ void Unit::CalcDamage()
 
         float ap_bonus = GetAP() / 14000.0f;
 
-        float bonus = ap_bonus * (GetBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
+        float bonus = ap_bonus * (getBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
 
         delta = float(static_cast<Creature*>(this)->ModDamageDone[0]);
         mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
@@ -13200,14 +13200,15 @@ void Unit::RemoveAllMovementImpairing()
     }
 }
 
+//\todo no attacktimer for ranged?
 void Unit::setAttackTimer(int32 time, bool offhand)
 {
     if (!time)
-        time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
+        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
     time = std::max(1000, float2int32(time * GetCastSpeedMod()));
     if (time> 300000)		// just in case.. shouldn't happen though
-        time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
+        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
     if (offhand)
         m_attackTimer_1 = Util::getMSTime() + time;
@@ -13215,6 +13216,7 @@ void Unit::setAttackTimer(int32 time, bool offhand)
         m_attackTimer = Util::getMSTime() + time;
 }
 
+//\todo no attacktimer for ranged?
 bool Unit::isAttackReady(bool offhand)
 {
     if (offhand)

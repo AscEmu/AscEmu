@@ -62,6 +62,7 @@ union
 #define WOWUNIT_RESISTANCE_COUNT 7
 #define WOWUNIT_POWER_COST_MODIFIER 7
 #define WOWUNIT_POWER_COST_MULTIPLIER 7
+#define WOWUNIT_ATTACK_TIME_COUNT 3
 
 struct WoWUnit : WoWObject
 {
@@ -92,7 +93,7 @@ struct WoWUnit : WoWObject
     uint32_t level;
     uint32_t faction_template;
     field_bytes_0_union field_bytes_0;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
     uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
     uint32_t unit_flags;
     uint32_t aura[WOWUNIT_AURA_COUNT];
@@ -100,8 +101,7 @@ struct WoWUnit : WoWObject
     uint32_t aura_levels[WOWUNIT_AURA_LEVELS_COUNT];
     uint32_t aura_applications[WOWUNIT_AURA_APPLICATIONS_COUNT];
     uint32_t aura_state;
-    uint64_t base_attack_time;
-    uint32_t ranged_attack_time;
+    uint32_t base_attack_time[WOWUNIT_ATTACK_TIME_COUNT];  //0 = melee, 1 = offhand, 2 = ranged
     float_t bounding_radius;
     float_t combat_reach;
     uint32_t display_id;
@@ -156,6 +156,7 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
 #define WOWUNIT_POWER_COST_MODIFIER 7
 #define WOWUNIT_POWER_COST_MULTIPLIER 7
+#define WOWUNIT_ATTACK_TIME_COUNT 3
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -185,7 +186,7 @@ struct WoWUnit : WoWObject
     uint32_t level;
     uint32_t faction_template;
     field_bytes_0_union field_bytes_0;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
     uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
     uint32_t unit_flags;
     uint32_t unit_flags_2;
@@ -194,8 +195,7 @@ struct WoWUnit : WoWObject
     uint32_t aura_levels[WOWUNIT_AURA_LEVELS_COUNT];
     uint32_t aura_applications[WOWUNIT_AURA_APPLICATIONS_COUNT];
     uint32_t aura_state;
-    uint64_t base_attack_time;
-    uint32_t ranged_attack_time;
+    uint32_t base_attack_time[WOWUNIT_ATTACK_TIME_COUNT];  //0 = melee, 1 = offhand, 2 = ranged
     float_t bounding_radius;
     float_t combat_reach;
     uint32_t display_id;
@@ -255,6 +255,7 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_POWER_COUNT 7
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_RESISTANCE_COUNT 7
+#define WOWUNIT_ATTACK_TIME_COUNT 3
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -291,12 +292,11 @@ struct WoWUnit : WoWObject
     float_t power_regen_interrupted_flat_modifier[WOWUNIT_POWER_COUNT];
     uint32_t level;
     uint32_t faction_template;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
     uint32_t unit_flags;
     uint32_t unit_flags_2;
     uint32_t aura_state;
-    uint64_t base_attack_time;
-    uint32_t ranged_attack_time;
+    uint32_t base_attack_time[WOWUNIT_ATTACK_TIME_COUNT];  //0 = melee, 1 = offhand, 2 = ranged
     float_t bounding_radius;
     float_t combat_reach;
     uint32_t display_id;
@@ -356,6 +356,7 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_RESISTANCE_COUNT 7
 #define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7
 #define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
+#define WOWUNIT_ATTACK_TIME_COUNT 3
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -388,12 +389,11 @@ struct WoWUnit : WoWObject
     float_t power_regen_interrupted_flat_modifier[5];
     uint32_t level;
     uint32_t faction_template;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
     uint32_t unit_flags;
     uint32_t unit_flags_2;
     uint32_t aura_state;
-    uint64_t base_attack_time;
-    uint32_t ranged_attack_time;
+    uint32_t base_attack_time[WOWUNIT_ATTACK_TIME_COUNT];  //0 = melee, 1 = offhand, 2 = ranged
     float_t bounding_radius;
     float_t combat_reach;
     uint32_t display_id;

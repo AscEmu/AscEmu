@@ -404,7 +404,7 @@ class MurmurAI : public CreatureAIScript
             if (_isTimerFinished(SonicBoomTimerId))
             {
                 RemoveAIUpdateEvent();
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
                 getCreature()->interruptSpell();
 

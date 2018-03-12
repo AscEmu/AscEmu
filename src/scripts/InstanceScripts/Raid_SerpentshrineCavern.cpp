@@ -383,7 +383,7 @@ class LurkerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 };
 
@@ -727,7 +727,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             getCreature()->setChannelObjectGuid(0);
             getCreature()->setChannelSpellId(0);
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -1089,7 +1089,7 @@ class MorogrimAI : public CreatureAIScript
         {
             sendDBChatMessage(4784);     // Flood of the deep, take you!
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -1617,7 +1617,7 @@ class TaintedElementalAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_SPELL);
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
@@ -1714,7 +1714,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             getCreature()->GetAIInterface()->setWayPointToMove(1);
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             QuillsCount = 0;
             NextWP = 0;

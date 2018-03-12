@@ -80,7 +80,7 @@ public:
 
             float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
             s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
-            s->SetBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
+            s->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
             s->SetMinDamage(s->GetMinDamage() + owner_bonus);
             s->SetMaxDamage(s->GetMaxDamage() + owner_bonus);
             s->BaseDamage[0] += owner_bonus;
@@ -184,7 +184,7 @@ public:
     void OnLoad() override
     {
         getCreature()->setDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
-        getCreature()->SetBaseAttackTime(MELEE, 2000);
+        getCreature()->setBaseAttackTime(MELEE, 2000);
 
         if (getCreature()->IsSummon())
         {
@@ -208,7 +208,7 @@ public:
                     }
 
                     s->setVirtualItemSlotId(MELEE, item->getEntry());
-                    s->SetBaseAttackTime(MELEE, item->getItemProperties()->Delay);
+                    s->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                 }
 
 #if VERSION_STRING >= WotLK
@@ -223,7 +223,7 @@ public:
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override

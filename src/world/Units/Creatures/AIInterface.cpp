@@ -4940,12 +4940,12 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->SetResistance(i, properties_difficulty->Resistances[i]);
             }
 
-            m_Unit->SetBaseAttackTime(MELEE, properties_difficulty->AttackTime);
+            m_Unit->setBaseAttackTime(MELEE, properties_difficulty->AttackTime);
 
             m_Unit->SetMinDamage(properties_difficulty->MinDamage);
             m_Unit->SetMaxDamage(properties_difficulty->MaxDamage);
 
-            m_Unit->SetBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
+            m_Unit->setBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
             m_Unit->SetMinRangedDamage(properties_difficulty->RangedMinDamage);
             m_Unit->SetMaxRangedDamage(properties_difficulty->RangedMaxDamage);
 

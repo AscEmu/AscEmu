@@ -1239,7 +1239,7 @@ class StickedSpewerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1268,7 +1268,7 @@ class SurgicalAssistantAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1301,7 +1301,7 @@ class SludgeBelcherAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1340,7 +1340,7 @@ class GrobbulusAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         getCreature()->CastSpell(getCreature(), poisonCloudGrob->mSpellInfo, poisonCloudGrob->mIsTriggered);
     }
 
@@ -2002,7 +2002,7 @@ class SapphironAI : public CreatureAIScript
             Waterfall->SetState(GO_STATE_CLOSED);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         PhaseTimer = (uint32)time(NULL) + 35;
         ChillTarget = NULL;
@@ -2246,7 +2246,7 @@ class SapphironAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->setWayPointToMove(0);
 
                 RemoveAIUpdateEvent();
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
                 PhaseTimer = (uint32)time(NULL) + 67;
                 ChillTarget = NULL;
@@ -2903,7 +2903,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3007,7 +3007,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3194,7 +3194,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
 
         OnStart = false;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         LastPosX = 0;
         LastPosY = 0;

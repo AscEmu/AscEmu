@@ -2511,18 +2511,18 @@ void Aura::SpellAuraModAttackSpeed(bool apply)
     {
         if (apply)
         {
-            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
-            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
-            mod->fixed_amount[2] = m_target->getPercentModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME, mod->m_amount);
-            m_target->ModBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->ModBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
-            m_target->ModBaseAttackTime(RANGED, -mod->fixed_amount[2]);
+            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + MELEE, mod->m_amount);
+            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + OFFHAND, mod->m_amount);
+            mod->fixed_amount[2] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + RANGED, mod->m_amount);
+            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
+            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
+            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[2]);
         }
         else
         {
-            m_target->ModBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->ModBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
-            m_target->ModBaseAttackTime(RANGED, mod->fixed_amount[2]);
+            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
+            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
+            m_target->modBaseAttackTime(RANGED, mod->fixed_amount[2]);
         }
     }
 
@@ -4008,7 +4008,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             else
             {
                 //turn back to mana
-                //m_target->SetBaseAttackTime(MELEE,oldap);
+                //m_target->setBaseAttackTime(MELEE,oldap);
                 m_target->setPowerType(POWER_TYPE_MANA);
                 if (m_target->m_stealth)
                 {
@@ -7247,21 +7247,21 @@ void Aura::SpellAuraModHaste(bool apply)
             mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
             mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
 
-            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[mod->m_effectIndex])
-                mod->fixed_amount[mod->m_effectIndex] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME);    //watch it, a negative timer might be bad ;)
-            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[mod->m_effectIndex * 2])
-                mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1); //watch it, a negative timer might be bad ;)
+            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[mod->m_effectIndex])
+                mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE);    //watch it, a negative timer might be bad ;)
+            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[mod->m_effectIndex * 2])
+                mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND); //watch it, a negative timer might be bad ;)
 
-            m_target->ModBaseAttackTime(MELEE, -mod->fixed_amount[mod->m_effectIndex]);
-            m_target->ModBaseAttackTime(OFFHAND, -mod->fixed_amount[mod->m_effectIndex * 2]);
+            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[mod->m_effectIndex]);
+            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[mod->m_effectIndex * 2]);
 
             if (m_target->IsCreature())
                 static_cast< Creature* >(m_target)->m_speedFromHaste += mod->fixed_amount[mod->m_effectIndex];
         }
         else
         {
-            m_target->ModBaseAttackTime(MELEE, mod->fixed_amount[mod->m_effectIndex]);
-            m_target->ModBaseAttackTime(OFFHAND, mod->fixed_amount[mod->m_effectIndex * 2]);
+            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[mod->m_effectIndex]);
+            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[mod->m_effectIndex * 2]);
 
             if (m_target->IsCreature())
                 static_cast< Creature* >(m_target)->m_speedFromHaste -= mod->fixed_amount[mod->m_effectIndex];
@@ -7326,9 +7326,9 @@ void Aura::SpellAuraModRangedHaste(bool apply)
         if (apply)
         {
             mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME, mod->m_amount);
-            m_target->ModBaseAttackTime(RANGED, -mod->fixed_amount[mod->m_effectIndex]);
+            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[mod->m_effectIndex]);
         }
-        else m_target->ModBaseAttackTime(RANGED, mod->fixed_amount[mod->m_effectIndex]);
+        else m_target->modBaseAttackTime(RANGED, mod->fixed_amount[mod->m_effectIndex]);
     }
 }
 
@@ -8351,21 +8351,21 @@ void Aura::SpellAuraMeleeHaste(bool apply)
     {
         if (apply)
         {
-            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
-            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
+            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + MELEE, mod->m_amount);
+            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + OFFHAND, mod->m_amount);
 
-            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[0])
-                mod->fixed_amount[0] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME);
-            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[1])
-                mod->fixed_amount[1] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1);
+            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[0])
+                mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE);
+            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[1])
+                mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND);
 
-            m_target->ModBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->ModBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
+            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
+            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
         }
         else
         {
-            m_target->ModBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->ModBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
+            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
+            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
         }
     }
 }

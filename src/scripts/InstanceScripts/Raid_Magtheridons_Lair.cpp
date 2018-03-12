@@ -805,7 +805,7 @@ class MagtheridonAI : public CreatureAIScript
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)

@@ -292,7 +292,7 @@ class VHCreatureAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             PutAllSpellsOnCooldown();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void PutAllSpellsOnCooldown()

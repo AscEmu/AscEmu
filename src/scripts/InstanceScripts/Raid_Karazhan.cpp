@@ -1733,7 +1733,7 @@ class FiendishImpAI : public CreatureAIScript
             setAIAgent(AGENT_SPELL);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override

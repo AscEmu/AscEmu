@@ -1311,7 +1311,7 @@ class SupremusAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
             timer = 0;
         }
 
@@ -2222,7 +2222,7 @@ class ShadeofakamaAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             hm = 100;
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnTargetDied(Unit* /*mTarget*/) override
@@ -3907,7 +3907,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, ForIllidan[i]));
             }
 
-            getCreature()->SetBaseAttackTime(RANGED, 1800);
+            getCreature()->setBaseAttackTime(RANGED, 1800);
             getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
             getCreature()->SetDualWield(true);
 

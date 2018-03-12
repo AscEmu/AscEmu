@@ -349,7 +349,6 @@ public:
     uint32_t getUInt32Value(uint16_t index) const;
     void modUInt32Value(uint16_t index, int32_t mod);
 
-    // Zyres 12/26/2017 - percent mod, float, not uint32_t (used for UNIT_FIELD_BASEATTACKTIME which should be a float)
     uint32_t getPercentModUInt32Value(uint16_t index, const int32_t value);
 
     void setInt32Value(uint16_t index, int32_t value);
