@@ -91,7 +91,7 @@ class UtgardeKeepScript : public InstanceScript
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_PRINCE_KELESETH:
                     mKelesethGUID = pCreature->getGuidLow();
@@ -110,7 +110,7 @@ class UtgardeKeepScript : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case BELLOW_1:
                     m_fmData[0].mBellow = pGameObject->getGuidLow();

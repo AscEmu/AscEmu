@@ -597,7 +597,7 @@ class HeadAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetEntry() != CN_RIGHT_HEAD)
+        if (getCreature()->getEntry() != CN_RIGHT_HEAD)
             return;
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 10322, "I... hate... you!");

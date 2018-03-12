@@ -49,7 +49,7 @@ Creature::Creature(uint64 guid)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
     m_updateMask.SetCount(UNIT_END);
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
+    setType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
     m_wowGuid.Init(getGuid());
 
@@ -311,15 +311,15 @@ void Creature::generateLoot()
         return;
 
     if (m_mapMgr != NULL)
-        lootmgr.FillCreatureLoot(&loot, GetEntry(), m_mapMgr->iInstanceMode);
+        lootmgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
     else
-        lootmgr.FillCreatureLoot(&loot, GetEntry(), 0);
+        lootmgr.FillCreatureLoot(&loot, getEntry(), 0);
 
     loot.gold = creature_properties->money;
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->GetDifficultyType());
         auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
         if (properties_difficulty != nullptr)
         {
@@ -400,7 +400,7 @@ void Creature::SaveToDB()
     if (m_spawn == NULL)
     {
         m_spawn = new MySQLStructure::CreatureSpawn;
-        m_spawn->entry = GetEntry();
+        m_spawn->entry = getEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
         m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
@@ -451,7 +451,7 @@ void Creature::SaveToDB()
 
     ss << "INSERT INTO creature_spawns VALUES("
         << spawnid << ","
-        << GetEntry() << ","
+        << getEntry() << ","
         << GetMapId() << ","
         << m_position.x << ","
         << m_position.y << ","
@@ -738,7 +738,7 @@ void Creature::AddToWorld()
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(getEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -756,7 +756,7 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(getEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -1103,8 +1103,8 @@ bool Creature::CanSee(Unit* obj)
             else detectRange = 0.0f;
         }
 
-        detectRange += GetBoundingRadius();         /// adjust range for size of creature
-        detectRange += obj->GetBoundingRadius();    /// adjust range for size of stealthed player
+        detectRange += getBoundingRadius();         /// adjust range for size of creature
+        detectRange += obj->getBoundingRadius();    /// adjust range for size of stealthed player
 
         if (GetDistance2dSq(obj) > detectRange * detectRange)
             return false;
@@ -1167,7 +1167,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
     if (!m_SellItems)
     {
         m_SellItems = new std::vector < CreatureItem > ;
-        objmgr.SetVendorList(GetEntry(), m_SellItems);
+        objmgr.SetVendorList(getEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
 }
@@ -1317,8 +1317,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     resetCurrentSpeed();
 
     //Set fields
-    SetEntry(creature_properties->Id);
-    SetScale(creature_properties->Scale);
+    setEntry(creature_properties->Id);
+    setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
@@ -1345,7 +1345,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
 
     setDisplayId(spawn->displayid);
-    SetNativeDisplayId(spawn->displayid);
+    setNativeDisplayId(spawn->displayid);
     SetMount(spawn->MountedDisplayID);
 
     EventModelChange();
@@ -1374,8 +1374,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     SetFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
     SetEmoteState(spawn->emote_state);
-    SetBoundingRadius(creature_properties->BoundingRadius);
-    SetCombatReach(creature_properties->CombatReach);
+    setBoundingRadius(creature_properties->BoundingRadius);
+    setCombatReach(creature_properties->CombatReach);
     original_emotestate = spawn->emote_state;
 
     // set position
@@ -1402,16 +1402,16 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(GetEntry());
+        m_SellItems = objmgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProf())
-        mTrainer = objmgr.GetTrainer(GetEntry());
+        mTrainer = objmgr.GetTrainer(getEntry());
 
     if (isAuctioner())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
+        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
     for (uint8 x = 0; x < 7; ++x)
@@ -1574,8 +1574,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     resetCurrentSpeed();
 
     //Set fields
-    SetEntry(creature_properties->Id);
-    SetScale(creature_properties->Scale);
+    setEntry(creature_properties->Id);
+    setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
@@ -1596,7 +1596,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setGender(gender);
 
     setDisplayId(model);
-    SetNativeDisplayId(model);
+    setNativeDisplayId(model);
     SetMount(0);
 
     EventModelChange();
@@ -1612,8 +1612,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
 
     SetFaction(creature_properties->Faction);
-    SetBoundingRadius(creature_properties->BoundingRadius);
-    SetCombatReach(creature_properties->CombatReach);
+    setBoundingRadius(creature_properties->BoundingRadius);
+    setCombatReach(creature_properties->CombatReach);
 
     original_emotestate = 0;
 
@@ -1637,16 +1637,16 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(GetEntry());
+        m_SellItems = objmgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProf())
-        mTrainer = objmgr.GetTrainer(GetEntry());
+        mTrainer = objmgr.GetTrainer(getEntry());
 
     if (isAuctioner())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
+        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
     for (uint8 j = 0; j < 7; ++j)
@@ -1734,7 +1734,7 @@ void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
     {
-        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", GetEntry());
+        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", getEntry());
         return;
     }
 
@@ -1984,20 +1984,20 @@ void Creature::SetGuardWaypoints()
         wp->backwardemoteoneshot = false;
         wp->forwardemoteid = 0;
         wp->forwardemoteoneshot = false;
-        wp->backwardskinid = m_uint32Values[UNIT_FIELD_NATIVEDISPLAYID];
-        wp->forwardskinid = m_uint32Values[UNIT_FIELD_NATIVEDISPLAYID];
+        wp->backwardskinid = getNativeDisplayId();
+        wp->forwardskinid = getNativeDisplayId();
         GetAIInterface()->addWayPoint(wp);
     }
 }
 
 uint32 Creature::GetNpcTextId()
 {
-    return sMySQLStore.getGossipTextIdForNpc(this->GetEntry());
+    return sMySQLStore.getGossipTextIdForNpc(this->getEntry());
 }
 
 float Creature::GetBaseParry()
 {
-    ///\todo what are the parry rates for mobs?
+    //\todo what are the parry rates for mobs?
     // FACT: bosses have varying parry rates (used to tune the difficulty of boss fights)
 
     // for now return a base of 5%, later get from dbase?
@@ -2594,7 +2594,7 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
 {
-    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(GetEntry(), Event);
+    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(getEntry(), Event);
     if (npcMonsterSay == nullptr)
     {
         return;

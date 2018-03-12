@@ -200,7 +200,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 
     // check to see that we have the correct creature
     Creature* c_target = static_cast<Creature*>(target);
-    if (c_target->GetEntry() != 10556 || !c_target->HasAura(17743))
+    if (c_target->getEntry() != 10556 || !c_target->HasAura(17743))
         return true;
 
     // Start moving again
@@ -321,7 +321,7 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->IsCreature() || target->GetEntry() != 17157)
+    if (!pSpell->p_caster || !target || !target->IsCreature() || target->getEntry() != 17157)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -545,7 +545,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
         if (itr && itr->IsCreature())
         {
             creature = static_cast<Creature*>(itr);
-            cloudtype = creature->GetEntry();
+            cloudtype = creature->getEntry();
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
             {

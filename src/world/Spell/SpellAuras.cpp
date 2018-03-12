@@ -4293,7 +4293,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             p_target->EventTalentHearthOfWildChange(false);
             p_target->m_ShapeShifted = 0;
         }
-        m_target->setDisplayId(m_target->GetNativeDisplayId());
+        m_target->setDisplayId(m_target->getNativeDisplayId());
         m_target->EventModelChange();
         if (spellId != GetSpellId())
         {
@@ -4944,7 +4944,7 @@ void Aura::SpellAuraTransform(bool apply)
     switch (GetSpellInfo()->getId())
     {
         case 20584://wisp
-            m_target->setDisplayId(apply ? 10045 : m_target->GetNativeDisplayId());
+            m_target->setDisplayId(apply ? 10045 : m_target->getNativeDisplayId());
             break;
 
         case 30167: // Red Ogre Costume
@@ -4952,7 +4952,7 @@ void Aura::SpellAuraTransform(bool apply)
             if (apply)
                 m_target->setDisplayId(11549);
             else
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
         }
         break;
 
@@ -4961,7 +4961,7 @@ void Aura::SpellAuraTransform(bool apply)
             if (apply)
                 m_target->setDisplayId(18628);
             else
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
         }
         break;
 
@@ -5042,12 +5042,12 @@ void Aura::SpellAuraTransform(bool apply)
                 }
             }
             else
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
         }
         break;
 
         case 42365:	// murloc costume
-            m_target->setDisplayId(apply ? 21723 : m_target->GetNativeDisplayId());
+            m_target->setDisplayId(apply ? 21723 : m_target->getNativeDisplayId());
             break;
 
         case 118://polymorph
@@ -5110,7 +5110,7 @@ void Aura::SpellAuraTransform(bool apply)
             }
             else
             {
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
                 m_target->polySpell = 0;
             }
         }
@@ -5130,7 +5130,7 @@ void Aura::SpellAuraTransform(bool apply)
             }
             else
             {
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
             }
         }
         break;
@@ -5145,7 +5145,7 @@ void Aura::SpellAuraTransform(bool apply)
             }
             else
             {
-                m_target->setDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->getNativeDisplayId());
             }
         }
         break;
@@ -5256,10 +5256,10 @@ void Aura::SpellAuraPacifySilence(bool apply)
 
 void Aura::SpellAuraModScale(bool apply)
 {
-    float current = m_target->GetScale();
+    float current = m_target->getScale();
     float delta = mod->m_amount / 100.0f;
 
-    m_target->SetScale(apply ? (current + current * delta) : current / (1.0f + delta));
+    m_target->setScale(apply ? (current + current * delta) : current / (1.0f + delta));
 }
 
 void Aura::SpellAuraPeriodicHealthFunnel(bool apply)
@@ -6107,7 +6107,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     }
                     SlotResult* lr = pCaster->GetItemInterface()->LastSearchResult();
 
-                    pCaster->SendItemPushResult(true, false, true, true, lr->ContainerSlot, lr->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                    pCaster->SendItemPushResult(true, false, true, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 }
             }
         }
@@ -8754,7 +8754,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
 
     if (apply)
     {
-        m_target->SetScale(0.5);
+        m_target->setScale(0.5);
         m_target->setHealth(1);
         SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
@@ -8764,7 +8764,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     }
     else
     {
-        m_target->SetScale(1);
+        m_target->setScale(1);
         m_target->RemoveAura(27792);
         m_target->setHealth(0);
     }

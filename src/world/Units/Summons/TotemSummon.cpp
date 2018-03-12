@@ -83,10 +83,10 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setPowerType(1);
     SetBaseAttackTime(MELEE, 2000);
     SetBaseAttackTime(OFFHAND, 2000);
-    SetBoundingRadius(1.0f);
-    SetCombatReach(1.0f);
+    setBoundingRadius(1.0f);
+    setCombatReach(1.0f);
     setDisplayId(displayID);
-    SetNativeDisplayId(creature_properties->Male_DisplayID);
+    setNativeDisplayId(creature_properties->Male_DisplayID);
     SetCastSpeedMod(1.0f);
     //\note remove all dynamic flags
     setDynamicFlags(0);

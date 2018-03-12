@@ -346,7 +346,7 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
     uint32_t mapid = ptr->GetMapId();
     go->CreateFromProto(entry_id, mapid, x, y, z, o);
     go->Phase(PHASE_SET, phase);
-    go->SetScale(scale);
+    go->setScale(scale);
     go->AddToWorld(ptr->GetMapMgr());
 
     if (duration)
@@ -424,7 +424,7 @@ int LuaGameObject::GetInRangePlayersCount(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetEntry(lua_State* L, GameObject* ptr)
 {
     TEST_GO()
-    lua_pushnumber(L, ptr->GetEntry());
+    lua_pushnumber(L, ptr->getEntry());
     return 1;
 }
 
@@ -887,9 +887,9 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
     if (perm)
     {
         float chance = CHECK_FLOAT(L, 5);
-        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->GetEntry(), itemid);
+        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
-        WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->GetEntry(), itemid, chance, mincount, maxcount);
+        WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
     lootmgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
@@ -1048,7 +1048,7 @@ int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
     float nScale = CHECK_FLOAT(L, 1);
     bool updateNow = CHECK_BOOL(L, 2);
     nScale = (nScale <= 0) ? 1 : nScale;
-    ptr->SetScale(nScale);
+    ptr->setScale(nScale);
     if (updateNow)
     {
         MapMgr* mapMgr = ptr->GetMapMgr();
@@ -1210,14 +1210,14 @@ int LuaGameObject::SetScale(lua_State* L, GameObject* ptr)
     TEST_GO();
     float scale = static_cast<float>(luaL_checknumber(L, 1));
     if (scale > 0)
-        ptr->SetScale(scale);
+        ptr->setScale(scale);
     return 0;
 }
 
 int LuaGameObject::GetScale(lua_State* L, GameObject* ptr)
 {
     TEST_GO();
-    lua_pushnumber(L, ptr->GetScale());
+    lua_pushnumber(L, ptr->getScale());
     return 1;
 }
 

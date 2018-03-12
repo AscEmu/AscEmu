@@ -975,7 +975,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto blood_strike_spell = new AI_Spell;
     blood_strike_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
-    blood_strike_spell->entryId = getCreature()->GetEntry();
+    blood_strike_spell->entryId = getCreature()->getEntry();
     blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->spelltargetType = TTYPE_SINGLETARGET;
@@ -994,7 +994,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto bone_barrier_spell = new AI_Spell;
     bone_barrier_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
-    bone_barrier_spell->entryId = getCreature()->GetEntry();
+    bone_barrier_spell->entryId = getCreature()->getEntry();
     bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->spelltargetType = TTYPE_CASTER;
@@ -1013,7 +1013,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto understudy_taunt_spell = new AI_Spell;
     understudy_taunt_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
-    understudy_taunt_spell->entryId = getCreature()->GetEntry();
+    understudy_taunt_spell->entryId = getCreature()->getEntry();
     understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->spelltargetType = TTYPE_SINGLETARGET;

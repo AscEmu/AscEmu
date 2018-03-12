@@ -31,7 +31,7 @@ class OnyxiaAI : public CreatureAIScript
         OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_phase = 1;
-            m_entry = pCreature->GetEntry();
+            m_entry = pCreature->getEntry();
             m_useSpell = true;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;

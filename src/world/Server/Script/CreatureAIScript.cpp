@@ -831,12 +831,12 @@ void CreatureAIScript::RemoveAIUpdateEvent()
 
 void CreatureAIScript::_setScale(float scale)
 {
-    _creature->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
+    _creature->setScale(scale);
 }
 
 float CreatureAIScript::_getScale()
 {
-    return _creature->getFloatValue(OBJECT_FIELD_SCALE_X);
+    return _creature->getScale();
 }
 
 void CreatureAIScript::_setDisplayId(uint32_t displayId)

@@ -36,7 +36,7 @@ class NaxxramasScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             //Creature* KelThuzad = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case 16998: // Kel thuzads cat
                     {
@@ -967,7 +967,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            CreaturePtr = static_cast<Creature*>(*Iter);
-//            if (CreaturePtr->GetEntry() != CN_CRYPT_GUARD)
+//            if (CreaturePtr->getEntry() != CN_CRYPT_GUARD)
 //                continue;
 //
 //            if (CreaturePtr->isAlive() || !CreaturePtr->IsInWorld())

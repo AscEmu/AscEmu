@@ -49,7 +49,7 @@ public:
         getCreature()->addUnitFlags(UNIT_FLAG_COMBAT);
         getCreature()->setStandState(STANDSTATE_DEAD);
 
-        uint32 sid = getCreature()->GetEntry();
+        uint32 sid = getCreature()->getEntry();
 
         switch (sid)
         {

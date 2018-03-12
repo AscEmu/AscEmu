@@ -44,13 +44,13 @@ Corpse::Corpse(uint32 high, uint32 low)
     memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
     m_updateMask.SetCount(CORPSE_END);
 
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
+    setType(TYPE_CORPSE | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);
     m_wowGuid.Init(getGuid());
 
-    SetScale(1);   //always 1
+    setScale(1);   //always 1
 
     m_time = (time_t)0;
 

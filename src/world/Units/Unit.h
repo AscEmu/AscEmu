@@ -301,8 +301,17 @@ public:
     void removeUnitFlags2(uint32_t unitFlags2);
 #endif
 
+    float_t getBoundingRadius() const;
+    void setBoundingRadius(float_t radius);
+
+    float_t getCombatReach() const;
+    void setCombatReach(float_t radius);
+
     uint32_t getDisplayId() const;
     void setDisplayId(uint32_t id);
+
+    uint32_t getNativeDisplayId() const;
+    void setNativeDisplayId(uint32_t id);
 
     //bytes_1 begin
     uint8_t getStandState() const;
@@ -1097,7 +1106,7 @@ public:
     void SendPeriodicHealAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 healed, uint32 over_healed, bool is_critical);
 
     void EventModelChange();
-    inline float GetModelHalfSize() { return m_modelhalfsize * GetScale(); }
+    inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }
 
     void RemoveFieldSummon();
 
@@ -1116,15 +1125,6 @@ public:
     void SetBaseAttackTime(uint8 slot, uint32 time) { setUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, time); }
     uint32 GetBaseAttackTime(uint8 slot) { return getUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot); }
     void ModBaseAttackTime(uint8 slot, int32 mod) { modUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
-
-    void SetBoundingRadius(float rad) { setFloatValue(UNIT_FIELD_BOUNDINGRADIUS, rad); }
-    float GetBoundingRadius() { return getFloatValue(UNIT_FIELD_BOUNDINGRADIUS); }
-
-    void SetCombatReach(float len) { setFloatValue(UNIT_FIELD_COMBATREACH, len); }
-    float GetCombatReach() { return getFloatValue(UNIT_FIELD_COMBATREACH); }
-
-    void SetNativeDisplayId(uint32 id) { setUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, id); }
-    uint32 GetNativeDisplayId() { return getUInt32Value(UNIT_FIELD_NATIVEDISPLAYID); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

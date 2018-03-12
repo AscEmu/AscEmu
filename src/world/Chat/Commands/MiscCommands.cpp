@@ -277,7 +277,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     spell->prepare(&targets);
 
                     GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureProperties()->Name.c_str());
-                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->GetEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
+                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->getEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
                     break;
                 }
                 case TYPEID_PLAYER:

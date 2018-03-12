@@ -318,7 +318,7 @@ bool ReturnFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply && pAura->GetTarget()->IsPlayer())
     {
         Player* p_target = static_cast<Player*>(pAura->GetTarget());
-        p_target->setDisplayId(p_target->GetNativeDisplayId());
+        p_target->setDisplayId(p_target->getNativeDisplayId());
         p_target->m_ShapeShifted = 0;
         p_target->SetShapeShift(0);
     }

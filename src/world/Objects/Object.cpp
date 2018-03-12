@@ -48,100 +48,6 @@
 
 // MIT Start
 
-void Object::setGuid(uint64_t guid)
-{
-    write(objectData()->guid, guid);
-    m_wowGuid.Init(guid);
-}
-
-void Object::setGuid(uint32_t low, uint32_t high)
-{
-    setGuid(static_cast<uint64_t>(high) << 32 | low);
-}
-
-void Object::setGuidLow(uint32_t low)
-{
-    setGuid(low, objectData()->guid_parts.high);
-}
-
-void Object::setGuidHigh(uint32_t high)
-{
-    setGuid(objectData()->guid_parts.low, high);
-}
-
-void Object::setObjectType(uint32_t objectTypeId)
-{
-    uint32_t object_type = TYPE_OBJECT;
-    switch (objectTypeId)
-    {
-    case TYPEID_CONTAINER:
-        object_type |= TYPE_CONTAINER;
-    case TYPEID_ITEM:
-        object_type |= TYPE_ITEM;
-        break;
-    case TYPEID_PLAYER:
-        object_type |= TYPE_PLAYER;
-    case TYPEID_UNIT:
-        object_type |= TYPE_UNIT;
-        break;
-    case TYPEID_GAMEOBJECT:
-        object_type |= TYPE_GAMEOBJECT;
-        break;
-    case TYPEID_DYNAMICOBJECT:
-        object_type |= TYPE_DYNAMICOBJECT;
-        break;
-    case TYPEID_CORPSE:
-        object_type |= TYPE_CORPSE;
-        break;
-    default:
-        break;
-    }
-
-    m_objectType = object_type;
-    m_objectTypeId = objectTypeId;
-    write(objectData()->type, static_cast<uint32_t>(m_objectType));
-}
-
-void Object::setScaleX(float_t scaleX)
-{
-    write(objectData()->scale_x, scaleX);
-}
-
-uint64_t Object::getGuid() const
-{
-    return objectData()->guid;
-}
-
-uint32_t Object::getGuidLow() const
-{
-    return objectData()->guid_parts.low;
-}
-
-uint32_t Object::getGuidHigh() const
-{
-    return objectData()->guid_parts.high;
-}
-
-void Object::setType(uint32_t type)
-{
-    write(objectData()->type, type);
-}
-
-uint32_t Object::getType() const
-{
-    return objectData()->type;
-}
-
-void Object::setEntry(uint32_t entry)
-{
-    write(objectData()->entry, entry);
-}
-
-uint32_t Object::getEntry() const
-{
-    return objectData()->entry;
-}
-
 bool Object::write(const uint8_t& member, uint8_t val)
 {
     if (member == val)
@@ -328,6 +234,64 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
 
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+uint64_t Object::getGuid() const { return objectData()->guid; }
+void Object::setGuid(uint64_t guid)
+{
+    write(objectData()->guid, guid);
+    m_wowGuid.Init(guid);
+}
+void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
+
+uint32_t Object::getGuidLow() const { return objectData()->guid_parts.low; }
+void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid_parts.high); }
+
+uint32_t Object::getGuidHigh() const { return objectData()->guid_parts.high; }
+void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, high); }
+
+uint32_t Object::getType() const { return objectData()->type; }
+void Object::setType(uint32_t type) { write(objectData()->type, type); }
+void Object::setObjectType(uint32_t objectTypeId)
+{
+    uint32_t object_type = TYPE_OBJECT;
+    switch (objectTypeId)
+    {
+    case TYPEID_CONTAINER:
+        object_type |= TYPE_CONTAINER;
+    case TYPEID_ITEM:
+        object_type |= TYPE_ITEM;
+        break;
+    case TYPEID_PLAYER:
+        object_type |= TYPE_PLAYER;
+    case TYPEID_UNIT:
+        object_type |= TYPE_UNIT;
+        break;
+    case TYPEID_GAMEOBJECT:
+        object_type |= TYPE_GAMEOBJECT;
+        break;
+    case TYPEID_DYNAMICOBJECT:
+        object_type |= TYPE_DYNAMICOBJECT;
+        break;
+    case TYPEID_CORPSE:
+        object_type |= TYPE_CORPSE;
+        break;
+    default:
+        break;
+    }
+
+    m_objectType = object_type;
+    m_objectTypeId = objectTypeId;
+    write(objectData()->type, static_cast<uint32_t>(m_objectType));
+}
+
+uint32_t Object::getEntry() const { return objectData()->entry; }
+void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
+
+float_t Object::getScale() const { return objectData()->scale_x; }
+void Object::setScale(float_t scaleX) { write(objectData()->scale_x, scaleX); }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object values
@@ -1459,7 +1423,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     if (this_creature)
     {
-        switch(GetEntry())
+        switch(getEntry())
         {
         case 6491:  // Spirit Healer
         case 13116: // Alliance Spirit Guide
@@ -1640,7 +1604,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if (uThis != nullptr)
         {
             // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
-            switch (GetEntry())
+            switch (getEntry())
             {
                 case 6491:      // Spirit Healer
                 case 13116:     // Alliance Spirit Guide
@@ -2291,7 +2255,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
                                         for (auto i = 0; i < 4; ++i)
                                         {
-                                            if (quest->required_mob_or_go[i] == this_go->GetEntry())
+                                            if (quest->required_mob_or_go[i] == this_go->getEntry())
                                             {
                                                 if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
                                                 {
@@ -2927,7 +2891,7 @@ void Object::_setFaction()
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
         if (faction_template == nullptr)
-            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
+            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), getEntry());
     }
     else if (IsGameObject())
     {
@@ -2937,7 +2901,7 @@ void Object::_setFaction()
         {
             if (faction_template == nullptr)
             {
-                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
+                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), getEntry());
             }
         }
     }
@@ -3603,7 +3567,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 std::string creatureName;
 
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
                     creatureName = lcn->name;
@@ -3659,7 +3623,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 //////////////////////////////////////////////////////////////////////////////////////////////
                 // get text (normal or localized)
                 const char* text = npcMonsterSay->texts[randChoice];
-                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(GetEntry(), sessionLanguage, event) : nullptr;
+                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(getEntry(), sessionLanguage, event) : nullptr;
                 if (lmsay != nullptr)
                 {
                     switch (randChoice)
@@ -3773,7 +3737,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 std::string creatureName;
 
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
                     creatureName = lcn->name;

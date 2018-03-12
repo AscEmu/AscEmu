@@ -550,7 +550,7 @@ void StrandOfTheAncient::SetIsWeekend(bool isweekend)
 
 bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Spell* /*spell*/)
 {
-    uint32 goentry = go->GetEntry();
+    uint32 goentry = go->getEntry();
 
     switch (goentry)
     {
@@ -582,7 +582,7 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Sp
 
 bool StrandOfTheAncient::HookQuickLockOpen(GameObject* go, Player* /*player*/, Spell* /*spell*/)
 {
-    uint32 entry = go->GetEntry();
+    uint32 entry = go->getEntry();
     if (entry == GO_RELIC)
     {
         PlaySoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_ALLIANCE : SOTA_SOUND_VICTORY_HORDE);

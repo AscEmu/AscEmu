@@ -84,7 +84,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
             data << uint8(i++);
             data << uint32(pItem->getGuidLow());
-            data << uint32(pItem->GetEntry());
+            data << uint32(pItem->getEntry());
 
             for (uint16_t j = 0; j < 7; ++j)
             {
@@ -246,7 +246,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
             if (GetPermissionCount() > 0)
             {
                 /* log the message */
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->GetEntry(), player->name, msg.money);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->getEntry(), player->name, msg.money);
             }
 
             pItem->DeleteMe();

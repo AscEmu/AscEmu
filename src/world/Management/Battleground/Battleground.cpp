@@ -394,7 +394,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
         go->CreateFromProto(entry, MapId, x, y, z, o);
 
         go->SetFaction(faction);
-        go->SetScale(scale);
+        go->setScale(scale);
         go->SetFlags(flags);
         go->SetPosition(x, y, z, o);
         go->SetInstanceID(m_mapMgr->GetInstanceID());
@@ -864,8 +864,8 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->Create(m_mapMgr->GetMapId(), x, y, z, o);
 
-    pCreature->SetEntry(13116 + horde);
-    pCreature->SetScale(1.0f);
+    pCreature->setEntry(13116 + horde);
+    pCreature->setScale(1.0f);
 
     pCreature->setMaxHealth(10000);
     pCreature->SetMaxPower(POWER_TYPE_MANA, 4868);
@@ -891,11 +891,11 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->SetBaseAttackTime(MELEE, 2000);
     pCreature->SetBaseAttackTime(OFFHAND, 2000);
-    pCreature->SetBoundingRadius(0.208f);
-    pCreature->SetCombatReach(1.5f);
+    pCreature->setBoundingRadius(0.208f);
+    pCreature->setCombatReach(1.5f);
 
     pCreature->setDisplayId(13337 + horde);
-    pCreature->SetNativeDisplayId(13337 + horde);
+    pCreature->setNativeDisplayId(13337 + horde);
 
     pCreature->setChannelSpellId(22011);
     pCreature->SetCastSpeedMod(1.0f);

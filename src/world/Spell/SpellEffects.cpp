@@ -507,7 +507,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         case 18788: //Demonic Sacrifice (508745)
         {
             uint32 DemonicSacEffectSpellId = 0;
-            switch (unitTarget->GetEntry())
+            switch (unitTarget->getEntry())
             {
                 case 416:
                     DemonicSacEffectSpellId = 18789;
@@ -1515,7 +1515,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
             ang = unitTarget->GetOrientation();
         }
         // avoid teleporting into the model on scaled models
-        const static float shadowstep_distance = 1.6f * unitTarget->getFloatValue(OBJECT_FIELD_SCALE_X);
+        const static float shadowstep_distance = 1.6f * unitTarget->getScale();
         float new_x = unitTarget->GetPositionX() - (shadowstep_distance * cosf(ang));
         float new_y = unitTarget->GetPositionY() - (shadowstep_distance * sinf(ang));
         /* Send a movement packet to "charge" at this target. Similar to warrior charge. */
@@ -1748,11 +1748,11 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
     {
         case 27907:
         {
-            if (unitTarget->GetEntry() == 15941)
+            if (unitTarget->getEntry() == 15941)
             {
                 unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What? Oh, not this again!");
             }
-            else if (unitTarget->GetEntry() == 15945)
+            else if (unitTarget->getEntry() == 15945)
             {
                 unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You can't do this to me! We had a deal!");
             }
@@ -1767,7 +1767,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             if (!p_caster)
                 break;
 
-            if (unitTarget->GetEntry() == 16483)
+            if (unitTarget->getEntry() == 16483)
             {
                 unitTarget->RemoveAura(29152);
                 unitTarget->setStandState(STANDSTATE_STAND);
@@ -1783,7 +1783,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             if (!p_caster)
                 break;
 
-            if (unitTarget->GetEntry() == 21387)
+            if (unitTarget->getEntry() == 21387)
             {
                 ((Creature*)unitTarget)->Despawn(5000, 360000);
                 p_caster->CastSpell(p_caster, 38178, true);
@@ -4233,10 +4233,10 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         return;
 
     // Vellums
-    if (GetSpellInfo()->getEffectItemType(effectIndex) && (itemTarget->GetEntry() == 39349 ||
-        itemTarget->GetEntry() == 39350 || itemTarget->GetEntry() == 43146 ||
-        itemTarget->GetEntry() == 38682 || itemTarget->GetEntry() == 37602 ||
-        itemTarget->GetEntry() == 43145))
+    if (GetSpellInfo()->getEffectItemType(effectIndex) && (itemTarget->getEntry() == 39349 ||
+        itemTarget->getEntry() == 39350 || itemTarget->getEntry() == 43146 ||
+        itemTarget->getEntry() == 38682 || itemTarget->getEntry() == 37602 ||
+        itemTarget->getEntry() == 43145))
     {
         uint32 itemid = GetSpellInfo()->getEffectItemType(effectIndex);
         ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
@@ -4250,7 +4250,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         if (pItem == nullptr)
             return;
 
-        p_caster->GetItemInterface()->RemoveItemAmt(itemTarget->GetEntry(), 1);
+        p_caster->GetItemInterface()->RemoveItemAmt(itemTarget->getEntry(), 1);
         if (!p_caster->GetItemInterface()->AddItemToFreeSlot(pItem))
             pItem->DeleteMe();
 
@@ -4328,8 +4328,8 @@ void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
 
     // Remove target
     tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
-    Pet* pPet = objmgr.CreatePet(tame->GetEntry());
-    if (!pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
+    Pet* pPet = objmgr.CreatePet(tame->getEntry());
+    if (!pPet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
     {
         pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         pPet = nullptr;
@@ -4413,7 +4413,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
     {
     if (unitTarget->IsPet() && unitTarget->GetTypeId() == TYPEID_UNIT)
     {
-    TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->GetEntry());
+    TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->getEntry());
     }
     }*/
 
@@ -4421,7 +4421,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
     {
         Pet* pPet = static_cast< Pet* >(unitTarget);
         if (pPet->IsSummonedPet())
-            p_caster->AddSummonSpell(unitTarget->GetEntry(), GetSpellInfo()->getEffectTriggerSpell(effectIndex));
+            p_caster->AddSummonSpell(unitTarget->getEntry(), GetSpellInfo()->getEffectTriggerSpell(effectIndex));
 
         pPet->AddSpell(sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
 
@@ -4757,7 +4757,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
         return;
     }
 
-    lootmgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->GetEntry());
+    lootmgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->getEntry());
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
@@ -5151,7 +5151,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
     if ((sk >= lvl * 5) || ((sk + 100) >= lvl * 10))
     {
         //Fill loot for Skinning
-        lootmgr.FillSkinningLoot(&cr->loot, unitTarget->GetEntry());
+        lootmgr.FillSkinningLoot(&cr->loot, unitTarget->getEntry());
         static_cast<Player*>(m_caster)->SendLoot(unitTarget->getGuid(), LOOT_SKINNING, unitTarget->GetMapId());
 
         //Not skinable again
@@ -5174,7 +5174,7 @@ void Spell::SpellEffectCharge(uint8_t /*effectIndex*/)
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    u_caster->GetAIInterface()->splineMoveCharge(unitTarget, u_caster->GetBoundingRadius());
+    u_caster->GetAIInterface()->splineMoveCharge(unitTarget, u_caster->getBoundingRadius());
 }
 
 void Spell::SpellEffectKnockBack(uint8_t effectIndex)
@@ -5210,10 +5210,10 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     if (!it->loot)
     {
         it->loot = new Loot;
-        lootmgr.FillItemLoot(it->loot, it->GetEntry());
+        lootmgr.FillItemLoot(it->loot, it->getEntry());
     }
 
-    LogDebugFlag(LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->GetEntry()));
+    LogDebugFlag(LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->getEntry()));
     p_caster->SendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
@@ -5245,7 +5245,7 @@ void Spell::SpellEffectInebriate(uint8_t /*effectIndex*/) // lets get drunk!
         currentDrunk = 0xFFFF;
     else
         currentDrunk += drunkMod;
-    playerTarget->SetDrunkValue(currentDrunk, i_caster ? i_caster->GetEntry() : 0);
+    playerTarget->SetDrunkValue(currentDrunk, i_caster ? i_caster->getEntry() : 0);
 }
 
 void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
@@ -5930,7 +5930,7 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
     Player* p_target = static_cast< Player* >(unitTarget);
 
     // calculate destination
-    float pullD = p_target->CalcDistance(m_caster) - p_target->GetBoundingRadius() - (u_caster ? u_caster->GetBoundingRadius() : 0) - 1.0f;
+    float pullD = p_target->CalcDistance(m_caster) - p_target->getBoundingRadius() - (u_caster ? u_caster->getBoundingRadius() : 0) - 1.0f;
     float pullO = p_target->calcRadAngle(p_target->GetPositionX(), p_target->GetPositionY(), m_caster->GetPositionX(), m_caster->GetPositionY());
     float pullX = p_target->GetPositionX() + pullD * cosf(pullO);
     float pullY = p_target->GetPositionY() + pullD * sinf(pullO);
@@ -6074,17 +6074,17 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
-        lootmgr.FillItemLoot(itemTarget->loot, itemTarget->GetEntry());
+        lootmgr.FillItemLoot(itemTarget->loot, itemTarget->getEntry());
     }
 
     if (itemTarget->loot->items.size() > 0)
     {
-        LogDebugFlag(LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->getEntry()));
         p_caster->SendLoot(itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        LogDebugFlag(LF_SPELL_EFF, "Prospecting failed, item %d has no loot", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Prospecting failed, item %d has no loot", uint32(itemTarget->getEntry()));
         SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
@@ -6296,17 +6296,17 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
-        lootmgr.FillItemLoot(itemTarget->loot, itemTarget->GetEntry());
+        lootmgr.FillItemLoot(itemTarget->loot, itemTarget->getEntry());
     }
 
     if (itemTarget->loot->items.size() > 0)
     {
-        LogDebugFlag(LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->getEntry()));
         p_caster->SendLoot(itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        LogDebugFlag(LF_SPELL_EFF, "Milling failed, item %d has no loot", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Milling failed, item %d has no loot", uint32(itemTarget->getEntry()));
         SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }

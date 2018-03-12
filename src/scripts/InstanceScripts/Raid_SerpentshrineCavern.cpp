@@ -1690,7 +1690,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // Waypoints
-            m_entry = pCreature->GetEntry();
+            m_entry = pCreature->getEntry();
             for (uint8_t i = 0; i < 12; i++)
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
@@ -2169,7 +2169,7 @@ class SerpentshrineCavern : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case 184203:
                     mBridgePart[0] = pGameObject->getGuidLow();

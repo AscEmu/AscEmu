@@ -1851,13 +1851,13 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     uint32 mapid = GetMapId();
     // Setup game object
     go->CreateFromProto(entryID, mapid, x, y, z, o);
-    go->SetScale(scale);
+    go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
 
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
-    go_spawn->entry = go->GetEntry();
+    go_spawn->entry = go->getEntry();
     go_spawn->id = objmgr.GenerateGameObjectSpawnID();
     go_spawn->map = go->GetMapId();
     go_spawn->position_x = go->GetPositionX();
@@ -1871,7 +1871,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->state = go->GetState();
     go_spawn->flags = go->GetFlags();
     go_spawn->faction = go->GetFaction();
-    go_spawn->scale = go->GetScale();
+    go_spawn->scale = go->getScale();
     //go_spawn->stateNpcLink = 0;
     go_spawn->phase = go->GetPhase();
     go_spawn->overrides = go->GetOverrides();

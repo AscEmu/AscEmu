@@ -185,7 +185,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
             if (GetPermissionCount() > 0)
             {
                 /* log the message */
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->GetEntry(), player_info->name, money);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->getEntry(), player_info->name, money);
             }
 
             pItem->DeleteMe();
@@ -657,7 +657,7 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
             Item * pItem = objmgr.LoadItem(itr->second.items[i]);
             *data << uint8_t(i);                                              // item index (0-6)
             *data << uint32_t((pItem ? pItem->getGuidLow() : 0));
-            *data << uint32_t((pItem ? pItem->GetEntry() : 0));
+            *data << uint32_t((pItem ? pItem->getEntry() : 0));
             for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
             {
                 *data << uint32_t((pItem ? pItem->GetEnchantmentId((EnchantmentSlot)j) : 0));

@@ -44,7 +44,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     }
 
     uint32 TextID = 820;
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->getEntry());
     if (Text != 0)
     {
         MySQLStructure::NpcText const* text = sMySQLStore.getNpcText(Text);

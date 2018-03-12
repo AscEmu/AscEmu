@@ -233,7 +233,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            if (!_player->GetSummon() || _player->GetSummon()->GetEntry() != (uint32_t)itemProto->ForcedPetId)
+            if (!_player->GetSummon() || _player->GetSummon()->getEntry() != (uint32_t)itemProto->ForcedPetId)
             {
                 _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
                 return;
@@ -351,14 +351,14 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
         if (!_player->hasAurasWithId(lightWellRenew))
         {
-            if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry()))
+            if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry()))
             {
                 creatureTarget->CastSpell(_player, clickSpell->SpellID, true);
             }
             else
             {
                 sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-                LogError("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+                LogError("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
                 return;
             }
 
@@ -370,7 +370,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         }
     }*/
 
-    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry());
+    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry());
     if (spellClickData != nullptr)
     {
         // TODO: there are spellclick spells which are friendly only, raid only and party only
@@ -380,7 +380,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellClickData->SpellID);
         if (spellInfo == nullptr)
         {
-            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->GetEntry(), spellClickData->SpellID);
+            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
             return;
         }
 
@@ -392,7 +392,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     else
     {
         sChatHandler.BlueSystemMessage(this, "NPC ID %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
         return;
     }
 }

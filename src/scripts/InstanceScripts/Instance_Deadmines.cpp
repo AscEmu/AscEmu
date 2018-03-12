@@ -57,7 +57,7 @@ static Movement::Location Guards[] =
 //
 //        void OnGameObjectPushToWorld(GameObject* pGameObject)
 //        {
-//            switch (pGameObject->GetEntry())
+//            switch (pGameObject->getEntry())
 //            {
 //                case GO_FACTORY_DOOR:
 //                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
@@ -73,7 +73,7 @@ static Movement::Location Guards[] =
 //
 //        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
 //        {
-//            switch (pGameObject->GetEntry())
+//            switch (pGameObject->getEntry())
 //            {
 //                case GO_DEFIAS_CANNON:
 //                {
@@ -111,7 +111,7 @@ static Movement::Location Guards[] =
 //
 //        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
 //        {
-//            switch (pCreature->GetEntry())
+//            switch (pCreature->getEntry())
 //            {
 //                case NPC_RHAHK_ZOR:
 //                {

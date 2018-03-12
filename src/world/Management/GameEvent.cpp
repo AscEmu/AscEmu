@@ -75,7 +75,7 @@ void GameEvent::CreateObjects()
         g->CreateFromProto(gobj.entry, gobj.map_id, gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing);
 
         // Set up spawn specific information
-        g->SetScale(gobj.scale);
+        g->setScale(gobj.scale);
 
         if (gobj.faction != 0)
             g->SetFaction(gobj.faction);

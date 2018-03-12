@@ -340,7 +340,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
 
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
@@ -361,7 +361,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
             qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
@@ -420,7 +420,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
@@ -440,7 +440,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);

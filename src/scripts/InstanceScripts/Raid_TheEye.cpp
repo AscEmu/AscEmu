@@ -964,7 +964,7 @@ class KaelThasAI : public CreatureAIScript
                 pCoords.y = pCreature->GetPositionY();
                 pCoords.z = pCreature->GetPositionZ();
                 pCoords.o = pCreature->GetOrientation();
-                pCoords.addition = pCreature->GetEntry();
+                pCoords.addition = pCreature->getEntry();
 
                 SetAIUpdateFreq(5000);
                 setScriptPhase(getScriptPhase() + 1);

@@ -57,11 +57,11 @@ GameObject::GameObject(uint64 guid)
     std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
 
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
+    setType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
     SetAnimProgress(100);
     m_wowGuid.Init(guid);
-    SetScale(1);
+    setScale(1);
     m_summonedGo = false;
     invisible = false;
     invisibilityFlag = INVIS_FLAG_NORMAL;
@@ -128,7 +128,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     }
 
     Object::_Create(mapid, x, y, z, ang);
-    SetEntry(entry);
+    setEntry(entry);
 
     m_overrides = overrides;
     SetRotationQuat(r0, r1, r2, r3);
@@ -209,7 +209,7 @@ void GameObject::SaveToDB()
     {
         // Create spawn instance
         m_spawn = new MySQLStructure::GameobjectSpawn;
-        m_spawn->entry = GetEntry();
+        m_spawn->entry = getEntry();
         m_spawn->id = objmgr.GenerateGameObjectSpawnID();
         m_spawn->map = GetMapId();
         m_spawn->position_x = GetPositionX();
@@ -223,7 +223,7 @@ void GameObject::SaveToDB()
         m_spawn->state = GetState();
         m_spawn->flags = GetFlags();
         m_spawn->faction = GetFaction();
-        m_spawn->scale = GetScale();
+        m_spawn->scale = getScale();
         //m_spawn->stateNpcLink = 0;
         m_spawn->phase = GetPhase();
         m_spawn->overrides = GetOverrides();
@@ -245,7 +245,7 @@ void GameObject::SaveToDB()
 
     ss << "INSERT INTO gameobject_spawns VALUES("
         << m_spawn->id << ","
-        << GetEntry() << ","
+        << getEntry() << ","
         << GetMapId() << ","
         << GetPositionX() << ","
         << GetPositionY() << ","
@@ -258,7 +258,7 @@ void GameObject::SaveToDB()
         << "0,"              // initial state
         << GetFlags() << ","
         << GetFaction() << ","
-        << GetScale() << ","
+        << getScale() << ","
         << "0,"
         << m_phase << ","
         << m_overrides << ")";
@@ -272,7 +272,7 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     ss << "INSERT INTO gameobject_spawns VALUES("
         << ((m_spawn == NULL) ? 0 : m_spawn->id) << ","
-        << GetEntry() << ","
+        << getEntry() << ","
         << GetMapId() << ","
         << GetPositionX() << ","
         << GetPositionY() << ","
@@ -285,7 +285,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << uint32(GetState()) << ","
         << GetFlags() << ","
         << GetFaction() << ","
-        << GetScale() << ","
+        << getScale() << ","
         << "0,"
         << m_phase << ","
         << m_overrides << ")";
@@ -302,7 +302,7 @@ void GameObject::SaveToFile(std::stringstream & name)
 void GameObject::InitAI()
 {
     if (myScript == NULL)
-        myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
+        myScript = sScriptMgr.CreateAIScriptClassForGameObject(getEntry(), this);
 }
 
 bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
@@ -318,7 +318,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
     {
         SetFaction(go_spawn->faction);
     }
-    SetScale(go_spawn->scale);
+    setScale(go_spawn->scale);
 
     return true;
 }

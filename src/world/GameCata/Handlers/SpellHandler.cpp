@@ -120,7 +120,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         return;
     }
 
-    uint32_t creature_id = unitTarget->GetEntry();
+    uint32_t creature_id = unitTarget->getEntry();
     uint32_t cast_spell_id = 0;
 
     if (unitTarget->RemoveAura(59907))

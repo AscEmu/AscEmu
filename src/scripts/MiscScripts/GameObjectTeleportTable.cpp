@@ -55,7 +55,7 @@ class CustomTeleport : public GameObjectAIScript // Custom Portals
             float x, y, z, orientation;
             uint32 mapid;
 
-            std::map<uint32, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->GetEntry());
+            std::map<uint32, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
             if (itr != m_teleStorage.end())
             {
                 GameobjectTeleport* gt = itr->second;

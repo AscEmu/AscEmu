@@ -1038,7 +1038,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                     auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!check)
                     {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->GetNameString());
                         result = 0;
                     }
                     else

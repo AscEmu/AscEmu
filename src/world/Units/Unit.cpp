@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
+#include <corecrt_io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -91,8 +92,17 @@ void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | 
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 #endif
 
+float_t Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
+void Unit::setBoundingRadius(float_t radius) { write(unitData()->bounding_radius, radius); }
+
+float_t Unit::getCombatReach() const { return unitData()->combat_reach; }
+void Unit::setCombatReach(float_t radius) { write(unitData()->combat_reach, radius); }
+
 uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
 void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
+
+uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
+void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
 
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }

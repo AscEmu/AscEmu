@@ -57,7 +57,7 @@ public:
             {
                 if (Rand(90))
                 {
-                    switch (getCreature()->GetEntry())
+                    switch (getCreature()->getEntry())
                     {
                         case 22307:
                             min = 4; max = 11;

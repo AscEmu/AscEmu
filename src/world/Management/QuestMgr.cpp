@@ -791,7 +791,7 @@ void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 respo
 bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 {
     QuestLogEntry* qle;
-    uint32 entry = go->GetEntry();
+    uint32 entry = go->getEntry();
     QuestProperties const* qst;
 
     for (uint8 i = 0; i < 25; ++i)
@@ -828,7 +828,7 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 
 void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
 {
-    uint32 entry = victim->GetEntry();
+    uint32 entry = victim->getEntry();
     _OnPlayerKill(plr, entry, IsGroupKill);
 
     // Extra credit (yay we wont have to script this anymore) - Shauren
@@ -941,7 +941,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
 
     Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : NULL;
 
-    uint32 entry = (victim) ? victim->GetEntry() : 0;
+    uint32 entry = (victim) ? victim->getEntry() : 0;
 
     for (uint8 i = 0; i < 25; ++i)
     {
@@ -988,7 +988,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
 void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
 {
     uint32 pcount;
-    uint32 entry = item->GetEntry();
+    uint32 entry = item->getEntry();
 
     for (uint8 i = 0; i < 25; ++i)
     {
@@ -1467,7 +1467,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 }
             }
 
-            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->GetEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
+            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->getEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
         }
     }
 }
@@ -1477,7 +1477,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
 void QuestMgr::LoadNPCQuests(Creature* qst_giver)
 {
-    qst_giver->SetQuestList(GetCreatureQuestList(qst_giver->GetEntry()));
+    qst_giver->SetQuestList(GetCreatureQuestList(qst_giver->getEntry()));
 }
 
 void QuestMgr::LoadGOQuests(GameObject* go)
@@ -1485,7 +1485,7 @@ void QuestMgr::LoadGOQuests(GameObject* go)
     if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
     {
         GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
-        go_quest_giver->SetQuestList(GetGOQuestList(go->GetEntry()));
+        go_quest_giver->SetQuestList(GetGOQuestList(go->getEntry()));
     }
 }
 
@@ -2380,7 +2380,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
     Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : NULL;
 
     uint32 i, j;
-    uint32 entry = (victim) ? victim->GetEntry() : 0;
+    uint32 entry = (victim) ? victim->getEntry() : 0;
     QuestLogEntry* qle;
     for (i = 0; i < 25; ++i)
     {

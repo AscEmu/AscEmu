@@ -259,7 +259,7 @@ void Gossip::Script::Destroy()
 
 Gossip::Script* Gossip::Script::GetInterface(Creature* creature)
 {
-    Gossip::Script* script = sScriptMgr.get_creature_gossip(creature->GetEntry());
+    Gossip::Script* script = sScriptMgr.get_creature_gossip(creature->getEntry());
     if (script != NULL)
         return script;
 
@@ -302,11 +302,11 @@ Gossip::Script* Gossip::Script::GetInterface(Creature* creature)
 }
 Gossip::Script* Gossip::Script::GetInterface(::Item* item)
 {
-    return sScriptMgr.get_item_gossip(item->GetEntry());
+    return sScriptMgr.get_item_gossip(item->getEntry());
 }
 Gossip::Script* Gossip::Script::GetInterface(GameObject* go)
 {
-    return sScriptMgr.get_go_gossip(go->GetEntry());
+    return sScriptMgr.get_go_gossip(go->getEntry());
 }
 
 // SPIRIT HEALER
@@ -319,7 +319,7 @@ void Arcemu::Gossip::SpiritHealer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 {
     Creature* creature = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(creature->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -347,7 +347,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* trainer = static_cast<Creature*>(pObject);
     ::Trainer* trainerinfo = trainer->GetTrainer();
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(trainer->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(trainer->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -394,7 +394,7 @@ void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint3
 void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* flightmaster = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(flightmaster->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(flightmaster->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -414,7 +414,7 @@ void Arcemu::Gossip::FlightMaster::OnSelectOption(Object* pObject, Player* Plr, 
 void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* auctioneer = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(auctioneer->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(auctioneer->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
     //auctioneers don't offer quests.
@@ -430,7 +430,7 @@ void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, ui
 void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 {
     Creature* innkeeper = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(innkeeper->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(innkeeper->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -459,7 +459,7 @@ void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uin
 void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* battlemaster = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(battlemaster->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(battlemaster->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -489,7 +489,7 @@ void Arcemu::Gossip::Banker::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/
 void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 {
     Creature* chartergiver = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(chartergiver->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(chartergiver->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -508,7 +508,7 @@ void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, 
 void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 {
     Creature* chartergiver = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(chartergiver->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(chartergiver->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -547,7 +547,7 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
 void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* stablemaster = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(stablemaster->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(stablemaster->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -567,7 +567,7 @@ void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, 
 void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* petrain = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(petrain->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(petrain->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -598,7 +598,7 @@ void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, ui
 void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* trainer = static_cast<Creature*>(pObject);
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(trainer->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(trainer->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
@@ -717,7 +717,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
 void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
 {
     //Simply send quests.
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 

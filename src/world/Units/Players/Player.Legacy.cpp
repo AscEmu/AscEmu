@@ -920,8 +920,8 @@ bool Player::Create(WorldPacket& data)
     memcpy(m_taximask, info->taximask, sizeof(m_taximask));
 
     // Set Starting stats for char
-    //SetScale( ((race==RACE_TAUREN)?1.3f:1.0f));
-    SetScale(1.0f);
+    //setScale( ((race==RACE_TAUREN)?1.3f:1.0f));
+    setScale(1.0f);
     setHealth(info->health);
     SetPower(POWER_TYPE_MANA, info->mana);
     SetPower(POWER_TYPE_RAGE, 0);
@@ -992,17 +992,17 @@ bool Player::Create(WorldPacket& data)
     SetStat(STAT_STAMINA, info->stamina);
     SetStat(STAT_INTELLECT, info->intellect);
     SetStat(STAT_SPIRIT, info->spirit);
-    SetBoundingRadius(0.388999998569489f);
-    SetCombatReach(1.5f);
+    setBoundingRadius(0.388999998569489f);
+    setCombatReach(1.5f);
     if (race != RACE_BLOODELF)
     {
         setDisplayId(info->displayId + gender);
-        SetNativeDisplayId(info->displayId + gender);
+        setNativeDisplayId(info->displayId + gender);
     }
     else
     {
         setDisplayId(info->displayId - gender);
-        SetNativeDisplayId(info->displayId - gender);
+        setNativeDisplayId(info->displayId - gender);
     }
     EventModelChange();
     //SetMinDamage(info->mindmg);
@@ -2864,7 +2864,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     }
     else
     {
-        ss << "," << transport->GetEntry();
+        ss << "," << transport->getEntry();
         ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "','" << GetTransPositionO() << "'";
     }
     ss << ",'";
@@ -3356,7 +3356,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     UpdateStats();
 
     // Initialize 'normal' fields
-    SetScale(1.0f);
+    setScale(1.0f);
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
@@ -3369,18 +3369,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
-    SetBoundingRadius(0.388999998569489f);
-    SetCombatReach(1.5f);
+    setBoundingRadius(0.388999998569489f);
+    setCombatReach(1.5f);
 
     if (getRace() != RACE_BLOODELF)
     {
         setDisplayId(info->displayId + getGender());
-        SetNativeDisplayId(info->displayId + getGender());
+        setNativeDisplayId(info->displayId + getGender());
     }
     else
     {
         setDisplayId(info->displayId - getGender());
-        SetNativeDisplayId(info->displayId - getGender());
+        setNativeDisplayId(info->displayId - getGender());
     }
     EventModelChange();
 
@@ -4111,7 +4111,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     UpdateStats();
 
     // Initialize 'normal' fields
-    SetScale(1.0f);
+    setScale(1.0f);
 #if VERSION_STRING > TBC
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
 #endif
@@ -4130,18 +4130,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
-    SetBoundingRadius(0.388999998569489f);
-    SetCombatReach(1.5f);
+    setBoundingRadius(0.388999998569489f);
+    setCombatReach(1.5f);
 
     if (getRace() != RACE_BLOODELF)
     {
         setDisplayId(info->displayId + getGender());
-        SetNativeDisplayId(info->displayId + getGender());
+        setNativeDisplayId(info->displayId + getGender());
     }
     else
     {
         setDisplayId(info->displayId - getGender());
-        SetNativeDisplayId(info->displayId - getGender());
+        setNativeDisplayId(info->displayId - getGender());
     }
     EventModelChange();
 
@@ -5552,7 +5552,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 Spell* spell = sSpellFactoryMgr.NewSpell(this, spells, true, nullptr);
                 SpellCastTargets targets;
                 targets.m_unitTarget = this->getGuid();
-                spell->castedItemId = item->GetEntry();
+                spell->castedItemId = item->getEntry();
                 spell->prepare(&targets);
 
             }
@@ -6913,8 +6913,8 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                         detectRange = 0.0f;
                 }
 
-                detectRange += GetBoundingRadius(); // adjust range for size of player
-                detectRange += pObj->GetBoundingRadius(); // adjust range for size of stealthed player
+                detectRange += getBoundingRadius(); // adjust range for size of player
+                detectRange += pObj->getBoundingRadius(); // adjust range for size of stealthed player
                 //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , getDistanceSq(pObj));
                 if (getDistanceSq(pObj) > detectRange * detectRange)
                     return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see stealthed players
@@ -7235,7 +7235,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             return SPELL_FAILED_LOWLEVEL;
 
         // Check ammo type
-        auto item_proto_ammo = sMySQLStore.getItemProperties(item->GetEntry());
+        auto item_proto_ammo = sMySQLStore.getItemProperties(item->getEntry());
         if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
@@ -7719,7 +7719,7 @@ void Player::UpdateNearbyGameObjects()
                     {
                         for (uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
                         {
-                            if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) &&
+                            if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->getEntry()) &&
                                 qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
                             {
                                 activate_quest_object = true;
@@ -7820,7 +7820,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
         currentvehicle->EjectPassenger(this);
 
     //also remove morph spells
-    if (getDisplayId() != GetNativeDisplayId())
+    if (getDisplayId() != getNativeDisplayId())
     {
         RemoveAllAuraType(SPELL_AURA_TRANSFORM);
         RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
@@ -8322,7 +8322,7 @@ void Player::AddItemsToWorld()
 
             if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
             {
-                UpdateKnownCurrencies(pItem->GetEntry(), true);
+                UpdateKnownCurrencies(pItem->getEntry(), true);
             }
 
             if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
@@ -8359,7 +8359,7 @@ void Player::AddItemsToWorld()
 
             if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
             {
-                UpdateKnownCurrencies(pItem->GetEntry(), true);
+                UpdateKnownCurrencies(pItem->getEntry(), true);
             }
 
             if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
@@ -9864,12 +9864,12 @@ void Player::SetGuildId(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+            setType(getType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+            setType(getType() & ~0x00010000);
         }
 
         //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
@@ -9887,12 +9887,12 @@ void Player::SetInGuild(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+            setType(getType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+            setType(getType() & ~0x00010000);
         }
 
         ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0 );
@@ -14124,13 +14124,13 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
                         {
                             auto player_group = player_tagger->GetGroup();
 
-                            player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                            player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
                             player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
 
                         }
                         else
                         {
-                            player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                            player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
                             player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                         }
 #endif
@@ -14142,7 +14142,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 #if VERSION_STRING > TBC
         if (pVictim->isCritter())
         {
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
         }
 #endif
@@ -14682,7 +14682,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         || !hasquest)
     {
         // We've got a hacker. Disconnect them.
-        //sCheatLog.writefromsession(this, "tried to accept incompatible quest %u from %u.", qst->id, qst_giver->GetEntry());
+        //sCheatLog.writefromsession(this, "tried to accept incompatible quest %u from %u.", qst->id, qst_giver->getEntry());
         //Disconnect();
         return;
     }
@@ -14731,13 +14731,13 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             else
                 SendItemPushResult(false, true, false, true,
                 m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
-                1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         }
     }
 
     if (qst->srcitem && qst->srcitem != qst->receive_items[0])
     {
-        if (!qst_giver->IsItem() || (qst_giver->GetEntry() != qst->srcitem))
+        if (!qst_giver->IsItem() || (qst_giver->getEntry() != qst->srcitem))
         {
             Item *item = objmgr.CreateItem(qst->srcitem, this);
             if (item != nullptr)

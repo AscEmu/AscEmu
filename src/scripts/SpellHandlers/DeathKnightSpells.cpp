@@ -208,7 +208,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         if (deltaX == 0.0f || deltaY == 0.0f)
             return false;
 
-        float d = sqrt(deltaX * deltaX + deltaY * deltaY) - s->u_caster->GetBoundingRadius() - unitTarget->GetBoundingRadius();
+        float d = sqrt(deltaX * deltaX + deltaY * deltaY) - s->u_caster->getBoundingRadius() - unitTarget->getBoundingRadius();
 
         float alpha = atanf(deltaY / deltaX);
 

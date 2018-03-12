@@ -376,10 +376,10 @@ void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
 
 void WorldSession::SendAuctionList(Creature* auctioneer)
 {
-    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->GetEntry());
+    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->getEntry());
     if (!AH)
     {
-        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->GetEntry());
+        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->getEntry());
         return;
     }
 

@@ -267,7 +267,7 @@ public:
     Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
-        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->setScale(0.4f);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -278,7 +278,7 @@ public:
     void OnTargetDied(Unit* /*mTarget*/) override
     {
         getCreature()->SetFaction(35);
-        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->setScale(0.4f);
     }
 };
 
@@ -301,7 +301,7 @@ public:
             if (pCreature != nullptr)
             {
                 pCreature->SetFaction(14);
-                pCreature->setFloatValue(OBJECT_FIELD_SCALE_X, 1);
+                pCreature->setScale(1.0f);
                 pCreature->GetAIInterface()->setNextTarget(pPlayer);
                 pCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
             }

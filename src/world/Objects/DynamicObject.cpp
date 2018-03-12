@@ -54,11 +54,11 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, (DYNAMICOBJECT_END)*sizeof(uint32));
     m_updateMask.SetCount(DYNAMICOBJECT_END);
-    m_uint32Values[OBJECT_FIELD_TYPE] = TYPE_DYNAMICOBJECT | TYPE_OBJECT;
+    setType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
     m_uint32Values[OBJECT_FIELD_GUID] = low;
     m_uint32Values[OBJECT_FIELD_GUID + 1] = high;
     m_wowGuid.Init(getGuid());
-    SetScale(1);
+    setScale(1.0f);
 
 
     m_parentSpell = nullptr;
@@ -91,8 +91,8 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
         p_caster = pSpell->p_caster;
 
     m_spellProto = pSpell->GetSpellInfo();
-    SetEntry(m_spellProto->getId());
-    setFloatValue(OBJECT_FIELD_SCALE_X, 1);
+    setEntry(m_spellProto->getId());
+    setScale(1.0f);
     setUInt64Value(DYNAMICOBJECT_CASTER, caster->getGuid());
     setByteFlag(DYNAMICOBJECT_BYTES, 0, static_cast<uint8_t>(type));
     setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->getId());

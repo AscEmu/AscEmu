@@ -99,12 +99,12 @@ public:
                 else
                 {
                     plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
+                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
                         item->GetItemRandomPropertyId(), item->GetStackCount());
 
                 }
 
-                if (pCreature->GetEntry() == 23859)
+                if (pCreature->getEntry() == 23859)
                 {
                     TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
                     plr->TaxiStart(path, 17759, 0);

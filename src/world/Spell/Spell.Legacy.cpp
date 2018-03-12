@@ -1121,7 +1121,7 @@ void Spell::castMe(bool check)
     {
         Creature* creature = static_cast<Creature*>(m_caster);
         LogDebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Creature: %s (spawn id: %u | entry: %u)",
-                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
+                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->getEntry());
     }
     else
     {
@@ -2395,7 +2395,7 @@ void Spell::SendSpellStart()
                 {
                     ip = item->getItemProperties();
                     /* Throwing Weapon Patch by Supalosa
-                    p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+                    p_caster->GetItemInterface()->RemoveItemAmt(it->getEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
                     We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
                     */
@@ -3983,7 +3983,7 @@ uint8 Spell::CanCast(bool tolerate)
             Creature* kilsorrow = p_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
             if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster->CalcDistance(p_caster, kilsorrow) > 1)
                 return SPELL_FAILED_NOT_HERE;
-            if (kilsorrow->GetEntry() != 17147 && kilsorrow->GetEntry() != 17148 && kilsorrow->GetEntry() != 18397 && kilsorrow->GetEntry() != 18658 && kilsorrow->GetEntry() != 17146)
+            if (kilsorrow->getEntry() != 17147 && kilsorrow->getEntry() != 17148 && kilsorrow->getEntry() != 18397 && kilsorrow->getEntry() != 18658 && kilsorrow->getEntry() != 17146)
                 return SPELL_FAILED_NOT_HERE;
         }
     }
@@ -4425,7 +4425,7 @@ uint8 Spell::CanCast(bool tolerate)
                 auto gameobject_info = static_cast<GameObject*>(itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
-                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->GetEntry());
+                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->getEntry());
                     continue;
                 }
 
@@ -4791,17 +4791,17 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (target)
         {
-            // UNIT_FIELD_BOUNDINGRADIUS + 1.5f; seems to match the client range
+            // getBoundingRadius()+ 1.5f; seems to match the client range
 
             if (tolerate)   // add an extra 33% to range on final check (squared = 1.78x)
             {
-                float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
+                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
                 if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange * 1.78f)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
             else
             {
-                float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
+                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
                 if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
@@ -5017,7 +5017,7 @@ uint8 Spell::CanCast(bool tolerate)
 
             // \todo Replace this awful hack with a better solution
             // Nestlewood Owlkin - Quest 9303
-            if (GetSpellInfo()->getId() == 29528 && target->IsCreature() && target->GetEntry() == 16518)
+            if (GetSpellInfo()->getId() == 29528 && target->IsCreature() && target->getEntry() == 16518)
             {
                 if (target->isRooted())
                 {
@@ -5032,11 +5032,11 @@ uint8 Spell::CanCast(bool tolerate)
             if (m_target_constraint != nullptr)
             {
                 // target is the wrong creature
-                if (target->IsCreature() && !m_target_constraint->hasCreature(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
+                if (target->IsCreature() && !m_target_constraint->hasCreature(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // target is the wrong GO :/
-                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
+                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 bool foundTarget = false;
@@ -5293,7 +5293,7 @@ uint8 Spell::CanCast(bool tolerate)
 
                     // if we are already fishing, don't cast it again
                     if (p_caster->GetSummonedObject())
-                        if (p_caster->GetSummonedObject()->GetEntry() == GO_FISHING_BOBBER)
+                        if (p_caster->GetSummonedObject()->getEntry() == GO_FISHING_BOBBER)
                             return SPELL_FAILED_SPELL_IN_PROGRESS;
                 }
             }
@@ -7499,7 +7499,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
@@ -7570,7 +7570,7 @@ void Spell::HandleModeratedTarget(uint64 guid)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
@@ -7636,7 +7636,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
             return;
         }
 
-        float rad = unitTarget->GetBoundingRadius() - u_caster->GetBoundingRadius();
+        float rad = unitTarget->getBoundingRadius() - u_caster->getBoundingRadius();
 
         float dx = m_caster->GetPositionX() - unitTarget->GetPositionX();
         float dy = m_caster->GetPositionY() - unitTarget->GetPositionY();
@@ -7701,7 +7701,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         if (uobj == nullptr || !uobj->IsUnit())
             return;
         Unit* un = static_cast<Unit*>(uobj);
-        float rad = un->GetBoundingRadius() + u_caster->GetBoundingRadius();
+        float rad = un->getBoundingRadius() + u_caster->getBoundingRadius();
         float angle = float(un->GetOrientation() + M_PI); //behind
         float x = un->GetPositionX() + cosf(angle) * rad;
         float y = un->GetPositionY() + sinf(angle) * rad;

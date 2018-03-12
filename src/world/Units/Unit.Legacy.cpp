@@ -1091,21 +1091,21 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     if (GetMapId() != pVictim->GetMapId())
         return false;
 
-    //	float targetreach = pVictim->GetCombatReach();
+    //	float targetreach = pVictim->getCombatReach();
     float selfreach;
     if (IsPlayer())
-        selfreach = 5.0f; // minimum melee range, UNIT_FIELD_COMBATREACH is too small and used eg. in melee spells
+        selfreach = 5.0f; // minimum melee range, getCombatReach() is too small and used eg. in melee spells
     else
-        selfreach = m_floatValues[UNIT_FIELD_COMBATREACH];
+        selfreach = getCombatReach();
 
     float targetradius;
-    //	targetradius = pVictim->m_floatValues[UNIT_FIELD_BOUNDINGRADIUS]; //this is plain wrong. Represents i have no idea what :)
+    //	targetradius = pVictim->getBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     targetradius = pVictim->GetModelHalfSize();
     float selfradius;
-    //	selfradius = m_floatValues[UNIT_FIELD_BOUNDINGRADIUS];
+    //	selfradius = getBoundingRadius();
     selfradius = GetModelHalfSize();
-    //	float targetscale = pVictim->m_floatValues[OBJECT_FIELD_SCALE_X];
-    //	float selfscale = m_floatValues[OBJECT_FIELD_SCALE_X];
+    //	float targetscale = pVictim->getScale();
+    //	float selfscale = getScale();
 
     //float distance = sqrt(getDistanceSq(pVictim));
     float delta_x = pVictim->GetPositionX() - GetPositionX();
@@ -8131,7 +8131,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
 
         //ugly hack for shadowfiend restoring mana
-        if (getSummonedByGuid() != 0 && GetEntry() == 19668)
+        if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             uint32 amount = static_cast<uint32>(owner->GetMaxPower(POWER_TYPE_MANA) * 0.05f);
@@ -8139,7 +8139,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
         //ugly hack for Bloodsworm restoring hp
-        if (getSummonedByGuid() != 0 && getUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
+        if (getSummonedByGuid() != 0 && getEntry() == 28017)
         {
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             if (owner != NULL)
@@ -8285,7 +8285,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
         else
         {
-            uint32 entry = weapon->GetEntry();
+            uint32 entry = weapon->getEntry();
             ItemProperties const* pProto = sMySQLStore.getItemProperties(entry);
             if (pProto != nullptr)
             {
@@ -10155,7 +10155,7 @@ float Unit::CalcSpellDamageReduction(Unit* victim, SpellInfo* spell, float res)
 void Unit::DeMorph()
 {
     // hope it solves it :)
-    uint32 displayid = this->GetNativeDisplayId();
+    uint32 displayid = this->getNativeDisplayId();
     this->setDisplayId(displayid);
     EventModelChange();
 }
@@ -13684,8 +13684,8 @@ bool Unit::isLootable()
 {
     if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !IsVehicle())
     {
-        auto creature_prop = sMySQLStore.getCreatureProperties(GetEntry());
-        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
+        auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
+        if (IsCreature() && !lootmgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
         return true;

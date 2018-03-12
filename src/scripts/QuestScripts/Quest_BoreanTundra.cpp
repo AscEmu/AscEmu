@@ -311,7 +311,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
+        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
 
         // check if there is a entry in the db
         if (sMySQLStore.getNpcText(Text) == nullptr)
@@ -620,7 +620,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    if (pCreature->GetEntry() == 26248)
+    if (pCreature->getEntry() == 26248)
     {
         if (qle->GetMobCount(2) == 0)
         {
@@ -632,7 +632,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
         pPlayer->AddQuestKill(11897, 2, 0);
     }
 
-    if (pCreature->GetEntry() == 26249)
+    if (pCreature->getEntry() == 26249)
     {
         if (qle->GetMobCount(1) == 0)
         {

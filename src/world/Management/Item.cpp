@@ -15,7 +15,7 @@ void Item::init(uint32_t high, uint32_t low)
 {
     memset(m_uint32Values, 0, sizeof(WoWItem));
     setObjectType(TYPEID_ITEM);
-    setScaleX(1.f);
+    setScale(1.f);
     setGuid(low, high);
 
     m_itemProperties = nullptr;

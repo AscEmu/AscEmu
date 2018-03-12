@@ -45,10 +45,10 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    SystemMessage(m_session, "Added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
-    sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+    SystemMessage(m_session, "Added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
-        creature_target->GetEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
+        creature_target->getEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
 
 
     AI_Spell* ai_spell = new AI_Spell;
@@ -127,7 +127,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     auto creature_trainer = creature_target->GetTrainer();
     if (creature_trainer == nullptr)
     {
-        RedSystemMessage(m_session, "%s (%u) is not a trainer!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+        RedSystemMessage(m_session, "%s (%u) is not a trainer!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
         return true;
     }
 
@@ -158,10 +158,10 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     creature_trainer->Spells.push_back(sp);
     creature_trainer->SpellCount++;
 
-    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
-    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-        creature_target->GetEntry(), (int)0, learn_spell->getId(), cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+        creature_target->getEntry(), (int)0, learn_spell->getId(), cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
 #else
     sp.spellCost = cost;
     sp.spell = learn_spell->Id;
@@ -170,10 +170,10 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     creature_trainer->Spells.push_back(sp);
     creature_trainer->SpellCount++;
 
-    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
-    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u)",
-                          creature_target->GetEntry(), learn_spell->Id, cost, (int)0, (int)0, reqlevel);
+                          creature_target->getEntry(), learn_spell->Id, cost, (int)0, (int)0, reqlevel);
 #endif
 
     return true;
@@ -308,7 +308,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
 
     SystemMessage(m_session, "Showing Creature info of %s =============", creature_target->GetCreatureProperties()->Name.c_str());
-    RedSystemMessage(m_session, "EntryID: %d", creature_target->GetEntry());
+    RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
     RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
     SystemMessage(m_session, "GUID: %u", guid);
     SystemMessage(m_session, "Faction: %u", creature_target->GetFaction());
@@ -505,15 +505,15 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->GetEntry());
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
     if (result == nullptr)
     {
-        RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+        RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
         return true;
     }
     else
     {
-        SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+        SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
         do
         {
             Field* fields = result->Fetch();
@@ -533,7 +533,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->GetEntry());
+    QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
         std::stringstream ss;
@@ -544,7 +544,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         if (*args)
             minQuality = atol(args);
 
-        SystemMessage(m_session, "Listing loot for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+        SystemMessage(m_session, "Listing loot for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
 
         do
         {
@@ -571,7 +571,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     }
     else
     {
-        RedSystemMessage(m_session, "No loot in loot_creatures table for %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+        RedSystemMessage(m_session, "No loot in loot_creatures table for %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     }
     return true;
 }
@@ -602,9 +602,9 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
         sEventMgr.RemoveEvents(creature_target, EVENT_CREATURE_RESPAWN);
 
         BlueSystemMessage(m_session, "Respawning Creature: `%s` with entry: %u on map: %u spawnid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
-            creature_target->GetEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+            creature_target->getEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
         sGMLog.writefromsession(m_session, "respawned Creature: `%s` with entry: %u on map: %u sqlid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
-            creature_target->GetEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+            creature_target->getEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
 
         creature_target->Despawn(0, 1000);
     }
@@ -853,7 +853,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     ItemProperties const* tmpItem = sMySQLStore.getItemProperties(item);
     if (tmpItem)
     {
-        WorldDatabase.Execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->GetEntry(), item, amount, costid);
+        WorldDatabase.Execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->getEntry(), item, amount, costid);
 
         selected_creature->AddVendorItem(item, amount, item_extended_cost);
 
@@ -867,7 +867,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         RedSystemMessage(m_session, "Item %u not found in database", item);
     }
 
-    sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->GetEntry());
+    sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->getEntry());
 #else
     char* pitem = strtok((char*)args, " ");
     if (!pitem)
@@ -908,7 +908,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
     int slot = selected_creature->GetSlotByItemId(itemguid);
     if (slot != -1)
     {
-        uint32 creatureId = selected_creature->GetEntry();
+        uint32 creatureId = selected_creature->getEntry();
 
         WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
 

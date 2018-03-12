@@ -42,7 +42,7 @@ class HallsOfLightningScript : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_GENERAL_DOORS:
                     mGeneralDoorsGUID = pGameObject->getGuidLow();
@@ -65,7 +65,7 @@ class HallsOfLightningScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             GameObject* pDoors = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_GENERAL_BJARNGRIM:
                 {
@@ -317,7 +317,7 @@ class Volkhan : public CreatureAIScript
     {
         for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
-            if (itr && itr->IsCreature() && itr->GetEntry() == CN_BRITTLE_GOLEM)
+            if (itr && itr->IsCreature() && itr->getEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast<Creature*>(itr);
                 if (_isHeroic())

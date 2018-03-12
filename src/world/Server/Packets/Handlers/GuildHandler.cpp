@@ -726,7 +726,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->GetEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->GetStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->GetStackCount());
 
             _player->ModGold(-(int32)costs[arena_type]);
             _player->m_charters[arena_index] = c;
@@ -804,7 +804,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->GetEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->GetStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->GetStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = c;
             _player->ModGold(-1000);
@@ -1569,7 +1569,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             if (deposit_stack && pSourceItem->GetStackCount() > deposit_stack)
             {
                 pSourceItem2 = pSourceItem;
-                pSourceItem = objmgr.CreateItem(pSourceItem2->GetEntry(), _player);
+                pSourceItem = objmgr.CreateItem(pSourceItem2->getEntry(), _player);
                 if (pSourceItem == NULL)
                     return;
 
@@ -1599,7 +1599,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 pSourceItem2->ModStackCount(-(int32)deposit_stack);
                 pSourceItem2->SaveToDB(0, 0, true, NULL);
 
-                pDestItem = objmgr.CreateItem(pSourceItem2->GetEntry(), _player);
+                pDestItem = objmgr.CreateItem(pSourceItem2->getEntry(), _player);
                 if (pDestItem == NULL)
                     return;
 
@@ -1626,7 +1626,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             pSourceItem->SaveToDB(0, 0, true, NULL);
 
             /// log it
-            pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->getGuidLow(), pSourceItem->GetEntry(),
+            pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->getGuidLow(), pSourceItem->getEntry(),
                                        (uint8)pSourceItem->GetStackCount(), pTab);
         }
 
@@ -1654,7 +1654,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             else
             {
                 /// log it
-                pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->getGuidLow(), pDestItem->GetEntry(),
+                pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->getGuidLow(), pDestItem->getEntry(),
                                            (uint8)pDestItem->GetStackCount(), pTab);
             }
         }
@@ -1783,7 +1783,7 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
             ++count;
 
             data << uint8(j);                   // slot
-            data << pTab->pSlots[j]->GetEntry();
+            data << pTab->pSlots[j]->getEntry();
             data << uint32(0);                  // 3.3.0 (0x8000, 0x8020) from MaNGOS
             data << (uint32)pTab->pSlots[j]->GetItemRandomPropertyId();
 

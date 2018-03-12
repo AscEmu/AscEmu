@@ -195,7 +195,7 @@ class ShadowfangKeepInstance : public InstanceScript
         // Objects handling
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_LEFT_CELL:
                 {
@@ -264,7 +264,7 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_RIGHT_LEVER:
                 {
@@ -297,7 +297,7 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnCreatureDeath(Creature* pCreature, Unit* /*pKiller*/) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_NANDOS:
                 {
@@ -318,7 +318,7 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_ADAMANT:
                 {
@@ -597,7 +597,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             //TODO: correct text id
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
@@ -767,7 +767,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)

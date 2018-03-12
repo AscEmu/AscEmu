@@ -99,7 +99,7 @@ namespace luaGlobalFunctions
                 GameObject* go = mapMgr->CreateGameObject(entry);
                 go->CreateFromProto(entry, map, x, y, z, o);
                 go->Phase(PHASE_SET, 1);
-                go->SetScale(((float)faction) / 100.0f);
+                go->setScale(((float)faction) / 100.0f);
 
                 go->AddToWorld(mapMgr);
 
@@ -259,7 +259,7 @@ namespace luaGlobalFunctions
         Creature *pCreature = mgr->GetCreature(GET_LOWGUID_PART(guid));
         if(pCreature)
         {
-        m_binding = g_luaMgr.GetUnitBinding(pCreature->GetEntry());
+        m_binding = g_luaMgr.GetUnitBinding(pCreature->getEntry());
         if (m_binding != NULL)
         g_engine->OnUnitEvent( pCreature, m_binding->Functions[CREATURE_EVENT_ON_LOAD], CREATURE_EVENT_ON_LOAD, NULL, 0, 0, 0, 0, NULL );
         }

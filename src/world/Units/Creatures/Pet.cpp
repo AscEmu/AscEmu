@@ -411,10 +411,10 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     if (type & 0x2 && created_from_creature != NULL)
         level = created_from_creature->getLevel() < (level - 5) ? level - 5 : created_from_creature->getLevel();
 
-    SetEntry(entry);
+    setEntry(entry);
     setLevel(level);
     setDisplayId(ci->Male_DisplayID);
-    SetNativeDisplayId(ci->Male_DisplayID);
+    setNativeDisplayId(ci->Male_DisplayID);
     EventModelChange();
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
@@ -448,8 +448,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setSheathType(SHEATH_STATE_MELEE);
         setShapeShiftForm(FORM_TREE);   //\todo really?
 
-        SetBoundingRadius(0.5f);
-        SetCombatReach(0.75f);
+        setBoundingRadius(0.5f);
+        setCombatReach(0.75f);
         setPowerType(POWER_TYPE_MANA);
     }
     else // Hunter pet
@@ -463,8 +463,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
             m_name.assign(myFamily->name);
 #endif
 
-        SetBoundingRadius(created_from_creature->GetBoundingRadius());
-        SetCombatReach(created_from_creature->GetCombatReach());
+        setBoundingRadius(created_from_creature->getBoundingRadius());
+        setCombatReach(created_from_creature->getCombatReach());
 
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
@@ -808,7 +808,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
 
     AI_Spell* sp = new AI_Spell;
     sp->agent = AGENT_SPELL;
-    sp->entryId = GetEntry();
+    sp->entryId = getEntry();
     sp->floatMisc1 = 0;
     sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     if (sp->maxrange < sqrt(info->custom_base_range_or_radius_sqr))
@@ -861,7 +861,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_PetNumber = mPi->number;
     m_name = mPi->name;
     Summon = false;
-    SetEntry(mPi->entry);
+    setEntry(mPi->entry);
     setLevel(mPi->level);
 
 
@@ -920,14 +920,14 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setSheathType(SHEATH_STATE_MELEE);
         setShapeShiftForm(FORM_TREE);   //\todo really?
 
-        SetBoundingRadius(0.5f);
-        SetCombatReach(0.75f);
+        setBoundingRadius(0.5f);
+        setCombatReach(0.75f);
         setPowerType(POWER_TYPE_MANA);
     }
     else
     {
-        SetBoundingRadius(creature_properties->BoundingRadius);
-        SetCombatReach(creature_properties->CombatReach);
+        setBoundingRadius(creature_properties->BoundingRadius);
+        setCombatReach(creature_properties->CombatReach);
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
@@ -954,7 +954,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setLevel(mPi->level);
 
     setDisplayId(creature_properties->Male_DisplayID);
-    SetNativeDisplayId(creature_properties->Male_DisplayID);
+    setNativeDisplayId(creature_properties->Male_DisplayID);
 
     EventModelChange();
 
@@ -1004,7 +1004,7 @@ void Pet::InitializeMe(bool first)
     GetAIInterface()->SetUnitToFollow(m_Owner);
     GetAIInterface()->SetFollowDistance(3.0f);
 
-    creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
+    creature_properties = sMySQLStore.getCreatureProperties(getEntry());
     if (creature_properties == nullptr)
         return;
 
@@ -1023,16 +1023,16 @@ void Pet::InitializeMe(bool first)
     if (Summon)         // Summons - always
     {
         // Adds parent +frost spell damage
-        if (GetEntry() == WATER_ELEMENTAL || GetEntry() == WATER_ELEMENTAL_NEW)
+        if (getEntry() == WATER_ELEMENTAL || getEntry() == WATER_ELEMENTAL_NEW)
         {
             // According to WoWWiki and ElitistJerks, Water Elemental should inherit 33% of owner's frost spell power.
             // And don't freak out about Waterbolt damage, it is supposed to do 601-673 base damage.
             float parentfrost = static_cast<float>(m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f);
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
-        else if (GetEntry() == PET_IMP)
+        else if (getEntry() == PET_IMP)
             m_aiInterface->setMeleeDisabled(true);
-        else if (GetEntry() == PET_FELGUARD)
+        else if (getEntry() == PET_FELGUARD)
             setVirtualItemSlotId(MELEE, 12784);
 
     }
@@ -1094,7 +1094,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
         return;
 
     player_pet->active = !bSetToOffline;
-    player_pet->entry = GetEntry();
+    player_pet->entry = getEntry();
     std::stringstream ss;
 
     player_pet->name = GetName();
@@ -1326,7 +1326,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     {
         std::map<uint32, std::set<uint32> >::iterator it1;
         std::set<uint32>::iterator it2;
-        it1 = m_Owner->SummonSpells.find(GetEntry());       // Get spells from the owner
+        it1 = m_Owner->SummonSpells.find(getEntry());       // Get spells from the owner
         if (it1 != m_Owner->SummonSpells.end())
         {
             it2 = it1->second.begin();
@@ -1654,7 +1654,7 @@ void Pet::Rename(std::string NewName)
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)
     {
-        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->getGuidLow(), GetEntry());
+        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->getGuidLow(), getEntry());
     }
 
     m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
@@ -1669,7 +1669,7 @@ void Pet::ApplySummonLevelAbilities()
     //float scale = 1;
     bool has_mana = true;
 
-    switch (GetEntry())
+    switch (getEntry())
     {
         case PET_IMP:
             stat_index = 0;
@@ -1707,12 +1707,12 @@ void Pet::ApplySummonLevelAbilities()
             stat_index = 4;
             break;
     }
-    if (GetEntry() == 89)
+    if (getEntry() == 89)
         has_mana = false;
 
     if (stat_index < 0)
     {
-        LOG_ERROR("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", GetEntry(), GetCreatureProperties()->Name.c_str());
+        LOG_ERROR("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", getEntry(), GetCreatureProperties()->Name.c_str());
         stat_index = 5;
     }
 
@@ -1790,7 +1790,7 @@ void Pet::ApplySummonLevelAbilities()
     double mana = has_mana ? (pet_int * pet_int_to_mana) : 0.0;
     if (health == 0)
     {
-        LOG_ERROR("Pet with entry %u has 0 health !!", GetEntry());
+        LOG_ERROR("Pet with entry %u has 0 health !!", getEntry());
         health = 100;
     }
     setBaseHealth((uint32)(health));
@@ -1873,9 +1873,9 @@ void Pet::ApplyStatsForLevel()
         float factor = scale_diff / level_diff;
         float scale = factor * pet_level + myFamily->minsize;
         if (myFamily->ID == 23) // Imps have strange values set into CreatureFamily.dbc,
-            SetScale(1.0f);    // they always will be set to be 0.5f. But that's not right.
+            setScale(1.0f);    // they always will be set to be 0.5f. But that's not right.
         else
-            SetScale(scale);
+            setScale(scale);
     }
 
     // Apply health fields.
@@ -2311,13 +2311,13 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                             {
                                 auto player_group = player_tagger->GetGroup();
 
-                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
                                 player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
 
                             }
                             else
                             {
-                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
                                 player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                             }
 #endif
@@ -2330,7 +2330,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 #if VERSION_STRING > TBC
         if (pVictim->isCritter())
         {
-            m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+            m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
             m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
         }
 #endif

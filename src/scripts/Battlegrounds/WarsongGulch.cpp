@@ -78,7 +78,7 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     for (uint8 i = 0; i < 2; ++i)
     {
         m_dropFlags[i]->Activate();
-        m_dropFlags[i]->SetScale(2.5f);
+        m_dropFlags[i]->setScale(2.5f);
     }
 
 }
@@ -294,7 +294,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()] != obj)
     {
         // are we returning it?
-        if ((obj->GetEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->GetEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
+        if ((obj->getEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->getEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
         {
             uint32 x = plr->GetTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));

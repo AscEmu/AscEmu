@@ -2065,7 +2065,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     tabData << uint32_t(tabItem->GetStackCount());
                     tabData << uint32_t(slotId);
                     tabData << uint32_t(0);
-                    tabData << uint32_t(tabItem->GetEntry());
+                    tabData << uint32_t(tabItem->getEntry());
                     tabData << uint32_t(tabItem->GetItemRandomPropertyId());
                     tabData << uint32_t(abs(0));
                     tabData << uint32_t(tabItem->GetItemRandomSuffixFactor());
@@ -2402,7 +2402,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
         pItem2->SetCreatorGUID(0);
         pItem2->SaveToDB(0, 0, true, nullptr);
 
-        pItem = objmgr.CreateItem(pItem2->GetEntry(), player);
+        pItem = objmgr.CreateItem(pItem2->getEntry(), player);
         if (pItem == nullptr)
         {
             return;
@@ -2457,7 +2457,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
         if (splitedAmount && pSourceItem->GetStackCount() > splitedAmount)
         {
             pSourceItem2 = pSourceItem;
-            pSourceItem = objmgr.CreateItem(pSourceItem2->GetEntry(), player);
+            pSourceItem = objmgr.CreateItem(pSourceItem2->getEntry(), player);
             if (pSourceItem == nullptr)
             {
                 return;
@@ -2487,7 +2487,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 pSourceItem2->ModStackCount(-(int32_t)splitedAmount);
                 pSourceItem2->SaveToDB(0, 0, true, nullptr);
 
-                pDestItem = objmgr.CreateItem(pSourceItem2->GetEntry(), player);
+                pDestItem = objmgr.CreateItem(pSourceItem2->getEntry(), player);
                 if (pDestItem == nullptr)
                 {
                     return;
@@ -2531,7 +2531,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             }
 
            logBankEvent(GB_LOG_WITHDRAW_ITEM, tabId, player->getGuidLow(),
-                getBankTab(tabId)->getItem(slotId)->GetEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->GetStackCount()));
+                getBankTab(tabId)->getItem(slotId)->getEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->GetStackCount()));
         }
     }
 
@@ -2579,7 +2579,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             tabData << uint32_t(tabItem ? tabItem->GetStackCount() : 0);
             tabData << uint32_t(*itr);
             tabData << uint32_t(0);
-            tabData << uint32_t(tabItem ? tabItem->GetEntry() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
             tabData << uint32_t(tabItem ? tabItem->GetItemRandomPropertyId() : 0);
             tabData << uint32_t(tabItem ? 0 : 0);
             tabData << uint32_t(tabItem ? tabItem->GetItemRandomSuffixFactor() : 0);

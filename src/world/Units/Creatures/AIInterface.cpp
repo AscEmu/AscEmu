@@ -237,7 +237,7 @@ void AIInterface::setupAndMoveToNextWaypoint()
 
 void AIInterface::generateWaypointScriptCircle()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -298,7 +298,7 @@ void AIInterface::generateWaypointScriptCircle()
 
 void AIInterface::generateWaypointScriptRandom()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -392,7 +392,7 @@ void AIInterface::generateWaypointScriptRandom()
 
 void AIInterface::generateWaypointScriptForwad()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -456,7 +456,7 @@ void AIInterface::generateWaypointScriptForwad()
 
 void AIInterface::generateWaypointScriptWantedWP()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -491,7 +491,7 @@ void AIInterface::generateWaypointScriptWantedWP()
 
 void AIInterface::generateWaypointScriptPatrol()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -908,14 +908,14 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             Creature* wpCreature = new Creature((uint64)HIGHGUID_TYPE_WAYPOINT << 32 | wayPoint->id);
             wpCreature->CreateWayPoint(wayPoint->id, player->GetMapId(), wayPoint->x, wayPoint->y, wayPoint->z, 0);
             wpCreature->SetCreatureProperties(targetCreature->GetCreatureProperties());
-            wpCreature->SetEntry(1);
-            wpCreature->SetScale(0.5f);
+            wpCreature->setEntry(1);
+            wpCreature->setScale(0.5f);
 
             uint32_t displayId = 0;
             if (showBackwards)
-                displayId = (wayPoint->backwardskinid == 0) ? GetUnit()->GetNativeDisplayId() : wayPoint->backwardskinid;
+                displayId = (wayPoint->backwardskinid == 0) ? GetUnit()->getNativeDisplayId() : wayPoint->backwardskinid;
             else
-                displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->GetNativeDisplayId() : wayPoint->forwardskinid;
+                displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->getNativeDisplayId() : wayPoint->forwardskinid;
 
             wpCreature->setDisplayId(displayId);
             wpCreature->SetEmoteState(wayPoint->backwardemoteid);
@@ -2767,15 +2767,15 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
     if (ranged)
         rang = 5.0f;
 
-    float selfreach = m_Unit->GetCombatReach();
+    float selfreach = m_Unit->getCombatReach();
     float targetradius;
     //    targetradius = target->GetBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     targetradius = target->GetModelHalfSize();
     float selfradius;
     //    selfradius = m_Unit->GetBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     selfradius = m_Unit->GetModelHalfSize();
-    //    float targetscale = target->GetScale();
-    //    float selfscale = m_Unit->GetScale();
+    //    float targetscale = target->getScale();
+    //    float selfscale = m_Unit->getScale();
 
     //    range = ((((targetradius*targetradius)*targetscale) + selfreach) + ((selfradius*selfscale) + rang));
     float range = targetradius + selfreach + selfradius + rang;
@@ -3052,7 +3052,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets
     // Stop movement while casting.
     setAiState(AI_STATE_CASTING);
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->GetEntry(),
+    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
               sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
 #endif
 
@@ -3220,7 +3220,7 @@ AI_Spell* AIInterface::getSpell()
     }
 
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
+    LOG_DEBUG("AI DEBUG: Returning no spell for unit %u", m_Unit->getEntry());
 #endif
     return nullptr;
 }
@@ -4369,7 +4369,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         if (m_Unit->IsCreature())
         {
             // set encounter state = InProgress
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 1);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 1);
         }
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
@@ -4569,7 +4569,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         if (m_Unit->IsCreature())
         {
             // set encounter state back to NotStarted
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 0);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 0);
         }
     }
 
@@ -4746,7 +4746,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
         // set encounter state to finished
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 2);    //2 = Finished
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 2);    //2 = Finished
     }
 
     setAiState(AI_STATE_IDLE);
@@ -4921,7 +4921,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_runSpeed = m_Unit->m_basicSpeedRun = properties_difficulty->run_speed;
             m_flySpeed = properties_difficulty->fly_speed;
 
-            m_Unit->SetScale(properties_difficulty->Scale);
+            m_Unit->setScale(properties_difficulty->Scale);
 
             uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
@@ -4962,9 +4962,9 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
                 m_Unit->m_aiInterface->m_canRangedAttack = false;
 
-            m_Unit->SetBoundingRadius(properties_difficulty->BoundingRadius);
+            m_Unit->setBoundingRadius(properties_difficulty->BoundingRadius);
 
-            m_Unit->SetCombatReach(properties_difficulty->CombatReach);
+            m_Unit->setCombatReach(properties_difficulty->CombatReach);
 
             m_Unit->setUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
 

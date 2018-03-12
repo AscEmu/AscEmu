@@ -432,13 +432,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 slotresult.ContainerSlot,
                 slotresult.Slot,
                 1,
-                item->GetEntry(),
+                item->getEntry(),
                 item->GetItemRandomSuffixFactor(),
                 item->GetItemRandomPropertyId(),
                 item->GetStackCount()
             );
 #if VERSION_STRING > TBC
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
 #endif
         }
         else
@@ -458,13 +458,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()),
             0xFFFFFFFF,
             amt,
-            add->GetEntry(),
+            add->getEntry(),
             add->GetItemRandomSuffixFactor(),
             add->GetItemRandomPropertyId(),
             add->GetStackCount()
         );
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
 #endif
     }
 
@@ -499,7 +499,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     /* any left yet? (for fishing bobbers) */
-    if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
+    if (pGO && pGO->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
         for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
@@ -751,7 +751,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 
             if (!pCreature->Skinned)
             {
-                if (lootmgr.IsSkinnable(pCreature->GetEntry()))
+                if (lootmgr.IsSkinnable(pCreature->getEntry()))
                 {
                     pCreature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
                 }
@@ -797,7 +797,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             if (pLock->locktype[i] == 1)   //Item or Quest Required;
                             {
                                 if (despawn)
-                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
+                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
                                 else
                                     pGO->SetState(GO_STATE_CLOSED);
 
@@ -828,7 +828,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     pGO->SetState(GO_STATE_CLOSED);
                                     return;
                                 }
-                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                                 return;
                             }
                         }
@@ -839,7 +839,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 pGO->SetState(1);
                                 return;
                             }
-                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                             return;
                         }
                     }
@@ -851,7 +851,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                         pGO->SetState(GO_STATE_CLOSED);
                         return;
                     }
-                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
 
                     return;
 
@@ -2169,7 +2169,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         slot_mask |= (1 << i);
 
-        data << uint32(item->GetEntry());
+        data << uint32(item->getEntry());
 
         uint16 enchant_mask = 0;
         size_t enchant_mask_pos = data.wpos();
@@ -2436,10 +2436,10 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
 #endif
     }
     else
@@ -2545,7 +2545,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
             return;
 
         pItem->SetGiftCreatorGUID(0);
-        pItem->SetEntry(pItem->wrapped_item_id);
+        pItem->setEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
         pItem->setItemProperties(it);
 
@@ -2602,7 +2602,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
     if (!pItem->loot)
     {
         pItem->loot = new Loot;
-        lootmgr.FillItemLoot(pItem->loot, pItem->GetEntry());
+        lootmgr.FillItemLoot(pItem->loot, pItem->getEntry());
     }
     _player->SendLoot(pItem->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }
@@ -2773,7 +2773,7 @@ void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CM
         return;
     sQuestMgr.OnGameObjectActivate(_player, gameobj);
 #if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->GetEntry(), 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->getEntry(), 0, 0);
 #endif
 }
 

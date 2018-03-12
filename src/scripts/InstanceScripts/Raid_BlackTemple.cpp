@@ -41,7 +41,7 @@ class BlackTempleScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             // You don't have to use additional scripts to open any gates / doors
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_SUPREMUS:
                     setGameObjectStateForEntry(185882, GO_STATE_OPEN);    // Gate to Black Temple behind Supremus
@@ -2037,7 +2037,7 @@ class GathiosAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         void AddEncounterCreature(Creature* pCreature)
@@ -2049,13 +2049,13 @@ class GathiosAI : public CreatureAIScript
         {
             for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
             {
-                if ((*itr) && (*itr)->isAlive() && (*itr)->GetEntry() != pCreatureEntry)
+                if ((*itr) && (*itr)->isAlive() && (*itr)->getEntry() != pCreatureEntry)
                 {
                     (*itr)->DealDamage((*itr), val, 0, 0, 0);
                 }
             }
 
-            if (isAlive() && getCreature()->GetEntry() != pCreatureEntry)
+            if (isAlive() && getCreature()->getEntry() != pCreatureEntry)
                 getCreature()->DealDamage(getCreature(), val, 0, 0, 0);
         }
 
@@ -2095,7 +2095,7 @@ class VerasAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2131,7 +2131,7 @@ class ZerevorAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2167,7 +2167,7 @@ class MalandeAI : public CreatureAIScript
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
             if (pGethois != NULL)
-                pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+                pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2637,7 +2637,7 @@ class GenericTriggerAI : public CreatureAIScript
             mSpellId = mDespawnTimer = 0;
             uint32 AIUpdate = 2000;
             bool OnSpawn = false;
-            switch (getCreature()->GetEntry())
+            switch (getCreature()->getEntry())
             {
                 case CN_DEMON_FIRE:
                     OnSpawn = true;
@@ -2684,7 +2684,7 @@ class GenericTriggerAI : public CreatureAIScript
             despawn(mDespawnTimer, 0);
             RemoveAIUpdateEvent();
 
-            if (getCreature()->GetEntry() == CN_FLAME_BURST)
+            if (getCreature()->getEntry() == CN_FLAME_BURST)
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             }
@@ -4054,7 +4054,7 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnHit(Unit* mVictim, float fAmount) override
         {
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT1!");
-            if (mVictim->IsCreature() && (mVictim->GetEntry() == CN_MAIEV || mVictim->GetEntry() == CN_AKAMA))
+            if (mVictim->IsCreature() && (mVictim->getEntry() == CN_MAIEV || mVictim->getEntry() == CN_AKAMA))
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT2!");
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
@@ -4077,7 +4077,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
-            if (mAttacker->IsCreature() && (mAttacker->GetEntry() == CN_MAIEV || mAttacker->GetEntry() == CN_AKAMA))
+            if (mAttacker->IsCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
             {
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
                 if (pTarget == NULL || !pTarget->IsPlayer())
@@ -4935,7 +4935,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 if (mYellTimer <= 0 && getCreature()->GetAIInterface()->getNextTarget() != NULL)
                 {
                     Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                    if (pTarget->IsCreature() && pTarget->GetEntry() == CN_MAIEV)
+                    if (pTarget->IsCreature() && pTarget->getEntry() == CN_MAIEV)
                     {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11470, "Feel the hatred of ten thousand years!");
                         mYellTimer = 25000;
@@ -4953,7 +4953,7 @@ class IllidanStormrageAI : public CreatureAIScript
             {
                 _clearHateList();
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->GetEntry() != CN_FACE_TRIGGER))
+                if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->getEntry() != CN_FACE_TRIGGER))
                 {
                     Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                     if (pTrigger != NULL)
@@ -5236,7 +5236,7 @@ class CageTrapGO : public GameObjectAIScript
     public:
         CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
         {
-            _gameobject->setFloatValue(OBJECT_FIELD_SCALE_X, 3);
+            _gameobject->setScale(3.0f);
         }
 
         void OnActivate(Player* /*pPlayer*/) override

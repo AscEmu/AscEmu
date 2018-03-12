@@ -295,26 +295,11 @@ protected:
         float* m_floatValues;
     };
 
+    bool skipping_updates = false;
+
     const WoWObject* objectData() const { return wow_data; }
 
-    void setGuid(uint64_t guid);
-    void setGuid(uint32_t low, uint32_t high);
-    void setGuidLow(uint32_t low);
-    void setGuidHigh(uint32_t high);
-    void setObjectType(uint32_t objectTypeId);
-    void setScaleX(float_t scaleX);
-
-    bool skipping_updates = false;
 public:
-    uint64_t getGuid() const;
-    uint32_t getGuidLow() const;
-    uint32_t getGuidHigh() const;
-
-    void setType(uint32_t type);
-    uint32_t getType() const;
-
-    void setEntry(uint32_t entry);
-    uint32_t getEntry() const;
 
     bool write(const uint8_t& member, uint8_t val);
     bool write(const uint16_t& member, uint16_t val);
@@ -326,6 +311,29 @@ public:
     bool writeLow(const uint64_t& member, uint32_t val);
     bool writeHigh(const uint64_t& member, uint32_t val);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
+    uint64_t getGuid() const;
+    void setGuid(uint64_t guid);
+    void setGuid(uint32_t low, uint32_t high);
+
+    uint32_t getGuidLow() const;
+    void setGuidLow(uint32_t low);
+
+    uint32_t getGuidHigh() const;
+    void setGuidHigh(uint32_t high);
+
+    uint32_t getType() const;
+    void setType(uint32_t type);
+    void setObjectType(uint32_t objectTypeId);
+
+    void setEntry(uint32_t entry);
+    uint32_t getEntry() const;
+
+    float_t getScale() const;
+    void setScale(float_t scaleX);
+
+    // old update data handling
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
     uint8_t getByteValue(uint16_t index, uint8_t offset) const;
 
@@ -507,11 +515,6 @@ public:
         // Guid always comes first
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
-        uint32 GetEntry() { return m_uint32Values[OBJECT_FIELD_ENTRY]; }
-        void SetEntry(uint32 value) { setUInt32Value(OBJECT_FIELD_ENTRY, value); }
-
-        float GetScale() { return m_floatValues[OBJECT_FIELD_SCALE_X]; }
-        void SetScale(float scale) { setFloatValue(OBJECT_FIELD_SCALE_X, scale); };
 
         const uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
         const uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }

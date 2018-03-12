@@ -1146,11 +1146,11 @@ void AlteracValley::AVNode::Spawn()
         else
         {
             // change entry, but to do this change guid
-            if (m_flag->GetEntry() != g->id[m_state] || !m_flag->IsInWorld())
+            if (m_flag->getEntry() != g->id[m_state] || !m_flag->IsInWorld())
             {
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
-                m_flag->SetEntry(g->id[m_state]);
+                m_flag->setEntry(g->id[m_state]);
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->SetDisplayId(gameobject_info->display_id);
@@ -1192,11 +1192,11 @@ void AlteracValley::AVNode::Spawn()
         else
         {
             // change entry, but to do this change guid
-            if (m_aura->GetEntry() != g->id[m_state] || !m_aura->IsInWorld())
+            if (m_aura->getEntry() != g->id[m_state] || !m_aura->IsInWorld())
             {
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
-                m_aura->SetEntry(g->id[m_state]);
+                m_aura->setEntry(g->id[m_state]);
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->SetDisplayId(gameobject_info->display_id);
@@ -1234,20 +1234,20 @@ void AlteracValley::AVNode::Spawn()
             m_glow->SetAnimProgress(100);
             m_glow->SetFlags(GO_FLAG_NONSELECTABLE);
             m_glow->SetState(GO_STATE_CLOSED);
-            if (m_glow->GetEntry() == 180422 || m_glow->GetEntry() == 180423)
-                m_glow->SetScale(10.0f);
+            if (m_glow->getEntry() == 180422 || m_glow->getEntry() == 180423)
+                m_glow->setScale(10.0f);
             else
-                m_glow->SetScale(2.0f);
+                m_glow->setScale(2.0f);
             m_glow->PushToWorld(m_bg->GetMapMgr());
         }
         else
         {
             // change entry, but to do this change guid
-            if (m_glow->GetEntry() != g->id[m_state] || !m_glow->IsInWorld())
+            if (m_glow->getEntry() != g->id[m_state] || !m_glow->IsInWorld())
             {
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
-                m_glow->SetEntry(g->id[m_state]);
+                m_glow->setEntry(g->id[m_state]);
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->SetDisplayId(gameobject_info->display_id);
@@ -1256,10 +1256,10 @@ void AlteracValley::AVNode::Spawn()
                 m_glow->SetAnimProgress(100);
                 m_glow->SetFlags(GO_FLAG_NONSELECTABLE);
                 m_glow->SetState(GO_STATE_CLOSED);
-                if (m_glow->GetEntry() == 180422 || m_glow->GetEntry() == 180423)
-                    m_glow->SetScale(10.0f);
+                if (m_glow->getEntry() == 180422 || m_glow->getEntry() == 180423)
+                    m_glow->setScale(10.0f);
                 else
-                    m_glow->SetScale(2.0f);
+                    m_glow->setScale(2.0f);
                 m_glow->PushToWorld(m_bg->GetMapMgr());
             }
         }
@@ -1744,7 +1744,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
         return;
 
     Player* plr2;
-    if (pVictim->GetEntry() == AV_NPC_GENERAL_VANNDAR_STORMPIKE)
+    if (pVictim->getEntry() == AV_NPC_GENERAL_VANNDAR_STORMPIKE)
     {
         Herald("The Stormpike General is dead!");
         RemoveReinforcements(0, AV_NUM_REINFORCEMENTS);
@@ -1757,7 +1757,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             HonorHandler::AddHonorPointsToPlayer(plr2, 62);
         }
     }
-    else if (pVictim->GetEntry() == AV_NPC_GENERAL_DREK_THAR)
+    else if (pVictim->getEntry() == AV_NPC_GENERAL_DREK_THAR)
     {
         Herald("The Frostwolf General is dead!");
         RemoveReinforcements(1, AV_NUM_REINFORCEMENTS);
@@ -1770,7 +1770,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
         }
     }
-    else if (pVictim->GetEntry() == AV_NPC_CAPTAIN_GALVANGAR)
+    else if (pVictim->getEntry() == AV_NPC_CAPTAIN_GALVANGAR)
     {
         RemoveReinforcements(1, AV_POINTS_ON_KILL_CAPTAIN);
         for (std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
@@ -1781,7 +1781,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
         }
     }
-    else if (pVictim->GetEntry() == AV_NPC_CAPTAIN_BALINDA_STONEHEARTH)
+    else if (pVictim->getEntry() == AV_NPC_CAPTAIN_BALINDA_STONEHEARTH)
     {
         RemoveReinforcements(0, AV_POINTS_ON_KILL_CAPTAIN);
         for (std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)

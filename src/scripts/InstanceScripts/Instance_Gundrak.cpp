@@ -68,7 +68,7 @@ class GundrakScript : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_ALTAR1_SLADRAN:
                 {
@@ -144,7 +144,7 @@ class GundrakScript : public InstanceScript
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_ALTAR1_SLADRAN:
                 {
@@ -193,7 +193,7 @@ class GundrakScript : public InstanceScript
         {
             GameObject* pDoors = NULL;
             GameObject* pAltar = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_MOORABI:
                 {

@@ -313,7 +313,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         Creature* pCreature = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
                         if (pCreature)
                         {
-                            if (pCreature->GetEntry() == giver_id) //found creature
+                            if (pCreature->getEntry() == giver_id) //found creature
                             {
                                 quest_giver = pCreature;
                                 guid = plr->GetMapMgr()->CreatureStorage.size();
@@ -719,7 +719,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
                 return true;
             }
 
-            quest_giver = unit->GetEntry();
+            quest_giver = unit->getEntry();
         }
     }
 
@@ -824,7 +824,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->GetEntry());
+    std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args);
     QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
@@ -863,7 +863,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -909,7 +909,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->GetEntry());
+    std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args);
     QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
@@ -948,7 +948,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1007,7 +1007,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->GetEntry());
+    std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args);
     QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
@@ -1045,7 +1045,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1091,7 +1091,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->GetEntry());
+    std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args);
     QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
@@ -1130,7 +1130,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;

@@ -174,7 +174,7 @@ void ObjectMgr::LoadTransports()
         {
             for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
             {
-                if ((*itr)->GetEntry() == it.second.transportEntry)
+                if ((*itr)->getEntry() == it.second.transportEntry)
                 {
                     TransportSpawn spawn{ it.second.guid, it.second.entry, it.second.transportEntry, it.second.transportOffsetX, it.second.transportOffsetY, it.second.transportOffsetZ, it.second.transportOffsetO, it.second.animation };
                     (*itr)->AddCreature(spawn);
@@ -529,7 +529,7 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
 
     WorldPacket packet(SMSG_TRANSFER_PENDING, 12);
     packet << newMapid;
-    packet << GetEntry();
+    packet << getEntry();
     packet << oldmap;
 
     for (auto passengerGuid : m_passengers)

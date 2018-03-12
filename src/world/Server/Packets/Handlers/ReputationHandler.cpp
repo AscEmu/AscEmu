@@ -389,7 +389,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     }
 
     uint32 team = GetTeam();
-    ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
+    ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->getEntry(), pUnit->m_factionDBC->ID);
     if (modifier != nullptr)
     {
         // Apply this data.

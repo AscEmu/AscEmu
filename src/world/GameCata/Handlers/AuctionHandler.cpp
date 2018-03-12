@@ -88,7 +88,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     if (auct->HighestBidder != 0)
     {
         char subject[100];
-        snprintf(subject, 100, "%u:0:0", (int)auct->pItem->GetEntry());
+        snprintf(subject, 100, "%u:0:0", (int)auct->pItem->getEntry());
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, ah->GetID(), auct->HighestBidder, subject, "", auct->HighestBid, 0, 0, MAIL_STATIONERY_AUCTION);
 
         if (auct->HighestBidder != (uint32_t)_player->getGuidLow())

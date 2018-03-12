@@ -1083,7 +1083,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             charter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
 
             _player->ModGold(-(int32_t)costs[arena_type]);
             _player->m_charters[arenaIndex] = charter;
@@ -1164,7 +1164,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->SaveToDB();
 
             _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(),
-                1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = charter;
             _player->ModGold(-1000);

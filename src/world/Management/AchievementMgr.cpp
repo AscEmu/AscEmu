@@ -919,7 +919,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // requires a target
                             if (pUnit)
                             {
-                                uint32 ent = pUnit->GetEntry();
+                                uint32 ent = pUnit->getEntry();
                                 if ((ent == 1412 && achievementCriteria->index == 1)    // Squirrel
                                     || (ent == 25679 && achievementCriteria->index == 2) // Steam Frog
                                     || (ent == 25677 && achievementCriteria->index == 3) // Borean Frog
@@ -950,7 +950,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // requires a target
                             if (pUnit)
                             {
-                                uint32 ent = pUnit->GetEntry();
+                                uint32 ent = pUnit->getEntry();
                                 if ((ent == 29328 && achievementCriteria->index == 1)   // Arctic Hare
                                     || (ent == 31685 && achievementCriteria->index == 2) // Borean Marmot
                                     || (ent == 28407 && achievementCriteria->index == 3) // Fjord Penguin
