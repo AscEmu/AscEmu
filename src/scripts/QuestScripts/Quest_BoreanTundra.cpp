@@ -488,8 +488,8 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
     GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->SetEquippedItem(0, 28487);       // Mainhand
-        getCreature()->SetEquippedItem(1, 11587);       // Offhand
+        getCreature()->setVirtualItemSlotId(0, 28487);       // Mainhand
+        getCreature()->setVirtualItemSlotId(1, 11587);       // Offhand
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;

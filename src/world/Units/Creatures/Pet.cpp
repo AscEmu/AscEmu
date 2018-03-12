@@ -413,7 +413,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     SetEntry(entry);
     setLevel(level);
-    SetDisplayId(ci->Male_DisplayID);
+    setDisplayId(ci->Male_DisplayID);
     SetNativeDisplayId(ci->Male_DisplayID);
     EventModelChange();
     setSummonedByGuid(owner->getGuid());
@@ -953,7 +953,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     setLevel(mPi->level);
 
-    SetDisplayId(creature_properties->Male_DisplayID);
+    setDisplayId(creature_properties->Male_DisplayID);
     SetNativeDisplayId(creature_properties->Male_DisplayID);
 
     EventModelChange();
@@ -1033,7 +1033,7 @@ void Pet::InitializeMe(bool first)
         else if (GetEntry() == PET_IMP)
             m_aiInterface->setMeleeDisabled(true);
         else if (GetEntry() == PET_FELGUARD)
-            SetEquippedItem(MELEE, 12784);
+            setVirtualItemSlotId(MELEE, 12784);
 
     }
     else if (first)     // Hunter pets - after taming
@@ -2387,7 +2387,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setDeathState(JUST_DIED);
     GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
 
-    if (GetChannelSpellTargetGUID() != 0)
+    if (getChannelObjectGuid() != 0)
     {
 
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
@@ -2399,7 +2399,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             {
                 if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    uint64 guid = GetChannelSpellTargetGUID();
+                    uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (!dObj)
                         return;

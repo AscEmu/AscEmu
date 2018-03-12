@@ -3989,8 +3989,8 @@ class IllidanStormrageAI : public CreatureAIScript
                 Creature* pBlade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                 if (pBlade != NULL)
                 {
-                    pBlade->SetChannelSpellTargetGUID(0);
-                    pBlade->SetChannelSpellId(0);
+                    pBlade->setChannelObjectGuid(0);
+                    pBlade->setChannelSpellId(0);
                     pBlade->Despawn(0, 0);
                 }
             }
@@ -4253,8 +4253,8 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->getGuid());
-                                pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
+                                pBlade->setChannelObjectGuid(mFoA1->getCreature()->getGuid());
+                                pBlade->setChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
                         if (mFoA2 != nullptr)
@@ -4262,8 +4262,8 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->getGuid());
-                                pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
+                                pBlade->setChannelObjectGuid(mFoA2->getCreature()->getGuid());
+                                pBlade->setChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
                         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -4346,8 +4346,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
-                        pBlade->SetChannelSpellTargetGUID(0);
-                        pBlade->SetChannelSpellId(0);
+                        pBlade->setChannelObjectGuid(0);
+                        pBlade->setChannelSpellId(0);
                     }
 
                     mFoA1 = NULL;
@@ -4360,8 +4360,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
-                        pBlade->SetChannelSpellTargetGUID(0);
-                        pBlade->SetChannelSpellId(0);
+                        pBlade->setChannelObjectGuid(0);
+                        pBlade->setChannelSpellId(0);
                     }
 
                     mFoA2 = NULL;
@@ -4369,7 +4369,7 @@ class IllidanStormrageAI : public CreatureAIScript
             }
             if (getCreature()->GetAIInterface()->getWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !_isCasting())
             {
-                if (getCreature()->GetChannelSpellId() == 0)
+                if (getCreature()->getChannelSpellId() == 0)
                 {
                     if (mFoA1 == NULL && mFoA2 == NULL)
                     {

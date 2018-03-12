@@ -2835,8 +2835,8 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     if (u_caster)
         if (GetSpellInfo()->getChannelInterruptFlags() > 0)
         {
-            u_caster->SetChannelSpellTargetGUID(dynObj->getGuid());
-            u_caster->SetChannelSpellId(GetSpellInfo()->getId());
+            u_caster->setChannelObjectGuid(dynObj->getGuid());
+            u_caster->setChannelSpellId(GetSpellInfo()->getId());
         }
 
     m_AreaAura = true;
@@ -4189,7 +4189,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         go->PushToWorld(m_caster->GetMapMgr());
 
-        u_caster->SetChannelSpellTargetGUID(go->getGuid());
+        u_caster->setChannelObjectGuid(go->getGuid());
     }
     else
     {

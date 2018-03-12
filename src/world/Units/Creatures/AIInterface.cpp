@@ -198,17 +198,17 @@ void AIInterface::setupAndMoveToNextWaypoint()
             {
                 if (!mMoveWaypointsBackwards)
                 {
-                    if ((wayPoint->forwardskinid != 0) && (GetUnit()->GetDisplayId() != wayPoint->forwardskinid))
+                    if ((wayPoint->forwardskinid != 0) && (GetUnit()->getDisplayId() != wayPoint->forwardskinid))
                     {
-                        GetUnit()->SetDisplayId(wayPoint->forwardskinid);
+                        GetUnit()->setDisplayId(wayPoint->forwardskinid);
                         GetUnit()->EventModelChange();
                     }
                 }
                 else
                 {
-                    if ((wayPoint->backwardskinid != 0) && (GetUnit()->GetDisplayId() != wayPoint->backwardskinid))
+                    if ((wayPoint->backwardskinid != 0) && (GetUnit()->getDisplayId() != wayPoint->backwardskinid))
                     {
-                        GetUnit()->SetDisplayId(wayPoint->backwardskinid);
+                        GetUnit()->setDisplayId(wayPoint->backwardskinid);
                         GetUnit()->EventModelChange();
                     }
                 }
@@ -917,7 +917,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             else
                 displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->GetNativeDisplayId() : wayPoint->forwardskinid;
 
-            wpCreature->SetDisplayId(displayId);
+            wpCreature->setDisplayId(displayId);
             wpCreature->SetEmoteState(wayPoint->backwardemoteid);
 
             wpCreature->setLevel(wayPoint->id);
@@ -4374,8 +4374,8 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
-            m_Unit->SetChannelSpellId(0);
-            m_Unit->SetChannelSpellTargetGUID(0);
+            m_Unit->setChannelSpellId(0);
+            m_Unit->setChannelObjectGuid(0);
         }
     }
 

@@ -421,9 +421,9 @@ void Creature::SaveToDB()
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID];
-        m_spawn->Item1SlotDisplay = GetEquippedItem(MELEE);
-        m_spawn->Item2SlotDisplay = GetEquippedItem(OFFHAND);
-        m_spawn->Item3SlotDisplay = GetEquippedItem(RANGED);
+        m_spawn->Item1SlotDisplay = getVirtualItemSlotId(MELEE);
+        m_spawn->Item2SlotDisplay = getVirtualItemSlotId(OFFHAND);
+        m_spawn->Item3SlotDisplay = getVirtualItemSlotId(RANGED);
         if (GetAIInterface()->isFlying())
             m_spawn->CanFly = 1;
         else if (GetAIInterface()->onGameobject)
@@ -475,9 +475,9 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID] << ","
-        << GetEquippedItem(MELEE) << ","
-        << GetEquippedItem(OFFHAND) << ","
-        << GetEquippedItem(RANGED) << ",";
+        << getVirtualItemSlotId(MELEE) << ","
+        << getVirtualItemSlotId(OFFHAND) << ","
+        << getVirtualItemSlotId(RANGED) << ",";
 
     if (GetAIInterface()->isFlying())
         ss << 1 << ",";
@@ -1236,8 +1236,8 @@ void Creature::ChannelLinkUpGO(uint32 SqlId)
     if (go != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(go->getGuid());
-        SetChannelSpellId(m_spawn->channel_spell);
+        setChannelObjectGuid(go->getGuid());
+        setChannelSpellId(m_spawn->channel_spell);
     }
 }
 
@@ -1250,8 +1250,8 @@ void Creature::ChannelLinkUpCreature(uint32 SqlId)
     if (creature != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(creature->getGuid());
-        SetChannelSpellId(m_spawn->channel_spell);
+        setChannelObjectGuid(creature->getGuid());
+        setChannelSpellId(m_spawn->channel_spell);
     }
 }
 
@@ -1344,7 +1344,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
 
 
-    SetDisplayId(spawn->displayid);
+    setDisplayId(spawn->displayid);
     SetNativeDisplayId(spawn->displayid);
     SetMount(spawn->MountedDisplayID);
 
@@ -1367,9 +1367,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     SetMinRangedDamage(creature_properties->RangedMinDamage);
     SetMaxRangedDamage(creature_properties->RangedMaxDamage);
 
-    SetEquippedItem(MELEE, spawn->Item1SlotDisplay);
-    SetEquippedItem(OFFHAND, spawn->Item2SlotDisplay);
-    SetEquippedItem(RANGED, spawn->Item3SlotDisplay);
+    setVirtualItemSlotId(MELEE, spawn->Item1SlotDisplay);
+    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotDisplay);
+    setVirtualItemSlotId(RANGED, spawn->Item3SlotDisplay);
 
     SetFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
@@ -1595,7 +1595,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&model);
     setGender(gender);
 
-    SetDisplayId(model);
+    setDisplayId(model);
     SetNativeDisplayId(model);
     SetMount(0);
 
@@ -2402,7 +2402,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
 
 
-    if (GetChannelSpellTargetGUID() != 0)
+    if (getChannelObjectGuid() != 0)
     {
 
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
@@ -2414,7 +2414,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             {
                 if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    uint64 guid = GetChannelSpellTargetGUID();
+                    uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (!dObj)
                         return;

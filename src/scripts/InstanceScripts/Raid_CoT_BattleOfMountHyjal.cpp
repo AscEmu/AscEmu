@@ -355,8 +355,8 @@ class ArchimondeTriggerAI : public CreatureAIScript
             Unit* Archimonde = getNearestCreature(5598.629883f, -3447.719971f, 1576.650024f, 17968);
             if (Archimonde)
             {
-                getCreature()->SetChannelSpellTargetGUID(Archimonde->getGuid());
-                getCreature()->SetChannelSpellId(DRAIN_WORLD_TREE_VISUAL2);
+                getCreature()->setChannelObjectGuid(Archimonde->getGuid());
+                getCreature()->setChannelSpellId(DRAIN_WORLD_TREE_VISUAL2);
             }
         }
 };

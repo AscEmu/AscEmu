@@ -252,6 +252,12 @@ public:
     uint64_t getTargetGuid() const;
     void setTargetGuid(uint64_t guid);
 
+    uint64_t getChannelObjectGuid() const;
+    void setChannelObjectGuid(uint64_t guid);
+
+    uint32_t getChannelSpellId() const;
+    void setChannelSpellId(uint32_t spell_id);
+
     //bytes_0 begin
     uint8_t getRace() const;
     void setRace(uint8_t race);
@@ -279,6 +285,9 @@ public:
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
 
+    uint32_t getVirtualItemSlotId(uint8_t slot) const;
+    void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
+
     uint32_t getUnitFlags() const;
     void setUnitFlags(uint32_t unitFlags);
     void addUnitFlags(uint32_t unitFlags);
@@ -291,6 +300,9 @@ public:
     void addUnitFlags2(uint32_t unitFlags2);
     void removeUnitFlags2(uint32_t unitFlags2);
 #endif
+
+    uint32_t getDisplayId() const;
+    void setDisplayId(uint32_t id);
 
     //bytes_1 begin
     uint8_t getStandState() const;
@@ -1101,15 +1113,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
-    void SetChannelSpellTargetGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, GUID); }
-    void SetChannelSpellId(uint32 SpellId) { setUInt32Value(UNIT_CHANNEL_SPELL, SpellId); }
-
-    uint64 GetChannelSpellTargetGUID() { return getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT); }
-    uint32 GetChannelSpellId() { return getUInt32Value(UNIT_CHANNEL_SPELL); }
-
-    void SetEquippedItem(uint8 slot, uint32 id) { setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, id); }
-    uint32 GetEquippedItem(uint8 slot) { return getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot); }
-
     void SetBaseAttackTime(uint8 slot, uint32 time) { setUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, time); }
     uint32 GetBaseAttackTime(uint8 slot) { return getUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot); }
     void ModBaseAttackTime(uint8 slot, int32 mod) { modUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
@@ -1119,9 +1122,6 @@ public:
 
     void SetCombatReach(float len) { setFloatValue(UNIT_FIELD_COMBATREACH, len); }
     float GetCombatReach() { return getFloatValue(UNIT_FIELD_COMBATREACH); }
-
-    void SetDisplayId(uint32 id) { setUInt32Value(UNIT_FIELD_DISPLAYID, id); }
-    uint32 GetDisplayId() { return getUInt32Value(UNIT_FIELD_DISPLAYID); }
 
     void SetNativeDisplayId(uint32 id) { setUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, id); }
     uint32 GetNativeDisplayId() { return getUInt32Value(UNIT_FIELD_NATIVEDISPLAYID); }

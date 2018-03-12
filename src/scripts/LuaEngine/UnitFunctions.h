@@ -53,7 +53,7 @@ class LuaUnit
         if (ptr == NULL)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->GetDisplayId());
+            lua_pushinteger(L, ptr->getDisplayId());
 
         return 1;
     }
@@ -583,9 +583,9 @@ class LuaUnit
         }
         pCreature->Load(p, x, y, z, o);
         pCreature->SetFaction(faction);
-        pCreature->SetEquippedItem(MELEE, equip1);
-        pCreature->SetEquippedItem(OFFHAND, equip2);
-        pCreature->SetEquippedItem(RANGED, equip3);
+        pCreature->setVirtualItemSlotId(MELEE, equip1);
+        pCreature->setVirtualItemSlotId(OFFHAND, equip2);
+        pCreature->setVirtualItemSlotId(RANGED, equip3);
         pCreature->Phase(PHASE_SET, phase);
         pCreature->m_noRespawn = true;
         pCreature->AddToWorld(ptr->GetMapMgr());
@@ -787,7 +787,7 @@ class LuaUnit
     {
         uint32 model = CHECK_ULONG(L, 1);
         if (ptr != NULL)
-            ptr->SetDisplayId(model);
+            ptr->setDisplayId(model);
         else
             RET_BOOL(false)
             RET_BOOL(true)
@@ -848,7 +848,7 @@ class LuaUnit
         }
 
         if (!modelid)
-            modelid = pCreature->GetDisplayId();
+            modelid = pCreature->getDisplayId();
 
         Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = (uint32)pCreature->m_custom_waypoint_map->size() + 1;
@@ -4679,9 +4679,9 @@ class LuaUnit
         uint32 equip1 = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 equip2 = static_cast<uint32>(luaL_checkinteger(L, 2));
         uint32 equip3 = static_cast<uint32>(luaL_checkinteger(L, 3));
-        ptr->SetEquippedItem(MELEE, equip1);
-        ptr->SetEquippedItem(OFFHAND, equip2);
-        ptr->SetEquippedItem(RANGED, equip3);
+        ptr->setVirtualItemSlotId(MELEE, equip1);
+        ptr->setVirtualItemSlotId(OFFHAND, equip2);
+        ptr->setVirtualItemSlotId(RANGED, equip3);
         return 0;
     }
 
@@ -4820,8 +4820,8 @@ class LuaUnit
         if (Csp && target != nullptr)
         {
             ptr->CastSpell(target->getGuid(), sSpellCustomizations.GetSpellInfo(Csp), false);
-            ptr->SetChannelSpellTargetGUID(target->getGuid());
-            ptr->SetChannelSpellId(Csp);
+            ptr->setChannelObjectGuid(target->getGuid());
+            ptr->setChannelSpellId(Csp);
         }
         return 0;
     }
@@ -4830,8 +4830,8 @@ class LuaUnit
     {
         if (ptr == nullptr)
             return 0;
-        ptr->SetChannelSpellTargetGUID(0);
-        ptr->SetChannelSpellId(0);
+        ptr->setChannelObjectGuid(0);
+        ptr->setChannelSpellId(0);
         return 0;
     }
 

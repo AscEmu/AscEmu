@@ -841,7 +841,7 @@ float CreatureAIScript::_getScale()
 
 void CreatureAIScript::_setDisplayId(uint32_t displayId)
 {
-    _creature->SetDisplayId(displayId);
+    _creature->setDisplayId(displayId);
 }
 
 void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
@@ -858,13 +858,13 @@ void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 
 void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 {
-    _setDisplayWeaponIds(setMainHand ? _creature->GetEquippedItem(MELEE) : 0, setOffHand ? _creature->GetEquippedItem(OFFHAND) : 0);
+    _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemSlotId(MELEE) : 0, setOffHand ? _creature->getVirtualItemSlotId(OFFHAND) : 0);
 }
 
 void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 {
-    _creature->SetEquippedItem(MELEE, itemId1);
-    _creature->SetEquippedItem(OFFHAND, itemId2);
+    _creature->setVirtualItemSlotId(MELEE, itemId1);
+    _creature->setVirtualItemSlotId(OFFHAND, itemId2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -988,8 +988,8 @@ void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
 {
     if (target != nullptr)
     {
-        _creature->SetChannelSpellTargetGUID(target->getGuid());
-        _creature->SetChannelSpellId(spellId);
+        _creature->setChannelObjectGuid(target->getGuid());
+        _creature->setChannelSpellId(spellId);
     }
     else
     {
@@ -999,8 +999,8 @@ void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
 
 void CreatureAIScript::_unsetTargetToChannel()
 {
-    _creature->SetChannelSpellTargetGUID(0);
-    _creature->SetChannelSpellId(0);
+    _creature->setChannelObjectGuid(0);
+    _creature->setChannelSpellId(0);
 }
 
 Unit* CreatureAIScript::_getTargetToChannel()

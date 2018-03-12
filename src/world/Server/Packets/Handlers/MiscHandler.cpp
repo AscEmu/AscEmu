@@ -1811,15 +1811,15 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (ritual_obj->GetRitual()->HasMember(plyr->getGuidLow()))
             {
                 ritual_obj->GetRitual()->RemoveMember(plyr->getGuidLow());
-                plyr->SetChannelSpellId(0);
-                plyr->SetChannelSpellTargetGUID(0);
+                plyr->setChannelSpellId(0);
+                plyr->setChannelObjectGuid(0);
                 return;
             }
             else
             {
                 ritual_obj->GetRitual()->AddMember(plyr->getGuidLow());
-                plyr->SetChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
-                plyr->SetChannelSpellTargetGUID(ritual_obj->getGuid());
+                plyr->setChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
+                plyr->setChannelObjectGuid(ritual_obj->getGuid());
             }
 
             // If we were the last required member, proceed with the ritual!
@@ -1834,8 +1834,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     plr = plyr->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(i));
                     if (plr != nullptr)
                     {
-                        plr->SetChannelSpellTargetGUID(0);
-                        plr->SetChannelSpellId(0);
+                        plr->setChannelObjectGuid(0);
+                        plr->setChannelSpellId(0);
                     }
                 }
 
@@ -1969,8 +1969,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             rGo->GetRitual()->Setup(_player->getGuidLow(), pPlayer->getGuidLow(), 18540);
             rGo->PushToWorld(_player->GetMapMgr());
 
-            _player->SetChannelSpellTargetGUID(rGo->getGuid());
-            _player->SetChannelSpellId(rGo->GetRitual()->GetSpellID());
+            _player->setChannelObjectGuid(rGo->getGuid());
+            _player->setChannelSpellId(rGo->GetRitual()->GetSpellID());
 
             // expire after 2mins
             sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

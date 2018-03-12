@@ -39,6 +39,12 @@ void Unit::setCreatedByGuid(uint64_t guid) { write(unitData()->created_by_guid.g
 uint64_t Unit::getTargetGuid() const { return unitData()->target_guid.guid; };
 void Unit::setTargetGuid(uint64_t guid) { write(unitData()->target_guid.guid, guid); }
 
+uint64_t Unit::getChannelObjectGuid() const { return unitData()->channel_object_guid.guid; };
+void Unit::setChannelObjectGuid(uint64_t guid) { write(unitData()->channel_object_guid.guid, guid); }
+
+uint32_t Unit::getChannelSpellId() const { return unitData()->channel_spell; };
+void Unit::setChannelSpellId(uint32_t spell_id) { write(unitData()->channel_spell, spell_id); }
+
 //bytes_0 begin
 uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
@@ -69,6 +75,9 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
+uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
+void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id) { write(unitData()->virtual_item_slot_display[slot], item_id); }
+
 uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
 void Unit::setUnitFlags(uint32_t unitFlags) { write(unitData()->unit_flags, unitFlags); }
 void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unitFlags); }
@@ -81,6 +90,9 @@ void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, 
 void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 #endif
+
+uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
+void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
 
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }

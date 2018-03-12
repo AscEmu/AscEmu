@@ -10156,7 +10156,7 @@ void Unit::DeMorph()
 {
     // hope it solves it :)
     uint32 displayid = this->GetNativeDisplayId();
-    this->SetDisplayId(displayid);
+    this->setDisplayId(displayid);
     EventModelChange();
 }
 

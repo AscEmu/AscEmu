@@ -542,7 +542,7 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
         uint8 petpowertype = pet->getPowerType();
         data << uint64(pet->getGuid());
         data << pet->GetName();
-        data << uint16(pet->GetDisplayId());
+        data << uint16(pet->getDisplayId());
         data << uint32(pet->GetHealth());
         data << uint32(pet->GetMaxHealth());
         data << uint8(petpowertype);

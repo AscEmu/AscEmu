@@ -976,8 +976,8 @@ void Aura::Remove()
     // only remove channel stuff if caster == target, then it's not removed twice, for example, arcane missiles applies a dummy aura to target
     if (caster != nullptr && caster == m_target && m_spellInfo->getChannelInterruptFlags() != 0)
     {
-        caster->SetChannelSpellTargetGUID(0);
-        caster->SetChannelSpellId(0);
+        caster->setChannelObjectGuid(0);
+        caster->setChannelSpellId(0);
     }
 
     if ((caster != nullptr) && caster->IsPlayer() && m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON))
@@ -4218,7 +4218,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
         if (modelId != 0)
         {
-            m_target->SetDisplayId(modelId);
+            m_target->setDisplayId(modelId);
             m_target->EventModelChange();
         }
 
@@ -4293,7 +4293,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             p_target->EventTalentHearthOfWildChange(false);
             p_target->m_ShapeShifted = 0;
         }
-        m_target->SetDisplayId(m_target->GetNativeDisplayId());
+        m_target->setDisplayId(m_target->GetNativeDisplayId());
         m_target->EventModelChange();
         if (spellId != GetSpellId())
         {
@@ -4944,24 +4944,24 @@ void Aura::SpellAuraTransform(bool apply)
     switch (GetSpellInfo()->getId())
     {
         case 20584://wisp
-            m_target->SetDisplayId(apply ? 10045 : m_target->GetNativeDisplayId());
+            m_target->setDisplayId(apply ? 10045 : m_target->GetNativeDisplayId());
             break;
 
         case 30167: // Red Ogre Costume
         {
             if (apply)
-                m_target->SetDisplayId(11549);
+                m_target->setDisplayId(11549);
             else
-                m_target->SetDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
         }
         break;
 
         case 41301: // Time-Lost Figurine
         {
             if (apply)
-                m_target->SetDisplayId(18628);
+                m_target->setDisplayId(18628);
             else
-                m_target->SetDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
         }
         break;
 
@@ -4972,82 +4972,82 @@ void Aura::SpellAuraTransform(bool apply)
                 if (m_target->getRace() == RACE_ORC)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10139);
+                        m_target->setDisplayId(10139);
                     else
-                        m_target->SetDisplayId(10140);
+                        m_target->setDisplayId(10140);
                 }
                 if (m_target->getRace() == RACE_TAUREN)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10136);
+                        m_target->setDisplayId(10136);
                     else
-                        m_target->SetDisplayId(10147);
+                        m_target->setDisplayId(10147);
                 }
                 if (m_target->getRace() == RACE_TROLL)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10135);
+                        m_target->setDisplayId(10135);
                     else
-                        m_target->SetDisplayId(10134);
+                        m_target->setDisplayId(10134);
                 }
                 if (m_target->getRace() == RACE_UNDEAD)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10146);
+                        m_target->setDisplayId(10146);
                     else
-                        m_target->SetDisplayId(10145);
+                        m_target->setDisplayId(10145);
                 }
                 if (m_target->getRace() == RACE_BLOODELF)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(17829);
+                        m_target->setDisplayId(17829);
                     else
-                        m_target->SetDisplayId(17830);
+                        m_target->setDisplayId(17830);
                 }
 
                 if (m_target->getRace() == RACE_GNOME)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10148);
+                        m_target->setDisplayId(10148);
                     else
-                        m_target->SetDisplayId(10149);
+                        m_target->setDisplayId(10149);
                 }
                 if (m_target->getRace() == RACE_DWARF)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10141);
+                        m_target->setDisplayId(10141);
                     else
-                        m_target->SetDisplayId(10142);
+                        m_target->setDisplayId(10142);
                 }
                 if (m_target->getRace() == RACE_HUMAN)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10137);
+                        m_target->setDisplayId(10137);
                     else
-                        m_target->SetDisplayId(10138);
+                        m_target->setDisplayId(10138);
                 }
                 if (m_target->getRace() == RACE_NIGHTELF)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(10143);
+                        m_target->setDisplayId(10143);
                     else
-                        m_target->SetDisplayId(10144);
+                        m_target->setDisplayId(10144);
                 }
                 if (m_target->getRace() == RACE_DRAENEI)
                 {
                     if (m_target->getGender() == 0)
-                        m_target->SetDisplayId(17827);
+                        m_target->setDisplayId(17827);
                     else
-                        m_target->SetDisplayId(17828);
+                        m_target->setDisplayId(17828);
                 }
             }
             else
-                m_target->SetDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
         }
         break;
 
         case 42365:	// murloc costume
-            m_target->SetDisplayId(apply ? 21723 : m_target->GetNativeDisplayId());
+            m_target->setDisplayId(apply ? 21723 : m_target->GetNativeDisplayId());
             break;
 
         case 118://polymorph
@@ -5097,7 +5097,7 @@ void Aura::SpellAuraTransform(bool apply)
                 if (caster != nullptr && m_target->IsCreature())
                     m_target->GetAIInterface()->AttackReaction(caster, 1, GetSpellId());
 
-                m_target->SetDisplayId(displayId);
+                m_target->setDisplayId(displayId);
 
                 // remove the current spell
                 if (m_target->isCastingNonMeleeSpell())
@@ -5110,7 +5110,7 @@ void Aura::SpellAuraTransform(bool apply)
             }
             else
             {
-                m_target->SetDisplayId(m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
                 m_target->polySpell = 0;
             }
         }
@@ -9621,7 +9621,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
     {
         Summon* s = static_cast< Summon* >(m_target);
 
-        s->SetDisplayId(s->GetOwner()->GetDisplayId());
+        s->setDisplayId(s->GetOwner()->getDisplayId());
 #if VERSION_STRING != Classic
         s->addUnitFlags2(UNIT_FLAG2_MIRROR_IMAGE);
 #endif

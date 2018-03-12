@@ -1368,12 +1368,12 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
 
     if (player_target->getGender() == 0)
     {
-        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
+        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
         player_target->SetNativeDisplayId(displayId);
     }
     else
     {
-        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
+        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
         player_target->SetNativeDisplayId(displayId);
     }
 

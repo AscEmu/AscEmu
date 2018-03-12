@@ -117,7 +117,7 @@ struct WoWUnit : WoWObject
     uint32_t pet_experience;
     uint32_t pet_next_level_experience;
     uint32_t dynamic_flags;
-    uint32_t channel_spell_id;
+    uint32_t channel_spell;
     float_t mod_cast_speed;
     uint32_t created_by_spell_id;
     uint32_t npc_flags;
@@ -211,7 +211,7 @@ struct WoWUnit : WoWObject
     uint32_t pet_experience;
     uint32_t pet_next_level_experience;
     uint32_t dynamic_flags;
-    uint32_t channel_spell_id;
+    uint32_t channel_spell;
     float_t mod_cast_speed;
     uint32_t created_by_spell_id;
     uint32_t npc_flags;

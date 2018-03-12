@@ -950,7 +950,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             // when a spell is channeling and a new spell is cast
             // that is a channeling spell, but not triggered by a aura
             // the channel bar/spell is bugged
-            if (u_caster && u_caster->GetChannelSpellTargetGUID() != 0 && u_caster->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
+            if (u_caster && u_caster->getChannelObjectGuid() != 0 && u_caster->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
             {
                 u_caster->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
                 SendChannelUpdate(0);
@@ -1040,7 +1040,7 @@ void Spell::cancel()
         {
             if (p_caster && p_caster->IsInWorld())
             {
-                Unit* pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetChannelSpellTargetGUID());
+                Unit* pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->getChannelObjectGuid());
                 if (!pTarget)
                     pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
 
@@ -1050,7 +1050,7 @@ void Spell::cancel()
                 }
                 if (m_AreaAura)//remove of blizz and shit like this
                 {
-                    uint64 guid = p_caster->GetChannelSpellTargetGUID();
+                    uint64 guid = p_caster->getChannelObjectGuid();
 
                     DynamicObject* dynObj = m_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (dynObj)
@@ -1523,24 +1523,24 @@ void Spell::castMe(bool check)
                     {
                         //Use channel interrupt flags here
                         if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION || m_targets.m_targetMask == TARGET_FLAG_SOURCE_LOCATION)
-                            u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                            u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         else if (p_caster->GetSelection() == m_caster->getGuid())
                         {
                             if (p_caster->GetSummon())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSummon()->getGuid());
+                                u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
                             else if (m_targets.m_unitTarget)
-                                u_caster->SetChannelSpellTargetGUID(m_targets.m_unitTarget);
+                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
                             else
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                                u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         }
                         else
                         {
                             if (p_caster->GetSelection())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                                u_caster->setChannelObjectGuid(p_caster->GetSelection());
                             else if (p_caster->GetSummon())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSummon()->getGuid());
+                                u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
                             else if (m_targets.m_unitTarget)
-                                u_caster->SetChannelSpellTargetGUID(m_targets.m_unitTarget);
+                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
                             else
                             {
                                 m_isCasting = false;
@@ -1946,7 +1946,7 @@ void Spell::finish(bool successful)
             Unit* pTarget = nullptr;
             if (p_caster->IsInWorld())
             {
-                pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetChannelSpellTargetGUID());
+                pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->getChannelObjectGuid());
                 if (!pTarget)
                     pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
             }
@@ -2763,7 +2763,7 @@ void Spell::SendChannelUpdate(uint32 time)
     {
         if (u_caster && u_caster->IsInWorld())
         {
-            uint64 guid = u_caster->GetChannelSpellTargetGUID();
+            uint64 guid = u_caster->getChannelObjectGuid();
 
             DynamicObject* dynObj = u_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
             if (dynObj)
@@ -2771,8 +2771,8 @@ void Spell::SendChannelUpdate(uint32 time)
 
             if (dynObj == nullptr /*&& m_pendingAuras.find(m_caster->getGuid()) == m_pendingAuras.end()*/)  //no persistant aura or aura on caster
             {
-                u_caster->SetChannelSpellTargetGUID(0);
-                u_caster->SetChannelSpellId(0);
+                u_caster->setChannelObjectGuid(0);
+                u_caster->setChannelSpellId(0);
             }
         }
 
@@ -2818,7 +2818,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     if (u_caster != NULL)
     {
-        u_caster->SetChannelSpellId(GetSpellInfo()->getId());
+        u_caster->setChannelSpellId(GetSpellInfo()->getId());
         sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }

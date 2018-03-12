@@ -703,7 +703,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
 
         spawnCreature(17535, -10897.650f, -1755.8311f, 90.476f, 4.61f); //Dorothee
         spawnCreature(17543, -10904.088f, -1754.8988f, 90.476f, 4.61f); //Strawman
@@ -740,7 +740,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); //Spawn Julianne
     }
 
@@ -773,7 +773,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
 
     }
@@ -1953,10 +1953,10 @@ class MalchezaarAI : public CreatureAIScript
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         // Reset weapon
-        getCreature()->SetEquippedItem(MELEE, 0);
+        getCreature()->setVirtualItemSlotId(MELEE, 0);
 
         // Off hand weapon
-        getCreature()->SetEquippedItem(OFFHAND, 0);
+        getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
         if (cp == nullptr)
@@ -2090,10 +2090,10 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[7].info, spells[6].instant);*/
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(MELEE, AXE_ITEM_MODEL);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(OFFHAND, AXE_ITEM_MODEL);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
@@ -2129,10 +2129,10 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->RemoveAura(WIELD_AXES);
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)

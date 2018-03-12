@@ -258,8 +258,8 @@ class NagaDistillerAI : public CreatureAIScript
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
         }
 };
 
@@ -330,8 +330,8 @@ class WarlordKalitreshAI : public CreatureAIScript
             if (pDistiller)
             {
                 pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pDistiller->SetChannelSpellTargetGUID(0);
-                pDistiller->SetChannelSpellId(0);
+                pDistiller->setChannelObjectGuid(0);
+                pDistiller->setChannelSpellId(0);
                 pDistiller->GetAIInterface()->WipeTargetList();
                 pDistiller->GetAIInterface()->WipeHateList();
             }
@@ -379,8 +379,8 @@ class WarlordKalitreshAI : public CreatureAIScript
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
                             pDistiller->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                            pDistiller->SetChannelSpellTargetGUID(getCreature()->getGuid());
-                            pDistiller->SetChannelSpellId(31543);
+                            pDistiller->setChannelObjectGuid(getCreature()->getGuid());
+                            pDistiller->setChannelSpellId(31543);
 
                             getCreature()->GetAIInterface()->StopMovement(0);
                             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
@@ -404,8 +404,8 @@ class WarlordKalitreshAI : public CreatureAIScript
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
                         pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                        pDistiller->SetChannelSpellTargetGUID(0);
-                        pDistiller->SetChannelSpellId(0);
+                        pDistiller->setChannelObjectGuid(0);
+                        pDistiller->setChannelSpellId(0);
                         pDistiller->GetAIInterface()->WipeTargetList();
                         pDistiller->GetAIInterface()->WipeHateList();
 

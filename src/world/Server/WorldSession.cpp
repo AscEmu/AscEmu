@@ -1192,7 +1192,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
 
     data << uint64(GUID);
-    data << uint32(Caster->GetDisplayId());
+    data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
     if (Caster->IsPlayer())

@@ -996,12 +996,12 @@ bool Player::Create(WorldPacket& data)
     SetCombatReach(1.5f);
     if (race != RACE_BLOODELF)
     {
-        SetDisplayId(info->displayId + gender);
+        setDisplayId(info->displayId + gender);
         SetNativeDisplayId(info->displayId + gender);
     }
     else
     {
-        SetDisplayId(info->displayId - gender);
+        setDisplayId(info->displayId - gender);
         SetNativeDisplayId(info->displayId - gender);
     }
     EventModelChange();
@@ -3374,12 +3374,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (getRace() != RACE_BLOODELF)
     {
-        SetDisplayId(info->displayId + getGender());
+        setDisplayId(info->displayId + getGender());
         SetNativeDisplayId(info->displayId + getGender());
     }
     else
     {
-        SetDisplayId(info->displayId - getGender());
+        setDisplayId(info->displayId - getGender());
         SetNativeDisplayId(info->displayId - getGender());
     }
     EventModelChange();
@@ -4135,12 +4135,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (getRace() != RACE_BLOODELF)
     {
-        SetDisplayId(info->displayId + getGender());
+        setDisplayId(info->displayId + getGender());
         SetNativeDisplayId(info->displayId + getGender());
     }
     else
     {
-        SetDisplayId(info->displayId - getGender());
+        setDisplayId(info->displayId - getGender());
         SetNativeDisplayId(info->displayId - getGender());
     }
     EventModelChange();
@@ -5869,7 +5869,7 @@ void Player::CreateCorpse()
     pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_1, _cfb1);
     pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_2, _cfb2);
     pCorpse->setUInt32Value(CORPSE_FIELD_FLAGS, 4);
-    pCorpse->SetDisplayId(GetDisplayId());
+    pCorpse->SetDisplayId(getDisplayId());
 
     if (m_bg)
     {
@@ -7073,7 +7073,7 @@ void Player::clearInRangeSets()
 
 void Player::EventCannibalize(uint32 amount)
 {
-    if (GetChannelSpellId() != 20577)
+    if (getChannelSpellId() != 20577)
     {
         sEventMgr.RemoveEvents(this, EVENT_CANNIBALIZE);
         cannibalize = false;
@@ -7820,7 +7820,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
         currentvehicle->EjectPassenger(this);
 
     //also remove morph spells
-    if (GetDisplayId() != GetNativeDisplayId())
+    if (getDisplayId() != GetNativeDisplayId())
     {
         RemoveAllAuraType(SPELL_AURA_TRANSFORM);
         RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
@@ -14275,7 +14275,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         DeathDurabilityLoss(0.10);
 
 
-    if (GetChannelSpellTargetGUID() != 0)
+    if (getChannelObjectGuid() != 0)
     {
 
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
@@ -14287,7 +14287,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             {
                 if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    uint64 guid = GetChannelSpellTargetGUID();
+                    uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (!dObj)
                         continue;

@@ -254,8 +254,8 @@ void DynamicObject::Remove()
 
     if (u_caster != nullptr && m_spellProto->getChannelInterruptFlags() != 0)
     {
-        u_caster->SetChannelSpellTargetGUID(0);
-        u_caster->SetChannelSpellId(0);
+        u_caster->setChannelObjectGuid(0);
+        u_caster->setChannelSpellId(0);
     }
 
     delete this;

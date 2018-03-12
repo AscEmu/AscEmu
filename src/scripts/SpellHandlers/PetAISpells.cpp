@@ -183,7 +183,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
+        getCreature()->setDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
         getCreature()->SetBaseAttackTime(MELEE, 2000);
 
         if (getCreature()->IsSummon())
@@ -207,7 +207,7 @@ public:
                             procSpell[si] = item->getItemProperties()->Spells[si].Id;
                     }
 
-                    s->SetEquippedItem(MELEE, item->GetEntry());
+                    s->setVirtualItemSlotId(MELEE, item->GetEntry());
                     s->SetBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                 }
 

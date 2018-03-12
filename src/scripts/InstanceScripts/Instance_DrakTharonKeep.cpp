@@ -462,7 +462,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             phase_timer = 0;
             phase_length = 0;
-            getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+            getCreature()->setDisplayId(getCreature()->GetNativeDisplayId());
         }
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
@@ -470,7 +470,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() < 2 && getScriptPhase() == 2)
             {
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
-                getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+                getCreature()->setDisplayId(getCreature()->GetNativeDisplayId());
                 getCreature()->CastSpell(getCreature(), 53463, false);
             }
         }
@@ -481,7 +481,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 setScriptPhase(2);
                 phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
-                getCreature()->SetDisplayId(27073);
+                getCreature()->setDisplayId(27073);
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 49356, false);
             }
@@ -489,7 +489,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 setScriptPhase(1);
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
-                getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+                getCreature()->setDisplayId(getCreature()->GetNativeDisplayId());
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 53463, false);
             }

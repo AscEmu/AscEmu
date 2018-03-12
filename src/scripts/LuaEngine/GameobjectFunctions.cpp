@@ -313,9 +313,9 @@ int LuaGameObject::SpawnCreature(lua_State* L, GameObject* ptr)
     pCreature->Load(p, x, y, z, o);
     pCreature->m_loadedFromDB = true;
     pCreature->SetFaction(faction);
-    pCreature->SetEquippedItem(MELEE, equip1);
-    pCreature->SetEquippedItem(OFFHAND, equip2);
-    pCreature->SetEquippedItem(RANGED, equip3);
+    pCreature->setVirtualItemSlotId(MELEE, equip1);
+    pCreature->setVirtualItemSlotId(OFFHAND, equip2);
+    pCreature->setVirtualItemSlotId(RANGED, equip3);
     pCreature->Phase(PHASE_SET, phase);
     pCreature->m_noRespawn = true;
     pCreature->PushToWorld(ptr->GetMapMgr());

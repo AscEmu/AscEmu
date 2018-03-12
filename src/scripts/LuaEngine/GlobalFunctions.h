@@ -74,9 +74,9 @@ namespace luaGlobalFunctions
                 Creature* pCreature = mapMgr->CreateCreature(entry);
                 pCreature->Load(p, x, y, z, o);
                 pCreature->SetFaction(faction);
-                pCreature->SetEquippedItem(MELEE, equip1);
-                pCreature->SetEquippedItem(OFFHAND, equip2);
-                pCreature->SetEquippedItem(RANGED, equip3);
+                pCreature->setVirtualItemSlotId(MELEE, equip1);
+                pCreature->setVirtualItemSlotId(OFFHAND, equip2);
+                pCreature->setVirtualItemSlotId(RANGED, equip3);
                 pCreature->Phase(PHASE_SET, 1);
                 pCreature->m_noRespawn = true;
                 pCreature->AddToWorld(mapMgr);

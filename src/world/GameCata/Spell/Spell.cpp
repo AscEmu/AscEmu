@@ -311,7 +311,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     if (u_caster != nullptr)
     {
-        u_caster->SetChannelSpellId(GetSpellInfo()->getId());
+        u_caster->setChannelSpellId(GetSpellInfo()->getId());
         sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }

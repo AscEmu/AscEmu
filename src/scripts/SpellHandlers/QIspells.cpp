@@ -1530,7 +1530,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->GetDisplayId();
+    uint32 md = lunaclaw->getDisplayId();
 
     //Waypoints
     lunaclaw->LoadCustomWaypoint(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -1575,7 +1575,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->GetDisplayId();
+    uint32 md = lunaclaw->getDisplayId();
 
     // Waypoints
     lunaclaw->LoadCustomWaypoint(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -2617,8 +2617,8 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
             pPlayer->CastSpell(Ward, sSpellCustomizations.GetSpellInfo(44981), false);
-            pPlayer->SetChannelSpellTargetGUID(Ward->getGuid());
-            pPlayer->SetChannelSpellId(44981);
+            pPlayer->setChannelObjectGuid(Ward->getGuid());
+            pPlayer->setChannelSpellId(44981);
 
             pPlayer->AddQuestKill(quests[i], 0, 0);
         }

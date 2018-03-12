@@ -2522,8 +2522,8 @@ class KelthuzadAI : public CreatureAIScript
         TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
-            getCreature()->SetChannelSpellTargetGUID(TheLichKing->getGuid());
-            getCreature()->SetChannelSpellId(29423);
+            getCreature()->setChannelObjectGuid(TheLichKing->getGuid());
+            getCreature()->setChannelSpellId(29423);
         }
 
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
@@ -2557,8 +2557,8 @@ class KelthuzadAI : public CreatureAIScript
                 WindowGate->SetState(GO_STATE_CLOSED);
         }
 
-        getCreature()->SetChannelSpellTargetGUID(0);
-        getCreature()->SetChannelSpellId(0);
+        getCreature()->setChannelObjectGuid(0);
+        getCreature()->setChannelSpellId(0);
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
@@ -2741,8 +2741,8 @@ class KelthuzadAI : public CreatureAIScript
 
             if (!PhaseTimer)
             {
-                getCreature()->SetChannelSpellTargetGUID(0);
-                getCreature()->SetChannelSpellId(0);
+                getCreature()->setChannelObjectGuid(0);
+                getCreature()->setChannelSpellId(0);
                 _setMeleeDisabled(false);
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 getCreature()->GetAIInterface()->m_canMove = true;

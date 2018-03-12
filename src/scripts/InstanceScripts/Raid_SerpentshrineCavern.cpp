@@ -100,7 +100,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            getCreature()->SetDisplayId(20162);
+            getCreature()->setDisplayId(20162);
             getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
             getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 0;
         }
@@ -198,7 +198,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     minspell = 1;
                     maxspell = 1;
                     form = true;
-                    getCreature()->SetDisplayId(5498);
+                    getCreature()->setDisplayId(5498);
                     sendDBChatMessage(4754);     // Aaghh, the poison...
                     getCreature()->PlaySoundToSet(11297);
                     const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 3;
@@ -282,7 +282,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     minspell = 0;
                     maxspell = 0;
                     form = false;
-                    getCreature()->SetDisplayId(20162);
+                    getCreature()->setDisplayId(20162);
                     sendDBChatMessage(4750);     // Better, much better.
                     getCreature()->PlaySoundToSet(11290);
                     const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 4;
@@ -534,16 +534,16 @@ class LeotherasAI : public CreatureAIScript
 
         void SwitchToHumanForm()
         {
-            getCreature()->SetDisplayId(20514);
-            getCreature()->SetEquippedItem(MELEE, (getCreature()->m_spawn != NULL) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
-            getCreature()->SetEquippedItem(OFFHAND, (getCreature()->m_spawn != NULL) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
+            getCreature()->setDisplayId(20514);
+            getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != NULL) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != NULL) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
         }
 
         void SwitchToDemonForm()
         {
-            getCreature()->SetDisplayId(20125);
-            getCreature()->SetEquippedItem(MELEE, 0);
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setDisplayId(20125);
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
         }
 
         void AIUpdate() override
@@ -717,15 +717,15 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             Leotheras = getNearestCreature(376.543f, -438.631f, 29.7083f, CN_LEOTHERAS_THE_BLIND);
             if (Leotheras)
             {
-                getCreature()->SetChannelSpellTargetGUID(Leotheras->getGuid());
-                getCreature()->SetChannelSpellId(30166);//wrong
+                getCreature()->setChannelObjectGuid(Leotheras->getGuid());
+                getCreature()->setChannelSpellId(30166);//wrong
             }
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
 
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
@@ -1566,8 +1566,8 @@ class VashjAI : public CreatureAIScript
                         {
                             channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             channel->GetAIInterface()->m_canMove = false;
-                            channel->SetChannelSpellTargetGUID(getCreature()->getGuid());
-                            channel->SetChannelSpellId(VASHJ_SHIELD);
+                            channel->setChannelObjectGuid(getCreature()->getGuid());
+                            channel->setChannelSpellId(VASHJ_SHIELD);
                         }
                     }
                     break;
