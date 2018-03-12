@@ -13236,7 +13236,7 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(getUInt32Value(UNIT_FIELD_DISPLAYID));
+    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(getDisplayId());
 
     //\todo if has mount, grab mount model and add the z value of attachment 0
     if (displayBoundingBox != nullptr)

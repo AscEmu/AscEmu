@@ -535,8 +535,8 @@ class LeotherasAI : public CreatureAIScript
         void SwitchToHumanForm()
         {
             getCreature()->setDisplayId(20514);
-            getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != NULL) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
-            getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != NULL) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
+            getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != nullptr) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != nullptr) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
         }
 
         void SwitchToDemonForm()

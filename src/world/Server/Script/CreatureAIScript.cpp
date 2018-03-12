@@ -1005,7 +1005,7 @@ void CreatureAIScript::_unsetTargetToChannel()
 
 Unit* CreatureAIScript::_getTargetToChannel()
 {
-    return _creature->GetMapMgr()->GetUnit(_creature->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+    return _creature->GetMapMgr()->GetUnit(_creature->getChannelObjectGuid());
 }
 
 void CreatureAIScript::newAIUpdateSpellSystem()

@@ -5126,11 +5126,11 @@ void Aura::SpellAuraTransform(bool apply)
                 // dwarf = 7819
                 // Halfling = 7818
                 // maybe 7842 as its from a lesser npc
-                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, 7842);
+                m_target->setDisplayId(7842);
             }
             else
             {
-                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
             }
         }
         break;
@@ -5141,11 +5141,11 @@ void Aura::SpellAuraTransform(bool apply)
 
             if (apply)
             {
-                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, displayId);
+                m_target->setDisplayId(displayId);
             }
             else
             {
-                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
+                m_target->setDisplayId(m_target->GetNativeDisplayId());
             }
         }
         break;
@@ -9649,13 +9649,14 @@ void Aura::SpellAuraMirrorImage2(bool apply)
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)
-                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->getItemProperties()->ItemId);
+                m_target->setVirtualItemSlotId(OFFHAND, item->getItemProperties()->ItemId);
         }
-        else
+        else if (GetCaster()->IsUnit())
         {
-            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
-            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
-            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
+            auto unit = static_cast<Unit*>(GetCaster());
+            m_target->setVirtualItemSlotId(MELEE, unit->getVirtualItemSlotId(MELEE));
+            m_target->setVirtualItemSlotId(OFFHAND, unit->getVirtualItemSlotId(OFFHAND));
+            m_target->setVirtualItemSlotId(RANGED, unit->getVirtualItemSlotId(RANGED));
         }
     }
 }

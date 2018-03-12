@@ -464,7 +464,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 return;
 
             // We check if Cube Trigger is not in use
-            if (CubeTrigger && CubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
+            if (CubeTrigger && CubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                 return;
 
             // We set player to channel spell "on Cube"
@@ -505,7 +505,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 aura = Channeler->getAuraWithId(SHADOW_GRASP2);
 
             // If player doesn't have aura we interrupt channeling
-            if (Channeler && (!aura || !Channeler->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
+            if (Channeler && (!aura || !Channeler->getChannelObjectGuid()))
             {
                 CubeTrigger->setChannelObjectGuid(0);
                 CubeTrigger->setChannelSpellId(0);
@@ -525,7 +525,7 @@ class ManticronCubeGO : public GameObjectAIScript
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                     if (Magtheridon != nullptr)
-                        if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
+                        if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                             Counter++;
                 }
 
@@ -554,7 +554,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
-                    if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
+                    if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                         Counter++;
             }
 

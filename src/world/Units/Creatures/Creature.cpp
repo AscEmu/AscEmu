@@ -404,7 +404,7 @@ void Creature::SaveToDB()
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
         m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
-        m_spawn->displayid = m_uint32Values[UNIT_FIELD_DISPLAYID];
+        m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
         m_spawn->z = m_position.z;
@@ -458,7 +458,7 @@ void Creature::SaveToDB()
         << m_position.z << ","
         << m_position.o << ","
         << uint32(m_aiInterface->getWaypointScriptType()) << ","
-        << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
+        << getDisplayId() << ","
         << GetFaction() << ","
         << getUnitFlags() << ","
         << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
@@ -1487,9 +1487,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
 
     //HACK!
-    if (m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
+    if (getDisplayId() == 17743 ||
+        getDisplayId() == 20242 ||
+        getDisplayId() == 15435 ||
         (creature_properties->Family == UNIT_TYPE_MISC))
     {
         m_useAI = false;
@@ -1692,10 +1692,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
 
-    /// \todo remove this HACK! already included few lines above
-    if (m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
+    // \todo remove this HACK! already included few lines above
+    if (getDisplayId() == 17743 ||
+        getDisplayId() == 20242 ||
+        getDisplayId() == 15435 ||
         creature_properties->Type == UNIT_TYPE_MISC)
     {
         m_useAI = false;
@@ -1906,8 +1906,8 @@ void Creature::LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32
     wp->forwardemoteid = pForwardEmoteId;
     wp->backwardemoteoneshot = pBackwardEmoteOneshot;
     wp->backwardemoteid = pBackwardEmoteId;
-    wp->forwardskinid = (pForwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pForwardSkinId);
-    wp->backwardskinid = (pBackwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pBackwardSkinId);
+    wp->forwardskinid = (pForwardSkinId == 0 ? this->getDisplayId() : pForwardSkinId);
+    wp->backwardskinid = (pBackwardSkinId == 0 ? this->getDisplayId() : pBackwardSkinId);
 
     this->m_custom_waypoint_map->resize(wp->id + 1);
     (*this->m_custom_waypoint_map)[wp->id] = wp;
