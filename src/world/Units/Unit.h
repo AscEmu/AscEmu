@@ -29,6 +29,8 @@
 #include "Objects/Object.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Spell/Definitions/AuraEffects.h"
+#include "Spell/Definitions/AuraStates.h"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
@@ -317,6 +319,11 @@ public:
     uint32_t getNativeDisplayId() const;
     void setNativeDisplayId(uint32_t id);
 
+    uint32_t getAuraState() const;
+    void setAuraState(uint32_t state);
+    void addAuraState(uint32_t state);
+    void removeAuraState(uint32_t state);
+
     //bytes_1 begin
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
@@ -442,12 +449,16 @@ public:
     Aura* getAuraWithId(uint32_t spell_id);
     Aura* getAuraWithId(uint32_t* auraId);
     Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
-
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* getAuraWithAuraEffect(uint32_t aura_effect);
+    Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
 
     bool hasAurasWithId(uint32_t auraId);
     bool hasAurasWithId(uint32_t* auraId);
+    bool hasAuraWithAuraEffect(AuraEffect type) const;
+    bool hasAuraState(AuraState state, SpellInfo *spellInfo = nullptr, Unit* caster = nullptr) const;
+
+    void addAuraStateAndAuras(AuraState state);
+    void removeAuraStateAndAuras(AuraState state);
 
     uint32_t getAuraCountForId(uint32_t auraId);
 
@@ -853,7 +864,6 @@ public:
     void EmoteExpire();
     void setEmoteState(uint8 emote) { m_emoteState = emote; };
     uint32 GetOldEmote() { return m_oldEmote; }
-    void EventAurastateExpire(uint32 aurastateflag) { RemoveFlag(UNIT_FIELD_AURASTATE, aurastateflag); }    //hmm this looks like so not necessary :S
     void EventHealthChangeSinceLastUpdate();
 
     // Stun Immobilize

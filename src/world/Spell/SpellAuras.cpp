@@ -316,7 +316,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 259 Mod Periodic Damage Taken Pct - Periodic Shadow damage taken increased by 3% (http://thottbot.com/s60448)
     &Aura::SpellAuraNULL,                                                   // 260 Screen Effect
     &Aura::SpellAuraPhase,                                                  // 261
-    &Aura::SpellAuraIgnoreTargetAuraState,                                  // 262 SPELL_AURA_IGNORE_TARGET_AURA_STATE
+    &Aura::SpellAuraNULL,                                                   // 262 SPELL_AURA_IGNORE_TARGET_AURA_STATE
     &Aura::SpellAuraAllowOnlyAbility,                                       // 263 SPELL_AURA_ALLOW_ONLY_ABILITY
     &Aura::SpellAuraNULL,                                                   // 264
     &Aura::SpellAuraNULL,                                                   // 265
@@ -651,7 +651,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "",                                                 // 272
     "",                                                 // 273
     "SPELL_AURA_CONSUMES_NO_AMMO",                      // 274
-    "",                                                 // 275
+    "SPELL_AURA_IGNORE_SHAPESHIFT",                     // 275 Ignores form/shapeshift requirements
     "",                                                 // 276
     "",                                                 // 277
     "SPELL_AURA_MOD_DISARM_RANGED",                     // 278
@@ -955,15 +955,12 @@ void Aura::Remove()
         caster->removeSingleTargetGuidForAura(GetSpellInfo()->getId());
 
     /* Remove aurastates */
-    uint32 flag = 0;
     if (m_spellInfo->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->asc_enraged)
-        flag |= AURASTATE_FLAG_ENRAGED;
+        m_target->removeAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
     else if (m_spellInfo->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->asc_bleed)
-        flag |= AURASTATE_FLAG_BLEED;
+        m_target->removeAuraStateAndAuras(AURASTATE_FLAG_BLEED);
     if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
-        flag |= AURASTATE_FLAG_JUDGEMENT;
-    if (flag != 0)
-        m_target->RemoveFlag(UNIT_FIELD_AURASTATE, flag);
+        m_target->removeAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 
     // We will delete this on the next update, eluding some spell crashes :|
     m_target->AddGarbageAura(this);
@@ -1805,22 +1802,22 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         SetNegative();
         if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
         {
-            m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
+            m_target->addAuraStateAndAuras(AURASTATE_FLAG_CONFLAGRATE);
         }
         //maybe poison aurastate should get triggered on other spells too ?
         else if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
-            m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
+            m_target->addAuraStateAndAuras(AURASTATE_FLAG_ENVENOM);
         }
     }
     else if ((m_flags & (1 << mod->m_effectIndex)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
         if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
-            m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
+            m_target->removeAuraStateAndAuras(AURASTATE_FLAG_CONFLAGRATE);
         //maybe poison aurastate should get triggered on other spells too ?
         else if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
-            m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
+            m_target->removeAuraStateAndAuras(AURASTATE_FLAG_ENVENOM);
         }
     }
 }
@@ -2281,10 +2278,10 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
                 case 69882:
                 case 71141:
                 {
-                    m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
+                    m_target->addAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
                     if (!sEventMgr.HasEvent(m_target, EVENT_REJUVENATION_FLAG_EXPIRE))
                     {
-                        sEventMgr.AddEvent(m_target, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_REJUVENATE, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                        sEventMgr.AddEvent(m_target, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_SWIFTMEND, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     }
                     else
                     {
@@ -3570,7 +3567,7 @@ void Aura::SpellAuraModRoot(bool apply)
         }
 
         if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !m_target->asc_frozen++)
-            m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
+            m_target->addAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
 
         ///\todo -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
     }
@@ -3586,7 +3583,7 @@ void Aura::SpellAuraModRoot(bool apply)
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 
         if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !--m_target->asc_frozen)
-            m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
+            m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
     }
 }
 
@@ -9077,51 +9074,20 @@ void Aura::SpellAuraModMechanicDmgTakenPct(bool apply)
     }
 }
 
-void Aura::SpellAuraIgnoreTargetAuraState(bool apply)
-{
-    if (!m_target->IsPlayer())
-        return;
-
-    if (apply)
-    {
-        static_cast< Player* >(m_target)->ignoreAuraStateCheck = true;
-    }
-    else
-    {
-        static_cast< Player* >(m_target)->ignoreAuraStateCheck = false;
-    }
-}
-
 void Aura::SpellAuraAllowOnlyAbility(bool apply)
 {
-    // cannot perform any abilities (other than those in EffectMask), currently only works on players
+    // cannot perform any abilities, currently only works on players
     if (!p_target)
         return;
 
     // Generic
     if (apply)
     {
-        p_target->m_castFilterEnabled = true;
-        for (uint8_t x = 0; x < 3; x++)
-#if VERSION_STRING != Cata
-            p_target->m_castFilter[x] |= m_spellInfo->getEffectSpellClassMask(mod->m_effectIndex, x);
-#else
-            p_target->m_castFilter[x] |= m_spellInfo->EffectSpellClassMask[x];
-#endif
+        p_target->addPlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST);
     }
     else
     {
-        p_target->m_castFilterEnabled = false;	// check if we can turn it off
-        for (uint8_t x = 0; x < 3; x++)
-        {
-#if VERSION_STRING != Cata
-            p_target->m_castFilter[x] &= ~m_spellInfo->getEffectSpellClassMask(mod->m_effectIndex, x);
-#else
-            p_target->m_castFilter[x] &= ~m_spellInfo->EffectSpellClassMask[x];
-#endif
-            if (p_target->m_castFilter[x])
-                p_target->m_castFilterEnabled = true;
-        }
+        p_target->removePlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST);
     }
 }
 

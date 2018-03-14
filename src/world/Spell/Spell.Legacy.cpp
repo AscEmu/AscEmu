@@ -926,17 +926,16 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
     if (objmgr.IsSpellDisabled(GetSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
-    else if (m_triggeredSpell || ProcedOnSpell != nullptr)
-        cancastresult = SPELL_CANCAST_OK;
     else
-        cancastresult = CanCast(false);
+        cancastresult = canCast(false);
 
     LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
     if (cancastresult != SPELL_CANCAST_OK)
     {
-        SendCastResult(cancastresult);
+        // Triggered spells also need to go through cancast check but they do not pop a error message
+        SendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult);
 
         if (m_triggeredByAura)
         {
@@ -988,10 +987,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             //p_caster->setAttackTimer(m_timer + 1000, false);
         }
 
-        // aura state removal
-        if (GetSpellInfo() && GetSpellInfo()->getCasterAuraState() != AURASTATE_NONE && GetSpellInfo()->getCasterAuraState() != AURASTATE_FLAG_JUDGEMENT)
-            if (u_caster != nullptr)
-                u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState());
+        // TODO: for future reference, I removed aurastate removal here if spell had any aurastate set in SpellInfo::CasterAuraState
+        // this is not handled anywhere yet -Appled
     }
 
     // If spell is triggered, skip straight to ::castMe
@@ -1131,7 +1128,7 @@ void Spell::castMe(bool check)
     if (objmgr.IsSpellDisabled(GetSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
     else if (check)
-        cancastresult = CanCast(true);
+        cancastresult = canCast(true);
     else
         cancastresult = SPELL_CANCAST_OK;
 
@@ -1256,7 +1253,7 @@ void Spell::castMe(bool check)
                 //SPELL_HASH_VICTORY_RUSH
                 case 34428:
                 {
-                    p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                    p_caster->removeAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
                 } break;
 
                 //SPELL_HASH_HOLY_LIGHT
@@ -1667,7 +1664,8 @@ void Spell::castMe(bool check)
                         Target->HandleProc(PROC_ON_SPELL_LAND_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell);
                         p_caster->m_procCounter = 0; //this is required for to be able to count the depth of procs (though i have no idea where/why we use proc on proc)
 
-                        Target->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState());
+                        // This is wrong but leaving this here commented out for now -Appled
+                        //Target->removeAuraStateAndAuras(AuraState(GetSpellInfo()->getTargetAuraState()));
                     }
                 }
             }
@@ -3993,123 +3991,6 @@ uint8 Spell::CanCast(bool tolerate)
      */
     if (u_caster)
     {
-        uint32 bladestorm[] =
-        {
-            //SPELL_HASH_BLADESTORM
-            9632,
-            35131,
-            46924,
-            63784,
-            63785,
-            65946,
-            65947,
-            67541,
-            69652,
-            69653,
-            0
-        };
-
-        if (u_caster->hasAurasWithId(bladestorm))
-        {
-            switch (GetSpellInfo()->getId())
-            {
-                //SPELL_HASH_WHIRLWIND
-                case 1680:
-                case 8989:
-                case 9633:
-                case 13736:
-                case 15576:
-                case 15577:
-                case 15578:
-                case 15589:
-                case 17207:
-                case 24236:
-                case 26038:
-                case 26083:
-                case 26084:
-                case 26686:
-                case 28334:
-                case 28335:
-                case 29573:
-                case 29851:
-                case 29852:
-                case 31737:
-                case 31738:
-                case 31909:
-                case 31910:
-                case 33238:
-                case 33239:
-                case 33500:
-                case 36132:
-                case 36142:
-                case 36175:
-                case 36981:
-                case 36982:
-                case 37582:
-                case 37583:
-                case 37640:
-                case 37641:
-                case 37704:
-                case 38618:
-                case 38619:
-                case 39232:
-                case 40236:
-                case 40653:
-                case 40654:
-                case 41056:
-                case 41057:
-                case 41058:
-                case 41059:
-                case 41061:
-                case 41097:
-                case 41098:
-                case 41194:
-                case 41195:
-                case 41399:
-                case 41400:
-                case 43442:
-                case 44949:
-                case 45895:
-                case 45896:
-                case 46270:
-                case 46271:
-                case 48280:
-                case 48281:
-                case 49807:
-                case 50228:
-                case 50229:
-                case 50622:
-                case 52027:
-                case 52028:
-                case 52977:
-                case 54797:
-                case 55266:
-                case 55267:
-                case 55463:
-                case 55977:
-                case 56408:
-                case 59322:
-                case 59323:
-                case 59549:
-                case 59550:
-                case 61076:
-                case 61078:
-                case 61136:
-                case 61137:
-                case 61139:
-                case 63805:
-                case 63806:
-                case 63807:
-                case 63808:
-                case 65510:
-                case 67037:
-                case 67716:
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                default:
-                    break;
-            }
-        }
-
         if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
         {
             // Warbringer (Warrior 51Prot Talent effect)
@@ -4163,11 +4044,6 @@ uint8 Spell::CanCast(bool tolerate)
         // only in outland check
         if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(ATTRIBUTESEXD_ONLY_IN_OUTLANDS))
             return SPELL_FAILED_INCORRECT_AREA;
-        /**
-         *	Cooldowns check
-         */
-        if (!tolerate && !p_caster->Cooldown_CanCast(GetSpellInfo()))
-            return SPELL_FAILED_NOT_READY;
 
         /**
          * Mana check
@@ -4235,15 +4111,6 @@ uint8 Spell::CanCast(bool tolerate)
             if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE))
                 return SPELL_FAILED_NOT_MOUNTED;
         }
-
-        /**
-         *	Filter Check
-         */
-        if (p_caster->m_castFilterEnabled &&
-            !((m_spellInfo->getSpellGroupType(0) & p_caster->m_castFilter[0]) ||
-            (m_spellInfo->getSpellGroupType(1) & p_caster->m_castFilter[1]) ||
-            (m_spellInfo->getSpellGroupType(2) & p_caster->m_castFilter[2])))
-            return SPELL_FAILED_SPELL_IN_PROGRESS;
 
         /**
          *	Shapeshifting checks
@@ -4471,29 +4338,6 @@ uint8 Spell::CanCast(bool tolerate)
             */
         }
 #endif
-
-        /**
-         *	AuraState check
-         */
-        if (!p_caster->ignoreAuraStateCheck)
-        {
-            if ((GetSpellInfo()->getCasterAuraState() && !p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState()))
-                || (GetSpellInfo()->getCasterAuraStateNot() && p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraStateNot()))
-                )
-                return SPELL_FAILED_CASTER_AURASTATE;
-        }
-
-        /**
-         *	Aura check
-         */
-        if (GetSpellInfo()->getCasterAuraSpell() && !p_caster->HasAura(GetSpellInfo()->getCasterAuraSpell()))
-        {
-            return SPELL_FAILED_NOT_READY;
-        }
-        if (GetSpellInfo()->getCasterAuraSpellNot() && p_caster->HasAura(GetSpellInfo()->getCasterAuraSpellNot()))
-        {
-            return SPELL_FAILED_NOT_READY;
-        }
     }
 
     /**
@@ -4812,123 +4656,6 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != nullptr)
             {
-                uint32 bladestorm[] =
-                {
-                    //SPELL_HASH_BLADESTORM
-                    9632,
-                    35131,
-                    46924,
-                    63784,
-                    63785,
-                    65946,
-                    65947,
-                    67541,
-                    69652,
-                    69653,
-                    0
-                };
-
-                if (p_caster->hasAurasWithId(bladestorm))
-                {
-                    switch (GetSpellInfo()->getId())
-                    {
-                        //SPELL_HASH_WHIRLWIND
-                        case 1680:
-                        case 8989:
-                        case 9633:
-                        case 13736:
-                        case 15576:
-                        case 15577:
-                        case 15578:
-                        case 15589:
-                        case 17207:
-                        case 24236:
-                        case 26038:
-                        case 26083:
-                        case 26084:
-                        case 26686:
-                        case 28334:
-                        case 28335:
-                        case 29573:
-                        case 29851:
-                        case 29852:
-                        case 31737:
-                        case 31738:
-                        case 31909:
-                        case 31910:
-                        case 33238:
-                        case 33239:
-                        case 33500:
-                        case 36132:
-                        case 36142:
-                        case 36175:
-                        case 36981:
-                        case 36982:
-                        case 37582:
-                        case 37583:
-                        case 37640:
-                        case 37641:
-                        case 37704:
-                        case 38618:
-                        case 38619:
-                        case 39232:
-                        case 40236:
-                        case 40653:
-                        case 40654:
-                        case 41056:
-                        case 41057:
-                        case 41058:
-                        case 41059:
-                        case 41061:
-                        case 41097:
-                        case 41098:
-                        case 41194:
-                        case 41195:
-                        case 41399:
-                        case 41400:
-                        case 43442:
-                        case 44949:
-                        case 45895:
-                        case 45896:
-                        case 46270:
-                        case 46271:
-                        case 48280:
-                        case 48281:
-                        case 49807:
-                        case 50228:
-                        case 50229:
-                        case 50622:
-                        case 52027:
-                        case 52028:
-                        case 52977:
-                        case 54797:
-                        case 55266:
-                        case 55267:
-                        case 55463:
-                        case 55977:
-                        case 56408:
-                        case 59322:
-                        case 59323:
-                        case 59549:
-                        case 59550:
-                        case 61076:
-                        case 61078:
-                        case 61136:
-                        case 61137:
-                        case 61139:
-                        case 63805:
-                        case 63806:
-                        case 63807:
-                        case 63808:
-                        case 65510:
-                        case 67037:
-                        case 67716:
-                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                        default:
-                            break;
-                    }
-                }
-
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -4943,11 +4670,11 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // check aurastate
-                if (GetSpellInfo()->getTargetAuraState() && !target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState()) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraState() && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }
-                if (GetSpellInfo()->getTargetAuraStateNot() && target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraStateNot()) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraStateNot() && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraStateNot()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }

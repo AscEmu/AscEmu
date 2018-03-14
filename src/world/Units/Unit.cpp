@@ -116,6 +116,11 @@ void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
 void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
 
+uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
+void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
+void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
+void Unit::removeAuraState(uint32_t state) { setAuraState(getAuraState() & ~state); }
+
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
@@ -1063,6 +1068,81 @@ bool Unit::hasAurasWithId(uint32_t* auraId)
     return false;
 }
 
+bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
+{
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] == nullptr)
+            continue;
+        if (m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(type))
+            return true;
+    }
+    return false;
+}
+
+bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) const
+{
+    if (caster != nullptr && spellInfo != nullptr && caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+    {
+        for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+        {
+            if (caster->m_auras[i] == nullptr)
+                continue;
+            if (!caster->m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+                continue;
+            if (caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(spellInfo))
+                return true;
+        }
+    }
+    return getAuraState() & (1 << (state - 1));
+}
+
+void Unit::addAuraStateAndAuras(AuraState state)
+{
+    if (!(getAuraState() & (1 << (state - 1))))
+    {
+        addAuraState(uint32_t(1 << (state - 1)));
+        if (IsPlayer())
+        {
+            // Activate passive spells which require this aurastate
+            auto playerSpellMap = static_cast<Player*>(this)->mSpells;
+            for (auto spellId : playerSpellMap)
+            {
+                // Skip deleted spells, i.e. spells with lower rank than the current rank
+                auto deletedSpell = static_cast<Player*>(this)->mDeletedSpells.find(spellId);
+                if ((deletedSpell != static_cast<Player*>(this)->mDeletedSpells.end()))
+                    continue;
+                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+                if (spellInfo == nullptr || !spellInfo->IsPassive())
+                    continue;
+                if (spellInfo->getCasterAuraState() == uint32_t(state))
+                    CastSpell(this, spellId, true);
+            }
+        }
+    }
+}
+
+void Unit::removeAuraStateAndAuras(AuraState state)
+{
+    if (getAuraState() & (1 << (state - 1)))
+    {
+        removeAuraState(uint32_t(1 << (state - 1)));
+        // Remove self-applied passive auras requiring this aurastate
+        // Skip removing enrage effects
+        for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+        {
+            if (m_auras[i] == nullptr)
+                continue;
+            if (m_auras[i]->GetCasterGUID() != getGuid())
+                continue;
+            if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != uint32_t(state))
+                continue;
+            if (m_auras[i]->GetSpellInfo()->IsPassive() || state != AURASTATE_FLAG_ENRAGED)
+                RemoveAura(m_auras[i]);
+        }
+    }
+}
+
 Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -1078,7 +1158,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithAuraEffect(uint32_t aura_effect)
+Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {

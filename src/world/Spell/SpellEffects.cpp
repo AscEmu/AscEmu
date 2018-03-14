@@ -720,7 +720,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 69973:
             case 71135:
             {
-                if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
+                if (unitTarget->hasAuraState(AURASTATE_FLAG_CONFLAGRATE, GetSpellInfo(), u_caster))
                 {
                     // random extra damage
                     uint32 extra_dmg = 111 + (GetSpellInfo()->custom_RankNumber * 11) + Util::getRandomUInt(GetSpellInfo()->custom_RankNumber * 11);
@@ -938,7 +938,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
             //SPELL_HASH_CONFLAGRATE
             case 17962:
-                unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
+                unitTarget->removeAuraStateAndAuras(AURASTATE_FLAG_CONFLAGRATE);
                 break;
 
             //SPELL_HASH_ICE_LANCE
@@ -955,7 +955,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 54261:
             {
                 // Deal triple damage to frozen targets or to those in Deep Freeze
-                if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN) || unitTarget->HasAura(44572))
+                if (unitTarget->hasAuraState(AURASTATE_FLAG_FROZEN, GetSpellInfo(), u_caster) || unitTarget->HasAura(44572))
                     dmg *= 3;
             } break;
 
@@ -1155,7 +1155,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
+                    p_caster->removeAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
                     dmg = (p_caster->GetAP()*(m_spellInfo->getEffectBasePoints(effectIndex) + 1)) / 100;
                 }
             }break;
@@ -1187,7 +1187,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     if (unitTarget->IsDazed())
-                        for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_REJUVENATE; i)
+                        for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_SWIFTMEND; i)
                         {
                             switch (m_spellInfo->getId())
                             { // This info isn't in the dbc files.....
@@ -2152,7 +2152,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                         if (!unitTarget->hasAurasWithId(rejuvenation))
                         {
-                            unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
+                            unitTarget->removeAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
                             sEventMgr.RemoveEvents(unitTarget, EVENT_REJUVENATION_FLAG_EXPIRE);
                         }
                     }
@@ -2217,7 +2217,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                             unitTarget->RemoveAura(taura);
 
-                            unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
+                            unitTarget->removeAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
                             sEventMgr.RemoveEvents(unitTarget, EVENT_REJUVENATION_FLAG_EXPIRE);
                         }
                     }

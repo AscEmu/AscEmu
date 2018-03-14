@@ -309,39 +309,42 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_NONE                = 0x00000000,
-    PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
-    PLAYER_FLAG_AFK                 = 0x00000002,
-    PLAYER_FLAG_DND                 = 0x00000004,
-    PLAYER_FLAG_GM                  = 0x00000008,
-    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00000010,
-    PLAYER_FLAG_RESTING             = 0x00000020,
-    PLAYER_FLAG_ADMIN               = 0x00000040,
-    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00000080,
-    PLAYER_FLAG_CONT_PVP            = 0x00000100,
-    PLAYER_FLAG_PVP_TOGGLE          = 0x00000200,
-    PLAYER_FLAG_NOHELM              = 0x00000400,
-    PLAYER_FLAG_NOCLOAK             = 0x00000800,
-    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x00001000,
-    PLAYER_FLAG_IS_DEAD             = 0x00002000,
-    PLAYER_FLAGS_RENAME_FIRST       = 0x00004000,
-    PLAYER_FLAG_DEVELOPER           = 0x00008000,
-    PLAYER_FLAG_UNK1                = 0x00010000,
-    PLAYER_FLAG_UNK2                = 0x00020000,
-    PLAYER_FLAG_PVP                 = 0x00040000,
-    PLAYER_FLAG_UNK3                = 0x00080000,
-    PLAYER_FLAG_UNK4                = 0x00100000,
-    PLAYER_FLAG_UNK5                = 0x00200000,
-    PLAYER_FLAG_UNK6                = 0x00400000,
-    PLAYER_FLAG_UNK7                = 0x00800000,
-    PLAYER_FLAG_IS_BANNED           = 0x01000000,
-    PLAYER_FLAG_UNK8                = 0x02000000,
-    PLAYER_FLAG_UNK9                = 0x04000000,
-    PLAYER_FLAGS_AUTO_DECLINE_GUILD = 0x08000000,
-    PLAYER_FLAGS_GUILD_LVL_ENABLED  = 0x10000000,
-    PLAYER_FLAG_UNK12               = 0x20000000,
-    PLAYER_FLAG_UNK13               = 0x40000000,
-    PLAYER_FLAG_UNK14               = 0x80000000
+    PLAYER_FLAG_NONE                    = 0x00000000,
+    PLAYER_FLAG_PARTY_LEADER            = 0x00000001, // (TODO: implement for all versions) Informs players outside of your group who is your group leader
+    PLAYER_FLAG_AFK                     = 0x00000002, // <AFK> or <Away> tag ingame
+    PLAYER_FLAG_DND                     = 0x00000004, // <DND> or <Busy> tag ingame
+    PLAYER_FLAG_GM                      = 0x00000008, // <GM> tag ingame
+    PLAYER_FLAG_DEATH_WORLD_ENABLE      = 0x00000010, // Adds death glow to the world
+    PLAYER_FLAG_RESTING                 = 0x00000020, // Applies rested state on your character portrait
+    PLAYER_FLAG_ADMIN                   = 0x00000040, // Unknown effect in 3.3.5a
+    PLAYER_FLAG_FREE_FOR_ALL_PVP        = 0x00000080, // Unknown in 3.3.5a, pre-wotlk FFA-pvp tag
+    PLAYER_FLAG_PVP_GUARD_ATTACKABLE    = 0x00000100, // Player will be attacked by neutral guards
+    PLAYER_FLAG_PVP_TOGGLE              = 0x00000200, // Toggles PvP combat on/off
+    PLAYER_FLAG_NOHELM                  = 0x00000400, // Hides helm
+    PLAYER_FLAG_NOCLOAK                 = 0x00000800, // Hides cloak
+    PLAYER_FLAG_PLAYED_3_HOURS          = 0x00001000, // Obsolete: "You have more than 3 hours of online time. You will receive 1/2 money and XP during this period."
+    PLAYER_FLAG_PLAYED_5_HOURS          = 0x00002000, // Obsolete: "You have more than 5 hours of online time. You will not be able to gain loot, XP, or complete quests."
+    PLAYER_FLAG_RENAME_ON_LOGIN         = 0x00004000, // Forces character rename on login screen
+    // TBC flags begin (needs verification)
+    PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
+    PLAYER_FLAG_SANCTUARY               = 0x00010000, // (TODO: not implemented?) Makes player unattackable, added in sanctuary areas
+    PLAYER_FLAG_UNK1                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
+    // WoTLK flags begin
+    PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off
+    PLAYER_FLAG_UNK2                    = 0x00080000,
+    PLAYER_FLAG_UNK3                    = 0x00100000,
+    PLAYER_FLAG_UNK4                    = 0x00200000,
+    PLAYER_FLAG_UNK5                    = 0x00400000,
+    PLAYER_FLAG_PREVENT_SPELL_CAST      = 0x00800000, // Prevents spell casting but excludes auto attack, used by Bladestorm for example
+    PLAYER_FLAG_PREVENT_MELEE_SPELLS    = 0x01000000, // Prevents melee spell casting and includes auto attack, unused?
+    PLAYER_FLAG_NO_XP                   = 0x02000000, // (TODO: implement this and remove variable from player class) Disables XP gain and hides XP bar
+    // Cataclysm flags begin (needs verification)
+    PLAYER_FLAG_UNK6                    = 0x04000000,
+    PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
+    PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
+    PLAYER_FLAG_UNK7                    = 0x20000000,
+    PLAYER_FLAG_UNK8                    = 0x40000000,
+    PLAYER_FLAG_UNK9                    = 0x80000000
 };
 
 enum CustomizeFlags
