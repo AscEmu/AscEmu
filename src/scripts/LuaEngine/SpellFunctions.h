@@ -275,7 +275,7 @@ namespace LuaSpell
     {
         if (!sp)
             return 0;
-        lua_pushinteger(L, sp->CanCast(false));
+        lua_pushinteger(L, sp->canCast(false));
         return 1;
     }
 

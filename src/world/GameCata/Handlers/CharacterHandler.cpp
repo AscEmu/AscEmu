@@ -115,15 +115,17 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             uint32_t char_flags = 0;
 
             if (charEnum.banned && (charEnum.banned < 10 || charEnum.banned > (uint32_t)UNIXTIME))
-                char_flags |= PLAYER_FLAG_IS_BANNED;
+                // Apparently character screen does not use player flags, debug these (this flag shows player is banned)
+                char_flags |= PLAYER_FLAG_PREVENT_MELEE_SPELLS;
             if (charEnum.deathState != 0)
-                char_flags |= PLAYER_FLAG_IS_DEAD;
+                // Apparently character screen does not use player flags, debug these (this flag shows player is dead)
+                char_flags |= PLAYER_FLAG_PLAYED_5_HOURS;
             if (charEnum.flags & PLAYER_FLAG_NOHELM)
                 char_flags |= PLAYER_FLAG_NOHELM;
             if (charEnum.flags & PLAYER_FLAG_NOCLOAK)
                 char_flags |= PLAYER_FLAG_NOCLOAK;
             if (charEnum.loginFlags == 1)
-                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
+                char_flags |= PLAYER_FLAG_RENAME_ON_LOGIN;
 
             data.writeBit(guid[3]);
             data.writeBit(guildGuid[1]);

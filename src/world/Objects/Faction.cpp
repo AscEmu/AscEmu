@@ -52,9 +52,9 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
         return false;
 
-    if (objA->IsPlayer() && static_cast<Player*>(objA)->hasPlayerFlags(PLAYER_FLAG_CONT_PVP) && objB->IsCreature() && reinterpret_cast<Unit*>(objB)->GetAIInterface()->m_isNeutralGuard)
+    if (objA->IsPlayer() && static_cast<Player*>(objA)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objB->IsCreature() && reinterpret_cast<Unit*>(objB)->GetAIInterface()->m_isNeutralGuard)
         return true;
-    if (objB->IsPlayer() && static_cast<Player*>(objB)->hasPlayerFlags(PLAYER_FLAG_CONT_PVP) && objA->IsCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
+    if (objB->IsPlayer() && static_cast<Player*>(objB)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objA->IsCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
     if (objB->IsUnit() && static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))

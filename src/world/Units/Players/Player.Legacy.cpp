@@ -192,7 +192,6 @@ Player::Player(uint32 guid)
     misdirectionTarget(0),
     bReincarnation(false),
     ignoreShapeShiftChecks(false),
-    ignoreAuraStateCheck(false),
     m_GM_SelectedGO(0),
     m_ShapeShifted(0),
     m_MountSpellId(0),
@@ -431,12 +430,10 @@ Player::Player(uint32 guid)
     setRangedAttackPowerMultiplier(0.f);
 
     m_resist_critical[0] = m_resist_critical[1] = 0;
-    m_castFilterEnabled = false;
 
     for (i = 0; i < 3; i++)
     {
         m_attack_speed[i] = 1.0f;
-        m_castFilter[i] = 0;
     }
 
     for (i = 0; i < SCHOOL_COUNT; i++)
@@ -10113,7 +10110,7 @@ void Player::PvPToggle()
             StopPvPTimer();
 
             addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-            removePlayerFlags(PLAYER_FLAG_PVP);
+            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
             if (!IsPvPFlagged())
                 SetPvPFlag();
@@ -10140,13 +10137,13 @@ void Player::PvPToggle()
                     ResetPvPTimer();
                 }
                 removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                addPlayerFlags(PLAYER_FLAG_PVP);
+                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
             }
             else
             {
                 // Move into PvP state.
                 addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                removePlayerFlags(PLAYER_FLAG_PVP);
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                 StopPvPTimer();
                 SetPvPFlag();
@@ -10168,7 +10165,7 @@ void Player::PvPToggle()
                 StopPvPTimer();
 
                 addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                removePlayerFlags(PLAYER_FLAG_PVP);
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                 if (!IsPvPFlagged())
                     SetPvPFlag();
@@ -10181,13 +10178,13 @@ void Player::PvPToggle()
                     ResetPvPTimer();
 
                     removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                    addPlayerFlags(PLAYER_FLAG_PVP);
+                    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
                 }
                 else
                 {
                     // Move into PvP state.
                     addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                    removePlayerFlags(PLAYER_FLAG_PVP);
+                    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                     StopPvPTimer();
                     SetPvPFlag();
@@ -10207,9 +10204,7 @@ void Player::PvPToggle()
                         StopPvPTimer();
 
                         addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
-                        removePlayerFlags(PLAYER_FLAG_PVP);
-#endif
+                        removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                         if (!IsPvPFlagged())
                             SetPvPFlag();
@@ -10222,18 +10217,13 @@ void Player::PvPToggle()
                             ResetPvPTimer();
 
                             removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
-                            addPlayerFlags(PLAYER_FLAG_PVP);
-#endif
-
+                            addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
                         }
                         else
                         {
                             // Move into PvP state.
                             addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
-                            removePlayerFlags(PLAYER_FLAG_PVP);
-#endif
+                            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                             StopPvPTimer();
                             SetPvPFlag();
@@ -10246,16 +10236,12 @@ void Player::PvPToggle()
             if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
             {
                 addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
-                removePlayerFlags(PLAYER_FLAG_PVP);
-#endif
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
             }
             else
             {
                 removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
-                addPlayerFlags(PLAYER_FLAG_PVP);
-#endif
+                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
             }
         }
     }
@@ -13161,7 +13147,7 @@ void Player::SetPvPFlag()
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
 #endif
 
-    addPlayerFlags(PLAYER_FLAG_PVP);
+    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
 
     summonhandler.SetPvPFlags();
@@ -13174,7 +13160,7 @@ void Player::SetPvPFlag()
     }
 
     if (CombatStatus.IsInCombat())
-        addPlayerFlags(PLAYER_FLAG_CONT_PVP);
+        addPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
 
 }
 
@@ -13188,7 +13174,7 @@ void Player::RemovePvPFlag()
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
 #endif
 
-    removePlayerFlags(PLAYER_FLAG_PVP);
+    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
     summonhandler.RemovePvPFlags();
 
@@ -13927,7 +13913,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
     ///////////////////////////////////////////////////// Hackatlon ///////////////////////////////////////////////////////////
 
     //the black sheep , no actually it is paladin : Ardent Defender
-    if (DamageTakenPctModOnHP35 && HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH35))
+    if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
         damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
 
     if (pVictim->IsCreature() && pVictim->IsTaggable())
@@ -14000,10 +13986,10 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
             if (setAurastateFlag)
             {
-                SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
 
                 if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::EventAurastateExpire, static_cast<uint32>(AURASTATE_FLAG_LASTKILLWITHHONOR), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
+                    sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
@@ -14095,10 +14081,10 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
                         {
                             player_tagger->GiveXP(xp, pVictim->getGuid(), true);
 
-                            SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                            addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
 
                             if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                                sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                                sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                             else
                                 sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 

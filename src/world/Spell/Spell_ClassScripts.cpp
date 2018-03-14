@@ -81,9 +81,9 @@ public:
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
 
     bool HasFireTotem = false;
-    uint8 CanCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        auto result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -368,9 +368,9 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
-    uint8 CanCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        auto result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {

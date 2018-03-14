@@ -1242,10 +1242,10 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
             Player* plr = active_player_list[i];
             plr->GiveXP(float2int32(((xp * plr->getLevel()) / total_level) * xp_mod), pVictim->getGuid(), true);
 
-            active_player_list[i]->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+            active_player_list[i]->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
             if (!sEventMgr.HasEvent(active_player_list[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
             {
-                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
             else
             {
@@ -7660,9 +7660,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             if (pVictim->IsPlayer() && pVictim->getClass() == DEATHKNIGHT)   // omg! dirty hack!
                 pVictim->CastSpell(pVictim, 56817, true);
 
-            pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);
+            pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);
             if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
             else sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
             break;
         case 2:     //parry
@@ -7681,16 +7681,16 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (pVictim->getClass() == DEATHKNIGHT)         // omg! dirty hack!
                     pVictim->CastSpell(pVictim, 56817, true);
 
-                pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
+                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
                 if (!sEventMgr.HasEvent(pVictim, EVENT_PARRY_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
+                    sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_PARRY_FLAG_EXPIRE, 5000);
                 if (static_cast<Player*>(pVictim)->getClass() == 1 || static_cast<Player*>(pVictim)->getClass() == 4)     //warriors for 'revenge' and rogues for 'riposte'
                 {
-                    pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);	                //SB@L: Enables spells requiring dodge
+                    pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	                //SB@L: Enables spells requiring dodge
                     if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                        sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                        sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                     else
                         sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000);
                 }
@@ -7886,9 +7886,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                             }
                             if (pVictim->IsPlayer())  //not necessary now but we'll have blocking mobs in future
                             {
-                                pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);	//SB@L: Enables spells requiring dodge
+                                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	//SB@L: Enables spells requiring dodge
                                 if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                                    sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                                    sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                                 else
                                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000);
                             }
@@ -7948,14 +7948,6 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                         {
                             vproc |= PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
                             aproc |= PROC_ON_RANGED_CRIT_ATTACK;
-                        }
-
-                        if (IsPlayer())
-                        {
-                            this->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_CRITICAL);
-                            if (!sEventMgr.HasEvent(this, EVENT_CRIT_FLAG_EXPIRE))
-                                sEventMgr.AddEvent(this, &Unit::EventAurastateExpire, uint32(AURASTATE_FLAG_CRITICAL), EVENT_CRIT_FLAG_EXPIRE, 5000, 1, 0);
-                            else sEventMgr.ModifyEventTimeLeft(this, EVENT_CRIT_FLAG_EXPIRE, 5000);
                         }
 
                         CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
@@ -9066,15 +9058,12 @@ void Unit::AddAura(Aura* aur)
     }
 
     /* Set aurastates */
-    uint32 flag = 0;
     if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
-        flag |= AURASTATE_FLAG_ENRAGED;
+        addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
     else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
-        flag |= AURASTATE_FLAG_BLEED;
+        addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
     if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
-        flag |= AURASTATE_FLAG_JUDGEMENT;
-
-    SetFlag(UNIT_FIELD_AURASTATE, flag);
+        addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 }
 #else
 void Unit::AddAura(Aura* aur)
@@ -9648,15 +9637,12 @@ void Unit::AddAura(Aura* aur)
     }
 
     /* Set aurastates */
-    uint32 flag = 0;
     if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
-        flag |= AURASTATE_FLAG_ENRAGED;
+        addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
     else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
-        flag |= AURASTATE_FLAG_BLEED;
+        addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
     if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
-        flag |= AURASTATE_FLAG_JUDGEMENT;
-
-    SetFlag(UNIT_FIELD_AURASTATE, flag);
+        addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 }
 #endif
 
@@ -12237,21 +12223,20 @@ void Unit::EventHealthChangeSinceLastUpdate()
 {
     int pct = GetHealthPct();
     if (pct < 35)
-    {
-        uint32 toset = AURASTATE_FLAG_HEALTH35;
-        if (pct < 20)
-            toset |= AURASTATE_FLAG_HEALTH20;
-        else
-            RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH20);
-        SetFlag(UNIT_FIELD_AURASTATE, toset);
-    }
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
     else
-        RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
+
+    if (pct < 20)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+    else
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+
 #if VERSION_STRING >= WotLK
-    if (pct < 75)
-        RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
+    if (pct > 75)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
     else
-        SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
 #endif
 }
 
@@ -12677,7 +12662,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
     Unit* pt;
 
     if (m_Unit->IsPlayer())
-        static_cast<Player*>(m_Unit)->removePlayerFlags(PLAYER_FLAG_CONT_PVP);
+        static_cast<Player*>(m_Unit)->removePlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
 
     for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
     {

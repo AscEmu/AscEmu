@@ -3,7 +3,9 @@
 set(PATH_PREFIX Spell/Definitions)
 
 set(SRC_SPELL_DEFINITIONS_FILES
+    ${PATH_PREFIX}/AuraEffects.h
     ${PATH_PREFIX}/AuraInterruptFlags.h
+    ${PATH_PREFIX}/AuraStates.h
     ${PATH_PREFIX}/CastInterruptFlags.h
     ${PATH_PREFIX}/ChannelInterruptFlags.h
     ${PATH_PREFIX}/DiminishingGroup.h
