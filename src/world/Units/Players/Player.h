@@ -1451,7 +1451,7 @@ public:
         uint32 m_retainedrage;
 
         uint32* GetPlayedtime() { return m_playedtime; };
-        void CalcStat(uint16 t);
+        void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);

@@ -78,7 +78,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
     else
         mod = 6;
 
-    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
 
     if (damage >= playerTarget->GetHealth())
         return false;
@@ -569,8 +569,8 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
         Player* PetOwner = static_cast<Pet*>(m_target)->GetPetOwner();
         if (PetOwner != nullptr)
         {
-            uint32 val1 = m_target->GetStat(STAT_STAMINA); // stamina
-            uint32 val2 = m_target->GetStat(STAT_INTELLECT); // intellect
+            uint32 val1 = m_target->getStat(STAT_STAMINA);
+            uint32 val2 = m_target->getStat(STAT_INTELLECT);
             uint32 val0 = val1 + val2;
             float dmginc = (float)(val0 * a->GetModAmount(effectIndex)) / 100;
 

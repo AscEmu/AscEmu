@@ -6463,7 +6463,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         if (p_caster != nullptr)
         {
             for (uint8 a = 0; a < 5; a++)
-                bonus += float2int32(p_caster->SpellHealDoneByAttribute[a][school] * p_caster->GetStat(a));
+                bonus += float2int32(p_caster->SpellHealDoneByAttribute[a][school] * p_caster->getStat(a));
         }
 
         //Spell Coefficient

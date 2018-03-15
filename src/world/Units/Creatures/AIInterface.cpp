@@ -925,7 +925,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             wpCreature->SetFaction(player->GetFaction());
             wpCreature->setHealth(1);
             wpCreature->setMaxHealth(1);
-            wpCreature->SetStat(STAT_STRENGTH, wayPoint->flags);
+            wpCreature->setStat(STAT_STRENGTH, wayPoint->flags);
 
             ByteBuffer buf(3000);
             uint32_t count = wpCreature->buildCreateUpdateBlockForPlayer(&buf, player);
@@ -4976,7 +4976,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             for (uint8 j = 0; j < 5; ++j)
             {
-                m_Unit->BaseStats[j] = m_Unit->GetStat(j);
+                m_Unit->BaseStats[j] = m_Unit->getStat(j);
             }
 
             m_Unit->BaseDamage[0] = m_Unit->getMinDamage();

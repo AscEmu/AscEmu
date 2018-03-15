@@ -2308,9 +2308,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
         bonus += c->HealDoneMod[m_spellInfo->getSchool()] + m_target->HealTakenMod[m_spellInfo->getSchool()];
         if (c->IsPlayer())
         {
-            for (uint16_t a = 0; a < 5; a++)
+            for (uint8_t a = 0; a < 5; a++)
             {
-                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->GetStat(a));
+                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->getStat(a));
             }
         }
         //Spell Coefficient
@@ -3686,7 +3686,7 @@ void Aura::SpellAuraModStat(bool apply)
     {
         ARCEMU_ASSERT(mod->m_miscValue < 5);
 
-        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+        uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
         if (m_target->IsPlayer())
         {
             if (mod->m_amount > 0)
@@ -5886,7 +5886,7 @@ void Aura::SpellAuraModPercStat(bool apply)
     else
     {
         ARCEMU_ASSERT(mod->m_miscValue < 5);
-        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+        uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
         if (p_target != nullptr)
         {
             if (mod->m_amount > 0)
@@ -7176,7 +7176,7 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
                 } break;
             }
 
-            uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+            uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
 
             if (mod->m_amount > 0)
                 p_target->TotalStatModPctPos[modValue] += val;
@@ -7189,7 +7189,7 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
         }
         else if (m_target->IsCreature())
         {
-            uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+            uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
 
             static_cast< Creature* >(m_target)->TotalStatModPct[modValue] += val;
             static_cast< Creature* >(m_target)->CalcStat(modValue);
@@ -7720,14 +7720,14 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
     else
         val = -mod->fixed_amount[mod->m_effectIndex];
 
-    uint16_t stat = 3;
+    uint8_t stat = 3;
     for (uint8_t i = 0; i < 3; i++)
     {
         //bit hacky but it will work with all currently available spells
         if (m_spellInfo->getEffectApplyAuraName(i) == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)
         {
             if (m_spellInfo->getEffectMiscValue(i) < 5)
-                stat = static_cast<uint16_t>(m_spellInfo->getEffectMiscValue(i));
+                stat = static_cast<uint8_t>(m_spellInfo->getEffectMiscValue(i));
             else
                 return;
         }
@@ -7741,7 +7741,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
             {
                 if (apply)
                 {
-                    mod->realamount = float2int32(((float)val / 100) * m_target->GetStat(stat));
+                    mod->realamount = float2int32(((float)val / 100) * m_target->getStat(stat));
                     p_target->ModPosDamageDoneMod(x, mod->realamount);
                 }
                 else
@@ -7802,9 +7802,9 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
     else
         val = -mod->fixed_amount[mod->m_effectIndex];
 
-    uint16_t stat;
+    uint8_t stat;
     if (mod->m_miscValue < 5)
-        stat = static_cast<uint16_t>(mod->m_miscValue);
+        stat = static_cast<uint8_t>(mod->m_miscValue);
     else
     {
         LOG_ERROR("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", mod->m_miscValue, GetSpellId());
@@ -7820,7 +7820,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
         p_target->UpdateChanceFields();
         if (apply)
         {
-            mod->realamount = float2int32(((float)val / 100.0f) * p_target->GetStat(stat));
+            mod->realamount = float2int32(((float)val / 100.0f) * p_target->getStat(stat));
             p_target->ModHealingDoneMod(mod->realamount);
         }
         else
@@ -8225,7 +8225,7 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
 
 void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
 {
-    uint32 i_Int = m_target->GetStat(STAT_INTELLECT);
+    uint32 i_Int = m_target->getStat(STAT_INTELLECT);
 
     int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
     amt *= (!apply) ? -1 : 1;
@@ -8637,7 +8637,7 @@ void Aura::EventPeriodicRegenManaStatPct(uint32 perc, uint32 stat)
     if (m_target->IsDead())
         return;
 
-    uint32 mana = m_target->GetPower(POWER_TYPE_MANA) + (m_target->GetStat(static_cast<uint16_t>(stat)) * perc) / 100;
+    uint32 mana = m_target->GetPower(POWER_TYPE_MANA) + (m_target->getStat(static_cast<uint8_t>(stat)) * perc) / 100;
 
     if (mana <= m_target->GetMaxPower(POWER_TYPE_MANA))
         m_target->SetPower(POWER_TYPE_MANA, mana);
@@ -8662,7 +8662,7 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
     if (apply)
     {
         //SetPositive();
-        /*mod->realamount = (mod->m_amount * m_target->GetStat(mod->m_miscValue) /1 00;
+        /*mod->realamount = (mod->m_amount * m_target->getStat(mod->m_miscValue) /1 00;
 
         for (uint32 x = 1; x < 7; x++)
         m_target->HealDoneMod[x] += mod->realamount;*/
@@ -8809,8 +8809,8 @@ void Aura::SpellAuraIncreaseRAPbyStatPct(bool apply)
         else
             SetNegative();
 
-        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
-        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(modValue) * mod->m_amount / 100;
+        uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
+        mod->fixed_amount[mod->m_effectIndex] = m_target->getStat(modValue) * mod->m_amount / 100;
         m_target->ModRangedAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else
@@ -9100,9 +9100,9 @@ void Aura::SpellAuraIncreaseAPbyStatPct(bool apply)
         else
             SetNegative();
 
-        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+        uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
 
-        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(modValue) * mod->m_amount / 100;
+        mod->fixed_amount[mod->m_effectIndex] = m_target->getStat(modValue) * mod->m_amount / 100;
         m_target->ModAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else

@@ -1798,7 +1798,7 @@ void Pet::ApplySummonLevelAbilities()
     setBaseMana((uint32)(mana));
     SetMaxPower(POWER_TYPE_MANA, (uint32)(mana));
 
-    for (uint16 x = 0; x < 5; ++x)
+    for (uint8_t x = 0; x < 5; ++x)
         CalcStat(x);
 }
 
@@ -1848,7 +1848,7 @@ void Pet::ApplyPetLevelAbilities()
     else if (family_aura[pet_family] != 0)
         this->CastSpell(this, family_aura[pet_family], true);
 
-    for (uint16 x = 0; x < 5; ++x)
+    for (uint8_t x = 0; x < 5; ++x)
         CalcStat(x);
 
     LoadPetAuras(-2);//Load all BM auras
@@ -1927,7 +1927,7 @@ void Pet::UpdateAP()
     if (Summon)
         return;
 
-    uint32 str = GetStat(STAT_STRENGTH);
+    uint32 str = getStat(STAT_STRENGTH);
     uint32 AP = (str * 2 - 20);
     if (m_Owner)
         AP += m_Owner->GetRAP() * 22 / 100;

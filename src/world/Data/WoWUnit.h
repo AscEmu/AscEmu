@@ -63,6 +63,7 @@ union
 #define WOWUNIT_POWER_COST_MODIFIER 7
 #define WOWUNIT_POWER_COST_MULTIPLIER 7
 #define WOWUNIT_ATTACK_TIME_COUNT 3
+#define WOWUNIT_STAT_COUNT 5
 
 struct WoWUnit : WoWObject
 {
@@ -123,11 +124,7 @@ struct WoWUnit : WoWObject
     uint32_t npc_flags;
     uint32_t npc_emote_state;
     uint32_t training_points;
-    uint32_t stat_0;
-    uint32_t stat_1;
-    uint32_t stat_2;
-    uint32_t stat_3;
-    uint32_t stat_4;
+    uint32_t stat[WOWUNIT_STAT_COUNT];
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
@@ -157,6 +154,8 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_POWER_COST_MODIFIER 7
 #define WOWUNIT_POWER_COST_MULTIPLIER 7
 #define WOWUNIT_ATTACK_TIME_COUNT 3
+#define WOWUNIT_STAT_COUNT 5
+
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -217,21 +216,9 @@ struct WoWUnit : WoWObject
     uint32_t npc_flags;
     uint32_t npc_emote_state;
     uint32_t training_points;
-    uint32_t stat_0;
-    uint32_t stat_1;
-    uint32_t stat_2;
-    uint32_t stat_3;
-    uint32_t stat_4;
-    uint32_t positive_stat_0;
-    uint32_t positive_stat_1;
-    uint32_t positive_stat_2;
-    uint32_t positive_stat_3;
-    uint32_t positive_stat_4;
-    uint32_t negative_stat_0;
-    uint32_t negative_stat_1;
-    uint32_t negative_stat_2;
-    uint32_t negative_stat_3;
-    uint32_t negative_stat_4;
+    uint32_t stat[WOWUNIT_STAT_COUNT];
+    uint32_t positive_stat[WOWUNIT_STAT_COUNT];
+    uint32_t negative_stat[WOWUNIT_STAT_COUNT];
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
     uint32_t resistance_buff_mod_positive[WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT];
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT];
@@ -256,6 +243,8 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_RESISTANCE_COUNT 7
 #define WOWUNIT_ATTACK_TIME_COUNT 3
+#define WOWUNIT_STAT_COUNT 5
+
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -316,21 +305,9 @@ struct WoWUnit : WoWObject
     uint32_t created_by_spell_id;
     uint32_t npc_flags;
     uint32_t npc_emote_state;
-    uint32_t stat_0;
-    uint32_t stat_1;
-    uint32_t stat_2;
-    uint32_t stat_3;
-    uint32_t stat_4;
-    uint32_t positive_stat_0;
-    uint32_t positive_stat_1;
-    uint32_t positive_stat_2;
-    uint32_t positive_stat_3;
-    uint32_t positive_stat_4;
-    uint32_t negative_stat_0;
-    uint32_t negative_stat_1;
-    uint32_t negative_stat_2;
-    uint32_t negative_stat_3;
-    uint32_t negative_stat_4;
+    uint32_t stat[WOWUNIT_STAT_COUNT];
+    uint32_t positive_stat[WOWUNIT_STAT_COUNT];
+    uint32_t negative_stat[WOWUNIT_STAT_COUNT];
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
     uint32_t resistance_buff_mod_positive[WOWUNIT_RESISTANCE_COUNT];
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_COUNT];
@@ -357,6 +334,8 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7
 #define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
 #define WOWUNIT_ATTACK_TIME_COUNT 3
+#define WOWUNIT_STAT_COUNT 5
+
 struct WoWUnit : WoWObject
 {
     guid_union charm_guid;
@@ -414,21 +393,9 @@ struct WoWUnit : WoWObject
     uint32_t created_by_spell_id;
     uint32_t npc_flags;
     uint32_t npc_emote_state;
-    uint32_t stat_0;
-    uint32_t stat_1;
-    uint32_t stat_2;
-    uint32_t stat_3;
-    uint32_t stat_4;
-    uint32_t positive_stat_0;
-    uint32_t positive_stat_1;
-    uint32_t positive_stat_2;
-    uint32_t positive_stat_3;
-    uint32_t positive_stat_4;
-    uint32_t negative_stat_0;
-    uint32_t negative_stat_1;
-    uint32_t negative_stat_2;
-    uint32_t negative_stat_3;
-    uint32_t negative_stat_4;
+    uint32_t stat[WOWUNIT_STAT_COUNT];
+    uint32_t positive_stat[WOWUNIT_STAT_COUNT];
+    uint32_t negative_stat[WOWUNIT_STAT_COUNT];
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
     uint32_t resistance_buff_mod_positive[WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT];
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT];

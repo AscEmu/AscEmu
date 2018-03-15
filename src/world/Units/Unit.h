@@ -369,6 +369,17 @@ public:
     uint32_t getEmoteState() const;
     void setEmoteState(uint32_t id);
 
+    uint32_t getStat(uint8_t stat) const;
+    void setStat(uint8_t stat, uint32_t value);
+
+#if VERSION_STRING > Classic
+    uint32_t getPosStat(uint8_t stat) const;
+    void setPosStat(uint8_t stat, uint32_t value);
+
+    uint32_t getNegStat(uint8_t stat) const;
+    void setNegStat(uint8_t stat, uint32_t value);
+#endif
+
     //byte_2 begin
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
@@ -1165,9 +1176,6 @@ public:
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
     void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetStat(uint16_t stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
-    uint32 GetStat(uint16_t stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }
 
     void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
     uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }

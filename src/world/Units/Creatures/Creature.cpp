@@ -923,7 +923,7 @@ void Creature::CalcResistance(uint16 type)
     SetResistance(type, tot > 0 ? tot : 0);
 }
 
-void Creature::CalcStat(uint16 type)
+void Creature::CalcStat(uint8_t type)
 {
     int32 pos = 0;
     int32 neg = 0;
@@ -937,9 +937,9 @@ void Creature::CalcStat(uint16 type)
     {
         Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
-            pos += int32(0.45f * owner->GetStat(STAT_STAMINA));
+            pos += int32(0.45f * owner->getStat(STAT_STAMINA));
         else if (type == STAT_INTELLECT && owner && getCreatedBySpellId())
-            pos += int32(0.30f * owner->GetStat(STAT_INTELLECT));
+            pos += int32(0.30f * owner->getStat(STAT_INTELLECT));
     }
 
     if (TotalStatModPct[type] < 0)
@@ -953,12 +953,12 @@ void Creature::CalcStat(uint16 type)
         pos += FlatStatMod[type];
 
 #if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
-    setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+    setPosStat(type, pos);
+    setNegStat(type, neg);
 #endif
 
     int32 tot = BaseStats[type] + pos - neg;
-    SetStat(type, tot > 0 ? tot : 0);
+    setStat(type, tot > 0 ? tot : 0);
 
     switch (type)
     {
@@ -967,7 +967,7 @@ void Creature::CalcStat(uint16 type)
             //Attack Power
             if (!IsPet())  //We calculate pet's later
             {
-                uint32 str = GetStat(STAT_STRENGTH);
+                uint32 str = getStat(STAT_STRENGTH);
                 int32 AP = (str * 2 - 20);
                 if (AP < 0) AP = 0;
                 SetAttackPower(AP);
@@ -978,7 +978,7 @@ void Creature::CalcStat(uint16 type)
         case STAT_AGILITY:
         {
             //Ranged Attack Power (Does any creature use this?)
-            int32 RAP = getLevel() + GetStat(STAT_AGILITY) - 10;
+            int32 RAP = getLevel() + getStat(STAT_AGILITY) - 10;
             if (RAP < 0) RAP = 0;
             SetRangedAttackPower(RAP);
         }
@@ -1417,7 +1417,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     for (uint8 x = 0; x < 7; ++x)
         BaseResistance[x] = GetResistance(x);
     for (uint8 x = 0; x < 5; ++x)
-        BaseStats[x] = GetStat(x);
+        BaseStats[x] = getStat(x);
 
     BaseDamage[0] = getMinDamage();
     BaseDamage[1] = getMaxDamage();
@@ -1652,7 +1652,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     for (uint8 j = 0; j < 7; ++j)
         BaseResistance[j] = GetResistance(j);
     for (uint8 j = 0; j < 5; ++j)
-        BaseStats[j] = GetStat(j);
+        BaseStats[j] = getStat(j);
 
     BaseDamage[0] = getMinDamage();
     BaseDamage[1] = getMaxDamage();

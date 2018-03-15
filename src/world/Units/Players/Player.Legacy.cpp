@@ -984,11 +984,11 @@ bool Player::Create(WorldPacket& data)
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 #endif
 
-    SetStat(STAT_STRENGTH, info->strength);
-    SetStat(STAT_AGILITY, info->ability);
-    SetStat(STAT_STAMINA, info->stamina);
-    SetStat(STAT_INTELLECT, info->intellect);
-    SetStat(STAT_SPIRIT, info->spirit);
+    setStat(STAT_STRENGTH, info->strength);
+    setStat(STAT_AGILITY, info->ability);
+    setStat(STAT_STAMINA, info->stamina);
+    setStat(STAT_INTELLECT, info->intellect);
+    setStat(STAT_SPIRIT, info->spirit);
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
     if (race != RACE_BLOODELF)
@@ -3709,8 +3709,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-    for (uint16 x = 0; x < 5; x++)
-        BaseStats[x] = GetStat(x);
+    for (uint8_t x = 0; x < 5; x++)
+        BaseStats[x] = getStat(x);
 
 #if VERSION_STRING > TBC
     UpdateGlyphs();
@@ -4497,8 +4497,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-    for (uint16 x = 0; x < 5; x++)
-        BaseStats[x] = GetStat(x);
+    for (uint8_t x = 0; x < 5; x++)
+        BaseStats[x] = getStat(x);
 
 #if VERSION_STRING > TBC
     UpdateGlyphs();
@@ -6252,7 +6252,7 @@ float Player::GetDodgeChance()
 
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
     auto CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(level - 1 + (pClass - 1) * 100);
-    uint32 agi = GetStat(STAT_AGILITY);
+    uint32 agi = getStat(STAT_AGILITY);
 
     float tmp = 100.0f * (baseCrit->val + agi * CritPerAgi->val);
     tmp *= crit_to_dodge[pClass];
@@ -6352,7 +6352,7 @@ void Player::UpdateChances()
     if (CritPerAgi == nullptr)
         CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (pClass - 1) * 100);
 
-    tmp = 100 * (baseCrit->val + GetStat(STAT_AGILITY) * CritPerAgi->val);
+    tmp = 100 * (baseCrit->val + getStat(STAT_AGILITY) * CritPerAgi->val);
 
     float melee_bonus = 0;
     float ranged_bonus = 0;
@@ -6391,7 +6391,7 @@ void Player::UpdateChances()
     if (SpellCritPerInt == nullptr)
         SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (pClass - 1) * 100);
 
-    spellcritperc = 100 * (SpellCritBase->val + GetStat(STAT_INTELLECT) * SpellCritPerInt->val) +
+    spellcritperc = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
         this->CalcRating(PCR_SPELL_CRIT);
     UpdateChanceFields();
@@ -6472,8 +6472,8 @@ void Player::UpdateStats()
     int32 hpdelta = 128;
     int32 manadelta = 128;
 
-    uint32 str = GetStat(STAT_STRENGTH);
-    uint32 agi = GetStat(STAT_AGILITY);
+    uint32 str = getStat(STAT_STRENGTH);
+    uint32 agi = getStat(STAT_AGILITY);
     uint32 lev = getLevel();
 
     // Attack power
@@ -6673,8 +6673,8 @@ void Player::UpdateStats()
         //float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Mesmer: new Manaregen formula.
-        uint32 Spirit = GetStat(STAT_SPIRIT);
-        uint32 Intellect = GetStat(STAT_INTELLECT);
+        uint32 Spirit = getStat(STAT_SPIRIT);
+        uint32 Intellect = getStat(STAT_INTELLECT);
         float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1]) * PctPowerRegenModifier[POWER_TYPE_MANA];
 #if VERSION_STRING > TBC
         setFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
@@ -8021,7 +8021,7 @@ void Player::RemoveSpellsFromLine(uint32 skill_line)
     }
 }
 
-void Player::CalcStat(uint16 type)
+void Player::CalcStat(uint8_t type)
 {
     int32 res;
     ARCEMU_ASSERT(type < 5);
@@ -8038,15 +8038,15 @@ void Player::CalcStat(uint16 type)
         res = 1;
 
 #if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
+    setPosStat(type, pos);
 
     if (neg < 0)
-        setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, -neg);
+        setNegStat(type, -neg);
     else
-        setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+        setNegStat(type, neg);
 #endif
 
-    SetStat(type, res);
+    setStat(type, res);
     if (type == STAT_AGILITY)
         CalcResistance(0);
 
@@ -14538,7 +14538,7 @@ uint32 Player::GetBlockDamageReduction()
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((it->getItemProperties()->Block + this->m_modblockvaluefromspells + this->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + this->GetStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return float2int32((it->getItemProperties()->Block + this->m_modblockvaluefromspells + this->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::ApplyFeralAttackPower(bool apply, Item* item)

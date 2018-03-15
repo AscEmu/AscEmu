@@ -166,6 +166,17 @@ void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcF
 uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
 void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
 
+uint32_t Unit::getStat(uint8_t stat) const { return unitData()->stat[stat]; }
+void Unit::setStat(uint8_t stat, uint32_t value) { write(unitData()->stat[stat], value); }
+
+#if VERSION_STRING > Classic
+uint32_t Unit::getPosStat(uint8_t stat) const { return unitData()->positive_stat[stat]; }
+void Unit::setPosStat(uint8_t stat, uint32_t value) { write(unitData()->positive_stat[stat], value); }
+
+uint32_t Unit::getNegStat(uint8_t stat) const { return unitData()->negative_stat[stat]; }
+void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative_stat[stat], value); }
+#endif
+
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
