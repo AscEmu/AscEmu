@@ -144,8 +144,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Remove Emote State                                                   */
     /************************************************************************/
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(EMOTE_ONESHOT_NONE);
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
 
 //    /************************************************************************/
 //    /* Make sure the co-ordinates are valid.                                */
