@@ -1061,13 +1061,13 @@ void StoneskinGargoyleAI::AIUpdate()
     bool HasAura = HasStoneskin();
     if (_isCasting() || HasAura)
         return;
-    else if (getCreature()->GetEmoteState() == EMOTE_STATE_SUBMERGED)
-        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+    else if (getCreature()->getEmoteState() == EMOTE_STATE_SUBMERGED)
+        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
     if (!_isCasting() && _getHealthPercent() <= 30)
     {
         _castAISpell(mStoneskin);
-        getCreature()->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
+        getCreature()->setEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();

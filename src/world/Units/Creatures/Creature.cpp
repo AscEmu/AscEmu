@@ -260,7 +260,7 @@ void Creature::OnRespawn(MapMgr* m)
     if (m_spawn)
     {
         setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
-        SetEmoteState(m_spawn->emote_state);
+        setEmoteState(m_spawn->emote_state);
 
         // creature's death state
         if (m_spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
@@ -1373,7 +1373,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     SetFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
-    SetEmoteState(spawn->emote_state);
+    setEmoteState(spawn->emote_state);
     setBoundingRadius(creature_properties->BoundingRadius);
     setCombatReach(creature_properties->CombatReach);
     original_emotestate = spawn->emote_state;
@@ -1951,7 +1951,7 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
         return;
 
     m_limbostate = false;
-    SetEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
+    setEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
     setHealth(GetMaxHealth());
     bInvincible = false;
 }
@@ -2072,11 +2072,6 @@ uint32 Creature::GetRequiredLootSkill()
         return SKILL_ENGINEERING;
     else
         return SKILL_SKINNING;      // skinning
-}
-
-void Creature::setEmoteState(uint8 emote)
-{
-    m_emoteState = emote;
 }
 
 uint32 Creature::GetSQL_id()

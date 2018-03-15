@@ -565,7 +565,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     m_aiInterface = new AIInterface();
     m_aiInterface->Init(this, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-    m_emoteState = 0;
     m_oldEmote = 0;
 
     BaseDamage[0] = 0;
@@ -8431,7 +8430,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
         if (pThis->cannibalize)
         {
             sEventMgr.RemoveEvents(pThis, EVENT_CANNIBALIZE);
-            pThis->SetEmoteState(EMOTE_ONESHOT_NONE);
+            pThis->setEmoteState(EMOTE_ONESHOT_NONE);
             pThis->cannibalize = false;
         }
     }
@@ -10245,14 +10244,14 @@ void Unit::clearInRangeSets()
 //Events
 void Unit::EventAddEmote(EmoteType emote, uint32 time)
 {
-    m_oldEmote = GetEmoteState();
-    SetEmoteState(emote);
+    m_oldEmote = getEmoteState();
+    setEmoteState(emote);
     sEventMgr.AddEvent(this, &Creature::EmoteExpire, EVENT_UNIT_EMOTE, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Unit::EmoteExpire()
 {
-    SetEmoteState(m_oldEmote);
+    setEmoteState(m_oldEmote);
     sEventMgr.RemoveEvents(this, EVENT_UNIT_EMOTE);
 }
 

@@ -1097,8 +1097,8 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    uint32 old_emote = creature_target->GetEmoteState();
-    creature_target->SetEmoteState(emote);
+    uint32 old_emote = creature_target->getEmoteState();
+    creature_target->setEmoteState(emote);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save = 1;

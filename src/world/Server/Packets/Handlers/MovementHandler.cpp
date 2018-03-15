@@ -185,8 +185,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         }
     }
 
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(EMOTE_ONESHOT_NONE);
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
 
     // TODO Verify that timestamp can be replaced with AscEmu funcs
     const auto ms_time = Util::getMSTime();

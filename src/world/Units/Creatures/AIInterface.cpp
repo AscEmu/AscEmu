@@ -918,7 +918,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
                 displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->getNativeDisplayId() : wayPoint->forwardskinid;
 
             wpCreature->setDisplayId(displayId);
-            wpCreature->SetEmoteState(wayPoint->backwardemoteid);
+            wpCreature->setEmoteState(wayPoint->backwardemoteid);
 
             wpCreature->setLevel(wayPoint->id);
             wpCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
@@ -4380,7 +4380,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     }
 
     // Stop the emote - change to fight emote
-    m_Unit->SetEmoteState(EMOTE_STATE_READY1H);
+    m_Unit->setEmoteState(EMOTE_STATE_READY1H);
 
     if (misc1 == 0)
     {
@@ -4484,9 +4484,9 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP);
 
         if (creature->original_emotestate)
-            m_Unit->SetEmoteState(creature->original_emotestate);
+            m_Unit->setEmoteState(creature->original_emotestate);
         else
-            m_Unit->SetEmoteState(EMOTE_ONESHOT_NONE);
+            m_Unit->setEmoteState(EMOTE_ONESHOT_NONE);
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {

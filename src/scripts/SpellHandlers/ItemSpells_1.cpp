@@ -821,11 +821,11 @@ bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        p_target->SetEmoteState(EMOTE_STATE_DANCE);
+        p_target->setEmoteState(EMOTE_STATE_DANCE);
     }
     else
     {
-        p_target->SetEmoteState(EMOTE_STATE_NONE);
+        p_target->setEmoteState(EMOTE_STATE_NONE);
     }
 
     return true;

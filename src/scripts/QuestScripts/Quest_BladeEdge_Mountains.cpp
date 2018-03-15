@@ -166,7 +166,7 @@ public:
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);
-        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
         getCreature()->GetAIInterface()->m_canMove = false;
         i = 1;
     }
@@ -365,7 +365,7 @@ public:
         if (getRangeToObject(Ogre->getCreature()) <= 5)
         {
             Ogre->_setDisplayWeaponIds(28562, 0);
-            Ogre->getCreature()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
+            Ogre->getCreature()->setEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
             Ogre->getCreature()->SetFaction(35);
             Ogre->getCreature()->setStandState(STANDSTATE_SIT);
 

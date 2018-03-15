@@ -539,7 +539,7 @@ class AdamantAI : public CreatureAIScript
                     {
                         case 0:
                         {
-                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->setEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();
@@ -698,7 +698,7 @@ class AshcrombeAI : public CreatureAIScript
                         // Starting movement
                         case 0:
                         {
-                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->setEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();

@@ -326,7 +326,7 @@ class WardenMellicharAI : public CreatureAIScript
             Phase_Timer = _addTimer(55000);
 
             setCanEnterCombat(false);
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
+            getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
 
             shield = getNearestGameObject(445.786f, -169.263f, 43.0466f, 184802);
             if (shield)

@@ -1354,7 +1354,7 @@ void Player::_EventAttack(bool offhand)
             if (static_cast< Player* >(pVictim)->cannibalize)
             {
                 sEventMgr.RemoveEvents(pVictim, EVENT_CANNIBALIZE);
-                pVictim->SetEmoteState(EMOTE_ONESHOT_NONE);
+                pVictim->setEmoteState(EMOTE_ONESHOT_NONE);
                 static_cast< Player* >(pVictim)->cannibalize = false;
             }
         }
@@ -7088,7 +7088,7 @@ void Player::EventCannibalize(uint32 amount)
 
     cannibalizeCount++;
     if (cannibalizeCount == 5)
-        SetEmoteState(EMOTE_ONESHOT_NONE);
+        setEmoteState(EMOTE_ONESHOT_NONE);
 
     SendPeriodicHealAuraLog(GetNewGUID(), GetNewGUID(), 20577, amt, 0, false);
 }
@@ -14187,7 +14187,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         if (cannibalize)
         {
             sEventMgr.RemoveEvents(this, EVENT_CANNIBALIZE);
-            SetEmoteState(EMOTE_ONESHOT_NONE);
+            setEmoteState(EMOTE_ONESHOT_NONE);
             cannibalize = false;
         }
     }

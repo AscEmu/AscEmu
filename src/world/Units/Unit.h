@@ -364,6 +364,9 @@ public:
     void addNpcFlags(uint32_t npcFlags);
     void removeNpcFlags(uint32_t npcFlags);
 
+    uint32_t getEmoteState() const;
+    void setEmoteState(uint32_t id);
+
     //byte_2 begin
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
@@ -877,7 +880,6 @@ public:
     void Emote(EmoteType emote);
     void EventAddEmote(EmoteType emote, uint32 time);
     void EmoteExpire();
-    void setEmoteState(uint8 emote) { m_emoteState = emote; };
     uint32 GetOldEmote() { return m_oldEmote; }
     void EventHealthChangeSinceLastUpdate();
 
@@ -1168,9 +1170,6 @@ public:
     void SetCreatedBySpell(uint32 id) { setUInt32Value(UNIT_CREATED_BY_SPELL, id); }
     uint32 GetCreatedBySpell() { return getUInt32Value(UNIT_CREATED_BY_SPELL); }
 
-    void SetEmoteState(uint32 id) { setUInt32Value(UNIT_NPC_EMOTESTATE, id); }
-    uint32 GetEmoteState() { return getUInt32Value(UNIT_NPC_EMOTESTATE); }
-
     void SetStat(uint16_t stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
     uint32 GetStat(uint16_t stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }
 
@@ -1360,7 +1359,6 @@ protected:
     uint32 m_manaShieldId;
 
     // Quest emote
-    uint8 m_emoteState;
     uint32 m_oldEmote;
 
     // Some auras can only be cast on one target at a time

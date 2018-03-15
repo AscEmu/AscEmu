@@ -160,6 +160,9 @@ void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlag
 void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
 void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
 
+uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
+void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
+
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }

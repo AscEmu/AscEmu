@@ -214,7 +214,6 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-        void setEmoteState(uint8 emote);
         uint32 GetSQL_id();
 
         virtual void setDeathState(DeathState s);
