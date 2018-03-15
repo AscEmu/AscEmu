@@ -91,6 +91,11 @@ void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | 
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 #endif
 
+uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
+void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
+void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
+void Unit::removeAuraState(uint32_t state) { setAuraState(getAuraState() & ~state); }
+
 uint32_t Unit::getBaseAttackTime(uint8_t slot) const { return unitData()->base_attack_time[slot]; }
 void Unit::setBaseAttackTime(uint8_t slot, uint32_t time) { write(unitData()->base_attack_time[slot], time); }
 void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
@@ -115,11 +120,6 @@ void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
 
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
 void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
-
-uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
-void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
-void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
-void Unit::removeAuraState(uint32_t state) { setAuraState(getAuraState() & ~state); }
 
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }

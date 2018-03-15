@@ -303,6 +303,11 @@ public:
     void removeUnitFlags2(uint32_t unitFlags2);
 #endif
 
+    uint32_t getAuraState() const;
+    void setAuraState(uint32_t state);
+    void addAuraState(uint32_t state);
+    void removeAuraState(uint32_t state);
+
     uint32_t getBaseAttackTime(uint8_t slot) const;
     void setBaseAttackTime(uint8_t slot, uint32_t time);
     void modBaseAttackTime(uint8_t slot, int32_t modTime);
@@ -318,11 +323,6 @@ public:
 
     uint32_t getNativeDisplayId() const;
     void setNativeDisplayId(uint32_t id);
-
-    uint32_t getAuraState() const;
-    void setAuraState(uint32_t state);
-    void addAuraState(uint32_t state);
-    void removeAuraState(uint32_t state);
 
     //bytes_1 begin
     uint8_t getStandState() const;
