@@ -10298,8 +10298,8 @@ void Unit::CalcDamage()
         r = (BaseDamage[1] + bonus) * mult + delta;
         setMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
 
-        //	SetMinRangedDamage(BaseRangedDamage[0]*mult+delta);
-        //	SetMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
+        //	setMinRangedDamage(BaseRangedDamage[0]*mult+delta);
+        //	setMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
     }
 }
 

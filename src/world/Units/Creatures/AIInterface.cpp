@@ -2026,7 +2026,7 @@ void AIInterface::DismissPet()
     if (m_PetOwner->GetTypeId() != TYPEID_PLAYER)
     return;
 
-    if (m_Unit->GetCreatedBySpell() == 0)
+    if (m_Unit->getCreatedBySpellId() == 0)
     TO< Player* >(m_PetOwner)->SetFreePetNo(false, (int)m_Unit->GetUInt32Value(UNIT_FIELD_PETNUMBER));
     TO< Player* >(m_PetOwner)->SetPet(NULL);
     TO< Player* >(m_PetOwner)->SetPetName("");
@@ -4946,8 +4946,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->setMaxDamage(properties_difficulty->MaxDamage);
 
             m_Unit->setBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
-            m_Unit->SetMinRangedDamage(properties_difficulty->RangedMinDamage);
-            m_Unit->SetMaxRangedDamage(properties_difficulty->RangedMaxDamage);
+            m_Unit->setMinRangedDamage(properties_difficulty->RangedMinDamage);
+            m_Unit->setMaxRangedDamage(properties_difficulty->RangedMaxDamage);
 
 
             m_Unit->SetFaction(properties_difficulty->Faction);
@@ -4983,8 +4983,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->BaseDamage[1] = m_Unit->getMaxDamage();
             m_Unit->BaseOffhandDamage[0] = m_Unit->getMinOffhandDamage();
             m_Unit->BaseOffhandDamage[1] = m_Unit->getMaxOffhandDamage();
-            m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
-            m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
+            m_Unit->BaseRangedDamage[0] = m_Unit->getMinRangedDamage();
+            m_Unit->BaseRangedDamage[1] = m_Unit->getMaxRangedDamage();
 
             creature->BaseAttackType = properties_difficulty->attackSchool;
 

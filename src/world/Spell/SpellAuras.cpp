@@ -980,7 +980,7 @@ void Aura::Remove()
     if ((caster != nullptr) && caster->IsPlayer() && m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON))
     {
         Unit* charm = caster->GetMapMgr()->GetUnit(caster->getCharmGuid());
-        if ((charm != nullptr) && (charm->GetCreatedBySpell() == m_spellInfo->getId()))
+        if ((charm != nullptr) && (charm->getCreatedBySpellId() == m_spellInfo->getId()))
             static_cast< Player* >(caster)->UnPossess();
     }
 }

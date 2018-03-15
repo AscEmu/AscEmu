@@ -3154,7 +3154,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    s->SetCreatedBySpell(m_spellInfo->getId());
+    s->setCreatedBySpellId(m_spellInfo->getId());
     s->PushToWorld(p_caster->GetMapMgr());
 
     p_caster->Possess(s, 1000);
@@ -3190,7 +3190,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
         return;
 
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    summon->SetCreatedBySpell(m_spellInfo->getId());
+    summon->setCreatedBySpellId(m_spellInfo->getId());
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
     summon->PushToWorld(u_caster->GetMapMgr());
     u_caster->setCritterGuid(summon->getGuid());
@@ -3209,7 +3209,7 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     Creature* c = u_caster->GetMapMgr()->CreateCreature(properties_->Id);
     c->Load(properties_, v.x, v.y, v.z, v.o);
     c->Phase(PHASE_SET, u_caster->GetPhase());
-    c->SetCreatedBySpell(m_spellInfo->getId());
+    c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
     c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);

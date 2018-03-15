@@ -116,7 +116,7 @@ public:
             owner->CastSpell(getCreature(), 58838, true);   // inherit threat list
 
             // Mage mirror image spell
-            if (getCreature()->GetCreatedBySpell() == 58833)
+            if (getCreature()->getCreatedBySpellId() == 58833)
             {
                 getCreature()->setMaxHealth(2500);
                 getCreature()->setHealth(2500);

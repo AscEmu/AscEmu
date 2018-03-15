@@ -2779,7 +2779,7 @@ void Spell::SendChannelUpdate(uint32 time)
             if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->getCharmGuid() != 0))
             {
                 Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->getCharmGuid());
-                if ((u != nullptr) && (u->GetCreatedBySpell() == m_spellInfo->getId()))
+                if ((u != nullptr) && (u->getCreatedBySpellId() == m_spellInfo->getId()))
                     p_caster->UnPossess();
             }
         }

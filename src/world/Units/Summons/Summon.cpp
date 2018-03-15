@@ -40,7 +40,7 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
     SetFaction(pOwner->GetFaction());
     Phase(PHASE_SET, pOwner->GetPhase());
     SetZoneId(pOwner->GetZoneId());
-    SetCreatedBySpell(spellid);
+    setCreatedBySpellId(spellid);
     this->summonslot = pSummonslot;
 
     if (pOwner->IsPvPFlagged())
@@ -88,8 +88,8 @@ void Summon::OnPreRemoveFromWorld()
     if (owner == NULL)
         return;
 
-    if (GetCreatedBySpell() != 0)
-        owner->RemoveAura(GetCreatedBySpell());
+    if (getCreatedBySpellId() != 0)
+        owner->RemoveAura(getCreatedBySpellId());
 
     if (summonslot != -1)
         owner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(summonslot), false);

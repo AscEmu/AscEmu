@@ -353,11 +353,13 @@ public:
     void setAnimationFlags(uint8_t animationFlags);
     //bytes_1 end
 
-
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
+
+    uint32_t getCreatedBySpellId() const;
+    void setCreatedBySpellId(uint32_t id);
 
     uint32_t getNpcFlags() const;
     void setNpcFlags(uint32_t npcFlags);
@@ -381,6 +383,12 @@ public:
     void setShapeShiftForm(uint8_t shapeShiftForm);
     uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
     //bytes_2 end
+
+    float_t getMinRangedDamage() const;
+    void setMinRangedDamage(float_t damage);
+
+    float_t getMaxRangedDamage() const;
+    void setMaxRangedDamage(float_t damage);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -1154,21 +1162,9 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetMinRangedDamage(float amt) { setFloatValue(UNIT_FIELD_MINRANGEDDAMAGE, amt); }
-    float GetMinRangedDamage() { return getFloatValue(UNIT_FIELD_MINRANGEDDAMAGE); }
-
-    void SetMaxRangedDamage(float amt) { setFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, amt); }
-    float GetMaxRangedDamage() { return getFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
     void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetCreatedBySpell(uint32 id) { setUInt32Value(UNIT_CREATED_BY_SPELL, id); }
-    uint32 GetCreatedBySpell() { return getUInt32Value(UNIT_CREATED_BY_SPELL); }
 
     void SetStat(uint16_t stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
     uint32 GetStat(uint16_t stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }

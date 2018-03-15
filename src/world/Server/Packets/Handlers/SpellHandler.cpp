@@ -332,7 +332,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
     // TODO: move this Lightwell 'script' to SpellScript or CreatureScript...
     // For future reference; seems like the Lightwell npc should actually cast spell 60123 on click
-    // and this 60123 spell has Script Effect, where should be determined which rank of the Lightwell Renew needs to be casted (switch (GetCaster()->GetCreatedBySpell())...)
+    // and this 60123 spell has Script Effect, where should be determined which rank of the Lightwell Renew needs to be casted (switch (GetCaster()->getCreatedBySpellId())...)
 
     // Commented this out for now, it's not even working -Appled
     /*const uint32_t lightWellCharges = 59907;

@@ -97,8 +97,8 @@ void SummonHandler::GetSummonSlotSpellIDs(std::vector< uint32 > &spellids)
         Unit* u = (*itr);
 
         if (u != NULL)
-            if (u->GetCreatedBySpell() != 0)
-                spellids.push_back(u->GetCreatedBySpell());
+            if (u->getCreatedBySpellId() != 0)
+                spellids.push_back(u->getCreatedBySpellId());
     }
 }
 

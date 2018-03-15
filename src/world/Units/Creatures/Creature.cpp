@@ -938,7 +938,7 @@ void Creature::CalcStat(uint16 type)
         Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
             pos += int32(0.45f * owner->GetStat(STAT_STAMINA));
-        else if (type == STAT_INTELLECT && owner && GetCreatedBySpell())
+        else if (type == STAT_INTELLECT && owner && getCreatedBySpellId())
             pos += int32(0.30f * owner->GetStat(STAT_INTELLECT));
     }
 
@@ -1364,8 +1364,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setMaxDamage(creature_properties->MaxDamage);
 
     setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
-    SetMinRangedDamage(creature_properties->RangedMinDamage);
-    SetMaxRangedDamage(creature_properties->RangedMaxDamage);
+    setMinRangedDamage(creature_properties->RangedMinDamage);
+    setMaxRangedDamage(creature_properties->RangedMaxDamage);
 
     setVirtualItemSlotId(MELEE, spawn->Item1SlotDisplay);
     setVirtualItemSlotId(OFFHAND, spawn->Item2SlotDisplay);
@@ -1423,8 +1423,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     BaseDamage[1] = getMaxDamage();
     BaseOffhandDamage[0] = getMinOffhandDamage();
     BaseOffhandDamage[1] = getMaxOffhandDamage();
-    BaseRangedDamage[0] = GetMinRangedDamage();
-    BaseRangedDamage[1] = GetMaxRangedDamage();
+    BaseRangedDamage[0] = getMinRangedDamage();
+    BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
@@ -1658,8 +1658,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     BaseDamage[1] = getMaxDamage();
     BaseOffhandDamage[0] = getMinOffhandDamage();
     BaseOffhandDamage[1] = getMaxOffhandDamage();
-    BaseRangedDamage[0] = GetMinRangedDamage();
-    BaseRangedDamage[1] = GetMaxRangedDamage();
+    BaseRangedDamage[0] = getMinRangedDamage();
+    BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
@@ -2241,8 +2241,8 @@ void Creature::PrepareForRemove()
                 summoner->setCritterGuid(0);
 #endif
 
-            if (GetCreatedBySpell() != 0)
-                summoner->RemoveAura(GetCreatedBySpell());
+            if (getCreatedBySpellId() != 0)
+                summoner->RemoveAura(getCreatedBySpellId());
         }
     }
 

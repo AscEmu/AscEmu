@@ -155,6 +155,9 @@ void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_fl
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 
+uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
+void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
+
 uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
 void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
 void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
@@ -176,6 +179,12 @@ void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet
 uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
 void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
 //bytes_2 end
+
+float_t Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
+void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged_damage, damage); }
+
+float_t Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
+void Unit::setMaxRangedDamage(float_t damage) { write(unitData()->maximum_ranged_ddamage, damage); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement

@@ -128,7 +128,7 @@ void TotemSummon::SetupSpells()
     if (GetOwner() == NULL)
         return;
 
-    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(GetCreatedBySpell());
+    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());
     SpellInfo* TotemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
 
     if (TotemSpell == NULL)

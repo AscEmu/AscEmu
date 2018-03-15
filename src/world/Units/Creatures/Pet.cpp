@@ -440,7 +440,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
                 created_by_spell->HasEffect(SPELL_EFFECT_TAMECREATURE))
                 SetNameForEntry(entry);
 
-            SetCreatedBySpell(created_by_spell->getId());
+            setCreatedBySpellId(created_by_spell->getId());
         }
 
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
@@ -960,7 +960,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
-    SetCreatedBySpell(mPi->spellid);
+    setCreatedBySpellId(mPi->spellid);
     SetFaction(owner->GetFaction());
 
     ApplyStatsForLevel();

@@ -473,7 +473,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     }
 
     if (creature_target->getCreatedByGuid() || creature_target->getSummonedByGuid() ||
-        creature_target->getCharmedByGuid() || creature_target->GetCreatedBySpell())
+        creature_target->getCharmedByGuid() || creature_target->getCreatedBySpellId())
     {
         if (!owner_header_set)
         {
@@ -487,8 +487,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
             SystemMessage(m_session, "Summoner GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->getSummonedByGuid()));
         if (creature_target->getCharmedByGuid())
             SystemMessage(m_session, "Charmer GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->getCharmedByGuid()));
-        if (creature_target->GetCreatedBySpell())
-            SystemMessage(m_session, "Creator Spell: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCreatedBySpell()));
+        if (creature_target->getCreatedBySpellId())
+            SystemMessage(m_session, "Creator Spell: %u", Arcemu::Util::GUID_LOPART(creature_target->getCreatedBySpellId()));
     }
 
     if (owner_header_set)

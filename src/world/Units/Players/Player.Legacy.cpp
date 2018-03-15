@@ -11117,11 +11117,11 @@ void Player::CalcDamage()
 
         r = BaseRangedDamage[0] + delta + bonus;
         r *= tmp;
-        SetMinRangedDamage(r > 0 ? r : 0);
+        setMinRangedDamage(r > 0 ? r : 0);
 
         r = BaseRangedDamage[1] + delta + bonus;
         r *= tmp;
-        SetMaxRangedDamage(r > 0 ? r : 0);
+        setMaxRangedDamage(r > 0 ? r : 0);
 
 
         if (m_wratings.size())
