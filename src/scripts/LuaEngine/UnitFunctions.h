@@ -804,7 +804,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         uint32 DsplId = CHECK_ULONG(L, 1);
-        ptr->SetMount(DsplId);
+        ptr->setMountDisplayId(DsplId);
         return 0;
     }
 
@@ -4890,7 +4890,7 @@ class LuaUnit
                 lua_pushboolean(L, 0);
         }
         else
-            lua_pushboolean(L, (ptr->GetMount() > 0) ? 1 : 0);
+            lua_pushboolean(L, (ptr->getMountDisplayId() > 0) ? 1 : 0);
         return 1;
     }
 

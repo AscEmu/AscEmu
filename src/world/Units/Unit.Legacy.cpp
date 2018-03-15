@@ -10295,9 +10295,9 @@ void Unit::CalcDamage()
         mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
         r = (BaseDamage[0] + bonus) * mult + delta;
         // give some diversity to pet damage instead of having a 77-78 damage range (as an example)
-        SetMinDamage(r > 0 ? (IsPet() ? r * 0.9f : r) : 0);
+        setMinDamage(r > 0 ? (IsPet() ? r * 0.9f : r) : 0);
         r = (BaseDamage[1] + bonus) * mult + delta;
-        SetMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
+        setMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
 
         //	SetMinRangedDamage(BaseRangedDamage[0]*mult+delta);
         //	SetMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
@@ -10495,7 +10495,7 @@ bool Unit::IsControlledByPlayer()
 
 void Unit::UpdateSpeed()
 {
-    if (GetMount() == 0)
+    if (getMountDisplayId() == 0)
     {
         m_currentSpeedRun = m_basicSpeedRun * (1.0f + ((float)m_speedModifier) / 100.0f);
     }

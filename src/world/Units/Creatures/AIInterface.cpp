@@ -4394,7 +4394,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
     // dismount if mounted
     if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
-        m_Unit->SetMount(0);
+        m_Unit->setMountDisplayId(0);
 
     if (!isAiState(AI_STATE_ATTACKING))
         StopMovement(0);
@@ -4589,7 +4589,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
     {
         Creature* creature = static_cast< Creature* >(m_Unit);
         if (creature->m_spawn)
-            m_Unit->SetMount(creature->m_spawn->MountedDisplayID);
+            m_Unit->setMountDisplayId(creature->m_spawn->MountedDisplayID);
     }
     //Zack : not sure we need to send this. Did not see it in the dumps since mob died eventually but it seems logical to make this
     m_Unit->smsg_AttackStop(pUnit);
@@ -4766,7 +4766,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
 
     resetNextTarget();
 
-    m_Unit->SetMount(0);
+    m_Unit->setMountDisplayId(0);
 
     mCurrentWaypoint = 0;
 
@@ -4942,8 +4942,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setBaseAttackTime(MELEE, properties_difficulty->AttackTime);
 
-            m_Unit->SetMinDamage(properties_difficulty->MinDamage);
-            m_Unit->SetMaxDamage(properties_difficulty->MaxDamage);
+            m_Unit->setMinDamage(properties_difficulty->MinDamage);
+            m_Unit->setMaxDamage(properties_difficulty->MaxDamage);
 
             m_Unit->setBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
             m_Unit->SetMinRangedDamage(properties_difficulty->RangedMinDamage);
@@ -4979,10 +4979,10 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->BaseStats[j] = m_Unit->GetStat(j);
             }
 
-            m_Unit->BaseDamage[0] = m_Unit->GetMinDamage();
-            m_Unit->BaseDamage[1] = m_Unit->GetMaxDamage();
-            m_Unit->BaseOffhandDamage[0] = m_Unit->GetMinOffhandDamage();
-            m_Unit->BaseOffhandDamage[1] = m_Unit->GetMaxOffhandDamage();
+            m_Unit->BaseDamage[0] = m_Unit->getMinDamage();
+            m_Unit->BaseDamage[1] = m_Unit->getMaxDamage();
+            m_Unit->BaseOffhandDamage[0] = m_Unit->getMinOffhandDamage();
+            m_Unit->BaseOffhandDamage[1] = m_Unit->getMaxOffhandDamage();
             m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
             m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
 

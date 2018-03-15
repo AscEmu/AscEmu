@@ -1002,8 +1002,8 @@ bool Player::Create(WorldPacket& data)
         setNativeDisplayId(info->displayId - gender);
     }
     EventModelChange();
-    //SetMinDamage(info->mindmg);
-    //SetMaxDamage(info->maxdmg);
+    //setMinDamage(info->mindmg);
+    //setMaxDamage(info->maxdmg);
     SetAttackPower(info->attackpower);
 
     // PLAYER_BYTES
@@ -2848,7 +2848,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     {
         ss << m_CurrentTaxiPath->GetID() << ", ";
         ss << lastNode << ", ";
-        ss << GetMount();
+        ss << getMountDisplayId();
     }
     else
     {
@@ -3486,7 +3486,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         lastNode = get_next_field.GetUInt32();
         if (path)
         {
-            SetMount(get_next_field.GetUInt32());
+            setMountDisplayId(get_next_field.GetUInt32());
             SetTaxiPath(path);
             m_onTaxi = true;
         }
@@ -4246,7 +4246,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         lastNode = get_next_field.GetUInt32();
         if (path)
         {
-            SetMount(get_next_field.GetUInt32());
+            setMountDisplayId(get_next_field.GetUInt32());
             SetTaxiPath(path);
             m_onTaxi = true;
         }
@@ -4946,7 +4946,7 @@ void Player::OnPushToWorld()
         ProcessPendingUpdates();
 
         TaxiStart(GetTaxiPath(),
-                  GetMount(),
+                  getMountDisplayId(),
                   lastNode);
 
         m_taxiMapChangeNode = 0;
@@ -5054,7 +5054,7 @@ void Player::OnPushToWorld()
         }
 
         TaxiStart(GetTaxiPath(),
-                  GetMount(),
+                  getMountDisplayId(),
                   lastNode);
 
         m_taxiMapChangeNode = 0;
@@ -7825,7 +7825,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
 
     DismissActivePets();
 
-    SetMount(modelid);
+    setMountDisplayId(modelid);
     addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
@@ -10973,11 +10973,11 @@ void Player::CalcDamage()
 
             r = feral_damage * 0.79f + delta + ap_bonus * 1000.0f;
             r *= tmp;
-            SetMinDamage(r > 0 ? r : 0);
+            setMinDamage(r > 0 ? r : 0);
 
             r = feral_damage * 1.21f + delta + ap_bonus * 1000.0f;
             r *= tmp;
-            SetMaxDamage(r > 0 ? r : 0);
+            setMaxDamage(r > 0 ? r : 0);
         }
         else // Bear or Dire Bear Form
         {
@@ -10993,11 +10993,11 @@ void Player::CalcDamage()
 
             r = feral_damage * 0.79f + delta + ap_bonus * 2500.0f;
             r *= tmp;
-            SetMinDamage(r > 0 ? r : 0);
+            setMinDamage(r > 0 ? r : 0);
 
             r = feral_damage * 1.21f + delta + ap_bonus * 2500.0f;
             r *= tmp;
-            SetMaxDamage(r > 0 ? r : 0);
+            setMaxDamage(r > 0 ? r : 0);
         }
 
         return;
@@ -11025,11 +11025,11 @@ void Player::CalcDamage()
 
     r = BaseDamage[0] + delta + bonus;
     r *= tmp;
-    SetMinDamage(r > 0 ? r : 0);
+    setMinDamage(r > 0 ? r : 0);
 
     r = BaseDamage[1] + delta + bonus;
     r *= tmp;
-    SetMaxDamage(r > 0 ? r : 0);
+    setMaxDamage(r > 0 ? r : 0);
 
     uint32 cr = 0;
     if (it)
@@ -11068,10 +11068,10 @@ void Player::CalcDamage()
 
         r = (BaseOffhandDamage[0] + delta + bonus) * offhand_dmg_mod;
         r *= tmp;
-        SetMinOffhandDamage(r > 0 ? r : 0);
+        setMinOffhandDamage(r > 0 ? r : 0);
         r = (BaseOffhandDamage[1] + delta + bonus) * offhand_dmg_mod;
         r *= tmp;
-        SetMaxOffhandDamage(r > 0 ? r : 0);
+        setMaxOffhandDamage(r > 0 ? r : 0);
         if (m_wratings.size())
         {
             std::map<uint32, uint32>::iterator itr = m_wratings.find(it->getItemProperties()->SubClass);

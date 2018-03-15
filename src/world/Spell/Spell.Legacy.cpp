@@ -5974,7 +5974,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
                 //4x 1h weapon-dps ->  4*(mindmg+maxdmg)/speed/2 = 2*(mindmg+maxdmg)/speed
-                value = float2int32((p_caster->GetMinDamage() + p_caster->GetMaxDamage()) / (float(p_caster->getBaseAttackTime(MELEE)) / 1000.0f)) << 1;
+                value = float2int32((p_caster->getMinDamage() + p_caster->getMaxDamage()) / (float(p_caster->getBaseAttackTime(MELEE)) / 1000.0f)) << 1;
         } break;
 
         // SPELL_HASH_BACKSTAB:  // Egari: spell 31220 is interfering with combopoints

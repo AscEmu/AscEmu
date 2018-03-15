@@ -260,13 +260,13 @@ bool ReindeerTransformation(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster)
         return true;
 
-    if (pSpell->p_caster->GetMount() != 0)
+    if (pSpell->p_caster->getMountDisplayId() != 0)
     {
         /*Zyres: This is not correct!
         if (pSpell->p_caster->m_setflycheat)
-            pSpell->p_caster->SetMount(22724);
+            pSpell->p_caster->setMountDisplayId(22724);
         else*/
-        pSpell->p_caster->SetMount(15902);
+        pSpell->p_caster->setMountDisplayId(15902);
     }
     return true;
 }

@@ -33,7 +33,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (unit_target->GetMount() != 0)
+    if (unit_target->getMountDisplayId() != 0)
     {
         RedSystemMessage(m_session, "Target is already mounted.");
         return true;
@@ -54,7 +54,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
     if (unit_target == nullptr)
         return true;
 
-    if (unit_target->GetMount() == 0)
+    if (unit_target->getMountDisplayId() == 0)
     {
         RedSystemMessage(m_session, "Target is not mounted.");
         return true;

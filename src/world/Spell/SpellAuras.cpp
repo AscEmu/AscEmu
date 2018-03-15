@@ -5769,7 +5769,7 @@ void Aura::SpellAuraMounted(bool apply)
         p_target->mountvehicleid = 0;
         p_target->m_MountSpellId = 0;
         p_target->flying_aura = 0;
-        m_target->SetMount(0);
+        m_target->setMountDisplayId(0);
         //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
         //if we had pet then respawn
@@ -7689,7 +7689,7 @@ void Aura::SpellAuraIncreaseCricticalTypePCT(bool apply)
 
 void Aura::SpellAuraIncreasePartySpeed(bool apply)
 {
-    if (m_target->IsPlayer() && m_target->isAlive() && m_target->GetMount() == 0)
+    if (m_target->IsPlayer() && m_target->isAlive() && m_target->getMountDisplayId() == 0)
     {
         if (apply)
         {

@@ -337,7 +337,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
         SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->GetPower(powertype), creature_target->GetMaxPower(powertype));
     }
 
-    SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->GetMinDamage(), creature_target->GetMaxDamage());
+    SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->getMinDamage(), creature_target->getMaxDamage());
 
     if (creature_target->getPetTalentPoints() != 0)
         SystemMessage(m_session, "Free pet talent points: %u", creature_target->getPetTalentPoints());

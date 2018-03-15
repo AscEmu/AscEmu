@@ -324,6 +324,21 @@ public:
     uint32_t getNativeDisplayId() const;
     void setNativeDisplayId(uint32_t id);
 
+    uint32_t getMountDisplayId() const;
+    void setMountDisplayId(uint32_t id);
+
+    float_t getMinDamage() const;
+    void setMinDamage(float_t damage);
+
+    float_t getMaxDamage() const;
+    void setMaxDamage(float_t damage);
+
+    float_t getMinOffhandDamage() const;
+    void setMinOffhandDamage(float_t damage);
+
+    float_t getMaxOffhandDamage() const;
+    void setMaxOffhandDamage(float_t damage);
+
     //bytes_1 begin
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
@@ -1137,18 +1152,6 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetMinDamage(float amt) { setFloatValue(UNIT_FIELD_MINDAMAGE, amt); }
-    float GetMinDamage() { return getFloatValue(UNIT_FIELD_MINDAMAGE); }
-
-    void SetMaxDamage(float amt) { setFloatValue(UNIT_FIELD_MAXDAMAGE, amt); }
-    float GetMaxDamage() { return getFloatValue(UNIT_FIELD_MAXDAMAGE); }
-
-    void SetMinOffhandDamage(float amt) { setFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE, amt); }
-    float GetMinOffhandDamage() { return getFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE); }
-
-    void SetMaxOffhandDamage(float amt) { setFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE, amt); }
-    float GetMaxOffhandDamage() { return getFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE); }
-
     void SetMinRangedDamage(float amt) { setFloatValue(UNIT_FIELD_MINRANGEDDAMAGE, amt); }
     float GetMinRangedDamage() { return getFloatValue(UNIT_FIELD_MINRANGEDDAMAGE); }
 
@@ -1157,8 +1160,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetMount(uint32 id) { setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, id); }
-    uint32 GetMount() { return getUInt32Value(UNIT_FIELD_MOUNTDISPLAYID); }
 
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }

@@ -121,6 +121,21 @@ void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
 void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
 
+uint32_t Unit::getMountDisplayId() const { return unitData()->mount_display_id; }
+void Unit::setMountDisplayId(uint32_t id) { write(unitData()->mount_display_id, id); }
+
+float_t Unit::getMinDamage() const { return unitData()->minimum_damage; }
+void Unit::setMinDamage(float_t damage) { write(unitData()->minimum_damage, damage); }
+
+float_t Unit::getMaxDamage() const { return unitData()->maximum_damage; }
+void Unit::setMaxDamage(float_t damage) { write(unitData()->maximum_damage, damage); }
+
+float_t Unit::getMinOffhandDamage() const { return unitData()->minimum_offhand_damage; }
+void Unit::setMinOffhandDamage(float_t damage) { write(unitData()->minimum_offhand_damage, damage); }
+
+float_t Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_damage; }
+void Unit::setMaxOffhandDamage(float_t damage) { write(unitData()->maximum_offhand_damage, damage); }
+
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }

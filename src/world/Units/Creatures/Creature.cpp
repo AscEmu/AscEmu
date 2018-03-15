@@ -1346,7 +1346,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     setDisplayId(spawn->displayid);
     setNativeDisplayId(spawn->displayid);
-    SetMount(spawn->MountedDisplayID);
+    setMountDisplayId(spawn->MountedDisplayID);
 
     EventModelChange();
 
@@ -1360,8 +1360,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
 
-    SetMinDamage(creature_properties->MinDamage);
-    SetMaxDamage(creature_properties->MaxDamage);
+    setMinDamage(creature_properties->MinDamage);
+    setMaxDamage(creature_properties->MaxDamage);
 
     setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
     SetMinRangedDamage(creature_properties->RangedMinDamage);
@@ -1419,10 +1419,10 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     for (uint8 x = 0; x < 5; ++x)
         BaseStats[x] = GetStat(x);
 
-    BaseDamage[0] = GetMinDamage();
-    BaseDamage[1] = GetMaxDamage();
-    BaseOffhandDamage[0] = GetMinOffhandDamage();
-    BaseOffhandDamage[1] = GetMaxOffhandDamage();
+    BaseDamage[0] = getMinDamage();
+    BaseDamage[1] = getMaxDamage();
+    BaseOffhandDamage[0] = getMinOffhandDamage();
+    BaseOffhandDamage[1] = getMaxOffhandDamage();
     BaseRangedDamage[0] = GetMinRangedDamage();
     BaseRangedDamage[1] = GetMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
@@ -1597,7 +1597,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     setDisplayId(model);
     setNativeDisplayId(model);
-    SetMount(0);
+    setMountDisplayId(0);
 
     EventModelChange();
 
@@ -1607,8 +1607,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         SetResistance(i, creature_properties->Resistances[i]);
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
-    SetMinDamage(creature_properties->MinDamage);
-    SetMaxDamage(creature_properties->MaxDamage);
+    setMinDamage(creature_properties->MinDamage);
+    setMaxDamage(creature_properties->MaxDamage);
 
 
     SetFaction(creature_properties->Faction);
@@ -1654,10 +1654,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     for (uint8 j = 0; j < 5; ++j)
         BaseStats[j] = GetStat(j);
 
-    BaseDamage[0] = GetMinDamage();
-    BaseDamage[1] = GetMaxDamage();
-    BaseOffhandDamage[0] = GetMinOffhandDamage();
-    BaseOffhandDamage[1] = GetMaxOffhandDamage();
+    BaseDamage[0] = getMinDamage();
+    BaseDamage[1] = getMaxDamage();
+    BaseOffhandDamage[0] = getMinOffhandDamage();
+    BaseOffhandDamage[1] = getMaxOffhandDamage();
     BaseRangedDamage[0] = GetMinRangedDamage();
     BaseRangedDamage[1] = GetMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;

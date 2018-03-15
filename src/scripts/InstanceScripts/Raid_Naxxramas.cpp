@@ -2240,7 +2240,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 {
     if (mChargerAI != NULL)
     {
-        if (isAlive() && getCreature()->GetMount() == 0)
+        if (isAlive() && getCreature()->getMountDisplayId() == 0)
             getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
 
         mChargerAI->mDeathKnightAI = NULL;
@@ -2253,7 +2253,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 
 void DeathKnightCavalierAI::AIUpdate()
 {
-    if (mIsMounted && getCreature()->GetMount() == 0)
+    if (mIsMounted && getCreature()->getMountDisplayId() == 0)
         getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
     if (mIsMounted && Util::getRandomUInt(99) < 2)
     {

@@ -43,7 +43,7 @@ void GameEvent::CreateNPCs()
         c->setVirtualItemSlotId(RANGED, cp->itemslot_3);
 
         if (npc.mountdisplayid != 0)
-            c->SetMount(npc.mountdisplayid);
+            c->setMountDisplayId(npc.mountdisplayid);
 
         c->mEvent = this;
         bool addToWorld = true;

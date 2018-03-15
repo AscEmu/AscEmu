@@ -1962,8 +1962,8 @@ class MalchezaarAI : public CreatureAIScript
         if (cp == nullptr)
             return;
 
-        getCreature()->SetMinDamage(cp->MinDamage);
-        getCreature()->SetMaxDamage(cp->MaxDamage);
+        getCreature()->setMinDamage(cp->MinDamage);
+        getCreature()->setMaxDamage(cp->MaxDamage);
 
         for (uint8 i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
@@ -2099,8 +2099,8 @@ class MalchezaarAI : public CreatureAIScript
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(1.5f * cp->MinDamage);
-            getCreature()->SetMaxDamage(1.5f * cp->MaxDamage);
+            getCreature()->setMinDamage(1.5f * cp->MinDamage);
+            getCreature()->setMaxDamage(1.5f * cp->MaxDamage);
 
             m_phase = 2;
         }
@@ -2138,8 +2138,8 @@ class MalchezaarAI : public CreatureAIScript
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(cp->MinDamage);
-            getCreature()->SetMaxDamage(cp->MaxDamage);
+            getCreature()->setMinDamage(cp->MinDamage);
+            getCreature()->setMaxDamage(cp->MaxDamage);
             m_phase = 3;
         }
     }

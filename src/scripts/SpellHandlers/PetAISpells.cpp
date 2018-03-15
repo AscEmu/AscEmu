@@ -49,8 +49,8 @@ public:
 
             float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
-            s->SetMinDamage(s->GetMinDamage() + parent_bonus);
-            s->SetMaxDamage(s->GetMaxDamage() + parent_bonus);
+            s->setMinDamage(s->getMinDamage() + parent_bonus);
+            s->setMaxDamage(s->getMaxDamage() + parent_bonus);
         }
     }
 
@@ -81,8 +81,8 @@ public:
             float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
             s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
             s->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
-            s->SetMinDamage(s->GetMinDamage() + owner_bonus);
-            s->SetMaxDamage(s->GetMaxDamage() + owner_bonus);
+            s->setMinDamage(s->getMinDamage() + owner_bonus);
+            s->setMaxDamage(s->getMaxDamage() + owner_bonus);
             s->BaseDamage[0] += owner_bonus;
             s->BaseDamage[1] += owner_bonus;
 
@@ -216,8 +216,8 @@ public:
 #endif
             }
 
-            s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
-            s->SetMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+            s->setMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+            s->setMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
         }
     }
 
