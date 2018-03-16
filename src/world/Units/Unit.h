@@ -282,9 +282,6 @@ public:
     uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
 
-    void setBaseHealth(uint32_t baseHealth);
-
-    void setBaseMana(uint32_t baseMana);
     void setMaxMana(uint32_t maxMana);
 
     uint32_t getLevel() const;
@@ -385,6 +382,12 @@ public:
 
     uint32_t getResistance(uint8_t type) const;
     void setResistance(uint8_t type, uint32_t value);
+
+    uint32_t getBaseMana() const;
+    void setBaseMana(uint32_t baseMana);
+
+    uint32_t getBaseHealth() const;
+    void setBaseHealth(uint32_t baseHealth);
 
     //byte_2 begin
     uint8_t getSheathType() const;
@@ -1182,10 +1185,6 @@ public:
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
     void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
-
-    uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
 
     void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
     void ModPowerCostMultiplier(uint16_t school, float amt) { modFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }

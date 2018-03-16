@@ -65,9 +65,6 @@ void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
 uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
 void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
 
-void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
-
-void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
 
 uint32_t Unit::getLevel() const { return unitData()->level; }
@@ -182,6 +179,12 @@ void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative
 
 uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
 void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
+
+uint32_t Unit::getBaseMana() const { return unitData()->base_mana; }
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+
+uint32_t Unit::getBaseHealth() const { return unitData()->base_health; }
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
 
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }

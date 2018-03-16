@@ -2939,9 +2939,9 @@ bool Spell::HasPower()
         if (u_caster != nullptr)
         {
             if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->GetBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
             else
-                cost = (u_caster->GetBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
         }
     }
     else
@@ -3097,9 +3097,9 @@ bool Spell::TakePower()
         if (u_caster != nullptr)
         {
             if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->GetBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
             else
-                cost = (u_caster->GetBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
         }
     }
     else
@@ -6090,7 +6090,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 53408:
         {
             if (u_caster != nullptr)
-                value = u_caster->GetBaseMana() * 2 / 100;
+                value = u_caster->getBaseMana() * 2 / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT:

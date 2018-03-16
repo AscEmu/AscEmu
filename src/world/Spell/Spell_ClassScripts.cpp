@@ -231,7 +231,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
         if (p_caster != NULL && i == 0 && target != NULL)
-            value = (uint32)(p_caster->GetBaseMana() * 0.225f);
+            value = (uint32)(p_caster->getBaseMana() * 0.225f);
 
         return value;
     }

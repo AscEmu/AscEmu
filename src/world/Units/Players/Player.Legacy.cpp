@@ -6576,7 +6576,7 @@ void Player::UpdateStats()
         manadelta -= levelInfo->Stat[3] * 15;
     }
 
-    uint32 hp = GetBaseHealth();
+    uint32 hp = getBaseHealth();
 
 #if VERSION_STRING != Classic
     int32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
@@ -6625,7 +6625,7 @@ void Player::UpdateStats()
     if (cl != WARRIOR && cl != ROGUE && cl != DEATHKNIGHT)
     {
         // MP
-        uint32 mana = GetBaseMana();
+        uint32 mana = getBaseMana();
 #if VERSION_STRING != Classic
         stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3);
 #endif

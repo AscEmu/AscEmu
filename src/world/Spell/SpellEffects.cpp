@@ -5438,7 +5438,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
             uint32 cost = 0;
 
             if (sp->getManaCostPercentage() != 0)
-                cost = (p_caster->GetBaseMana() * sp->getManaCostPercentage()) / 100;
+                cost = (p_caster->getBaseMana() * sp->getManaCostPercentage()) / 100;
             else
                 cost = sp->getManaCost();
 

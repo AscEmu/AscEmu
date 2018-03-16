@@ -9232,7 +9232,7 @@ void Aura::SpellAuraModBaseHealth(bool apply)
         return;
 
     if (apply)
-        mod->fixed_amount[0] = p_target->GetBaseHealth();
+        mod->fixed_amount[0] = p_target->getBaseHealth();
 
     int32 amt = mod->fixed_amount[0] * mod->m_amount / 100;
 

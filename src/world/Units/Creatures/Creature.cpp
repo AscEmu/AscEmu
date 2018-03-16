@@ -987,7 +987,7 @@ void Creature::CalcStat(uint8_t type)
         {
 #if VERSION_STRING != Classic
             //Health
-            uint32 hp = GetBaseHealth();
+            uint32 hp = getBaseHealth();
             uint32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
             if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
@@ -1007,7 +1007,7 @@ void Creature::CalcStat(uint8_t type)
 #if VERSION_STRING != Classic
             if (getPowerType() == POWER_TYPE_MANA)
             {
-                uint32 mana = GetBaseMana();
+                uint32 mana = getBaseMana();
                 uint32 stat_bonus = (getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3));
                 if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
