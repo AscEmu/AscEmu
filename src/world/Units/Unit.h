@@ -380,6 +380,9 @@ public:
     void setNegStat(uint8_t stat, uint32_t value);
 #endif
 
+    uint32_t getResistance(uint8_t type) const;
+    void setResistance(uint8_t type, uint32_t value);
+
     //byte_2 begin
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
@@ -1176,10 +1179,6 @@ public:
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
     void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
-    uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
-
 
     uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
 

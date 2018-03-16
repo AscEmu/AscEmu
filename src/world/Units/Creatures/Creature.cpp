@@ -884,7 +884,7 @@ void Creature::clearInRangeSets()
     Unit::clearInRangeSets();
 }
 
-void Creature::CalcResistance(uint16 type)
+void Creature::CalcResistance(uint8_t type)
 {
     int32 pos = 0;
     int32 neg = 0;
@@ -898,9 +898,9 @@ void Creature::CalcResistance(uint16 type)
     {
         Player* owner = static_cast<Pet*>(this)->GetPetOwner();
         if (type == 0 && owner)
-            pos += int32(0.35f * owner->GetResistance(type));
+            pos += int32(0.35f * owner->getResistance(type));
         else if (owner)
-            pos += int32(0.40f * owner->GetResistance(type));
+            pos += int32(0.40f * owner->getResistance(type));
     }
 
     if (ResistanceModPct[type] < 0)
@@ -920,7 +920,7 @@ void Creature::CalcResistance(uint16 type)
 
     int32 tot = BaseResistance[type] + pos - neg;
 
-    SetResistance(type, tot > 0 ? tot : 0);
+    setResistance(type, tot > 0 ? tot : 0);
 }
 
 void Creature::CalcStat(uint8_t type)
@@ -1356,7 +1356,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         setLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
     for (uint8 i = 0; i < 7; ++i)
-        SetResistance(i, creature_properties->Resistances[i]);
+        setResistance(i, creature_properties->Resistances[i]);
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
 
@@ -1414,9 +1414,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 x = 0; x < 7; ++x)
-        BaseResistance[x] = GetResistance(x);
-    for (uint8 x = 0; x < 5; ++x)
+    for (uint8 x = 0; x < SCHOOL_COUNT; ++x)
+        BaseResistance[x] = getResistance(x);
+    for (uint8 x = 0; x < STAT_COUNT; ++x)
         BaseStats[x] = getStat(x);
 
     BaseDamage[0] = getMinDamage();
@@ -1604,7 +1604,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     for (uint8 i = 0; i < 7; ++i)
-        SetResistance(i, creature_properties->Resistances[i]);
+        setResistance(i, creature_properties->Resistances[i]);
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
     setMinDamage(creature_properties->MinDamage);
@@ -1649,9 +1649,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 j = 0; j < 7; ++j)
-        BaseResistance[j] = GetResistance(j);
-    for (uint8 j = 0; j < 5; ++j)
+    for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
+        BaseResistance[j] = getResistance(j);
+    for (uint8 j = 0; j < STAT_COUNT; ++j)
         BaseStats[j] = getStat(j);
 
     BaseDamage[0] = getMinDamage();

@@ -3709,7 +3709,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-    for (uint8_t x = 0; x < 5; x++)
+    for (uint8_t x = 0; x < STAT_COUNT; x++)
         BaseStats[x] = getStat(x);
 
 #if VERSION_STRING > TBC
@@ -4497,7 +4497,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-    for (uint8_t x = 0; x < 5; x++)
+    for (uint8_t x = 0; x < STAT_COUNT; x++)
         BaseStats[x] = getStat(x);
 
 #if VERSION_STRING > TBC
@@ -7639,7 +7639,7 @@ void Player::Reset_AllTalents()
     ActivateSpec(originalspec);
 }
 
-void Player::CalcResistance(uint16 type)
+void Player::CalcResistance(uint8_t type)
 {
     int32 res;
     int32 pos;
@@ -7675,7 +7675,7 @@ void Player::CalcResistance(uint16 type)
     setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
     setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, -neg);
 #endif
-    SetResistance(type, res > 0 ? res : 0);
+    setResistance(type, res > 0 ? res : 0);
 
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)

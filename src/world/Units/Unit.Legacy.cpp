@@ -6907,23 +6907,23 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     if ((*dmg).school_type == 0)        //physical
     {
         if (this->IsPlayer())
-            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->GetResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
+            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
         else
             ArmorReduce = 0.0f;
 
-        if (ArmorReduce >= pVictim->GetResistance(0))		// fully penetrated :O
+        if (ArmorReduce >= pVictim->getResistance(0))		// fully penetrated :O
             return;
 
-        //		double Reduction = double(pVictim->GetResistance(0)) / double(pVictim->GetResistance(0)+400+(85*getLevel()));
+        //		double Reduction = double(pVictim->getResistance(0)) / double(pVictim->getResistance(0)+400+(85*getLevel()));
         //dmg reduction formula from xinef
         double Reduction = 0;
         if (getLevel() < 60)
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) + 400 + (85 * getLevel()));
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 400 + (85 * getLevel()));
         else if (getLevel() > 59 && getLevel() < DBC_PLAYER_LEVEL_CAP)
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) - 22167.5 + (467.5 * getLevel()));
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) - 22167.5 + (467.5 * getLevel()));
         //
         else
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) + 10557.5);
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 10557.5);
 
         if (Reduction > 0.75f)
             Reduction = 0.75f;
@@ -6936,7 +6936,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     else
     {
         // applying resistance to other type of damage
-        int32 RResist = float2int32((pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
+        int32 RResist = float2int32((pVictim->getResistance(static_cast<uint8_t>((*dmg).school_type)) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
         if (RResist < 0)
             RResist = 0;
         AverageResistance = ((float)(RResist) / (float)(getLevel() * 5) * 0.75f);
@@ -6946,7 +6946,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
         if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
-            float Resistchance = (float)pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) / (float)pVictim->getLevel();
+            float Resistchance = (float)pVictim->getResistance(static_cast<uint8_t>((*dmg).school_type)) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
             if (Rand(Resistchance))
                 AverageResistance = 1.0f;

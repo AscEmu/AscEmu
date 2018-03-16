@@ -177,6 +177,9 @@ uint32_t Unit::getNegStat(uint8_t stat) const { return unitData()->negative_stat
 void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative_stat[stat], value); }
 #endif
 
+uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
+void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
+
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }

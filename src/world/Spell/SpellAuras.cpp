@@ -1616,7 +1616,7 @@ void Aura::SpellAuraModBaseResistancePerc(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint16 x = 0; x < 7; x++)
+    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -2308,7 +2308,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         bonus += c->HealDoneMod[m_spellInfo->getSchool()] + m_target->HealTakenMod[m_spellInfo->getSchool()];
         if (c->IsPlayer())
         {
-            for (uint8_t a = 0; a < 5; a++)
+            for (uint8_t a = 0; a < STAT_COUNT; a++)
             {
                 bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->getStat(a));
             }
@@ -3344,7 +3344,7 @@ void Aura::SpellAuraModResistance(bool apply)
 
     if (m_target->IsPlayer())
     {
-        for (uint16 x = 0; x < 7; x++)
+        for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
         {
             if (Flag & (((uint32)1) << x))
             {
@@ -3358,7 +3358,7 @@ void Aura::SpellAuraModResistance(bool apply)
     }
     else if (m_target->IsCreature())
     {
-        for (uint16 x = 0; x < 7; x++)
+        for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
         {
             if (Flag & (((uint32)1) << (uint32)x))
             {
@@ -6355,7 +6355,7 @@ void Aura::SpellAuraModResistancePCT(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint16 x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -7735,7 +7735,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
 
     if (m_target->IsPlayer())
     {
-        for (uint8_t x = 1; x < 7; x++)
+        for (uint8_t x = 1; x < SCHOOL_COUNT; x++)
         {
             if (mod->m_miscValue & (((uint32)1) << x))
             {
@@ -8230,7 +8230,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
     int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
     amt *= (!apply) ? -1 : 1;
 
-    for (uint16 x = 0; x < 7; x++)
+    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
     {
         if (mod->m_miscValue & (((uint32)1) << x))
         {
@@ -9262,7 +9262,7 @@ void Aura::SpellAuraModAttackPowerOfArmor(bool apply)
         else
             SetNegative();
 
-        mod->fixed_amount[mod->m_effectIndex] = m_target->GetResistance(SCHOOL_NORMAL) / mod->m_amount;
+        mod->fixed_amount[mod->m_effectIndex] = m_target->getResistance(SCHOOL_NORMAL) / mod->m_amount;
         m_target->ModAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else

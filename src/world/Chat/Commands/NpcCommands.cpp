@@ -361,26 +361,26 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // resistance
-    if (creature_target->GetResistance(SCHOOL_NORMAL) || creature_target->GetResistance(SCHOOL_HOLY) ||
-        creature_target->GetResistance(SCHOOL_FIRE) || creature_target->GetResistance(SCHOOL_NATURE) ||
-        creature_target->GetResistance(SCHOOL_FROST) || creature_target->GetResistance(SCHOOL_SHADOW) ||
-        creature_target->GetResistance(SCHOOL_ARCANE))
+    if (creature_target->getResistance(SCHOOL_NORMAL) || creature_target->getResistance(SCHOOL_HOLY) ||
+        creature_target->getResistance(SCHOOL_FIRE) || creature_target->getResistance(SCHOOL_NATURE) ||
+        creature_target->getResistance(SCHOOL_FROST) || creature_target->getResistance(SCHOOL_SHADOW) ||
+        creature_target->getResistance(SCHOOL_ARCANE))
     {
         GreenSystemMessage(m_session, "Resistance =======================");
-        if (creature_target->GetResistance(SCHOOL_NORMAL))
-            GreenSystemMessage(m_session, "-- Armor: %u", creature_target->GetResistance(SCHOOL_NORMAL));
-        if (creature_target->GetResistance(SCHOOL_HOLY))
-            GreenSystemMessage(m_session, "-- Holy: %u", creature_target->GetResistance(SCHOOL_HOLY));
-        if (creature_target->GetResistance(SCHOOL_FIRE))
-            GreenSystemMessage(m_session, "-- Fire: %u", creature_target->GetResistance(SCHOOL_FIRE));
-        if (creature_target->GetResistance(SCHOOL_NATURE))
-            GreenSystemMessage(m_session, "-- Nature: %u", creature_target->GetResistance(SCHOOL_NATURE));
-        if (creature_target->GetResistance(SCHOOL_FROST))
-            GreenSystemMessage(m_session, "-- Frost: %u", creature_target->GetResistance(SCHOOL_FROST));
-        if (creature_target->GetResistance(SCHOOL_SHADOW))
-            GreenSystemMessage(m_session, "-- Shadow: %u", creature_target->GetResistance(SCHOOL_SHADOW));
-        if (creature_target->GetResistance(SCHOOL_ARCANE))
-            GreenSystemMessage(m_session, "-- Arcane: %u", creature_target->GetResistance(SCHOOL_ARCANE));
+        if (creature_target->getResistance(SCHOOL_NORMAL))
+            GreenSystemMessage(m_session, "-- Armor: %u", creature_target->getResistance(SCHOOL_NORMAL));
+        if (creature_target->getResistance(SCHOOL_HOLY))
+            GreenSystemMessage(m_session, "-- Holy: %u", creature_target->getResistance(SCHOOL_HOLY));
+        if (creature_target->getResistance(SCHOOL_FIRE))
+            GreenSystemMessage(m_session, "-- Fire: %u", creature_target->getResistance(SCHOOL_FIRE));
+        if (creature_target->getResistance(SCHOOL_NATURE))
+            GreenSystemMessage(m_session, "-- Nature: %u", creature_target->getResistance(SCHOOL_NATURE));
+        if (creature_target->getResistance(SCHOOL_FROST))
+            GreenSystemMessage(m_session, "-- Frost: %u", creature_target->getResistance(SCHOOL_FROST));
+        if (creature_target->getResistance(SCHOOL_SHADOW))
+            GreenSystemMessage(m_session, "-- Shadow: %u", creature_target->getResistance(SCHOOL_SHADOW));
+        if (creature_target->getResistance(SCHOOL_ARCANE))
+            GreenSystemMessage(m_session, "-- Arcane: %u", creature_target->getResistance(SCHOOL_ARCANE));
         GreenSystemMessage(m_session, "=================================");
     }
 

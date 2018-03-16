@@ -4935,9 +4935,9 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
-            for (uint8 i = 0; i < 7; ++i)
+            for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
             {
-                m_Unit->SetResistance(i, properties_difficulty->Resistances[i]);
+                m_Unit->setResistance(i, properties_difficulty->Resistances[i]);
             }
 
             m_Unit->setBaseAttackTime(MELEE, properties_difficulty->AttackTime);
@@ -4969,12 +4969,12 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->setUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
 
             // resistances
-            for (uint8 j = 0; j < 7; ++j)
+            for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
             {
-                m_Unit->BaseResistance[j] = m_Unit->GetResistance(j);
+                m_Unit->BaseResistance[j] = m_Unit->getResistance(j);
             }
 
-            for (uint8 j = 0; j < 5; ++j)
+            for (uint8 j = 0; j < STAT_COUNT; ++j)
             {
                 m_Unit->BaseStats[j] = m_Unit->getStat(j);
             }

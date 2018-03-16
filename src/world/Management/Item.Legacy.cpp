@@ -762,7 +762,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     {
                         m_owner->FlatResistanceModifierPos[Entry->spell[c]] -= val;
                     }
-                    m_owner->CalcResistance(static_cast<uint16_t>(Entry->spell[c]));
+                    m_owner->CalcResistance(static_cast<uint8_t>(Entry->spell[c]));
                 }
                 break;
 

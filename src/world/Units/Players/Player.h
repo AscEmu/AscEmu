@@ -1412,7 +1412,7 @@ public:
         void EventDeActivateGameObject(GameObject* obj);
         void UpdateNearbyGameObjects();
 
-        void CalcResistance(uint16 type);
+        void CalcResistance(uint8_t type);
         float res_M_crit_get() { return m_resist_critical[0]; }
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
         float res_R_crit_get() { return m_resist_critical[1]; }
