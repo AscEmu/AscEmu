@@ -651,7 +651,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* revive the player if he is dead */
     if (!plr->isAlive())
     {
-        plr->setHealth(plr->GetMaxHealth());
+        plr->setHealth(plr->getMaxHealth());
         plr->ResurrectPlayer();
     }
 
@@ -1001,7 +1001,7 @@ void CBattleground::EventResurrectPlayers()
                 plr->SendMessageToSet(&data, true);
 
                 plr->ResurrectPlayer();
-                plr->setHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->getMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
                 plr->SetPower(POWER_TYPE_ENERGY, plr->GetMaxPower(POWER_TYPE_ENERGY));
                 plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);

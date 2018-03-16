@@ -896,7 +896,7 @@ class KarathressAI : public CreatureAIScript
                 if (random_target == nullptr)
                     return;
                 //let's force this effect
-                info_cataclysmic_bolt->setEffectBasePoints(random_target->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2, 0);
+                info_cataclysmic_bolt->setEffectBasePoints(random_target->getMaxHealth() / 2, 0);
                 getCreature()->CastSpell(random_target, info_cataclysmic_bolt, true);
                 TargetTable.clear();
             }
@@ -1673,7 +1673,7 @@ class TaintedCoreGO : public GameObjectAIScript
             Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
             if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
             {
-                Vashj->ModHealth(static_cast<int32>((Vashj->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 100) * 5));
+                Vashj->ModHealth(static_cast<int32>((Vashj->getMaxHealth() / 100) * 5));
                 Creature* channel = NULL;
                 channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
                 if (channel != NULL && channel->IsInWorld())

@@ -981,7 +981,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     {
         //\note remove all dynamic flags
         setDynamicFlags(0);
-        setHealth(GetMaxHealth());              //this is modified (if required) in Spell::SpellEffectSummonDeadPet()
+        setHealth(getMaxHealth());              //this is modified (if required) in Spell::SpellEffectSummonDeadPet()
         setDeathState(ALIVE);
     }
 
@@ -1124,7 +1124,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->alive = isAlive();
     player_pet->current_power = GetPower(getPowerType());
     player_pet->talentpoints = getPetTalentPoints();
-    player_pet->current_hp = GetHealth();
+    player_pet->current_hp = getHealth();
     player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
 
     if (getPetFlags() == PET_RENAME_ALLOWED)
@@ -1840,7 +1840,7 @@ void Pet::ApplyPetLevelAbilities()
     BaseStats[4] = pet_abilities->spirit;
 
     setBaseHealth(pet_abilities->health);
-    setUInt32Value(UNIT_FIELD_MAXHEALTH, pet_abilities->health);
+    setMaxHealth(pet_abilities->health);
 
     //Family Aura
     if (pet_family > 46)
@@ -1879,7 +1879,7 @@ void Pet::ApplyStatsForLevel()
     }
 
     // Apply health fields.
-    setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+    setHealth(getMaxHealth());
     SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));   // mana
     SetPower(POWER_TYPE_FOCUS, GetMaxPower(POWER_TYPE_FOCUS));   // focus
 }
@@ -2149,9 +2149,9 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     // Duel
     if (pVictim->IsPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
     {
-        if (pVictim->GetHealth() <= damage)
+        if (pVictim->getHealth() <= damage)
         {
-            uint32 NewHP = pVictim->GetMaxHealth() / 100;
+            uint32 NewHP = pVictim->getMaxHealth() / 100;
 
             if (NewHP < 5)
                 NewHP = 5;
@@ -2163,7 +2163,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         }
     }
 
-    if (pVictim->GetHealth() <= damage)
+    if (pVictim->getHealth() <= damage)
     {
         if (pVictim->isTrainingDummy())
         {

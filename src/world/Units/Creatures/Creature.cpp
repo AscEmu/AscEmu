@@ -254,7 +254,7 @@ void Creature::OnRespawn(MapMgr* m)
     }
 
     LOG_DETAIL("Respawning " I64FMT "...", getGuid());
-    setHealth(GetMaxHealth());
+    setHealth(getMaxHealth());
     //\note remove all dynamic flags
     setDynamicFlags(0); // not tagging shit
     if (m_spawn)
@@ -994,10 +994,11 @@ void Creature::CalcStat(uint8_t type)
             uint32 bonus = stat_bonus * 10 + m_healthfromspell;
             uint32 res = hp + bonus;
 
-            if (res < hp) res = hp;
-            setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
-            if (getUInt32Value(UNIT_FIELD_HEALTH) > getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            if (res < hp)
+                res = hp;
+            setMaxHealth(res);
+            if (getHealth() > getMaxHealth())
+                setHealth(getMaxHealth());
 #endif
         }
         break;
@@ -1027,8 +1028,8 @@ void Creature::RegenerateHealth()
     if (m_limbostate || !m_canRegenerateHP)
         return;
 
-    uint32 cur = GetHealth();
-    uint32 mh = GetMaxHealth();
+    uint32 cur = getHealth();
+    uint32 mh = getMaxHealth();
     if (cur >= mh)return;
 
     //though creatures have their stats we use some weird formula for amt
@@ -1952,7 +1953,7 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
 
     m_limbostate = false;
     setEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
-    setHealth(GetMaxHealth());
+    setHealth(getMaxHealth());
     bInvincible = false;
 }
 
@@ -2321,7 +2322,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
         }
     }
 
-    if (pVictim->GetHealth() <= damage)
+    if (pVictim->getHealth() <= damage)
     {
         if (pVictim->isTrainingDummy())
         {

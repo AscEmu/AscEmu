@@ -5052,10 +5052,10 @@ uint8 Spell::CanCast(bool tolerate)
 
                 if (GetSpellInfo()->getCategory() == 1131) //Hammer of wrath, requires target to have 20- % of hp
                 {
-                    if (target->GetHealth() == 0)
+                    if (target->getHealth() == 0)
                         return SPELL_FAILED_BAD_TARGETS;
 
-                    if (target->GetMaxHealth() / target->GetHealth() < 5)
+                    if (target->getMaxHealth() / target->getHealth() < 5)
                         return SPELL_FAILED_BAD_TARGETS;
                 }
                 else if (GetSpellInfo()->getCategory() == 672) //Conflagrate, requires immolation spell on victim
@@ -6081,7 +6081,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 57774:
         {
             if (u_caster != nullptr)
-                value = u_caster->GetMaxHealth() * 2 / 100;
+                value = u_caster->getMaxHealth() * 2 / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_WISDOM:
@@ -6682,8 +6682,8 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         amount = 0;
 
     uint32 overheal = 0;
-    uint32 curHealth = unitTarget->getUInt32Value(UNIT_FIELD_HEALTH);
-    uint32 maxHealth = unitTarget->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+    uint32 curHealth = unitTarget->getHealth();
+    uint32 maxHealth = unitTarget->getMaxHealth();
     if ((curHealth + amount) >= maxHealth)
     {
         unitTarget->setHealth(maxHealth);

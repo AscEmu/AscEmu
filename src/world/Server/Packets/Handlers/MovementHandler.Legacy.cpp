@@ -622,10 +622,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 ((mover->getGuid() != _player->getGuid()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
             {
                 // 1.7% damage for each unit fallen on Z axis over 13
-                uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);
+                uint32 health_loss = static_cast<uint32>(mover->getHealth() * (falldistance - 12) * 0.017f);
 
-                if (health_loss >= mover->GetHealth())
-                    health_loss = mover->GetHealth();
+                if (health_loss >= mover->getHealth())
+                    health_loss = mover->getHealth();
 #if VERSION_STRING > TBC
                 else if ((falldistance >= 65) && (mover->getGuid() == _player->getGuid()))
                 {

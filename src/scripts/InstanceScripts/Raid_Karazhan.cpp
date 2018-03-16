@@ -2189,7 +2189,7 @@ class MalchezaarAI : public CreatureAIScript
             if ((*E_Itr)->getGuid() != getCreature()->GetAIInterface()->GetMostHated()->getGuid())
             {
                 Enfeeble_Targets[i] = (*E_Itr)->getGuid();
-                Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
+                Enfeeble_Health[i] = (*E_Itr)->getHealth();
 
                 getCreature()->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
                 (*E_Itr)->SetHealth(1);
@@ -2204,7 +2204,7 @@ class MalchezaarAI : public CreatureAIScript
         {
             Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
-                ETarget->setUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
+                ETarget->setHealth(Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;
             Enfeeble_Health[i] = 0;
         }
@@ -2218,7 +2218,7 @@ protected:
     uint32 m_enfeebleoff;
     uint32 m_spawn_infernal;
     uint64 Enfeeble_Targets[5];
-    uint64 Enfeeble_Health[5];
+    uint32 Enfeeble_Health[5];
 };
 
 class NetherInfernalAI : public CreatureAIScript

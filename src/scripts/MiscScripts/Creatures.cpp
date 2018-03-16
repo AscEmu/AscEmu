@@ -401,7 +401,7 @@ class DraeneiSurvivor : public CreatureAIScript
 
         void OnLoad()
         {
-            getCreature()->setHealth(getCreature()->GetMaxHealth() / 2);
+            getCreature()->setHealth(getCreature()->getMaxHealth() / 2);
         }
 };
 

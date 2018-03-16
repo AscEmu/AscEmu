@@ -59,7 +59,10 @@ uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_ty
 void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
 //bytes_0 end
 
+uint32_t Unit::getHealth() const { return unitData()->health; }
 void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+
+uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
 void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
 
 void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }

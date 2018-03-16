@@ -513,8 +513,8 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
     uint8 powerType = plr->getPowerType();
     data << uint32(mask1);
     data << uint16(MEMBER_STATUS_ONLINE);
-    data << uint32(plr->GetHealth());
-    data << uint32(plr->GetMaxHealth());
+    data << uint32(plr->getHealth());
+    data << uint32(plr->getMaxHealth());
     data << uint8(powerType);
     data << uint16(plr->GetPower(powerType));
     data << uint16(plr->GetMaxPower(powerType));
@@ -543,8 +543,8 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
         data << uint64(pet->getGuid());
         data << pet->GetName();
         data << uint16(pet->getDisplayId());
-        data << uint32(pet->GetHealth());
-        data << uint32(pet->GetMaxHealth());
+        data << uint32(pet->getHealth());
+        data << uint32(pet->getMaxHealth());
         data << uint8(petpowertype);
         data << uint16(pet->GetPower(petpowertype));
         data << uint16(pet->GetMaxPower(petpowertype));

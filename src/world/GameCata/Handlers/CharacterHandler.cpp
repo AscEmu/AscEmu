@@ -538,7 +538,7 @@ void WorldSession::FullLogin(Player* plr)
             if (plr->IsDead())
             {
                 plr->ResurrectPlayer();
-                plr->setHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->getMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 

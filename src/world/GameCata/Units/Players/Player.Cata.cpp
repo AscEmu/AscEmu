@@ -165,11 +165,11 @@ void Player::handleFall(MovementInfo const& movementInfo)
 
     if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
     {
-        auto health_loss = static_cast<uint32_t>(GetHealth() * (falldistance - 12) * 0.017f);
+        auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
 
-        if (health_loss >= GetHealth())
+        if (health_loss >= getHealth())
         {
-            health_loss = GetHealth();
+            health_loss = getHealth();
         }
         else if ((falldistance >= 65))
         {

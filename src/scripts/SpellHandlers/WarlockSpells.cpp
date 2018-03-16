@@ -80,7 +80,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
 
     uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
 
-    if (damage >= playerTarget->GetHealth())
+    if (damage >= playerTarget->getHealth())
         return false;
 
     s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->getId());

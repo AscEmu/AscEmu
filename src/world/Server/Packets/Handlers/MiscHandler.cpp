@@ -1190,7 +1190,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     }
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 #endif
 

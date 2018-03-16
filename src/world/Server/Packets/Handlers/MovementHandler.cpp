@@ -264,10 +264,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
             if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
                 getGuid() != _player->getGuid() || !_player->GodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
             {
-                auto health_lost = static_cast<uint32_t>(mover->GetHealth() * (fall_distance - 12) * 0.017f);
-                if (health_lost >= mover->GetHealth())
+                auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
+                if (health_lost >= mover->getHealth())
                 {
-                    health_lost = mover->GetHealth();
+                    health_lost = mover->getHealth();
                 }
 #ifdef FT_ACHIEVEMENTS
                 else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())

@@ -511,7 +511,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
     }
 
-    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

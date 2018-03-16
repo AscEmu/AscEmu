@@ -2583,9 +2583,9 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    for (const auto& PlayerIter : pCreatureAI->getCreature()->getInRangePlayersSet())
 //    {
 //        if (PlayerIter && (static_cast<Player*>(PlayerIter))->isAlive() && PlayerIter->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
-//                && PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
+//                && PlayerIter->getHealth() > _mostHP)
 //        {
-//            _mostHP = PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH);
+//            _mostHP = PlayerIter->getHealth();
 //            pBestTarget = static_cast<Player*>(PlayerIter);
 //        }
 //    }

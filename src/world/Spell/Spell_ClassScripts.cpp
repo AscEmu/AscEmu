@@ -158,11 +158,11 @@ public:
             return 0;
 
         // Check if damage will kill player.
-        uint32 cur_hlth = p_target->GetHealth();
+        uint32 cur_hlth = p_target->getHealth();
         if ((*dmg) < cur_hlth)
             return 0;
 
-        uint32 max_hlth = p_target->GetMaxHealth();
+        uint32 max_hlth = p_target->getMaxHealth();
         uint32 min_hlth = max_hlth / 10;
 
         /*
@@ -420,7 +420,7 @@ public:
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
+            return caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
         else
             return mod->m_amount;
     }
@@ -496,8 +496,8 @@ public:
             return 0;
 
         int health_pct = caster->GetHealthPct();
-        uint32 cur_health = caster->GetHealth();
-        uint32 max_health = caster->GetMaxHealth();
+        uint32 cur_health = caster->getHealth();
+        uint32 max_health = caster->getMaxHealth();
         uint32 new_health_pct = (cur_health - *dmg) * 100 / max_health;
 
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
@@ -524,7 +524,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
+            value = p_caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
 
         return value;
     }

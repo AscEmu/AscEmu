@@ -465,13 +465,13 @@ class ArthasAI : public CreatureAIScript
                     if (citizen)
                     {
                         getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                        getCreature()->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
+                        getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
                     }
                     citizen = getNearestCreature(28169);
                     if (citizen)
                     {
                         getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                        getCreature()->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
+                        getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
                     }
                     getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
                     phase++;

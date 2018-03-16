@@ -34,7 +34,7 @@ public:
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
-        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
+        if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
         {
             if (mAttacker->IsPlayer())
             {

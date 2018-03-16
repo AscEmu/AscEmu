@@ -2463,7 +2463,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
                         if (ospinfo && (int32)spell_proc->mProcCharges >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
-                            dmg < this->getUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
+                            dmg < this->getHealth())    //if this is not a killer blow
                             can_proc_now = true;
                     }
                     else can_proc_now = true; //target died
@@ -9713,7 +9713,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38801:
                 case 43093:
                 {
-                    if (getUInt32Value(UNIT_FIELD_HEALTH) == getUInt32Value(UNIT_FIELD_MAXHEALTH))
+                    if (getHealth() == getMaxHealth())
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -9724,7 +9724,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38772:
                 {
                     uint32 p = m_auras[x]->GetSpellInfo()->getEffectBasePoints(1);
-                    if (getUInt32Value(UNIT_FIELD_MAXHEALTH) * p <= getUInt32Value(UNIT_FIELD_HEALTH) * 100)
+                    if (getMaxHealth() * p <= getHealth() * 100)
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -12758,8 +12758,8 @@ void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
     if (!target || !SpellId || !amount)
         return;
 
-    uint32 ch = target->GetHealth();
-    uint32 mh = target->GetMaxHealth();
+    uint32 ch = target->getHealth();
+    uint32 mh = target->getMaxHealth();
     if (mh != ch)
     {
         ch += amount;

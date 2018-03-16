@@ -276,7 +276,10 @@ public:
     void setPowerType(uint8_t powerType);
     //bytes_0 end
 
+    uint32_t getHealth() const;
     void setHealth(uint32_t health);
+
+    uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
 
     void setBaseHealth(uint32_t baseHealth);
@@ -966,13 +969,13 @@ public:
     int GetHealthPct()
     {
         //shitty db? pet/guardian bug?
-        if (getUInt32Value(UNIT_FIELD_HEALTH) == 0 || getUInt32Value(UNIT_FIELD_MAXHEALTH) == 0)
+        if (getHealth() == 0 || getMaxHealth() == 0)
             return 0;
 
-        return (int)(getUInt32Value(UNIT_FIELD_HEALTH) * 100 / getUInt32Value(UNIT_FIELD_MAXHEALTH));
+        return (int)(getHealth() * 100 / getMaxHealth());
     };
 
-    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
+    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
     int GetManaPct()
     {
@@ -1267,10 +1270,6 @@ public:
     void ModRangedAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    uint32 GetHealth()    const { return getUInt32Value(UNIT_FIELD_HEALTH); }
-    uint32 GetMaxHealth() const { return getUInt32Value(UNIT_FIELD_MAXHEALTH); }
 
     void ModHealth(int32 val) { modUInt32Value(UNIT_FIELD_HEALTH, val); }
     void ModMaxHealth(int32 val) { modUInt32Value(UNIT_FIELD_MAXHEALTH, val); }

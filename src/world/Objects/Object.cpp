@@ -3079,7 +3079,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             else if (pl->HasAura(44396))
                 pctmod = 0.15f;
 
-            uint32 hp = static_cast<uint32>(0.05f * pl->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            uint32 hp = static_cast<uint32>(0.05f * pl->getMaxHealth());
             uint32 spellpower = static_cast<uint32>(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
 
             if (spellpower > hp)
@@ -3223,8 +3223,8 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->getUInt32Value(UNIT_FIELD_HEALTH))
-        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
+    if (Target->IsUnit() && Damage > static_cast<Unit*>(Target)->getHealth())
+        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
 
     WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
 
@@ -3260,8 +3260,8 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
+    if (Target->IsUnit() && Damage > static_cast<Unit*>(Target)->getHealth())
+        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
 
     data << uint32(HitStatus);
     data << Caster->GetNewGUID();

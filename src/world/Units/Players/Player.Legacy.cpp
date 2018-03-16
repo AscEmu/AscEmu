@@ -1100,7 +1100,7 @@ bool Player::Create(WorldPacket& data)
     }
 
     sHookInterface.OnCharacterCreate(this);
-    load_health = GetHealth();
+    load_health = getHealth();
     load_mana = GetPower(POWER_TYPE_MANA);
     return true;
 }
@@ -1151,7 +1151,7 @@ void Player::Update(unsigned long time_passed)
             // check last damage dealt timestamp, and if enough time has elapsed deal damage
             if (mstime >= m_UnderwaterLastDmg)
             {
-                uint32 damage = m_uint32Values[UNIT_FIELD_MAXHEALTH] / 10;
+                uint32 damage = getMaxHealth() / 10;
 
                 SendEnvironmentalDamageLog(getGuid(), uint8(DAMAGE_DROWNING), damage);
                 DealDamage(this, damage, 0, 0, 0);
@@ -1181,7 +1181,7 @@ void Player::Update(unsigned long time_passed)
         // check last damage dealt timestamp, and if enough time has elapsed deal damage
         if (mstime >= m_UnderwaterLastDmg)
         {
-            uint32 damage = m_uint32Values[UNIT_FIELD_MAXHEALTH] / 5;
+            uint32 damage = getMaxHealth() / 5;
 
             SendEnvironmentalDamageLog(getGuid(), uint8(DAMAGE_LAVA), damage);
             DealDamage(this, damage, 0, 0, 0);
@@ -1760,7 +1760,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
             ResurrectPlayer();
 
         //set full hp and mana
-        setHealth(GetMaxHealth());
+        setHealth(getMaxHealth());
         SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
 
         // if warlock has summoned pet, increase its level too
@@ -4962,7 +4962,7 @@ void Player::OnPushToWorld()
     /* send weather */
     sWeatherMgr.SendWeather(this);
 
-    setHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
+    setHealth((load_health > getMaxHealth() ? getMaxHealth() : load_health));
     SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
@@ -5070,7 +5070,7 @@ void Player::OnPushToWorld()
     /* send weather */
     sWeatherMgr.SendWeather(this);
 
-    setHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
+    setHealth((load_health > getMaxHealth() ? getMaxHealth() : load_health));
     SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
@@ -5107,7 +5107,7 @@ void Player::RemoveFromWorld()
     if (raidgrouponlysent)
         event_RemoveEvents(EVENT_PLAYER_EJECT_FROM_INSTANCE);
 
-    load_health = GetHealth();
+    load_health = getHealth();
     load_mana = GetPower(POWER_TYPE_MANA);
 
     if (m_bg)
@@ -5759,7 +5759,7 @@ void Player::ResurrectPlayer()
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT); // In case somebody resurrected us before this event happened
     if (m_resurrectHealth)
-        setHealth((uint32)std::min(m_resurrectHealth, m_uint32Values[UNIT_FIELD_MAXHEALTH]));
+        setHealth((uint32)std::min(m_resurrectHealth, getMaxHealth()));
     if (m_resurrectMana)
         SetPower(POWER_TYPE_MANA, m_resurrectMana);
 
@@ -6588,7 +6588,7 @@ void Player::UpdateStats()
     int32 bonus = stat_bonus * 10 + m_healthfromspell + m_healthfromitems;
 
     uint32 res = hp + bonus + hpdelta;
-    uint32 oldmaxhp = getUInt32Value(UNIT_FIELD_MAXHEALTH);
+    uint32 oldmaxhp = getMaxHealth();
 
     if (res < hp)
         res = hp;
@@ -6612,13 +6612,13 @@ void Player::UpdateStats()
             res = worldConfig.limit.maxHealthCap;
         }
     }
-    setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
+    setMaxHealth(res);
 
-    if (getUInt32Value(UNIT_FIELD_HEALTH) > res)
+    if (getHealth() > res)
         setHealth(res);
     else if ((cl == DRUID) && (getShapeShiftForm() == FORM_BEAR || getShapeShiftForm() == FORM_DIREBEAR))
     {
-        res = getUInt32Value(UNIT_FIELD_MAXHEALTH) * getUInt32Value(UNIT_FIELD_HEALTH) / oldmaxhp;
+        res = getMaxHealth() * getHealth() / oldmaxhp;
         setHealth(res);
     }
 
@@ -7077,14 +7077,14 @@ void Player::EventCannibalize(uint32 amount)
         cannibalizeCount = 0;
         return;
     }
-    uint32 amt = (GetMaxHealth() * amount) / 100;
+    uint32 amt = (getMaxHealth() * amount) / 100;
 
-    uint32 newHealth = GetHealth() + amt;
+    uint32 newHealth = getHealth() + amt;
 
-    if (newHealth <= GetMaxHealth())
+    if (newHealth <= getMaxHealth())
         setHealth(newHealth);
     else
-        setHealth(GetMaxHealth());
+        setHealth(getMaxHealth());
 
     cannibalizeCount++;
     if (cannibalizeCount == 5)
@@ -8099,8 +8099,8 @@ void Player::RegenerateMana(bool is_interrupted)
 
 void Player::RegenerateHealth(bool inCombat)
 {
-    uint32 cur = GetHealth();
-    uint32 mh = GetMaxHealth();
+    uint32 cur = getHealth();
+    uint32 mh = getMaxHealth();
 
     if (cur == 0) return;   // cebernic: bugfix dying but regenerated?
 
@@ -10417,7 +10417,7 @@ void Player::CompleteLoading()
 
     // this needs to be after the cast of passive spells, because it will cast ghost form, after the remove making it in ghost alive, if no corpse.
     //death system checkout
-    if (GetHealth() <= 0 && !hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
+    if (getHealth() <= 0 && !hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         setDeathState(CORPSE);
     }
@@ -12815,7 +12815,7 @@ void Player::FullHPMP()
 {
     if (IsDead())
         ResurrectPlayer();
-    setHealth(GetMaxHealth());
+    setHealth(getMaxHealth());
     SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
     SetPower(POWER_TYPE_ENERGY, GetMaxPower(POWER_TYPE_ENERGY));
 }
@@ -13935,9 +13935,9 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
     // Duel
     if (pVictim->IsPlayer() && DuelingWith != nullptr && DuelingWith->getGuid() == pVictim->getGuid())
     {
-        if (pVictim->GetHealth() <= damage)
+        if (pVictim->getHealth() <= damage)
         {
-            uint32 NewHP = pVictim->GetMaxHealth() / 100;
+            uint32 NewHP = pVictim->getMaxHealth() / 100;
 
             if (NewHP < 5)
                 NewHP = 5;
@@ -13949,7 +13949,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
         }
     }
 
-    if (pVictim->GetHealth() <= damage)
+    if (pVictim->getHealth() <= damage)
     {
 
         if (pVictim->isTrainingDummy())
@@ -15504,7 +15504,7 @@ void Player::RemoteRevive()
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
     setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
     setMoveLandWalk();
-    setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+    setHealth(getMaxHealth());
 }
 
 void Player::SetMover(Unit* target)

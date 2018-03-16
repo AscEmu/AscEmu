@@ -20,7 +20,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
     if (percentDamage == 0)
         return true;
 
-    uint32_t health = selected_unit->GetHealth();
+    uint32_t health = selected_unit->getHealth();
 
     uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
 

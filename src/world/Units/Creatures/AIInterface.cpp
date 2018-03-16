@@ -1371,7 +1371,7 @@ void AIInterface::Update(unsigned long time_passed)
             setSplineWalk();
 
             if (!isAiScriptType(AI_SCRIPT_PET) && !skip_reset_hp)
-                m_Unit->setHealth(m_Unit->GetMaxHealth());
+                m_Unit->setHealth(m_Unit->getMaxHealth());
         }
         else
         {
@@ -1694,7 +1694,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
             if (!m_nextSpell)
                 m_nextSpell = this->getSpell();
 
-            if (m_canFlee && !m_hasFleed && ((static_cast<float>(m_Unit->GetHealth()) / static_cast<float>(m_Unit->GetMaxHealth()) < m_FleeHealth)))
+            if (m_canFlee && !m_hasFleed && ((static_cast<float>(m_Unit->getHealth()) / static_cast<float>(m_Unit->getMaxHealth()) < m_FleeHealth)))
             {
                 agent = AGENT_FLEE;
             }
@@ -1787,7 +1787,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             if (t_unit == nullptr)
                                 return;
 
-                            uint32 health_before_strike = t_unit->GetHealth();
+                            uint32 health_before_strike = t_unit->getHealth();
 #endif
                             if (m_Unit->GetOnMeleeSpell() != 0)
                             {
@@ -1801,7 +1801,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             //as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
                             if (getNextTarget() && m_Unit->m_factionDBC &&
                                 !(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask == 0 && m_Unit->m_faction->HostileMask == 0) /* neutral creature */
-                                && getNextTarget()->IsPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->GetHealth()
+                                && getNextTarget()->IsPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->getHealth()
                                 && Rand(m_Unit->get_chance_to_daze(getNextTarget())))
                             {
                                 float our_facing = m_Unit->calcRadAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY());

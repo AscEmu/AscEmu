@@ -726,7 +726,7 @@ class EnslavedServantAI : public CreatureAIScript
         {
             if (_isTimerFinished(mHealthResetTimer))
             {
-                getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
+                getCreature()->setHealth(getCreature()->getMaxHealth());    // Found such note about this mob
                 _resetTimer(mHealthResetTimer, 45000);
             }
         }
@@ -3486,7 +3486,7 @@ class MaievAI : public CreatureAIScript
             // HACK!
             //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-            getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
+            getCreature()->setMaxHealth(1000000);
             getCreature()->setHealth(1000000);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
@@ -3524,7 +3524,7 @@ class MaievAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
-            getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            getCreature()->setHealth(getCreature()->getMaxHealth());
         }
 
         void AIUpdate() override

@@ -944,6 +944,7 @@ void MapMgr::_UpdateObjects()
                     }
                 }
 
+                //what?
                 if (pObj->IsUnit() && pObj->HasUpdateField(UNIT_FIELD_HEALTH))
                     static_cast<Unit*>(pObj)->EventHealthChangeSinceLastUpdate();
 

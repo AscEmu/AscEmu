@@ -1852,7 +1852,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_HEALTH));
+            lua_pushinteger(L, ptr->getHealth());
         return 1;
     }
 
@@ -1861,7 +1861,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            lua_pushinteger(L, ptr->getMaxHealth());
 
         return 1;
     }
@@ -1871,8 +1871,8 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val > ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                ptr->setHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            if (val > ptr->getMaxHealth())
+                ptr->setHealth(ptr->getMaxHealth());
             else
                 ptr->setHealth(val);
         }
@@ -1884,9 +1884,9 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val < ptr->getUInt32Value(UNIT_FIELD_HEALTH))
+            if (val < ptr->getHealth())
                 ptr->setHealth(val);
-            ptr->setUInt32Value(UNIT_FIELD_MAXHEALTH, val);
+            ptr->setMaxHealth(val);
         }
         return 0;
     }
@@ -2927,7 +2927,7 @@ class LuaUnit
         Unit* target = CHECK_UNIT(L, 1);
         if (!ptr || !target)
             return 0;
-        ptr->DealDamage(target, target->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0, true);
+        ptr->DealDamage(target, target->getHealth(), 0, 0, 0, true);
         return 0;
     }
 

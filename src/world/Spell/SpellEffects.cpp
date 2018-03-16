@@ -607,9 +607,9 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     }
 
     //instant kill effects don't have a log
-    //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->GetHealth(), true);
+    //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->getHealth(), true);
     // cebernic: the value of instant kill must be higher than normal health,cuz anti health regenerated.
-    m_caster->DealDamage(unitTarget, unitTarget->getUInt32Value(UNIT_FIELD_HEALTH) << 1, 0, 0, 0);
+    m_caster->DealDamage(unitTarget, unitTarget->getHealth() << 1, 0, 0, 0);
 }
 
 void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
@@ -1280,8 +1280,8 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    if (dmg > (p_caster->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2))
-                        dmg = (p_caster->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2);
+                    if (dmg > (p_caster->getMaxHealth() / 2))
+                        dmg = (p_caster->getMaxHealth() / 2);
                 }
             }break;
 
@@ -1840,7 +1840,7 @@ void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    uint32 curHealth = unitTarget->GetHealth();
+    uint32 curHealth = unitTarget->getHealth();
     uint32 amt = damage;
     if (amt > curHealth)
     {
@@ -1850,8 +1850,8 @@ void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
 
     if (!u_caster)
         return;
-    uint32 playerCurHealth = u_caster->getUInt32Value(UNIT_FIELD_HEALTH);
-    uint32 playerMaxHealth = u_caster->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+    uint32 playerCurHealth = u_caster->getHealth();
+    uint32 playerMaxHealth = u_caster->getMaxHealth();
 
     if (playerCurHealth + amt > playerMaxHealth)
     {
@@ -1997,7 +1997,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         else
                             value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
-                        Heal(unitTarget->GetMaxHealth()*value / 100);
+                        Heal(unitTarget->getMaxHealth()*value / 100);
                     }
                 }
             }
@@ -2007,7 +2007,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             {
                 if (unitTarget)
                 {
-                    Heal(unitTarget->GetMaxHealth() / 100);
+                    Heal(unitTarget->getMaxHealth() / 100);
                 }
             }
             break;
@@ -2023,7 +2023,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                     mPlayer->getShapeShiftForm() != FORM_BEAR &&
                     mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
                     break;
-                uint32 max = mPlayer->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+                uint32 max = mPlayer->getMaxHealth();
                 uint32 val = float2int32(((mPlayer->getAuraWithId(34300)) ? 0.04f : 0.02f) * max);
                 if (val)
                     mPlayer->Heal(mPlayer, 34299, (uint32)(val));
@@ -2042,7 +2042,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 uint32 val = mPlayer->GetPower(POWER_TYPE_RAGE);
                 if (val > 100)
                     val = 100;
-                uint32 HpPerPoint = float2int32((mPlayer->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.003f));   //0.3% of hp per point of rage
+                uint32 HpPerPoint = float2int32((mPlayer->getMaxHealth() * 0.003f));   //0.3% of hp per point of rage
                 uint32 heal = HpPerPoint * (val / 10); //1 point of rage = 0.3% of max hp
                 mPlayer->ModPower(POWER_TYPE_RAGE, -1 * val);
 
@@ -2305,7 +2305,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
             {
                 if (unitTarget->IsCreature() && unitTarget->IsPet() && unitTarget->IsDead())
                 {
-                    uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxHealth()) ? unitTarget->GetMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
+                    uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
                     if (!unitTarget->IsPet())
@@ -4618,7 +4618,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    uint32 dif = unitTarget->getUInt32Value(UNIT_FIELD_MAXHEALTH) - unitTarget->getUInt32Value(UNIT_FIELD_HEALTH);
+    uint32 dif = unitTarget->getMaxHealth() - unitTarget->getHealth();
     if (!dif)
     {
         SendCastResult(SPELL_FAILED_ALREADY_AT_FULL_HEALTH);
@@ -5110,14 +5110,14 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
             int32 amt = 20;
             spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
             spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
-            health = uint32((unitTarget->GetMaxHealth() * amt) / 100);
+            health = uint32((unitTarget->getMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
         break;
         default:
         {
             if (damage < 0) return;
-            health = uint32(unitTarget->GetMaxHealth() * damage / 100);
+            health = uint32(unitTarget->getMaxHealth() * damage / 100);
             mana = uint32(unitTarget->GetMaxPower(POWER_TYPE_MANA) * damage / 100);
         }
         break;
@@ -5387,7 +5387,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
 
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
-        pPet->setHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
+        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
         pPet->setDeathState(ALIVE);
         pPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
@@ -5404,7 +5404,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
         spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
 
-        pPet->setHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
+        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
     }
 }
 
@@ -5462,7 +5462,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
             {
                 if (unitTarget->IsCreature() && unitTarget->IsPet() && unitTarget->IsDead())
                 {
-                    uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxHealth()) ? unitTarget->GetMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
+                    uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
                     if (!unitTarget->IsPet())
@@ -6325,8 +6325,8 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    uint32 currentHealth = unitTarget->GetHealth();
-    uint32 maxHealth = unitTarget->GetMaxHealth();
+    uint32 currentHealth = unitTarget->getHealth();
+    uint32 maxHealth = unitTarget->getMaxHealth();
     uint32 modHealth = damage * maxHealth / 100;
     uint32 newHealth = modHealth + currentHealth;
 

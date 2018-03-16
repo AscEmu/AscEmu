@@ -2396,8 +2396,8 @@ void Aura::EventPeriodicHeal(uint32 amount)
         }
     }
 
-    uint32 curHealth = m_target->GetHealth();
-    uint32 maxHealth = m_target->GetMaxHealth();
+    uint32 curHealth = m_target->getHealth();
+    uint32 maxHealth = m_target->getMaxHealth();
     uint32 over_heal = 0;
 
     if ((curHealth + add) >= maxHealth)
@@ -3206,14 +3206,14 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     if (!m_target->isAlive())
         return;
 
-    uint32 add = float2int32(m_target->GetMaxHealth() * (RegenPct / 100.0f));
+    uint32 add = float2int32(m_target->getMaxHealth() * (RegenPct / 100.0f));
 
-    uint32 newHealth = m_target->GetHealth() + add;
+    uint32 newHealth = m_target->getHealth() + add;
 
-    if (newHealth <= m_target->GetMaxHealth())
+    if (newHealth <= m_target->getMaxHealth())
         m_target->setHealth(newHealth);
     else
-        m_target->setHealth(m_target->GetMaxHealth());
+        m_target->setHealth(m_target->getMaxHealth());
 
     m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
@@ -3895,7 +3895,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
                 mod->m_amount = 1500;
                 break;
             case 12976:// Last Stand
-                mod->m_amount = (uint32)(m_target->GetMaxHealth() * 0.3);
+                mod->m_amount = (uint32)(m_target->getMaxHealth() * 0.3);
                 break;
         }
         SetPositive();
@@ -3913,7 +3913,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
             m_target->ModHealth(amt);
         else
         {
-            if ((int32)m_target->GetHealth() > -amt) //watch it on remove value is negative
+            if ((int32)m_target->getHealth() > -amt) //watch it on remove value is negative
                 m_target->ModHealth(amt);
             else m_target->setHealth(1); //do not kill player but do strip him good
         }
@@ -4770,7 +4770,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
         }
     }
 
-    amount = (uint32)std::min(amount, m_target->getUInt32Value(UNIT_FIELD_HEALTH));
+    amount = (uint32)std::min(amount, m_target->getHealth());
 
     // Apply bonus from [Warlock] Soul Siphon
     if (m_caster->m_soulSiphon.amt)
@@ -4830,9 +4830,9 @@ void Aura::EventPeriodicLeech(uint32 amount)
     uint32 dmg_amount = amount;
     uint32 heal_amount = float2int32(amount * sp->getEffectMultipleValue(mod->m_effectIndex));
 
-    uint32 newHealth = m_caster->GetHealth() + heal_amount;
+    uint32 newHealth = m_caster->getHealth() + heal_amount;
 
-    uint32 mh = m_caster->GetMaxHealth();
+    uint32 mh = m_caster->getMaxHealth();
     if (newHealth <= mh)
         m_caster->setHealth(newHealth);
     else
@@ -5281,9 +5281,9 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
     {
 
         m_caster->DealDamage(m_target, amount, 0, 0, GetSpellId(), true);
-        uint32 newHealth = m_caster->GetHealth() + 1000;
+        uint32 newHealth = m_caster->getHealth() + 1000;
 
-        uint32 mh = m_caster->GetMaxHealth();
+        uint32 mh = m_caster->getMaxHealth();
         if (newHealth <= mh)
             m_caster->setHealth(newHealth);
         else
@@ -6014,9 +6014,9 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     if (!m_target->isAlive())
         return;
 
-    uint32 ch = m_target->GetHealth();
+    uint32 ch = m_target->getHealth();
     ch += amount;
-    uint32 mh = m_target->GetMaxHealth();
+    uint32 mh = m_target->getMaxHealth();
 
     if (ch > mh)
         m_target->setHealth(mh);
@@ -6175,7 +6175,7 @@ void Aura::SpellAuraPeriodicDamagePercent(bool apply)
 
         /*if (m_spellProto->getId() == 28347) //Dimensional Siphon
         {
-        uint32 dmg = (m_target->GetMaxHealth()*5)/100;
+        uint32 dmg = (m_target->getMaxHealth()*5)/100;
         sEventMgr.AddEvent(this, &Aura::EventPeriodicDamagePercent, dmg,
         EVENT_AURA_PERIODIC_DAMAGE_PERCENT, 1000, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
@@ -6197,7 +6197,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
     if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
         return;
 
-    uint32 damage = float2int32(amount / 100.0f * m_target->GetMaxHealth());
+    uint32 damage = float2int32(amount / 100.0f * m_target->getMaxHealth());
 
     Unit* c = GetUnitCaster();
 
@@ -7092,8 +7092,8 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     else
     {
         m_target->ModMaxHealth(-mod->fixed_amount[mod->m_effectIndex]);
-        if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-            m_target->setHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+        if (m_target->getHealth() > m_target->getMaxHealth())
+            m_target->setHealth(m_target->getMaxHealth());
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
         //		else if (m_target->IsPet())
@@ -9026,9 +9026,9 @@ void Aura::SpellAuraAddHealth(bool apply)
     else
     {
         m_target->ModMaxHealth(-mod->m_amount);
-        uint32 maxHealth = m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH);
-        if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > maxHealth)
-            m_target->setUInt32Value(UNIT_FIELD_MAXHEALTH, maxHealth);
+        uint32 maxHealth = m_target->getMaxHealth();
+        if (m_target->getHealth() > maxHealth)
+            m_target->setMaxHealth(maxHealth);
     }
 }
 
