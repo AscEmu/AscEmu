@@ -378,7 +378,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     packet.info = movement_info;*/
 
     AscEmu::Packets::MovementPacket packet;
-    packet.deserialise(recv_data);
+    if (!packet.deserialise(recv_data))
+        return;
+
     movement_info = packet.info;
 
     if (packet.guid != mover->getGuid())

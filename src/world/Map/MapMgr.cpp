@@ -532,15 +532,19 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     {
         for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
-            plObj->PushOutOfRange((*itr)->GetNewGUID());
+            if (*itr != nullptr)
+                plObj->PushOutOfRange((*itr)->GetNewGUID());
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
-        plObj->GetSession()->SetInstance(0);
+        if (plObj->GetSession())
+        {
+            plObj->GetSession()->SetInstance(0);
 
-        // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-        if (!plObj->GetSession()->bDeleted)
-            sWorld.addGlobalSession(plObj->GetSession());
+            // Add it to the global session set. Don't "re-add" to session if it is being deleted.
+            if (!plObj->GetSession()->bDeleted)
+                sWorld.addGlobalSession(plObj->GetSession());
+        }
     }
 
     if (!HasPlayers())
