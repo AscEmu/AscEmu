@@ -3987,20 +3987,6 @@ uint8 Spell::CanCast(bool tolerate)
     }
 
     /**
-     *	Unit caster checks
-     */
-    if (u_caster)
-    {
-        if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
-        {
-            // Warbringer (Warrior 51Prot Talent effect)
-            if ((GetSpellInfo()->getId() != 100 && GetSpellInfo()->getId() != 6178 && GetSpellInfo()->getId() != 11578)
-                || (p_caster != nullptr && !p_caster->ignoreShapeShiftChecks))
-                return SPELL_FAILED_TARGET_IN_COMBAT;
-        }
-    }
-
-    /**
      *	Player caster checks
      */
     if (p_caster)
