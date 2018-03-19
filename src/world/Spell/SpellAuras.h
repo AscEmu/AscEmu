@@ -401,7 +401,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraPeriodicTriggerSpellWithValue(bool apply);
         void SpellAuraModMechanicDmgTakenPct(bool apply);
         void SpellAuraBlockMultipleDamage(bool apply);
-        void SpellAuraIgnoreTargetAuraState(bool apply);
         void SpellAuraAllowOnlyAbility(bool apply);
         void SpellAuraIncreaseAPbyStatPct(bool apply);
         void SpellAuraModSpellDamageDOTPct(bool apply);

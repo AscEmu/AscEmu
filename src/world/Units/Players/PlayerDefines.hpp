@@ -324,27 +324,27 @@ enum PlayerFlags
     PLAYER_FLAG_NOCLOAK                 = 0x00000800, // Hides cloak
     PLAYER_FLAG_PLAYED_3_HOURS          = 0x00001000, // Obsolete: "You have more than 3 hours of online time. You will receive 1/2 money and XP during this period."
     PLAYER_FLAG_PLAYED_5_HOURS          = 0x00002000, // Obsolete: "You have more than 5 hours of online time. You will not be able to gain loot, XP, or complete quests."
-    PLAYER_FLAG_RENAME_ON_LOGIN         = 0x00004000, // Forces character rename on login screen
+    PLAYER_FLAG_UNK1                    = 0x00004000,
     // TBC flags begin (needs verification)
     PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
     PLAYER_FLAG_SANCTUARY               = 0x00010000, // (TODO: not implemented?) Makes player unattackable, added in sanctuary areas
-    PLAYER_FLAG_UNK1                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
+    PLAYER_FLAG_UNK2                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
     // WoTLK flags begin
     PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off
-    PLAYER_FLAG_UNK2                    = 0x00080000,
-    PLAYER_FLAG_UNK3                    = 0x00100000,
-    PLAYER_FLAG_UNK4                    = 0x00200000,
-    PLAYER_FLAG_UNK5                    = 0x00400000,
+    PLAYER_FLAG_UNK3                    = 0x00080000,
+    PLAYER_FLAG_UNK4                    = 0x00100000,
+    PLAYER_FLAG_UNK5                    = 0x00200000,
+    PLAYER_FLAG_UNK6                    = 0x00400000,
     PLAYER_FLAG_PREVENT_SPELL_CAST      = 0x00800000, // Prevents spell casting but excludes auto attack, used by Bladestorm for example
     PLAYER_FLAG_PREVENT_MELEE_SPELLS    = 0x01000000, // Prevents melee spell casting and includes auto attack, unused?
     PLAYER_FLAG_NO_XP                   = 0x02000000, // (TODO: implement this and remove variable from player class) Disables XP gain and hides XP bar
     // Cataclysm flags begin (needs verification)
-    PLAYER_FLAG_UNK6                    = 0x04000000,
+    PLAYER_FLAG_UNK7                    = 0x04000000,
     PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
     PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
-    PLAYER_FLAG_UNK7                    = 0x20000000,
-    PLAYER_FLAG_UNK8                    = 0x40000000,
-    PLAYER_FLAG_UNK9                    = 0x80000000
+    PLAYER_FLAG_UNK8                    = 0x20000000,
+    PLAYER_FLAG_UNK9                    = 0x40000000,
+    PLAYER_FLAG_UNK10                   = 0x80000000
 };
 
 enum CustomizeFlags
@@ -362,6 +362,17 @@ enum LoginFlags
     LOGIN_CUSTOMIZE_FACTION     = 2,
     LOGIN_CUSTOMIZE_RACE        = 4,
     LOGIN_CUSTOMIZE_LOOKS       = 8
+};
+
+enum CharacterScreenFlags
+{
+    CHARACTER_SCREEN_FLAG_NONE              = 0x00000000,
+    CHARACTER_SCREEN_FLAG_LOCKED_UPDATE     = 0x00000004, // Prevents login: "You cannot log in until the character update process you recently initiated is complete."
+    CHARACTER_SCREEN_FLAG_HIDE_HELM         = 0x00000400, // Hides character's helm
+    CHARACTER_SCREEN_FLAG_HIDE_CLOAK        = 0x00000800, // Hides character's cloak
+    CHARACTER_SCREEN_FLAG_DEAD              = 0x00002000, // Shows character is dead
+    CHARACTER_SCREEN_FLAG_FORCED_RENAME     = 0x00004000, // Prevents login: "Your name has been flagged for rename, please enter a new name:"
+    CHARACTER_SCREEN_FLAG_BANNED            = 0x01000000  // Prevents login: "Character locked. Contact Billing for more information."
 };
 
 enum FriendsResult
