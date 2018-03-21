@@ -1,11 +1,11 @@
 ﻿TERMS OF USE AGREEMENT
-**********************
+
 
 Please take a moment to review these rules detailed below. If you agree with them, then you may
 proceed with reading the source code.
 
 1. Acceptance of Terms of Use and Amendments
-********************************************
+
 Each time you use or cause access to this web site or services, you agree to be bound by these
 Terms of Use, and as amended from time to time with or without notice to you. In addition, if
 you are using a particular service on or through this web site, you will be subject to any rules
@@ -14,7 +14,7 @@ Terms of Use.
 
 
 2. Our Service
-**************
+
 Our web site and services provided to you on and through our web site on an AS IS basis. You
 agree that the owners of this web site exclusively reserve the right and may, at any time and
 without notice and any liability to you, modify or discontinue this web site and its services
@@ -24,21 +24,21 @@ any data or information.
 
 
 3. Your Responsibilities and Registration Obligations
-*****************************************************
+
 In order to use this web site, you must register on our site, and agree to provide truthful information
 when requested. When registering, you explicitly
 agree to our Terms of Use and as may be modified by us from time to time and available here.
 
 
 4. Registration and Password
-****************************
+
 You are responsible to maintain the confidentiality of your password and shall be responsible for
 all uses via your registration and/or login, whether authorized or unauthorized by you. You agree
 to immediately notify us of any unauthorized use or your registration, user account or password.
 
 
 5. Your Conduct
-***************
+
 You agree that all information or data of any kind, whether text, software, code, music or sound,
 photographs or graphics, video or other materials (Content), publicly or privately provided, shall
 be the sole responsibility of the person providing the Content or the person whose user account is
@@ -65,7 +65,7 @@ advertising without our prior written consent.
 
 
 6. Submission of Content on this Web Site
-*****************************************
+
 By providing any Content to our web site:
 
 (a) you agree to grant to us a worldwide, royalty-free, perpetual, non-exclusive right and license
@@ -79,7 +79,7 @@ you acknowledge and agree that we shall have the right (but not obligation), in 
 publish or to remove or block access to any Content you provide at any time and for any reason, with or without notice.
 
 9. Copyright and "link-back"
-****************************
+
 If you use commits/pullrequests or codeparts made for or by the ascemu community, you agree to fill the following lines into the header
 section of your files:
 * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
@@ -88,7 +88,7 @@ If you don't want to fill the AscEmu copyright link, feel free to contact the or
 to get permission to use it without the link back.
 
 10. LIMITATION OF LIABILITY
-**************************
+
 YOU EXPRESSLY UNDERSTAND AND AGREE THAT WE SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INDICENTAL,
 CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA 
 OR OTHER INTANGIBLE LOSS (EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES), RESULTING FROM OR ARISING OUT OF
