@@ -62,5 +62,5 @@ HowTo install (detailed guides on our wiki)
 ### Copyright and other stuff
 * [License](LICENSE.md)
 * [Thanks to all](THANKS.md)
-* [Terms of use](TERMS OF USE AGREEMENT)
+* [Terms of use](TERMS_OF_USE_AGREEMENT.md)
  
