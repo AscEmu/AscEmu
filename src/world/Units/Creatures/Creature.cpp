@@ -1428,7 +1428,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
-    SetCastSpeedMod(1.0f);   // better set this one
+    setModCastSpeed(1.0f);   // better set this one
     setUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes0);
     setUInt32Value(UNIT_FIELD_BYTES_1, spawn->bytes1);
     setUInt32Value(UNIT_FIELD_BYTES_2, spawn->bytes2);
@@ -1663,7 +1663,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
-    SetCastSpeedMod(1.0f);   // better set this one
+    setModCastSpeed(1.0f);   // better set this one
 
     ////////////AI
 

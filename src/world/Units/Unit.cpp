@@ -155,6 +155,15 @@ void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_fl
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 
+float_t Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
+void Unit::setModCastSpeed(float_t modifier) { write(unitData()->mod_cast_speed, modifier); }
+void Unit::modModCastSpeed(float_t modifier)
+{
+    float_t currentMod = getModCastSpeed();
+    currentMod += modifier;
+    setModCastSpeed(currentMod);
+}
+
 uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
 void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
 
@@ -205,6 +214,15 @@ void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged
 
 float_t Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
 void Unit::setMaxRangedDamage(float_t damage) { write(unitData()->maximum_ranged_ddamage, damage); }
+
+float_t Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
+void Unit::setPowerCostMultiplier(uint16_t school, float_t multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
+void Unit::modPowerCostMultiplier(uint16_t school, float_t multiplier)
+{
+    float_t currentMultiplier = getPowerCostMultiplier(school);
+    currentMultiplier += multiplier;
+    setPowerCostMultiplier(school, currentMultiplier);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement

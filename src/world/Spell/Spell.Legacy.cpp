@@ -885,7 +885,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         // handle MOD_CAST_TIME
         if (u_caster != nullptr && m_castTime)
         {
-            m_castTime = float2int32(m_castTime * u_caster->GetCastSpeedMod());
+            m_castTime = float2int32(m_castTime * u_caster->getModCastSpeed());
         }
     }
 
@@ -1513,7 +1513,7 @@ void Spell::castMe(bool check)
 
                     uint32 channelDuration = GetDuration();
                     if (u_caster != nullptr)
-                        channelDuration = static_cast<uint32>(channelDuration * u_caster->GetCastSpeedMod());
+                        channelDuration = static_cast<uint32>(channelDuration * u_caster->getModCastSpeed());
                     m_spellState = SPELL_STATE_CASTING;
                     SendChannelStart(channelDuration);
                     if (p_caster != nullptr)
@@ -2957,7 +2957,7 @@ bool Spell::HasPower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
+        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost
@@ -3115,7 +3115,7 @@ bool Spell::TakePower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
+        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost

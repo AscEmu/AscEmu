@@ -898,7 +898,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setNativeDisplayId(13337 + horde);
 
     pCreature->setChannelSpellId(22011);
-    pCreature->SetCastSpeedMod(1.0f);
+    pCreature->setModCastSpeed(1.0f);
 
     pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
     pCreature->setSheathType(SHEATH_STATE_MELEE);

@@ -783,7 +783,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     }
 
     if (GetDuration() > 0 && m_spellInfo->getChannelInterruptFlags() != 0 && caster->IsUnit())
-        SetDuration(GetDuration() * float2int32(static_cast<Unit*>(caster)->GetCastSpeedMod()));
+        SetDuration(GetDuration() * float2int32(static_cast<Unit*>(caster)->getModCastSpeed()));
 
     // SetCasterFaction(caster->_getFaction());
 
@@ -3385,7 +3385,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             if (m_spellInfo->getChannelInterruptFlags() != 0)
-                amptitude *= caster->GetCastSpeedMod();
+                amptitude *= caster->getModCastSpeed();
         }
 
         sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, spe, true, mod->m_amount,
@@ -3463,7 +3463,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             if (m_spellInfo->getChannelInterruptFlags() != 0)
-                amptitude *= caster->GetCastSpeedMod();
+                amptitude *= caster->getModCastSpeed();
         }
 
         sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, trigger, false, int32(0),
@@ -5336,13 +5336,13 @@ void Aura::EventPeriodicManaLeech(uint32 amount)
 
 void Aura::SpellAuraModCastingSpeed(bool apply)
 {
-    float current = m_target->GetCastSpeedMod();
+    float current = m_target->getModCastSpeed();
     if (apply)
         current -= mod->m_amount / 100.0f;
     else
         current += mod->m_amount / 100.0f;
 
-    m_target->SetCastSpeedMod(current);
+    m_target->setModCastSpeed(current);
 }
 
 bool isFeignDeathResisted(uint32 playerlevel, uint32 moblevel)
@@ -5545,7 +5545,7 @@ void Aura::SpellAuraModPowerCost(bool apply)
     {
         if (mod->m_miscValue & (((uint32)1) << x))
         {
-            m_target->ModPowerCostMultiplier(x, val / 100.0f);
+            m_target->modPowerCostMultiplier(x, val / 100.0f);
         }
     }
 }
@@ -8325,7 +8325,7 @@ void Aura::SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply)
 {
     int32 val = (apply) ? mod->m_amount : -mod->m_amount;
     float pct_value = -val / 100.0f;
-    m_target->ModCastSpeedMod(pct_value);
+    m_target->modModCastSpeed(pct_value);
 }
 
 void Aura::SpellAuraMeleeHaste(bool apply)

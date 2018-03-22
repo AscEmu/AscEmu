@@ -358,6 +358,10 @@ public:
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
 
+    float_t getModCastSpeed() const;
+    void setModCastSpeed(float_t modifier);
+    void modModCastSpeed(float_t modifier);
+
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
 
@@ -409,6 +413,10 @@ public:
 
     float_t getMaxRangedDamage() const;
     void setMaxRangedDamage(float_t damage);
+
+    float_t getPowerCostMultiplier(uint16_t school) const;
+    void setPowerCostMultiplier(uint16_t school, float_t multiplier);
+    void modPowerCostMultiplier(uint16_t school, float_t multiplier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -524,7 +532,6 @@ public:
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
     void setAuraSlotLevel(uint32_t slot, bool positive);
 #endif
-
 
     // Do not alter anything below this line
     // -------------------------------------
@@ -1182,13 +1189,6 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
-    float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
-    void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    void ModPowerCostMultiplier(uint16_t school, float amt) { modFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    float GetPowerCostMultiplier(uint16_t school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

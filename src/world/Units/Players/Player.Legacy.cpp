@@ -1026,7 +1026,7 @@ bool Player::Create(WorldPacket& data)
 
     setNextLevelXp(400);
     setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -3381,7 +3381,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     EventModelChange();
 
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -4142,7 +4142,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     EventModelChange();
 
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -6419,7 +6419,7 @@ void Player::ModAttackSpeed(int32 mod, ModType type)
         m_attack_speed[type] /= 1.0f + ((float)(-mod) / 100.0f);
 
     if (type == MOD_SPELL)
-        SetCastSpeedMod(1.0f / (m_attack_speed[MOD_SPELL] * SpellHasteRatingBonus));
+        setModCastSpeed(1.0f / (m_attack_speed[MOD_SPELL] * SpellHasteRatingBonus));
 }
 
 void Player::UpdateAttackSpeed()
@@ -6686,9 +6686,9 @@ void Player::UpdateStats()
     float haste = 1.0f + CalcRating(PCR_SPELL_HASTE) / 100.0f;
     if (haste != SpellHasteRatingBonus)
     {
-        float value = GetCastSpeedMod() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
+        float value = getModCastSpeed() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
 
-        SetCastSpeedMod(value);
+        setModCastSpeed(value);
         SpellHasteRatingBonus = haste;    // keep value for next run
     }
 
@@ -12216,10 +12216,10 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     uint32 mstime = Util::getMSTime();
     int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
 
-    if (GetCastSpeedMod() >= 1.0f)
+    if (getModCastSpeed() >= 1.0f)
         atime = pSpell->getStartRecoveryTime();
     else
-        atime = float2int32(pSpell->getStartRecoveryTime() * GetCastSpeedMod());
+        atime = float2int32(pSpell->getStartRecoveryTime() * getModCastSpeed());
 
     spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellGroupType());
     spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellGroupType());

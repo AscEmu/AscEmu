@@ -148,11 +148,11 @@ struct WoWUnit : WoWObject
 #define WOWUNIT_AURA_FLAGS_COUNT 14
 #define WOWUNIT_AURA_LEVELS_COUNT 14
 #define WOWUNIT_AURA_APPLICATIONS_COUNT 14
-#define WOWUNIT_RESISTANCE_COUNT 7
-#define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7
-#define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
-#define WOWUNIT_POWER_COST_MODIFIER 7
-#define WOWUNIT_POWER_COST_MULTIPLIER 7
+#define WOWUNIT_RESISTANCE_COUNT 7                      //school?
+#define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7    //school?
+#define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7    //school?
+#define WOWUNIT_POWER_COST_MODIFIER 7                   //school?
+#define WOWUNIT_POWER_COST_MULTIPLIER 7                 //school?
 #define WOWUNIT_ATTACK_TIME_COUNT 3
 #define WOWUNIT_STAT_COUNT 5
 
@@ -235,7 +235,7 @@ struct WoWUnit : WoWObject
     float_t maximum_ranged_ddamage;
     uint32_t power_cost_modifier[WOWUNIT_POWER_COST_MODIFIER];
     float_t power_cost_multiplier[WOWUNIT_POWER_COST_MULTIPLIER];
-    float_t max_health_modifier;
+    float_t max_health_modifier;    // not used
     uint32_t unit_padding;
 };
 #elif VERSION_STRING == WotLK

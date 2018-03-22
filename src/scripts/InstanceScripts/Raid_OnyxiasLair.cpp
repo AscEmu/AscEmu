@@ -199,7 +199,7 @@ class OnyxiaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 65)
             {
                 m_phase = 2;
-                getCreature()->SetCastSpeedMod(0.01f);
+                getCreature()->setModCastSpeed(0.01f);
                 if (getCreature()->isCastingNonMeleeSpell())
                     getCreature()->interruptSpell();
 
@@ -221,7 +221,7 @@ class OnyxiaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 40)
             {
                 m_phase = 3;
-                getCreature()->SetCastSpeedMod(1.0f);
+                getCreature()->setModCastSpeed(1.0f);
                 if (getCreature()->isCastingNonMeleeSpell())
                     getCreature()->interruptSpell();
                 getCreature()->GetAIInterface()->m_canMove = true;

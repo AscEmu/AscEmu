@@ -13190,7 +13190,7 @@ void Unit::setAttackTimer(int32 time, bool offhand)
     if (!time)
         time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
-    time = std::max(1000, float2int32(time * GetCastSpeedMod()));
+    time = std::max(1000, float2int32(time * getModCastSpeed()));
     if (time> 300000)		// just in case.. shouldn't happen though
         time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
