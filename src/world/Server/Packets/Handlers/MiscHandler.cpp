@@ -39,6 +39,7 @@
 #include "Server/Packets/CmsgWho.h"
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
+#include "Server/Packets/CmsgSetSheathed.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -1982,11 +1983,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
 void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
 
-    uint32 active;
-    recv_data >> active;
-    _player->setSheathType((uint8)active);
+    CmsgSetSheathed recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    _player->setSheathType(static_cast<uint8>(recv_packet.type));
 }
 
 void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
@@ -2220,20 +2222,9 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
 }
 
 #if VERSION_STRING != Cata
-// Handlers for acknowledgement opcodes (removes some 'unknown opcode' flood from the logs)
 void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    switch (recv_data.GetOpcode())
-    {
-        case CMSG_MOVE_WATER_WALK_ACK:
-            break;
-
-        /*case CMSG_MOVE_SET_CAN_FLY_ACK:
-            _player->FlyCheat = _player->m_setflycheat;
-            break;*/
-    }
+    LogDebugFlag(LF_OPCODE, "Opcode %s (%u) received. This opcode is not known/implemented right now!", getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode());
 }
 #endif
 
