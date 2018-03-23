@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgListInventory.h"
+#include "Server/Packets/CmsgItemQuerySingle.h"
 
 using namespace AscEmu::Packets;
 
@@ -719,22 +720,21 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
 #if VERSION_STRING == TBC
 void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 4);
+    CmsgItemQuerySingle itemQueryPacket;
+    if (!itemQueryPacket.deserialise(recvData))
+        return;
 
-    uint32 itemid;
-    recvData >> itemid;
-
-    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
+    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemQueryPacket.item_id);
     if (!itemProto)
     {
-        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
+        LOG_ERROR("WORLD: Unknown item id %u", itemQueryPacket.item_id);
         return;
     }
 
     std::string Name;
     std::string Description;
 
-    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemQueryPacket.item_id, language) : nullptr;
     if (li != nullptr)
     {
         Name = li->name;
@@ -776,8 +776,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
     data << itemProto->Unique;
     data << itemProto->MaxCount;
     data << itemProto->ContainerSlots;
-    data << itemProto->itemstatscount;  //10
-    for (uint8 i = 0; i < itemProto->itemstatscount; i++)
+    for (uint8 i = 0; i < 10; i++) //itemProto->itemstatscount
     {
         data << itemProto->Stats[i].Type;
         data << itemProto->Stats[i].Value;
@@ -855,22 +854,21 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 #else
 void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 4);
+    CmsgItemQuerySingle itemQueryPacket;
+    if (!itemQueryPacket.deserialise(recvData))
+        return;
 
-    uint32 itemid;
-    recvData >> itemid;
-
-    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
+    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemQueryPacket.item_id);
     if (!itemProto)
     {
-        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
+        LOG_ERROR("WORLD: Unknown item id %u", itemQueryPacket.item_id);
         return;
     }
 
     std::string Name;
     std::string Description;
 
-    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemQueryPacket.item_id, language) : nullptr;
     if (li != nullptr)
     {
         Name = li->name;
