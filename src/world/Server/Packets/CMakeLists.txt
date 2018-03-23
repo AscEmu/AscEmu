@@ -14,6 +14,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgJoinChannel.h
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
+   ${PATH_PREFIX}/CmsgNpcTextQuery.h
    ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
    ${PATH_PREFIX}/CmsgSetContactNotes.h

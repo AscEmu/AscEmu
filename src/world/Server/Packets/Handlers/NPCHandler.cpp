@@ -32,6 +32,7 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/CmsgGossipHello.h"
+#include "Server/Packets/CmsgNpcTextQuery.h"
 
 using namespace AscEmu::Packets;
 
@@ -515,30 +516,25 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
     GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///This function handles CMSG_NPC_TEXT_QUERY:
-//////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgNpcTextQuery npcTextPacket;
+    if (!npcTextPacket.deserialise(recv_data))
+        return;
+
+    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", npcTextPacket.text_id);
+
+    GetPlayer()->setTargetGuid(npcTextPacket.guid);
+
+    auto lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(npcTextPacket.text_id, language) : nullptr;
+
     WorldPacket data;
-    uint32 textID;
-    uint64 targetGuid;
-
-    recv_data >> textID;
-    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
-
-    recv_data >> targetGuid;
-    GetPlayer()->setTargetGuid(targetGuid);
-
-    MySQLStructure::NpcText const* pGossip = sMySQLStore.getNpcText(textID);
-    MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;
-
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
-    data << textID;
+    data << npcTextPacket.text_id;
 
-    if (pGossip)
+    if (const auto pGossip = sMySQLStore.getNpcText(npcTextPacket.text_id))
     {
         for (uint8 i = 0; i < 8; i++)
         {
@@ -547,43 +543,28 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             if (lnc)
             {
                 if (strlen(lnc->texts[i][0]) == 0)
-                {
                     data << lnc->texts[i][1];
-                }
                 else
-                {
                     data << lnc->texts[i][0];
-                }
 
                 if (strlen(lnc->texts[i][1]) == 0)
-                {
                     data << lnc->texts[i][0];
-                }
                 else
-                {
                     data << lnc->texts[i][1];
-                }
             }
             else
             {
-                if (pGossip->textHolder[i].texts[0].size() == 0)
-                {
+                if (pGossip->textHolder[i].texts[0].empty())
                     data << pGossip->textHolder[i].texts[1];
-                }
                 else
-                {
                     data << pGossip->textHolder[i].texts[0];
-                }
 
-                if (pGossip->textHolder[i].texts[1].size() == 0)
-                {
+                if (pGossip->textHolder[i].texts[1].empty())
                     data << pGossip->textHolder[i].texts[0];
-                }
                 else
-                {
                     data << pGossip->textHolder[i].texts[1];
-                }
             }
+
             data << pGossip->textHolder[i].language;
 
             for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
@@ -611,7 +592,6 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     }
 
     SendPacket(&data);
-    return;
 }
 
 void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
