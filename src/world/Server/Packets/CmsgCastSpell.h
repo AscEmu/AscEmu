@@ -40,7 +40,7 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING <= TBC
             packet << spell_id << cast_count;
 #elif VERSION_STRING == WotLK
-            recvPacket << cast_count << spell_id << flags;
+            packet << cast_count << spell_id << flags;
 #endif
             return true;
         }
@@ -50,7 +50,7 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING <= TBC
             packet >> spell_id >> cast_count;
 #elif VERSION_STRING == WotLK
-            recvPacket >> cast_count >> spell_id >> flags;
+            packet >> cast_count >> spell_id >> flags;
 #endif
             return true;
         }

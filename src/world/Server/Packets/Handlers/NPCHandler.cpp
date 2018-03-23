@@ -33,6 +33,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/CmsgGossipHello.h"
 #include "Server/Packets/CmsgNpcTextQuery.h"
+#include "Server/Packets/CmsgGossipSelectOption.h"
 
 using namespace AscEmu::Packets;
 
@@ -425,36 +426,31 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_GOSSIP_SELECT_OPTION:
-//////////////////////////////////////////////////////////////////////////////////////////
+
 void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 option;
-    uint32 gossipId;
-    uint64 guid;
+    CmsgGossipSelectOption gossipSelectPacket;
+    if (!gossipSelectPacket.deserialise(recv_data))
+        return;
 
-    recv_data >> guid;
-    recv_data >> gossipId;
-    recv_data >> option;
-
-    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X", gossipId, option, guid);
+    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X",
+        gossipSelectPacket.gossip_id, gossipSelectPacket.option, gossipSelectPacket.guid);
 
     Arcemu::Gossip::Script* script = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 guidtype = GET_TYPE_FROM_GUID(gossipSelectPacket.guid);
 
     Object* object;
     if (guidtype == HIGHGUID_TYPE_ITEM)         //Item objects are retrieved differently.
     {
-        object = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        object = GetPlayer()->GetItemInterface()->GetItemByGUID(gossipSelectPacket.guid);
         if (object != nullptr)
             script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(object));
     }
     else
     {
-        object = GetPlayer()->GetMapMgr()->_GetObject(guid);
+        object = GetPlayer()->GetMapMgr()->_GetObject(gossipSelectPacket.guid);
     }
 
     if (object != nullptr)
@@ -467,14 +463,10 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
 
     if (script != nullptr)
     {
-        std::string str;
-        if (recv_data.rpos() != recv_data.wpos())
-            recv_data >> str;
-
-        if (str.length() > 0)
-            script->OnSelectOption(object, GetPlayer(), option, str.c_str(), gossipId);
+        if (gossipSelectPacket.input.length() > 0)
+            script->OnSelectOption(object, GetPlayer(), gossipSelectPacket.option, gossipSelectPacket.input.c_str(), gossipSelectPacket.gossip_id);
         else
-            script->OnSelectOption(object, GetPlayer(), option, nullptr, gossipId);
+            script->OnSelectOption(object, GetPlayer(), gossipSelectPacket.option, nullptr, gossipSelectPacket.gossip_id);
     }
 }
 

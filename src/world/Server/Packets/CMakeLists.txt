@@ -10,6 +10,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
    ${PATH_PREFIX}/CmsgGossipHello.h
+   ${PATH_PREFIX}/CmsgGossipSelectOption.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
    ${PATH_PREFIX}/CmsgMessageChat.h
