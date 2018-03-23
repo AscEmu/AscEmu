@@ -31,6 +31,9 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/CmsgGossipHello.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 trainertype trainer_types[TRAINER_TYPE_MAX] =
@@ -390,17 +393,15 @@ void WorldSession::SendAuctionList(Creature* auctioneer)
     SendPacket(&data);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_GOSSIP_HELLO:
-//////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
+    CmsgGossipHello gossipPacket;
+    if (!gossipPacket.deserialise(recv_data))
+        return;
 
-    recv_data >> guid;
-    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(gossipPacket.guid));
 
     if (qst_giver != nullptr)
     {
@@ -415,7 +416,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
         // reputation
         _player->Reputation_OnTalk(qst_giver->m_factionDBC);
 
-        LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(guid));
+        LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(gossipPacket.guid));
 
         Arcemu::Gossip::Script* script = Arcemu::Gossip::Script::GetInterface(qst_giver);
         if (script != nullptr)
