@@ -27,6 +27,9 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgListInventory.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 bool VerifyBagSlots(int8_t containerSlot, int8_t slot)
@@ -1538,13 +1541,11 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
 
 void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 8);
-    LOG_DETAIL("WORLD: Recvd CMSG_LIST_INVENTORY");
-    uint64 guid;
+    CmsgListInventory listInventoryPacket;
+    if (!listInventoryPacket.deserialise(recvData))
+        return;
 
-    recvData >> guid;
-
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(listInventoryPacket.guid));
     if (unit == nullptr)
         return;
 
@@ -1569,9 +1570,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
     if (_player->CanBuyAt(vendor))
         SendInventoryList(unit);
     else
-    {
         Arcemu::Gossip::Menu::SendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
-    }
 }
 
 void WorldSession::SendInventoryList(Creature* unit)

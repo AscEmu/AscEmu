@@ -13,6 +13,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
+   ${PATH_PREFIX}/CmsgListInventory.h
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgNpcTextQuery.h
