@@ -161,7 +161,7 @@ public:
     {
         int32 i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
-        switch (pPrisoner->GetEntry())
+        switch (pPrisoner->getEntry())
         {
             case 20677:
                 i = 0;
@@ -194,7 +194,7 @@ public:
 
         uint8 i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
-        switch (pPrisoner->GetEntry())
+        switch (pPrisoner->getEntry())
         {
             case 20677:
                 i = 0;

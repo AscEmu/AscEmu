@@ -919,7 +919,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // requires a target
                             if (pUnit)
                             {
-                                uint32 ent = pUnit->GetEntry();
+                                uint32 ent = pUnit->getEntry();
                                 if ((ent == 1412 && achievementCriteria->index == 1)    // Squirrel
                                     || (ent == 25679 && achievementCriteria->index == 2) // Steam Frog
                                     || (ent == 25677 && achievementCriteria->index == 3) // Borean Frog
@@ -950,7 +950,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // requires a target
                             if (pUnit)
                             {
-                                uint32 ent = pUnit->GetEntry();
+                                uint32 ent = pUnit->getEntry();
                                 if ((ent == 29328 && achievementCriteria->index == 1)   // Arctic Hare
                                     || (ent == 31685 && achievementCriteria->index == 2) // Borean Marmot
                                     || (ent == 28407 && achievementCriteria->index == 3) // Fjord Penguin
@@ -1348,7 +1348,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->_GetSkillLineMax(achievementCriteria->learn_skill_level.skillID) / 75);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
-                SetCriteriaProgress(achievementCriteria, (uint8)(GetPlayer()->getUInt32Value(PLAYER_BYTES_2) >> 16));
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getBankSlots());
                 break;
                 //End of Achievement List
             default:

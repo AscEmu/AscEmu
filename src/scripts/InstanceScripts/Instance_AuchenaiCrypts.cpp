@@ -121,7 +121,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
         {
             Avatar = false;
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override

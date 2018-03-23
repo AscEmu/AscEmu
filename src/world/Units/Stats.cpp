@@ -138,7 +138,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         return 0;
 
     // No xp reward for killing summons
-    if (pVictim->GetCreatedByGUID() != 0)
+    if (pVictim->getCreatedByGuid() != 0)
         return 0;
 
     CreatureProperties const* victimI = static_cast<Creature*>(pVictim)->GetCreatureProperties();
@@ -620,11 +620,11 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
                     wspeed = 2000;
             }
             else
-                wspeed = (float)pAttacker->GetBaseAttackTime(RANGED);
+                wspeed = (float)pAttacker->getBaseAttackTime(RANGED);
         }
         else
         {
-            wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+            wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
 
         //ranged weapon normalization.
@@ -650,7 +650,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
             }
         }
 
-        bonus = (wspeed - pAttacker->GetBaseAttackTime(RANGED)) / 14000.0f * ap;
+        bonus = (wspeed - pAttacker->getBaseAttackTime(RANGED)) / 14000.0f * ap;
         min_damage += bonus;
         max_damage += bonus;
     }
@@ -685,11 +685,11 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
                     wspeed = 2000;
             }
             else
-                wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+                wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
         else
         {
-            wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+            wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
 
         //Normalized weapon damage checks.
@@ -728,9 +728,9 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         }
 
         if (offset == UNIT_FIELD_MINDAMAGE)
-            bonus = (wspeed - pAttacker->GetBaseAttackTime(MELEE)) / 14000.0f * ap;
+            bonus = (wspeed - pAttacker->getBaseAttackTime(MELEE)) / 14000.0f * ap;
         else
-            bonus = (wspeed - pAttacker->GetBaseAttackTime(OFFHAND)) / 14000.0f * ap;
+            bonus = (wspeed - pAttacker->getBaseAttackTime(OFFHAND)) / 14000.0f * ap;
         min_damage += bonus;
         max_damage += bonus;
     }

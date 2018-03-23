@@ -78,7 +78,7 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     for (uint8 i = 0; i < 2; ++i)
     {
         m_dropFlags[i]->Activate();
-        m_dropFlags[i]->SetScale(2.5f);
+        m_dropFlags[i]->setScale(2.5f);
     }
 
 }
@@ -238,7 +238,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
             sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            this->EndBattleground(plr->GetTeamReal());
+            this->EndBattleground(plr->GetTeam());
         }
 
         // increment the score world state
@@ -278,7 +278,7 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
-    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeamReal(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     PlaySoundToAll(SOUND_FLAG_RETURNED);
 
@@ -294,7 +294,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()] != obj)
     {
         // are we returning it?
-        if ((obj->GetEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->GetEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
+        if ((obj->getEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->getEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
         {
             uint32 x = plr->GetTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));

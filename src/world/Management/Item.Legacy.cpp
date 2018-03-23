@@ -118,7 +118,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     else
         locked = false;
 
-    SetEntry(itemid);
+    setEntry(itemid);
     m_owner = plr;
 
     wrapped_item_id = fields[3].GetUInt32();
@@ -196,7 +196,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     ApplyRandomProperties(false);
 
     // Charter stuff
-    if (GetEntry() == ITEM_ENTRY_GUILD_CHARTER)
+    if (getEntry() == ITEM_ENTRY_GUILD_CHARTER)
     {
         SoulBind();
         setStackCount(1);
@@ -205,7 +205,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_GUILD]->GetID());
     }
 
-    if (GetEntry() == ARENA_TEAM_CHARTER_2v2)
+    if (getEntry() == ARENA_TEAM_CHARTER_2v2)
     {
         SoulBind();
         setStackCount(1);
@@ -214,7 +214,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_2V2]->GetID());
     }
 
-    if (GetEntry() == ARENA_TEAM_CHARTER_3v3)
+    if (getEntry() == ARENA_TEAM_CHARTER_3v3)
     {
         SoulBind();
         setStackCount(1);
@@ -223,7 +223,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_3V3]->GetID());
     }
 
-    if (GetEntry() == ARENA_TEAM_CHARTER_5v5)
+    if (getEntry() == ARENA_TEAM_CHARTER_5v5)
     {
         SoulBind();
         setStackCount(1);
@@ -598,7 +598,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         WorldPacket EnchantLog(SMSG_ENCHANTMENTLOG, 25);
         EnchantLog << m_owner->getGuid();
         EnchantLog << m_owner->getGuid();
-        EnchantLog << GetEntry();
+        EnchantLog << getEntry();
         EnchantLog << Enchantment->Id;
         EnchantLog << uint8(0);
         m_owner->SendPacket(&EnchantLog);
@@ -762,7 +762,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     {
                         m_owner->FlatResistanceModifierPos[Entry->spell[c]] -= val;
                     }
-                    m_owner->CalcResistance(static_cast<uint16_t>(Entry->spell[c]));
+                    m_owner->CalcResistance(static_cast<uint8_t>(Entry->spell[c]));
                 }
                 break;
 

@@ -692,14 +692,6 @@ void ApplyNormalFixes()
 
         ARCEMU_ASSERT(sp->getSchool() < SCHOOL_COUNT);
 
-        // correct caster/target aura states
-        if (sp->getCasterAuraState() > 1)
-            sp->setCasterAuraState(1 << (sp->getCasterAuraState() - 1));
-
-        if (sp->getTargetAuraState() > 1)
-            sp->setTargetAuraState(1 << (sp->getTargetAuraState() - 1));
-
-
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
         switch (sp->getId())

@@ -41,6 +41,7 @@ struct MovementInfo
         transport_data(),
         transport_time(0),
         transport_seat(0),
+        transport_time2(0.f),
         pitch(0.f),
         fall_time(0),
         redirect_velocity(0.f),

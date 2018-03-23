@@ -79,7 +79,7 @@ class IceCrownCitadelScript : public InstanceScript
                 setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
             }
 
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_TELE_1:
                 case GO_TELE_2:
@@ -94,7 +94,7 @@ class IceCrownCitadelScript : public InstanceScript
 
         void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_LORD_MARROWGAR:
                 {

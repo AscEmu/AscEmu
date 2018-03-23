@@ -524,9 +524,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             GetPlayer()->SetAFKReason(reason);
 
             /* WorldPacket *data, WorldSession* session, uint32 type, uint32 language, const char *channelName, const char *message*/
-            if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_AFK))
             {
-                GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+                GetPlayer()->removePlayerFlags(PLAYER_FLAG_AFK);
                 if (worldConfig.getKickAFKPlayerTime())
                 {
                     sEventMgr.RemoveEvents(GetPlayer(), EVENT_PLAYER_SOFT_DISCONNECT);
@@ -534,7 +534,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             }
             else
             {
-                GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+                GetPlayer()->addPlayerFlags(PLAYER_FLAG_AFK);
 
                 if (GetPlayer()->m_bg)
                 {
@@ -554,13 +554,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             recvData >> reason;
             GetPlayer()->SetAFKReason(reason);
 
-            if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
+            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_DND))
             {
-                GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+                GetPlayer()->removePlayerFlags(PLAYER_FLAG_DND);
             }
             else
             {
-                GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+                GetPlayer()->addPlayerFlags(PLAYER_FLAG_DND);
             }
         }
         break;
@@ -657,7 +657,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         case EMOTE_STATE_READ:
         case EMOTE_STATE_DANCE:
         {
-            _player->SetEmoteState(emoteTextEntry->textid);
+            _player->setEmoteState(emoteTextEntry->textid);
         } break;
         case EMOTE_STATE_SLEEP:
         case EMOTE_STATE_SIT:

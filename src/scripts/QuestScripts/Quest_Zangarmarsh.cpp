@@ -26,7 +26,7 @@ class AncientMarks : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        uint32 entry = pObject->GetEntry();
+        uint32 entry = pObject->getEntry();
         const char* text = "";
         uint32 TextId = 0;
 
@@ -52,7 +52,7 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* casta = (static_cast<Creature*>(pObject));
-        switch (pObject->GetEntry())
+        switch (pObject->getEntry())
         {
             case 17900:
             {

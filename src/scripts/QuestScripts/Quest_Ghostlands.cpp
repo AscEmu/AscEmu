@@ -65,7 +65,7 @@ public:
 
         Prisoner22->Despawn(5000, 6 * 60 * 1000);
         Prisoner22->setStandState(STANDSTATE_STAND);
-        Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
+        Prisoner22->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 
@@ -90,7 +90,7 @@ public:
 
         Prisoner32->Despawn(5000, 6 * 60 * 1000);
         Prisoner32->setStandState(STANDSTATE_STAND);
-        Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
+        Prisoner32->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 

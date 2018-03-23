@@ -979,7 +979,7 @@ public:
 
         dmgOverwrite[0] = dmg * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
 
-        int max_dmg = mTarget->GetMaxHealth() / 2;
+        int max_dmg = mTarget->getMaxHealth() / 2;
 
         if (dmgOverwrite[0] > max_dmg)
             dmgOverwrite[0] = max_dmg;

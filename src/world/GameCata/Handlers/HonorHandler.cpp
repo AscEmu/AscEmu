@@ -23,10 +23,12 @@ void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recvData)
     CHECK_PACKET_SIZE(recvData, 4);
     uint32_t ChosenRank;
     recvData >> ChosenRank;
+#if VERSION_STRING > Classic
     if (ChosenRank == 0xFFFFFFFF)
-        _player->SetChosenTitle(0);
+        _player->setChosenTitle(0);
     else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
-        _player->SetChosenTitle(ChosenRank);
+        _player->setChosenTitle(ChosenRank);
+#endif
 }
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
@@ -122,7 +124,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         uint32 pvppoints = pts * 10;
                         data << pvppoints;
                         data << pVictim->getGuid();
-                        data << uint32(pVictim->GetPVPRank());
+                        data << uint32(pVictim->getPvpRank());
                         (*vtr)->GetSession()->SendPacket(&data);
                     }
                 }
@@ -187,7 +189,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 uint32 pvppoints = contributorpts * 10; // Why *10?
                 data << pvppoints;
                 data << pVictim->getGuid();
-                data << uint32(pVictim->GetPVPRank());
+                data << uint32(pVictim->getPvpRank());
                 pAffectedPlayer->GetSession()->SendPacket(&data);
 
                 int PvPToken = Config.MainConfig.getIntDefault("Player", "EnablePvPToken", 0);
@@ -215,11 +217,11 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 if (pAffectedPlayer->GetZoneId() == 3483)
                 {
                     // Hellfire Horde Controlled Towers
-                    /*if (pAffectedPlayer->GetMapMgr()->GetWorldState(2478) != 3 && pAffectedPlayer->GetTeam() == 1)
+                    /*if (pAffectedPlayer->GetMapMgr()->GetWorldState(2478) != 3 && pAffectedPlayer->GetTeam() == TEAM_HORDE)
                     return;
 
                     // Hellfire Alliance Controlled Towers
-                    if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->GetTeam() == 0)
+                    if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->GetTeam() == TEAM_ALLIANCE)
                     return;
                     */
 

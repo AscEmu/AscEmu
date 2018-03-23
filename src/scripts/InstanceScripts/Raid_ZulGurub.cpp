@@ -84,7 +84,7 @@ class JeklikAI : public CreatureAIScript
         {
             sendDBChatMessage(3201);     // Lord Hir'eek, grant me wings of vengeance!
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
             // bat transform
             //getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
@@ -155,7 +155,7 @@ class VenoxisAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override

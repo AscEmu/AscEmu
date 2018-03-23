@@ -873,7 +873,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         switch (opcode)
         {
             //stop spaming opcodes here
-            case SMSG_MONSTER_MOVE:
+            //case SMSG_MONSTER_MOVE:
             case MSG_MOVE_HEARTBEAT:
             {
             } break;

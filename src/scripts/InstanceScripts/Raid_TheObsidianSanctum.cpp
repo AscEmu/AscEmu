@@ -34,7 +34,7 @@ class ObsidianSanctumScript : public InstanceScript
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_DRAKE_TENEBRON:
                     m_creatureGuid[DRAKE_TENEBRON] = pCreature->getGuidLow();
@@ -55,7 +55,7 @@ class ObsidianSanctumScript : public InstanceScript
 
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_SARTHARION:
                     m_creatureGuid[BOSS_SARTHARION] = 0;

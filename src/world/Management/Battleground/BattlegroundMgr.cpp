@@ -412,18 +412,21 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
     return team->m_id;
 }
 
-void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, int nteam)
+void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint32 nteam)
 {
     ArenaTeam* team;
     Player* plr;
 
-    if (group == NULL || group->GetLeader() == NULL) return;
+    if (group == NULL || group->GetLeader() == NULL)
+        return;
 
     plr = group->GetLeader()->m_loggedInPlayer;
-    if (plr == NULL) return;
+    if (plr == NULL)
+        return;
 
     team = plr->m_arenaTeams[bg->GetType() - BATTLEGROUND_ARENA_2V2];
-    if (team == NULL) return;
+    if (team == NULL)
+        return;
 
     GroupMembersSet::iterator itx;
     for (itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
@@ -452,8 +455,8 @@ int CBattlegroundManager::CreateArenaType(int type, Group* group1, Group* group2
     }
     ar->rated_match = true;
 
-    AddGroupToArena(ar, group1, 0);
-    AddGroupToArena(ar, group2, 1);
+    AddGroupToArena(ar, group1, TEAM_ALLIANCE);
+    AddGroupToArena(ar, group2, TEAM_HORDE);
 
     return 0;
 }

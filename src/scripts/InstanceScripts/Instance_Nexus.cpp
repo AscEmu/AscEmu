@@ -573,7 +573,7 @@ class NexusScript : public InstanceScript
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_KERISTRASZA:
                     mKeristraszaGUID = pCreature->getGuidLow();
@@ -592,7 +592,7 @@ class NexusScript : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
@@ -608,7 +608,7 @@ class NexusScript : public InstanceScript
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);

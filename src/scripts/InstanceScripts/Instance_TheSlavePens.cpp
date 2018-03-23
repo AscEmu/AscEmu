@@ -36,7 +36,7 @@ class TotemsAI : public CreatureAIScript
             uint32 AIUpdate = 1000;
 
             SpellID = 1;
-            switch (getCreature()->GetEntry())
+            switch (getCreature()->getEntry())
             {
                 case CN_MENNUS_HEALING_WARD:
                     SpellID = 34977;

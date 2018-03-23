@@ -394,7 +394,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
         go->CreateFromProto(entry, MapId, x, y, z, o);
 
         go->SetFaction(faction);
-        go->SetScale(scale);
+        go->setScale(scale);
         go->SetFlags(flags);
         go->SetPosition(x, y, z, o);
         go->SetInstanceID(m_mapMgr->GetInstanceID());
@@ -651,7 +651,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* revive the player if he is dead */
     if (!plr->isAlive())
     {
-        plr->setHealth(plr->GetMaxHealth());
+        plr->setHealth(plr->getMaxHealth());
         plr->ResurrectPlayer();
     }
 
@@ -864,8 +864,8 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->Create(m_mapMgr->GetMapId(), x, y, z, o);
 
-    pCreature->SetEntry(13116 + horde);
-    pCreature->SetScale(1.0f);
+    pCreature->setEntry(13116 + horde);
+    pCreature->setScale(1.0f);
 
     pCreature->setMaxHealth(10000);
     pCreature->SetMaxPower(POWER_TYPE_MANA, 4868);
@@ -885,19 +885,19 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setGender(1);
     pCreature->setPowerType(0);
 
-    pCreature->SetEquippedItem(MELEE, 22802);
+    pCreature->setVirtualItemSlotId(MELEE, 22802);
 
     pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
 
-    pCreature->SetBaseAttackTime(MELEE, 2000);
-    pCreature->SetBaseAttackTime(OFFHAND, 2000);
-    pCreature->SetBoundingRadius(0.208f);
-    pCreature->SetCombatReach(1.5f);
+    pCreature->setBaseAttackTime(MELEE, 2000);
+    pCreature->setBaseAttackTime(OFFHAND, 2000);
+    pCreature->setBoundingRadius(0.208f);
+    pCreature->setCombatReach(1.5f);
 
-    pCreature->SetDisplayId(13337 + horde);
-    pCreature->SetNativeDisplayId(13337 + horde);
+    pCreature->setDisplayId(13337 + horde);
+    pCreature->setNativeDisplayId(13337 + horde);
 
-    pCreature->SetChannelSpellId(22011);
+    pCreature->setChannelSpellId(22011);
     pCreature->SetCastSpeedMod(1.0f);
 
     pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
@@ -1001,7 +1001,7 @@ void CBattleground::EventResurrectPlayers()
                 plr->SendMessageToSet(&data, true);
 
                 plr->ResurrectPlayer();
-                plr->setHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->getMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
                 plr->SetPower(POWER_TYPE_ENERGY, plr->GetMaxPower(POWER_TYPE_ENERGY));
                 plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);

@@ -33,7 +33,7 @@ public:
     void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
     {
         // If Balos Jacken HP - fAmount < 20%
-        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
+        if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
         {
             //Missing: modify fAmount to prevent Balos Jacken death.
             //{...}
@@ -104,7 +104,7 @@ public:
         {
             getCreature()->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
         }
-        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
+        if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.3f)
         {
             if (mAttacker->IsPlayer())
             {
@@ -171,7 +171,7 @@ public:
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
-        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
+        if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.37f)
         {
             if (mAttacker->IsPlayer())
             {

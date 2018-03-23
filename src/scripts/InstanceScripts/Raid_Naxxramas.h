@@ -975,7 +975,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto blood_strike_spell = new AI_Spell;
     blood_strike_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
-    blood_strike_spell->entryId = getCreature()->GetEntry();
+    blood_strike_spell->entryId = getCreature()->getEntry();
     blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->spelltargetType = TTYPE_SINGLETARGET;
@@ -994,7 +994,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto bone_barrier_spell = new AI_Spell;
     bone_barrier_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
-    bone_barrier_spell->entryId = getCreature()->GetEntry();
+    bone_barrier_spell->entryId = getCreature()->getEntry();
     bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->spelltargetType = TTYPE_CASTER;
@@ -1013,7 +1013,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto understudy_taunt_spell = new AI_Spell;
     understudy_taunt_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
-    understudy_taunt_spell->entryId = getCreature()->GetEntry();
+    understudy_taunt_spell->entryId = getCreature()->getEntry();
     understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->spelltargetType = TTYPE_SINGLETARGET;
@@ -1239,7 +1239,7 @@ class StickedSpewerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1268,7 +1268,7 @@ class SurgicalAssistantAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1301,7 +1301,7 @@ class SludgeBelcherAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1340,7 +1340,7 @@ class GrobbulusAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         getCreature()->CastSpell(getCreature(), poisonCloudGrob->mSpellInfo, poisonCloudGrob->mIsTriggered);
     }
 
@@ -2002,7 +2002,7 @@ class SapphironAI : public CreatureAIScript
             Waterfall->SetState(GO_STATE_CLOSED);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         PhaseTimer = (uint32)time(NULL) + 35;
         ChillTarget = NULL;
@@ -2246,7 +2246,7 @@ class SapphironAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->setWayPointToMove(0);
 
                 RemoveAIUpdateEvent();
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
                 PhaseTimer = (uint32)time(NULL) + 67;
                 ChillTarget = NULL;
@@ -2522,8 +2522,8 @@ class KelthuzadAI : public CreatureAIScript
         TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
-            getCreature()->SetChannelSpellTargetGUID(TheLichKing->getGuid());
-            getCreature()->SetChannelSpellId(29423);
+            getCreature()->setChannelObjectGuid(TheLichKing->getGuid());
+            getCreature()->setChannelSpellId(29423);
         }
 
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
@@ -2557,8 +2557,8 @@ class KelthuzadAI : public CreatureAIScript
                 WindowGate->SetState(GO_STATE_CLOSED);
         }
 
-        getCreature()->SetChannelSpellTargetGUID(0);
-        getCreature()->SetChannelSpellId(0);
+        getCreature()->setChannelObjectGuid(0);
+        getCreature()->setChannelSpellId(0);
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
@@ -2741,8 +2741,8 @@ class KelthuzadAI : public CreatureAIScript
 
             if (!PhaseTimer)
             {
-                getCreature()->SetChannelSpellTargetGUID(0);
-                getCreature()->SetChannelSpellId(0);
+                getCreature()->setChannelObjectGuid(0);
+                getCreature()->setChannelSpellId(0);
                 _setMeleeDisabled(false);
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 getCreature()->GetAIInterface()->m_canMove = true;
@@ -2903,7 +2903,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3007,7 +3007,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3194,7 +3194,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
 
         OnStart = false;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         LastPosX = 0;
         LastPosY = 0;

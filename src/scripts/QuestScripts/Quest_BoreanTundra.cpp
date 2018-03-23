@@ -311,7 +311,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
+        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
 
         // check if there is a entry in the db
         if (sMySQLStore.getNpcText(Text) == nullptr)
@@ -472,7 +472,7 @@ public:
         }
 
         Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
-        GearmasterMechazod->SetTargetGUID(pPlayer->getGuid());
+        GearmasterMechazod->setTargetGuid(pPlayer->getGuid());
         if (GearmasterMechazod->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else
@@ -488,8 +488,8 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
     GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->SetEquippedItem(0, 28487);       // Mainhand
-        getCreature()->SetEquippedItem(1, 11587);       // Offhand
+        getCreature()->setVirtualItemSlotId(MELEE, 28487);
+        getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;
@@ -620,7 +620,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    if (pCreature->GetEntry() == 26248)
+    if (pCreature->getEntry() == 26248)
     {
         if (qle->GetMobCount(2) == 0)
         {
@@ -632,7 +632,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
         pPlayer->AddQuestKill(11897, 2, 0);
     }
 
-    if (pCreature->GetEntry() == 26249)
+    if (pCreature->getEntry() == 26249)
     {
         if (qle->GetMobCount(1) == 0)
         {
@@ -657,7 +657,7 @@ public:
     {
         getCreature()->setMoveRoot(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-        getCreature()->Die(getCreature(), getCreature()->GetHealth(), 0);
+        getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
     }
 };
 

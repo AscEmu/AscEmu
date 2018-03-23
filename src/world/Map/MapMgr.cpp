@@ -532,15 +532,19 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     {
         for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
-            plObj->PushOutOfRange((*itr)->GetNewGUID());
+            if (*itr != nullptr)
+                plObj->PushOutOfRange((*itr)->GetNewGUID());
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
-        plObj->GetSession()->SetInstance(0);
+        if (plObj->GetSession())
+        {
+            plObj->GetSession()->SetInstance(0);
 
-        // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-        if (!plObj->GetSession()->bDeleted)
-            sWorld.addGlobalSession(plObj->GetSession());
+            // Add it to the global session set. Don't "re-add" to session if it is being deleted.
+            if (!plObj->GetSession()->bDeleted)
+                sWorld.addGlobalSession(plObj->GetSession());
+        }
     }
 
     if (!HasPlayers())
@@ -944,6 +948,7 @@ void MapMgr::_UpdateObjects()
                     }
                 }
 
+                //what?
                 if (pObj->IsUnit() && pObj->HasUpdateField(UNIT_FIELD_HEALTH))
                     static_cast<Unit*>(pObj)->EventHealthChangeSinceLastUpdate();
 
@@ -1851,13 +1856,13 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     uint32 mapid = GetMapId();
     // Setup game object
     go->CreateFromProto(entryID, mapid, x, y, z, o);
-    go->SetScale(scale);
+    go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
 
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
-    go_spawn->entry = go->GetEntry();
+    go_spawn->entry = go->getEntry();
     go_spawn->id = objmgr.GenerateGameObjectSpawnID();
     go_spawn->map = go->GetMapId();
     go_spawn->position_x = go->GetPositionX();
@@ -1871,7 +1876,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->state = go->GetState();
     go_spawn->flags = go->GetFlags();
     go_spawn->faction = go->GetFaction();
-    go_spawn->scale = go->GetScale();
+    go_spawn->scale = go->getScale();
     //go_spawn->stateNpcLink = 0;
     go_spawn->phase = go->GetPhase();
     go_spawn->overrides = go->GetOverrides();

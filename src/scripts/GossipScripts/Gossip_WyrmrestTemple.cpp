@@ -51,7 +51,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        switch (pObject->GetEntry())
+        switch (pObject->getEntry())
         {
             case CN_TORASTRASZA:
             {

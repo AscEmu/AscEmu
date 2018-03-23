@@ -49,7 +49,7 @@ Creature::Creature(uint64 guid)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
     m_updateMask.SetCount(UNIT_END);
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
+    setType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
     m_wowGuid.Init(getGuid());
 
@@ -254,13 +254,13 @@ void Creature::OnRespawn(MapMgr* m)
     }
 
     LOG_DETAIL("Respawning " I64FMT "...", getGuid());
-    setHealth(GetMaxHealth());
+    setHealth(getMaxHealth());
     //\note remove all dynamic flags
     setDynamicFlags(0); // not tagging shit
     if (m_spawn)
     {
         setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
-        SetEmoteState(m_spawn->emote_state);
+        setEmoteState(m_spawn->emote_state);
 
         // creature's death state
         if (m_spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
@@ -311,15 +311,15 @@ void Creature::generateLoot()
         return;
 
     if (m_mapMgr != NULL)
-        lootmgr.FillCreatureLoot(&loot, GetEntry(), m_mapMgr->iInstanceMode);
+        lootmgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
     else
-        lootmgr.FillCreatureLoot(&loot, GetEntry(), 0);
+        lootmgr.FillCreatureLoot(&loot, getEntry(), 0);
 
     loot.gold = creature_properties->money;
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->GetDifficultyType());
         auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
         if (properties_difficulty != nullptr)
         {
@@ -400,11 +400,11 @@ void Creature::SaveToDB()
     if (m_spawn == NULL)
     {
         m_spawn = new MySQLStructure::CreatureSpawn;
-        m_spawn->entry = GetEntry();
+        m_spawn->entry = getEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
         m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
-        m_spawn->displayid = m_uint32Values[UNIT_FIELD_DISPLAYID];
+        m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
         m_spawn->z = m_position.z;
@@ -421,9 +421,9 @@ void Creature::SaveToDB()
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID];
-        m_spawn->Item1SlotDisplay = GetEquippedItem(MELEE);
-        m_spawn->Item2SlotDisplay = GetEquippedItem(OFFHAND);
-        m_spawn->Item3SlotDisplay = GetEquippedItem(RANGED);
+        m_spawn->Item1SlotDisplay = getVirtualItemSlotId(MELEE);
+        m_spawn->Item2SlotDisplay = getVirtualItemSlotId(OFFHAND);
+        m_spawn->Item3SlotDisplay = getVirtualItemSlotId(RANGED);
         if (GetAIInterface()->isFlying())
             m_spawn->CanFly = 1;
         else if (GetAIInterface()->onGameobject)
@@ -451,14 +451,14 @@ void Creature::SaveToDB()
 
     ss << "INSERT INTO creature_spawns VALUES("
         << spawnid << ","
-        << GetEntry() << ","
+        << getEntry() << ","
         << GetMapId() << ","
         << m_position.x << ","
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
         << uint32(m_aiInterface->getWaypointScriptType()) << ","
-        << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
+        << getDisplayId() << ","
         << GetFaction() << ","
         << getUnitFlags() << ","
         << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
@@ -475,9 +475,9 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID] << ","
-        << GetEquippedItem(MELEE) << ","
-        << GetEquippedItem(OFFHAND) << ","
-        << GetEquippedItem(RANGED) << ",";
+        << getVirtualItemSlotId(MELEE) << ","
+        << getVirtualItemSlotId(OFFHAND) << ","
+        << getVirtualItemSlotId(RANGED) << ",";
 
     if (GetAIInterface()->isFlying())
         ss << 1 << ",";
@@ -717,7 +717,7 @@ void Creature::setDeathState(DeathState s)
         }
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
-        if ((GetCreatedByGUID() == 0) && (GetSummonedByGUID() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
+        if ((getCreatedByGuid() == 0) && (getSummonedByGuid() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
             addUnitFlags(UNIT_FLAG_SKINNABLE);
 
 
@@ -738,7 +738,7 @@ void Creature::AddToWorld()
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(getEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -756,7 +756,7 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(getEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -797,13 +797,13 @@ void Creature::EnslaveExpire()
 {
     m_enslaveCount++;
 
-    uint64 charmer = GetCharmedByGUID();
+    uint64 charmer = getCharmedByGuid();
 
     Player* caster = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
     if (caster)
     {
-        caster->SetCharmedUnitGUID(0);
-        caster->SetSummonedUnitGUID(0);
+        caster->setCharmGuid(0);
+        caster->setSummonGuid(0);
 
         WorldPacket data(SMSG_PET_SPELLS, 8);
 
@@ -812,8 +812,8 @@ void Creature::EnslaveExpire()
 
         caster->SendPacket(&data);
     }
-    SetCharmedByGUID(0);
-    SetSummonedByGUID(0);
+    setCharmedByGuid(0);
+    setSummonedByGuid(0);
 
     resetCurrentSpeed();
 
@@ -884,7 +884,7 @@ void Creature::clearInRangeSets()
     Unit::clearInRangeSets();
 }
 
-void Creature::CalcResistance(uint16 type)
+void Creature::CalcResistance(uint8_t type)
 {
     int32 pos = 0;
     int32 neg = 0;
@@ -898,9 +898,9 @@ void Creature::CalcResistance(uint16 type)
     {
         Player* owner = static_cast<Pet*>(this)->GetPetOwner();
         if (type == 0 && owner)
-            pos += int32(0.35f * owner->GetResistance(type));
+            pos += int32(0.35f * owner->getResistance(type));
         else if (owner)
-            pos += int32(0.40f * owner->GetResistance(type));
+            pos += int32(0.40f * owner->getResistance(type));
     }
 
     if (ResistanceModPct[type] < 0)
@@ -920,10 +920,10 @@ void Creature::CalcResistance(uint16 type)
 
     int32 tot = BaseResistance[type] + pos - neg;
 
-    SetResistance(type, tot > 0 ? tot : 0);
+    setResistance(type, tot > 0 ? tot : 0);
 }
 
-void Creature::CalcStat(uint16 type)
+void Creature::CalcStat(uint8_t type)
 {
     int32 pos = 0;
     int32 neg = 0;
@@ -937,9 +937,9 @@ void Creature::CalcStat(uint16 type)
     {
         Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
-            pos += int32(0.45f * owner->GetStat(STAT_STAMINA));
-        else if (type == STAT_INTELLECT && owner && GetCreatedBySpell())
-            pos += int32(0.30f * owner->GetStat(STAT_INTELLECT));
+            pos += int32(0.45f * owner->getStat(STAT_STAMINA));
+        else if (type == STAT_INTELLECT && owner && getCreatedBySpellId())
+            pos += int32(0.30f * owner->getStat(STAT_INTELLECT));
     }
 
     if (TotalStatModPct[type] < 0)
@@ -953,12 +953,12 @@ void Creature::CalcStat(uint16 type)
         pos += FlatStatMod[type];
 
 #if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
-    setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+    setPosStat(type, pos);
+    setNegStat(type, neg);
 #endif
 
     int32 tot = BaseStats[type] + pos - neg;
-    SetStat(type, tot > 0 ? tot : 0);
+    setStat(type, tot > 0 ? tot : 0);
 
     switch (type)
     {
@@ -967,7 +967,7 @@ void Creature::CalcStat(uint16 type)
             //Attack Power
             if (!IsPet())  //We calculate pet's later
             {
-                uint32 str = GetStat(STAT_STRENGTH);
+                uint32 str = getStat(STAT_STRENGTH);
                 int32 AP = (str * 2 - 20);
                 if (AP < 0) AP = 0;
                 SetAttackPower(AP);
@@ -978,7 +978,7 @@ void Creature::CalcStat(uint16 type)
         case STAT_AGILITY:
         {
             //Ranged Attack Power (Does any creature use this?)
-            int32 RAP = getLevel() + GetStat(STAT_AGILITY) - 10;
+            int32 RAP = getLevel() + getStat(STAT_AGILITY) - 10;
             if (RAP < 0) RAP = 0;
             SetRangedAttackPower(RAP);
         }
@@ -987,17 +987,18 @@ void Creature::CalcStat(uint16 type)
         {
 #if VERSION_STRING != Classic
             //Health
-            uint32 hp = GetBaseHealth();
+            uint32 hp = getBaseHealth();
             uint32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
             if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
             uint32 bonus = stat_bonus * 10 + m_healthfromspell;
             uint32 res = hp + bonus;
 
-            if (res < hp) res = hp;
-            setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
-            if (getUInt32Value(UNIT_FIELD_HEALTH) > getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            if (res < hp)
+                res = hp;
+            setMaxHealth(res);
+            if (getHealth() > getMaxHealth())
+                setHealth(getMaxHealth());
 #endif
         }
         break;
@@ -1006,7 +1007,7 @@ void Creature::CalcStat(uint16 type)
 #if VERSION_STRING != Classic
             if (getPowerType() == POWER_TYPE_MANA)
             {
-                uint32 mana = GetBaseMana();
+                uint32 mana = getBaseMana();
                 uint32 stat_bonus = (getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3));
                 if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
@@ -1027,8 +1028,8 @@ void Creature::RegenerateHealth()
     if (m_limbostate || !m_canRegenerateHP)
         return;
 
-    uint32 cur = GetHealth();
-    uint32 mh = GetMaxHealth();
+    uint32 cur = getHealth();
+    uint32 mh = getMaxHealth();
     if (cur >= mh)return;
 
     //though creatures have their stats we use some weird formula for amt
@@ -1103,8 +1104,8 @@ bool Creature::CanSee(Unit* obj)
             else detectRange = 0.0f;
         }
 
-        detectRange += GetBoundingRadius();         /// adjust range for size of creature
-        detectRange += obj->GetBoundingRadius();    /// adjust range for size of stealthed player
+        detectRange += getBoundingRadius();         /// adjust range for size of creature
+        detectRange += obj->getBoundingRadius();    /// adjust range for size of stealthed player
 
         if (GetDistance2dSq(obj) > detectRange * detectRange)
             return false;
@@ -1167,7 +1168,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
     if (!m_SellItems)
     {
         m_SellItems = new std::vector < CreatureItem > ;
-        objmgr.SetVendorList(GetEntry(), m_SellItems);
+        objmgr.SetVendorList(getEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
 }
@@ -1236,8 +1237,8 @@ void Creature::ChannelLinkUpGO(uint32 SqlId)
     if (go != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(go->getGuid());
-        SetChannelSpellId(m_spawn->channel_spell);
+        setChannelObjectGuid(go->getGuid());
+        setChannelSpellId(m_spawn->channel_spell);
     }
 }
 
@@ -1250,8 +1251,8 @@ void Creature::ChannelLinkUpCreature(uint32 SqlId)
     if (creature != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(creature->getGuid());
-        SetChannelSpellId(m_spawn->channel_spell);
+        setChannelObjectGuid(creature->getGuid());
+        setChannelSpellId(m_spawn->channel_spell);
     }
 }
 
@@ -1317,8 +1318,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     resetCurrentSpeed();
 
     //Set fields
-    SetEntry(creature_properties->Id);
-    SetScale(creature_properties->Scale);
+    setEntry(creature_properties->Id);
+    setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
@@ -1344,9 +1345,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
 
 
-    SetDisplayId(spawn->displayid);
-    SetNativeDisplayId(spawn->displayid);
-    SetMount(spawn->MountedDisplayID);
+    setDisplayId(spawn->displayid);
+    setNativeDisplayId(spawn->displayid);
+    setMountDisplayId(spawn->MountedDisplayID);
 
     EventModelChange();
 
@@ -1356,26 +1357,26 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         setLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
     for (uint8 i = 0; i < 7; ++i)
-        SetResistance(i, creature_properties->Resistances[i]);
+        setResistance(i, creature_properties->Resistances[i]);
 
-    SetBaseAttackTime(MELEE, creature_properties->AttackTime);
+    setBaseAttackTime(MELEE, creature_properties->AttackTime);
 
-    SetMinDamage(creature_properties->MinDamage);
-    SetMaxDamage(creature_properties->MaxDamage);
+    setMinDamage(creature_properties->MinDamage);
+    setMaxDamage(creature_properties->MaxDamage);
 
-    SetBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
-    SetMinRangedDamage(creature_properties->RangedMinDamage);
-    SetMaxRangedDamage(creature_properties->RangedMaxDamage);
+    setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
+    setMinRangedDamage(creature_properties->RangedMinDamage);
+    setMaxRangedDamage(creature_properties->RangedMaxDamage);
 
-    SetEquippedItem(MELEE, spawn->Item1SlotDisplay);
-    SetEquippedItem(OFFHAND, spawn->Item2SlotDisplay);
-    SetEquippedItem(RANGED, spawn->Item3SlotDisplay);
+    setVirtualItemSlotId(MELEE, spawn->Item1SlotDisplay);
+    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotDisplay);
+    setVirtualItemSlotId(RANGED, spawn->Item3SlotDisplay);
 
     SetFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
-    SetEmoteState(spawn->emote_state);
-    SetBoundingRadius(creature_properties->BoundingRadius);
-    SetCombatReach(creature_properties->CombatReach);
+    setEmoteState(spawn->emote_state);
+    setBoundingRadius(creature_properties->BoundingRadius);
+    setCombatReach(creature_properties->CombatReach);
     original_emotestate = spawn->emote_state;
 
     // set position
@@ -1402,29 +1403,29 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(GetEntry());
+        m_SellItems = objmgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProf())
-        mTrainer = objmgr.GetTrainer(GetEntry());
+        mTrainer = objmgr.GetTrainer(getEntry());
 
     if (isAuctioner())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
+        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 x = 0; x < 7; ++x)
-        BaseResistance[x] = GetResistance(x);
-    for (uint8 x = 0; x < 5; ++x)
-        BaseStats[x] = GetStat(x);
+    for (uint8 x = 0; x < SCHOOL_COUNT; ++x)
+        BaseResistance[x] = getResistance(x);
+    for (uint8 x = 0; x < STAT_COUNT; ++x)
+        BaseStats[x] = getStat(x);
 
-    BaseDamage[0] = GetMinDamage();
-    BaseDamage[1] = GetMaxDamage();
-    BaseOffhandDamage[0] = GetMinOffhandDamage();
-    BaseOffhandDamage[1] = GetMaxOffhandDamage();
-    BaseRangedDamage[0] = GetMinRangedDamage();
-    BaseRangedDamage[1] = GetMaxRangedDamage();
+    BaseDamage[0] = getMinDamage();
+    BaseDamage[1] = getMaxDamage();
+    BaseOffhandDamage[0] = getMinOffhandDamage();
+    BaseOffhandDamage[1] = getMaxOffhandDamage();
+    BaseRangedDamage[0] = getMinRangedDamage();
+    BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
@@ -1487,9 +1488,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
 
     //HACK!
-    if (m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
+    if (getDisplayId() == 17743 ||
+        getDisplayId() == 20242 ||
+        getDisplayId() == 15435 ||
         (creature_properties->Family == UNIT_TYPE_MISC))
     {
         m_useAI = false;
@@ -1574,8 +1575,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     resetCurrentSpeed();
 
     //Set fields
-    SetEntry(creature_properties->Id);
-    SetScale(creature_properties->Scale);
+    setEntry(creature_properties->Id);
+    setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
@@ -1595,25 +1596,25 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&model);
     setGender(gender);
 
-    SetDisplayId(model);
-    SetNativeDisplayId(model);
-    SetMount(0);
+    setDisplayId(model);
+    setNativeDisplayId(model);
+    setMountDisplayId(0);
 
     EventModelChange();
 
     setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     for (uint8 i = 0; i < 7; ++i)
-        SetResistance(i, creature_properties->Resistances[i]);
+        setResistance(i, creature_properties->Resistances[i]);
 
-    SetBaseAttackTime(MELEE, creature_properties->AttackTime);
-    SetMinDamage(creature_properties->MinDamage);
-    SetMaxDamage(creature_properties->MaxDamage);
+    setBaseAttackTime(MELEE, creature_properties->AttackTime);
+    setMinDamage(creature_properties->MinDamage);
+    setMaxDamage(creature_properties->MaxDamage);
 
 
     SetFaction(creature_properties->Faction);
-    SetBoundingRadius(creature_properties->BoundingRadius);
-    SetCombatReach(creature_properties->CombatReach);
+    setBoundingRadius(creature_properties->BoundingRadius);
+    setCombatReach(creature_properties->CombatReach);
 
     original_emotestate = 0;
 
@@ -1637,29 +1638,29 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(GetEntry());
+        m_SellItems = objmgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProf())
-        mTrainer = objmgr.GetTrainer(GetEntry());
+        mTrainer = objmgr.GetTrainer(getEntry());
 
     if (isAuctioner())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
+        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 j = 0; j < 7; ++j)
-        BaseResistance[j] = GetResistance(j);
-    for (uint8 j = 0; j < 5; ++j)
-        BaseStats[j] = GetStat(j);
+    for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
+        BaseResistance[j] = getResistance(j);
+    for (uint8 j = 0; j < STAT_COUNT; ++j)
+        BaseStats[j] = getStat(j);
 
-    BaseDamage[0] = GetMinDamage();
-    BaseDamage[1] = GetMaxDamage();
-    BaseOffhandDamage[0] = GetMinOffhandDamage();
-    BaseOffhandDamage[1] = GetMaxOffhandDamage();
-    BaseRangedDamage[0] = GetMinRangedDamage();
-    BaseRangedDamage[1] = GetMaxRangedDamage();
+    BaseDamage[0] = getMinDamage();
+    BaseDamage[1] = getMaxDamage();
+    BaseOffhandDamage[0] = getMinOffhandDamage();
+    BaseOffhandDamage[1] = getMaxOffhandDamage();
+    BaseRangedDamage[0] = getMinRangedDamage();
+    BaseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
@@ -1692,10 +1693,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
 
-    /// \todo remove this HACK! already included few lines above
-    if (m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
-        m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
+    // \todo remove this HACK! already included few lines above
+    if (getDisplayId() == 17743 ||
+        getDisplayId() == 20242 ||
+        getDisplayId() == 15435 ||
         creature_properties->Type == UNIT_TYPE_MISC)
     {
         m_useAI = false;
@@ -1734,7 +1735,7 @@ void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
     {
-        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", GetEntry());
+        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", getEntry());
         return;
     }
 
@@ -1906,8 +1907,8 @@ void Creature::LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32
     wp->forwardemoteid = pForwardEmoteId;
     wp->backwardemoteoneshot = pBackwardEmoteOneshot;
     wp->backwardemoteid = pBackwardEmoteId;
-    wp->forwardskinid = (pForwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pForwardSkinId);
-    wp->backwardskinid = (pBackwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pBackwardSkinId);
+    wp->forwardskinid = (pForwardSkinId == 0 ? this->getDisplayId() : pForwardSkinId);
+    wp->backwardskinid = (pBackwardSkinId == 0 ? this->getDisplayId() : pBackwardSkinId);
 
     this->m_custom_waypoint_map->resize(wp->id + 1);
     (*this->m_custom_waypoint_map)[wp->id] = wp;
@@ -1951,8 +1952,8 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
         return;
 
     m_limbostate = false;
-    SetEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
-    setHealth(GetMaxHealth());
+    setEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
+    setHealth(getMaxHealth());
     bInvincible = false;
 }
 
@@ -1984,20 +1985,20 @@ void Creature::SetGuardWaypoints()
         wp->backwardemoteoneshot = false;
         wp->forwardemoteid = 0;
         wp->forwardemoteoneshot = false;
-        wp->backwardskinid = m_uint32Values[UNIT_FIELD_NATIVEDISPLAYID];
-        wp->forwardskinid = m_uint32Values[UNIT_FIELD_NATIVEDISPLAYID];
+        wp->backwardskinid = getNativeDisplayId();
+        wp->forwardskinid = getNativeDisplayId();
         GetAIInterface()->addWayPoint(wp);
     }
 }
 
 uint32 Creature::GetNpcTextId()
 {
-    return sMySQLStore.getGossipTextIdForNpc(this->GetEntry());
+    return sMySQLStore.getGossipTextIdForNpc(this->getEntry());
 }
 
 float Creature::GetBaseParry()
 {
-    ///\todo what are the parry rates for mobs?
+    //\todo what are the parry rates for mobs?
     // FACT: bosses have varying parry rates (used to tune the difficulty of boss fights)
 
     // for now return a base of 5%, later get from dbase?
@@ -2072,11 +2073,6 @@ uint32 Creature::GetRequiredLootSkill()
         return SKILL_ENGINEERING;
     else
         return SKILL_SKINNING;      // skinning
-}
-
-void Creature::setEmoteState(uint8 emote)
-{
-    m_emoteState = emote;
 }
 
 uint32 Creature::GetSQL_id()
@@ -2235,17 +2231,19 @@ void Creature::PrepareForRemove()
     if (!IsInWorld())
         return;
 
-    if (GetCreatedByGUID() != 0)
+    if (getCreatedByGuid() != 0)
     {
 
-        Unit* summoner = GetMapMgrUnit(GetCreatedByGUID());
+        Unit* summoner = GetMapMgrUnit(getCreatedByGuid());
         if (summoner != NULL)
         {
-            if (summoner->GetSummonedCritterGUID() == getGuid())
-                summoner->SetSummonedCritterGUID(0);
+#if VERSION_STRING > TBC
+            if (summoner->getCritterGuid() == getGuid())
+                summoner->setCritterGuid(0);
+#endif
 
-            if (GetCreatedBySpell() != 0)
-                summoner->RemoveAura(GetCreatedBySpell());
+            if (getCreatedBySpellId() != 0)
+                summoner->RemoveAura(getCreatedBySpellId());
         }
     }
 
@@ -2324,7 +2322,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
         }
     }
 
-    if (pVictim->GetHealth() <= damage)
+    if (pVictim->getHealth() <= damage)
     {
         if (pVictim->isTrainingDummy())
         {
@@ -2400,7 +2398,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
 
 
-    if (GetChannelSpellTargetGUID() != 0)
+    if (getChannelObjectGuid() != 0)
     {
 
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
@@ -2412,7 +2410,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             {
                 if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    uint64 guid = GetChannelSpellTargetGUID();
+                    uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (!dObj)
                         return;
@@ -2459,7 +2457,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Add Kills if Player is in Vehicle
     if (pAttacker->IsVehicle())
     {
-        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->GetCharmedByGUID());
+        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
 
         if (vehicle_owner != nullptr && vehicle_owner->IsPlayer())
         {
@@ -2469,7 +2467,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     addUnitFlags(UNIT_FLAG_DEAD);
 
-    if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
+    if ((getCreatedByGuid() == 0) && (GetTaggerGUID() != 0))
     {
         Unit* owner = m_mapMgr->GetUnit(GetTaggerGUID());
 
@@ -2477,18 +2475,18 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             generateLoot();
     }
 
-    if (GetCharmedByGUID())
+    if (getCharmedByGuid())
     {
         //remove owner warlock soul link from caster
-        Unit* owner = GetMapMgr()->GetUnit(GetCharmedByGUID());
+        Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
 
         if (owner != NULL && owner->IsPlayer())
             static_cast<Player*>(owner)->EventDismissPet();
     }
 
-    if (GetCharmedByGUID() != 0)
+    if (getCharmedByGuid() != 0)
     {
-        Unit* charmer = m_mapMgr->GetUnit(GetCharmedByGUID());
+        Unit* charmer = m_mapMgr->GetUnit(getCharmedByGuid());
         if (charmer != NULL)
             charmer->UnPossess();
     }
@@ -2592,7 +2590,7 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
 {
-    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(GetEntry(), Event);
+    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(getEntry(), Event);
     if (npcMonsterSay == nullptr)
     {
         return;

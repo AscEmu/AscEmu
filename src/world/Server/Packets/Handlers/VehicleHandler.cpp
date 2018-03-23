@@ -27,7 +27,7 @@
 #if VERSION_STRING > TBC
 void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
 {
-    uint64 current_vehicle_guid = _player->GetCharmedUnitGUID();
+    uint64 current_vehicle_guid = _player->getCharmGuid();
 
     // wait what no vehicle
     if (current_vehicle_guid == 0)

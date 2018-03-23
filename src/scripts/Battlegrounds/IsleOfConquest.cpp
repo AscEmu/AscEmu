@@ -570,7 +570,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // assign it a new guid (client needs this to see the entry change?)
         controlpoint[Id].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        controlpoint[Id].banner->SetEntry(gameobject_info->entry);
+        controlpoint[Id].banner->setEntry(gameobject_info->entry);
         controlpoint[Id].banner->SetDisplayId(gameobject_info->display_id);
         controlpoint[Id].banner->SetType(static_cast<uint8>(gameobject_info->type));
 
@@ -649,7 +649,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // re-spawn the aura
         controlpoint[Id].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        controlpoint[Id].aura->SetEntry(gi_aura->entry);
+        controlpoint[Id].aura->setEntry(gi_aura->entry);
         controlpoint[Id].aura->SetDisplayId(gi_aura->display_id);
         controlpoint[Id].aura->SetGameObjectProperties(gi_aura);
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
@@ -799,13 +799,13 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
     {
         Creature *c = static_cast<Creature*>(victim);
 
-        if ((generals[TEAM_ALLIANCE] != NULL) && (c->GetEntry() == generals[TEAM_ALLIANCE]->GetEntry()))
+        if ((generals[TEAM_ALLIANCE] != NULL) && (c->getEntry() == generals[TEAM_ALLIANCE]->getEntry()))
         {
             Finish(TEAM_ALLIANCE);
             generals[TEAM_ALLIANCE] = NULL;
         }
         else
-            if ((generals[TEAM_HORDE] != NULL) && (c->GetEntry() == generals[TEAM_HORDE]->GetEntry()))
+            if ((generals[TEAM_HORDE] != NULL) && (c->getEntry() == generals[TEAM_HORDE]->getEntry()))
             {
                 Finish(TEAM_HORDE);
                 generals[TEAM_HORDE] = NULL;

@@ -35,11 +35,230 @@
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
+#include "Server/Packets/CmsgStandStateChange.h"
+#include "Server/Packets/CmsgWho.h"
+#include "Server/Packets/CmsgSetSelection.h"
+#include "Server/Packets/CmsgTutorialFlag.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
 
 using namespace AscEmu::Packets;
+
+//MIT
+void WorldSession::handleStandStateChangeOpcode(WorldPacket& recvPacket)
+{
+    CmsgStandStateChange recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    _player->setStandState(recv_packet.state);
+}
+
+void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
+{
+    bool cname = false;
+    bool gname = false;
+
+    CmsgWho recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    if (recv_packet.player_name.length() > 0)
+        cname = true;
+
+    if (recv_packet.guild_name.length() > 0)
+        gname = true;
+
+    LOG_DEBUG("WORLD: Recvd CMSG_WHO Message with %u zones and %u names", recv_packet.zone_count, recv_packet.name_count);
+
+    uint32 team = _player->GetTeam();
+
+    uint32 sent_count = 0;
+    uint32 total_count = 0;
+
+    //SMSG_WHO
+    WorldPacket data;
+    data.SetOpcode(SMSG_WHO);
+    data << uint64(0);
+
+    objmgr._playerslock.AcquireReadLock();
+    PlayerStorageMap::const_iterator iend = objmgr._players.end();
+    PlayerStorageMap::const_iterator itr = objmgr._players.begin();
+    while (itr != iend && sent_count < 49)   // WhoList should display 49 names not including your own
+    {
+        Player* plr = itr->second;
+        ++itr;
+
+        if (!plr->GetSession() || !plr->IsInWorld())
+            continue;
+
+        if (!worldConfig.server.showGmInWhoList && !HasGMPermissions())
+        {
+            if (plr->GetSession()->HasGMPermissions())
+                continue;
+        }
+
+        // Team check
+        if (!HasGMPermissions() && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+            continue;
+
+        ++total_count;
+
+        // Add by default, if we don't have any checks
+        bool add = true;
+
+        // Chat name
+        if (cname && recv_packet.player_name != *plr->GetNameString())
+            continue;
+
+        // Guild name
+        if (gname)
+        {
+#if VERSION_STRING != Cata
+            if (!plr->GetGuild() || recv_packet.guild_name != plr->GetGuild()->getGuildName())
+                continue;
+#else
+            if (!plr->GetGuild() || recv_packet.guild_name.compare(plr->GetGuild()->getName()) != 0)
+                continue;
+#endif
+        }
+
+        // Level check
+        if (recv_packet.min_level && recv_packet.max_level)
+        {
+            // skip players outside of level range
+            if (plr->getLevel() < recv_packet.min_level || plr->getLevel() > recv_packet.max_level)
+                continue;
+        }
+
+        // Zone id compare
+        if (recv_packet.zone_count)
+        {
+            // people that fail the zone check don't get added
+            add = false;
+            for (uint32 i = 0; i < recv_packet.zone_count; ++i)
+            {
+                if (recv_packet.zones[i] == plr->GetZoneId())
+                {
+                    add = true;
+                    break;
+                }
+            }
+        }
+
+        if (!((recv_packet.class_mask >> 1) & plr->getClassMask()) || !((recv_packet.race_mask >> 1) & plr->getRaceMask()))
+            add = false;
+
+        // skip players that fail zone check
+        if (!add)
+            continue;
+
+        if (recv_packet.name_count)
+        {
+            // people that fail name check don't get added
+            add = false;
+            for (uint32 i = 0; i < recv_packet.name_count; ++i)
+            {
+                if (!strnicmp(recv_packet.names[i].c_str(), plr->GetName(), recv_packet.names[i].length()))
+                {
+                    add = true;
+                    break;
+                }
+            }
+        }
+
+        if (!add)
+            continue;
+
+        // if we're here, it means we've passed all tests
+        data << plr->GetName();
+
+#if VERSION_STRING != Cata
+        if (plr->m_playerInfo->guild)
+            data << plr->m_playerInfo->guild->getGuildName();
+        else
+            data << uint8(0);	   // Guild name
+#else
+        if (plr->m_playerInfo->m_guild)
+            data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
+        else
+            data << uint8(0);	   // Guild name
+#endif
+
+        data << plr->getLevel();
+        data << uint32(plr->getClass());
+        data << uint32(plr->getRace());
+        data << plr->getGender();
+        data << uint32(plr->GetZoneId());
+        ++sent_count;
+    }
+    objmgr._playerslock.ReleaseReadLock();
+    data.wpos(0);
+    data << sent_count;
+    data << sent_count;
+
+    SendPacket(&data);
+}
+
+void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetSelection recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    _player->SetSelection(recv_packet.guid);
+
+    if (_player->m_comboPoints)
+        _player->UpdateComboPoints();
+
+    _player->setTargetGuid(recv_packet.guid);
+    if (recv_packet.guid == 0)
+    {
+        if (_player->IsInWorld())
+            _player->CombatStatusHandler_ResetPvPTimeout();
+    }
+}
+
+void WorldSession::handleTogglePVPOpcode(WorldPacket& /*recvPacket*/)
+{
+    _player->PvPToggle();
+}
+
+void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
+{
+    CmsgTutorialFlag recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const uint32_t tutorial_index = (recv_packet.flag / 32);
+    const uint32_t tutorial_status = (recv_packet.flag % 32);
+
+    if (tutorial_index >= 7)
+    {
+        Disconnect();
+        return;
+    }
+
+    uint32_t tutorial_flag = GetPlayer()->GetTutorialInt(tutorial_index);
+    tutorial_flag |= (1 << tutorial_status);
+    GetPlayer()->SetTutorialInt(tutorial_index, tutorial_flag);
+
+    LOG_DEBUG("Received Tutorial flag: (%u).", recv_packet.flag);
+}
+
+void WorldSession::handleTutorialClear(WorldPacket& /*recvPacket*/)
+{
+    for (uint32_t id = 0; id < 8; id++)
+        GetPlayer()->SetTutorialInt(id, 0xFFFFFFFF);
+}
+
+void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
+{
+    for (uint32_t id = 0; id < 8; id++)
+        GetPlayer()->SetTutorialInt(id, 0x00000000);
+}
+// MIT end
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -213,13 +432,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 slotresult.ContainerSlot,
                 slotresult.Slot,
                 1,
-                item->GetEntry(),
+                item->getEntry(),
                 item->GetItemRandomSuffixFactor(),
                 item->GetItemRandomPropertyId(),
                 item->GetStackCount()
             );
 #if VERSION_STRING > TBC
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
 #endif
         }
         else
@@ -239,13 +458,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()),
             0xFFFFFFFF,
             amt,
-            add->GetEntry(),
+            add->getEntry(),
             add->GetItemRandomSuffixFactor(),
             add->GetItemRandomPropertyId(),
             add->GetStackCount()
         );
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
 #endif
     }
 
@@ -280,7 +499,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     /* any left yet? (for fishing bobbers) */
-    if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
+    if (pGO && pGO->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
         for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
@@ -532,7 +751,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 
             if (!pCreature->Skinned)
             {
-                if (lootmgr.IsSkinnable(pCreature->GetEntry()))
+                if (lootmgr.IsSkinnable(pCreature->getEntry()))
                 {
                     pCreature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
                 }
@@ -578,7 +797,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             if (pLock->locktype[i] == 1)   //Item or Quest Required;
                             {
                                 if (despawn)
-                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
+                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
                                 else
                                     pGO->SetState(GO_STATE_CLOSED);
 
@@ -609,7 +828,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     pGO->SetState(GO_STATE_CLOSED);
                                     return;
                                 }
-                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                                 return;
                             }
                         }
@@ -620,7 +839,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 pGO->SetState(1);
                                 return;
                             }
-                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                             return;
                         }
                     }
@@ -632,7 +851,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                         pGO->SetState(GO_STATE_CLOSED);
                         return;
                     }
-                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
 
                     return;
 
@@ -684,210 +903,6 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
 }
 #endif
-
-void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 min_level;
-    uint32 max_level;
-    uint32 class_mask;
-    uint32 race_mask;
-    uint32 zone_count;
-    uint32* zones = 0;
-    uint32 name_count;
-    std::string* names = 0;
-    std::string chatname;
-    std::string guildname;
-    bool cname = false;
-    bool gname = false;
-    uint32 i;
-
-    recv_data >> min_level;
-    recv_data >> max_level;
-    recv_data >> chatname;
-    recv_data >> guildname;
-    recv_data >> race_mask;
-    recv_data >> class_mask;
-    recv_data >> zone_count;
-
-    if (zone_count > 0 && zone_count < 10)
-    {
-        zones = new uint32[zone_count];
-
-        for (i = 0; i < zone_count; ++i)
-            recv_data >> zones[i];
-    }
-    else
-    {
-        zone_count = 0;
-    }
-
-    recv_data >> name_count;
-    if (name_count > 0 && name_count < 10)
-    {
-        names = new std::string[name_count];
-
-        for (i = 0; i < name_count; ++i)
-            recv_data >> names[i];
-    }
-    else
-    {
-        name_count = 0;
-    }
-
-    if (chatname.length() > 0)
-        cname = true;
-
-    if (guildname.length() > 0)
-        gname = true;
-
-    LOG_DEBUG("WORLD: Recvd CMSG_WHO Message with %u zones and %u names", zone_count, name_count);
-
-    bool gm = false;
-    uint32 team = _player->GetTeam();
-    if (HasGMPermissions())
-        gm = true;
-
-    uint32 sent_count = 0;
-    uint32 total_count = 0;
-
-    PlayerStorageMap::const_iterator itr, iend;
-    Player* plr;
-    uint32 lvl;
-    bool add;
-    WorldPacket data;
-    data.SetOpcode(SMSG_WHO);
-    data << uint64(0);
-
-    objmgr._playerslock.AcquireReadLock();
-    iend = objmgr._players.end();
-    itr = objmgr._players.begin();
-    while (itr != iend && sent_count < 49)   // WhoList should display 49 names not including your own
-    {
-        plr = itr->second;
-        ++itr;
-
-        if (!plr->GetSession() || !plr->IsInWorld())
-            continue;
-
-        if (!worldConfig.server.showGmInWhoList && !HasGMPermissions())
-        {
-            if (plr->GetSession()->HasGMPermissions())
-                continue;
-        }
-
-        // Team check
-        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
-            continue;
-
-        ++total_count;
-
-        // Add by default, if we don't have any checks
-        add = true;
-
-        // Chat name
-        if (cname && chatname != *plr->GetNameString())
-            continue;
-
-        // Guild name
-        if (gname)
-        {
-#if VERSION_STRING != Cata
-            if (!plr->GetGuild() || strcmp(plr->GetGuild()->getGuildName(), guildname.c_str()) != 0)
-                continue;
-#else
-            if (!plr->GetGuild() || strcmp(plr->GetGuild()->getName().c_str(), guildname.c_str()) != 0)
-                continue;
-#endif
-        }
-
-        // Level check
-        lvl = plr->getLevel();
-
-        if (min_level && max_level)
-        {
-            // skip players outside of level range
-            if (lvl < min_level || lvl > max_level)
-                continue;
-        }
-
-        // Zone id compare
-        if (zone_count)
-        {
-            // people that fail the zone check don't get added
-            add = false;
-            for (i = 0; i < zone_count; ++i)
-            {
-                if (zones[i] == plr->GetZoneId())
-                {
-                    add = true;
-                    break;
-                }
-            }
-        }
-
-        if (!((class_mask >> 1) & plr->getClassMask()) || !((race_mask >> 1) & plr->getRaceMask()))
-            add = false;
-
-        // skip players that fail zone check
-        if (!add)
-            continue;
-
-        // name check
-        if (name_count)
-        {
-            // people that fail name check don't get added
-            add = false;
-            for (i = 0; i < name_count; ++i)
-            {
-                if (!strnicmp(names[i].c_str(), plr->GetName(), names[i].length()))
-                {
-                    add = true;
-                    break;
-                }
-            }
-        }
-
-        if (!add)
-            continue;
-
-        // if we're here, it means we've passed all testing
-        // so add the names :)
-        data << plr->GetName();
-
-#if VERSION_STRING != Cata
-        if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->getGuildName();
-        else
-            data << uint8(0);	   // Guild name
-#else
-        if (plr->m_playerInfo->m_guild)
-            data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
-        else
-            data << uint8(0);	   // Guild name
-#endif
-
-        data << plr->getLevel();
-        data << uint32(plr->getClass());
-        data << uint32(plr->getRace());
-        data << plr->getGender();
-        data << uint32(plr->GetZoneId());
-        ++sent_count;
-    }
-    objmgr._playerslock.ReleaseReadLock();
-    data.wpos(0);
-    data << sent_count;
-    data << sent_count;
-
-    SendPacket(&data);
-
-    // free up used memory
-    if (zones)
-        delete[] zones;
-    if (names)
-        delete[] names;
-}
 
 void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 {
@@ -1090,35 +1105,6 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
     _player->GetItemInterface()->EmptyBuyBack();
 }
 
-void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-    _player->SetSelection(guid);
-
-    if (_player->m_comboPoints)
-        _player->UpdateComboPoints();
-
-    _player->SetTargetGUID(guid);
-    if (guid == 0) // deselected target
-    {
-        if (_player->IsInWorld())
-            _player->CombatStatusHandler_ResetPvPTimeout();
-    }
-}
-
-void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8 animstate;
-    recv_data >> animstate;
-
-    _player->setStandState(animstate);
-}
-
 #if VERSION_STRING != Cata
 void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 {
@@ -1204,7 +1190,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     }
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 #endif
 
@@ -1444,13 +1430,6 @@ void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
     GetPlayer()->setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
 }
 
-void WorldSession::HandleTogglePVPOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    _player->PvPToggle();
-}
-
 void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1542,10 +1521,10 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     recv_data >> facialhairorpiercing;
     recv_data >> skincolor;
 
-    uint32 oldhair = _player->getByteValue(PLAYER_BYTES, 2);
-    uint32 oldhaircolor = _player->getByteValue(PLAYER_BYTES, 3);
-    uint32 oldfacial = _player->getByteValue(PLAYER_BYTES_2, 0);
-    // uint32 oldskincolor = _player->getByteValue(PLAYER_BYTES, 0);
+    uint32 oldhair = _player->getHairStyle();
+    uint32 oldhaircolor = _player->getHairColor();
+    uint32 oldfacial = _player->getFacialFeatures();
+    // uint32 oldskincolor = _player->getSkinColor();
 
     uint32 newhair, newhaircolor, newfacial;
 
@@ -1601,11 +1580,11 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     data << uint32(0);                                  // ok
     SendPacket(&data);
 
-    _player->setByteValue(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
-    _player->setByteValue(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
-    _player->setByteValue(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
+    _player->setHairStyle(static_cast<uint8>(newhair));
+    _player->setHairColor(static_cast<uint8>(newhaircolor));
+    _player->setFacialFeatures(static_cast<uint8>(newfacial));
     if (barberShopSkinColor)
-        _player->setByteValue(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
+        _player->setSkinColor(static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
     _player->setStandState(STANDSTATE_STAND);                              // stand up
@@ -1832,15 +1811,15 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (ritual_obj->GetRitual()->HasMember(plyr->getGuidLow()))
             {
                 ritual_obj->GetRitual()->RemoveMember(plyr->getGuidLow());
-                plyr->SetChannelSpellId(0);
-                plyr->SetChannelSpellTargetGUID(0);
+                plyr->setChannelSpellId(0);
+                plyr->setChannelObjectGuid(0);
                 return;
             }
             else
             {
                 ritual_obj->GetRitual()->AddMember(plyr->getGuidLow());
-                plyr->SetChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
-                plyr->SetChannelSpellTargetGUID(ritual_obj->getGuid());
+                plyr->setChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
+                plyr->setChannelObjectGuid(ritual_obj->getGuid());
             }
 
             // If we were the last required member, proceed with the ritual!
@@ -1855,8 +1834,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     plr = plyr->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(i));
                     if (plr != nullptr)
                     {
-                        plr->SetChannelSpellTargetGUID(0);
-                        plr->SetChannelSpellId(0);
+                        plr->setChannelObjectGuid(0);
+                        plr->setChannelSpellId(0);
                     }
                 }
 
@@ -1990,8 +1969,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             rGo->GetRitual()->Setup(_player->getGuidLow(), pPlayer->getGuidLow(), 18540);
             rGo->PushToWorld(_player->GetMapMgr());
 
-            _player->SetChannelSpellTargetGUID(rGo->getGuid());
-            _player->SetChannelSpellId(rGo->GetRitual()->GetSpellID());
+            _player->setChannelObjectGuid(rGo->getGuid());
+            _player->setChannelSpellId(rGo->GetRitual()->GetSpellID());
 
             // expire after 2mins
             sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -2000,44 +1979,6 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleTutorialFlag(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 iFlag;
-    recv_data >> iFlag;
-
-    uint32 wInt = (iFlag / 32);
-    uint32 rInt = (iFlag % 32);
-
-    if (wInt >= 7)
-    {
-        Disconnect();
-        return;
-    }
-
-    uint32 tutflag = GetPlayer()->GetTutorialInt(wInt);
-    tutflag |= (1 << rInt);
-    GetPlayer()->SetTutorialInt(wInt, tutflag);
-
-    LOG_DEBUG("Received Tutorial Flag Set {%u}.", iFlag);
-}
-
-void WorldSession::HandleTutorialClear(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    for (uint32 iI = 0; iI < 8; iI++)
-        GetPlayer()->SetTutorialInt(iI, 0xFFFFFFFF);
-}
-
-void WorldSession::HandleTutorialReset(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    for (uint32 iI = 0; iI < 8; iI++)
-        GetPlayer()->SetTutorialInt(iI, 0x00000000);
-}
 
 void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 {
@@ -2120,7 +2061,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         return;
     }
 
-    _player->SetTargetGUID(guid);
+    _player->setTargetGuid(guid);
     _player->SetSelection(guid);
 
     if (_player->m_comboPoints)
@@ -2228,7 +2169,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         slot_mask |= (1 << i);
 
-        data << uint32(item->GetEntry());
+        data << uint32(item->getEntry());
 
         uint16 enchant_mask = 0;
         size_t enchant_mask_pos = data.wpos();
@@ -2495,10 +2436,10 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
 #endif
     }
     else
@@ -2604,7 +2545,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
             return;
 
         pItem->SetGiftCreatorGUID(0);
-        pItem->SetEntry(pItem->wrapped_item_id);
+        pItem->setEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
         pItem->setItemProperties(it);
 
@@ -2661,7 +2602,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
     if (!pItem->loot)
     {
         pItem->loot = new Loot;
-        lootmgr.FillItemLoot(pItem->loot, pItem->GetEntry());
+        lootmgr.FillItemLoot(pItem->loot, pItem->getEntry());
     }
     _player->SendLoot(pItem->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }
@@ -2693,20 +2634,20 @@ void WorldSession::HandleToggleCloakOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK))
-        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK);
+    if (_player->hasPlayerFlags(PLAYER_FLAG_NOCLOAK))
+        _player->removePlayerFlags(PLAYER_FLAG_NOCLOAK);
     else
-        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK);
+        _player->addPlayerFlags(PLAYER_FLAG_NOCLOAK);
 }
 
 void WorldSession::HandleToggleHelmOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM))
-        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
+    if (_player->hasPlayerFlags(PLAYER_FLAG_NOHELM))
+        _player->removePlayerFlags(PLAYER_FLAG_NOHELM);
     else
-        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
+        _player->addPlayerFlags(PLAYER_FLAG_NOHELM);
 }
 
 void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvData)
@@ -2832,7 +2773,7 @@ void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CM
         return;
     sQuestMgr.OnGameObjectActivate(_player, gameobj);
 #if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->GetEntry(), 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->getEntry(), 0, 0);
 #endif
 }
 

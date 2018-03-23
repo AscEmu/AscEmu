@@ -230,8 +230,8 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
         if (target == NULL)
             return true;
 
-        uint32 plrHP = p_target->GetHealth();
-        uint32 targetHP = target->GetHealth();
+        uint32 plrHP = p_target->getHealth();
+        uint32 targetHP = target->getHealth();
 
         if (plrHP > targetHP)
             p_target->CastSpell(p_target, 58670, true);

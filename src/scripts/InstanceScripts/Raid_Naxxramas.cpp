@@ -36,7 +36,7 @@ class NaxxramasScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             //Creature* KelThuzad = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case 16998: // Kel thuzads cat
                     {
@@ -967,7 +967,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            CreaturePtr = static_cast<Creature*>(*Iter);
-//            if (CreaturePtr->GetEntry() != CN_CRYPT_GUARD)
+//            if (CreaturePtr->getEntry() != CN_CRYPT_GUARD)
 //                continue;
 //
 //            if (CreaturePtr->isAlive() || !CreaturePtr->IsInWorld())
@@ -1061,13 +1061,13 @@ void StoneskinGargoyleAI::AIUpdate()
     bool HasAura = HasStoneskin();
     if (_isCasting() || HasAura)
         return;
-    else if (getCreature()->GetEmoteState() == EMOTE_STATE_SUBMERGED)
-        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+    else if (getCreature()->getEmoteState() == EMOTE_STATE_SUBMERGED)
+        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
     if (!_isCasting() && _getHealthPercent() <= 30)
     {
         _castAISpell(mStoneskin);
-        getCreature()->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
+        getCreature()->setEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
@@ -2097,7 +2097,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : CreatureAIScript(pCr
     // We do not consider using a spell that summons these portals by anyone else than Shade of Naxxramas.
     // I must figure out why it's often not added if only one Shade is on the battlefield.
     // I don't like this method anyway.
-    if (getCreature()->GetSummonedByGUID() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         //mShadeAI = static_cast< ShadeOfNaxxramasAI* >(GetNearestCreature(CN_SHADE_OF_NAXXRAMAS));
         Creature* UnitPtr = getNearestCreature(CN_SHADE_OF_NAXXRAMAS);
@@ -2240,7 +2240,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 {
     if (mChargerAI != NULL)
     {
-        if (isAlive() && getCreature()->GetMount() == 0)
+        if (isAlive() && getCreature()->getMountDisplayId() == 0)
             getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
 
         mChargerAI->mDeathKnightAI = NULL;
@@ -2253,7 +2253,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 
 void DeathKnightCavalierAI::AIUpdate()
 {
-    if (mIsMounted && getCreature()->GetMount() == 0)
+    if (mIsMounted && getCreature()->getMountDisplayId() == 0)
         getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
     if (mIsMounted && Util::getRandomUInt(99) < 2)
     {
@@ -2284,7 +2284,7 @@ DeathchargerSteedAI::DeathchargerSteedAI(Creature* pCreature) : CreatureAIScript
 
     // We do not consider using a spell that summons this unit by anyone else than Death Knight Cavalier.
     // I don't like this method anyway.
-    if (getCreature()->GetSummonedByGUID() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         mDeathKnightAI = static_cast< DeathKnightCavalierAI* >(getNearestCreatureAI(CN_DEATH_KNIGHT_CAVALIER));
         if (mDeathKnightAI != NULL && mDeathKnightAI->mChargerAI == NULL)
@@ -2583,9 +2583,9 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    for (const auto& PlayerIter : pCreatureAI->getCreature()->getInRangePlayersSet())
 //    {
 //        if (PlayerIter && (static_cast<Player*>(PlayerIter))->isAlive() && PlayerIter->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
-//                && PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
+//                && PlayerIter->getHealth() > _mostHP)
 //        {
-//            _mostHP = PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH);
+//            _mostHP = PlayerIter->getHealth();
 //            pBestTarget = static_cast<Player*>(PlayerIter);
 //        }
 //    }

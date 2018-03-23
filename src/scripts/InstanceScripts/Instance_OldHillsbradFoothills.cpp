@@ -137,7 +137,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
 //    {
-//        if (pGameObject->GetEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
+//        if (pGameObject->getEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
 //            return;
 //
 //        pGameObject->Despawn(1000, 0);

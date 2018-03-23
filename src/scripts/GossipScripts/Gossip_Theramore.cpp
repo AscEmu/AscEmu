@@ -58,7 +58,7 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             //Send quests and gossip menu.
-            uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry());
+            uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
             if (sMySQLStore.getNpcText(Text) == nullptr)
                 Text = DefaultGossipTextId;
 

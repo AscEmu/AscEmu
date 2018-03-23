@@ -998,7 +998,7 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
         }
     }
 
-    chn = new Channel(name, (seperatechannels && p != NULL) ? p->GetTeam() : 0, type_id);
+    chn = new Channel(name, (seperatechannels && p != NULL) ? p->GetTeam() : TEAM_ALLIANCE, type_id);
     m_confSettingLock.Release();//Channel::Channel() reads configs so we release the lock after we create the Channel.
     cl->insert(make_pair(chn->m_name, chn));
     lock.Release();

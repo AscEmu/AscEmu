@@ -195,8 +195,8 @@ class SERVER_DECL Creature : public Unit
 
         int32 ModDamageDone[SCHOOL_COUNT];
         float ModDamageDonePct[SCHOOL_COUNT];
-        void CalcResistance(uint16 type);
-        void CalcStat(uint16 type);
+        void CalcResistance(uint8_t type);
+        void CalcStat(uint8_t type);
 
         bool m_canRegenerateHP;
         void RegenerateHealth();
@@ -214,7 +214,6 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-        void setEmoteState(uint8 emote);
         uint32 GetSQL_id();
 
         virtual void setDeathState(DeathState s);

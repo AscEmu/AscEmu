@@ -20,7 +20,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
     if (percentDamage == 0)
         return true;
 
-    uint32_t health = selected_unit->GetHealth();
+    uint32_t health = selected_unit->getHealth();
 
     uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
 
@@ -430,6 +430,43 @@ bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* 
     }
 
     GreenSystemMessage(m_session, "Unit Bytes %u Offset %u set to Value %u", bytes, offset, value);
+
+    return true;
+}
+
+//.debug setplayerflag
+bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t flags;
+    if (sscanf(args, "%u", &flags) != 1)
+    {
+        RedSystemMessage(m_session, "Command must contain at least 1 flag.");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true);
+    if (player_target == nullptr)
+        return true;
+
+    const auto current_flags = player_target->getPlayerFlags();
+
+    player_target->addPlayerFlags(flags);
+
+    GreenSystemMessage(m_session, "Player flag %u added (before %u)", flags, current_flags);
+
+    return true;
+}
+
+//.debug getplayerflag
+bool ChatHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    const auto player_target = GetSelectedPlayer(m_session, true);
+    if (player_target == nullptr)
+        return true;
+
+    const auto current_flags = player_target->getPlayerFlags();
+
+    GreenSystemMessage(m_session, "Current player flags: %u", current_flags);
 
     return true;
 }

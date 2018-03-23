@@ -305,7 +305,7 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
 
         void AddPlayerToBg(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j);
 
-        void AddGroupToArena(CBattleground* bg, Group* group, int nteam);
+        void AddGroupToArena(CBattleground* bg, Group* group, uint32 nteam);
 
         uint32 GetMinimumPlayers(uint32 dbcIndex);
 

@@ -198,17 +198,17 @@ void AIInterface::setupAndMoveToNextWaypoint()
             {
                 if (!mMoveWaypointsBackwards)
                 {
-                    if ((wayPoint->forwardskinid != 0) && (GetUnit()->GetDisplayId() != wayPoint->forwardskinid))
+                    if ((wayPoint->forwardskinid != 0) && (GetUnit()->getDisplayId() != wayPoint->forwardskinid))
                     {
-                        GetUnit()->SetDisplayId(wayPoint->forwardskinid);
+                        GetUnit()->setDisplayId(wayPoint->forwardskinid);
                         GetUnit()->EventModelChange();
                     }
                 }
                 else
                 {
-                    if ((wayPoint->backwardskinid != 0) && (GetUnit()->GetDisplayId() != wayPoint->backwardskinid))
+                    if ((wayPoint->backwardskinid != 0) && (GetUnit()->getDisplayId() != wayPoint->backwardskinid))
                     {
-                        GetUnit()->SetDisplayId(wayPoint->backwardskinid);
+                        GetUnit()->setDisplayId(wayPoint->backwardskinid);
                         GetUnit()->EventModelChange();
                     }
                 }
@@ -237,7 +237,7 @@ void AIInterface::setupAndMoveToNextWaypoint()
 
 void AIInterface::generateWaypointScriptCircle()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -298,7 +298,7 @@ void AIInterface::generateWaypointScriptCircle()
 
 void AIInterface::generateWaypointScriptRandom()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -392,7 +392,7 @@ void AIInterface::generateWaypointScriptRandom()
 
 void AIInterface::generateWaypointScriptForwad()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -456,7 +456,7 @@ void AIInterface::generateWaypointScriptForwad()
 
 void AIInterface::generateWaypointScriptWantedWP()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -491,7 +491,7 @@ void AIInterface::generateWaypointScriptWantedWP()
 
 void AIInterface::generateWaypointScriptPatrol()
 {
-    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
         //LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
@@ -908,24 +908,24 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             Creature* wpCreature = new Creature((uint64)HIGHGUID_TYPE_WAYPOINT << 32 | wayPoint->id);
             wpCreature->CreateWayPoint(wayPoint->id, player->GetMapId(), wayPoint->x, wayPoint->y, wayPoint->z, 0);
             wpCreature->SetCreatureProperties(targetCreature->GetCreatureProperties());
-            wpCreature->SetEntry(1);
-            wpCreature->SetScale(0.5f);
+            wpCreature->setEntry(1);
+            wpCreature->setScale(0.5f);
 
             uint32_t displayId = 0;
             if (showBackwards)
-                displayId = (wayPoint->backwardskinid == 0) ? GetUnit()->GetNativeDisplayId() : wayPoint->backwardskinid;
+                displayId = (wayPoint->backwardskinid == 0) ? GetUnit()->getNativeDisplayId() : wayPoint->backwardskinid;
             else
-                displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->GetNativeDisplayId() : wayPoint->forwardskinid;
+                displayId = (wayPoint->forwardskinid == 0) ? GetUnit()->getNativeDisplayId() : wayPoint->forwardskinid;
 
-            wpCreature->SetDisplayId(displayId);
-            wpCreature->SetEmoteState(wayPoint->backwardemoteid);
+            wpCreature->setDisplayId(displayId);
+            wpCreature->setEmoteState(wayPoint->backwardemoteid);
 
             wpCreature->setLevel(wayPoint->id);
             wpCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             wpCreature->SetFaction(player->GetFaction());
             wpCreature->setHealth(1);
             wpCreature->setMaxHealth(1);
-            wpCreature->SetStat(STAT_STRENGTH, wayPoint->flags);
+            wpCreature->setStat(STAT_STRENGTH, wayPoint->flags);
 
             ByteBuffer buf(3000);
             uint32_t count = wpCreature->buildCreateUpdateBlockForPlayer(&buf, player);
@@ -1371,7 +1371,7 @@ void AIInterface::Update(unsigned long time_passed)
             setSplineWalk();
 
             if (!isAiScriptType(AI_SCRIPT_PET) && !skip_reset_hp)
-                m_Unit->setHealth(m_Unit->GetMaxHealth());
+                m_Unit->setHealth(m_Unit->getMaxHealth());
         }
         else
         {
@@ -1694,7 +1694,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
             if (!m_nextSpell)
                 m_nextSpell = this->getSpell();
 
-            if (m_canFlee && !m_hasFleed && ((static_cast<float>(m_Unit->GetHealth()) / static_cast<float>(m_Unit->GetMaxHealth()) < m_FleeHealth)))
+            if (m_canFlee && !m_hasFleed && ((static_cast<float>(m_Unit->getHealth()) / static_cast<float>(m_Unit->getMaxHealth()) < m_FleeHealth)))
             {
                 agent = AGENT_FLEE;
             }
@@ -1787,7 +1787,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             if (t_unit == nullptr)
                                 return;
 
-                            uint32 health_before_strike = t_unit->GetHealth();
+                            uint32 health_before_strike = t_unit->getHealth();
 #endif
                             if (m_Unit->GetOnMeleeSpell() != 0)
                             {
@@ -1801,7 +1801,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             //as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
                             if (getNextTarget() && m_Unit->m_factionDBC &&
                                 !(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask == 0 && m_Unit->m_faction->HostileMask == 0) /* neutral creature */
-                                && getNextTarget()->IsPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->GetHealth()
+                                && getNextTarget()->IsPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->getHealth()
                                 && Rand(m_Unit->get_chance_to_daze(getNextTarget())))
                             {
                                 float our_facing = m_Unit->calcRadAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY());
@@ -2026,14 +2026,14 @@ void AIInterface::DismissPet()
     if (m_PetOwner->GetTypeId() != TYPEID_PLAYER)
     return;
 
-    if (m_Unit->GetCreatedBySpell() == 0)
+    if (m_Unit->getCreatedBySpellId() == 0)
     TO< Player* >(m_PetOwner)->SetFreePetNo(false, (int)m_Unit->GetUInt32Value(UNIT_FIELD_PETNUMBER));
     TO< Player* >(m_PetOwner)->SetPet(NULL);
     TO< Player* >(m_PetOwner)->SetPetName("");
 
     //FIXME:Check hunter pet or not
     //FIXME:Check enslaved creature
-    m_PetOwner->SetUInt64Value(UNIT_FIELD_SUMMON, 0);
+    m_PetOwner->setSummonGuid(0);
 
     WorldPacket data;
     data.Initialize(SMSG_PET_SPELLS);
@@ -2215,7 +2215,7 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
         return false;
 
     //don't attack owner
-    if (m_Unit->GetCreatedByGUID() == pUnit->getGuid())
+    if (m_Unit->getCreatedByGuid() == pUnit->getGuid())
         return false;
 
     //don't agro neutrals
@@ -2292,7 +2292,7 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr->m_invisible)
                 continue;
 
-            if (!tmpPlr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP))    //PvP Guard Attackable.
+            if (!tmpPlr->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))    //PvP Guard Attackable.
                 continue;
 
             if (!(tmpPlr->m_phase & m_Unit->m_phase))   //Not in the same phase, skip this target
@@ -2434,9 +2434,9 @@ Unit* AIInterface::FindTarget()
 
         m_Unit->SendAIReaction();
 
-        if (target->GetCreatedByGUID() != 0)
+        if (target->getCreatedByGuid() != 0)
         {
-            uint64 charmer = target->GetCharmedByGUID();
+            uint64 charmer = target->getCharmedByGuid();
 
             Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
 
@@ -2457,7 +2457,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
         {
             if (m_Unit->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
             {
-                m_Unit->SetTargetGUID(0);
+                m_Unit->setTargetGuid(0);
                 return m_Unit;
             }
             for (AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
@@ -2468,7 +2468,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
                 }
                 if ((*i)->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
                 {
-                    m_Unit->SetTargetGUID((*i)->getGuid());
+                    m_Unit->setTargetGuid((*i)->getGuid());
                     return (*i); // heal Assist Target which has low HP
                 }
             }
@@ -2476,7 +2476,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
 
         if (sp->spellType == STYPE_BUFF)
         {
-            m_Unit->SetTargetGUID(0);
+            m_Unit->setTargetGuid(0);
             return m_Unit;
         }
     }
@@ -2767,15 +2767,15 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
     if (ranged)
         rang = 5.0f;
 
-    float selfreach = m_Unit->GetCombatReach();
+    float selfreach = m_Unit->getCombatReach();
     float targetradius;
     //    targetradius = target->GetBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     targetradius = target->GetModelHalfSize();
     float selfradius;
     //    selfradius = m_Unit->GetBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     selfradius = m_Unit->GetModelHalfSize();
-    //    float targetscale = target->GetScale();
-    //    float selfscale = m_Unit->GetScale();
+    //    float targetscale = target->getScale();
+    //    float selfscale = m_Unit->getScale();
 
     //    range = ((((targetradius*targetradius)*targetscale) + selfreach) + ((selfradius*selfscale) + rang));
     float range = targetradius + selfreach + selfradius + rang;
@@ -3052,7 +3052,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets
     // Stop movement while casting.
     setAiState(AI_STATE_CASTING);
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->GetEntry(),
+    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
               sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
 #endif
 
@@ -3220,7 +3220,7 @@ AI_Spell* AIInterface::getSpell()
     }
 
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
+    LOG_DEBUG("AI DEBUG: Returning no spell for unit %u", m_Unit->getEntry());
 #endif
     return nullptr;
 }
@@ -3827,13 +3827,13 @@ void AIInterface::setNextTarget(Unit* nextTarget)
 void AIInterface::setNextTarget(uint64 nextTarget)
 {
     m_nextTarget = nextTarget;
-    m_Unit->SetTargetGUID(m_nextTarget);
+    m_Unit->setTargetGuid(m_nextTarget);
 }
 
 void AIInterface::resetNextTarget()
 {
     m_nextTarget = 0;
-    m_Unit->SetTargetGUID(0);
+    m_Unit->setTargetGuid(0);
 }
 
 Unit* AIInterface::getUnitToFollow()
@@ -4354,7 +4354,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     // set the target first
     if (pUnit->GetInstanceID() == m_Unit->GetInstanceID())
     {
-        m_Unit->SetTargetGUID(pUnit->getGuid());
+        m_Unit->setTargetGuid(pUnit->getGuid());
     }
 
     /* send the message */
@@ -4369,18 +4369,18 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         if (m_Unit->IsCreature())
         {
             // set encounter state = InProgress
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 1);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 1);
         }
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
-            m_Unit->SetChannelSpellId(0);
-            m_Unit->SetChannelSpellTargetGUID(0);
+            m_Unit->setChannelSpellId(0);
+            m_Unit->setChannelObjectGuid(0);
         }
     }
 
     // Stop the emote - change to fight emote
-    m_Unit->SetEmoteState(EMOTE_STATE_READY1H);
+    m_Unit->setEmoteState(EMOTE_STATE_READY1H);
 
     if (misc1 == 0)
     {
@@ -4394,7 +4394,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
     // dismount if mounted
     if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
-        m_Unit->SetMount(0);
+        m_Unit->setMountDisplayId(0);
 
     if (!isAiState(AI_STATE_ATTACKING))
         StopMovement(0);
@@ -4484,9 +4484,9 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP);
 
         if (creature->original_emotestate)
-            m_Unit->SetEmoteState(creature->original_emotestate);
+            m_Unit->setEmoteState(creature->original_emotestate);
         else
-            m_Unit->SetEmoteState(EMOTE_ONESHOT_NONE);
+            m_Unit->setEmoteState(EMOTE_ONESHOT_NONE);
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
@@ -4569,7 +4569,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         if (m_Unit->IsCreature())
         {
             // set encounter state back to NotStarted
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 0);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 0);
         }
     }
 
@@ -4589,7 +4589,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
     {
         Creature* creature = static_cast< Creature* >(m_Unit);
         if (creature->m_spawn)
-            m_Unit->SetMount(creature->m_spawn->MountedDisplayID);
+            m_Unit->setMountDisplayId(creature->m_spawn->MountedDisplayID);
     }
     //Zack : not sure we need to send this. Did not see it in the dumps since mob died eventually but it seems logical to make this
     m_Unit->smsg_AttackStop(pUnit);
@@ -4746,7 +4746,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
         // set encounter state to finished
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 2);    //2 = Finished
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 2);    //2 = Finished
     }
 
     setAiState(AI_STATE_IDLE);
@@ -4766,7 +4766,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
 
     resetNextTarget();
 
-    m_Unit->SetMount(0);
+    m_Unit->setMountDisplayId(0);
 
     mCurrentWaypoint = 0;
 
@@ -4921,7 +4921,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_runSpeed = m_Unit->m_basicSpeedRun = properties_difficulty->run_speed;
             m_flySpeed = properties_difficulty->fly_speed;
 
-            m_Unit->SetScale(properties_difficulty->Scale);
+            m_Unit->setScale(properties_difficulty->Scale);
 
             uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
@@ -4935,19 +4935,19 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
-            for (uint8 i = 0; i < 7; ++i)
+            for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
             {
-                m_Unit->SetResistance(i, properties_difficulty->Resistances[i]);
+                m_Unit->setResistance(i, properties_difficulty->Resistances[i]);
             }
 
-            m_Unit->SetBaseAttackTime(MELEE, properties_difficulty->AttackTime);
+            m_Unit->setBaseAttackTime(MELEE, properties_difficulty->AttackTime);
 
-            m_Unit->SetMinDamage(properties_difficulty->MinDamage);
-            m_Unit->SetMaxDamage(properties_difficulty->MaxDamage);
+            m_Unit->setMinDamage(properties_difficulty->MinDamage);
+            m_Unit->setMaxDamage(properties_difficulty->MaxDamage);
 
-            m_Unit->SetBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
-            m_Unit->SetMinRangedDamage(properties_difficulty->RangedMinDamage);
-            m_Unit->SetMaxRangedDamage(properties_difficulty->RangedMaxDamage);
+            m_Unit->setBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
+            m_Unit->setMinRangedDamage(properties_difficulty->RangedMinDamage);
+            m_Unit->setMaxRangedDamage(properties_difficulty->RangedMaxDamage);
 
 
             m_Unit->SetFaction(properties_difficulty->Faction);
@@ -4962,29 +4962,29 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
                 m_Unit->m_aiInterface->m_canRangedAttack = false;
 
-            m_Unit->SetBoundingRadius(properties_difficulty->BoundingRadius);
+            m_Unit->setBoundingRadius(properties_difficulty->BoundingRadius);
 
-            m_Unit->SetCombatReach(properties_difficulty->CombatReach);
+            m_Unit->setCombatReach(properties_difficulty->CombatReach);
 
             m_Unit->setUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
 
             // resistances
-            for (uint8 j = 0; j < 7; ++j)
+            for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
             {
-                m_Unit->BaseResistance[j] = m_Unit->GetResistance(j);
+                m_Unit->BaseResistance[j] = m_Unit->getResistance(j);
             }
 
-            for (uint8 j = 0; j < 5; ++j)
+            for (uint8 j = 0; j < STAT_COUNT; ++j)
             {
-                m_Unit->BaseStats[j] = m_Unit->GetStat(j);
+                m_Unit->BaseStats[j] = m_Unit->getStat(j);
             }
 
-            m_Unit->BaseDamage[0] = m_Unit->GetMinDamage();
-            m_Unit->BaseDamage[1] = m_Unit->GetMaxDamage();
-            m_Unit->BaseOffhandDamage[0] = m_Unit->GetMinOffhandDamage();
-            m_Unit->BaseOffhandDamage[1] = m_Unit->GetMaxOffhandDamage();
-            m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
-            m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
+            m_Unit->BaseDamage[0] = m_Unit->getMinDamage();
+            m_Unit->BaseDamage[1] = m_Unit->getMaxDamage();
+            m_Unit->BaseOffhandDamage[0] = m_Unit->getMinOffhandDamage();
+            m_Unit->BaseOffhandDamage[1] = m_Unit->getMaxOffhandDamage();
+            m_Unit->BaseRangedDamage[0] = m_Unit->getMinRangedDamage();
+            m_Unit->BaseRangedDamage[1] = m_Unit->getMaxRangedDamage();
 
             creature->BaseAttackType = properties_difficulty->attackSchool;
 

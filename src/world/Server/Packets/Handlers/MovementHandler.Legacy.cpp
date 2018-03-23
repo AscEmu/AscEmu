@@ -326,7 +326,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
     bool moved = true;
 
-    if (/*_player->GetCharmedByGUID() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
+    if (/*_player->getCharmedByGuid() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
         return;
 
     // spell cancel on movement, for now only fishing is added
@@ -378,7 +378,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     packet.info = movement_info;*/
 
     AscEmu::Packets::MovementPacket packet;
-    packet.deserialise(recv_data);
+    if (!packet.deserialise(recv_data))
+        return;
+
     movement_info = packet.info;
 
     if (packet.guid != mover->getGuid())
@@ -470,7 +472,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
 
 
-    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->GetCharmedUnitGUID())
+    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->getCharmGuid())
     {
         /************************************************************************/
         /* Anti-Teleport                                                        */
@@ -499,8 +501,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Remove Emote State                                                   */
     /************************************************************************/
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(EMOTE_ONESHOT_NONE);
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
 
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
@@ -622,10 +624,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 ((mover->getGuid() != _player->getGuid()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
             {
                 // 1.7% damage for each unit fallen on Z axis over 13
-                uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);
+                uint32 health_loss = static_cast<uint32>(mover->getHealth() * (falldistance - 12) * 0.017f);
 
-                if (health_loss >= mover->GetHealth())
-                    health_loss = mover->GetHealth();
+                if (health_loss >= mover->getHealth())
+                    health_loss = mover->getHealth();
 #if VERSION_STRING > TBC
                 else if ((falldistance >= 65) && (mover->getGuid() == _player->getGuid()))
                 {
@@ -795,7 +797,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 
     //movement_info.init(recvData);
 
-    if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
+    if ((guid != uint64(0)) && (guid == _player->getCharmGuid()))
         m_MoverWoWGuid = guid;
     else
         m_MoverWoWGuid.Init(_player->getGuid());

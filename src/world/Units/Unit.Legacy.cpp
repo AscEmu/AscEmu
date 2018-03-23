@@ -565,7 +565,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     m_aiInterface = new AIInterface();
     m_aiInterface->Init(this, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-    m_emoteState = 0;
     m_oldEmote = 0;
 
     BaseDamage[0] = 0;
@@ -1091,21 +1090,21 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     if (GetMapId() != pVictim->GetMapId())
         return false;
 
-    //	float targetreach = pVictim->GetCombatReach();
+    //	float targetreach = pVictim->getCombatReach();
     float selfreach;
     if (IsPlayer())
-        selfreach = 5.0f; // minimum melee range, UNIT_FIELD_COMBATREACH is too small and used eg. in melee spells
+        selfreach = 5.0f; // minimum melee range, getCombatReach() is too small and used eg. in melee spells
     else
-        selfreach = m_floatValues[UNIT_FIELD_COMBATREACH];
+        selfreach = getCombatReach();
 
     float targetradius;
-    //	targetradius = pVictim->m_floatValues[UNIT_FIELD_BOUNDINGRADIUS]; //this is plain wrong. Represents i have no idea what :)
+    //	targetradius = pVictim->getBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     targetradius = pVictim->GetModelHalfSize();
     float selfradius;
-    //	selfradius = m_floatValues[UNIT_FIELD_BOUNDINGRADIUS];
+    //	selfradius = getBoundingRadius();
     selfradius = GetModelHalfSize();
-    //	float targetscale = pVictim->m_floatValues[OBJECT_FIELD_SCALE_X];
-    //	float selfscale = m_floatValues[OBJECT_FIELD_SCALE_X];
+    //	float targetscale = pVictim->getScale();
+    //	float selfscale = getScale();
 
     //float distance = sqrt(getDistanceSq(pVictim));
     float delta_x = pVictim->GetPositionX() - GetPositionX();
@@ -1242,10 +1241,10 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
             Player* plr = active_player_list[i];
             plr->GiveXP(float2int32(((xp * plr->getLevel()) / total_level) * xp_mod), pVictim->getGuid(), true);
 
-            active_player_list[i]->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+            active_player_list[i]->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
             if (!sEventMgr.HasEvent(active_player_list[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
             {
-                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
             else
             {
@@ -2464,7 +2463,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
                         if (ospinfo && (int32)spell_proc->mProcCharges >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
-                            dmg < this->getUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
+                            dmg < this->getHealth())    //if this is not a killer blow
                             can_proc_now = true;
                     }
                     else can_proc_now = true; //target died
@@ -6908,23 +6907,23 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     if ((*dmg).school_type == 0)        //physical
     {
         if (this->IsPlayer())
-            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->GetResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
+            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
         else
             ArmorReduce = 0.0f;
 
-        if (ArmorReduce >= pVictim->GetResistance(0))		// fully penetrated :O
+        if (ArmorReduce >= pVictim->getResistance(0))		// fully penetrated :O
             return;
 
-        //		double Reduction = double(pVictim->GetResistance(0)) / double(pVictim->GetResistance(0)+400+(85*getLevel()));
+        //		double Reduction = double(pVictim->getResistance(0)) / double(pVictim->getResistance(0)+400+(85*getLevel()));
         //dmg reduction formula from xinef
         double Reduction = 0;
         if (getLevel() < 60)
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) + 400 + (85 * getLevel()));
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 400 + (85 * getLevel()));
         else if (getLevel() > 59 && getLevel() < DBC_PLAYER_LEVEL_CAP)
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) - 22167.5 + (467.5 * getLevel()));
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) - 22167.5 + (467.5 * getLevel()));
         //
         else
-            Reduction = double(pVictim->GetResistance(0) - ArmorReduce) / double(pVictim->GetResistance(0) + 10557.5);
+            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 10557.5);
 
         if (Reduction > 0.75f)
             Reduction = 0.75f;
@@ -6937,7 +6936,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     else
     {
         // applying resistance to other type of damage
-        int32 RResist = float2int32((pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
+        int32 RResist = float2int32((pVictim->getResistance(static_cast<uint8_t>((*dmg).school_type)) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
         if (RResist < 0)
             RResist = 0;
         AverageResistance = ((float)(RResist) / (float)(getLevel() * 5) * 0.75f);
@@ -6947,7 +6946,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
         if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
-            float Resistchance = (float)pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) / (float)pVictim->getLevel();
+            float Resistchance = (float)pVictim->getResistance(static_cast<uint8_t>((*dmg).school_type)) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
             if (Rand(Resistchance))
                 AverageResistance = 1.0f;
@@ -7003,7 +7002,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     else                                                                // mob defensive chances
     {
         if (weapon_damage_type != RANGED && !backAttack)
-            dodge = pVictim->GetStat(STAT_AGILITY) / 14.5f;             // what is this value?
+            dodge = pVictim->getStat(STAT_AGILITY) / 14.5f;             // what is this value?
         victim_skill = pVictim->getLevel() * 5;
 
         if (pVictim->IsCreature())
@@ -7660,9 +7659,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             if (pVictim->IsPlayer() && pVictim->getClass() == DEATHKNIGHT)   // omg! dirty hack!
                 pVictim->CastSpell(pVictim, 56817, true);
 
-            pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);
+            pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);
             if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
             else sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
             break;
         case 2:     //parry
@@ -7681,16 +7680,16 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (pVictim->getClass() == DEATHKNIGHT)         // omg! dirty hack!
                     pVictim->CastSpell(pVictim, 56817, true);
 
-                pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
+                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
                 if (!sEventMgr.HasEvent(pVictim, EVENT_PARRY_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
+                    sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_PARRY_FLAG_EXPIRE, 5000);
                 if (static_cast<Player*>(pVictim)->getClass() == 1 || static_cast<Player*>(pVictim)->getClass() == 4)     //warriors for 'revenge' and rogues for 'riposte'
                 {
-                    pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);	                //SB@L: Enables spells requiring dodge
+                    pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	                //SB@L: Enables spells requiring dodge
                     if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                        sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                        sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                     else
                         sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000);
                 }
@@ -7866,7 +7865,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                                 float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
                                 if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                                blocked_damage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK))) + ((pVictim->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                                blocked_damage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                                 if (Rand(m_BlockModPct))
                                     blocked_damage *= 2;
@@ -7886,9 +7885,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                             }
                             if (pVictim->IsPlayer())  //not necessary now but we'll have blocking mobs in future
                             {
-                                pVictim->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_DODGE_BLOCK);	//SB@L: Enables spells requiring dodge
+                                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	//SB@L: Enables spells requiring dodge
                                 if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-                                    sEventMgr.AddEvent(pVictim, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_DODGE_BLOCK, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
+                                    sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                                 else
                                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000);
                             }
@@ -7948,14 +7947,6 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                         {
                             vproc |= PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
                             aproc |= PROC_ON_RANGED_CRIT_ATTACK;
-                        }
-
-                        if (IsPlayer())
-                        {
-                            this->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_CRITICAL);
-                            if (!sEventMgr.HasEvent(this, EVENT_CRIT_FLAG_EXPIRE))
-                                sEventMgr.AddEvent(this, &Unit::EventAurastateExpire, uint32(AURASTATE_FLAG_CRITICAL), EVENT_CRIT_FLAG_EXPIRE, 5000, 1, 0);
-                            else sEventMgr.ModifyEventTimeLeft(this, EVENT_CRIT_FLAG_EXPIRE, 5000);
                         }
 
                         CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
@@ -8131,17 +8122,17 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
 
         //ugly hack for shadowfiend restoring mana
-        if (GetSummonedByGUID() != 0 && GetEntry() == 19668)
+        if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)GetSummonedByGUID());
+            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             uint32 amount = static_cast<uint32>(owner->GetMaxPower(POWER_TYPE_MANA) * 0.05f);
             if (owner != NULL)
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
         //ugly hack for Bloodsworm restoring hp
-        if (getUInt64Value(UNIT_FIELD_SUMMONEDBY) != 0 && getUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
+        if (getSummonedByGuid() != 0 && getEntry() == 28017)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)getUInt64Value(UNIT_FIELD_SUMMONEDBY));
+            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             if (owner != NULL)
                 Heal(owner, 50452, float2int32(1.5f * realdamage));
         }
@@ -8279,13 +8270,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (weapon == nullptr)
         {
             if (weapon_damage_type == OFFHAND)
-                s = getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) / 1000.0f;
+                s = getBaseAttackTime(OFFHAND) / 1000.0f;
             else
-                s = GetBaseAttackTime(MELEE) / 1000.0f;
+                s = getBaseAttackTime(MELEE) / 1000.0f;
         }
         else
         {
-            uint32 entry = weapon->GetEntry();
+            uint32 entry = weapon->getEntry();
             ItemProperties const* pProto = sMySQLStore.getItemProperties(entry);
             if (pProto != nullptr)
             {
@@ -8439,7 +8430,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
         if (pThis->cannibalize)
         {
             sEventMgr.RemoveEvents(pThis, EVENT_CANNIBALIZE);
-            pThis->SetEmoteState(EMOTE_ONESHOT_NONE);
+            pThis->setEmoteState(EMOTE_ONESHOT_NONE);
             pThis->cannibalize = false;
         }
     }
@@ -9066,15 +9057,12 @@ void Unit::AddAura(Aura* aur)
     }
 
     /* Set aurastates */
-    uint32 flag = 0;
     if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
-        flag |= AURASTATE_FLAG_ENRAGED;
+        addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
     else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
-        flag |= AURASTATE_FLAG_BLEED;
+        addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
     if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
-        flag |= AURASTATE_FLAG_JUDGEMENT;
-
-    SetFlag(UNIT_FIELD_AURASTATE, flag);
+        addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 }
 #else
 void Unit::AddAura(Aura* aur)
@@ -9648,15 +9636,12 @@ void Unit::AddAura(Aura* aur)
     }
 
     /* Set aurastates */
-    uint32 flag = 0;
     if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
-        flag |= AURASTATE_FLAG_ENRAGED;
+        addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
     else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
-        flag |= AURASTATE_FLAG_BLEED;
+        addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
     if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
-        flag |= AURASTATE_FLAG_JUDGEMENT;
-
-    SetFlag(UNIT_FIELD_AURASTATE, flag);
+        addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 }
 #endif
 
@@ -9728,7 +9713,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38801:
                 case 43093:
                 {
-                    if (getUInt32Value(UNIT_FIELD_HEALTH) == getUInt32Value(UNIT_FIELD_MAXHEALTH))
+                    if (getHealth() == getMaxHealth())
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -9739,7 +9724,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38772:
                 {
                     uint32 p = m_auras[x]->GetSpellInfo()->getEffectBasePoints(1);
-                    if (getUInt32Value(UNIT_FIELD_MAXHEALTH) * p <= getUInt32Value(UNIT_FIELD_HEALTH) * 100)
+                    if (getMaxHealth() * p <= getHealth() * 100)
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -10155,8 +10140,8 @@ float Unit::CalcSpellDamageReduction(Unit* victim, SpellInfo* spell, float res)
 void Unit::DeMorph()
 {
     // hope it solves it :)
-    uint32 displayid = this->GetNativeDisplayId();
-    this->SetDisplayId(displayid);
+    uint32 displayid = this->getNativeDisplayId();
+    this->setDisplayId(displayid);
     EventModelChange();
 }
 
@@ -10246,7 +10231,7 @@ void Unit::onRemoveInRangeObject(Object* pObj)
         Unit* pUnit = static_cast<Unit*>(pObj);
         GetAIInterface()->CheckTarget(pUnit);
 
-        if (GetCharmedUnitGUID() == pObj->getGuid())
+        if (getCharmGuid() == pObj->getGuid())
             interruptSpell();
     }
 }
@@ -10259,14 +10244,14 @@ void Unit::clearInRangeSets()
 //Events
 void Unit::EventAddEmote(EmoteType emote, uint32 time)
 {
-    m_oldEmote = GetEmoteState();
-    SetEmoteState(emote);
+    m_oldEmote = getEmoteState();
+    setEmoteState(emote);
     sEventMgr.AddEvent(this, &Creature::EmoteExpire, EVENT_UNIT_EMOTE, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Unit::EmoteExpire()
 {
-    SetEmoteState(m_oldEmote);
+    setEmoteState(m_oldEmote);
     sEventMgr.RemoveEvents(this, EVENT_UNIT_EMOTE);
 }
 
@@ -10303,18 +10288,18 @@ void Unit::CalcDamage()
 
         float ap_bonus = GetAP() / 14000.0f;
 
-        float bonus = ap_bonus * (GetBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
+        float bonus = ap_bonus * (getBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
 
         delta = float(static_cast<Creature*>(this)->ModDamageDone[0]);
         mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
         r = (BaseDamage[0] + bonus) * mult + delta;
         // give some diversity to pet damage instead of having a 77-78 damage range (as an example)
-        SetMinDamage(r > 0 ? (IsPet() ? r * 0.9f : r) : 0);
+        setMinDamage(r > 0 ? (IsPet() ? r * 0.9f : r) : 0);
         r = (BaseDamage[1] + bonus) * mult + delta;
-        SetMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
+        setMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
 
-        //	SetMinRangedDamage(BaseRangedDamage[0]*mult+delta);
-        //	SetMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
+        //	setMinRangedDamage(BaseRangedDamage[0]*mult+delta);
+        //	setMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
     }
 }
 
@@ -10502,14 +10487,14 @@ void Unit::DropAurasOnDeath()
 
 bool Unit::IsControlledByPlayer()
 {
-    if (IS_PLAYER_GUID(GetCharmedByGUID()) || IsPlayer())
+    if (IS_PLAYER_GUID(getCharmedByGuid()) || IsPlayer())
         return true;
     return false;
 }
 
 void Unit::UpdateSpeed()
 {
-    if (GetMount() == 0)
+    if (getMountDisplayId() == 0)
     {
         m_currentSpeedRun = m_basicSpeedRun * (1.0f + ((float)m_speedModifier) / 100.0f);
     }
@@ -10820,14 +10805,16 @@ void Unit::RemoveFromWorld(bool free_guid)
     RemoveVehicleComponent();
 
     CombatStatus.OnRemoveFromWorld();
-    if (GetSummonedCritterGUID() != 0)
+#if VERSION_STRING > TBC
+    if (getCritterGuid() != 0)
     {
-        SetSummonedCritterGUID(0);
+        setCritterGuid(0);
 
-        Unit* u = m_mapMgr->GetUnit(GetSummonedCritterGUID());
+        Unit* u = m_mapMgr->GetUnit(getCritterGuid());
         if (u != NULL)
             u->Delete();
     }
+#endif
 
     if (dynObj != 0)
         dynObj->Remove();
@@ -12235,21 +12222,20 @@ void Unit::EventHealthChangeSinceLastUpdate()
 {
     int pct = GetHealthPct();
     if (pct < 35)
-    {
-        uint32 toset = AURASTATE_FLAG_HEALTH35;
-        if (pct < 20)
-            toset |= AURASTATE_FLAG_HEALTH20;
-        else
-            RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH20);
-        SetFlag(UNIT_FIELD_AURASTATE, toset);
-    }
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
     else
-        RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
+
+    if (pct < 20)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+    else
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+
 #if VERSION_STRING >= WotLK
-    if (pct < 75)
-        RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
+    if (pct > 75)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
     else
-        SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
 #endif
 }
 
@@ -12298,6 +12284,40 @@ void Unit::EventCastSpell(Unit* Target, SpellInfo* Sp)
     pSpell->prepare(&targets);
 }
 
+#if VERSION_STRING == TBC
+void Unit::SetFacing(float newo)
+{
+    SetOrientation(newo);
+
+    //generate smsg_monster_move
+    WorldPacket data(SMSG_MONSTER_MOVE, 60);
+
+    data << GetNewGUID();
+
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+    data << Util::getMSTime();
+    if (newo != 0.0f)
+    {
+        data << uint8(4);
+        data << newo;
+    }
+    else
+    {
+        data << uint8(0);
+    }
+
+    data << uint32(0x1000); //move flags: run
+    data << uint32(0); //movetime
+    data << uint32(1); //1 point
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+
+    SendMessageToSet(&data, true);
+}
+#else
 void Unit::SetFacing(float newo)
 {
     SetOrientation(newo);
@@ -12322,6 +12342,7 @@ void Unit::SetFacing(float newo)
 
     SendMessageToSet(&data, true);
 }
+#endif
 
 float Unit::get_chance_to_daze(Unit* target)
 {
@@ -12640,7 +12661,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
     Unit* pt;
 
     if (m_Unit->IsPlayer())
-        static_cast<Player*>(m_Unit)->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
+        static_cast<Player*>(m_Unit)->removePlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
 
     for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
     {
@@ -12737,8 +12758,8 @@ void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
     if (!target || !SpellId || !amount)
         return;
 
-    uint32 ch = target->GetHealth();
-    uint32 mh = target->GetMaxHealth();
+    uint32 ch = target->getHealth();
+    uint32 mh = target->getMaxHealth();
     if (mh != ch)
     {
         ch += amount;
@@ -13163,14 +13184,15 @@ void Unit::RemoveAllMovementImpairing()
     }
 }
 
+//\todo no attacktimer for ranged?
 void Unit::setAttackTimer(int32 time, bool offhand)
 {
     if (!time)
-        time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
+        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
     time = std::max(1000, float2int32(time * GetCastSpeedMod()));
     if (time> 300000)		// just in case.. shouldn't happen though
-        time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
+        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
     if (offhand)
         m_attackTimer_1 = Util::getMSTime() + time;
@@ -13178,6 +13200,7 @@ void Unit::setAttackTimer(int32 time, bool offhand)
         m_attackTimer = Util::getMSTime() + time;
 }
 
+//\todo no attacktimer for ranged?
 bool Unit::isAttackReady(bool offhand)
 {
     if (offhand)
@@ -13199,7 +13222,7 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(getUInt32Value(UNIT_FIELD_DISPLAYID));
+    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(getDisplayId());
 
     //\todo if has mount, grab mount model and add the z value of attachment 0
     if (displayBoundingBox != nullptr)
@@ -13214,7 +13237,7 @@ void Unit::EventModelChange()
 
 void Unit::RemoveFieldSummon()
 {
-    uint64 guid = GetSummonedUnitGUID();
+    uint64 guid = getSummonGuid();
     if (guid && GetMapMgr())
     {
         Creature* summon = static_cast<Creature*>(GetMapMgr()->GetUnit(guid));
@@ -13222,7 +13245,7 @@ void Unit::RemoveFieldSummon()
         {
             summon->RemoveFromWorld(false, true);
         }
-        SetSummonedUnitGUID(0);
+        setSummonGuid(0);
     }
 }
 
@@ -13645,10 +13668,10 @@ uint64 Unit::GetTaggerGUID()
 
 bool Unit::isLootable()
 {
-    if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (GetCreatedByGUID() == 0) && !IsVehicle())
+    if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !IsVehicle())
     {
-        auto creature_prop = sMySQLStore.getCreatureProperties(GetEntry());
-        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
+        auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
+        if (IsCreature() && !lootmgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
         return true;
@@ -14093,7 +14116,7 @@ void Unit::CastOnMeleeSpell()
     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
     spell->extra_cast_number = GetOnMeleeSpellEcn();
     SpellCastTargets targets;
-    targets.m_unitTarget = GetTargetGUID();
+    targets.m_unitTarget = getTargetGuid();
     spell->prepare(&targets);
     SetOnMeleeSpell(0);
 }
@@ -14437,7 +14460,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
         return;
     if (!pThis)
         return;
-    if (GetCharmedUnitGUID())
+    if (getCharmGuid())
         return;
 
     setMoveRoot(true);
@@ -14464,8 +14487,8 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     }
 
     m_noInterrupt++;
-    SetCharmedUnitGUID(pTarget->getGuid());
-    pTarget->SetCharmedByGUID(getGuid());
+    setCharmGuid(pTarget->getGuid());
+    pTarget->setCharmedByGuid(getGuid());
     pTarget->SetCharmTempVal(pTarget->GetFaction());
     pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
@@ -14497,10 +14520,10 @@ void Unit::UnPossess()
         return;
     if (!pThis)
         return;
-    if (!GetCharmedUnitGUID())
+    if (!getCharmGuid())
         return;
 
-    Unit* pTarget = GetMapMgr()->GetUnit(GetCharmedUnitGUID());
+    Unit* pTarget = GetMapMgr()->GetUnit(getCharmGuid());
     if (!pTarget)
         return;
 
@@ -14519,9 +14542,9 @@ void Unit::UnPossess()
     m_noInterrupt--;
     pThis->SetFarsightTarget(0);
     pThis->mControledUnit = this;
-    SetCharmedUnitGUID(0);
-    pTarget->SetCharmedByGUID(0);
-    SetCharmedUnitGUID(0);
+    setCharmGuid(0);
+    pTarget->setCharmedByGuid(0);
+    setCharmGuid(0);
 
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     pTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -14536,7 +14559,7 @@ void Unit::UnPossess()
 
     setMoveRoot(false);
 
-    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == getGuid()))
+    if (!pTarget->IsPet() && (pTarget->getCreatedByGuid() == getGuid()))
     {
         sEventMgr.AddEvent(static_cast< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
         return;

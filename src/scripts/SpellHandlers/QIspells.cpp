@@ -75,7 +75,7 @@ bool ElementalPowerExtractor(uint32 /*i*/, Spell* pSpell)
         return true;
 
     Creature* pTarget = static_cast<Creature*>(pUnit);
-    if ((pTarget->GetEntry() == 18881 || pTarget->GetEntry() == 18865) && pTarget->isAlive())
+    if ((pTarget->getEntry() == 18881 || pTarget->getEntry() == 18865) && pTarget->isAlive())
     {
         pPlayer->GetItemInterface()->AddItemById(28548, 1, 0);
     }
@@ -751,7 +751,7 @@ bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector creatPos = creat->GetPosition();
 
-    uint32 cit = creat->GetEntry();
+    uint32 cit = creat->getEntry();
     switch (cit)
     {
         case 5360:
@@ -1062,7 +1062,7 @@ bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (target == nullptr || target->GetEntry() != 29392 || target->IsDead() == false)
+    if (target == nullptr || target->getEntry() != 29392 || target->IsDead() == false)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -1079,9 +1079,9 @@ bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 23652 || !target->isAlive())
+    if (!target || target->getEntry() != 23652 || !target->isAlive())
         return true;
-    else if (!target || target->GetEntry() != 23652 || !target->HasAura(40467))
+    else if (!target || target->getEntry() != 23652 || !target->HasAura(40467))
         return true;
 
     Player* pPlayer = pSpell->p_caster;
@@ -1108,7 +1108,7 @@ bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 26633 || !target->IsDead())
+    if (!target || target->getEntry() != 26633 || !target->IsDead())
         return true;
 
     Player* pPlayer = pSpell->p_caster;
@@ -1130,7 +1130,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->GetEntry() != 23657 && target->GetEntry() != 23661 && target->GetEntry() != 23662 && target->GetEntry() != 23663 && target->GetEntry() != 23664 && target->GetEntry() != 23665 && target->GetEntry() != 23666 && target->GetEntry() != 23667 && target->GetEntry() != 23668 && target->GetEntry() != 23669 && target->GetEntry() != 23670) || !target->IsDead())
+    if (!target || (target->getEntry() != 23657 && target->getEntry() != 23661 && target->getEntry() != 23662 && target->getEntry() != 23663 && target->getEntry() != 23664 && target->getEntry() != 23665 && target->getEntry() != 23666 && target->getEntry() != 23667 && target->getEntry() != 23668 && target->getEntry() != 23669 && target->getEntry() != 23670) || !target->IsDead())
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 300000);
@@ -1160,7 +1160,7 @@ bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->GetEntry() != 25432 && target->GetEntry() != 25434) || !target->isAlive())
+    if (!target || (target->getEntry() != 25432 && target->getEntry() != 25434) || !target->isAlive())
     {
         return true;
     }
@@ -1180,7 +1180,7 @@ bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->GetEntry() != 25342 && target->GetEntry() != 25343))
+    if (!target || (target->getEntry() != 25342 && target->getEntry() != 25343))
     {
         return true;
     }
@@ -1222,7 +1222,7 @@ bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->GetEntry() != 29974 && target->GetEntry() != 30144 && target->GetEntry() != 30135) || !target->IsDead())
+    if (!target || (target->getEntry() != 29974 && target->getEntry() != 30144 && target->getEntry() != 30135) || !target->IsDead())
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -1242,7 +1242,7 @@ bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 30035)
+    if (!target || target->getEntry() != 30035)
     {
         return true;
     }
@@ -1264,7 +1264,7 @@ bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 25753 || !target->IsDead())
+    if (!target || target->getEntry() != 25753 || !target->IsDead())
     {
         return true;
     }
@@ -1286,7 +1286,7 @@ bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 28156)
+    if (!target || target->getEntry() != 28156)
     {
         return true;
     }
@@ -1318,7 +1318,7 @@ bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->GetEntry() != 22431)
+    if (!target || target->getEntry() != 22431)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
@@ -1384,8 +1384,8 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
                     Creature* tamed = static_cast<Creature*>(m_target);
                     tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
 
-                    Pet* pPet = objmgr.CreatePet(tamed->GetEntry());
-                    if (!pPet->CreateAsSummon(tamed->GetEntry(), tamed->GetCreatureProperties(), tamed, p_caster, triggerspell, 2, 900000))
+                    Pet* pPet = objmgr.CreatePet(tamed->getEntry());
+                    if (!pPet->CreateAsSummon(tamed->getEntry(), tamed->GetCreatureProperties(), tamed, p_caster, triggerspell, 2, 900000))
                     {
                         pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
                         pPet = NULL;
@@ -1530,7 +1530,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->GetDisplayId();
+    uint32 md = lunaclaw->getDisplayId();
 
     //Waypoints
     lunaclaw->LoadCustomWaypoint(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -1575,7 +1575,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->GetDisplayId();
+    uint32 md = lunaclaw->getDisplayId();
 
     // Waypoints
     lunaclaw->LoadCustomWaypoint(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -1614,7 +1614,7 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
 
     LocationVector targetPos = target->GetPosition();
 
-    uint32 entry = target->GetEntry();
+    uint32 entry = target->getEntry();
     if (entry == 12296 || entry == 12298)
     {
         caster->AddQuestKill(6129, 0, 0);
@@ -1674,7 +1674,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
 
     for (uint8 j = 0; j < 3; j++)
     {
-        if (target->GetEntry() == targets[j])
+        if (target->getEntry() == targets[j])
         {
             targetOk = true;
             break;
@@ -1724,7 +1724,7 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
     if (target == nullptr)
         return true;
 
-    if (target->GetEntry() != 17768)
+    if (target->getEntry() != 17768)
         return true;
 
     QuestLogEntry* qle = plr->GetQuestLogForEntry(9685);
@@ -1903,7 +1903,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
-    if (target == nullptr || target->GetEntry() != 16880) // Hulking Helboar
+    if (target == nullptr || target->getEntry() != 16880) // Hulking Helboar
         return true;
 
     LocationVector targetPos = target->GetPosition();
@@ -2178,7 +2178,7 @@ bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pTarget == nullptr)
         return true;
 
-    if (pTarget->GetEntry() != 16852)
+    if (pTarget->getEntry() != 16852)
         return true;
 
     pTarget->setStandState(STANDSTATE_STAND);
@@ -2290,7 +2290,7 @@ bool FuryOfTheDreghoodElders(uint32 /*i*/, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
 
     Unit* pUnit = pSpell->GetUnitTarget();
-    if (pUnit == nullptr || !pUnit->IsCreature() || pUnit->GetEntry() != 19354)
+    if (pUnit == nullptr || !pUnit->IsCreature() || pUnit->getEntry() != 19354)
         return true;
 
     LocationVector targetPos = pUnit->GetPosition();
@@ -2351,7 +2351,7 @@ bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
     if (target == nullptr || target->isAlive())
         return true;
 
-    uint32 cit = target->GetEntry();
+    uint32 cit = target->getEntry();
     switch (cit)
     {
         case 24161:
@@ -2386,7 +2386,7 @@ bool ConvertingSentry(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Creature* pTarget = static_cast<Creature*>(pSpell->GetUnitTarget());
-    if (pTarget == nullptr || pTarget->GetEntry() != 24972 || pTarget->isAlive())   // Erratic Sentry: 24972
+    if (pTarget == nullptr || pTarget->getEntry() != 24972 || pTarget->isAlive())   // Erratic Sentry: 24972
         return true;
 
     QuestLogEntry* qle = pCaster->GetQuestLogForEntry(11525);
@@ -2431,7 +2431,7 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
         if (pSpell->m_caster->CalcDistance(pTarget) > 5)
             continue;
 
-        if (pTarget->GetEntry() == 25084)
+        if (pTarget->getEntry() == 25084)
         {
             LocationVector targetPos = pTarget->GetPosition();
 
@@ -2617,8 +2617,8 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
             pPlayer->CastSpell(Ward, sSpellCustomizations.GetSpellInfo(44981), false);
-            pPlayer->SetChannelSpellTargetGUID(Ward->getGuid());
-            pPlayer->SetChannelSpellId(44981);
+            pPlayer->setChannelObjectGuid(Ward->getGuid());
+            pPlayer->setChannelSpellId(44981);
 
             pPlayer->AddQuestKill(quests[i], 0, 0);
         }
@@ -2855,7 +2855,7 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
     if (pQuest == nullptr)
         return true;
 
-    if (pTarget->GetEntry() == 21722 && pPlayer->CalcDistance(pTarget) < 30)
+    if (pTarget->getEntry() == 21722 && pPlayer->CalcDistance(pTarget) < 30)
     {
         if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
         {
@@ -2904,7 +2904,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
     GameObject* obj = nullptr;
 
-    if (target->GetEntry() == 21859)
+    if (target->getEntry() == 21859)
     {
         if (qle->GetMobCount(0) == qle->GetQuest()->required_mob_or_go_count[0])
             return true;
@@ -2915,7 +2915,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
         if (obj != nullptr)
             obj->Despawn(1 * 60 * 1000, 0);
     }
-    else if (target->GetEntry() == 21846)
+    else if (target->getEntry() == 21846)
     {
         if (qle->GetMobCount(1) == qle->GetQuest()->required_mob_or_go_count[1])
             return true;
@@ -2949,7 +2949,7 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
     if (target == nullptr)
         return true;
 
-    if (target->GetEntry() != 9999)
+    if (target->getEntry() != 9999)
         return true;
 
     QuestLogEntry* qle = plr->GetQuestLogForEntry(4492);
@@ -3033,7 +3033,7 @@ bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
     static const uint32 friends[] = { 10978, 7583, 10977 };
     for (uint8 j = 0; j < sizeof(friends) / sizeof(uint32); j++)
     {
-        if (target->GetEntry() == friends[j] && qLogEntry->GetMobCount(j) < qLogEntry->GetQuest()->required_mob_or_go_count[j])
+        if (target->getEntry() == friends[j] && qLogEntry->GetMobCount(j) < qLogEntry->GetQuest()->required_mob_or_go_count[j])
         {
             pSpell->p_caster->AddQuestKill(5163, j, 0);
             return true;

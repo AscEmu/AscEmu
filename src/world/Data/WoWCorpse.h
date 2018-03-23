@@ -92,10 +92,8 @@ struct WoWCorpse : WoWObject
     uint32_t item[WOWCORPSE_ITEM_COUNT];
     uint32_t corpse_bytes_1;
     uint32_t corpse_bytes_2;
-    uint32_t guild;
     uint32_t corpse_flags;
     uint32_t dynamic_flags;
-    uint32_t corpse_padding;
 };
 #endif
 

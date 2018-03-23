@@ -105,8 +105,8 @@ class ForgemasterGarfrostAI : public CreatureAIScript
             else
                 getCreature()->CastSpell(getCreature(), SPELL_FROZEBLADE, false);
 
-            getCreature()->SetEquippedItem(MELEE, EQUIP_ID_SWORD);
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setVirtualItemSlotId(MELEE, EQUIP_ID_SWORD);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
             setScriptPhase(2);
         }
 
@@ -125,7 +125,7 @@ class ForgemasterGarfrostAI : public CreatureAIScript
             else
                 getCreature()->CastSpell(getCreature(), SPELL_FROZEMACE, false);
             
-            getCreature()->SetEquippedItem(MELEE, EQUIP_ID_MACE);
+            getCreature()->setVirtualItemSlotId(MELEE, EQUIP_ID_MACE);
             setScriptPhase(3);
         }
     }
@@ -536,7 +536,7 @@ class BarrageAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), SPELL_AUTO_GROW, false);
 
             // Invisibility Hack
-            getCreature()->SetDisplayId(11686);
+            getCreature()->setDisplayId(11686);
 
             // AIUpdate
             RegisterAIUpdateEvent(500);

@@ -33,7 +33,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (unit_target->GetMount() != 0)
+    if (unit_target->getMountDisplayId() != 0)
     {
         RedSystemMessage(m_session, "Target is already mounted.");
         return true;
@@ -54,7 +54,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
     if (unit_target == nullptr)
         return true;
 
-    if (unit_target->GetMount() == 0)
+    if (unit_target->getMountDisplayId() == 0)
     {
         RedSystemMessage(m_session, "Target is not mounted.");
         return true;
@@ -277,7 +277,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     spell->prepare(&targets);
 
                     GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureProperties()->Name.c_str());
-                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->GetEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
+                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->getEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
                     break;
                 }
                 case TYPEID_PLAYER:
@@ -354,7 +354,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
         {
             player_target->setMoveRoot(false);
             player_target->ResurrectPlayer();
-            player_target->setHealth(player_target->GetMaxHealth());
+            player_target->setHealth(player_target->getMaxHealth());
             player_target->SetPower(POWER_TYPE_MANA, player_target->GetMaxPower(POWER_TYPE_MANA));
             player_target->SetPower(POWER_TYPE_ENERGY, player_target->GetMaxPower(POWER_TYPE_ENERGY));
 

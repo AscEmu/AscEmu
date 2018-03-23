@@ -190,6 +190,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session);
         bool HandleSendCastFailed(const char* args, WorldSession* m_session);
         bool HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session);
+        bool HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session);
+        bool HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session);
+
         // old debugcmds.cpp
         //\todo Rewrite these commands
         bool HandleDoPercentDamageCommand(const char* args, WorldSession* session);

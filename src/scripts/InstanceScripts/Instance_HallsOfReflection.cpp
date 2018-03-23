@@ -78,7 +78,7 @@ class JainaAI : public CreatureAIScript
             Creature* Lich = getNearestCreature(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (Uther && Lich)
             {
-                Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
+                Lich->setDisplayId(11686); // HACK FIX makes invisible till needed
                 Lich->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
                 getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
@@ -135,7 +135,7 @@ class JainaAI : public CreatureAIScript
             if (!Lich)
                 return;
 
-            Lich->SetDisplayId(30721);
+            Lich->setDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f);
             Lich->SetOrientation(3.93f);
             RemoveAIUpdateEvent();

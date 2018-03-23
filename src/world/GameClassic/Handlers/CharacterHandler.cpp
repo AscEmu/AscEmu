@@ -121,15 +121,15 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             uint32_t char_flags = 0;
 
             if (charEnum.banned && (charEnum.banned < 10 || charEnum.banned > (uint32_t)UNIXTIME))
-                char_flags |= PLAYER_FLAG_IS_BANNED;
+                char_flags |= CHARACTER_SCREEN_FLAG_BANNED;
             if (charEnum.deathState != 0)
-                char_flags |= PLAYER_FLAG_IS_DEAD;
+                char_flags |= CHARACTER_SCREEN_FLAG_DEAD;
             if (charEnum.flags & PLAYER_FLAG_NOHELM)
-                char_flags |= PLAYER_FLAG_NOHELM;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_HELM;
             if (charEnum.flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= PLAYER_FLAG_NOCLOAK;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_CLOAK;
             if (charEnum.loginFlags == 1)
-                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
+                char_flags |= CHARACTER_SCREEN_FLAG_FORCED_RENAME;
 
             data << uint32_t(char_flags);
             data << uint8_t(0);

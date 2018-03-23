@@ -10,6 +10,32 @@ namespace Packets
 {
     namespace Movement
     {
+#if VERSION_STRING == TBC
+        void SendMoveToPacket(Unit* pUnit)
+        {
+            auto spline = pUnit->m_movementManager.m_spline;
+            auto splineFlags = spline.GetSplineFlags();
+            auto midpoints = pUnit->m_movementManager.m_spline.GetMidPoints();
+
+            WorldPacket data(SMSG_MONSTER_MOVE, 60);
+            data << pUnit->GetNewGUID();
+            data << float(pUnit->GetPositionX());
+            data << float(pUnit->GetPositionY());
+            data << float(pUnit->GetPositionZ());
+            data << uint32(Util::getMSTime());
+            // Id of first spline, so always 0
+            data << uint8(0);
+
+            data << uint32(0x1000); //move flags: run
+            data << uint32(0); //movetime
+            data << uint32(1); //1 point
+            data << pUnit->GetPositionX();
+            data << pUnit->GetPositionY();
+            data << pUnit->GetPositionZ();
+
+            pUnit->SendMessageToSet(&data, true);
+        }
+#else
         void SendMoveToPacket(Unit* pUnit)
         {
             auto spline = pUnit->m_movementManager.m_spline;
@@ -133,5 +159,6 @@ namespace Packets
 
             pUnit->SendMessageToSet(&data, true);
         }
+#endif
     }
 }

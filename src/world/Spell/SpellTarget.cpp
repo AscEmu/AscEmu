@@ -533,10 +533,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
             if (TargetType & SPELL_TARGET_ANY_OBJECT)
             {
-                if (u_caster->getUInt64Value(UNIT_FIELD_TARGET))
+                if (u_caster->getTargetGuid())
                 {
                     //generate targets for things like arcane missiles trigger, tame pet, etc
-                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_TARGET));
+                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getTargetGuid());
                     if (target != nullptr)
                     {
                         if (target->IsUnit())
@@ -558,10 +558,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
             if (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE)
             {
-                if (u_caster->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT))
+                if (u_caster->getChannelObjectGuid())
                 {
                     //generate targets for things like arcane missiles trigger, tame pet, etc
-                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getChannelObjectGuid());
                     if (target != nullptr)
                     {
                         if (target->IsUnit())
@@ -578,10 +578,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                         }
                     }
                 }
-                else if (u_caster->getUInt64Value(UNIT_FIELD_TARGET))
+                else if (u_caster->getTargetGuid())
                 {
                     //generate targets for things like arcane missiles trigger, tame pet, etc
-                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_TARGET));
+                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getTargetGuid());
                     if (target != nullptr)
                     {
                         if (target->IsUnit())
@@ -658,9 +658,9 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         else if (TargetType & SPELL_TARGET_AREA)  //targetted aoe
         {
             //spells like blizzard, rain of fire
-            if (u_caster->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT))
+            if (u_caster->getChannelObjectGuid())
             {
-                Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+                Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getChannelObjectGuid());
                 if (target)
                 {
                     t->m_targetMask |= TARGET_FLAG_DEST_LOCATION | TARGET_FLAG_UNIT;

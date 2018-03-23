@@ -174,7 +174,7 @@ void ObjectMgr::LoadTransports()
         {
             for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
             {
-                if ((*itr)->GetEntry() == it.second.transportEntry)
+                if ((*itr)->getEntry() == it.second.transportEntry)
                 {
                     TransportSpawn spawn{ it.second.guid, it.second.entry, it.second.transportEntry, it.second.transportOffsetX, it.second.transportOffsetY, it.second.transportOffsetZ, it.second.transportOffsetO, it.second.animation };
                     (*itr)->AddCreature(spawn);
@@ -192,10 +192,11 @@ void ObjectMgr::LoadTransports()
 
 Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
 {
-
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID | UPDATEFLAG_TRANSPORT);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_TRANSPORT;
 #endif
 
@@ -528,7 +529,7 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
 
     WorldPacket packet(SMSG_TRANSFER_PENDING, 12);
     packet << newMapid;
-    packet << GetEntry();
+    packet << getEntry();
     packet << oldmap;
 
     for (auto passengerGuid : m_passengers)

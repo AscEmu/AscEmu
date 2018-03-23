@@ -246,9 +246,9 @@ namespace luaItem
         if (perm)
         {
             float chance = CHECK_FLOAT(L, 5);
-            QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_items WHERE entryid = %u, itemid = %u", ptr->GetEntry(), itemid);
+            QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_items WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
             if (!result)
-                WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->GetEntry(), itemid, chance, mincount, maxcount);
+                WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
         lootmgr.AddLoot(ptr->loot, itemid, mincount, maxcount);
@@ -405,7 +405,7 @@ namespace luaItem
             Item* item = pCont->GetItem(i);
             if (item)
             {
-                if (item->GetEntry() == itemid && item->wrapped_item_id == 0)
+                if (item->getEntry() == itemid && item->wrapped_item_id == 0)
                 {
                     cnt += item->GetStackCount() ? item->GetStackCount() : 1;
                 }
@@ -418,7 +418,7 @@ namespace luaItem
     int GetEquippedSlot(lua_State* L, Item* ptr)
     {
         if (!ptr) return 0;
-        lua_pushinteger(L, ptr->getOwner()->GetItemInterface()->GetInventorySlotById(ptr->GetEntry()));
+        lua_pushinteger(L, ptr->getOwner()->GetItemInterface()->GetInventorySlotById(ptr->getEntry()));
         return 1;
     }
 

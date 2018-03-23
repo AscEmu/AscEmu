@@ -303,7 +303,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     break;
                 }
 
-                player_cache->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
                 if (language != LANG_ADDON)
                     // TODO Verify should this be LANG_UNIVERSAL?
                     SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
@@ -811,9 +811,9 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            }
 //
 //            /* WorldPacket *data, WorldSession* session, uint32 type, uint32 language, const char *channelName, const char *message*/
-//            if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+//            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_AFK))
 //            {
-//                GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+//                GetPlayer()->removePlayerFlags(PLAYER_FLAG_AFK);
 //                if (worldConfig.getKickAFKPlayerTime())
 //                {
 //                    sEventMgr.RemoveEvents(GetPlayer(), EVENT_PLAYER_SOFT_DISCONNECT);
@@ -821,7 +821,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            }
 //            else
 //            {
-//                GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+//                GetPlayer()->addPlayerFlags(PLAYER_FLAG_AFK);
 //
 //                if (GetPlayer()->m_bg)
 //                {
@@ -847,13 +847,13 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //                return;
 //            }
 //
-//            if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
+//            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_DND))
 //            {
-//                GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+//                GetPlayer()->removePlayerFlags(PLAYER_FLAG_DND);
 //            }
 //            else
 //            {
-//                GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+//                GetPlayer()->addPlayerFlags(PLAYER_FLAG_DND);
 //            }
 //        }
 //        break;
@@ -986,7 +986,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
             case EMOTE_STATE_KNEEL:
             case EMOTE_STATE_DANCE:
             {
-                _player->SetEmoteState(emote_text_entry->textid);
+                _player->setEmoteState(emote_text_entry->textid);
             } break;
             default:
                 break;

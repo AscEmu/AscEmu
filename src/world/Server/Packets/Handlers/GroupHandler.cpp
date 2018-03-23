@@ -25,35 +25,28 @@
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/CmsgGroupInvite.h"
+#include "Server/Packets/SmsgGroupInvite.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
-//////////////////////////////////////////////////////////////
-/// This function handles CMSG_GROUP_INVITE
-//////////////////////////////////////////////////////////////
-void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
+//MIT
+void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN;
-    CHECK_PACKET_SIZE(recv_data, 1);
-    WorldPacket data(100);
-    std::string membername;
-    Group* group = NULL;
-
-    recv_data >> membername;
-    if (_player->HasBeenInvited())
+    CmsgGroupInvite recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    Player* player = objmgr.GetPlayer(membername.c_str(), false);
-
-    if (player == NULL)
+    auto player = objmgr.GetPlayer(recv_packet.name.c_str(), false);
+    if (player == nullptr)
     {
-        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_CANNOT_FIND);
         return;
     }
 
-    if (player == _player)
-    {
+    if (player == _player || _player->HasBeenInvited())
         return;
-    }
 
     if (_player->InGroup() && !_player->IsGroupLeader())
     {
@@ -61,10 +54,9 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    group = _player->GetGroup();
-    if (group != NULL)
+    if (_player->GetGroup() != nullptr)
     {
-        if (group->IsFull())
+        if (_player->GetGroup()->IsFull())
         {
             SendPartyCommandResult(_player, 0, "", ERR_PARTY_IS_FULL);
             return;
@@ -73,58 +65,52 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
 
     if (player->InGroup())
     {
-        SendPartyCommandResult(_player, player->GetGroup()->getGroupType(), membername, ERR_PARTY_ALREADY_IN_GROUP);
-        data.SetOpcode(SMSG_GROUP_INVITE);
-        data << uint8(0);
-        data << GetPlayer()->GetName();
-        player->GetSession()->SendPacket(&data);
+        SendPartyCommandResult(_player, player->GetGroup()->getGroupType(), recv_packet.name, ERR_PARTY_ALREADY_IN_GROUP);
+        player->GetSession()->SendPacket(SmsgGroupInvite(0, GetPlayer()->GetName()).serialise().get());
         return;
     }
 
     if (player->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGroupEnabled)
     {
-        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_WRONG_FACTION);
+        SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_WRONG_FACTION);
         return;
     }
 
     if (player->HasBeenInvited())
     {
-        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_ALREADY_IN_GROUP);
+        SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_ALREADY_IN_GROUP);
         return;
     }
 
     if (player->Social_IsIgnoring(_player->getGuidLow()))
     {
-        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_IGNORING_YOU);
+        SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_IS_IGNORING_YOU);
         return;
     }
 
     if (player->isGMFlagSet() && !_player->GetSession()->HasPermissions())
     {
-        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_CANNOT_FIND);
         return;
     }
 
-    data.SetOpcode(SMSG_GROUP_INVITE);
-    data << uint8(1);
-    data << GetPlayer()->GetName();
+    player->GetSession()->SendPacket(SmsgGroupInvite(1, GetPlayer()->GetName()).serialise().get());
 
-    player->GetSession()->SendPacket(&data);
+    SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_NO_ERROR);
 
-    SendPartyCommandResult(_player, 0, membername, ERR_PARTY_NO_ERROR);
-
-    // 16/08/06 - change to guid to prevent very unlikely event of a crash in deny, etc
     player->SetInviter(_player->getGuidLow());
 }
 
-///////////////////////////////////////////////////////////////
-///This function handles CMSG_GROUP_CANCEL:
-///////////////////////////////////////////////////////////////
-void WorldSession::HandleGroupCancelOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
+//MIT end
 
-        LOG_DEBUG("WORLD: got CMSG_GROUP_CANCEL.");
+////////////////////////////////////////////////////////////////
+///This function handles CMSG_GROUP_CANCEL:
+////////////////////////////////////////////////////////////////
+void WorldSession::HandleGroupCancelOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN;
+
+    LOG_DEBUG("WORLD: received CMSG_GROUP_CANCEL");
 }
 
 ////////////////////////////////////////////////////////////////
@@ -172,10 +158,6 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
         instance->m_creatorGuid = 0;
         instance->SaveToDB();
     }
-
-    //sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
-
-    // Currentgroup and all that shit are set by addmember.
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -531,8 +513,8 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
     uint8 powerType = plr->getPowerType();
     data << uint32(mask1);
     data << uint16(MEMBER_STATUS_ONLINE);
-    data << uint32(plr->GetHealth());
-    data << uint32(plr->GetMaxHealth());
+    data << uint32(plr->getHealth());
+    data << uint32(plr->getMaxHealth());
     data << uint8(powerType);
     data << uint16(plr->GetPower(powerType));
     data << uint16(plr->GetMaxPower(powerType));
@@ -560,9 +542,9 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
         uint8 petpowertype = pet->getPowerType();
         data << uint64(pet->getGuid());
         data << pet->GetName();
-        data << uint16(pet->GetDisplayId());
-        data << uint32(pet->GetHealth());
-        data << uint32(pet->GetMaxHealth());
+        data << uint16(pet->getDisplayId());
+        data << uint32(pet->getHealth());
+        data << uint32(pet->getMaxHealth());
         data << uint8(petpowertype);
         data << uint16(pet->GetPower(petpowertype));
         data << uint16(pet->GetMaxPower(petpowertype));

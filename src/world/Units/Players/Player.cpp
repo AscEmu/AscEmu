@@ -18,15 +18,79 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
-void Player::setAttackPowerMultiplier(float val)
-{
-    write(playerData()->attack_power_multiplier, val);
-}
+uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
+void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
 
-void Player::setRangedAttackPowerMultiplier(float val)
-{
-    write(playerData()->ranged_attack_power_multiplier, val);
-}
+uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
+void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
+void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
+bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
+
+//bytes begin
+uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
+void Player::setPlayerBytes(uint32_t bytes) { write(playerData()->player_bytes.raw, bytes); }
+
+uint8_t Player::getSkinColor() const { return playerData()->player_bytes.s.skin_color; }
+void Player::setSkinColor(uint8_t color) { write(playerData()->player_bytes.s.skin_color, color); }
+
+uint8_t Player::getFace() const { return playerData()->player_bytes.s.face; }
+void Player::setFace(uint8_t face) { write(playerData()->player_bytes.s.face, face); }
+
+uint8_t Player::getHairStyle() const { return playerData()->player_bytes.s.hair_style; }
+void Player::setHairStyle(uint8_t style) { write(playerData()->player_bytes.s.hair_style, style); }
+
+uint8_t Player::getHairColor() const { return playerData()->player_bytes.s.hair_color; }
+void Player::setHairColor(uint8_t color) { write(playerData()->player_bytes.s.hair_color, color); }
+//bytes end
+
+//bytes2 begin
+uint32_t Player::getPlayerBytes2() const { return playerData()->player_bytes_2.raw; }
+void Player::setPlayerBytes2(uint32_t bytes2) { write(playerData()->player_bytes_2.raw, bytes2); }
+
+uint8_t Player::getFacialFeatures() const { return playerData()->player_bytes_2.s.facial_hair; }
+void Player::setFacialFeatures(uint8_t feature) { write(playerData()->player_bytes_2.s.facial_hair, feature); }
+
+//unk1
+
+uint8_t Player::getBankSlots() const { return playerData()->player_bytes_2.s.bank_slots; }
+void Player::setBankSlots(uint8_t slots) { write(playerData()->player_bytes_2.s.bank_slots, slots); }
+
+uint8_t Player::getRestState() const { return playerData()->player_bytes_2.s.rest_state; }
+void Player::setRestState(uint8_t state) { write(playerData()->player_bytes_2.s.rest_state, state); }
+//bytes2 end
+
+//bytes3 begin
+uint32_t Player::getPlayerBytes3() const { return playerData()->player_bytes_3.raw; }
+void Player::setPlayerBytes3(uint32_t bytes3) { write(playerData()->player_bytes_3.raw, bytes3); }
+
+uint8_t Player::getPlayerGender() const { return playerData()->player_bytes_3.s.gender; }
+void Player::setPlayerGender(uint8_t gender) { write(playerData()->player_bytes_3.s.gender, gender); }
+
+uint16_t Player::getDrunkValue() const { return playerData()->player_bytes_3.s.drunk_value; }
+void Player::setDrunkValue(uint16_t value) { write(playerData()->player_bytes_3.s.drunk_value, value); }
+
+uint8_t Player::getPvpRank() const { return playerData()->player_bytes_3.s.pvp_rank; }
+void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp_rank, rank); }
+//bytes3 end
+
+uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
+void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
+
+#if VERSION_STRING > Classic
+uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
+void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }
+#endif
+
+uint32_t Player::getXp() const { return playerData()->xp; }
+void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
+
+uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
+void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+
+void Player::setAttackPowerMultiplier(float val) { write(playerData()->attack_power_multiplier, val); }
+
+void Player::setRangedAttackPowerMultiplier(float val) { write(playerData()->ranged_attack_power_multiplier, val); }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
@@ -258,15 +322,15 @@ bool Player::isTransferPending() const
 
 void Player::toggleAfk()
 {
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
     {
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+        removePlayerFlags(PLAYER_FLAG_AFK);
         if (worldConfig.getKickAFKPlayerTime())
             sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
     }
     else
     {
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+        addPlayerFlags(PLAYER_FLAG_AFK);
 
         if (m_bg)
             m_bg->RemovePlayer(this, false);
@@ -279,10 +343,10 @@ void Player::toggleAfk()
 
 void Player::toggleDnd()
 {
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
+        removePlayerFlags(PLAYER_FLAG_DND);
     else
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+        addPlayerFlags(PLAYER_FLAG_DND);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +370,7 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
 // Misc
 bool Player::isGMFlagSet()
 {
-    return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+    return hasPlayerFlags(PLAYER_FLAG_GM);
 }
 
 void Player::sendMovie(uint32_t movieId)
@@ -319,14 +383,6 @@ void Player::sendMovie(uint32_t movieId)
 }
 
 uint8 Player::GetPlayerStatus() const { return m_status; }
-
-void Player::setXp(uint32 xp) { write(playerData()->xp, xp); }
-
-uint32 Player::getXp() const { return playerData()->xp; }
-
-void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
-
-uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
 
 PlayerSpec& Player::getActiveSpec()
 {

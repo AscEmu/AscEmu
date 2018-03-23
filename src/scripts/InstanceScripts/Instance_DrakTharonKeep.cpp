@@ -256,7 +256,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         //position is guessed
                         c->Load(cp, -379.101227f, -824.835449f, 60.0f, 0.0f);
                         c->PushToWorld(getCreature()->GetMapMgr());
-                        c->SetSummonedByGUID(getCreature()->getGuid());
+                        c->setSummonedByGuid(getCreature()->getGuid());
                         //path finding would be usefull :)
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
@@ -369,7 +369,7 @@ class CrystalHandlerAI : public CreatureAIScript
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
+            Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->getSummonedByGuid());
             if (Novos)
             {
                 for (uint8 i = 0; i < 4; i++)
@@ -462,7 +462,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             phase_timer = 0;
             phase_length = 0;
-            getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+            getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
         }
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
@@ -470,7 +470,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() < 2 && getScriptPhase() == 2)
             {
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
-                getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+                getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
                 getCreature()->CastSpell(getCreature(), 53463, false);
             }
         }
@@ -481,7 +481,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 setScriptPhase(2);
                 phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
-                getCreature()->SetDisplayId(27073);
+                getCreature()->setDisplayId(27073);
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 49356, false);
             }
@@ -489,7 +489,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 setScriptPhase(1);
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
-                getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
+                getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 53463, false);
             }

@@ -34,13 +34,13 @@ Container::Container(uint32 high, uint32 low) : Item()
     memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
     m_updateMask.SetCount(CONTAINER_END);
 
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+    setType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);
     m_wowGuid.Init(getGuid());
 
-    SetScale(1);   //always 1
+    setScale(1);   //always 1
 
     m_Slot = NULL;
     random_suffix = random_prop = 0;
@@ -65,7 +65,7 @@ void Container::LoadFromDB(Field* fields)
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
-    SetEntry(itemid);
+    setEntry(itemid);
 
 
     SetCreatorGUID(fields[5].GetUInt32());
@@ -90,7 +90,7 @@ void Container::Create(uint32 itemid, Player* owner)
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    SetEntry(itemid);
+    setEntry(itemid);
 
     ///\todo this shouldn't get NULL form containers in mail fix me
     if (owner != NULL)
@@ -191,7 +191,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
         return;
 
     uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
-    if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->GetEntry() == m_Slot[SrcSlot]->GetEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
+    if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->GetStackCount() + m_Slot[DstSlot]->GetStackCount();
         m_Slot[DstSlot]->m_isDirty = m_Slot[SrcSlot]->m_isDirty = true;

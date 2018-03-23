@@ -185,7 +185,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     }
     if (u_caster && m_spellInfo->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
-        Unit* u = u_caster->GetMapMgrUnit(u_caster->GetCharmedByGUID());
+        Unit* u = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
         if (u)
         {
             u_caster = u;
@@ -901,7 +901,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         if (p_caster->cannibalize)
         {
             sEventMgr.RemoveEvents(p_caster, EVENT_CANNIBALIZE);
-            p_caster->SetEmoteState(EMOTE_ONESHOT_NONE);
+            p_caster->setEmoteState(EMOTE_ONESHOT_NONE);
             p_caster->cannibalize = false;
         }
     }
@@ -926,17 +926,16 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
     if (objmgr.IsSpellDisabled(GetSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
-    else if (m_triggeredSpell || ProcedOnSpell != nullptr)
-        cancastresult = SPELL_CANCAST_OK;
     else
-        cancastresult = CanCast(false);
+        cancastresult = canCast(false);
 
     LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
     if (cancastresult != SPELL_CANCAST_OK)
     {
-        SendCastResult(cancastresult);
+        // Triggered spells also need to go through cancast check but they do not pop a error message
+        SendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult);
 
         if (m_triggeredByAura)
         {
@@ -950,7 +949,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             // when a spell is channeling and a new spell is cast
             // that is a channeling spell, but not triggered by a aura
             // the channel bar/spell is bugged
-            if (u_caster && u_caster->GetChannelSpellTargetGUID() != 0 && u_caster->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
+            if (u_caster && u_caster->getChannelObjectGuid() != 0 && u_caster->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
             {
                 u_caster->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
                 SendChannelUpdate(0);
@@ -988,10 +987,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             //p_caster->setAttackTimer(m_timer + 1000, false);
         }
 
-        // aura state removal
-        if (GetSpellInfo() && GetSpellInfo()->getCasterAuraState() != AURASTATE_NONE && GetSpellInfo()->getCasterAuraState() != AURASTATE_FLAG_JUDGEMENT)
-            if (u_caster != nullptr)
-                u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState());
+        // TODO: for future reference, I removed aurastate removal here if spell had any aurastate set in SpellInfo::CasterAuraState
+        // this is not handled anywhere yet -Appled
     }
 
     // If spell is triggered, skip straight to ::castMe
@@ -1040,7 +1037,7 @@ void Spell::cancel()
         {
             if (p_caster && p_caster->IsInWorld())
             {
-                Unit* pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetChannelSpellTargetGUID());
+                Unit* pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->getChannelObjectGuid());
                 if (!pTarget)
                     pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
 
@@ -1050,7 +1047,7 @@ void Spell::cancel()
                 }
                 if (m_AreaAura)//remove of blizz and shit like this
                 {
-                    uint64 guid = p_caster->GetChannelSpellTargetGUID();
+                    uint64 guid = p_caster->getChannelObjectGuid();
 
                     DynamicObject* dynObj = m_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
                     if (dynObj)
@@ -1121,7 +1118,7 @@ void Spell::castMe(bool check)
     {
         Creature* creature = static_cast<Creature*>(m_caster);
         LogDebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Creature: %s (spawn id: %u | entry: %u)",
-                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
+                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->getEntry());
     }
     else
     {
@@ -1131,7 +1128,7 @@ void Spell::castMe(bool check)
     if (objmgr.IsSpellDisabled(GetSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
     else if (check)
-        cancastresult = CanCast(true);
+        cancastresult = canCast(true);
     else
         cancastresult = SPELL_CANCAST_OK;
 
@@ -1256,7 +1253,7 @@ void Spell::castMe(bool check)
                 //SPELL_HASH_VICTORY_RUSH
                 case 34428:
                 {
-                    p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                    p_caster->removeAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
                 } break;
 
                 //SPELL_HASH_HOLY_LIGHT
@@ -1523,24 +1520,24 @@ void Spell::castMe(bool check)
                     {
                         //Use channel interrupt flags here
                         if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION || m_targets.m_targetMask == TARGET_FLAG_SOURCE_LOCATION)
-                            u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                            u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         else if (p_caster->GetSelection() == m_caster->getGuid())
                         {
                             if (p_caster->GetSummon())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSummon()->getGuid());
+                                u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
                             else if (m_targets.m_unitTarget)
-                                u_caster->SetChannelSpellTargetGUID(m_targets.m_unitTarget);
+                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
                             else
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                                u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         }
                         else
                         {
                             if (p_caster->GetSelection())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSelection());
+                                u_caster->setChannelObjectGuid(p_caster->GetSelection());
                             else if (p_caster->GetSummon())
-                                u_caster->SetChannelSpellTargetGUID(p_caster->GetSummon()->getGuid());
+                                u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
                             else if (m_targets.m_unitTarget)
-                                u_caster->SetChannelSpellTargetGUID(m_targets.m_unitTarget);
+                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
                             else
                             {
                                 m_isCasting = false;
@@ -1667,7 +1664,8 @@ void Spell::castMe(bool check)
                         Target->HandleProc(PROC_ON_SPELL_LAND_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell);
                         p_caster->m_procCounter = 0; //this is required for to be able to count the depth of procs (though i have no idea where/why we use proc on proc)
 
-                        Target->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState());
+                        // This is wrong but leaving this here commented out for now -Appled
+                        //Target->removeAuraStateAndAuras(AuraState(GetSpellInfo()->getTargetAuraState()));
                     }
                 }
             }
@@ -1882,7 +1880,7 @@ void Spell::finish(bool successful)
         if (!sEventMgr.HasEvent(u_caster, EVENT_CREATURE_RESPAWN))
         {
             // call script
-            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
             if (target != nullptr)
             {
                 if (target->IsCreature())
@@ -1946,7 +1944,7 @@ void Spell::finish(bool successful)
             Unit* pTarget = nullptr;
             if (p_caster->IsInWorld())
             {
-                pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetChannelSpellTargetGUID());
+                pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->getChannelObjectGuid());
                 if (!pTarget)
                     pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
             }
@@ -2214,7 +2212,7 @@ void Spell::finish(bool successful)
             }
             if (numTargets == 0)
             {
-                uint64 guid = p_caster->GetTargetGUID();
+                uint64 guid = p_caster->getTargetGuid();
                 sQuestMgr.OnPlayerCast(p_caster, GetSpellInfo()->getId(), guid);
             }
         }
@@ -2395,7 +2393,7 @@ void Spell::SendSpellStart()
                 {
                     ip = item->getItemProperties();
                     /* Throwing Weapon Patch by Supalosa
-                    p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+                    p_caster->GetItemInterface()->RemoveItemAmt(it->getEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
                     We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
                     */
@@ -2763,7 +2761,7 @@ void Spell::SendChannelUpdate(uint32 time)
     {
         if (u_caster && u_caster->IsInWorld())
         {
-            uint64 guid = u_caster->GetChannelSpellTargetGUID();
+            uint64 guid = u_caster->getChannelObjectGuid();
 
             DynamicObject* dynObj = u_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
             if (dynObj)
@@ -2771,17 +2769,17 @@ void Spell::SendChannelUpdate(uint32 time)
 
             if (dynObj == nullptr /*&& m_pendingAuras.find(m_caster->getGuid()) == m_pendingAuras.end()*/)  //no persistant aura or aura on caster
             {
-                u_caster->SetChannelSpellTargetGUID(0);
-                u_caster->SetChannelSpellId(0);
+                u_caster->setChannelObjectGuid(0);
+                u_caster->setChannelSpellId(0);
             }
         }
 
         if (p_caster != nullptr)
         {
-            if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->GetCharmedUnitGUID() != 0))
+            if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->getCharmGuid() != 0))
             {
-                Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->GetCharmedUnitGUID());
-                if ((u != nullptr) && (u->GetCreatedBySpell() == m_spellInfo->getId()))
+                Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->getCharmGuid());
+                if ((u != nullptr) && (u->getCreatedBySpellId() == m_spellInfo->getId()))
                     p_caster->UnPossess();
             }
         }
@@ -2818,7 +2816,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     if (u_caster != NULL)
     {
-        u_caster->SetChannelSpellId(GetSpellInfo()->getId());
+        u_caster->setChannelSpellId(GetSpellInfo()->getId());
         sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
@@ -2941,9 +2939,9 @@ bool Spell::HasPower()
         if (u_caster != nullptr)
         {
             if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->GetBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
             else
-                cost = (u_caster->GetBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
         }
     }
     else
@@ -3099,9 +3097,9 @@ bool Spell::TakePower()
         if (u_caster != nullptr)
         {
             if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->GetBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseMana() * GetSpellInfo()->getManaCostPercentage()) / 100;
             else
-                cost = (u_caster->GetBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
+                cost = (u_caster->getBaseHealth() * GetSpellInfo()->getManaCostPercentage()) / 100;
         }
     }
     else
@@ -3926,7 +3924,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case 48743:
                 case 51956:
                 {
-                    if (target->GetSummonedByGUID() != m_caster->getGuid())
+                    if (target->getSummonedByGuid() != m_caster->getGuid())
                         return SPELL_FAILED_BAD_TARGETS;
                 } break;
             }
@@ -3983,139 +3981,8 @@ uint8 Spell::CanCast(bool tolerate)
             Creature* kilsorrow = p_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
             if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster->CalcDistance(p_caster, kilsorrow) > 1)
                 return SPELL_FAILED_NOT_HERE;
-            if (kilsorrow->GetEntry() != 17147 && kilsorrow->GetEntry() != 17148 && kilsorrow->GetEntry() != 18397 && kilsorrow->GetEntry() != 18658 && kilsorrow->GetEntry() != 17146)
+            if (kilsorrow->getEntry() != 17147 && kilsorrow->getEntry() != 17148 && kilsorrow->getEntry() != 18397 && kilsorrow->getEntry() != 18658 && kilsorrow->getEntry() != 17146)
                 return SPELL_FAILED_NOT_HERE;
-        }
-    }
-
-    /**
-     *	Unit caster checks
-     */
-    if (u_caster)
-    {
-        uint32 bladestorm[] =
-        {
-            //SPELL_HASH_BLADESTORM
-            9632,
-            35131,
-            46924,
-            63784,
-            63785,
-            65946,
-            65947,
-            67541,
-            69652,
-            69653,
-            0
-        };
-
-        if (u_caster->hasAurasWithId(bladestorm))
-        {
-            switch (GetSpellInfo()->getId())
-            {
-                //SPELL_HASH_WHIRLWIND
-                case 1680:
-                case 8989:
-                case 9633:
-                case 13736:
-                case 15576:
-                case 15577:
-                case 15578:
-                case 15589:
-                case 17207:
-                case 24236:
-                case 26038:
-                case 26083:
-                case 26084:
-                case 26686:
-                case 28334:
-                case 28335:
-                case 29573:
-                case 29851:
-                case 29852:
-                case 31737:
-                case 31738:
-                case 31909:
-                case 31910:
-                case 33238:
-                case 33239:
-                case 33500:
-                case 36132:
-                case 36142:
-                case 36175:
-                case 36981:
-                case 36982:
-                case 37582:
-                case 37583:
-                case 37640:
-                case 37641:
-                case 37704:
-                case 38618:
-                case 38619:
-                case 39232:
-                case 40236:
-                case 40653:
-                case 40654:
-                case 41056:
-                case 41057:
-                case 41058:
-                case 41059:
-                case 41061:
-                case 41097:
-                case 41098:
-                case 41194:
-                case 41195:
-                case 41399:
-                case 41400:
-                case 43442:
-                case 44949:
-                case 45895:
-                case 45896:
-                case 46270:
-                case 46271:
-                case 48280:
-                case 48281:
-                case 49807:
-                case 50228:
-                case 50229:
-                case 50622:
-                case 52027:
-                case 52028:
-                case 52977:
-                case 54797:
-                case 55266:
-                case 55267:
-                case 55463:
-                case 55977:
-                case 56408:
-                case 59322:
-                case 59323:
-                case 59549:
-                case 59550:
-                case 61076:
-                case 61078:
-                case 61136:
-                case 61137:
-                case 61139:
-                case 63805:
-                case 63806:
-                case 63807:
-                case 63808:
-                case 65510:
-                case 67037:
-                case 67716:
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                default:
-                    break;
-            }
-        }
-
-        if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
-        {
-            // Warbringer (Warrior 51Prot Talent effect)
-            if ((GetSpellInfo()->getId() != 100 && GetSpellInfo()->getId() != 6178 && GetSpellInfo()->getId() != 11578)
-                || (p_caster != nullptr && !p_caster->ignoreShapeShiftChecks))
-                return SPELL_FAILED_TARGET_IN_COMBAT;
         }
     }
 
@@ -4163,11 +4030,6 @@ uint8 Spell::CanCast(bool tolerate)
         // only in outland check
         if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(ATTRIBUTESEXD_ONLY_IN_OUTLANDS))
             return SPELL_FAILED_INCORRECT_AREA;
-        /**
-         *	Cooldowns check
-         */
-        if (!tolerate && !p_caster->Cooldown_CanCast(GetSpellInfo()))
-            return SPELL_FAILED_NOT_READY;
 
         /**
          * Mana check
@@ -4235,15 +4097,6 @@ uint8 Spell::CanCast(bool tolerate)
             if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE))
                 return SPELL_FAILED_NOT_MOUNTED;
         }
-
-        /**
-         *	Filter Check
-         */
-        if (p_caster->m_castFilterEnabled &&
-            !((m_spellInfo->getSpellGroupType(0) & p_caster->m_castFilter[0]) ||
-            (m_spellInfo->getSpellGroupType(1) & p_caster->m_castFilter[1]) ||
-            (m_spellInfo->getSpellGroupType(2) & p_caster->m_castFilter[2])))
-            return SPELL_FAILED_SPELL_IN_PROGRESS;
 
         /**
          *	Shapeshifting checks
@@ -4425,7 +4278,7 @@ uint8 Spell::CanCast(bool tolerate)
                 auto gameobject_info = static_cast<GameObject*>(itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
-                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->GetEntry());
+                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->getEntry());
                     continue;
                 }
 
@@ -4471,29 +4324,6 @@ uint8 Spell::CanCast(bool tolerate)
             */
         }
 #endif
-
-        /**
-         *	AuraState check
-         */
-        if (!p_caster->ignoreAuraStateCheck)
-        {
-            if ((GetSpellInfo()->getCasterAuraState() && !p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState()))
-                || (GetSpellInfo()->getCasterAuraStateNot() && p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraStateNot()))
-                )
-                return SPELL_FAILED_CASTER_AURASTATE;
-        }
-
-        /**
-         *	Aura check
-         */
-        if (GetSpellInfo()->getCasterAuraSpell() && !p_caster->HasAura(GetSpellInfo()->getCasterAuraSpell()))
-        {
-            return SPELL_FAILED_NOT_READY;
-        }
-        if (GetSpellInfo()->getCasterAuraSpellNot() && p_caster->HasAura(GetSpellInfo()->getCasterAuraSpellNot()))
-        {
-            return SPELL_FAILED_NOT_READY;
-        }
     }
 
     /**
@@ -4791,17 +4621,17 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (target)
         {
-            // UNIT_FIELD_BOUNDINGRADIUS + 1.5f; seems to match the client range
+            // getBoundingRadius()+ 1.5f; seems to match the client range
 
             if (tolerate)   // add an extra 33% to range on final check (squared = 1.78x)
             {
-                float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
+                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
                 if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange * 1.78f)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
             else
             {
-                float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
+                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
                 if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
@@ -4812,123 +4642,6 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != nullptr)
             {
-                uint32 bladestorm[] =
-                {
-                    //SPELL_HASH_BLADESTORM
-                    9632,
-                    35131,
-                    46924,
-                    63784,
-                    63785,
-                    65946,
-                    65947,
-                    67541,
-                    69652,
-                    69653,
-                    0
-                };
-
-                if (p_caster->hasAurasWithId(bladestorm))
-                {
-                    switch (GetSpellInfo()->getId())
-                    {
-                        //SPELL_HASH_WHIRLWIND
-                        case 1680:
-                        case 8989:
-                        case 9633:
-                        case 13736:
-                        case 15576:
-                        case 15577:
-                        case 15578:
-                        case 15589:
-                        case 17207:
-                        case 24236:
-                        case 26038:
-                        case 26083:
-                        case 26084:
-                        case 26686:
-                        case 28334:
-                        case 28335:
-                        case 29573:
-                        case 29851:
-                        case 29852:
-                        case 31737:
-                        case 31738:
-                        case 31909:
-                        case 31910:
-                        case 33238:
-                        case 33239:
-                        case 33500:
-                        case 36132:
-                        case 36142:
-                        case 36175:
-                        case 36981:
-                        case 36982:
-                        case 37582:
-                        case 37583:
-                        case 37640:
-                        case 37641:
-                        case 37704:
-                        case 38618:
-                        case 38619:
-                        case 39232:
-                        case 40236:
-                        case 40653:
-                        case 40654:
-                        case 41056:
-                        case 41057:
-                        case 41058:
-                        case 41059:
-                        case 41061:
-                        case 41097:
-                        case 41098:
-                        case 41194:
-                        case 41195:
-                        case 41399:
-                        case 41400:
-                        case 43442:
-                        case 44949:
-                        case 45895:
-                        case 45896:
-                        case 46270:
-                        case 46271:
-                        case 48280:
-                        case 48281:
-                        case 49807:
-                        case 50228:
-                        case 50229:
-                        case 50622:
-                        case 52027:
-                        case 52028:
-                        case 52977:
-                        case 54797:
-                        case 55266:
-                        case 55267:
-                        case 55463:
-                        case 55977:
-                        case 56408:
-                        case 59322:
-                        case 59323:
-                        case 59549:
-                        case 59550:
-                        case 61076:
-                        case 61078:
-                        case 61136:
-                        case 61137:
-                        case 61139:
-                        case 63805:
-                        case 63806:
-                        case 63807:
-                        case 63808:
-                        case 65510:
-                        case 67037:
-                        case 67716:
-                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                        default:
-                            break;
-                    }
-                }
-
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -4943,11 +4656,11 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // check aurastate
-                if (GetSpellInfo()->getTargetAuraState() && !target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState()) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraState() && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }
-                if (GetSpellInfo()->getTargetAuraStateNot() && target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraStateNot()) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraStateNot() && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraStateNot()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }
@@ -5017,14 +4730,14 @@ uint8 Spell::CanCast(bool tolerate)
 
             // \todo Replace this awful hack with a better solution
             // Nestlewood Owlkin - Quest 9303
-            if (GetSpellInfo()->getId() == 29528 && target->IsCreature() && target->GetEntry() == 16518)
+            if (GetSpellInfo()->getId() == 29528 && target->IsCreature() && target->getEntry() == 16518)
             {
                 if (target->isRooted())
                 {
                     return SPELL_FAILED_BAD_TARGETS;
                 }
 
-                target->SetTargetGUID(p_caster->getGuid());
+                target->setTargetGuid(p_caster->getGuid());
                 return SPELL_FAILED_SUCCESS;
             }
             ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////
@@ -5032,11 +4745,11 @@ uint8 Spell::CanCast(bool tolerate)
             if (m_target_constraint != nullptr)
             {
                 // target is the wrong creature
-                if (target->IsCreature() && !m_target_constraint->hasCreature(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
+                if (target->IsCreature() && !m_target_constraint->hasCreature(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // target is the wrong GO :/
-                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
+                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 bool foundTarget = false;
@@ -5293,7 +5006,7 @@ uint8 Spell::CanCast(bool tolerate)
 
                     // if we are already fishing, don't cast it again
                     if (p_caster->GetSummonedObject())
-                        if (p_caster->GetSummonedObject()->GetEntry() == GO_FISHING_BOBBER)
+                        if (p_caster->GetSummonedObject()->getEntry() == GO_FISHING_BOBBER)
                             return SPELL_FAILED_SPELL_IN_PROGRESS;
                 }
             }
@@ -5325,10 +5038,10 @@ uint8 Spell::CanCast(bool tolerate)
 
                 if (GetSpellInfo()->getCategory() == 1131) //Hammer of wrath, requires target to have 20- % of hp
                 {
-                    if (target->GetHealth() == 0)
+                    if (target->getHealth() == 0)
                         return SPELL_FAILED_BAD_TARGETS;
 
-                    if (target->GetMaxHealth() / target->GetHealth() < 5)
+                    if (target->getMaxHealth() / target->getHealth() < 5)
                         return SPELL_FAILED_BAD_TARGETS;
                 }
                 else if (GetSpellInfo()->getCategory() == 672) //Conflagrate, requires immolation spell on victim
@@ -6247,7 +5960,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
                 //4x 1h weapon-dps ->  4*(mindmg+maxdmg)/speed/2 = 2*(mindmg+maxdmg)/speed
-                value = float2int32((p_caster->GetMinDamage() + p_caster->GetMaxDamage()) / (float(p_caster->GetBaseAttackTime(MELEE)) / 1000.0f)) << 1;
+                value = float2int32((p_caster->getMinDamage() + p_caster->getMaxDamage()) / (float(p_caster->getBaseAttackTime(MELEE)) / 1000.0f)) << 1;
         } break;
 
         // SPELL_HASH_BACKSTAB:  // Egari: spell 31220 is interfering with combopoints
@@ -6354,7 +6067,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 57774:
         {
             if (u_caster != nullptr)
-                value = u_caster->GetMaxHealth() * 2 / 100;
+                value = u_caster->getMaxHealth() * 2 / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_WISDOM:
@@ -6363,7 +6076,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 53408:
         {
             if (u_caster != nullptr)
-                value = u_caster->GetBaseMana() * 2 / 100;
+                value = u_caster->getBaseMana() * 2 / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT:
@@ -6735,8 +6448,8 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         //Bonus from Intellect & Spirit
         if (p_caster != nullptr)
         {
-            for (uint8 a = 0; a < 5; a++)
-                bonus += float2int32(p_caster->SpellHealDoneByAttribute[a][school] * p_caster->GetStat(a));
+            for (uint8 a = 0; a < STAT_COUNT; a++)
+                bonus += float2int32(p_caster->SpellHealDoneByAttribute[a][school] * p_caster->getStat(a));
         }
 
         //Spell Coefficient
@@ -6955,8 +6668,8 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         amount = 0;
 
     uint32 overheal = 0;
-    uint32 curHealth = unitTarget->getUInt32Value(UNIT_FIELD_HEALTH);
-    uint32 maxHealth = unitTarget->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+    uint32 curHealth = unitTarget->getHealth();
+    uint32 maxHealth = unitTarget->getMaxHealth();
     if ((curHealth + amount) >= maxHealth)
     {
         unitTarget->setHealth(maxHealth);
@@ -7499,7 +7212,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
@@ -7570,7 +7283,7 @@ void Spell::HandleModeratedTarget(uint64 guid)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
@@ -7636,7 +7349,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
             return;
         }
 
-        float rad = unitTarget->GetBoundingRadius() - u_caster->GetBoundingRadius();
+        float rad = unitTarget->getBoundingRadius() - u_caster->getBoundingRadius();
 
         float dx = m_caster->GetPositionX() - unitTarget->GetPositionX();
         float dy = m_caster->GetPositionY() - unitTarget->GetPositionY();
@@ -7701,7 +7414,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         if (uobj == nullptr || !uobj->IsUnit())
             return;
         Unit* un = static_cast<Unit*>(uobj);
-        float rad = un->GetBoundingRadius() + u_caster->GetBoundingRadius();
+        float rad = un->getBoundingRadius() + u_caster->getBoundingRadius();
         float angle = float(un->GetOrientation() + M_PI); //behind
         float x = un->GetPositionX() + cosf(angle) * rad;
         float y = un->GetPositionY() + sinf(angle) * rad;

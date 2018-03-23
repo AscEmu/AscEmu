@@ -90,7 +90,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
     // something already in this slot
     if (i2)
     {
-        if (i1->GetEntry() == i2->GetEntry())
+        if (i1->getEntry() == i2->getEntry())
         {
             //check if player has the required stacks to avoid exploiting.
             //safe exploit check
@@ -126,7 +126,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
         {
             i1->ModStackCount(-count);
 
-            i2 = objmgr.CreateItem(i1->GetEntry(), _player);
+            i2 = objmgr.CreateItem(i1->getEntry(), _player);
             if (i2 == nullptr)
                 return;
 
@@ -713,6 +713,143 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     }
 }
 
+#if VERSION_STRING == TBC
+void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
+{
+    CHECK_PACKET_SIZE(recvData, 4);
+
+    uint32 itemid;
+    recvData >> itemid;
+
+    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
+    if (!itemProto)
+    {
+        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
+        return;
+    }
+
+    std::string Name;
+    std::string Description;
+
+    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+    if (li != nullptr)
+    {
+        Name = li->name;
+        Description = li->description;
+    }
+    else
+    {
+        Name = itemProto->Name;
+        Description = itemProto->Description;
+    }
+
+    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
+    data << itemProto->ItemId;
+    data << itemProto->Class;
+    data << uint32_t(itemProto->SubClass);
+    data << itemProto->unknown_bc;  // soundOverride
+    data << Name;
+    data << uint8(0);           // name 2?
+    data << uint8(0);           // name 3?
+    data << uint8(0);           // name 4?
+    data << itemProto->DisplayInfoID;
+    data << itemProto->Quality;
+    data << itemProto->Flags;
+    //data << itemProto->Flags2;
+    data << itemProto->BuyPrice;
+    data << itemProto->SellPrice;
+    data << itemProto->InventoryType;
+    data << itemProto->AllowableClass;
+    data << itemProto->AllowableRace;
+    data << itemProto->ItemLevel;
+    data << itemProto->RequiredLevel;
+    data << itemProto->RequiredSkill;
+    data << itemProto->RequiredSkillRank;
+    data << itemProto->RequiredSkillSubRank;
+    data << itemProto->RequiredPlayerRank1;
+    data << itemProto->RequiredPlayerRank2;
+    data << itemProto->RequiredFaction;
+    data << itemProto->RequiredFactionStanding;
+    data << itemProto->Unique;
+    data << itemProto->MaxCount;
+    data << itemProto->ContainerSlots;
+    data << itemProto->itemstatscount;  //10
+    for (uint8 i = 0; i < itemProto->itemstatscount; i++)
+    {
+        data << itemProto->Stats[i].Type;
+        data << itemProto->Stats[i].Value;
+    }
+
+    //data << itemProto->ScalingStatsEntry;
+    //data << itemProto->ScalingStatsFlag;
+    for (uint8 i = 0; i < 2; i++)
+    {
+        data << itemProto->Damage[i].Min;
+        data << itemProto->Damage[i].Max;
+        data << itemProto->Damage[i].Type;
+    }
+
+    for (uint8 i = 0; i < 3; i++)
+    {
+        data << float(0.0f);
+        data << float(0.0f);
+        data << uint32_t(0);
+    }
+
+    data << itemProto->Armor;
+    data << itemProto->HolyRes;
+    data << itemProto->FireRes;
+    data << itemProto->NatureRes;
+    data << itemProto->FrostRes;
+    data << itemProto->ShadowRes;
+    data << itemProto->ArcaneRes;
+    data << itemProto->Delay;
+    data << itemProto->AmmoType;
+    data << itemProto->Range;
+    for (uint8 i = 0; i < 5; i++)
+    {
+        data << itemProto->Spells[i].Id;
+        data << itemProto->Spells[i].Trigger;
+        data << itemProto->Spells[i].Charges;
+        data << itemProto->Spells[i].Cooldown;
+        data << itemProto->Spells[i].Category;
+        data << itemProto->Spells[i].CategoryCooldown;
+    }
+    data << itemProto->Bonding;
+
+    data << Description;
+
+    data << itemProto->PageId;
+    data << itemProto->PageLanguage;
+    data << itemProto->PageMaterial;
+    data << itemProto->QuestId;
+    data << itemProto->LockId;
+    data << itemProto->LockMaterial;
+    data << itemProto->SheathID;
+    data << itemProto->RandomPropId;
+    data << itemProto->RandomSuffixId;
+    data << itemProto->Block;
+    data << sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
+    data << itemProto->MaxDurability;
+    data << itemProto->ZoneNameID;
+    data << itemProto->MapID;
+    data << itemProto->BagFamily;
+    data << itemProto->TotemCategory;
+    data << itemProto->Sockets[0].SocketColor;
+    data << itemProto->Sockets[0].Unk;
+    data << itemProto->Sockets[1].SocketColor;
+    data << itemProto->Sockets[1].Unk;
+    data << itemProto->Sockets[2].SocketColor;
+    data << itemProto->Sockets[2].Unk;
+    data << itemProto->SocketBonus;
+    data << itemProto->GemProperties;
+    data << itemProto->DisenchantReqSkill;
+    data << itemProto->ArmorDamageModifier;
+    data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
+
+    SendPacket(&data);
+}
+#else
 void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 4);
@@ -840,6 +977,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
     data << itemProto->HolidayId;                           // HolidayNames.dbc
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
 {
@@ -859,7 +997,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
     {
         // Find free slot and break if inv full
         uint32 amount = it->GetStackCount();
-        uint32 itemid = it->GetEntry();
+        uint32 itemid = it->getEntry();
 
         Item * add = _player->GetItemInterface()->FindItemLessMax(itemid, amount, false);
 
@@ -1211,7 +1349,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
             return;
     }
 
-    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->GetEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
+    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->getEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
     data << uint64(srcguid);
@@ -1349,7 +1487,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                 {
                     item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
             }
         }
         else
@@ -1366,7 +1504,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                     {
                         item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                     }
-                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 }
             }
         }
@@ -1375,7 +1513,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
     {
         add_item->ModStackCount(amount * creature_item.amount);
         add_item->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->getEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
     }
 
     _player->GetItemInterface()->BuyItem(it, amount, creature);
@@ -1440,8 +1578,8 @@ void WorldSession::SendInventoryList(Creature* unit)
 {
     if (!unit->HasItems())
     {
-        sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->GetName(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+        sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
+        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->GetName(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
         Arcemu::Gossip::Menu::Complete(GetPlayer());
         return;
     }
@@ -1843,13 +1981,11 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    uint32 bytes, slots;
     int32 price;
 
     LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
 
-    bytes = GetPlayer()->getUInt32Value(PLAYER_BYTES_2);
-    slots = (uint8)(bytes >> 16);
+    uint8_t slots = GetPlayer()->getBankSlots();
 
     LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
     auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
@@ -1864,7 +2000,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
     price = bank_bag_slot_prices->Price;
     if (_player->HasGold(price))
     {
-        _player->setUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
+        _player->setBankSlots(slots + 1);
         _player->ModGold(-price);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
@@ -2220,7 +2356,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     }
 
     // all checks passed ok
-    source_entry = src->GetEntry();
+    source_entry = src->getEntry();
     itemid = source_entry;
     switch (source_entry)
     {
@@ -2269,8 +2405,8 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     }
 
     // change the dest item's entry
-    dst->wrapped_item_id = dst->GetEntry();
-    dst->SetEntry(itemid);
+    dst->wrapped_item_id = dst->getEntry();
+    dst->setEntry(itemid);
 
     // set the giftwrapper fields
     dst->SetGiftCreatorGUID(_player->getGuid());

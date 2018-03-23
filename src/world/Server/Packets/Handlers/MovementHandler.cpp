@@ -159,7 +159,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         {
             // TODO Fix for charmed units
             // TODO Fix for transports
-            if (_player->GetCharmedUnitGUID() == 0)
+            if (_player->getCharmGuid() == 0)
             {
                 if (_player->m_position.Distance2DSq(movement_info.position) > 3025.f)
                 {
@@ -185,8 +185,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         }
     }
 
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(EMOTE_ONESHOT_NONE);
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
 
     // TODO Verify that timestamp can be replaced with AscEmu funcs
     const auto ms_time = Util::getMSTime();
@@ -264,10 +264,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
             if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
                 getGuid() != _player->getGuid() || !_player->GodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
             {
-                auto health_lost = static_cast<uint32_t>(mover->GetHealth() * (fall_distance - 12) * 0.017f);
-                if (health_lost >= mover->GetHealth())
+                auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
+                if (health_lost >= mover->getHealth())
                 {
-                    health_lost = mover->GetHealth();
+                    health_lost = mover->getHealth();
                 }
 #ifdef FT_ACHIEVEMENTS
                 else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())

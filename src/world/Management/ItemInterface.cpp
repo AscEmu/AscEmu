@@ -277,7 +277,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
         else
         {
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), item->GetEntry());
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), item->getEntry());
             m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->GetEnchantmentId(0));
         }
     }
@@ -291,7 +291,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
         else
         {
-            m_pOwner->setUInt32Value(VisibleBase, item->getUInt32Value(OBJECT_FIELD_ENTRY));
+            m_pOwner->setUInt32Value(VisibleBase, item->getEntry());
             m_pOwner->setUInt32Value(VisibleBase + 1, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
             m_pOwner->setUInt32Value(VisibleBase + 2, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
             m_pOwner->setUInt32Value(VisibleBase + 3, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
@@ -311,7 +311,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
     if (slot >= CURRENCYTOKEN_SLOT_START && slot < CURRENCYTOKEN_SLOT_END)
     {
-        m_pOwner->UpdateKnownCurrencies(item->GetEntry(), true);
+        m_pOwner->UpdateKnownCurrencies(item->getEntry(), true);
     }
 
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET && slot == EQUIPMENT_SLOT_OFFHAND && item->getItemProperties()->Class == ITEM_CLASS_WEAPON)
@@ -330,7 +330,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
     }
 
 #if VERSION_STRING > TBC
-    m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->GetEntry(), 1, 0);
+    m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getEntry(), 1, 0);
 #endif
     ////////////////////////////////////////////////////// existingduration stuff /////////////////////////////////////////////////////
     if (item->getItemProperties()->ExistingDuration != 0)
@@ -754,7 +754,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         if (item)
         {
             uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-            if ((item->GetEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
+            if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
             {
                 return item;
             }
@@ -788,7 +788,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         if (item)
         {
             uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-            if ((item->GetEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
+            if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
             {
                 return item;
             }
@@ -803,7 +803,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
             if (item)
             {
                 uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-                if ((item->GetEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
+                if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->GetStackCount() + cnt)))
                 {
                     return item;
                 }
@@ -847,7 +847,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
 
         if (item)
         {
-            if (item->GetEntry() == itemid && item->wrapped_item_id == 0)
+            if (item->getEntry() == itemid && item->wrapped_item_id == 0)
             {
                 cnt += item->GetStackCount() ? item->GetStackCount() : 1;
             }
@@ -864,7 +864,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
                 Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    if (item2->GetEntry() == itemid && item->wrapped_item_id == 0)
+                    if (item2->getEntry() == itemid && item->wrapped_item_id == 0)
                     {
                         cnt += item2->GetStackCount() ? item2->GetStackCount() : 1;
                     }
@@ -949,7 +949,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->GetEntry() == id && item->wrapped_item_id == 0)
+            if (item->getEntry() == id && item->wrapped_item_id == 0)
             {
                 if (item->getItemProperties()->ContainerSlots > 0 && item->IsContainer() && ((Container*)item)->HasItems())
                 {
@@ -1111,7 +1111,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->GetEntry() == id && item->wrapped_item_id == 0)
+            if (item->getEntry() == id && item->wrapped_item_id == 0)
             {
                 if (item->getItemProperties()->ContainerSlots > 0 && item->IsContainer() && ((Container*)item)->HasItems())
                 {
@@ -1638,7 +1638,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                         m_result.ContainerSlot = INVENTORY_SLOT_NOT_SET;
                         m_result.Slot = static_cast<int8>(i);
                         m_result.Result = true;
-                        p->UpdateKnownCurrencies(m_pItems[i]->GetEntry(), true);
+                        p->UpdateKnownCurrencies(m_pItems[i]->getEntry(), true);
                         return ADD_ITEM_RESULT_OK;
                     }
                 }
@@ -1649,7 +1649,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     m_pItems[i]->setStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
                     m_result.Slot = static_cast<int8>(i);
                     m_result.Result = true;
-                    p->UpdateKnownCurrencies(m_pItems[i]->GetEntry(), true);
+                    p->UpdateKnownCurrencies(m_pItems[i]->getEntry(), true);
                     return ADD_ITEM_RESULT_OK;
                 }
             }
@@ -1869,7 +1869,7 @@ uint8 ItemInterface::FindFreeBackPackSlotMax()
 }
 
 /// Converts bank bags slot ids into player bank byte slots(0-5)
-int8 ItemInterface::GetInternalBankSlotFromPlayer(int8 islot)
+uint8 ItemInterface::GetInternalBankSlotFromPlayer(int8 islot)
 {
     switch (islot)
     {
@@ -2219,14 +2219,10 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
         case BANK_SLOT_BAG_6:
         case BANK_SLOT_BAG_7:
         {
-            int32 bytes, slots;
-            int8 islot;
-
             if (!GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot))        //check if player got that slot.
             {
-                bytes = m_pOwner->getUInt32Value(PLAYER_BYTES_2);
-                slots = (uint8)(bytes >> 16);
-                islot = GetInternalBankSlotFromPlayer(slot);
+                const uint8_t slots = m_pOwner->getBankSlots();
+                const uint8_t islot = GetInternalBankSlotFromPlayer(slot);
                 if (slots < islot)
                 {
                     return INV_ERR_MUST_PURCHASE_THAT_BAG_SLOT;
@@ -2983,7 +2979,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         dstItemMaxStack = 0;
     }
 
-    if (SrcItem != nullptr && DstItem != nullptr && SrcItem->GetEntry() == DstItem->GetEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+    if (SrcItem != nullptr && DstItem != nullptr && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
     {
         uint32 total = SrcItem->GetStackCount() + DstItem->GetStackCount();
         if (total <= dstItemMaxStack)
@@ -3047,7 +3043,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 auto result = m_pOwner->GetItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
                 if (!result)
                 {
-                    LOG_ERROR("Error while adding item %u to player %s", tSrcItem->GetEntry(), m_pOwner->GetNameString());
+                    LOG_ERROR("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->GetNameString());
                     return;
                 }
             }
@@ -3123,7 +3119,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (srcslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)srcslot]->GetEntry());
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)srcslot]->getEntry());
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->GetEnchantmentId(0));
             }
 
@@ -3158,7 +3154,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (srcslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)srcslot]->GetEntry());
+                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)srcslot]->getEntry());
                 m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
                 m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
                 m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
@@ -3202,7 +3198,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (dstslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)dstslot]->GetEntry());
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)dstslot]->getEntry());
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->GetEnchantmentId(0));
             }
 
@@ -3239,7 +3235,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (dstslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)dstslot]->GetEntry());
+                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)dstslot]->getEntry());
                 m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
                 m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
                 m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
@@ -4100,7 +4096,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         {
             SlotResult* lr = LastSearchResult();
 
-            chr->SendItemPushResult(false, true, false, true, lr->ContainerSlot, lr->Slot, toadd, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            chr->SendItemPushResult(false, true, false, true, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
 #if VERSION_STRING > TBC
             chr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, itemid, 1, 0);
 #endif
@@ -4285,7 +4281,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         //Check for stacking
         uint32 srcItemMaxStack = (SrcItem->getOwner()->ItemStackCheat) ? 0x7fffffff : SrcItem->getItemProperties()->MaxCount;
         uint32 dstItemMaxStack = (DstItem) ? ((DstItem->getOwner()->ItemStackCheat) ? 0x7fffffff : DstItem->getItemProperties()->MaxCount) : 0;
-        if (DstItem && SrcItem && SrcItem->GetEntry() == DstItem->GetEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+        if (DstItem && SrcItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
         {
             uint32 total = SrcItem->GetStackCount() + DstItem->GetStackCount();
             if (total <= dstItemMaxStack)

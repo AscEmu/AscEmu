@@ -365,7 +365,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->GetItemInterface()->removeLootableItems();
 
         // Save HP/Mana
-        _player->load_health = _player->getUInt32Value(UNIT_FIELD_HEALTH);
+        _player->load_health = _player->getHealth();
         _player->load_mana = _player->GetPower(POWER_TYPE_MANA);
 
 
@@ -1038,7 +1038,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                     auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!check)
                     {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->GetNameString());
                         result = 0;
                     }
                     else
@@ -1180,10 +1180,10 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Image == NULL)
         return;					// ups no unit found with that GUID on the map. Spoofed packet?
 
-    if (Image->GetCreatedByGUID() == 0)
+    if (Image->getCreatedByGuid() == 0)
         return;
 
-    uint64 CasterGUID = Image->GetCreatedByGUID();
+    uint64 CasterGUID = Image->getCreatedByGuid();
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
     if (Caster == NULL)
@@ -1192,7 +1192,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
 
     data << uint64(GUID);
-    data << uint32(Caster->GetDisplayId());
+    data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
     if (Caster->IsPlayer())
@@ -1202,12 +1202,12 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->getGender());
         data << uint8(pcaster->getClass());
 
-        // facial features, like big nose, piercings, bonehead, etc
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 0));	// skin color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 1));	// face
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 2));	// hair style
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 3));	// hair color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES_2, 0));	// facial hair
+        // facial features
+        data << uint8(pcaster->getSkinColor());
+        data << uint8(pcaster->getFace());
+        data << uint8(pcaster->getHairStyle());
+        data << uint8(pcaster->getHairColor());
+        data << uint8(pcaster->getFacialFeatures());
 
 #if VERSION_STRING != Cata
         if (pcaster->IsInGuild())
@@ -1283,17 +1283,18 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 
 void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     uint64 GUID;
 
     recv_data >> GUID;
 
-    if (_player->GetSummonedCritterGUID() == 0)
+    if (_player->getCritterGuid() == 0)
     {
         LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
-    if (_player->GetSummonedCritterGUID() != GUID)
+    if (_player->getCritterGuid() != GUID)
     {
         LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
@@ -1306,7 +1307,8 @@ void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
         companion->Delete();
     }
 
-    _player->SetSummonedCritterGUID(0);
+    _player->setCritterGuid(0);
+#endif
 }
 
 #if VERSION_STRING > TBC

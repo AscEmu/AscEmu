@@ -401,7 +401,7 @@ class DraeneiSurvivor : public CreatureAIScript
 
         void OnLoad()
         {
-            getCreature()->setHealth(getCreature()->GetMaxHealth() / 2);
+            getCreature()->setHealth(getCreature()->getMaxHealth() / 2);
         }
 };
 
@@ -472,7 +472,7 @@ class NestlewoodOwlkin : public CreatureAIScript
         {
             if (getCreature()->HasAura(29528))
             {
-                Player* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32>(getCreature()->GetTargetGUID()));
+                Player* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32>(getCreature()->getTargetGuid()));
                 if (player != nullptr)
                 {
                     if (!player->HasQuest(9303) || player->HasFinishedQuest(9303))

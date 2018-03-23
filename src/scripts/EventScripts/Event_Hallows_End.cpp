@@ -99,7 +99,7 @@ public:
     ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
-        getCreature()->SetMount(22653);
+        getCreature()->setMountDisplayId(22653);
         //Spells
         //SHADE_OF_THE_HORSEMAN_SUMMON
 
@@ -239,7 +239,7 @@ class WaterBarrel : public GameObjectAIScript
                     auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
                     if (!result)
                     {
-                        LOG_ERROR("Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                        LOG_ERROR("Error while adding item %u to player %s", itm->getEntry(), pPlayer->GetNameString());
                         itm->DeleteMe();
                     }
                 }

@@ -61,7 +61,7 @@ class SERVER_DECL MapScriptInterface
                 CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
                 if (CurrentDist < ClosestDist && (*iter)->GetTypeId() == TypeId)
                 {
-                    if ((Entry && (*iter)->GetEntry() == Entry) || !Entry)
+                    if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
                     {
                         ClosestDist = CurrentDist;
                         ClosestObject = ((T*)(*iter));

@@ -233,7 +233,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            if (!_player->GetSummon() || _player->GetSummon()->GetEntry() != (uint32_t)itemProto->ForcedPetId)
+            if (!_player->GetSummon() || _player->GetSummon()->getEntry() != (uint32_t)itemProto->ForcedPetId)
             {
                 _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
                 return;
@@ -332,7 +332,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
     // TODO: move this Lightwell 'script' to SpellScript or CreatureScript...
     // For future reference; seems like the Lightwell npc should actually cast spell 60123 on click
-    // and this 60123 spell has Script Effect, where should be determined which rank of the Lightwell Renew needs to be casted (switch (GetCaster()->GetCreatedBySpell())...)
+    // and this 60123 spell has Script Effect, where should be determined which rank of the Lightwell Renew needs to be casted (switch (GetCaster()->getCreatedBySpellId())...)
 
     // Commented this out for now, it's not even working -Appled
     /*const uint32_t lightWellCharges = 59907;
@@ -351,14 +351,14 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
         if (!_player->hasAurasWithId(lightWellRenew))
         {
-            if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry()))
+            if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry()))
             {
                 creatureTarget->CastSpell(_player, clickSpell->SpellID, true);
             }
             else
             {
                 sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-                LogError("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+                LogError("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
                 return;
             }
 
@@ -370,7 +370,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         }
     }*/
 
-    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry());
+    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry());
     if (spellClickData != nullptr)
     {
         // TODO: there are spellclick spells which are friendly only, raid only and party only
@@ -380,7 +380,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellClickData->SpellID);
         if (spellInfo == nullptr)
         {
-            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->GetEntry(), spellClickData->SpellID);
+            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
             return;
         }
 
@@ -392,7 +392,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     else
     {
         sChatHandler.BlueSystemMessage(this, "NPC ID %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
         return;
     }
 }
@@ -617,7 +617,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->GetCharmedUnitGUID() == 0)
+    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->getCharmGuid() == 0)
     {
         LogError("HandlePetCastSpell: Received opcode but player %u has no pet.", _player->getGuidLow());
         return;
@@ -645,7 +645,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         }
     }
     // If pet is charmed or possessed by player
-    else if (_player->m_CurrentCharm == petGuid || _player->GetCharmedUnitGUID() == petGuid)
+    else if (_player->m_CurrentCharm == petGuid || _player->getCharmGuid() == petGuid)
     {
         // TODO: find less uglier way for this... using Arcemu's solution for now
         bool found = false;

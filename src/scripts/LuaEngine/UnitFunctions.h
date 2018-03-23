@@ -53,7 +53,7 @@ class LuaUnit
         if (ptr == NULL)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->GetDisplayId());
+            lua_pushinteger(L, ptr->getDisplayId());
 
         return 1;
     }
@@ -63,7 +63,7 @@ class LuaUnit
         if (ptr == NULL)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->GetNativeDisplayId());
+            lua_pushinteger(L, ptr->getNativeDisplayId());
 
         return 1;
     }
@@ -583,9 +583,9 @@ class LuaUnit
         }
         pCreature->Load(p, x, y, z, o);
         pCreature->SetFaction(faction);
-        pCreature->SetEquippedItem(MELEE, equip1);
-        pCreature->SetEquippedItem(OFFHAND, equip2);
-        pCreature->SetEquippedItem(RANGED, equip3);
+        pCreature->setVirtualItemSlotId(MELEE, equip1);
+        pCreature->setVirtualItemSlotId(OFFHAND, equip2);
+        pCreature->setVirtualItemSlotId(RANGED, equip3);
         pCreature->Phase(PHASE_SET, phase);
         pCreature->m_noRespawn = true;
         pCreature->AddToWorld(ptr->GetMapMgr());
@@ -622,7 +622,7 @@ class LuaUnit
             uint32 mapid = ptr->GetMapId();
             go->CreateFromProto(entry_id, mapid, x, y, z, o);
             go->Phase(PHASE_SET, phase);
-            go->SetScale(scale);
+            go->setScale(scale);
             go->AddToWorld(ptr->GetMapMgr());
 
             if (duration)
@@ -777,7 +777,7 @@ class LuaUnit
     {
         float scale = CHECK_FLOAT(L, 1);
         if (scale && ptr)
-            ptr->setFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
+            ptr->setScale(scale);
         else
             RET_BOOL(false)
             RET_BOOL(true)
@@ -787,7 +787,7 @@ class LuaUnit
     {
         uint32 model = CHECK_ULONG(L, 1);
         if (ptr != NULL)
-            ptr->SetDisplayId(model);
+            ptr->setDisplayId(model);
         else
             RET_BOOL(false)
             RET_BOOL(true)
@@ -804,7 +804,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         uint32 DsplId = CHECK_ULONG(L, 1);
-        ptr->SetMount(DsplId);
+        ptr->setMountDisplayId(DsplId);
         return 0;
     }
 
@@ -848,7 +848,7 @@ class LuaUnit
         }
 
         if (!modelid)
-            modelid = pCreature->GetDisplayId();
+            modelid = pCreature->getDisplayId();
 
         Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = (uint32)pCreature->m_custom_waypoint_map->size() + 1;
@@ -950,7 +950,7 @@ class LuaUnit
             item_add->setStackCount(count);
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
-                player->GetItemInterface()->LastSearchItemSlot(), count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(),
+                player->GetItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(),
                 item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
         }
         else
@@ -959,7 +959,7 @@ class LuaUnit
             item_add->SetDirty();
             player->SendItemPushResult(false, true, false, false,
                                        static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0xFFFFFFFF,
-                                       count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
+                                       count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
         }
         PUSH_ITEM(L, item_add);
         return 1;
@@ -1240,7 +1240,7 @@ class LuaUnit
                     continue;
                 for (uint8 bslot = 0; bslot != bag->GetNumSlots(); bslot++)
                 {
-                    if (bag->GetItem(bslot) && bag->GetItem(bslot)->GetEntry() == entry)
+                    if (bag->GetItem(bslot) && bag->GetItem(bslot)->getEntry() == entry)
                     {
                         PUSH_ITEM(L, bag->GetItem(bslot));
                         return 1;
@@ -1852,7 +1852,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_HEALTH));
+            lua_pushinteger(L, ptr->getHealth());
         return 1;
     }
 
@@ -1861,7 +1861,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            lua_pushinteger(L, ptr->getMaxHealth());
 
         return 1;
     }
@@ -1871,8 +1871,8 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val > ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                ptr->setHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            if (val > ptr->getMaxHealth())
+                ptr->setHealth(ptr->getMaxHealth());
             else
                 ptr->setHealth(val);
         }
@@ -1884,9 +1884,9 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val < ptr->getUInt32Value(UNIT_FIELD_HEALTH))
+            if (val < ptr->getHealth())
                 ptr->setHealth(val);
-            ptr->setUInt32Value(UNIT_FIELD_MAXHEALTH, val);
+            ptr->setMaxHealth(val);
         }
         return 0;
     }
@@ -2187,7 +2187,7 @@ class LuaUnit
         if (!qst)
             return 0;
 
-        uint32 quest_giver = unit->GetEntry();
+        uint32 quest_giver = unit->getEntry();
 
         char my_query1[200];
         sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d", quest_giver, quest_id);
@@ -2230,7 +2230,7 @@ class LuaUnit
         if (!qst)
             return 0;
 
-        uint32 quest_giver = unit->GetEntry();
+        uint32 quest_giver = unit->getEntry();
 
         char my_query1[200];
         sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d", quest_giver, quest_id);
@@ -2475,7 +2475,7 @@ class LuaUnit
     static int GetEntry(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            lua_pushnumber(L, ptr->GetEntry());
+            lua_pushnumber(L, ptr->getEntry());
         return 1;
     }
 
@@ -2927,7 +2927,7 @@ class LuaUnit
         Unit* target = CHECK_UNIT(L, 1);
         if (!ptr || !target)
             return 0;
-        ptr->DealDamage(target, target->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0, true);
+        ptr->DealDamage(target, target->getHealth(), 0, 0, 0, true);
         return 0;
     }
 
@@ -4550,16 +4550,16 @@ class LuaUnit
             switch (loot_type)
             {
                 default:
-                    lootmgr.FillCreatureLoot(&pUnit->loot, pUnit->GetEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
+                    lootmgr.FillCreatureLoot(&pUnit->loot, pUnit->getEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
                     pUnit->loot.gold = creature_properties ? creature_properties->money : 0;
                     loot_type2 = 1;
                     break;
                 case 2:
-                    lootmgr.FillSkinningLoot(&pUnit->loot, pUnit->GetEntry());
+                    lootmgr.FillSkinningLoot(&pUnit->loot, pUnit->getEntry());
                     loot_type2 = 2;
                     break;
                 case 3:
-                    lootmgr.FillPickpocketingLoot(&pUnit->loot, pUnit->GetEntry());
+                    lootmgr.FillPickpocketingLoot(&pUnit->loot, pUnit->getEntry());
                     loot_type2 = 2;
                     break;
             }
@@ -4573,11 +4573,11 @@ class LuaUnit
                 switch (loot_type)
                 {
                     default:
-                        lootmgr.FillGOLoot(&lt->loot, pGO->GetEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
+                        lootmgr.FillGOLoot(&lt->loot, pGO->getEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
                         loot_type2 = 1;
                         break;
                     case 5:
-                        lootmgr.FillSkinningLoot(&lt->loot, pGO->GetEntry());
+                        lootmgr.FillSkinningLoot(&lt->loot, pGO->getEntry());
                         loot_type2 = 2;
                         break;
                 }
@@ -4589,7 +4589,7 @@ class LuaUnit
             switch (loot_type)
             {
                 case 6:
-                    lootmgr.FillItemLoot(pItem->loot, pItem->GetEntry());
+                    lootmgr.FillItemLoot(pItem->loot, pItem->getEntry());
                     loot_type2 = 1;
                     break;
                 default:
@@ -4613,9 +4613,9 @@ class LuaUnit
         if (perm)
         {
             float chance = CHECK_FLOAT(L, 5);
-            QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->GetEntry(), itemid);
+            QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
             if (!result)
-                WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->GetEntry(), itemid, chance, mincount, maxcount);
+                WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
         lootmgr.AddLoot(&ptr->loot, itemid, mincount, maxcount);
@@ -4679,9 +4679,9 @@ class LuaUnit
         uint32 equip1 = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 equip2 = static_cast<uint32>(luaL_checkinteger(L, 2));
         uint32 equip3 = static_cast<uint32>(luaL_checkinteger(L, 3));
-        ptr->SetEquippedItem(MELEE, equip1);
-        ptr->SetEquippedItem(OFFHAND, equip2);
-        ptr->SetEquippedItem(RANGED, equip3);
+        ptr->setVirtualItemSlotId(MELEE, equip1);
+        ptr->setVirtualItemSlotId(OFFHAND, equip2);
+        ptr->setVirtualItemSlotId(RANGED, equip3);
         return 0;
     }
 
@@ -4820,8 +4820,8 @@ class LuaUnit
         if (Csp && target != nullptr)
         {
             ptr->CastSpell(target->getGuid(), sSpellCustomizations.GetSpellInfo(Csp), false);
-            ptr->SetChannelSpellTargetGUID(target->getGuid());
-            ptr->SetChannelSpellId(Csp);
+            ptr->setChannelObjectGuid(target->getGuid());
+            ptr->setChannelSpellId(Csp);
         }
         return 0;
     }
@@ -4830,8 +4830,8 @@ class LuaUnit
     {
         if (ptr == nullptr)
             return 0;
-        ptr->SetChannelSpellTargetGUID(0);
-        ptr->SetChannelSpellId(0);
+        ptr->setChannelObjectGuid(0);
+        ptr->setChannelSpellId(0);
         return 0;
     }
 
@@ -4890,7 +4890,7 @@ class LuaUnit
                 lua_pushboolean(L, 0);
         }
         else
-            lua_pushboolean(L, (ptr->GetMount() > 0) ? 1 : 0);
+            lua_pushboolean(L, (ptr->getMountDisplayId() > 0) ? 1 : 0);
         return 1;
     }
 

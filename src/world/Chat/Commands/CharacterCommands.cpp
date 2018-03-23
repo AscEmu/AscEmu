@@ -809,7 +809,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             {
                 SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
                 SlotResult* le = player->GetItemInterface()->LastSearchResult();
-                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 ++itemset_items_count;
             }
 
@@ -1342,7 +1342,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    uint32 displayId = player_target->GetNativeDisplayId();
+    uint32 displayId = player_target->getNativeDisplayId();
     uint8 gender;
     if (*args == 0)
     {
@@ -1368,13 +1368,13 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
 
     if (player_target->getGender() == 0)
     {
-        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
-        player_target->SetNativeDisplayId(displayId);
+        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
+        player_target->setNativeDisplayId(displayId);
     }
     else
     {
-        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
-        player_target->SetNativeDisplayId(displayId);
+        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
+        player_target->setNativeDisplayId(displayId);
     }
 
     player_target->EventModelChange();
@@ -1759,7 +1759,9 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
         player_target->SetKnownTitle(static_cast<RankTitles>(-title), false);
     }
 
-    player_target->SetChosenTitle(0);  // better remove chosen one
+#if VERSION_STRING > Classic
+    player_target->setChosenTitle(0);  // better remove chosen one
+#endif
     SystemMessage(m_session, "Title has been %s.", title > 0 ? "set" : "reset");
 
     std::stringstream logtext;

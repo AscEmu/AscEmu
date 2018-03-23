@@ -100,7 +100,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            getCreature()->SetDisplayId(20162);
+            getCreature()->setDisplayId(20162);
             getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
             getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 0;
         }
@@ -198,7 +198,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     minspell = 1;
                     maxspell = 1;
                     form = true;
-                    getCreature()->SetDisplayId(5498);
+                    getCreature()->setDisplayId(5498);
                     sendDBChatMessage(4754);     // Aaghh, the poison...
                     getCreature()->PlaySoundToSet(11297);
                     const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 3;
@@ -282,7 +282,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     minspell = 0;
                     maxspell = 0;
                     form = false;
-                    getCreature()->SetDisplayId(20162);
+                    getCreature()->setDisplayId(20162);
                     sendDBChatMessage(4750);     // Better, much better.
                     getCreature()->PlaySoundToSet(11290);
                     const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 4;
@@ -383,7 +383,7 @@ class LurkerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 };
 
@@ -534,16 +534,16 @@ class LeotherasAI : public CreatureAIScript
 
         void SwitchToHumanForm()
         {
-            getCreature()->SetDisplayId(20514);
-            getCreature()->SetEquippedItem(MELEE, (getCreature()->m_spawn != NULL) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
-            getCreature()->SetEquippedItem(OFFHAND, (getCreature()->m_spawn != NULL) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
+            getCreature()->setDisplayId(20514);
+            getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != nullptr) ? getCreature()->m_spawn->Item1SlotDisplay : 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != nullptr) ?  getCreature()->m_spawn->Item2SlotDisplay : 0);
         }
 
         void SwitchToDemonForm()
         {
-            getCreature()->SetDisplayId(20125);
-            getCreature()->SetEquippedItem(MELEE, 0);
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setDisplayId(20125);
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
         }
 
         void AIUpdate() override
@@ -717,17 +717,17 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             Leotheras = getNearestCreature(376.543f, -438.631f, 29.7083f, CN_LEOTHERAS_THE_BLIND);
             if (Leotheras)
             {
-                getCreature()->SetChannelSpellTargetGUID(Leotheras->getGuid());
-                getCreature()->SetChannelSpellId(30166);//wrong
+                getCreature()->setChannelObjectGuid(Leotheras->getGuid());
+                getCreature()->setChannelSpellId(30166);//wrong
             }
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -896,7 +896,7 @@ class KarathressAI : public CreatureAIScript
                 if (random_target == nullptr)
                     return;
                 //let's force this effect
-                info_cataclysmic_bolt->setEffectBasePoints(random_target->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2, 0);
+                info_cataclysmic_bolt->setEffectBasePoints(random_target->getMaxHealth() / 2, 0);
                 getCreature()->CastSpell(random_target, info_cataclysmic_bolt, true);
                 TargetTable.clear();
             }
@@ -1089,7 +1089,7 @@ class MorogrimAI : public CreatureAIScript
         {
             sendDBChatMessage(4784);     // Flood of the deep, take you!
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -1226,8 +1226,8 @@ class EnchantedElementalAI : public CreatureAIScript
                     if (Vashj)
                     {
                         //Increase Lady Vashj attack by 5%
-                        Vashj->modFloatValue(UNIT_FIELD_MINDAMAGE, (Vashj->GetMinDamage() / 100) * 5);
-                        Vashj->modFloatValue(UNIT_FIELD_MAXDAMAGE, (Vashj->GetMaxDamage() / 100) * 5);
+                        Vashj->modFloatValue(UNIT_FIELD_MINDAMAGE, (Vashj->getMinDamage() / 100) * 5);
+                        Vashj->modFloatValue(UNIT_FIELD_MAXDAMAGE, (Vashj->getMaxDamage() / 100) * 5);
                     }
 
                     //despawn
@@ -1566,8 +1566,8 @@ class VashjAI : public CreatureAIScript
                         {
                             channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             channel->GetAIInterface()->m_canMove = false;
-                            channel->SetChannelSpellTargetGUID(getCreature()->getGuid());
-                            channel->SetChannelSpellId(VASHJ_SHIELD);
+                            channel->setChannelObjectGuid(getCreature()->getGuid());
+                            channel->setChannelSpellId(VASHJ_SHIELD);
                         }
                     }
                     break;
@@ -1617,7 +1617,7 @@ class TaintedElementalAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_SPELL);
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
@@ -1673,7 +1673,7 @@ class TaintedCoreGO : public GameObjectAIScript
             Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
             if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
             {
-                Vashj->ModHealth(static_cast<int32>((Vashj->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 100) * 5));
+                Vashj->ModHealth(static_cast<int32>((Vashj->getMaxHealth() / 100) * 5));
                 Creature* channel = NULL;
                 channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
                 if (channel != NULL && channel->IsInWorld())
@@ -1690,7 +1690,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // Waypoints
-            m_entry = pCreature->GetEntry();
+            m_entry = pCreature->getEntry();
             for (uint8_t i = 0; i < 12; i++)
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
@@ -1714,7 +1714,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             getCreature()->GetAIInterface()->setWayPointToMove(1);
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             QuillsCount = 0;
             NextWP = 0;
@@ -2169,7 +2169,7 @@ class SerpentshrineCavern : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case 184203:
                     mBridgePart[0] = pGameObject->getGuidLow();

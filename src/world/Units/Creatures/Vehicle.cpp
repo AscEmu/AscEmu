@@ -194,8 +194,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
             pack << owner->GetNewGUID() << uint8(1);
             passenger->SendPacket(&pack);
 
-            passenger->SetCharmedUnitGUID(owner->getGuid());
-            owner->SetCharmedByGUID(passenger->getGuid());
+            passenger->setCharmGuid(owner->getGuid());
+            owner->setCharmedByGuid(passenger->getGuid());
             owner->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
 
             WorldPacket spells(SMSG_PET_SPELLS, 100);
@@ -301,8 +301,8 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     // remove charmed by if passenger was controller
     if (seats[seatid]->Controller())
     {
-        passenger->SetCharmedUnitGUID(0);
-        owner->SetCharmedByGUID(0);
+        passenger->setCharmGuid(0);
+        owner->setCharmedByGuid(0);
 
         if (passenger->IsPlayer())
         {
@@ -374,7 +374,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         }
         else{
             // The passenger summoned the vehicle, and we have no script to remove it, so we remove it here
-            if ((passengercount == 0) && (c->GetSummonedByGUID() == passenger->getGuid()))
+            if ((passengercount == 0) && (c->getSummonedByGuid() == passenger->getGuid()))
                 c->Despawn(1 * 1000, 0);
         }
     }

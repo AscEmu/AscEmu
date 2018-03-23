@@ -376,10 +376,10 @@ void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
 
 void WorldSession::SendAuctionList(Creature* auctioneer)
 {
-    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->GetEntry());
+    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->getEntry());
     if (!AH)
     {
-        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->GetEntry());
+        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->getEntry());
         return;
     }
 
@@ -511,7 +511,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
     }
 
-    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -529,7 +529,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
 
     recv_data >> targetGuid;
-    GetPlayer()->SetTargetGUID(targetGuid);
+    GetPlayer()->setTargetGuid(targetGuid);
 
     MySQLStructure::NpcText const* pGossip = sMySQLStore.getNpcText(textID);
     MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;

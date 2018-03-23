@@ -627,8 +627,8 @@ class PhoenixAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            double CurrentHP = (double)getCreature()->getUInt32Value(UNIT_FIELD_HEALTH);
-            double PercMaxHP = (double)getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.05;
+            double CurrentHP = (double)getCreature()->getHealth();
+            double PercMaxHP = (double)getCreature()->getMaxHealth() * 0.05;
             if (CurrentHP > PercMaxHP && _isTimerFinished(mBurnTimer))
             {
                 getCreature()->setHealth((uint32)(CurrentHP - PercMaxHP));
@@ -964,7 +964,7 @@ class KaelThasAI : public CreatureAIScript
                 pCoords.y = pCreature->GetPositionY();
                 pCoords.z = pCreature->GetPositionZ();
                 pCoords.o = pCreature->GetOrientation();
-                pCoords.addition = pCreature->GetEntry();
+                pCoords.addition = pCreature->getEntry();
 
                 SetAIUpdateFreq(5000);
                 setScriptPhase(getScriptPhase() + 1);

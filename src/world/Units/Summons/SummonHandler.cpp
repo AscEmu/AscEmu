@@ -97,8 +97,8 @@ void SummonHandler::GetSummonSlotSpellIDs(std::vector< uint32 > &spellids)
         Unit* u = (*itr);
 
         if (u != NULL)
-            if (u->GetCreatedBySpell() != 0)
-                spellids.push_back(u->GetCreatedBySpell());
+            if (u->getCreatedBySpellId() != 0)
+                spellids.push_back(u->getCreatedBySpellId());
     }
 }
 
@@ -118,12 +118,12 @@ Unit* SummonHandler::GetSummonInSlot(uint8 slot)
 Unit* SummonHandler::GetSummonWithEntry(uint32 entry)
 {
     for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        if ((*itr) != NULL && (*itr)->GetEntry() == entry)
+        if ((*itr) != NULL && (*itr)->getEntry() == entry)
             return (*itr);
 
     for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
     {
-        if ((*itr) != NULL && (*itr)->GetEntry() == entry)
+        if ((*itr) != NULL && (*itr)->getEntry() == entry)
             return (*itr);
     }
     return NULL;

@@ -194,7 +194,7 @@ public:
             {
                 RandomCreature->m_noRespawn = true;
                 RandomCreature->Despawn(60000, 0);
-                if (RandomCreature->GetEntry() == 17681)
+                if (RandomCreature->getEntry() == 17681)
                 {
                     QuestHolder->AddQuestKill(9670, 0, 0);
                 }

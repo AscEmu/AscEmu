@@ -48,100 +48,6 @@
 
 // MIT Start
 
-void Object::setGuid(uint64_t guid)
-{
-    write(objectData()->guid, guid);
-    m_wowGuid.Init(guid);
-}
-
-void Object::setGuid(uint32_t low, uint32_t high)
-{
-    setGuid(static_cast<uint64_t>(high) << 32 | low);
-}
-
-void Object::setGuidLow(uint32_t low)
-{
-    setGuid(low, objectData()->guid_parts.high);
-}
-
-void Object::setGuidHigh(uint32_t high)
-{
-    setGuid(objectData()->guid_parts.low, high);
-}
-
-void Object::setObjectType(uint32_t objectTypeId)
-{
-    uint32_t object_type = TYPE_OBJECT;
-    switch (objectTypeId)
-    {
-    case TYPEID_CONTAINER:
-        object_type |= TYPE_CONTAINER;
-    case TYPEID_ITEM:
-        object_type |= TYPE_ITEM;
-        break;
-    case TYPEID_PLAYER:
-        object_type |= TYPE_PLAYER;
-    case TYPEID_UNIT:
-        object_type |= TYPE_UNIT;
-        break;
-    case TYPEID_GAMEOBJECT:
-        object_type |= TYPE_GAMEOBJECT;
-        break;
-    case TYPEID_DYNAMICOBJECT:
-        object_type |= TYPE_DYNAMICOBJECT;
-        break;
-    case TYPEID_CORPSE:
-        object_type |= TYPE_CORPSE;
-        break;
-    default:
-        break;
-    }
-
-    m_objectType = object_type;
-    m_objectTypeId = objectTypeId;
-    write(objectData()->type, static_cast<uint32_t>(m_objectType));
-}
-
-void Object::setScaleX(float_t scaleX)
-{
-    write(objectData()->scale_x, scaleX);
-}
-
-uint64_t Object::getGuid() const
-{
-    return objectData()->guid;
-}
-
-uint32_t Object::getGuidLow() const
-{
-    return objectData()->guid_parts.low;
-}
-
-uint32_t Object::getGuidHigh() const
-{
-    return objectData()->guid_parts.high;
-}
-
-void Object::setType(uint32_t type)
-{
-    write(objectData()->type, type);
-}
-
-uint32_t Object::getType() const
-{
-    return objectData()->type;
-}
-
-void Object::setEntry(uint32_t entry)
-{
-    write(objectData()->entry, entry);
-}
-
-uint32_t Object::getEntry() const
-{
-    return objectData()->entry;
-}
-
 bool Object::write(const uint8_t& member, uint8_t val)
 {
     if (member == val)
@@ -155,6 +61,27 @@ bool Object::write(const uint8_t& member, uint8_t val)
     distance /= 4;
 
     m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const uint16_t& member, uint16_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint16_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
 
     if (!skipping_updates)
         updateObject();
@@ -307,6 +234,64 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
 
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+uint64_t Object::getGuid() const { return objectData()->guid; }
+void Object::setGuid(uint64_t guid)
+{
+    write(objectData()->guid, guid);
+    m_wowGuid.Init(guid);
+}
+void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
+
+uint32_t Object::getGuidLow() const { return objectData()->guid_parts.low; }
+void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid_parts.high); }
+
+uint32_t Object::getGuidHigh() const { return objectData()->guid_parts.high; }
+void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, high); }
+
+uint32_t Object::getType() const { return objectData()->type; }
+void Object::setType(uint32_t type) { write(objectData()->type, type); }
+void Object::setObjectType(uint32_t objectTypeId)
+{
+    uint32_t object_type = TYPE_OBJECT;
+    switch (objectTypeId)
+    {
+    case TYPEID_CONTAINER:
+        object_type |= TYPE_CONTAINER;
+    case TYPEID_ITEM:
+        object_type |= TYPE_ITEM;
+        break;
+    case TYPEID_PLAYER:
+        object_type |= TYPE_PLAYER;
+    case TYPEID_UNIT:
+        object_type |= TYPE_UNIT;
+        break;
+    case TYPEID_GAMEOBJECT:
+        object_type |= TYPE_GAMEOBJECT;
+        break;
+    case TYPEID_DYNAMICOBJECT:
+        object_type |= TYPE_DYNAMICOBJECT;
+        break;
+    case TYPEID_CORPSE:
+        object_type |= TYPE_CORPSE;
+        break;
+    default:
+        break;
+    }
+
+    m_objectType = object_type;
+    m_objectTypeId = objectTypeId;
+    write(objectData()->type, static_cast<uint32_t>(m_objectType));
+}
+
+uint32_t Object::getEntry() const { return objectData()->entry; }
+void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
+
+float_t Object::getScale() const { return objectData()->scale_x; }
+void Object::setScale(float_t scaleX) { write(objectData()->scale_x, scaleX); }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object values
@@ -1103,7 +1088,7 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_lastMapUpdatePosition.ChangeCoords(x, y, z, ang);
 }
 
-#ifdef AE_TBC
+#if VERSION_STRING <= TBC
 uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
@@ -1180,7 +1165,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 }
 #endif
 
-#ifndef AE_TBC
+#if VERSION_STRING > TBC
 uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
@@ -1223,7 +1208,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
         if (IsType(TYPE_UNIT))
         {
-            if (((Unit*)this)->GetTargetGUID() != 0)
+            if (((Unit*)this)->getTargetGuid() != 0)
                 updateflags |= UPDATEFLAG_HAS_TARGET;
         }
     }
@@ -1261,7 +1246,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
     if (IsUnit())
     {
-        if (static_cast< Unit* >(this)->GetTargetGUID())
+        if (static_cast< Unit* >(this)->getTargetGuid())
             updateflags |= UPDATEFLAG_HAS_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
     }
 #endif
@@ -1438,7 +1423,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     if (this_creature)
     {
-        switch(GetEntry())
+        switch(getEntry())
         {
         case 6491:  // Spirit Healer
         case 13116: // Alliance Spirit Guide
@@ -1619,7 +1604,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if (uThis != nullptr)
         {
             // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
-            switch (GetEntry())
+            switch (getEntry())
             {
                 case 6491:      // Spirit Healer
                 case 13116:     // Alliance Spirit Guide
@@ -1785,7 +1770,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (IsUnit())
-            FastGUIDPack(*data, static_cast<Unit*>(this)->GetTargetGUID());	//some compressed GUID
+            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid());	//some compressed GUID
         else
             *data << uint64(0);
     }
@@ -1956,7 +1941,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
     {
         if (IsUnit())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->GetTargetGUID();
+            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->writeBit(victimGuid[2]);
             data->writeBit(victimGuid[7]);
@@ -2170,7 +2155,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
     {
         if (IsUnit())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->GetTargetGUID();
+            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->WriteByteSeq(victimGuid[4]);
             data->WriteByteSeq(victimGuid[0]);
@@ -2270,7 +2255,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
                                         for (auto i = 0; i < 4; ++i)
                                         {
-                                            if (quest->required_mob_or_go[i] == this_go->GetEntry())
+                                            if (quest->required_mob_or_go[i] == this_go->getEntry())
                                             {
                                                 if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
                                                 {
@@ -2856,7 +2841,7 @@ bool Object::isInBack(Object* target)
     angle = (angle >= 0.0) ? angle : 2.0 * M_PI + angle;
 
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
-    if (IsCreature() && static_cast<Creature*>(this)->GetTargetGUID() != 0)
+    if (IsCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
     {
         Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
         if (pTarget != nullptr)
@@ -2906,7 +2891,7 @@ void Object::_setFaction()
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
         if (faction_template == nullptr)
-            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
+            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), getEntry());
     }
     else if (IsGameObject())
     {
@@ -2916,7 +2901,7 @@ void Object::_setFaction()
         {
             if (faction_template == nullptr)
             {
-                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
+                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), getEntry());
             }
         }
     }
@@ -3094,7 +3079,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             else if (pl->HasAura(44396))
                 pctmod = 0.15f;
 
-            uint32 hp = static_cast<uint32>(0.05f * pl->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            uint32 hp = static_cast<uint32>(0.05f * pl->getMaxHealth());
             uint32 spellpower = static_cast<uint32>(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
 
             if (spellpower > hp)
@@ -3238,8 +3223,8 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->getUInt32Value(UNIT_FIELD_HEALTH))
-        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
+    if (Target->IsUnit() && Damage > static_cast<Unit*>(Target)->getHealth())
+        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
 
     WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
 
@@ -3275,21 +3260,24 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
+    if (Target->IsUnit() && Damage > static_cast<Unit*>(Target)->getHealth())
+        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
 
     data << uint32(HitStatus);
     data << Caster->GetNewGUID();
     data << Target->GetNewGUID();
 
     data << uint32(Damage);                 // Realdamage
+#if VERSION_STRING > TBC
     data << uint32(Overkill);               // Overkill
+#endif
     data << uint8(1);                       // Damage type counter / swing type
 
     data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
     data << float(Dmg->full_damage);        // Damage float
     data << uint32(Dmg->full_damage);       // Damage amount
 
+#if VERSION_STRING > TBC
     if (HitStatus & HITSTATUS_ABSORBED)
     {
         data << uint32(Abs);                // Damage absorbed
@@ -3299,11 +3287,11 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     {
         data << uint32(Dmg->resisted_damage);   // Damage resisted
     }
-
+#endif
     data << uint8(VState);
     data << uint32(0);          // can be 0,1000 or -1
     data << uint32(0);
-
+#if VERSION_STRING > TBC
     if (HitStatus & HITSTATUS_BLOCK)
     {
         data << uint32(BlockedDamage);  // Damage amount blocked
@@ -3331,6 +3319,9 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
         data << float(0);       // Found in loop
         data << uint32(0);
     }
+#else
+    data << uint32(BlockedDamage);  // Damage amount blocked
+#endif
 
     SendMessageToSet(&data, Caster->IsPlayer());
 }
@@ -3576,7 +3567,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 std::string creatureName;
 
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
                     creatureName = lcn->name;
@@ -3632,7 +3623,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 //////////////////////////////////////////////////////////////////////////////////////////////
                 // get text (normal or localized)
                 const char* text = npcMonsterSay->texts[randChoice];
-                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(GetEntry(), sessionLanguage, event) : nullptr;
+                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(getEntry(), sessionLanguage, event) : nullptr;
                 if (lmsay != nullptr)
                 {
                     switch (randChoice)
@@ -3679,7 +3670,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$r");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3692,7 +3683,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$n");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget && CurrentTarget->IsPlayer())
                     {
@@ -3705,7 +3696,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$c");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3718,7 +3709,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$g");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->GetTargetGUID();
+                    uint64 targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3746,7 +3737,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 std::string creatureName;
 
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
                     creatureName = lcn->name;

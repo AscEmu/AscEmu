@@ -30,9 +30,11 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 
@@ -42,13 +44,13 @@ Corpse::Corpse(uint32 high, uint32 low)
     memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
     m_updateMask.SetCount(CORPSE_END);
 
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
+    setType(TYPE_CORPSE | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);
     m_wowGuid.Init(getGuid());
 
-    SetScale(1);   //always 1
+    setScale(1);   //always 1
 
     m_time = (time_t)0;
 

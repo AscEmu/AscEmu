@@ -31,7 +31,7 @@ class OnyxiaAI : public CreatureAIScript
         OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_phase = 1;
-            m_entry = pCreature->GetEntry();
+            m_entry = pCreature->getEntry();
             m_useSpell = true;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
@@ -78,7 +78,7 @@ class OnyxiaAI : public CreatureAIScript
             getCreature()->setStandState(STANDSTATE_STAND);
             sendDBChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             m_fBreath = false;
             m_kAway = false;

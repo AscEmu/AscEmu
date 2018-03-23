@@ -703,7 +703,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
 
         spawnCreature(17535, -10897.650f, -1755.8311f, 90.476f, 4.61f); //Dorothee
         spawnCreature(17543, -10904.088f, -1754.8988f, 90.476f, 4.61f); //Strawman
@@ -740,7 +740,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); //Spawn Julianne
     }
 
@@ -773,7 +773,7 @@ class BarnesAI : public CreatureAIScript
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
 
     }
@@ -1733,7 +1733,7 @@ class FiendishImpAI : public CreatureAIScript
             setAIAgent(AGENT_SPELL);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1953,17 +1953,17 @@ class MalchezaarAI : public CreatureAIScript
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         // Reset weapon
-        getCreature()->SetEquippedItem(MELEE, 0);
+        getCreature()->setVirtualItemSlotId(MELEE, 0);
 
         // Off hand weapon
-        getCreature()->SetEquippedItem(OFFHAND, 0);
+        getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
         if (cp == nullptr)
             return;
 
-        getCreature()->SetMinDamage(cp->MinDamage);
-        getCreature()->SetMaxDamage(cp->MaxDamage);
+        getCreature()->setMinDamage(cp->MinDamage);
+        getCreature()->setMaxDamage(cp->MaxDamage);
 
         for (uint8 i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
@@ -2090,17 +2090,17 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[7].info, spells[6].instant);*/
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(MELEE, AXE_ITEM_MODEL);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(OFFHAND, AXE_ITEM_MODEL);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(1.5f * cp->MinDamage);
-            getCreature()->SetMaxDamage(1.5f * cp->MaxDamage);
+            getCreature()->setMinDamage(1.5f * cp->MinDamage);
+            getCreature()->setMaxDamage(1.5f * cp->MaxDamage);
 
             m_phase = 2;
         }
@@ -2129,17 +2129,17 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->RemoveAura(WIELD_AXES);
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(cp->MinDamage);
-            getCreature()->SetMaxDamage(cp->MaxDamage);
+            getCreature()->setMinDamage(cp->MinDamage);
+            getCreature()->setMaxDamage(cp->MaxDamage);
             m_phase = 3;
         }
     }
@@ -2189,7 +2189,7 @@ class MalchezaarAI : public CreatureAIScript
             if ((*E_Itr)->getGuid() != getCreature()->GetAIInterface()->GetMostHated()->getGuid())
             {
                 Enfeeble_Targets[i] = (*E_Itr)->getGuid();
-                Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
+                Enfeeble_Health[i] = (*E_Itr)->getHealth();
 
                 getCreature()->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
                 (*E_Itr)->SetHealth(1);
@@ -2204,7 +2204,7 @@ class MalchezaarAI : public CreatureAIScript
         {
             Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
-                ETarget->setUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
+                ETarget->setHealth(Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;
             Enfeeble_Health[i] = 0;
         }
@@ -2218,7 +2218,7 @@ protected:
     uint32 m_enfeebleoff;
     uint32 m_spawn_infernal;
     uint64 Enfeeble_Targets[5];
-    uint64 Enfeeble_Health[5];
+    uint32 Enfeeble_Health[5];
 };
 
 class NetherInfernalAI : public CreatureAIScript

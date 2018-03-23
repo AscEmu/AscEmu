@@ -1083,7 +1083,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             charter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
 
             _player->ModGold(-(int32_t)costs[arena_type]);
             _player->m_charters[arenaIndex] = charter;
@@ -1164,7 +1164,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->SaveToDB();
 
             _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(),
-                1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = charter;
             _player->ModGold(-1000);
@@ -1628,7 +1628,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
     Player* player = GetPlayer();
 
     LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
-    LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeamReal());
+    LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeam());
     uint32_t guildCount = static_cast<uint32_t>(guildList.size());
 
     if (guildCount == 0)
@@ -2007,6 +2007,6 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
         }
     }
 
-    LFGuildSettings settings(listed, player->GetTeamReal(), player->GetGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
+    LFGuildSettings settings(listed, player->GetTeam(), player->GetGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
     sGuildFinderMgr.setGuildSettings(player->GetGuildId(), settings);
 }

@@ -288,21 +288,26 @@ class SERVER_DECL WorldSession
         Loot* getLootFromHighGuidType(uint32_t highGuid);
         void HandleSuggestionOpcode(WorldPacket& recv_data);
 #endif
-        void HandleWhoOpcode(WorldPacket& recvPacket);
+        void handleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
         void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
         //void HandleSetTargetOpcode(WorldPacket& recvPacket);
-        void HandleSetSelectionOpcode(WorldPacket& recvPacket);
-        void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
+        void handleSetSelectionOpcode(WorldPacket& recvPacket);
+        void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void HandleDismountOpcode(WorldPacket& recvPacket);
-        void HandleFriendListOpcode(WorldPacket& recvPacket);
-        void HandleAddFriendOpcode(WorldPacket& recvPacket);
-        void HandleDelFriendOpcode(WorldPacket& recvPacket);
-        void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
-        void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
+
+        void handleFriendListOpcode(WorldPacket& recvPacket);
+        void handleAddFriendOpcode(WorldPacket& recvPacket);
+        void handleDelFriendOpcode(WorldPacket& recvPacket);
+        void handleAddIgnoreOpcode(WorldPacket& recvPacket);
+        void handleDelIgnoreOpcode(WorldPacket& recvPacket);
+
+        //\todo not used for WotLK nor TBC maybe classic?
+        void HandleSetFriendNote(WorldPacket& recvPacket);
+
         void HandleBugOpcode(WorldPacket& recv_data);
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         void HandleUpdateAccountData(WorldPacket& recvPacket);
@@ -310,7 +315,7 @@ class SERVER_DECL WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
         void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
-        void HandleTogglePVPOpcode(WorldPacket& recvPacket);
+        void handleTogglePVPOpcode(WorldPacket& recvPacket);
         void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         void HandleGameObjectUse(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
@@ -373,7 +378,12 @@ class SERVER_DECL WorldSession
 #else
         void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
 #endif
+
+#if VERSION_STRING == Cata
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+#else
+        void handleGroupInviteOpcode(WorldPacket& recvPacket);
+#endif
         void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
@@ -792,9 +802,9 @@ class SERVER_DECL WorldSession
         //void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
 
         // Tutorials
-        void HandleTutorialFlag(WorldPacket& recv_data);
-        void HandleTutorialClear(WorldPacket& recv_data);
-        void HandleTutorialReset(WorldPacket& recv_data);
+        void handleTutorialFlag(WorldPacket& recv_data);
+        void handleTutorialClear(WorldPacket& recv_data);
+        void handleTutorialReset(WorldPacket& recv_data);
 
         // Acknowledgements
         void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
@@ -861,7 +871,6 @@ class SERVER_DECL WorldSession
         void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
         void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         void HandleMirrorImageOpcode(WorldPacket& recv_data);
-        void HandleSetFriendNote(WorldPacket& recv_data);
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);
         void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);

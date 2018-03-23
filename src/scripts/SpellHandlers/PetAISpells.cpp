@@ -49,8 +49,8 @@ public:
 
             float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
-            s->SetMinDamage(s->GetMinDamage() + parent_bonus);
-            s->SetMaxDamage(s->GetMaxDamage() + parent_bonus);
+            s->setMinDamage(s->getMinDamage() + parent_bonus);
+            s->setMaxDamage(s->getMaxDamage() + parent_bonus);
         }
     }
 
@@ -80,13 +80,13 @@ public:
 
             float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
             s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
-            s->SetBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
-            s->SetMinDamage(s->GetMinDamage() + owner_bonus);
-            s->SetMaxDamage(s->GetMaxDamage() + owner_bonus);
+            s->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
+            s->setMinDamage(s->getMinDamage() + owner_bonus);
+            s->setMaxDamage(s->getMaxDamage() + owner_bonus);
             s->BaseDamage[0] += owner_bonus;
             s->BaseDamage[1] += owner_bonus;
 
-            Unit* uTarget = s->GetMapMgr()->GetUnit(owner->GetTargetGUID());
+            Unit* uTarget = s->GetMapMgr()->GetUnit(owner->getTargetGuid());
             if ((uTarget != NULL) && isAttackable(owner, uTarget))
             {
                 s->GetAIInterface()->AttackReaction(uTarget, 1);
@@ -116,7 +116,7 @@ public:
             owner->CastSpell(getCreature(), 58838, true);   // inherit threat list
 
             // Mage mirror image spell
-            if (getCreature()->GetCreatedBySpell() == 58833)
+            if (getCreature()->getCreatedBySpellId() == 58833)
             {
                 getCreature()->setMaxHealth(2500);
                 getCreature()->setHealth(2500);
@@ -183,8 +183,8 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
-        getCreature()->SetBaseAttackTime(MELEE, 2000);
+        getCreature()->setDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
+        getCreature()->setBaseAttackTime(MELEE, 2000);
 
         if (getCreature()->IsSummon())
         {
@@ -207,8 +207,8 @@ public:
                             procSpell[si] = item->getItemProperties()->Spells[si].Id;
                     }
 
-                    s->SetEquippedItem(MELEE, item->GetEntry());
-                    s->SetBaseAttackTime(MELEE, item->getItemProperties()->Delay);
+                    s->setVirtualItemSlotId(MELEE, item->getEntry());
+                    s->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                 }
 
 #if VERSION_STRING >= WotLK
@@ -216,14 +216,14 @@ public:
 #endif
             }
 
-            s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
-            s->SetMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+            s->setMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+            s->setMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
         }
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -324,7 +324,7 @@ public:
 
     void OnLastPassengerLeft(Unit *passenger)
     {
-        if (getCreature()->GetSummonedByGUID() == passenger->getGuid())
+        if (getCreature()->getSummonedByGuid() == passenger->getGuid())
             getCreature()->Despawn(1 * 1000, 0);
     }
 };

@@ -57,7 +57,7 @@ static Movement::Location Guards[] =
 //
 //        void OnGameObjectPushToWorld(GameObject* pGameObject)
 //        {
-//            switch (pGameObject->GetEntry())
+//            switch (pGameObject->getEntry())
 //            {
 //                case GO_FACTORY_DOOR:
 //                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
@@ -73,7 +73,7 @@ static Movement::Location Guards[] =
 //
 //        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
 //        {
-//            switch (pGameObject->GetEntry())
+//            switch (pGameObject->getEntry())
 //            {
 //                case GO_DEFIAS_CANNON:
 //                {
@@ -111,7 +111,7 @@ static Movement::Location Guards[] =
 //
 //        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
 //        {
-//            switch (pCreature->GetEntry())
+//            switch (pCreature->getEntry())
 //            {
 //                case NPC_RHAHK_ZOR:
 //                {
@@ -268,16 +268,16 @@ class MrSmiteAI : public CreatureAIScript
             {
                 case 1: // Phase 1 (Default)
                     _setDisplayWeaponIds(5192, 0);
-                    getCreature()->SetBaseAttackTime(MELEE, getCreature()->GetBaseAttackTime(MELEE));    // 1483 is taken from NCDB creature_proto
+                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE));    // 1483 is taken from NCDB creature_proto
                     break;
                 case 2: // Phase 2
                     _setDisplayWeaponIds(5196, 5196);
-                    getCreature()->SetBaseAttackTime(MELEE, getCreature()->GetBaseAttackTime(MELEE) / 2);
+                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) / 2);
                     break;
                 case 4: // Phase 4
                     // Is base attack time change needed if we use aura ?
                     _setDisplayWeaponIds(7230, 0);
-                    getCreature()->SetBaseAttackTime(MELEE, getCreature()->GetBaseAttackTime(MELEE) * 2);
+                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) * 2);
                     _applyAura(SMITES_HAMMER);
                     break;
             }

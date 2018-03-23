@@ -188,7 +188,7 @@ bool BanishExile(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster || !target)
         return true;
 
-    pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->getId(), target->getUInt32Value(UNIT_FIELD_HEALTH), true);
+    pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->getId(), target->getHealth(), true);
     return true;
 }
 
@@ -200,7 +200,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 
     // check to see that we have the correct creature
     Creature* c_target = static_cast<Creature*>(target);
-    if (c_target->GetEntry() != 10556 || !c_target->HasAura(17743))
+    if (c_target->getEntry() != 10556 || !c_target->HasAura(17743))
         return true;
 
     // Start moving again
@@ -260,13 +260,13 @@ bool ReindeerTransformation(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster)
         return true;
 
-    if (pSpell->p_caster->GetMount() != 0)
+    if (pSpell->p_caster->getMountDisplayId() != 0)
     {
         /*Zyres: This is not correct!
         if (pSpell->p_caster->m_setflycheat)
-            pSpell->p_caster->SetMount(22724);
+            pSpell->p_caster->setMountDisplayId(22724);
         else*/
-        pSpell->p_caster->SetMount(15902);
+        pSpell->p_caster->setMountDisplayId(15902);
     }
     return true;
 }
@@ -321,7 +321,7 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->IsCreature() || target->GetEntry() != 17157)
+    if (!pSpell->p_caster || !target || !target->IsCreature() || target->getEntry() != 17157)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -545,7 +545,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
         if (itr && itr->IsCreature())
         {
             creature = static_cast<Creature*>(itr);
-            cloudtype = creature->GetEntry();
+            cloudtype = creature->getEntry();
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
             {
@@ -720,7 +720,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
                     Unit* u = static_cast<Unit*>(o);
 
-                    if (u->GetTargetGUID() != s->p_caster->getGuid())
+                    if (u->getTargetGuid() != s->p_caster->getGuid())
                         continue;
 
                     if (!isAttackable(s->p_caster, u))
@@ -821,11 +821,11 @@ bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        p_target->SetEmoteState(EMOTE_STATE_DANCE);
+        p_target->setEmoteState(EMOTE_STATE_DANCE);
     }
     else
     {
-        p_target->SetEmoteState(EMOTE_STATE_NONE);
+        p_target->setEmoteState(EMOTE_STATE_NONE);
     }
 
     return true;

@@ -418,6 +418,77 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
+    uint64_t getDuelArbiter() const;
+    void setDuelArbiter(uint64_t guid);
+
+    uint32_t getPlayerFlags() const;
+    void setPlayerFlags(uint32_t flags);
+    void addPlayerFlags(uint32_t flags);
+    void removePlayerFlags(uint32_t flags);
+    bool hasPlayerFlags(uint32_t flags) const;
+
+    //bytes begin
+    uint32_t getPlayerBytes() const;
+    void setPlayerBytes(uint32_t bytes);
+
+    uint8_t getSkinColor() const;
+    void setSkinColor(uint8_t color);
+
+    uint8_t getFace() const;
+    void setFace(uint8_t face);
+
+    uint8_t getHairStyle() const;
+    void setHairStyle(uint8_t style);
+
+    uint8_t getHairColor() const;
+    void setHairColor(uint8_t color);
+    //bytes end
+
+    //bytes2 begin
+    uint32_t getPlayerBytes2() const;
+    void setPlayerBytes2(uint32_t bytes2);
+
+    uint8_t getFacialFeatures() const;
+    void setFacialFeatures(uint8_t feature);
+
+    //unk1
+
+    uint8_t getBankSlots() const;
+    void setBankSlots(uint8_t slots);
+
+    uint8_t getRestState() const;
+    void setRestState(uint8_t state);
+    //bytes2 end
+
+    //bytes3 begin
+    uint32_t getPlayerBytes3() const;
+    void setPlayerBytes3(uint32_t bytes3);
+
+    //\note already available in unit data
+    uint8_t getPlayerGender() const;
+    void setPlayerGender(uint8_t gender);
+
+    uint16_t getDrunkValue() const;
+    void setDrunkValue(uint16_t value);
+
+    uint8_t getPvpRank() const;
+    void setPvpRank(uint8_t rank);
+    //bytes3 end
+
+    uint32_t getDuelTeam() const;
+    void setDuelTeam(uint32_t team);
+
+#if VERSION_STRING > Classic
+    uint32_t getChosenTitle() const;
+    void setChosenTitle(uint32_t title);
+#endif
+
+    uint32_t getXp() const;
+    void setXp(uint32_t xp);
+
+    uint32_t getNextLevelXp();
+    void setNextLevelXp(uint32_t xp);
+
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
@@ -803,19 +874,14 @@ public:
         std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
-        /*! \deprecated This function returns a uint32 (the underlying type of the enum) instead of a PlayerTeam (the enum itself)
-         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam
-         *  \sa Player::GetTeamReal */
-        uint32 GetTeam() { return m_team; }
 
-        PlayerTeam GetTeamReal();
-
+        PlayerTeam GetTeam();
         uint32 GetTeamInitial();
         void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
 
         void ResetTeam();
-        bool IsTeamHorde() { return m_team == TEAM_HORDE; }
-        bool IsTeamAlliance() { return m_team == TEAM_ALLIANCE; }
+        bool IsTeamHorde() { return GetTeam() == TEAM_HORDE; }
+        bool IsTeamAlliance() { return GetTeam() == TEAM_ALLIANCE; }
 
         bool IsInFeralForm()
         {
@@ -942,14 +1008,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint8 GetPVPRank()
-        {
-            return (uint8)((getUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
-        }
-        void SetPVPRank(int newrank)
-        {
-            setUInt32Value(PLAYER_BYTES_3, ((getUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
-        }
         uint32 GetMaxPersonalRating();
 
         bool HasTitle(RankTitles title)
@@ -1043,10 +1101,6 @@ public:
         uint8 GetDuelState() { return m_duelState; }
         // duel variables
         Player* DuelingWith;
-        void SetDuelArbiter(uint64 guid) { setUInt64Value(PLAYER_DUEL_ARBITER, guid); }
-        uint64 GetDuelArbiter() { return getUInt64Value(PLAYER_DUEL_ARBITER); }
-        void SetDuelTeam(uint32 team) { setUInt32Value(PLAYER_DUEL_TEAM, team); }
-        uint32 GetDuelTeam() { return getUInt32Value(PLAYER_DUEL_TEAM); }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
@@ -1358,7 +1412,7 @@ public:
         void EventDeActivateGameObject(GameObject* obj);
         void UpdateNearbyGameObjects();
 
-        void CalcResistance(uint16 type);
+        void CalcResistance(uint8_t type);
         float res_M_crit_get() { return m_resist_critical[0]; }
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
         float res_R_crit_get() { return m_resist_critical[1]; }
@@ -1397,7 +1451,7 @@ public:
         uint32 m_retainedrage;
 
         uint32* GetPlayedtime() { return m_playedtime; };
-        void CalcStat(uint16 t);
+        void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
@@ -1420,7 +1474,6 @@ public:
 
         bool bReincarnation;
         bool ignoreShapeShiftChecks;
-        bool ignoreAuraStateCheck;
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;
@@ -1668,22 +1721,10 @@ public:
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void SetChosenTitle(uint32 id)
-        {
-#if VERSION_STRING > Classic
-            setUInt32Value(PLAYER_CHOSEN_TITLE, id);
-#endif
-        }
-
         void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
-
-    void setXp(uint32 xp);
-    uint32 getXp() const;
-    uint32_t getNextLevelXp();
-    void setNextLevelXp(uint32_t xp);
 
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
@@ -2203,9 +2244,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // end social
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool m_castFilterEnabled;
-        uint32 m_castFilter[3];    // spell group relation of only spells that player can currently cast
 
         uint32 m_outStealthDamageBonusPct;
         uint32 m_outStealthDamageBonusPeriod;
