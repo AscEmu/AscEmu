@@ -52,6 +52,9 @@ void GameObject::setParentRotation(uint8_t type, float_t rotation) { write(gameO
 uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
 
+uint32_t GameObject::getLevel() const { return gameObjectData()->level; }
+void GameObject::setLevel(uint32_t level) { write(gameObjectData()->level, level); }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Type helper
 

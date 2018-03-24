@@ -400,6 +400,9 @@ public:
     uint32_t getDynamic() const;
     void setDynamic(uint32_t dynamic);
 
+    uint32_t getLevel() const;
+    void setLevel(uint32_t level);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Type helper
     bool isQuestGiver() const;
@@ -507,9 +510,6 @@ public:
             _setFaction();
         }
         uint32 GetFaction() { return getUInt32Value(GAMEOBJECT_FACTION); }
-
-        void SetLevel(uint32 level) { setUInt32Value(GAMEOBJECT_LEVEL, level); }
-        uint32 GetLevel() { return getUInt32Value(GAMEOBJECT_LEVEL); }
 
         GameObjectModel* m_model;
 

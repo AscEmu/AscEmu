@@ -5354,7 +5354,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
         return;
     }
 
-    GoSummon->SetLevel(u_caster->getLevel());
+    GoSummon->setLevel(u_caster->getLevel());
     GoSummon->setUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->getGuid());
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
 

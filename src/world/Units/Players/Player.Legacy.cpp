@@ -9214,7 +9214,7 @@ void Player::RequestDuel(Player* pTarget)
     //Spawn the Flag
     pGameObj->setUInt64Value(OBJECT_FIELD_CREATED_BY, getGuid());
     pGameObj->SetFaction(GetFaction());
-    pGameObj->SetLevel(getLevel());
+    pGameObj->setLevel(getLevel());
 
     //Assign the Flag
     setDuelArbiter(pGameObj->getGuid());

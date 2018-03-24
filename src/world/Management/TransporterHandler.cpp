@@ -282,7 +282,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     // Set position
     SetMapId(mapid);
     SetPosition(x, y, z, o);
-    SetLevel(m_period);
+    setLevel(m_period);
 
     return true;
 }
