@@ -1616,15 +1616,13 @@ void AlteracValley::OnCreate()
 {
     // Alliance Gate
     GameObject* gate = SpawnGameObject(AV_GAMEOBJECT_GATE, GetMapMgr()->GetMapId(), 780.487f, -493.024f, 99.9553f, 3.0976f, 32, 114, 3.000000f);
-    gate->SetParentRotation(2, 0.0129570f);
-    gate->SetParentRotation(3, -0.0602880f);
+    gate->SetRotationQuat(0.f, 0.f, 0.0129570f, -0.0602880f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde gate
     gate = SpawnGameObject(AV_GAMEOBJECT_GATE, GetMapMgr()->GetMapId(), -1375.73f, -538.966f, 55.3006f, 0.791198f, 32, 114, 3.000000f);
-    gate->SetParentRotation(2, 0.36f);
-    gate->SetParentRotation(3, 0.922766f);
+    gate->SetRotationQuat(0.f, 0.f, 0.36f, 0.922766f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 

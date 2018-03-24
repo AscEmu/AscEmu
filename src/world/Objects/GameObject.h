@@ -394,6 +394,9 @@ public:
     void removeFlags(uint32_t flags);
     bool hasFlags(uint32_t flags) const;
 
+    float_t getParentRotation(uint8_t type) const;
+    void setParentRotation(uint8_t type, float_t rotation);
+
     uint32_t getDynamic() const;
     void setDynamic(uint32_t dynamic);
 
@@ -497,9 +500,6 @@ public:
         uint32 GetOverrides() { return m_overrides; }
 
         void SetRotationQuat(float qx, float qy, float qz, float qw);
-
-        void SetParentRotation(uint8 rot, float value) { setFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
-        float GetParentRotation(uint8 rot) { return getFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
 
         void SetFaction(uint32 id)
         {

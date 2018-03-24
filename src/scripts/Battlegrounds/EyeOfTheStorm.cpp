@@ -894,8 +894,7 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
     {
         EOTSm_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3], 0, 114, 1);
 
-        EOTSm_buffs[x]->SetParentRotation(2, EOTSBuffRotations[x][0]);
-        EOTSm_buffs[x]->SetParentRotation(3, EOTSBuffRotations[x][1]);
+        EOTSm_buffs[x]->SetRotationQuat(0.f, 0.f, EOTSBuffRotations[x][0], EOTSBuffRotations[x][1]);
         EOTSm_buffs[x]->SetState(GO_STATE_CLOSED);
         EOTSm_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
         EOTSm_buffs[x]->SetAnimProgress(100);

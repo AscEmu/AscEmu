@@ -46,6 +46,9 @@ void GameObject::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
+float_t GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
+void GameObject::setParentRotation(uint8_t type, float_t rotation) { write(gameObjectData()->rotation[type], rotation); }
+
 uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
 
@@ -228,10 +231,10 @@ void GameObject::SaveToDB()
         m_spawn->position_y = GetPositionY();
         m_spawn->position_z = GetPositionZ();
         m_spawn->orientation = GetOrientation();
-        m_spawn->rotation_0 = GetParentRotation(0);
-        m_spawn->rotation_1 = GetParentRotation(1);
-        m_spawn->rotation_2 = GetParentRotation(2);
-        m_spawn->rotation_3 = GetParentRotation(3);
+        m_spawn->rotation_0 = getParentRotation(0);
+        m_spawn->rotation_1 = getParentRotation(1);
+        m_spawn->rotation_2 = getParentRotation(2);
+        m_spawn->rotation_3 = getParentRotation(3);
         m_spawn->state = GetState();
         m_spawn->flags = getFlags();
         m_spawn->faction = GetFaction();
@@ -263,10 +266,10 @@ void GameObject::SaveToDB()
         << GetPositionY() << ","
         << GetPositionZ() << ","
         << GetOrientation() << ","
-        << GetParentRotation(0) << ","
-        << GetParentRotation(1) << ","
-        << GetParentRotation(2) << ","
-        << GetParentRotation(3) << ","
+        << getParentRotation(0) << ","
+        << getParentRotation(1) << ","
+        << getParentRotation(2) << ","
+        << getParentRotation(3) << ","
         << "0,"              // initial state
         << getFlags() << ","
         << GetFaction() << ","
@@ -290,10 +293,10 @@ void GameObject::SaveToFile(std::stringstream & name)
         << GetPositionY() << ","
         << GetPositionZ() << ","
         << GetOrientation() << ","
-        << GetParentRotation(0) << ","
-        << GetParentRotation(1) << ","
-        << GetParentRotation(2) << ","
-        << GetParentRotation(3) << ","
+        << getParentRotation(0) << ","
+        << getParentRotation(1) << ","
+        << getParentRotation(2) << ","
+        << getParentRotation(3) << ","
         << uint32(GetState()) << ","
         << getFlags() << ","
         << GetFaction() << ","

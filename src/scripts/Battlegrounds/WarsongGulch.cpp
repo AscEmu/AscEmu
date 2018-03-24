@@ -493,48 +493,42 @@ void WarsongGulch::SpawnBuff(uint32 x)
     {
         case 0:
             m_buffs[x] = SpawnGameObject(179871, 489, 1449.9296875f, 1470.70971679688f, 342.634552001953f, -1.64060950279236f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.73135370016098f);
-            m_buffs[x]->SetParentRotation(3, -0.681998312473297f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.73135370016098f, -0.681998312473297f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
             break;
         case 1:
             m_buffs[x] = SpawnGameObject(179899, 489, 1005.17071533203f, 1447.94567871094f, 335.903228759766f, 1.64060950279236f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.73135370016098f);
-            m_buffs[x]->SetParentRotation(3, 0.681998372077942f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.73135370016098f, 0.681998372077942f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
             break;
         case 2:
             m_buffs[x] = SpawnGameObject(179904, 489, 1317.50573730469f, 1550.85070800781f, 313.234375f, -0.26179963350296f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.130526319146156f);
-            m_buffs[x]->SetParentRotation(3, -0.991444826126099f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.130526319146156f, -0.991444826126099f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
             break;
         case 3:
             m_buffs[x] = SpawnGameObject(179906, 489, 1110.45129394531f, 1353.65563964844f, 316.518096923828f, -0.68067866563797f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.333806991577148f);
-            m_buffs[x]->SetParentRotation(3, -0.94264143705368f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.333806991577148f, -0.94264143705368f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
             break;
         case 4:
             m_buffs[x] = SpawnGameObject(179905, 489, 1320.09375f, 1378.78967285156f, 314.753234863281f, 1.18682384490967f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.559192895889282f);
-            m_buffs[x]->SetParentRotation(3, 0.829037606716156f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.559192895889282f, 0.829037606716156f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
             break;
         case 5:
             m_buffs[x] = SpawnGameObject(179907, 489, 1139.68774414063f, 1560.28771972656f, 306.843170166016f, -2.4434609413147f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.939692616462708f);
-            m_buffs[x]->SetParentRotation(3, -0.342020124197006f);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.939692616462708f, -0.342020124197006f);
             m_buffs[x]->SetState(GO_STATE_CLOSED);
             m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
             m_buffs[x]->SetAnimProgress(100);
@@ -569,19 +563,13 @@ void WarsongGulch::OnCreate()
 
     // Horde Gates
     gate = SpawnGameObject(179916, 489, 949.1663208f, 1423.7717285f, 345.6241455f, -0.5756807f, 32, 114, 0.900901f);
-    gate->SetParentRotation(0, -0.0167336f);
-    gate->SetParentRotation(1, -0.004956f);
-    gate->SetParentRotation(2, -0.283972f);
-    gate->SetParentRotation(3, 0.9586736f);
+    gate->SetRotationQuat(-0.0167336f, -0.004956f, -0.283972f, 0.9586736f);
     gate->SetAnimProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     gate = SpawnGameObject(179917, 489, 953.0507202f, 1459.8424072f, 340.6525573f, -1.9966197f, 32, 114, 0.854700f);
-    gate->SetParentRotation(0, -0.1971825f);
-    gate->SetParentRotation(1, 0.1575096f);
-    gate->SetParentRotation(2, -0.8239487f);
-    gate->SetParentRotation(3, 0.5073640f);
+    gate->SetRotationQuat(-0.1971825f, 0.1575096f, -0.8239487f, 0.5073640f);
     gate->SetAnimProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);

@@ -291,10 +291,10 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 
     SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getScale());
     SystemMessage(m_session, "%s Orientation:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetOrientation());
-    SystemMessage(m_session, "%s Rotation 0:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(0));
-    SystemMessage(m_session, "%s Rotation 1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(1));
-    SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(2));
-    SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(3));
+    SystemMessage(m_session, "%s Rotation 0:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(0));
+    SystemMessage(m_session, "%s Rotation 1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(1));
+    SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(2));
+    SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(3));
 
     GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameobject);
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
@@ -600,10 +600,10 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     go_spawn->position_y = gameobject->GetPositionY();
     go_spawn->position_z = gameobject->GetPositionZ();
     go_spawn->orientation = gameobject->GetOrientation();
-    go_spawn->rotation_0 = gameobject->GetParentRotation(0);
-    go_spawn->rotation_1 = gameobject->GetParentRotation(1);
-    go_spawn->rotation_2 = gameobject->GetParentRotation(2);
-    go_spawn->rotation_3 = gameobject->GetParentRotation(3);
+    go_spawn->rotation_0 = gameobject->getParentRotation(0);
+    go_spawn->rotation_1 = gameobject->getParentRotation(1);
+    go_spawn->rotation_2 = gameobject->getParentRotation(2);
+    go_spawn->rotation_3 = gameobject->getParentRotation(3);
     go_spawn->state = gameobject->GetState();
     go_spawn->flags = gameobject->getFlags();
     go_spawn->faction = gameobject->GetFaction();
