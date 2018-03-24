@@ -1729,7 +1729,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             return;
         }
 
-        if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
+        if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
             pAura = sSpellFactoryMgr.NewAura(GetSpellInfo(), Duration, g_caster->m_summoner, unitTarget, m_triggeredSpell, i_caster);
         else
             pAura = sSpellFactoryMgr.NewAura(GetSpellInfo(), Duration, m_caster, unitTarget, m_triggeredSpell, i_caster);
@@ -3001,9 +3001,9 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             p->setCreatedByGuid(m_caster->getGuid());
 
             if (m_caster->IsGameObject())
-                p->SetFaction(static_cast<GameObject*>(m_caster)->GetFaction());
+                p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
             else
-                p->SetFaction(static_cast<Unit*>(m_caster)->GetFaction());
+                p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
         }
         else
         {
@@ -3485,7 +3485,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             else if (gameObjTarget)
             {
                 auto gameobject_info = gameObjTarget->GetGameObjectProperties();
-                if (gameObjTarget->GetState() == 0)
+                if (gameObjTarget->getState() == 0)
                     return;
 
                 auto lock = sLockStore.LookupEntry(gameobject_info->raw.parameter_0);
@@ -3498,7 +3498,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     {
                         v = lock->minlockskill[j];
                         gameObjTarget->setFlags(GO_FLAG_NONE);
-                        gameObjTarget->SetState(GO_STATE_CLOSED);
+                        gameObjTarget->setState(GO_STATE_CLOSED);
                         //Add Fill GO loot here
                         if (gameObjTarget->IsLootable())
                         {
@@ -3663,7 +3663,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
         }
         break;
     };
-    if (gameObjTarget && gameObjTarget->GetType() == GAMEOBJECT_TYPE_CHEST)
+    if (gameObjTarget && gameObjTarget->getType() == GAMEOBJECT_TYPE_CHEST)
         static_cast< Player* >(m_caster)->SendLoot(gameObjTarget->getGuid(), loottype, gameObjTarget->GetMapId());
 }
 
@@ -4182,9 +4182,9 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         go->CreateFromProto(entry, mapid, posx, posy, posz, orient);
         go->setFlags(GO_FLAG_NONE);
-        go->SetState(GO_STATE_OPEN);
-        go->setUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->getGuid());
-        go->SetFaction(u_caster->GetFaction());
+        go->setState(GO_STATE_OPEN);
+        go->setCreatedByGuid(m_caster->getGuid());
+        go->SetFaction(u_caster->getFactionTemplate());
         go->Phase(PHASE_SET, u_caster->GetPhase());
 
         go->PushToWorld(m_caster->GetMapMgr());
@@ -4206,7 +4206,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         go = m_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
-        go->setUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->getGuid());
+        go->setCreatedByGuid(m_caster->getGuid());
         go->Phase(PHASE_SET, u_caster->GetPhase());
         go->PushToWorld(m_caster->GetMapMgr());
         sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -5355,7 +5355,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     }
 
     GoSummon->setLevel(u_caster->getLevel());
-    GoSummon->setUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->getGuid());
+    GoSummon->setCreatedByGuid(m_caster->getGuid());
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
 
     GoSummon->PushToWorld(m_caster->GetMapMgr());

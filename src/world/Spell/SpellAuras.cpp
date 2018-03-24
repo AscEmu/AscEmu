@@ -785,7 +785,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     if (GetDuration() > 0 && m_spellInfo->getChannelInterruptFlags() != 0 && caster->IsUnit())
         SetDuration(GetDuration() * float2int32(static_cast<Unit*>(caster)->getModCastSpeed()));
 
-    // SetCasterFaction(caster->_getFaction());
+    // SetCasterFaction(caster->getServersideFaction());
 
     // m_auraSlot = 0;
     m_modcount = 0;
@@ -2070,8 +2070,8 @@ void Aura::SpellAuraModCharm(bool apply)
             return;
 
         m_target->addUnitStateFlag(UNIT_STATE_CHARM);
-        m_target->SetCharmTempVal(m_target->GetFaction());
-        m_target->SetFaction(caster->GetFaction());
+        m_target->SetCharmTempVal(m_target->getFactionTemplate());
+        m_target->SetFaction(caster->getFactionTemplate());
         m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
         m_target->setCharmedByGuid(caster->getGuid());

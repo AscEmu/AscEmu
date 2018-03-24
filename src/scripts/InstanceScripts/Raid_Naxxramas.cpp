@@ -571,7 +571,7 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* /*pTarget*/)
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GO_STATE_CLOSED);
+        WebGate->setState(GO_STATE_CLOSED);
 }
 
 void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
@@ -580,7 +580,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GO_STATE_OPEN);
+        WebGate->setState(GO_STATE_OPEN);
 
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
@@ -1201,11 +1201,11 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
     }
 }
 
@@ -1215,11 +1215,11 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
 
         Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
     }
 
     for (std::set< PlaguedWarriorAI* >::iterator Iter = mWarriors.begin(); Iter != mWarriors.end(); ++Iter)
@@ -1669,11 +1669,11 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         if (mFissures.size() == 0)
         {
@@ -1687,7 +1687,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
                 if (Fissure->GetGameObjectProperties() == nullptr)
                     continue;
 
-                if (Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 6785 && Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 1287)
+                if (Fissure->getDisplayId() != 6785 && Fissure->getDisplayId() != 1287)
                     continue;
 
                 if (Fissure->GetScript() == nullptr)
@@ -1710,11 +1710,11 @@ void HeiganTheUncleanAI::OnCombatStop(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
 
         Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
     }
 
     mFissures.clear();
@@ -1790,7 +1790,7 @@ PlagueFissureGO::PlagueFissureGO(GameObject* pGameObject) : GameObjectAIScript(p
 
 void PlagueFissureGO::SetState(uint8_t pState)
 {
-    _gameobject->SetState(pState);
+    _gameobject->setState(pState);
 }
 
 void PlagueFissureGO::DoErrupt()
@@ -2058,7 +2058,7 @@ ShadeOfNaxxramasAI::ShadeOfNaxxramasAI(Creature* pCreature) : CreatureAIScript(p
 
 void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
 {
-    CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+    CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
     if (Ghost != nullptr)
     {
         Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -2130,7 +2130,7 @@ void PortalOfShadowsAI::AIUpdate()
     {
         if (_isTimerFinished(mSpawnTimer))
         {
-            CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+            CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
             if (Ghost != nullptr)
             {
                 Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);

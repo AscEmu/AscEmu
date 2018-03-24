@@ -319,7 +319,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
             if (LakkasCage != NULL)
             {
-                LakkasCage->SetState(GO_STATE_OPEN);
+                LakkasCage->setState(GO_STATE_OPEN);
                 LakkasCage->removeFlags(GO_FLAG_NONSELECTABLE);
             }
 
@@ -409,7 +409,7 @@ class TalonKingIkissAI : public CreatureAIScript
         {
             GameObject* IkissDoor = getNearestGameObject(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != nullptr)
-                IkissDoor->SetState(GO_STATE_OPEN);
+                IkissDoor->setState(GO_STATE_OPEN);
         }
 
         void AIUpdate() override

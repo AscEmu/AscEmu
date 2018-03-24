@@ -423,7 +423,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
-    SetFaction(owner->GetFaction());
+    SetFaction(owner->getFactionTemplate());
     setModCastSpeed(1.0f);    // better set this one
 
     if (type == 1)
@@ -477,7 +477,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setPetFlags(PET_RENAME_ALLOWED);    // 0x3 -> Enable pet rename.
         setPowerType(POWER_TYPE_FOCUS);
     }
-    SetFaction(owner->GetFaction());
+    SetFaction(owner->getFactionTemplate());
 
     if (owner->IsPvPFlagged())
         this->SetPvPFlag();
@@ -961,7 +961,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
     setCreatedBySpellId(mPi->spellid);
-    SetFaction(owner->GetFaction());
+    SetFaction(owner->getFactionTemplate());
 
     ApplyStatsForLevel();
 
@@ -1017,7 +1017,7 @@ void Pet::InitializeMe(bool first)
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
     SetPetDiet();
-    _setFaction();
+    setServersideFaction();
 
     // Load our spells
     if (Summon)         // Summons - always

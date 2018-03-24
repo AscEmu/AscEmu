@@ -213,7 +213,7 @@ public:
 
         if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
-            if (obelisk1->GetState() == 0 && obelisk2->GetState() == 0 && obelisk3->GetState() == 0 && obelisk4->GetState() == 0 && obelisk5->GetState() == 0)
+            if (obelisk1->getState() == 0 && obelisk2->getState() == 0 && obelisk3->getState() == 0 && obelisk4->getState() == 0 && obelisk5->getState() == 0)
             {
                 Creature* ct = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
                 if (ct != nullptr)
@@ -223,15 +223,15 @@ public:
 
 #if VERSION_STRING > TBC
         if (obelisk1 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk1, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk2 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk2, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk3 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk3, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk4 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk4, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk5 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk5, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
 #endif
     }
 

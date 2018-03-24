@@ -158,7 +158,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         else
             return;
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
@@ -354,7 +354,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         else
             return; // oops..
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
@@ -434,7 +434,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         else
             return; // oops..
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
             qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);

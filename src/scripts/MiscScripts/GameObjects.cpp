@@ -370,7 +370,7 @@ public:
             NewCreature->GetAIInterface()->setNextTarget(player);
             NewCreature->GetAIInterface()->AttackReaction(player, 1);
             pDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
-            pDoor->SetState(GO_STATE_OPEN);
+            pDoor->setState(GO_STATE_OPEN);
         };
     }
 };

@@ -124,7 +124,7 @@ void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
     Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     if (!train) return;
 
-    _player->Reputation_OnTalk(train->m_factionDBC);
+    _player->Reputation_OnTalk(train->m_factionEntry);
     SendTrainerList(train);
 }
 
@@ -416,7 +416,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
             _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
 
         // reputation
-        _player->Reputation_OnTalk(qst_giver->m_factionDBC);
+        _player->Reputation_OnTalk(qst_giver->m_factionEntry);
 
         LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(gossipPacket.guid));
 

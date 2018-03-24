@@ -307,7 +307,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             return;
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-        pLGO->SetState(0);
+        pLGO->setState(0);
         pLoot = &pLGO->loot;
         m_currentLoot = pLGO->getGuid();
     }

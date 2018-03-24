@@ -105,8 +105,8 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
 
     m_aliveDuration = duration;
     u_caster = caster;
-    m_faction = caster->m_faction;
-    m_factionDBC = caster->m_factionDBC;
+    m_factionTemplate = caster->m_factionTemplate;
+    m_factionEntry = caster->m_factionEntry;
     m_phase = caster->GetPhase();
 
     if (pSpell->g_caster)

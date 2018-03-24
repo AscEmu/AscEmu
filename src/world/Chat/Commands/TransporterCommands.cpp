@@ -85,11 +85,11 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
-        if (transport->GetState() == GO_STATE_OPEN)
+        if (transport->getState() == GO_STATE_OPEN)
         {
             transport->m_WayPoints.clear();
-            transport->RemoveFlag(GAMEOBJECT_FLAGS, 1);
-            transport->SetState(GO_STATE_CLOSED);
+            transport->removeFlags(GO_FLAG_NONSELECTABLE);
+            transport->setState(GO_STATE_CLOSED);
         }
     }
     catch (AscEmu::Exception::AscemuException e)
@@ -109,12 +109,12 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
-        if (transport->GetState() == GO_STATE_CLOSED)
+        if (transport->getState() == GO_STATE_CLOSED)
         {
-            transport->SetFlag(GAMEOBJECT_FLAGS, 1);
-            transport->SetState(GO_STATE_OPEN);
-            transport->setUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
-            transport->setFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
+            transport->setFlags(GO_FLAG_NONSELECTABLE);
+            transport->setState(GO_STATE_OPEN);
+            transport->setDynamic(0x10830010); //\todo When people see things in sniffs... probably wrong
+            transport->setParentRotation(3, 1.0f);
             std::set<uint32> mapsUsed;
             GameObjectProperties const* goinfo = transport->GetGameObjectProperties();
 

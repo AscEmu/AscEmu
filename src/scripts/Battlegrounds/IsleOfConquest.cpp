@@ -485,7 +485,7 @@ void IsleOfConquest::OpenGates()
     {
         for (uint8 j = 0; j < 3; j++)
         {
-            gates[i][j].dyngate->SetState(GO_STATE_OPEN);
+            gates[i][j].dyngate->setState(GO_STATE_OPEN);
             gates[i][j].dyngate->removeFlags(GO_FLAG_NONSELECTABLE);
         }
     }
@@ -494,7 +494,7 @@ void IsleOfConquest::OpenGates()
     {
         for (uint8 i = 0; i < 2; i++)
         {
-            towergates[team][i]->SetState(GO_STATE_OPEN);
+            towergates[team][i]->setState(GO_STATE_OPEN);
             towergates[team][i]->removeFlags(GO_FLAG_UNTARGETABLE);
         }
     }
@@ -538,9 +538,9 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].banner = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        controlpoint[Id].banner->SetState(GO_STATE_CLOSED);
-        controlpoint[Id].banner->SetType(static_cast<uint8>(gameobject_info->type));
-        controlpoint[Id].banner->SetAnimProgress(100);
+        controlpoint[Id].banner->setState(GO_STATE_CLOSED);
+        controlpoint[Id].banner->setType(static_cast<uint8>(gameobject_info->type));
+        controlpoint[Id].banner->setAnimationProgress(100);
         controlpoint[Id].banner->setDynamic(1);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
 
@@ -572,22 +572,22 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         controlpoint[Id].banner->setEntry(gameobject_info->entry);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
-        controlpoint[Id].banner->SetType(static_cast<uint8>(gameobject_info->type));
+        controlpoint[Id].banner->setType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
         {
             case IOC_SPAWN_TYPE_ALLIANCE_ASSAULT:
             case IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED:
-                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 2);
+                controlpoint[Id].banner->setFactionTemplate(2);
                 break;
 
             case IOC_SPAWN_TYPE_HORDE_ASSAULT:
             case IOC_SPAWN_TYPE_HORDE_CONTROLLED:
-                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 1);
+                controlpoint[Id].banner->setFactionTemplate(1);
                 break;
 
             default:
-                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 35);         // neutral
+                controlpoint[Id].banner->setFactionTemplate(35);         // neutral
                 break;
         }
 
@@ -637,9 +637,9 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].aura = SpawnGameObject(gi_aura->entry, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 5.0f);
 
-        controlpoint[Id].aura->SetState(GO_STATE_CLOSED);
-        controlpoint[Id].aura->SetType(GAMEOBJECT_TYPE_TRAP);
-        controlpoint[Id].aura->SetAnimProgress(100);
+        controlpoint[Id].aura->setState(GO_STATE_CLOSED);
+        controlpoint[Id].aura->setType(GAMEOBJECT_TYPE_TRAP);
+        controlpoint[Id].aura->setAnimationProgress(100);
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
     }
     else

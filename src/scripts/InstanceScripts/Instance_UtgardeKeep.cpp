@@ -172,7 +172,7 @@ class UtgardeKeepScript : public InstanceScript
                             pGO = GetGameObjectByGuid(mIngvarDoors[i]);
                             if (pGO)
                             {
-                                pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+                                pGO->setState(pGO->getState() == 1 ? 0 : 1);
                             }
                         }
                     }
@@ -186,19 +186,19 @@ class UtgardeKeepScript : public InstanceScript
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mBellow);
             if (pGO)
             {
-                pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+                pGO->setState(pGO->getState() == 1 ? 0 : 1);
             }
 
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mFire);
             if (pGO)
             {
-                pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+                pGO->setState(pGO->getState() == 1 ? 0 : 1);
             }
 
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mAnvil);
             if (pGO)
             {
-                pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+                pGO->setState(pGO->getState() == 1 ? 0 : 1);
             }
         }
 };
@@ -699,7 +699,7 @@ class IngvarThePlundererAI : public CreatureAIScript
         void OnDied(Unit* /*pKiller*/) override
         {
             //Ressurect event
-            spawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+            spawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
             despawn(1000, 0);
         }
 };

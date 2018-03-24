@@ -2194,10 +2194,10 @@ class SerpentshrineCavern : public InstanceScript
             {
                 pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
                 if (pBridgePart != NULL)
-                    pBridgePart->SetState(GO_STATE_OPEN);
+                    pBridgePart->setState(GO_STATE_OPEN);
             }
 
-            pGameObject->SetState(GO_STATE_OPEN);
+            pGameObject->setState(GO_STATE_OPEN);
         }
 };
 

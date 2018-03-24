@@ -1873,9 +1873,9 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->rotation_1 = go->getParentRotation(1);
     go_spawn->rotation_2 = go->getParentRotation(2);
     go_spawn->rotation_3 = go->getParentRotation(3);
-    go_spawn->state = go->GetState();
+    go_spawn->state = go->getState();
     go_spawn->flags = go->getFlags();
-    go_spawn->faction = go->GetFaction();
+    go_spawn->faction = go->getFactionTemplate();
     go_spawn->scale = go->getScale();
     //go_spawn->stateNpcLink = 0;
     go_spawn->phase = go->GetPhase();
@@ -2012,7 +2012,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
 
         GameObject* irgo = static_cast<GameObject*>(iro);
 
-        if (irgo->GetType() != type)
+        if (irgo->getType() != type)
             continue;
 
         if ((irgo->GetPhase() & o->GetPhase()) == 0)

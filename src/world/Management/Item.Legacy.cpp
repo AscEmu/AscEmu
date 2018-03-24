@@ -59,8 +59,8 @@ Item::Item()
     random_prop = 0;
     random_suffix = 0;
     m_mapMgr = 0;
-    m_faction = NULL;
-    m_factionDBC = NULL;
+    m_factionTemplate = NULL;
+    m_factionEntry = NULL;
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     m_inQueue = false;
     m_loadedFromDB = false;
@@ -518,7 +518,7 @@ uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr
 
     if (plr != NULL && vendor != NULL)
     {
-        Standing plrstanding = plr->GetStandingRank(vendor->m_faction->Faction);
+        Standing plrstanding = plr->GetStandingRank(vendor->m_factionTemplate->Faction);
         cost = float2int32(ceilf(proto->BuyPrice * pricemod[plrstanding]));
     }
 

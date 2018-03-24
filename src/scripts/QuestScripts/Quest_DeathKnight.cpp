@@ -142,7 +142,7 @@ public:
 
         player->CastSpell(player, 51888, true);
 
-        _gameobject->SetState(GO_STATE_CLOSED);
+        _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 

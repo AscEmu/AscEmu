@@ -30,8 +30,8 @@ void Item::init(uint32_t high, uint32_t low)
     m_zoneId = 0;
     m_objectUpdated = false;
     m_mapMgr = nullptr;
-    m_faction = nullptr;
-    m_factionDBC = nullptr;
+    m_factionTemplate = nullptr;
+    m_factionEntry = nullptr;
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     m_inQueue = false;
     m_loadedFromDB = false;

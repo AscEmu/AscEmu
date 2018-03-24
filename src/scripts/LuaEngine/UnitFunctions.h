@@ -749,7 +749,7 @@ class LuaUnit
                 }
                 else
                 {
-                    RET_INT(ptr->GetFaction());
+                    RET_INT(ptr->getFactionTemplate());
                 }
             }
     }
@@ -3622,7 +3622,7 @@ class LuaUnit
     static int GetFaction(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            lua_pushnumber(L, ptr->GetFaction());
+            lua_pushnumber(L, ptr->getFactionTemplate());
         return 1;
     }
 

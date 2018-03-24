@@ -37,6 +37,9 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
+uint64_t GameObject::getCreatedByGuid() const { return gameObjectData()->guid; }
+void GameObject::setCreatedByGuid(uint64_t guid) { write(gameObjectData()->guid, guid); }
+
 uint32_t GameObject::getDisplayId() const { return gameObjectData()->display_id; }
 void GameObject::setDisplayId(uint32_t id) { write(gameObjectData()->display_id, id); }
 
@@ -52,14 +55,86 @@ void GameObject::setParentRotation(uint8_t type, float_t rotation) { write(gameO
 uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
 
+uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }
+void GameObject::setFactionTemplate(uint32_t id) { write(gameObjectData()->faction_template, id); }
+
 uint32_t GameObject::getLevel() const { return gameObjectData()->level; }
 void GameObject::setLevel(uint32_t level) { write(gameObjectData()->level, level); }
+
+//bytes1
+uint8_t GameObject::getState() const
+{
+#if VERSION_STRING <= TBC
+    return gameObjectData()->state;
+#elif VERSION_STRING >= WotLK
+    return gameObjectData()->bytes_1_gameobject.state;
+#endif
+}
+void GameObject::setState(uint8_t state)
+{
+#if VERSION_STRING <= TBC
+    write(gameObjectData()->state, static_cast<uint32_t>(state));
+#elif VERSION_STRING >= WotLK
+    write(gameObjectData()->bytes_1_gameobject.state, state);
+#endif
+}
+
+uint8_t GameObject::getType() const
+{
+#if VERSION_STRING <= TBC
+    return gameObjectData()->type;
+#elif VERSION_STRING >= WotLK
+    return gameObjectData()->bytes_1_gameobject.type;
+#endif
+}
+void GameObject::setType(uint8_t type)
+{
+#if VERSION_STRING <= TBC
+    write(gameObjectData()->type, static_cast<uint32_t>(type));
+#elif VERSION_STRING >= WotLK
+    write(gameObjectData()->bytes_1_gameobject.type, type);
+#endif
+}
+
+uint8_t GameObject::getArtKit() const
+{
+#if VERSION_STRING <= TBC
+    return gameObjectData()->art_kit;
+#elif VERSION_STRING >= WotLK
+    return gameObjectData()->bytes_1_gameobject.art_kit;
+#endif
+}
+void GameObject::setArtKit(uint8_t artkit)
+{
+#if VERSION_STRING <= TBC
+    write(gameObjectData()->art_kit, static_cast<uint32_t>(artkit));
+#elif VERSION_STRING >= WotLK
+    write(gameObjectData()->bytes_1_gameobject.art_kit, artkit);
+#endif
+}
+
+uint8_t GameObject::getAnimationProgress() const
+{
+#if VERSION_STRING <= TBC
+    return gameObjectData()->animation_progress;
+#elif VERSION_STRING >= WotLK
+    return gameObjectData()->bytes_1_gameobject.animation_progress;
+#endif
+}
+void GameObject::setAnimationProgress(uint8_t progress)
+{
+#if VERSION_STRING <= TBC
+    write(gameObjectData()->animation_progress, static_cast<uint32_t>(progress));
+#elif VERSION_STRING >= WotLK
+    write(gameObjectData()->bytes_1_gameobject.animation_progress, progress);
+#endif
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Type helper
 
-bool GameObject::isQuestGiver() const { return GetType() == GAMEOBJECT_TYPE_QUESTGIVER; }
-bool GameObject::isFishingNode() const { return GetType() == GAMEOBJECT_TYPE_FISHINGNODE; }
+bool GameObject::isQuestGiver() const { return getType() == GAMEOBJECT_TYPE_QUESTGIVER; }
+bool GameObject::isFishingNode() const { return getType() == GAMEOBJECT_TYPE_FISHINGNODE; }
 // MIT End
 
 GameObject::GameObject(uint64 guid)
@@ -82,7 +157,7 @@ GameObject::GameObject(uint64 guid)
 
     setType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
-    SetAnimProgress(100);
+    setAnimationProgress(100);
     m_wowGuid.Init(guid);
     setScale(1);
     m_summonedGo = false;
@@ -111,7 +186,9 @@ GameObject::~GameObject()
         myScript = NULL;
     }
 
-    uint32 guid = getUInt32Value(OBJECT_FIELD_CREATED_BY);
+    //\todo guid (uint64_t) can not be used for GetPlayer... however it seems to be common to cast uint64_t to uint32_t.
+    // it would be probably the best to store player guid as uint64_t instead of uint32_t
+    uint32 guid = static_cast<uint32_t>(getCreatedByGuid());
     if (guid)
     {
         Player* plr = objmgr.GetPlayer(guid);
@@ -152,10 +229,10 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     SetRotationQuat(r0, r1, r2, r3);
     SetPosition(x, y, z, ang);
     //UpdateRotation();
-    SetAnimProgress(0);
-    SetState(1);
+    setAnimationProgress(0);
+    setState(1);
     setDisplayId(gameobject_properties->display_id);
-    SetType(static_cast<uint8>(gameobject_properties->type));
+    setType(static_cast<uint8>(gameobject_properties->type));
     InitAI();
 
     return true;
@@ -197,7 +274,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     //This is for go get deleted while looting
     if (m_spawn)
     {
-        SetState(static_cast<uint8>(m_spawn->state));
+        setState(static_cast<uint8>(m_spawn->state));
         setFlags(m_spawn->flags);
     }
 
@@ -238,9 +315,9 @@ void GameObject::SaveToDB()
         m_spawn->rotation_1 = getParentRotation(1);
         m_spawn->rotation_2 = getParentRotation(2);
         m_spawn->rotation_3 = getParentRotation(3);
-        m_spawn->state = GetState();
+        m_spawn->state = getState();
         m_spawn->flags = getFlags();
-        m_spawn->faction = GetFaction();
+        m_spawn->faction = getFactionTemplate();
         m_spawn->scale = getScale();
         //m_spawn->stateNpcLink = 0;
         m_spawn->phase = GetPhase();
@@ -275,7 +352,7 @@ void GameObject::SaveToDB()
         << getParentRotation(3) << ","
         << "0,"              // initial state
         << getFlags() << ","
-        << GetFaction() << ","
+        << getFactionTemplate() << ","
         << getScale() << ","
         << "0,"
         << m_phase << ","
@@ -300,9 +377,9 @@ void GameObject::SaveToFile(std::stringstream & name)
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
         << getParentRotation(3) << ","
-        << uint32(GetState()) << ","
+        << uint32(getState()) << ","
         << getFlags() << ","
-        << GetFaction() << ","
+        << getFactionTemplate() << ","
         << getScale() << ","
         << "0,"
         << m_phase << ","
@@ -331,7 +408,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
     m_spawn = go_spawn;
     m_phase = go_spawn->phase;
     setFlags(go_spawn->flags);
-    SetState(static_cast<uint8>(go_spawn->state));
+    setState(static_cast<uint8>(go_spawn->state));
     if (go_spawn->faction)
     {
         SetFaction(go_spawn->faction);
@@ -404,8 +481,8 @@ void GameObject::OnPushToWorld()
         static_cast<GameObject_Lootable*>(this)->resetLoot();
 
         //close if open (happenes after respawn)
-        if (this->GetState() == GO_STATE_OPEN)
-            this->SetState(GO_STATE_CLOSED);
+        if (this->getState() == GO_STATE_OPEN)
+            this->setState(GO_STATE_CLOSED);
 
         // set next loot reset time
         time_t lootResetTime = 60 * 1000;
@@ -455,11 +532,6 @@ uint32 GameObject::GetGOReqSkill()
     return 0;
 }
 
-uint32 GameObject::GetType() const
-{
-    return GetGameObjectProperties()->type;
-}
-
 using G3D::Quat;
 struct QuaternionCompressed
 {
@@ -506,10 +578,10 @@ void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
 
     quat.unitize();
     m_rotation = QuaternionCompressed(quat).m_raw;
-    setFloatValue(GAMEOBJECT_PARENTROTATION+0, quat.x);
-    setFloatValue(GAMEOBJECT_PARENTROTATION+1, quat.y);
-    setFloatValue(GAMEOBJECT_PARENTROTATION+2, quat.z);
-    setFloatValue(GAMEOBJECT_PARENTROTATION+3, quat.w);
+    setParentRotation(0, quat.x);
+    setParentRotation(1, quat.y);
+    setParentRotation(2, quat.z);
+    setParentRotation(3, quat.w);
 }
 
 void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
@@ -565,14 +637,14 @@ void GameObject_Door::InitAI()
     GameObject::InitAI();
 
     if (gameobject_properties->door.start_open != 0)
-        SetState(GO_STATE_OPEN);
+        setState(GO_STATE_OPEN);
     else
-        SetState(GO_STATE_CLOSED);
+        setState(GO_STATE_CLOSED);
 }
 
 void GameObject_Door::Open()
 {
-    SetState(GO_STATE_OPEN);
+    setState(GO_STATE_OPEN);
     if (gameobject_properties->door.auto_close_time != 0)
         sEventMgr.AddEvent(this, &GameObject_Door::Close, 0, gameobject_properties->door.auto_close_time, 1, 0);
 }
@@ -580,17 +652,17 @@ void GameObject_Door::Open()
 void GameObject_Door::Close()
 {
     sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
-    SetState(GO_STATE_CLOSED);
+    setState(GO_STATE_CLOSED);
 }
 
 void GameObject_Door::SpecialOpen()
 {
-    SetState(GO_STATE_ALTERNATIVE_OPEN);
+    setState(GO_STATE_ALTERNATIVE_OPEN);
 }
 
 void GameObject_Door::Use(uint64 /*GUID*/)
 {
-    if (GetState() == GO_STATE_CLOSED)
+    if (getState() == GO_STATE_CLOSED)
         Open();
     else
         Close();
@@ -611,7 +683,7 @@ void GameObject_Button::InitAI()
     GameObject::InitAI();
 
     if (gameobject_properties->button.start_open != 0)
-        SetState(GO_STATE_OPEN);
+        setState(GO_STATE_OPEN);
 
     if (gameobject_properties->button.linked_trap_id != 0)
     {
@@ -627,7 +699,7 @@ void GameObject_Button::InitAI()
 
 void GameObject_Button::Open()
 {
-    SetState(GO_STATE_OPEN);
+    setState(GO_STATE_OPEN);
     if (gameobject_properties->button.auto_close_time != 0)
         sEventMgr.AddEvent(this, &GameObject_Button::Close, EVENT_GAMEOBJECT_CLOSE, gameobject_properties->button.auto_close_time, 1, 0);
 }
@@ -635,12 +707,12 @@ void GameObject_Button::Open()
 void GameObject_Button::Close()
 {
     sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
-    SetState(GO_STATE_CLOSED);
+    setState(GO_STATE_CLOSED);
 }
 
 void GameObject_Button::Use(uint64 GUID)
 {
-    if (GetState() == GO_STATE_CLOSED)
+    if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
@@ -757,17 +829,17 @@ bool GameObject_Chest::HasLoot()
 
 void GameObject_Chest::Open()
 {
-    SetState(GO_STATE_OPEN);
+    setState(GO_STATE_OPEN);
 }
 
 void GameObject_Chest::Close()
 {
-    SetState(GO_STATE_CLOSED);
+    setState(GO_STATE_CLOSED);
 }
 
 void GameObject_Chest::Use(uint64 GUID)
 {
-    if (GetState() == GO_STATE_CLOSED)
+    if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
@@ -845,7 +917,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
     if (spell == NULL)
         return;
 
-    if (GetState() == 1)
+    if (getState() == 1)
     {
         targetupdatetimer += time_passed;
 
@@ -940,8 +1012,8 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
         return;
     }
 
-    go->SetFaction(GetFaction());
-    go->setUInt64Value(OBJECT_FIELD_CREATED_BY, getGuid());
+    go->SetFaction(getFactionTemplate());
+    go->setCreatedByGuid(getGuid());
     go->PushToWorld(m_mapMgr);
 }
 
@@ -972,7 +1044,7 @@ void GameObject_Goober::InitAI()
 
 void GameObject_Goober::Open()
 {
-    SetState(GO_STATE_OPEN);
+    setState(GO_STATE_OPEN);
     if (gameobject_properties->goober.auto_close_time != 0)
         sEventMgr.AddEvent(this, &GameObject_Goober::Close, EVENT_GAMEOBJECT_CLOSE, gameobject_properties->goober.auto_close_time, 1, 0);
 }
@@ -980,12 +1052,12 @@ void GameObject_Goober::Open()
 void GameObject_Goober::Close()
 {
     sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
-    SetState(GO_STATE_CLOSED);
+    setState(GO_STATE_CLOSED);
 }
 
 void GameObject_Goober::Use(uint64 GUID)
 {
-    if (GetState() == GO_STATE_CLOSED)
+    if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
@@ -1230,7 +1302,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
     }
 
     uint8 animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
-    SetAnimProgress(animprogress);
+    setAnimationProgress(animprogress);
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
 

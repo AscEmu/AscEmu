@@ -2335,7 +2335,7 @@ void Player::SpawnPet(uint32 pet_number)
     else
         pPet->RemoveSanctuaryFlag();
 
-    pPet->SetFaction(this->GetFaction());
+    pPet->SetFaction(this->getFactionTemplate());
 
     if (itr->second->spellid)
     {
@@ -2692,8 +2692,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << uint32(getClass()) << ","
         << uint32(getGender()) << ",";
 
-    if (GetFaction() != info->factiontemplate)
-        ss << GetFaction() << ",";
+    if (getFactionTemplate() != info->factiontemplate)
+        ss << getFactionTemplate() << ",";
     else
         ss << "0,";
 
@@ -6974,7 +6974,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
             if (gObj->invisible) // Invisibility - Detection of GameObjects
             {
-                uint64 owner = gObj->getUInt64Value(OBJECT_FIELD_CREATED_BY);
+                uint64 owner = gObj->getCreatedByGuid();
 
                 if (getGuid() == owner) // the owner of an object can always see it
                     return true;
@@ -7751,7 +7751,7 @@ void Player::UpdateNearbyGameObjects()
                 }
             }
             bool bPassed = !deactivate;
-            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
                 GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
 
@@ -9212,8 +9212,8 @@ void Player::RequestDuel(Player* pTarget)
     pGameObj->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
 
     //Spawn the Flag
-    pGameObj->setUInt64Value(OBJECT_FIELD_CREATED_BY, getGuid());
-    pGameObj->SetFaction(GetFaction());
+    pGameObj->setCreatedByGuid(getGuid());
+    pGameObj->SetFaction(getFactionTemplate());
     pGameObj->setLevel(getLevel());
 
     //Assign the Flag

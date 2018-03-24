@@ -105,9 +105,9 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (pData == Finished)
                     {
                         GameObject* pGate = GetGameObjectByGuid(go_arugalsLair_GUID);
-                        if (pGate != nullptr && pGate->GetState() == GO_STATE_CLOSED)
+                        if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                         {
-                            pGate->SetState(GO_STATE_OPEN);
+                            pGate->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -142,17 +142,17 @@ class ShadowfangKeepInstance : public InstanceScript
                         // Make levers targetable
                         if (GameObject* pGO = GetGameObjectByGuid(go_leftCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
 
                         if (GameObject* pGO = GetGameObjectByGuid(go_middleCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
 
                         if (GameObject* pGO = GetGameObjectByGuid(go_rightCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
                     }
                 }break;
@@ -163,8 +163,8 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         if (GameObject* pGO = GetGameObjectByGuid(go_courtyarDoor_GUID))
                         {
-                            if (pGO->GetState() != GO_STATE_OPEN)
-                                pGO->SetState(GO_STATE_OPEN);
+                            if (pGO->getState() != GO_STATE_OPEN)
+                                pGO->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -174,9 +174,9 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         SetLocaleInstanceData(0, INDEX_VOIDWALKER, InProgress);
                         GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
-                        if (pGate != nullptr && pGate->GetState() == GO_STATE_CLOSED)
+                        if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                         {
-                            pGate->SetState(GO_STATE_OPEN);
+                            pGate->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -212,17 +212,17 @@ class ShadowfangKeepInstance : public InstanceScript
                 case GO_ARUGALS_LAIR_GATE:
                 {
                     go_arugalsLair_GUID = pGameObject->getGuidLow();
-                    if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 case GO_SORCERER_GATE:
                 {
                     go_sorcererGate_GUID = pGameObject->getGuidLow();
-                    if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 case GO_LEFT_LEVER:
@@ -230,7 +230,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     go_leftCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_RIGHT_LEVER:
@@ -238,7 +238,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     go_rightCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_MIDDLE_LEVER:
@@ -246,15 +246,15 @@ class ShadowfangKeepInstance : public InstanceScript
                     go_middleCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_COURTYARD_DOOR:
                 {
                     go_courtyarDoor_GUID = pGameObject->getGuidLow();
-                    if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 default:
@@ -270,24 +270,24 @@ class ShadowfangKeepInstance : public InstanceScript
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_rightCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_MIDDLE_LEVER:
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_middleCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_LEFT_LEVER:
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_leftCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 default:
@@ -1128,7 +1128,7 @@ class ArugalBossAI : public CreatureAIScript
                 {
                     if (GameObject* pGO = getNearestGameObject(GO_ARUGAL_FOCUS))
                     {
-                        pGO->SetState(GO_STATE_OPEN);
+                        pGO->setState(GO_STATE_OPEN);
                     }
 
                     // Spawn Arugal's Voidwalkers
@@ -1452,7 +1452,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (GameObject* pGameObject = target->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), GO_COURTYARD_DOOR))
     {
-        pGameObject->SetState(GO_STATE_OPEN);
+        pGameObject->setState(GO_STATE_OPEN);
         return true;
     }
 

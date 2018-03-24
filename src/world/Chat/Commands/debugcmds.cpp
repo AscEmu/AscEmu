@@ -720,7 +720,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
             c->setHealth(health);
         }
         c->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, (count % 2) ? 1 : 2);
-        c->_setFaction();
+        c->setServersideFaction();
         c->PushToWorld(m);
 
         r += 0.5;

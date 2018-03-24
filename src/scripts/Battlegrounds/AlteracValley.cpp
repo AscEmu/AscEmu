@@ -1139,7 +1139,7 @@ void AlteracValley::AVNode::Spawn()
             // initial spawn
             m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
             m_flag->SetFaction(g_gameObjectFactions[m_state]);
-            m_flag->SetAnimProgress(100);
+            m_flag->setAnimationProgress(100);
             m_flag->setDynamic(1);
             m_flag->PushToWorld(m_bg->GetMapMgr());
         }
@@ -1154,9 +1154,9 @@ void AlteracValley::AVNode::Spawn()
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->setDisplayId(gameobject_info->display_id);
-                m_flag->SetType(static_cast<uint8>(gameobject_info->type));
+                m_flag->setType(static_cast<uint8>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
-                m_flag->SetAnimProgress(100);
+                m_flag->setAnimationProgress(100);
                 m_flag->setDynamic(1);
                 m_flag->PushToWorld(m_bg->GetMapMgr());
             }
@@ -1184,9 +1184,9 @@ void AlteracValley::AVNode::Spawn()
             // initial spawn
             m_aura = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 3.0f);
             m_aura->SetFaction(g_gameObjectFactions[m_state]);
-            m_aura->SetAnimProgress(100);
+            m_aura->setAnimationProgress(100);
             m_aura->setFlags(GO_FLAG_NONSELECTABLE);
-            m_aura->SetState(GO_STATE_CLOSED);
+            m_aura->setState(GO_STATE_CLOSED);
             m_aura->PushToWorld(m_bg->GetMapMgr());
         }
         else
@@ -1200,11 +1200,11 @@ void AlteracValley::AVNode::Spawn()
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->setDisplayId(gameobject_info->display_id);
-                m_aura->SetType(static_cast<uint8>(gameobject_info->type));
+                m_aura->setType(static_cast<uint8>(gameobject_info->type));
                 m_aura->SetFaction(g_gameObjectFactions[m_state]);
-                m_aura->SetAnimProgress(100);
+                m_aura->setAnimationProgress(100);
                 m_aura->setFlags(GO_FLAG_NONSELECTABLE);
-                m_aura->SetState(GO_STATE_CLOSED);
+                m_aura->setState(GO_STATE_CLOSED);
                 m_aura->PushToWorld(m_bg->GetMapMgr());
             }
         }
@@ -1231,9 +1231,9 @@ void AlteracValley::AVNode::Spawn()
             // initial spawn
             m_glow = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
             m_glow->SetFaction(g_gameObjectFactions[m_state]);
-            m_glow->SetAnimProgress(100);
+            m_glow->setAnimationProgress(100);
             m_glow->setFlags(GO_FLAG_NONSELECTABLE);
-            m_glow->SetState(GO_STATE_CLOSED);
+            m_glow->setState(GO_STATE_CLOSED);
             if (m_glow->getEntry() == 180422 || m_glow->getEntry() == 180423)
                 m_glow->setScale(10.0f);
             else
@@ -1251,11 +1251,11 @@ void AlteracValley::AVNode::Spawn()
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->setDisplayId(gameobject_info->display_id);
-                m_glow->SetType(static_cast<uint8>(gameobject_info->type));
+                m_glow->setType(static_cast<uint8>(gameobject_info->type));
                 m_glow->SetFaction(g_gameObjectFactions[m_state]);
-                m_glow->SetAnimProgress(100);
+                m_glow->setAnimationProgress(100);
                 m_glow->setFlags(GO_FLAG_NONSELECTABLE);
-                m_glow->SetState(GO_STATE_CLOSED);
+                m_glow->setState(GO_STATE_CLOSED);
                 if (m_glow->getEntry() == 180422 || m_glow->getEntry() == 180423)
                     m_glow->setScale(10.0f);
                 else
@@ -1405,7 +1405,7 @@ void AlteracValley::AVNode::Capture()
             {
                 m_flag->setFlags(GO_FLAG_NONSELECTABLE);
                 m_flag->setDynamic(0);
-                m_flag->SetState(GO_STATE_CLOSED);
+                m_flag->setState(GO_STATE_CLOSED);
             }
 
             // prevent further actions
@@ -1656,7 +1656,7 @@ void AlteracValley::OnStart()
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->setFlags(GO_FLAG_TRIGGERED);
-        (*itr)->SetState(GO_STATE_OPEN);
+        (*itr)->setState(GO_STATE_OPEN);
     }
 
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);

@@ -1738,7 +1738,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
             if (Player* victim = objmgr.GetPlayer(GET_LOWGUID_PART(pBoot->victim)))
             {
             TeleportPlayer(victim, true, false);
-            SetState(pBoot->victim, LFG_STATE_NONE);
+            setState(pBoot->victim, LFG_STATE_NONE);
             }
             OfferContinue(grp);
             DecreaseKicksLeft(gguid);

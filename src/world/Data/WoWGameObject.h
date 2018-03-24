@@ -31,8 +31,8 @@ struct WoWGameObject : WoWObject
     float_t z;
     float_t o;
     uint32_t dynamic;
-    uint32_t faction;
-    uint32_t type_id;
+    uint32_t faction_template;
+    uint32_t type;
     uint32_t level;
     uint32_t art_kit;
     uint32_t animation_progress;
@@ -56,8 +56,8 @@ struct WoWGameObject : WoWObject
     float_t z;
     float_t o;
     uint32_t dynamic;
-    uint32_t faction;
-    uint32_t type_id;
+    uint32_t faction_template;
+    uint32_t type;
     uint32_t level;
     uint32_t art_kit;
     uint32_t animation_progress;
@@ -76,7 +76,7 @@ struct WoWGameObject : WoWObject
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];
     uint32_t dynamic;
-    uint32_t faction;
+    uint32_t faction_template;
     uint32_t level;
     union
     {
@@ -103,7 +103,7 @@ struct WoWGameObject : WoWObject
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];
     uint32_t dynamic;
-    uint32_t faction;
+    uint32_t faction_template;
     uint32_t level;
     union
     {

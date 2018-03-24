@@ -287,6 +287,9 @@ public:
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
 
+    uint32_t getFactionTemplate() const;
+    void setFactionTemplate(uint32_t id);
+
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
@@ -963,12 +966,10 @@ public:
 
     bool IsSitting();
 
-    uint32 GetFaction() { return getUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
-
     void SetFaction(uint32 factionId)
     {
-        setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, factionId);
-        _setFaction();
+        setFactionTemplate(factionId);
+        setServersideFaction();
     }
 
     virtual void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) = 0;

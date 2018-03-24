@@ -1023,8 +1023,8 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_mapMgr = nullptr;
     m_mapCell_x = m_mapCell_y = uint32(-1);
 
-    m_faction = nullptr;
-    m_factionDBC = nullptr;
+    m_factionTemplate = nullptr;
+    m_factionEntry = nullptr;
 
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     Active = false;
@@ -1190,7 +1190,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
         if (IsType(TYPE_GAMEOBJECT))
         {
-            switch (((GameObject*)this)->GetType())
+            switch (((GameObject*)this)->getType())
             {
                 case GAMEOBJECT_TYPE_TRAP:
                 case GAMEOBJECT_TYPE_DUEL_ARBITER:
@@ -2883,45 +2883,45 @@ bool Object::isInRange(Object* target, float range)
     return(dist <= range);
 }
 
-void Object::_setFaction()
+void Object::setServersideFaction()
 {
     DBC::Structures::FactionTemplateEntry const* faction_template = nullptr;
 
     if (IsUnit())
     {
-        faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
+        faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->getFactionTemplate());
         if (faction_template == nullptr)
-            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), getEntry());
+            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
     }
     else if (IsGameObject())
     {
-        uint32 go_faction_id = static_cast<GameObject*>(this)->GetFaction();
+        uint32 go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
         faction_template = sFactionTemplateStore.LookupEntry(go_faction_id);
         if (go_faction_id != 0)         // faction = 0 means it has no faction.
         {
             if (faction_template == nullptr)
             {
-                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), getEntry());
+                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->getFactionTemplate(), getEntry());
             }
         }
     }
 
     //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
-    m_faction = faction_template;
-    if (m_faction == nullptr)
+    m_factionTemplate = faction_template;
+    if (m_factionTemplate == nullptr)
     {
-        m_faction = sFactionTemplateStore.LookupEntry(0);
-        m_factionDBC = sFactionStore.LookupEntry(0);
+        m_factionTemplate = sFactionTemplateStore.LookupEntry(0);
+        m_factionEntry = sFactionStore.LookupEntry(0);
     }
     else
     {
-        m_factionDBC = sFactionStore.LookupEntry(m_faction->Faction);
+        m_factionEntry = sFactionStore.LookupEntry(m_factionTemplate->Faction);
     }
 }
 
-uint32 Object::_getFaction()
+uint32 Object::getServersideFaction()
 {
-    return m_faction->Faction;
+    return m_factionTemplate->Faction;
 }
 
 void Object::EventSetUInt32Value(uint16 index, uint32 value)
@@ -3378,7 +3378,7 @@ bool Object::CanActivate()
 
         case TYPEID_GAMEOBJECT:
         {
-            if (static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
+            if (static_cast<GameObject*>(this)->getType() != GAMEOBJECT_TYPE_TRAP)
                 return true;
         }
         break;
@@ -3459,7 +3459,7 @@ bool Object::IsInBg()
 uint32 Object::GetTeam()
 {
 
-    switch (m_factionDBC->ID)
+    switch (m_factionEntry->ID)
     {
         // Human
         case 1:

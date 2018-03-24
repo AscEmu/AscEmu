@@ -148,7 +148,7 @@ class GundrakScript : public InstanceScript
                 {
                     GameObject* pStatue = GetGameObjectByGuid(mSladranStatueGUID);
                     if (pStatue)
-                        pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
+                        pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
                     pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
@@ -158,7 +158,7 @@ class GundrakScript : public InstanceScript
                 {
                     GameObject* pStatue = GetGameObjectByGuid(mColossusStatueGUID);
                     if (pStatue)
-                        pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
+                        pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
                     pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
@@ -168,7 +168,7 @@ class GundrakScript : public InstanceScript
                 {
                     GameObject* pStatue = GetGameObjectByGuid(mMoorabiStatueGUID);
                     if (pStatue)
-                        pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
+                        pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
                     pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
@@ -182,9 +182,9 @@ class GundrakScript : public InstanceScript
             GameObject* pTrapDoors = GetGameObjectByGuid(mTrapDoorGUID);
             GameObject* pCoilision = GetGameObjectByGuid(mCoilisionGUID);
             if (pTrapDoors)
-                pTrapDoors->SetState(pTrapDoors->GetState() == 1 ? 0 : 1);
+                pTrapDoors->setState(pTrapDoors->getState() == 1 ? 0 : 1);
             if (pCoilision)
-                pCoilision->SetState(pCoilision->GetState() == 1 ? 0 : 1);
+                pCoilision->setState(pCoilision->getState() == 1 ? 0 : 1);
         }
 
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
@@ -204,18 +204,18 @@ class GundrakScript : public InstanceScript
 
                     pDoors = GetGameObjectByGuid(mEckDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_GAL_DARAH:
                 {
                     pDoors = GetGameObjectByGuid(mDoor1GUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
 
                     pDoors = GetGameObjectByGuid(mDoor2GUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_SLADRAN:

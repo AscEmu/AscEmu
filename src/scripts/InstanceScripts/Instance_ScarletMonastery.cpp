@@ -208,7 +208,7 @@ class MograineAI : public CreatureAIScript
         {
             GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor != nullptr)
-                pDoor->SetState(GO_STATE_OPEN);
+                pDoor->setState(GO_STATE_OPEN);
         }
 };
 
@@ -294,10 +294,10 @@ class ScarletTorch : public GameObjectAIScript
             GameObject* SecretDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1167.79f, 1347.26f, 31.5494f, GO_SCARLET_SECRET_DOOR);
             if (SecretDoor != NULL)
             {
-                if (SecretDoor->GetState() == GO_STATE_CLOSED)
-                    SecretDoor->SetState(GO_STATE_OPEN);
+                if (SecretDoor->getState() == GO_STATE_CLOSED)
+                    SecretDoor->setState(GO_STATE_OPEN);
                 else
-                    SecretDoor->SetState(GO_STATE_CLOSED);
+                    SecretDoor->setState(GO_STATE_CLOSED);
             }
         }
 };
@@ -314,10 +314,10 @@ class ArmoryLever : public GameObjectAIScript
             GameObject* ArmoryDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2886.31f, -827.261f, 160.336f, GO_ARMORY_DOOR);
             if (ArmoryDoor != NULL)
             {
-                if (ArmoryDoor->GetState() == GO_STATE_CLOSED)
-                    ArmoryDoor->SetState(GO_STATE_OPEN);
+                if (ArmoryDoor->getState() == GO_STATE_CLOSED)
+                    ArmoryDoor->setState(GO_STATE_OPEN);
                 else
-                    ArmoryDoor->SetState(GO_STATE_CLOSED);
+                    ArmoryDoor->setState(GO_STATE_CLOSED);
             }
         }
 };
@@ -334,10 +334,10 @@ class CathedralLever : public GameObjectAIScript
             GameObject* CathedralDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2908.18f, -818.203f, 160.332f, GO_CATHEDRAL_DOOR);
             if (CathedralDoor != NULL)
             {
-                if (CathedralDoor->GetState() == GO_STATE_CLOSED)
-                    CathedralDoor->SetState(GO_STATE_OPEN);
+                if (CathedralDoor->getState() == GO_STATE_CLOSED)
+                    CathedralDoor->setState(GO_STATE_OPEN);
                 else
-                    CathedralDoor->SetState(GO_STATE_CLOSED);
+                    CathedralDoor->setState(GO_STATE_CLOSED);
             }
         }
 };

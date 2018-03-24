@@ -779,11 +779,11 @@ public:
         void SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState);
 
         // object faction
-        void _setFaction();
-        uint32 _getFaction();
+        void setServersideFaction();
+        uint32 getServersideFaction();
 
-        DBC::Structures::FactionTemplateEntry const* m_faction;
-        DBC::Structures::FactionEntry const* m_factionDBC;
+        DBC::Structures::FactionTemplateEntry const* m_factionTemplate;
+        DBC::Structures::FactionEntry const* m_factionEntry;
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }
         int32 GetInstanceID() { return m_instanceId; }

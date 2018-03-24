@@ -336,7 +336,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         if (t_go->IsGameObject())
         {
             GameObject* go = static_cast<GameObject*>(t_go);
-            if (go->GetType() == GAMEOBJECT_TYPE_FISHINGNODE)
+            if (go->getType() == GAMEOBJECT_TYPE_FISHINGNODE)
             {
                 GameObject_FishingNode* go_fishing_node = static_cast<GameObject_FishingNode*>(go);
                 go_fishing_node->EndFishing(true);

@@ -27,7 +27,7 @@
 
 bool isNeutral(Object* a, Object* b)
 {
-    if ((a->m_faction->HostileMask & b->m_faction->Mask) == 0 && (a->m_faction->FriendlyMask & b->m_faction->Mask) == 0)
+    if ((a->m_factionTemplate->HostileMask & b->m_factionTemplate->Mask) == 0 && (a->m_factionTemplate->FriendlyMask & b->m_factionTemplate->Mask) == 0)
         return true;
 
     return false;
@@ -60,17 +60,17 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     if (objB->IsUnit() && static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))
         return false;
 
-    if (!objB->m_faction || !objA->m_faction)
+    if (!objB->m_factionTemplate || !objA->m_factionTemplate)
         return false;
 
-    uint32 faction = objB->m_faction->Mask;
-    uint32 host = objA->m_faction->HostileMask;
+    uint32 faction = objB->m_factionTemplate->Mask;
+    uint32 host = objA->m_factionTemplate->HostileMask;
 
     if ((faction & host) != 0)
         hostile = true;
 
-    faction = objA->m_faction->Mask;
-    host = objB->m_faction->HostileMask;
+    faction = objA->m_factionTemplate->Mask;
+    host = objB->m_factionTemplate->HostileMask;
 
     if ((faction & host) != 0)
         hostile = true;
@@ -78,13 +78,13 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     // check friend/enemy list
     for (uint8 i = 0; i < 4; i++)
     {
-        if (objA->m_faction->EnemyFactions[i] == objB->m_faction->Faction)
+        if (objA->m_factionTemplate->EnemyFactions[i] == objB->m_factionTemplate->Faction)
         {
             hostile = true;
             break;
         }
 
-        if (objA->m_faction->FriendlyFactions[i] == objB->m_faction->Faction)
+        if (objA->m_factionTemplate->FriendlyFactions[i] == objB->m_factionTemplate->Faction)
         {
             hostile = false;
             break;
@@ -93,12 +93,12 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
 
     // Reputation System Checks
     if (objA->IsPlayer() && !objB->IsPlayer())
-        if (objB->m_factionDBC->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionDBC);
+        if (objB->m_factionEntry->RepListId >= 0)
+            hostile = reinterpret_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionEntry);
 
     if (objB->IsPlayer() && !objA->IsPlayer())
-        if (objA->m_factionDBC->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionDBC);
+        if (objA->m_factionEntry->RepListId >= 0)
+            hostile = reinterpret_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionEntry);
 
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're
@@ -182,22 +182,22 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return true;
     }
 
-    if (objA->m_faction == nullptr || objB->m_faction == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
+    if (objA->m_factionTemplate == nullptr || objB->m_factionTemplate == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
         return false;
 
-    if (objA->m_faction == objB->m_faction)    // same faction can't kill each other unless in ffa pvp/duel
+    if (objA->m_factionTemplate == objB->m_factionTemplate)    // same faction can't kill each other unless in ffa pvp/duel
         return false;
 
     // Neutral Creature Check
     if (objA->IsPlayer() || objA->IsPet())
     {
 
-        if ((objB->m_factionDBC->RepListId == -1) && (objB->m_faction->HostileMask == 0) && (objB->m_faction->FriendlyMask == 0))
+        if ((objB->m_factionEntry->RepListId == -1) && (objB->m_factionTemplate->HostileMask == 0) && (objB->m_factionTemplate->FriendlyMask == 0))
             return true;
     }
     else if (objB->IsPlayer() || objB->IsPet())
     {
-        if ((objA->m_factionDBC->RepListId == -1) && (objA->m_faction->HostileMask == 0) && (objA->m_faction->FriendlyMask == 0))
+        if ((objA->m_factionEntry->RepListId == -1) && (objA->m_factionTemplate->HostileMask == 0) && (objA->m_factionTemplate->FriendlyMask == 0))
             return true;
     }
 
@@ -228,8 +228,8 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
 
     bool combatSupport = false;
 
-    uint32 fSupport = objB->m_faction->FriendlyMask;
-    uint32 myFaction = objA->m_faction->Mask;
+    uint32 fSupport = objB->m_factionTemplate->FriendlyMask;
+    uint32 myFaction = objA->m_factionTemplate->Mask;
 
     if (myFaction & fSupport)
     {
@@ -238,12 +238,12 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
     // check friend/enemy list
     for (uint8 i = 0; i < 4; i++)
     {
-        if (objB->m_faction->EnemyFactions[i] == objA->m_faction->Faction)
+        if (objB->m_factionTemplate->EnemyFactions[i] == objA->m_factionTemplate->Faction)
         {
             combatSupport = false;
             break;
         }
-        if (objB->m_faction->FriendlyFactions[i] == objA->m_faction->Faction)
+        if (objB->m_factionTemplate->FriendlyFactions[i] == objA->m_factionTemplate->Faction)
         {
             combatSupport = true;
             break;
@@ -257,15 +257,15 @@ bool isAlliance(Object* objA)// A is alliance?
 {
     DBC::Structures::FactionTemplateEntry const* m_sw_faction = sFactionTemplateStore.LookupEntry(11);
     DBC::Structures::FactionEntry const* m_sw_factionDBC = sFactionStore.LookupEntry(72);
-    if (!objA)          // || objA->m_factionDBC == NULL || objA->m_faction == NULL
+    if (!objA)          // || objA->m_factionEntry == NULL || objA->m_factionTemplate == NULL
         return true;
 
-    if (m_sw_faction == objA->m_faction || m_sw_factionDBC == objA->m_factionDBC)
+    if (m_sw_faction == objA->m_factionTemplate || m_sw_factionDBC == objA->m_factionEntry)
         return true;
 
     //bool hostile = false;
     uint32 faction = m_sw_faction->Faction;
-    uint32 host = objA->m_faction->HostileMask;
+    uint32 host = objA->m_factionTemplate->HostileMask;
 
     if (faction & host)
         return false;
@@ -273,11 +273,11 @@ bool isAlliance(Object* objA)// A is alliance?
     // check friend/enemy list
     for (uint8 i = 0; i < 4; i++)
     {
-        if (objA->m_faction->EnemyFactions[i] == faction)
+        if (objA->m_factionTemplate->EnemyFactions[i] == faction)
             return false;
     }
 
-    faction = objA->m_faction->Faction;
+    faction = objA->m_factionTemplate->Faction;
     host = m_sw_faction->HostileMask;
 
     if (faction & host)
@@ -286,7 +286,7 @@ bool isAlliance(Object* objA)// A is alliance?
     // check friend/enemy list
     for (uint8 i = 0; i < 4; i++)
     {
-        if (objA->m_faction->EnemyFactions[i] == faction)
+        if (objA->m_factionTemplate->EnemyFactions[i] == faction)
             return false;
     }
 

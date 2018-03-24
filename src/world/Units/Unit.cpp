@@ -75,6 +75,9 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
+uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
+void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
+
 uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
 void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id) { write(unitData()->virtual_item_slot_display[slot], item_id); }
 

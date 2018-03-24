@@ -178,14 +178,14 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getEntry());
     SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
     SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDisplayId());
-    SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetState());
+    SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getState());
     SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFlags());
     SystemMessage(m_session, "%s dynflags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getUInt32Value(GAMEOBJECT_DYNAMIC));
-    SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFaction());
+    SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFactionTemplate());
     SystemMessage(m_session, "%s phase:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPhase());
 
     char gotypetxt[50];
-    switch (gameobject->GetType())
+    switch (gameobject->getType())
     {
         case GAMEOBJECT_TYPE_DOOR:
             strcpy(gotypetxt, "Door");
@@ -275,7 +275,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
             strcpy(gotypetxt, "Unknown.");
             break;
     }
-    SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetType(), gotypetxt);
+    SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getType(), gotypetxt);
 
     SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
 
@@ -370,14 +370,14 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
         return true;
     }
 
-    if (gameobject->GetState() != GO_STATE_OPEN)
+    if (gameobject->getState() != GO_STATE_OPEN)
     {
-        gameobject->SetState(GO_STATE_OPEN);
+        gameobject->setState(GO_STATE_OPEN);
         BlueSystemMessage(m_session, "Gameobject opened.");
     }
     else
     {
-        gameobject->SetState(GO_STATE_CLOSED);
+        gameobject->setState(GO_STATE_CLOSED);
         BlueSystemMessage(m_session, "Gameobject closed.");
     }
 
@@ -604,9 +604,9 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     go_spawn->rotation_1 = gameobject->getParentRotation(1);
     go_spawn->rotation_2 = gameobject->getParentRotation(2);
     go_spawn->rotation_3 = gameobject->getParentRotation(3);
-    go_spawn->state = gameobject->GetState();
+    go_spawn->state = gameobject->getState();
     go_spawn->flags = gameobject->getFlags();
-    go_spawn->faction = gameobject->GetFaction();
+    go_spawn->faction = gameobject->getFactionTemplate();
     go_spawn->scale = gameobject->getScale();
     //go_spawn->npclink = 0;
     go_spawn->phase = gameobject->GetPhase();
@@ -662,7 +662,7 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
         return true;
     }
 
-    gameobject->SetAnimProgress(static_cast<uint8>(animprogress));
+    gameobject->setAnimationProgress(static_cast<uint8>(animprogress));
     GreenSystemMessage(m_session, "Gameobject animprogress set to %u", animprogress);
 
     return true;
@@ -951,7 +951,7 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    gameobject->SetState(static_cast<uint8>(go_state));
+    gameobject->setState(static_cast<uint8>(go_state));
 
     auto go_spawn = gameobject->m_spawn;
 

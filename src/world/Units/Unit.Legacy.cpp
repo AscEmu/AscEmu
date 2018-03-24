@@ -14489,10 +14489,10 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     m_noInterrupt++;
     setCharmGuid(pTarget->getGuid());
     pTarget->setCharmedByGuid(getGuid());
-    pTarget->SetCharmTempVal(pTarget->GetFaction());
+    pTarget->SetCharmTempVal(pTarget->getFactionTemplate());
     pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
-    pTarget->SetFaction(GetFaction());
+    pTarget->SetFaction(getFactionTemplate());
     pTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);

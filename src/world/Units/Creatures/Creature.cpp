@@ -411,7 +411,7 @@ void Creature::SaveToDB()
         m_spawn->o = m_position.o;
         m_spawn->emote_state = m_uint32Values[UNIT_NPC_EMOTESTATE];
         m_spawn->flags = getUnitFlags();
-        m_spawn->factionid = GetFaction();
+        m_spawn->factionid = getFactionTemplate();
         m_spawn->bytes0 = m_uint32Values[UNIT_FIELD_BYTES_0];
         m_spawn->bytes1 = m_uint32Values[UNIT_FIELD_BYTES_1];
         m_spawn->bytes2 = m_uint32Values[UNIT_FIELD_BYTES_2];
@@ -459,7 +459,7 @@ void Creature::SaveToDB()
         << m_position.o << ","
         << uint32(m_aiInterface->getWaypointScriptType()) << ","
         << getDisplayId() << ","
-        << GetFaction() << ","
+        << getFactionTemplate() << ","
         << getUnitFlags() << ","
         << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
         << m_uint32Values[UNIT_FIELD_BYTES_1] << ","
@@ -734,8 +734,8 @@ uint32 Creature::GetOldEmote()
 void Creature::AddToWorld()
 {
     // force set faction
-    if (m_faction == NULL || m_factionDBC == NULL)
-        _setFaction();
+    if (m_factionTemplate == NULL || m_factionEntry == NULL)
+        setServersideFaction();
 
     if (creature_properties == nullptr)
         creature_properties = sMySQLStore.getCreatureProperties(getEntry());
@@ -743,7 +743,7 @@ void Creature::AddToWorld()
     if (creature_properties == nullptr)
         return;
 
-    if (m_faction == NULL || m_factionDBC == NULL)
+    if (m_factionTemplate == NULL || m_factionEntry == NULL)
         return;
 
     Object::AddToWorld();
@@ -752,8 +752,8 @@ void Creature::AddToWorld()
 void Creature::AddToWorld(MapMgr* pMapMgr)
 {
     // force set faction
-    if (m_faction == NULL || m_factionDBC == NULL)
-        _setFaction();
+    if (m_factionTemplate == NULL || m_factionEntry == NULL)
+        setServersideFaction();
 
     if (creature_properties == nullptr)
         creature_properties = sMySQLStore.getCreatureProperties(getEntry());
@@ -761,7 +761,7 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
     if (creature_properties == nullptr)
         return;
 
-    if (m_faction == NULL || m_factionDBC == NULL)
+    if (m_factionTemplate == NULL || m_factionEntry == NULL)
         return;
 
     Object::AddToWorld(pMapMgr);
@@ -769,10 +769,10 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
 
 bool Creature::CanAddToWorld()
 {
-    if (m_factionDBC == NULL || m_faction == NULL)
-        _setFaction();
+    if (m_factionEntry == NULL || m_factionTemplate == NULL)
+        setServersideFaction();
 
-    if (m_faction == NULL || m_factionDBC == NULL || creature_properties == nullptr)
+    if (m_factionTemplate == NULL || m_factionEntry == NULL || creature_properties == nullptr)
         return false;
 
     return true;
@@ -1388,7 +1388,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
 
     // not a neutral creature
-    if (!(m_factionDBC != nullptr && m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }
@@ -1623,7 +1623,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_spawnLocation.ChangeCoords(x, y, z, o);
 
     // not a neutral creature
-    if (m_factionDBC && !(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }
