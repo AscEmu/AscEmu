@@ -378,16 +378,34 @@ struct WoWGameObject;
 class SERVER_DECL GameObject : public Object
 {
     // MIT Start
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+
 public:
+
+    uint32_t getDisplayId() const;
+    void setDisplayId(uint32_t id);
+
+    uint32_t getFlags() const;
+    void setFlags(uint32_t flags);
+    void addFlags(uint32_t flags);
+    void removeFlags(uint32_t flags);
+    bool hasFlags(uint32_t flags) const;
+
+    uint32_t getDynamic() const;
+    void setDynamic(uint32_t dynamic);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Type helper
     bool isQuestGiver() const;
+    bool isFishingNode() const;
+
     // MIT End
 
         GameObject(uint64 guid);
         ~GameObject();
-    bool isFishingNode() const;
-    uint32_t getDynamic() const;
-    void setDynamic(uint32_t dynamic);
 
     GameEvent* mEvent = nullptr;
 
@@ -478,19 +496,6 @@ public:
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
 
-        void Deactivate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
-        void Activate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
-        bool IsActive()
-        {
-            if (getUInt32Value(GAMEOBJECT_DYNAMIC) == 1)
-                return true;
-            else
-                return false;
-        }
-
-        void SetDisplayId(uint32 id) { setUInt32Value(GAMEOBJECT_DISPLAYID, id); }
-        uint32 GetDisplayId() { return getUInt32Value(GAMEOBJECT_DISPLAYID); }
-
         void SetRotationQuat(float qx, float qy, float qz, float qw);
 
         void SetParentRotation(uint8 rot, float value) { setFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
@@ -505,18 +510,6 @@ public:
 
         void SetLevel(uint32 level) { setUInt32Value(GAMEOBJECT_LEVEL, level); }
         uint32 GetLevel() { return getUInt32Value(GAMEOBJECT_LEVEL); }
-
-        void SetFlags(uint32 flags) { setUInt32Value(GAMEOBJECT_FLAGS, flags); }
-        uint32 GetFlags() { return getUInt32Value(GAMEOBJECT_FLAGS); }
-        void RemoveFlags(uint32 flags) { RemoveFlag(GAMEOBJECT_FLAGS, flags); }
-
-        bool HasFlags(uint32 flags)
-        {
-            if (HasFlag(GAMEOBJECT_FLAGS, flags) != 0)
-                return true;
-            else
-                return false;
-        }
 
         GameObjectModel* m_model;
 

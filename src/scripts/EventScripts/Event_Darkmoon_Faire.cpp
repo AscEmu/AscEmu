@@ -79,7 +79,7 @@ public:
 
         CurrentPlayer->setMoveRoot(false);
         CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
-        _gameobject->SetFlags(0);
+        _gameobject->setFlags(GO_FLAG_NONE);
         mPlayerGuid = 0;
         RemoveAIUpdateEvent();
     }

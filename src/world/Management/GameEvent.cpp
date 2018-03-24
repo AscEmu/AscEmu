@@ -80,7 +80,7 @@ void GameEvent::CreateObjects()
         if (gobj.faction != 0)
             g->SetFaction(gobj.faction);
 
-        g->SetFlags(gobj.flags);
+        g->setFlags(gobj.flags);
 
         bool addToWorld = true;
         if (mEventScript != nullptr)

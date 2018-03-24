@@ -120,13 +120,13 @@ bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_se
     if (gameobject->IsActive())
     {
         // Deactivate
-        gameobject->Deactivate();
+        gameobject->setDynamic(0);
         BlueSystemMessage(m_session, "Gameobject deactivated.");
     }
     else
     {
         // /Activate
-        gameobject->Activate();
+        gameobject->setDynamic(1);
         BlueSystemMessage(m_session, "Gameobject activated.");
     }
 
@@ -177,9 +177,9 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "%s SpawnID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != NULL ? gameobject->m_spawn->id : 0);
     SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getEntry());
     SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
-    SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetDisplayId());
+    SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDisplayId());
     SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetState());
-    SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFlags());
+    SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFlags());
     SystemMessage(m_session, "%s dynflags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getUInt32Value(GAMEOBJECT_DYNAMIC));
     SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFaction());
     SystemMessage(m_session, "%s phase:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPhase());
@@ -605,7 +605,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     go_spawn->rotation_2 = gameobject->GetParentRotation(2);
     go_spawn->rotation_3 = gameobject->GetParentRotation(3);
     go_spawn->state = gameobject->GetState();
-    go_spawn->flags = gameobject->GetFlags();
+    go_spawn->flags = gameobject->getFlags();
     go_spawn->faction = gameobject->GetFaction();
     go_spawn->scale = gameobject->getScale();
     //go_spawn->npclink = 0;
@@ -741,7 +741,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    gameobject->SetFlags(go_flags);
+    gameobject->setFlags(go_flags);
 
     auto go_spawn = gameobject->m_spawn;
 

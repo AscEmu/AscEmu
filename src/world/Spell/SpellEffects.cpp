@@ -3497,7 +3497,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        gameObjTarget->SetFlags(GO_FLAG_NONE);
+                        gameObjTarget->setFlags(GO_FLAG_NONE);
                         gameObjTarget->SetState(GO_STATE_CLOSED);
                         //Add Fill GO loot here
                         if (gameObjTarget->IsLootable())
@@ -4181,7 +4181,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         go = u_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, posz, orient);
-        go->SetFlags(GO_FLAG_NONE);
+        go->setFlags(GO_FLAG_NONE);
         go->SetState(GO_STATE_OPEN);
         go->setUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->getGuid());
         go->SetFaction(u_caster->GetFaction());
@@ -4996,9 +4996,9 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
     }
 
     CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
-    gameObjTarget->Activate();
+    gameObjTarget->setDynamic(1);
 
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::Deactivate, 0, GetDuration(), 1, 0);
+    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamic, static_cast<uint32_t>(0), 0, GetDuration(), 1, 0);
 }
 
 void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)

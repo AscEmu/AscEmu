@@ -1874,7 +1874,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->rotation_2 = go->GetParentRotation(2);
     go_spawn->rotation_3 = go->GetParentRotation(3);
     go_spawn->state = go->GetState();
-    go_spawn->flags = go->GetFlags();
+    go_spawn->flags = go->getFlags();
     go_spawn->faction = go->GetFaction();
     go_spawn->scale = go->getScale();
     //go_spawn->stateNpcLink = 0;

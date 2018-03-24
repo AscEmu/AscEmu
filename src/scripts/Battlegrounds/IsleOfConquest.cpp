@@ -395,7 +395,7 @@ void IsleOfConquest::OnCreate()
         gates[TEAM_ALLIANCE][i].gate = SpawnGameObject(allygateids[i], 628, allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3], 0, 1, 1.0f);
         gates[TEAM_ALLIANCE][i].gate->PushToWorld(m_mapMgr);
         gates[TEAM_ALLIANCE][i].dyngate = SpawnGameObject(IOC_DYNAMIC_GATE_ALLY, 628, allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3], 0, 1, 1.0f);
-        gates[TEAM_ALLIANCE][i].dyngate->SetFlags(GO_FLAG_UNTARGETABLE);
+        gates[TEAM_ALLIANCE][i].dyngate->setFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_ALLIANCE][i].dyngate->PushToWorld(m_mapMgr);
     }
 
@@ -405,7 +405,7 @@ void IsleOfConquest::OnCreate()
         gates[TEAM_HORDE][i].gate = SpawnGameObject(hordegateids[i], 628, hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3], 0, 2, 1.0f);
         gates[TEAM_HORDE][i].gate->PushToWorld(m_mapMgr);
         gates[TEAM_HORDE][i].dyngate = SpawnGameObject(IOC_DYNAMIC_GATE_HORDE, 628, hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3], 0, 2, 1.0f);
-        gates[TEAM_HORDE][i].dyngate->SetFlags(GO_FLAG_UNTARGETABLE);
+        gates[TEAM_HORDE][i].dyngate->setFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_HORDE][i].dyngate->PushToWorld(m_mapMgr);
     }
 
@@ -413,7 +413,7 @@ void IsleOfConquest::OnCreate()
     for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_ALLIANCE][i] = SpawnGameObject(195436, AllyTowerGates[i], 0, 35, 1.0f);
-        towergates[TEAM_ALLIANCE][i]->SetFlags(GO_FLAG_UNTARGETABLE);
+        towergates[TEAM_ALLIANCE][i]->setFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_ALLIANCE][i]->PushToWorld(m_mapMgr);
     }
 
@@ -421,7 +421,7 @@ void IsleOfConquest::OnCreate()
     for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_HORDE][i] = SpawnGameObject(195437, HordeTowerGates[i], 0, 35, 0.5f);
-        towergates[TEAM_HORDE][i]->SetFlags(GO_FLAG_UNTARGETABLE);
+        towergates[TEAM_HORDE][i]->setFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_HORDE][i]->PushToWorld(m_mapMgr);
     }
 
@@ -486,7 +486,7 @@ void IsleOfConquest::OpenGates()
         for (uint8 j = 0; j < 3; j++)
         {
             gates[i][j].dyngate->SetState(GO_STATE_OPEN);
-            gates[i][j].dyngate->RemoveFlags(GO_FLAG_NONSELECTABLE);
+            gates[i][j].dyngate->removeFlags(GO_FLAG_NONSELECTABLE);
         }
     }
 
@@ -495,7 +495,7 @@ void IsleOfConquest::OpenGates()
         for (uint8 i = 0; i < 2; i++)
         {
             towergates[team][i]->SetState(GO_STATE_OPEN);
-            towergates[team][i]->RemoveFlags(GO_FLAG_UNTARGETABLE);
+            towergates[team][i]->removeFlags(GO_FLAG_UNTARGETABLE);
         }
     }
 
@@ -541,8 +541,8 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].banner->SetState(GO_STATE_CLOSED);
         controlpoint[Id].banner->SetType(static_cast<uint8>(gameobject_info->type));
         controlpoint[Id].banner->SetAnimProgress(100);
-        controlpoint[Id].banner->Activate();
-        controlpoint[Id].banner->SetDisplayId(gameobject_info->display_id);
+        controlpoint[Id].banner->setDynamic(1);
+        controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
 
         switch (Type)
         {
@@ -571,7 +571,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         // assign it a new guid (client needs this to see the entry change?)
         controlpoint[Id].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         controlpoint[Id].banner->setEntry(gameobject_info->entry);
-        controlpoint[Id].banner->SetDisplayId(gameobject_info->display_id);
+        controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
         controlpoint[Id].banner->SetType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
@@ -650,7 +650,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         // re-spawn the aura
         controlpoint[Id].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         controlpoint[Id].aura->setEntry(gi_aura->entry);
-        controlpoint[Id].aura->SetDisplayId(gi_aura->display_id);
+        controlpoint[Id].aura->setDisplayId(gi_aura->display_id);
         controlpoint[Id].aura->SetGameObjectProperties(gi_aura);
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
     }

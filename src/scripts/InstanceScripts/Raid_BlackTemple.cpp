@@ -5241,7 +5241,7 @@ class CageTrapGO : public GameObjectAIScript
 
         void OnActivate(Player* /*pPlayer*/) override
         {
-            _gameobject->SetFlags(GO_FLAG_NONSELECTABLE);
+            _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {

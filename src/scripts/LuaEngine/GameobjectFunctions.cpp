@@ -855,7 +855,7 @@ int LuaGameObject::Activate(lua_State* L, GameObject* ptr)
         ptr->SetState(GO_STATE_OPEN);
     else
         ptr->SetState(GO_STATE_CLOSED);
-    ptr->SetFlags((ptr->GetFlags() & ~1));
+    ptr->removeFlags(GO_FLAG_NONSELECTABLE);
     RET_BOOL(true)
 }
 

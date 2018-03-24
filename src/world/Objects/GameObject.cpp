@@ -33,10 +33,27 @@
 #include "Data/WoWGameObject.h"
 
 // MIT
-bool GameObject::isQuestGiver() const
-{
-    return GetType() == GAMEOBJECT_TYPE_QUESTGIVER;
-}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+
+uint32_t GameObject::getDisplayId() const { return gameObjectData()->display_id; }
+void GameObject::setDisplayId(uint32_t id) { write(gameObjectData()->display_id, id); }
+
+uint32_t GameObject::getFlags() const { return gameObjectData()->flags; }
+void GameObject::setFlags(uint32_t flags) { write(gameObjectData()->flags, flags); }
+void GameObject::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
+void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
+bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
+
+uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
+void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Type helper
+
+bool GameObject::isQuestGiver() const { return GetType() == GAMEOBJECT_TYPE_QUESTGIVER; }
+bool GameObject::isFishingNode() const { return GetType() == GAMEOBJECT_TYPE_FISHINGNODE; }
 // MIT End
 
 GameObject::GameObject(uint64 guid)
@@ -108,11 +125,6 @@ GameObject::~GameObject()
                 m_summoner->m_ObjectSlots[i] = 0;
 }
 
-bool GameObject::isFishingNode() const
-{
-    return GetType() == GAMEOBJECT_TYPE_FISHINGNODE;
-}
-
 GameObjectProperties const* GameObject::GetGameObjectProperties() const
 {
     return gameobject_properties;
@@ -136,7 +148,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     //UpdateRotation();
     SetAnimProgress(0);
     SetState(1);
-    SetDisplayId(gameobject_properties->display_id);
+    setDisplayId(gameobject_properties->display_id);
     SetType(static_cast<uint8>(gameobject_properties->type));
     InitAI();
 
@@ -180,7 +192,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     if (m_spawn)
     {
         SetState(static_cast<uint8>(m_spawn->state));
-        SetFlags(m_spawn->flags);
+        setFlags(m_spawn->flags);
     }
 
     CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
@@ -221,7 +233,7 @@ void GameObject::SaveToDB()
         m_spawn->rotation_2 = GetParentRotation(2);
         m_spawn->rotation_3 = GetParentRotation(3);
         m_spawn->state = GetState();
-        m_spawn->flags = GetFlags();
+        m_spawn->flags = getFlags();
         m_spawn->faction = GetFaction();
         m_spawn->scale = getScale();
         //m_spawn->stateNpcLink = 0;
@@ -256,7 +268,7 @@ void GameObject::SaveToDB()
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
         << "0,"              // initial state
-        << GetFlags() << ","
+        << getFlags() << ","
         << GetFaction() << ","
         << getScale() << ","
         << "0,"
@@ -283,7 +295,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
         << uint32(GetState()) << ","
-        << GetFlags() << ","
+        << getFlags() << ","
         << GetFaction() << ","
         << getScale() << ","
         << "0,"
@@ -312,7 +324,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
 
     m_spawn = go_spawn;
     m_phase = go_spawn->phase;
-    SetFlags(go_spawn->flags);
+    setFlags(go_spawn->flags);
     SetState(static_cast<uint8>(go_spawn->state));
     if (go_spawn->faction)
     {
@@ -533,15 +545,6 @@ void GameObject::SetCustomAnim(uint32_t anim)
     SendMessageToSet(&data, false, false);
 }
 
-uint32_t GameObject::getDynamic() const
-{
-    return gameObjectData()->dynamic;
-}
-
-void GameObject::setDynamic(uint32_t dynamic)
-{
-    write(gameObjectData()->dynamic, dynamic);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
@@ -1184,9 +1187,9 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
         // Instant destruction
         hitpoints = 0;
 
-        SetFlags(GO_FLAG_DESTROYED);
-        SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
-        SetDisplayId(gameobject_properties->destructible_building.destroyed_display_id);   // destroyed display id
+        setFlags(GO_FLAG_DESTROYED);
+        removeFlags(GO_FLAG_DAMAGED);
+        setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);   // destroyed display id
 
         CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
 
@@ -1196,24 +1199,24 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
         // Simply damaging
         hitpoints -= damage;
 
-        if (!HasFlags(GO_FLAG_DAMAGED))
+        if (!hasFlags(GO_FLAG_DAMAGED))
         {
             // Intact  ->  Damaged
 
             // Are we below the intact-damaged transition treshold?
             if (hitpoints <= (maxhitpoints - gameobject_properties->destructible_building.intact_num_hits))
             {
-                SetFlags(GO_FLAG_DAMAGED);
-                SetDisplayId(gameobject_properties->destructible_building.damaged_display_id); // damaged display id
+                setFlags(GO_FLAG_DAMAGED);
+                setDisplayId(gameobject_properties->destructible_building.damaged_display_id); // damaged display id
             }
         }
         else
         {
             if (hitpoints == 0)
             {
-                SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
-                SetFlags(GO_FLAG_DESTROYED);
-                SetDisplayId(gameobject_properties->destructible_building.destroyed_display_id);
+                removeFlags(GO_FLAG_DAMAGED);
+                setFlags(GO_FLAG_DESTROYED);
+                setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);
             }
         }
 
@@ -1241,8 +1244,8 @@ void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUI
 
 void GameObject_Destructible::Rebuild()
 {
-    SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
-    SetDisplayId(gameobject_properties->display_id);
+    removeFlags(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED);
+    setDisplayId(gameobject_properties->display_id);
     maxhitpoints = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
 }

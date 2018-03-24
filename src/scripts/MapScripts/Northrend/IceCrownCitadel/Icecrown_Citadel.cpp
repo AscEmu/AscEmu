@@ -87,7 +87,7 @@ public:
 
     void OnCreate() override
     {
-        _gameobject->SetFlags(32);
+        _gameobject->setFlags(GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnActivate(Player* player) override

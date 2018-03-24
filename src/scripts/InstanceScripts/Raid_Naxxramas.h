@@ -2143,7 +2143,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
 
@@ -2167,7 +2167,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }
@@ -2186,7 +2186,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }

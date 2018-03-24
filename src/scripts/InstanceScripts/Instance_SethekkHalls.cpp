@@ -320,7 +320,7 @@ class DarkweaverSythAI : public CreatureAIScript
             if (LakkasCage != NULL)
             {
                 LakkasCage->SetState(GO_STATE_OPEN);
-                LakkasCage->SetFlags(LakkasCage->GetFlags() - 1);
+                LakkasCage->removeFlags(GO_FLAG_NONSELECTABLE);
             }
 
             if (mLakka != NULL && mLakka->GetScript())

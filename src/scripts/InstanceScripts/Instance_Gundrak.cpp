@@ -20,8 +20,6 @@
 #include "Setup.h"
 #include "Instance_Gundrak.h"
 
-#define GO_FLAG_UNCLICKABLE 0x00000010
-
 class GundrakScript : public InstanceScript
 {
     public:
@@ -73,67 +71,67 @@ class GundrakScript : public InstanceScript
                 case GO_ALTAR1_SLADRAN:
                 {
                     mSladranAltarGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_STATUE1_SLADRAN:
                 {
                     mSladranStatueGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_ALTAR2_COLOSSUS:
                 {
                     mColossusAltarGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_STATUE2_COLOSSUS:
                 {
                     mColossusStatueGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_ALTAR3_MOORABI:
                 {
                     mMoorabiAltarGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_STATUE3_MOORABI:
                 {
                     mMoorabiStatueGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_ECKDOOR:
                 {
                     mEckDoorsGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_TRAPDOOR:
                 {
                     mTrapDoorGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_COILISION:
                 {
                     mCoilisionGUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR1:
                 {
                     mDoor1GUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR2:
                 {
                     mDoor2GUID = pGameObject->getGuidLow();
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case 192568:
@@ -152,7 +150,7 @@ class GundrakScript : public InstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
                 }
                 break;
@@ -162,7 +160,7 @@ class GundrakScript : public InstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
                 }
                 break;
@@ -172,7 +170,7 @@ class GundrakScript : public InstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     mStatueCount++;
                 }
                 break;
@@ -199,7 +197,7 @@ class GundrakScript : public InstanceScript
                 {
                     pAltar = GetGameObjectByGuid(mMoorabiAltarGUID);
                     if (pAltar)
-                        pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
 
                     if (mInstance->iInstanceMode != MODE_HEROIC)
                         return;
@@ -224,14 +222,14 @@ class GundrakScript : public InstanceScript
                 {
                     pAltar = GetGameObjectByGuid(mSladranAltarGUID);
                     if (pAltar)
-                        pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
                 case CN_DRAKKARI_COLOSSUS:
                 {
                     pAltar = GetGameObjectByGuid(mColossusAltarGUID);
                     if (pAltar)
-                        pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
                 break;
             }

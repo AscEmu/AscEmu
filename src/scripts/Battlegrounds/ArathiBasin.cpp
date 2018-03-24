@@ -213,8 +213,8 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id]->SetState(GO_STATE_CLOSED);
         m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
         m_controlPoints[Id]->SetAnimProgress(100);
-        m_controlPoints[Id]->Activate();
-        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->setDynamic(1);
+        m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
 
         switch (Type)
         {
@@ -243,7 +243,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         // assign it a new guid (client needs this to see the entry change?)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
-        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
         m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
@@ -296,7 +296,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         // re-spawn the aura
         m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         m_controlPointAuras[Id]->setEntry(gi_aura->entry);
-        m_controlPointAuras[Id]->SetDisplayId(gi_aura->display_id);
+        m_controlPointAuras[Id]->setDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetGameObjectProperties(gi_aura);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
@@ -351,7 +351,7 @@ void ArathiBasin::OnStart()
     // open gates
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
+        (*itr)->setFlags(GO_FLAG_TRIGGERED);
         (*itr)->SetState(GO_STATE_OPEN);
     }
 

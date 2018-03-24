@@ -71,9 +71,9 @@ public:
             LocationVector pos = pPlayer->GetPosition();
 
             GameObject* pBeacon = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
-            if (pBeacon != nullptr && pBeacon->GetFlags() > 0)
+            if (pBeacon != nullptr && pBeacon->getFlags() > 0)
             {
-                pBeacon->SetFlags((pBeacon->GetFlags() - 1));
+                pBeacon->removeFlags(GO_FLAG_NONSELECTABLE);
             }
 
             // Northern Zeth'Gor Tower

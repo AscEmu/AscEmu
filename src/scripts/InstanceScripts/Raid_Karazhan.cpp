@@ -1114,7 +1114,7 @@ class ShadeofAranAI : public CreatureAIScript
         if (SDoor)
         {
             SDoor->SetState(GO_STATE_CLOSED);
-            SDoor->SetFlags(33);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 
@@ -1124,7 +1124,7 @@ class ShadeofAranAI : public CreatureAIScript
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
-            SDoor->SetFlags(34);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1134,7 +1134,7 @@ class ShadeofAranAI : public CreatureAIScript
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
-            SDoor->SetFlags(34);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -1946,7 +1946,7 @@ class MalchezaarAI : public CreatureAIScript
         if (MDoor != NULL)
         {
             MDoor->SetState(GO_STATE_CLOSED);
-            MDoor->SetFlags(33);
+            MDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 
@@ -2363,7 +2363,7 @@ class NetherspiteAI : public CreatureAIScript
         if (NDoor)
         {
             NDoor->SetState(GO_STATE_CLOSED);
-            NDoor->SetFlags(33);
+            NDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 

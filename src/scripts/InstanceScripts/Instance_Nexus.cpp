@@ -22,8 +22,6 @@
 #include "Setup.h"
 #include "Instance_Nexus.h"
 
-#define GO_FLAG_UNCLICKABLE 0x00000010
-
 class AnomalusAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
@@ -107,7 +105,7 @@ class AnomalusAI : public CreatureAIScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
@@ -291,7 +289,7 @@ class TelestraBossAI : public CreatureAIScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
@@ -399,7 +397,7 @@ class OrmorokAI : public CreatureAIScript
             for (auto goSphere : sphereSet)
             {
                 if (goSphere != nullptr)
-                    goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
             }
         }
     }
@@ -546,7 +544,7 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
 
@@ -556,7 +554,7 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
 
@@ -566,7 +564,7 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
@@ -595,13 +593,13 @@ class NexusScript : public InstanceScript
             switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
             }
         }
@@ -611,15 +609,15 @@ class NexusScript : public InstanceScript
             switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 default:

@@ -345,7 +345,7 @@ void Arena::OnStart()
     // open gates
     for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
+        (*itr)->setFlags(GO_FLAG_TRIGGERED);
         (*itr)->SetState(GO_STATE_CLOSED);
     }
 
