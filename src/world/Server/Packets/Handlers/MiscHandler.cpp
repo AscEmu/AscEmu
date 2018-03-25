@@ -436,7 +436,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 item->getEntry(),
                 item->GetItemRandomSuffixFactor(),
                 item->GetItemRandomPropertyId(),
-                item->GetStackCount()
+                item->getStackCount()
             );
 #if VERSION_STRING > TBC
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
@@ -447,7 +447,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->setStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->getStackCount() + amt);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
@@ -462,7 +462,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             add->getEntry(),
             add->GetItemRandomSuffixFactor(),
             add->GetItemRandomPropertyId(),
-            add->GetStackCount()
+            add->getStackCount()
         );
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
@@ -2192,7 +2192,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data.put<uint16>(enchant_mask_pos, enchant_mask);
 
         data << uint16(0);   // UNKNOWN
-        FastGUIDPack(data, item->GetCreatorGUID());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
+        FastGUIDPack(data, item->getCreatorGuid());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
         data << uint32(0);   // UNKNOWN
     }
     data.put<uint32>(slot_mask_pos, slot_mask);
@@ -2427,7 +2427,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
@@ -2529,13 +2529,13 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
 
     // gift wrapping handler
-    if (pItem->GetGiftCreatorGUID() && pItem->wrapped_item_id)
+    if (pItem->getGiftCreatorGuid() && pItem->wrapped_item_id)
     {
         ItemProperties const* it = sMySQLStore.getItemProperties(pItem->wrapped_item_id);
         if (it == nullptr)
             return;
 
-        pItem->SetGiftCreatorGUID(0);
+        pItem->setGiftCreatorGuid(0);
         pItem->setEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
         pItem->setItemProperties(it);

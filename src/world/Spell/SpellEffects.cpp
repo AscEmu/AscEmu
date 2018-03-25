@@ -5273,9 +5273,9 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
     tgt.m_unitTarget = pPet->getGuid();
     sp->prepare(&tgt);
 
-    if (itemTarget->GetStackCount() > 1)
+    if (itemTarget->getStackCount() > 1)
     {
-        itemTarget->ModStackCount(-1);
+        itemTarget->modStackCount(-1);
         itemTarget->m_isDirty = true;
     }
     else

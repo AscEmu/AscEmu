@@ -951,15 +951,15 @@ class LuaUnit
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
                 player->GetItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(),
-                item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
+                item_add->GetItemRandomPropertyId(), item_add->getStackCount());
         }
         else
         {
-            item_add->ModStackCount(count);
+            item_add->modStackCount(count);
             item_add->SetDirty();
             player->SendItemPushResult(false, true, false, false,
                                        static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0xFFFFFFFF,
-                                       count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
+                                       count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->getStackCount());
         }
         PUSH_ITEM(L, item_add);
         return 1;

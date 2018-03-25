@@ -122,8 +122,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     m_owner = plr;
 
     wrapped_item_id = fields[3].GetUInt32();
-    SetGiftCreatorGUID(fields[4].GetUInt32());
-    SetCreatorGUID(fields[5].GetUInt32());
+    setGiftCreatorGuid(fields[4].GetUInt32());
+    setCreatorGuid(fields[5].GetUInt32());
 
     count = fields[6].GetUInt32();
     if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->ItemStackCheat))
@@ -132,7 +132,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     SetChargesLeft(fields[7].GetUInt32());
 
-    setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
+    setFlags(fields[8].GetUInt32());
     randomProp = fields[9].GetUInt32();
     randomSuffix = fields[10].GetUInt32();
 
@@ -299,8 +299,8 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
         return;
     }
 
-    uint64 GiftCreatorGUID = GetGiftCreatorGUID();
-    uint64 CreatorGUID = GetCreatorGUID();
+    uint64 GiftCreatorGUID = getGiftCreatorGuid();
+    uint64 CreatorGUID = getCreatorGuid();
 
     std::stringstream ss;
 
@@ -328,9 +328,9 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     ss << (Arcemu::Util::GUID_LOPART(GiftCreatorGUID)) << ",";
     ss << (Arcemu::Util::GUID_LOPART(CreatorGUID)) << ",";
 
-    ss << GetStackCount() << ",";
+    ss << getStackCount() << ",";
     ss << int32(GetChargesLeft()) << ",";
-    ss << uint32(m_uint32Values[ITEM_FIELD_FLAGS]) << ",";
+    ss << getFlags() << ",";
     ss << random_prop << ", " << random_suffix << ", ";
     ss << 0 << ",";
     ss << GetDurability() << ",";
@@ -1217,7 +1217,7 @@ void Item::SendDurationUpdate()
 #if VERSION_STRING >= WotLK
     durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
 #else
-    durationupdate << uint32_t(getUInt32Value(ITEM_FIELD_DURATION));
+    durationupdate << getDuration();
 #endif
     m_owner->SendPacket(&durationupdate);
 

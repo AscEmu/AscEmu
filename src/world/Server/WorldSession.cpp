@@ -745,7 +745,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
 
         ItemProperties const* proto = item->getItemProperties();
 
-        item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
+        item->setFlags(ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
         // As of 3.2.0a the server sends this packet to provide refund info on
         // an item

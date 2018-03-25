@@ -4218,7 +4218,7 @@ uint8 Spell::CanCast(bool tolerate)
             if (i_caster->getItemProperties()->Spells[0].Charges != 0)
             {
                 // check if the item has the required charges
-                if (i_caster->GetCharges(0) == 0)
+                if (i_caster->getSpellCharges(0) <= 0)
                     return SPELL_FAILED_NO_CHARGES_REMAIN;
             }
         }
@@ -5379,17 +5379,17 @@ void Spell::RemoveItems()
     if (i_caster)
     {
         // Stackable Item -> remove 1 from stack
-        if (i_caster->GetStackCount() > 1)
+        if (i_caster->getStackCount() > 1)
         {
-            i_caster->ModStackCount(-1);
+            i_caster->modStackCount(-1);
             i_caster->m_isDirty = true;
             i_caster = nullptr;
         }
         else
         {
-            for (uint16_t x = 0; x < 5; x++)
+            for (uint8_t x = 0; x < 5; x++)
             {
-                int32 charges = static_cast<int32>(i_caster->GetCharges(x));
+                int32 charges = i_caster->getSpellCharges(x);
 
                 if (charges == 0)
                     continue;
@@ -5412,13 +5412,13 @@ void Spell::RemoveItems()
                     }
                     else
                     {
-                        i_caster->ModCharges(x, 1);
+                        i_caster->modSpellCharges(x, 1);
                     }
 
                 }
                 else
                 {
-                    i_caster->ModCharges(x, -1);
+                    i_caster->modSpellCharges(x, -1);
                 }
 
                 i_caster = nullptr;
@@ -5593,7 +5593,7 @@ exit:
     else if (i_caster != nullptr && target != nullptr)
     {
         //we should inherit the modifiers from the conjured food caster
-        Unit* item_creator = target->GetMapMgr()->GetUnit(i_caster->GetCreatorGUID());
+        Unit* item_creator = target->GetMapMgr()->GetUnit(i_caster->getCreatorGuid());
 
         if (item_creator != nullptr)
         {

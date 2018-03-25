@@ -176,7 +176,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (GetPlayer()->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
         {
             sQuestMgr.OnPlayerItemPickup(GetPlayer(), item);
-            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
         }
         else
@@ -184,11 +184,11 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->setStackCount(add->GetStackCount() + lootItemAmount);
+        add->setStackCount(add->getStackCount() + lootItemAmount);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
-        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->getEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->getEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->getStackCount());
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
     }
 
@@ -704,7 +704,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
     }

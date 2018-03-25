@@ -407,7 +407,7 @@ namespace luaItem
             {
                 if (item->getEntry() == itemid && item->wrapped_item_id == 0)
                 {
-                    cnt += item->GetStackCount() ? item->GetStackCount() : 1;
+                    cnt += item->getStackCount() ? item->getStackCount() : 1;
                 }
             }
         }

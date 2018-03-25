@@ -9157,11 +9157,11 @@ void Player::SendTradeUpdate()
 
             data << uint32(pProto->ItemId);
             data << uint32(pProto->DisplayInfoID);
-            data << uint32(pItem->GetStackCount());    // Amount           OK
+            data << uint32(pItem->getStackCount());    // Amount           OK
 
             // Enchantment stuff
             data << uint32(0);                                            // unknown
-            data << uint64(pItem->GetGiftCreatorGUID());    // gift creator     OK
+            data << uint64(pItem->getGiftCreatorGuid());    // gift creator     OK
             data << uint32(pItem->GetEnchantmentId(0));    // Item Enchantment OK
             for (uint8 i = 2; i < 5; i++)                                // Gem enchantments
             {
@@ -9170,8 +9170,8 @@ void Player::SendTradeUpdate()
                 else
                     data << uint32(0);
             }
-            data << uint64(pItem->GetCreatorGUID());        // item creator     OK
-            data << uint32(pItem->GetCharges(0));    // Spell Charges    OK
+            data << uint64(pItem->getCreatorGuid());        // item creator     OK
+            data << uint32(pItem->getSpellCharges(0));    // Spell Charges    OK
             data << uint32(pItem->GetItemRandomSuffixFactor());   // seems like time stamp or something like that
             data << uint32(pItem->GetItemRandomPropertyId());
             data << uint32(pProto->LockId);                                        // lock ID          OK
@@ -14717,7 +14717,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             else
                 SendItemPushResult(false, true, false, true,
                 m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
-                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         }
     }
 

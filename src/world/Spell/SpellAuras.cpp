@@ -6095,7 +6095,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     if (!item)
                         return;
 
-                    item->SetCreatorGUID(pCaster->getGuid());
+                    item->setCreatorGuid(pCaster->getGuid());
                     if (!pCaster->GetItemInterface()->AddItemToFreeSlot(item))
                     {
                         pCaster->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
@@ -6104,7 +6104,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     }
                     SlotResult* lr = pCaster->GetItemInterface()->LastSearchResult();
 
-                    pCaster->SendItemPushResult(true, false, true, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                    pCaster->SendItemPushResult(true, false, true, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
                 }
             }
         }

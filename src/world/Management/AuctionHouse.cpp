@@ -277,7 +277,7 @@ void Auction::AddToPacket(WorldPacket& data)
     * (Modifier / 10000) * enchantmentvalue = EnchantmentGain;
     */
 
-    data << pItem->GetStackCount();                     // Amount
+    data << pItem->getStackCount();                     // Amount
     data << pItem->GetChargesLeft();                    // Charges Left
     data << uint32(0);                                  // Unknown
     data << uint64(Owner);                              // Owner guid
@@ -595,7 +595,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     AuctionHouse* ah = pCreature->auctionHouse;
 
-    uint32 item_worth = pItem->getItemProperties()->SellPrice * pItem->GetStackCount();
+    uint32 item_worth = pItem->getItemProperties()->SellPrice * pItem->getStackCount();
     uint32 item_deposit = (uint32)(item_worth * ah->deposit_percent) * (uint32)(etime / 240.0f); // deposit is per 4 hours
 
     if (!_player->HasGold(item_deposit))   // player cannot afford deposit
@@ -1171,7 +1171,7 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
 
     data << int32(pItem->GetItemRandomPropertyId());                // Random item property id
     data << uint32(pItem->GetItemRandomSuffixFactor());             // SuffixFactor
-    data << uint32(pItem->GetStackCount());                         // item->count
+    data << uint32(pItem->getStackCount());                         // item->count
     data << uint32(pItem->GetChargesLeft());                        // item->charge FFFFFFF
     data << uint32(0);                                              // Unknown
     data << uint64(Owner);                                          // Auction->owner

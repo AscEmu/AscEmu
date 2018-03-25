@@ -360,7 +360,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recvData)
 
     data << uint32_t(MAIL_OK);
     data << item->getGuidLow();
-    data << item->GetStackCount();
+    data << item->getStackCount();
 
     message->items.erase(itr);
 
@@ -667,7 +667,7 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
 
             *data << int32_t((pItem ? pItem->GetItemRandomPropertyId() : 0)); // can be negative
             *data << uint32_t((pItem ? pItem->GetItemRandomSuffixFactor() : 0));
-            *data << uint32_t((pItem ? pItem->GetStackCount() : 0));
+            *data << uint32_t((pItem ? pItem->getStackCount() : 0));
             *data << uint32_t((pItem ? pItem->GetChargesLeft() : 0));
             *data << uint32_t((pItem ? pItem->GetDurabilityMax() : 0));
             *data << uint32_t((pItem ? pItem->GetDurability() : 0));

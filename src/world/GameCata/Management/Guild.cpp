@@ -2062,7 +2062,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     tabData << uint32_t(0);
                     tabData << uint32_t(0);
                     tabData << uint32_t(0);
-                    tabData << uint32_t(tabItem->GetStackCount());
+                    tabData << uint32_t(tabItem->getStackCount());
                     tabData << uint32_t(slotId);
                     tabData << uint32_t(0);
                     tabData << uint32_t(tabItem->getEntry());
@@ -2394,12 +2394,12 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
         return;
     }
 
-    if (pItem != nullptr && splitedAmount > 0 && pItem->GetStackCount() > splitedAmount)
+    if (pItem != nullptr && splitedAmount > 0 && pItem->getStackCount() > splitedAmount)
     {
         pItem2 = pItem;
 
-        pItem2->ModStackCount(-(int32_t)splitedAmount);
-        pItem2->SetCreatorGUID(0);
+        pItem2->modStackCount(-(int32_t)splitedAmount);
+        pItem2->setCreatorGuid(0);
         pItem2->SaveToDB(0, 0, true, nullptr);
 
         pItem = objmgr.CreateItem(pItem2->getEntry(), player);
@@ -2409,7 +2409,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
         }
 
         pItem->setStackCount(splitedAmount);
-        pItem->SetCreatorGUID(0);
+        pItem->setCreatorGuid(0);
         pItem->SaveToDB(0, 0, true, nullptr);
     }
     else
@@ -2454,7 +2454,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             return;
         }
 
-        if (splitedAmount && pSourceItem->GetStackCount() > splitedAmount)
+        if (splitedAmount && pSourceItem->getStackCount() > splitedAmount)
         {
             pSourceItem2 = pSourceItem;
             pSourceItem = objmgr.CreateItem(pSourceItem2->getEntry(), player);
@@ -2464,8 +2464,8 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             }
 
             pSourceItem->setStackCount(splitedAmount);
-            pSourceItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
-            pSourceItem2->ModStackCount(-(int32_t)splitedAmount);
+            pSourceItem->setCreatorGuid(pSourceItem2->getCreatorGuid());
+            pSourceItem2->modStackCount(-(int32_t)splitedAmount);
             pSourceItem2->m_isDirty = true;
         }
         else
@@ -2480,11 +2480,11 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
         if (pSourceItem == nullptr)
         {
-            if (pDestItem != nullptr && splitedAmount > 0 && pDestItem->GetStackCount() > splitedAmount)
+            if (pDestItem != nullptr && splitedAmount > 0 && pDestItem->getStackCount() > splitedAmount)
             {
                 pSourceItem2 = pDestItem;
 
-                pSourceItem2->ModStackCount(-(int32_t)splitedAmount);
+                pSourceItem2->modStackCount(-(int32_t)splitedAmount);
                 pSourceItem2->SaveToDB(0, 0, true, nullptr);
 
                 pDestItem = objmgr.CreateItem(pSourceItem2->getEntry(), player);
@@ -2494,7 +2494,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 }
 
                 pDestItem->setStackCount(splitedAmount);
-                pDestItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
+                pDestItem->setCreatorGuid(pSourceItem2->getCreatorGuid());
             }
             else
             {
@@ -2531,7 +2531,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             }
 
            logBankEvent(GB_LOG_WITHDRAW_ITEM, tabId, player->getGuidLow(),
-                getBankTab(tabId)->getItem(slotId)->getEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->GetStackCount()));
+                getBankTab(tabId)->getItem(slotId)->getEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->getStackCount()));
         }
     }
 
@@ -2576,7 +2576,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             tabData << uint32_t(0);
             tabData << uint32_t(0);
             tabData << uint32_t(0);
-            tabData << uint32_t(tabItem ? tabItem->GetStackCount() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
             tabData << uint32_t(*itr);
             tabData << uint32_t(0);
             tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
