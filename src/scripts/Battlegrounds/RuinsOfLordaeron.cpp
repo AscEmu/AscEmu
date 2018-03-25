@@ -51,14 +51,14 @@ void RuinsOfLordaeron::HookOnShadowSight()
     m_buffs[0] = SpawnGameObject(184664, 572, 1328.729268f, 1632.738403f, 34.838585f, 2.611449f, 32, 1375, 1.0f);
     m_buffs[0]->setState(GO_STATE_CLOSED);
     m_buffs[0]->SetRotationQuat(0.f, 0.f, 0.904455f, -0.426569f);
-    m_buffs[0]->setType(GAMEOBJECT_TYPE_TRAP);
+    m_buffs[0]->setGoType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[0]->setAnimationProgress(100);
     m_buffs[0]->PushToWorld(m_mapMgr);
 
     m_buffs[1] = SpawnGameObject(184664, 572, 1243.306763f, 1699.334351f, 34.837566f, 5.713773f, 32, 1375, 1.0f);
     m_buffs[1]->setState(GO_STATE_CLOSED);
     m_buffs[1]->SetRotationQuat(0.f, 0.f, 0.90445f, -0.426569f);
-    m_buffs[1]->setType(GAMEOBJECT_TYPE_TRAP);
+    m_buffs[1]->setGoType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[1]->setAnimationProgress(100);
     m_buffs[1]->PushToWorld(m_mapMgr);
 

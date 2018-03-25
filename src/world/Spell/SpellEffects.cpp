@@ -3663,7 +3663,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
         }
         break;
     };
-    if (gameObjTarget && gameObjTarget->getType() == GAMEOBJECT_TYPE_CHEST)
+    if (gameObjTarget && gameObjTarget->getGoType() == GAMEOBJECT_TYPE_CHEST)
         static_cast< Player* >(m_caster)->SendLoot(gameObjTarget->getGuid(), loottype, gameObjTarget->GetMapId());
 }
 

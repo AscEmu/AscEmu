@@ -448,7 +448,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pGO == nullptr)
             return;
 
-        switch (pGO->getType())
+        switch (pGO->getGoType())
         {
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
@@ -755,7 +755,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
         if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
             return;
 
-        if (pGO->getType() == GAMEOBJECT_TYPE_CHEST)
+        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
             li = pLGO->loot.items[slotid].roll;
     }
     else if (guidtype == HIGHGUID_TYPE_UNIT)

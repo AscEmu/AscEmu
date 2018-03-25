@@ -896,7 +896,7 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
 
         EOTSm_buffs[x]->SetRotationQuat(0.f, 0.f, EOTSBuffRotations[x][0], EOTSBuffRotations[x][1]);
         EOTSm_buffs[x]->setState(GO_STATE_CLOSED);
-        EOTSm_buffs[x]->setType(GAMEOBJECT_TYPE_TRAP);
+        EOTSm_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
         EOTSm_buffs[x]->setAnimationProgress(100);
         EOTSm_buffs[x]->PushToWorld(m_mapMgr);
     }

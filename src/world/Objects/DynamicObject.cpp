@@ -54,7 +54,7 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, (DYNAMICOBJECT_END)*sizeof(uint32));
     m_updateMask.SetCount(DYNAMICOBJECT_END);
-    setType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
+    setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
     m_uint32Values[OBJECT_FIELD_GUID] = low;
     m_uint32Values[OBJECT_FIELD_GUID + 1] = high;
     m_wowGuid.Init(getGuid());

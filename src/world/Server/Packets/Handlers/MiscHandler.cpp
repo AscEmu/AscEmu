@@ -765,7 +765,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pGO == NULL)
             return;
 
-        switch (pGO->getType())
+        switch (pGO->getGoType())
         {
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
@@ -1622,7 +1622,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
     _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
 
-    uint32 type = obj->getType();
+    uint32 type = obj->getGoType();
     switch (type)
     {
         case GAMEOBJECT_TYPE_CHAIR:
@@ -2488,7 +2488,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
         if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
             return;
 
-        if (pGO->getType() == GAMEOBJECT_TYPE_CHEST)
+        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
             li = pLGO->loot.items[slotid].roll;
     }
     else if (guidtype == HIGHGUID_TYPE_UNIT)

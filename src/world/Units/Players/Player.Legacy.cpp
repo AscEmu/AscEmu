@@ -1004,7 +1004,7 @@ bool Player::Create(WorldPacket& data)
     EventModelChange();
     //setMinDamage(info->mindmg);
     //setMaxDamage(info->maxdmg);
-    SetAttackPower(info->attackpower);
+    setAttackPower(info->attackpower);
 
     // PLAYER_BYTES
     setSkinColor(skin);
@@ -6557,7 +6557,7 @@ void Player::UpdateStats()
     if (RAP < 0)RAP = 0;
     if (AP < 0)AP = 0;
 
-    SetAttackPower(AP);
+    setAttackPower(AP);
     SetRangedAttackPower(RAP);
 
     LevelInfo* levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
@@ -7751,7 +7751,7 @@ void Player::UpdateNearbyGameObjects()
                 }
             }
             bool bPassed = !deactivate;
-            if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
                 GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
 
@@ -9861,12 +9861,12 @@ void Player::SetGuildId(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setType(getType() | 0x00010000);
+            setOType(getOType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setType(getType() & ~0x00010000);
+            setOType(getOType() & ~0x00010000);
         }
 
         //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
@@ -9884,12 +9884,12 @@ void Player::SetInGuild(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setType(getType() | 0x00010000);
+            setOType(getOType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setType(getType() & ~0x00010000);
+            setOType(getOType() & ~0x00010000);
         }
 
         ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0 );

@@ -201,7 +201,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
         GameObject* go = static_cast<GameObject*>(quest_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -281,7 +281,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
         GameObject* go = static_cast<GameObject*>(quest_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -676,7 +676,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     {
         GameObject* go = static_cast<GameObject*>(qst_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -1482,7 +1482,7 @@ void QuestMgr::LoadNPCQuests(Creature* qst_giver)
 
 void QuestMgr::LoadGOQuests(GameObject* go)
 {
-    if (go->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+    if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
     {
         GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
         go_quest_giver->SetQuestList(GetGOQuestList(go->getEntry()));
@@ -1776,7 +1776,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
     if (qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
     {
         GameObject* gameobject = static_cast<GameObject*>(qst_giver);
-        if (gameobject->getType() != GAMEOBJECT_TYPE_QUESTGIVER)
+        if (gameobject->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
             return false;
 
         GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(gameobject);
@@ -1806,7 +1806,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
             GameObject* gameobject = static_cast<GameObject*>(qst_giver);
             GameObject_QuestGiver* go_quest_giver = nullptr;
-            if (gameobject->getType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            if (gameobject->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
                 go_quest_giver = static_cast<GameObject_QuestGiver*>(gameobject);
                 if (go_quest_giver->HasQuests())

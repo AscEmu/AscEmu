@@ -411,6 +411,9 @@ public:
     uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
     //bytes_2 end
 
+    uint32_t getAttackPower() const;
+    void setAttackPower(uint32_t value);
+
     float_t getMinRangedDamage() const;
     void setMinRangedDamage(float_t damage);
 
@@ -1190,19 +1193,14 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
-    int32 GetAttackPower() { return getInt32Value(UNIT_FIELD_ATTACK_POWER); }
-
     //\todo fix this
     void SetAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1212,11 +1210,11 @@ public:
 #if VERSION_STRING != Cata
         return getInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
@@ -1241,7 +1239,8 @@ public:
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1251,11 +1250,11 @@ public:
 #if VERSION_STRING != Cata
         return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModRangedAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata

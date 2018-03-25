@@ -212,6 +212,9 @@ uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.sha
 void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
 //bytes_2 end
 
+uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
+void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
+
 float_t Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
 void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged_damage, damage); }
 

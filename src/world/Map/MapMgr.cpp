@@ -2012,7 +2012,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
 
         GameObject* irgo = static_cast<GameObject*>(iro);
 
-        if (irgo->getType() != type)
+        if (irgo->getGoType() != type)
             continue;
 
         if ((irgo->GetPhase() & o->GetPhase()) == 0)

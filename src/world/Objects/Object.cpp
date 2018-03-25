@@ -45,6 +45,8 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.h"
+#include "Data/WoWPlayer.h"
+#include "Data/WoWGameObject.h"
 
 // MIT Start
 
@@ -251,8 +253,8 @@ void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid_parts.hi
 uint32_t Object::getGuidHigh() const { return objectData()->guid_parts.high; }
 void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, high); }
 
-uint32_t Object::getType() const { return objectData()->type; }
-void Object::setType(uint32_t type) { write(objectData()->type, type); }
+uint32_t Object::getOType() const { return objectData()->type; }
+void Object::setOType(uint32_t type) { write(objectData()->type, type); }
 void Object::setObjectType(uint32_t objectTypeId)
 {
     uint32_t object_type = TYPE_OBJECT;
@@ -1041,6 +1043,22 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     mInRangeSameFactionSet.clear();
 
     Active = false;
+
+//#define WOW_STRUCT_CHECK
+#ifdef WOW_STRUCT_CHECK
+    //size check
+    auto size_object = OBJECT_END * sizeof(uint32_t);
+    auto size_object_struct = sizeof(WoWObject);
+
+    auto size_player = PLAYER_END * sizeof(uint32_t);
+    auto size_player_struct = sizeof(WoWPlayer);
+
+    auto size_unit = UNIT_END * sizeof(uint32_t);
+    auto size_unit_struct = sizeof(WoWUnit);
+
+    auto size_gobj = GAMEOBJECT_END * sizeof(uint32_t);
+    auto size_gobj_struct = sizeof(WoWGameObject);
+#endif
 }
 
 Object::~Object()
@@ -1190,7 +1208,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
         if (IsType(TYPE_GAMEOBJECT))
         {
-            switch (((GameObject*)this)->getType())
+            switch (((GameObject*)this)->getGoType())
             {
                 case GAMEOBJECT_TYPE_TRAP:
                 case GAMEOBJECT_TYPE_DUEL_ARBITER:
@@ -3378,7 +3396,7 @@ bool Object::CanActivate()
 
         case TYPEID_GAMEOBJECT:
         {
-            if (static_cast<GameObject*>(this)->getType() != GAMEOBJECT_TYPE_TRAP)
+            if (static_cast<GameObject*>(this)->getGoType() != GAMEOBJECT_TYPE_TRAP)
                 return true;
         }
         break;

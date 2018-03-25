@@ -904,7 +904,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     }
 
     //Preventing overbuffs
-    SetAttackPower(0);
+    setAttackPower(0);
     SetAttackPowerMods(0);
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
@@ -1780,7 +1780,7 @@ void Pet::ApplySummonLevelAbilities()
     BaseDamage[1] = float(pet_max_dmg);
 
     // Apply attack power.
-    SetAttackPower((uint32)(pet_pwr));
+    setAttackPower((uint32)(pet_pwr));
 
     BaseResistance[0] = (uint32)(pet_arm);
     CalcResistance(0);
@@ -1931,8 +1931,9 @@ void Pet::UpdateAP()
     uint32 AP = (str * 2 - 20);
     if (m_Owner)
         AP += m_Owner->GetRAP() * 22 / 100;
-    if (static_cast<int32>(AP) < 0) AP = 0;
-    SetAttackPower(AP);
+    if (static_cast<int32>(AP) < 0)
+        AP = 0;
+    setAttackPower(AP);
 }
 
 uint32 Pet::CanLearnSpell(SpellInfo* sp)

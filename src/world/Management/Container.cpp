@@ -34,7 +34,7 @@ Container::Container(uint32 high, uint32 low) : Item()
     memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
     m_updateMask.SetCount(CONTAINER_END);
 
-    setType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+    setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);

@@ -79,7 +79,7 @@ void GameObject::setState(uint8_t state)
 #endif
 }
 
-uint8_t GameObject::getType() const
+uint8_t GameObject::getGoType() const
 {
 #if VERSION_STRING <= TBC
     return gameObjectData()->type;
@@ -87,7 +87,7 @@ uint8_t GameObject::getType() const
     return gameObjectData()->bytes_1_gameobject.type;
 #endif
 }
-void GameObject::setType(uint8_t type)
+void GameObject::setGoType(uint8_t type)
 {
 #if VERSION_STRING <= TBC
     write(gameObjectData()->type, static_cast<uint32_t>(type));
@@ -133,8 +133,8 @@ void GameObject::setAnimationProgress(uint8_t progress)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Type helper
 
-bool GameObject::isQuestGiver() const { return getType() == GAMEOBJECT_TYPE_QUESTGIVER; }
-bool GameObject::isFishingNode() const { return getType() == GAMEOBJECT_TYPE_FISHINGNODE; }
+bool GameObject::isQuestGiver() const { return getGoType() == GAMEOBJECT_TYPE_QUESTGIVER; }
+bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_FISHINGNODE; }
 // MIT End
 
 GameObject::GameObject(uint64 guid)
@@ -155,7 +155,7 @@ GameObject::GameObject(uint64 guid)
     std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
 
-    setType(TYPE_GAMEOBJECT | TYPE_OBJECT);
+    setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
     setAnimationProgress(100);
     m_wowGuid.Init(guid);
@@ -232,7 +232,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     setAnimationProgress(0);
     setState(1);
     setDisplayId(gameobject_properties->display_id);
-    setType(static_cast<uint8>(gameobject_properties->type));
+    setGoType(static_cast<uint8>(gameobject_properties->type));
     InitAI();
 
     return true;

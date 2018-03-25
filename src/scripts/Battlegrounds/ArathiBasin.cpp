@@ -173,7 +173,7 @@ void ArathiBasin::SpawnBuff(uint32 x)
 
         m_buffs[x]->SetRotationQuat(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
         m_buffs[x]->setState(GO_STATE_CLOSED);
-        m_buffs[x]->setType(GAMEOBJECT_TYPE_TRAP);
+        m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
         m_buffs[x]->setAnimationProgress(100);
         m_buffs[x]->PushToWorld(m_mapMgr);
     }
@@ -209,7 +209,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         m_controlPoints[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
         m_controlPoints[Id]->setState(GO_STATE_CLOSED);
-        m_controlPoints[Id]->setType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
         m_controlPoints[Id]->setAnimationProgress(100);
         m_controlPoints[Id]->setDynamic(1);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
@@ -242,7 +242,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
-        m_controlPoints[Id]->setType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
         {
@@ -281,7 +281,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         m_controlPointAuras[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
         m_controlPointAuras[Id]->setState(GO_STATE_CLOSED);
-        m_controlPointAuras[Id]->setType(GAMEOBJECT_TYPE_TRAP);
+        m_controlPointAuras[Id]->setGoType(GAMEOBJECT_TYPE_TRAP);
         m_controlPointAuras[Id]->setAnimationProgress(100);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }

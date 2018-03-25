@@ -61,14 +61,14 @@ void RingOfTrials::HookOnShadowSight()
     m_buffs[0] = SpawnGameObject(184664, 559, 4011.113232f, 2896.879980f, 12.523950f, 0.486944f, 32, 1375, 1.0f);
     m_buffs[0]->setState(GO_STATE_CLOSED);
     m_buffs[0]->SetRotationQuat(0.f, 0.f, 0.904455f, -0.426569f);
-    m_buffs[0]->setType(GAMEOBJECT_TYPE_TRAP);
+    m_buffs[0]->setGoType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[0]->setAnimationProgress(100);
     m_buffs[0]->PushToWorld(m_mapMgr);
 
     m_buffs[1] = SpawnGameObject(184664, 559, 4102.111426f, 2945.843262f, 12.662578f, 3.628544f, 32, 1375, 1.0f);
     m_buffs[1]->setState(GO_STATE_CLOSED);
     m_buffs[1]->SetRotationQuat(0.f, 0.f, 0.90445f, -0.426569f);
-    m_buffs[1]->setType(GAMEOBJECT_TYPE_TRAP);
+    m_buffs[1]->setGoType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[1]->setAnimationProgress(100);
     m_buffs[1]->PushToWorld(m_mapMgr);
 }

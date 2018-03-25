@@ -49,7 +49,7 @@ Creature::Creature(uint64 guid)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
     m_updateMask.SetCount(UNIT_END);
-    setType(TYPE_UNIT | TYPE_OBJECT);
+    setOType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
     m_wowGuid.Init(getGuid());
 
@@ -970,7 +970,7 @@ void Creature::CalcStat(uint8_t type)
                 uint32 str = getStat(STAT_STRENGTH);
                 int32 AP = (str * 2 - 20);
                 if (AP < 0) AP = 0;
-                SetAttackPower(AP);
+                setAttackPower(AP);
             }
             CalcDamage();
         }

@@ -44,7 +44,7 @@ Corpse::Corpse(uint32 high, uint32 low)
     memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
     m_updateMask.SetCount(CORPSE_END);
 
-    setType(TYPE_CORPSE | TYPE_OBJECT);
+    setOType(TYPE_CORPSE | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);

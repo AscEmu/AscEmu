@@ -539,7 +539,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         controlpoint[Id].banner->setState(GO_STATE_CLOSED);
-        controlpoint[Id].banner->setType(static_cast<uint8>(gameobject_info->type));
+        controlpoint[Id].banner->setGoType(static_cast<uint8>(gameobject_info->type));
         controlpoint[Id].banner->setAnimationProgress(100);
         controlpoint[Id].banner->setDynamic(1);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
@@ -572,7 +572,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         controlpoint[Id].banner->setEntry(gameobject_info->entry);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
-        controlpoint[Id].banner->setType(static_cast<uint8>(gameobject_info->type));
+        controlpoint[Id].banner->setGoType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
         {
@@ -638,7 +638,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 5.0f);
 
         controlpoint[Id].aura->setState(GO_STATE_CLOSED);
-        controlpoint[Id].aura->setType(GAMEOBJECT_TYPE_TRAP);
+        controlpoint[Id].aura->setGoType(GAMEOBJECT_TYPE_TRAP);
         controlpoint[Id].aura->setAnimationProgress(100);
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
     }

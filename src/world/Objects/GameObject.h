@@ -414,8 +414,8 @@ public:
     uint8_t getState() const;
     void setState(uint8_t state);
 
-    uint8_t getType() const;
-    void setType(uint8_t type);
+    uint8_t getGoType() const;
+    void setGoType(uint8_t type);
 
     uint8_t getArtKit() const;
     void setArtKit(uint8_t artkit);

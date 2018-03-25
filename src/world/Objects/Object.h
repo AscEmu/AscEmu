@@ -323,8 +323,9 @@ public:
     uint32_t getGuidHigh() const;
     void setGuidHigh(uint32_t high);
 
-    uint32_t getType() const;
-    void setType(uint32_t type);
+    //\todo choose one function!
+    uint32_t getOType() const;
+    void setOType(uint32_t type);
     void setObjectType(uint32_t objectTypeId);
 
     void setEntry(uint32_t entry);
