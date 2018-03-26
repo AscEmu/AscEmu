@@ -2399,10 +2399,10 @@ void Spell::SendSpellStart()
                     */
 
                     // burlex - added a check here anyway (wpe suckers :P)
-                    if (item->GetDurability() > 0)
+                    if (item->getDurability() > 0)
                     {
-                        item->SetDurability(item->GetDurability() - 1);
-                        if (item->GetDurability() == 0)
+                        item->setDurability(item->getDurability() - 1);
+                        if (item->getDurability() == 0)
                             p_caster->ApplyItemMods(item, EQUIPMENT_SLOT_RANGED, false, true);
                     }
                 }
@@ -4368,7 +4368,7 @@ uint8 Spell::CanCast(bool tolerate)
 
         // check to make sure we have a targeted item
         // the second check is a temporary exploit fix, people keep stacking enchants on 0 durability items and then 1hit/1shot the other guys
-        if (!i_target || (i_target->GetDurability() == 0 && i_target->GetDurabilityMax() != 0))
+        if (!i_target || (i_target->getDurability() == 0 && i_target->getMaxDurability() != 0))
             return SPELL_FAILED_BAD_TARGETS;
 
         ItemProperties const* proto = i_target->getItemProperties();
@@ -5467,9 +5467,9 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
     int32 value = 0;
 
     /* Random suffix value calculation */
-    if (i_caster && (int32(i_caster->GetItemRandomPropertyId()) < 0))
+    if (i_caster && (int32(i_caster->getRandomPropertiesId()) < 0))
     {
-        auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(i_caster->GetItemRandomPropertyId())));
+        auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(i_caster->getRandomPropertiesId())));
 
         for (uint8 j = 0; j < 3; ++j)
         {
@@ -5489,7 +5489,7 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
                         if (item_random_suffix->prefixes[k] == 0)
                             goto exit;
 
-                        value = RANDOM_SUFFIX_MAGIC_CALCULATION(item_random_suffix->prefixes[j], i_caster->GetItemRandomSuffixFactor());
+                        value = RANDOM_SUFFIX_MAGIC_CALCULATION(item_random_suffix->prefixes[j], i_caster->getPropertySeed());
 
                         if (value == 0)
                             goto exit;

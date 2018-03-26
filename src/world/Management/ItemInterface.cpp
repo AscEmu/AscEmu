@@ -278,7 +278,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         else
         {
             m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), item->getEntry());
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->GetEnchantmentId(0));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->getEnchantmentId(0));
         }
     }
 #else
@@ -299,7 +299,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
             m_pOwner->setUInt32Value(VisibleBase + 5, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
             m_pOwner->setUInt32Value(VisibleBase + 6, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
             m_pOwner->setUInt32Value(VisibleBase + 7, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-            m_pOwner->setInt32Value(VisibleBase + 8, item->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+            m_pOwner->setInt32Value(VisibleBase + 8, item->getRandomPropertiesId()));
         }
     }
 #endif
@@ -3120,7 +3120,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)srcslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->GetEnchantmentId(0));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->getEnchantmentId(0));
             }
 
             // handle bind on equip
@@ -3162,7 +3162,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
                 m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
                 m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getRandomPropertiesId()));
             }
 
             // handle bind on equip
@@ -3199,7 +3199,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)dstslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->GetEnchantmentId(0));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->getEnchantmentId(0));
             }
 
             // handle bind on equip
@@ -3243,7 +3243,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
                 m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
                 m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getRandomPropertiesId()));
             }
 
             // handle bind on equip
@@ -3661,12 +3661,12 @@ void ItemInterface::ReduceItemDurability()
         Item* pItem = GetInventoryItem(INVENTORY_SLOT_NOT_SET, static_cast<int16>(slot));
         if (pItem != nullptr)
         {
-            if (pItem->GetDurability() && pItem->GetDurabilityMax())
+            if (pItem->getDurability() && pItem->getMaxDurability())
             {
-                pItem->SetDurability(pItem->GetDurabilityMax() - 1);
+                pItem->setDurability(pItem->getMaxDurability() - 1);
                 pItem->m_isDirty = true;
                 //check final durability
-                if (!pItem->GetDurability())   //no dur left
+                if (!pItem->getDurability())   //no dur left
                 {
                     m_pOwner->ApplyItemMods(pItem, static_cast<int16>(slot), false, true);
 
@@ -4075,7 +4075,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
             if (randomprop < 0)
                 item->SetRandomSuffix(-randomprop);
             else
-                item->SetItemRandomPropertyId(randomprop);
+                item->setRandomPropertiesId(randomprop);
 
             item->ApplyRandomProperties(false);
         }
@@ -4096,7 +4096,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         {
             SlotResult* lr = LastSearchResult();
 
-            chr->SendItemPushResult(false, true, false, true, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+            chr->SendItemPushResult(false, true, false, true, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 #if VERSION_STRING > TBC
             chr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, itemid, 1, 0);
 #endif

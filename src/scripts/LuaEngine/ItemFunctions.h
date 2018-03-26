@@ -309,7 +309,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        ptr->SetDurabilityToMax();
+        ptr->setDurabilityToMax();
         return 1;
     }
 
@@ -317,7 +317,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        lua_pushnumber(L, ptr->GetDurabilityMax());
+        lua_pushnumber(L, ptr->getMaxDurability());
         return 1;
     }
 
@@ -325,7 +325,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        lua_pushnumber(L, ptr->GetDurability());
+        lua_pushnumber(L, ptr->getDurability());
         return 1;
     }
 

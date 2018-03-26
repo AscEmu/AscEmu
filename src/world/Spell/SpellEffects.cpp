@@ -3373,7 +3373,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                     Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (oit != nullptr)
                     {
-                        if (oit->GetDurability() != 0)
+                        if (oit->getDurability() != 0)
                         {
                             if (oit->getItemProperties()->Class == 2 && oit->getItemProperties()->SubClass == 15)   // daggers
                                 damage = 105; //causing 105% weapon damage with daggers
@@ -3678,7 +3678,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
 
     //Save durability of the old item
     Player* owner = i_caster->getOwner();
-    uint32 dur = i_caster->GetDurability();
+    uint32 dur = i_caster->getDurability();
 
     result = owner->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->getGuid());
     if (!result)
@@ -3692,7 +3692,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     Item* it = objmgr.CreateItem(itemid, owner);
     if (!it) return;
 
-    it->SetDurability(dur);
+    it->setDurability(dur);
     //additem
 
     //additem
@@ -6433,8 +6433,8 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
-                            uint32 maxdur = pItem->GetDurabilityMax();
-                            uint32 olddur = pItem->GetDurability();
+                            uint32 maxdur = pItem->getMaxDurability();
+                            uint32 olddur = pItem->getDurability();
                             uint32 newdur = (olddur)-(damage);
 
                             if (static_cast<int32>(newdur) < 0)
@@ -6443,14 +6443,14 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                             if (newdur > maxdur)
                                 newdur = maxdur;
 
-                            pItem->SetDurability(newdur);
+                            pItem->setDurability(newdur);
                         }
                     }
                 }
                 else
                 {
-                    uint32 maxdur = pItem->GetDurabilityMax();
-                    uint32 olddur = pItem->GetDurability();
+                    uint32 maxdur = pItem->getMaxDurability();
+                    uint32 olddur = pItem->getDurability();
                     uint32 newdur = (olddur)-(damage);
 
                     if (static_cast<int32>(newdur) < 0)
@@ -6460,7 +6460,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                         newdur = maxdur;
 
                     // Apply / Disapply enchantements from this item
-                    pItem->SetDurability(newdur);
+                    pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
                         p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
@@ -6478,8 +6478,8 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
     pItem = p_caster->GetItemInterface()->GetInventoryItem(slot);
     if (pItem)
     {
-        uint32 maxdur = pItem->GetDurabilityMax();
-        uint32 olddur = pItem->GetDurability();
+        uint32 maxdur = pItem->getMaxDurability();
+        uint32 olddur = pItem->getDurability();
         uint32 newdur = (olddur)-(damage);
 
         if (static_cast<int32>(newdur) < 0)
@@ -6488,7 +6488,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
         if (newdur > maxdur)
             newdur = maxdur;
 
-        pItem->SetDurability(newdur);
+        pItem->setDurability(newdur);
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)
@@ -6526,8 +6526,8 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
-                            uint32 maxdur = pItem->GetDurabilityMax();
-                            uint32 olddur = pItem->GetDurability();
+                            uint32 maxdur = pItem->getMaxDurability();
+                            uint32 olddur = pItem->getDurability();
                             uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
                             if (static_cast<int32>(newdur) < 0)
@@ -6536,14 +6536,14 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                             if (newdur > maxdur)
                                 newdur = maxdur;
 
-                            pItem->SetDurability(newdur);
+                            pItem->setDurability(newdur);
                         }
                     }
                 }
                 else
                 {
-                    uint32 maxdur = pItem->GetDurabilityMax();
-                    uint32 olddur = pItem->GetDurability();
+                    uint32 maxdur = pItem->getMaxDurability();
+                    uint32 olddur = pItem->getDurability();
                     uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
                     if (static_cast<int32>(newdur) < 0)
@@ -6553,7 +6553,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                         newdur = maxdur;
 
                     // Apply / Disapply enchantements from this item
-                    pItem->SetDurability(newdur);
+                    pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
                         p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
@@ -6574,8 +6574,8 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
     pItem = p_caster->GetItemInterface()->GetInventoryItem(slot);
     if (pItem)
     {
-        uint32 maxdur = pItem->GetDurabilityMax();
-        uint32 olddur = pItem->GetDurability();
+        uint32 maxdur = pItem->getMaxDurability();
+        uint32 olddur = pItem->getDurability();
         uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
         if (static_cast<int32>(newdur) < 0)
@@ -6584,7 +6584,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
         if (newdur > maxdur)
             newdur = maxdur;
 
-        pItem->SetDurability(newdur);
+        pItem->setDurability(newdur);
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)

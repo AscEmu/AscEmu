@@ -72,10 +72,10 @@ void Container::LoadFromDB(Field* fields)
     setStackCount(1);
 
     setFlags(fields[8].GetUInt32());
-    SetItemRandomPropertyId(fields[9].GetUInt32());
+    setRandomPropertiesId(fields[9].GetUInt32());
 
-    SetDurabilityMax(m_itemProperties->MaxDurability);
-    SetDurability(fields[12].GetUInt32());
+    setMaxDurability(m_itemProperties->MaxDurability);
+    setDurability(fields[12].GetUInt32());
 
 
     SetNumSlots(m_itemProperties->ContainerSlots);

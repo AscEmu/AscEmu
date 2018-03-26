@@ -660,17 +660,17 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
             *data << uint32_t((pItem ? pItem->getEntry() : 0));
             for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
             {
-                *data << uint32_t((pItem ? pItem->GetEnchantmentId((EnchantmentSlot)j) : 0));
-                *data << uint32_t((pItem ? pItem->GetEnchantmentDuration((EnchantmentSlot)j) : 0));
-                *data << uint32_t((pItem ? pItem->GetEnchantmentCharges((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentId((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentDuration((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentCharges((EnchantmentSlot)j) : 0));
             }
 
-            *data << int32_t((pItem ? pItem->GetItemRandomPropertyId() : 0)); // can be negative
-            *data << uint32_t((pItem ? pItem->GetItemRandomSuffixFactor() : 0));
+            *data << int32_t((pItem ? pItem->getRandomPropertiesId() : 0)); // can be negative
+            *data << uint32_t((pItem ? pItem->getPropertySeed() : 0));
             *data << uint32_t((pItem ? pItem->getStackCount() : 0));
             *data << uint32_t((pItem ? pItem->GetChargesLeft() : 0));
-            *data << uint32_t((pItem ? pItem->GetDurabilityMax() : 0));
-            *data << uint32_t((pItem ? pItem->GetDurability() : 0));
+            *data << uint32_t((pItem ? pItem->getMaxDurability() : 0));
+            *data << uint32_t((pItem ? pItem->getDurability() : 0));
             *data << uint8_t(0);
         }
         ++realCount;

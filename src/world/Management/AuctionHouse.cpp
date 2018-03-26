@@ -255,13 +255,13 @@ void Auction::AddToPacket(WorldPacket& data)
 
     for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
     {
-        data << uint32(pItem->GetEnchantmentId(i));             // Enchantment ID
+        data << uint32(pItem->getEnchantmentId(i));             // Enchantment ID
         data << uint32(pItem->GetEnchantmentApplytime(i));      // Unknown / maybe ApplyTime
-        data << uint32(pItem->GetEnchantmentCharges(i));        // charges
+        data << uint32(pItem->getEnchantmentCharges(i));        // charges
     }
 
-    data << pItem->GetItemRandomPropertyId();                   // -ItemRandomSuffix / random property     : If the value is negative its ItemRandomSuffix if its possitive its RandomItemProperty
-    data << pItem->GetItemRandomSuffixFactor();                 // when ItemRandomSuffix is used this is the modifier
+    data << pItem->getRandomPropertiesId();                   // -ItemRandomSuffix / random property     : If the value is negative its ItemRandomSuffix if its possitive its RandomItemProperty
+    data << pItem->getPropertySeed();                 // when ItemRandomSuffix is used this is the modifier
 
     /******************** ItemRandomSuffix***************************
     * For what I have seen ItemRandomSuffix is like RandomItemProperty
@@ -1164,13 +1164,13 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
 
     for (uint8 i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i) // PROP_ENCHANTMENT_SLOT_0 = 10
     {
-        data << uint32(pItem->GetEnchantmentId(EnchantmentSlot(i)));
-        data << uint32(pItem->GetEnchantmentDuration(EnchantmentSlot(i)));
-        data << uint32(pItem->GetEnchantmentCharges(EnchantmentSlot(i)));
+        data << uint32(pItem->getEnchantmentId(EnchantmentSlot(i)));
+        data << uint32(pItem->getEnchantmentDuration(EnchantmentSlot(i)));
+        data << uint32(pItem->getEnchantmentCharges(EnchantmentSlot(i)));
     }
 
-    data << int32(pItem->GetItemRandomPropertyId());                // Random item property id
-    data << uint32(pItem->GetItemRandomSuffixFactor());             // SuffixFactor
+    data << int32(pItem->getRandomPropertiesId());                // Random item property id
+    data << uint32(pItem->getPropertySeed());             // SuffixFactor
     data << uint32(pItem->getStackCount());                         // item->count
     data << uint32(pItem->GetChargesLeft());                        // item->charge FFFFFFF
     data << uint32(0);                                              // Unknown

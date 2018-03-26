@@ -413,7 +413,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         item->setStackCount(amt);
         if (pLoot->items.at(lootSlot).iRandomProperty != NULL)
         {
-            item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
+            item->setRandomPropertiesId(pLoot->items.at(lootSlot).iRandomProperty->ID);
             item->ApplyRandomProperties(false);
         }
         else if (pLoot->items.at(lootSlot).iRandomSuffix != NULL)
@@ -434,8 +434,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 slotresult.Slot,
                 1,
                 item->getEntry(),
-                item->GetItemRandomSuffixFactor(),
-                item->GetItemRandomPropertyId(),
+                item->getPropertySeed(),
+                item->getRandomPropertiesId(),
                 item->getStackCount()
             );
 #if VERSION_STRING > TBC
@@ -460,8 +460,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             0xFFFFFFFF,
             amt,
             add->getEntry(),
-            add->GetItemRandomSuffixFactor(),
-            add->GetItemRandomPropertyId(),
+            add->getPropertySeed(),
+            add->getRandomPropertiesId(),
             add->getStackCount()
         );
 #if VERSION_STRING > TBC
@@ -2178,9 +2178,9 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         data << uint16(enchant_mask);
 
-        for (uint16 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot) // In UpdateFields.h we have ITEM_FIELD_ENCHANTMENT_1_1 to ITEM_FIELD_ENCHANTMENT_12_1, iterate on them...
+        for (uint8_t Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot) // In UpdateFields.h we have ITEM_FIELD_ENCHANTMENT_1_1 to ITEM_FIELD_ENCHANTMENT_12_1, iterate on them...
         {
-            uint32 enchantId = item->GetEnchantmentId(Slot);   // This calculation has to be in sync with Item.cpp line ~614, at the moment it is:    uint32 EnchantBase = Slot * 3 + ITEM_FIELD_ENCHANTMENT_1_1;
+            uint32 enchantId = item->getEnchantmentId(Slot);   // This calculation has to be in sync with Item.cpp line ~614, at the moment it is:    uint32 EnchantBase = Slot * 3 + ITEM_FIELD_ENCHANTMENT_1_1;
 
             if (!enchantId)
                 continue;
@@ -2416,7 +2416,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != NULL)
     {
-        item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
+        item->setRandomPropertiesId(pLoot->items.at(slotid).iRandomProperty->ID);
         item->ApplyRandomProperties(false);
     }
     else if (pLoot->items.at(slotid).iRandomSuffix != NULL)
@@ -2427,7 +2427,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
@@ -2547,8 +2547,8 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
 
         if (it->MaxDurability)
         {
-            pItem->SetDurability(it->MaxDurability);
-            pItem->SetDurabilityMax(it->MaxDurability);
+            pItem->setDurability(it->MaxDurability);
+            pItem->setMaxDurability(it->MaxDurability);
         }
 
         pItem->m_isDirty = true;

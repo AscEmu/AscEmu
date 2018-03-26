@@ -1265,7 +1265,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
             return;
     }
 
-    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->getEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->getStackCount());
+    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->getEntry(), pItem->getPropertySeed(), pItem->getRandomPropertiesId(), pItem->getStackCount());
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
     data << uint64(srcguid);
@@ -1396,7 +1396,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                 {
                     item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
             }
         }
         else
@@ -1413,7 +1413,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                     {
                         item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                     }
-                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 }
             }
         }
@@ -1422,7 +1422,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
     {
         add_item->modStackCount(amount * creature_item.amount);
         add_item->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->getEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->getStackCount());
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->getEntry(), add_item->getPropertySeed(), add_item->getRandomPropertiesId(), add_item->getStackCount());
     }
 
     _player->GetItemInterface()->BuyItem(it, amount, creature);
@@ -1784,7 +1784,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
                 {
                     if (i < INVENTORY_SLOT_BAG_END)
                     {
-                        if (pItem->GetDurability() == 0 && pItem->RepairItem(_player, guildmoney, &totalcost))
+                        if (pItem->getDurability() == 0 && pItem->RepairItem(_player, guildmoney, &totalcost))
                             _player->ApplyItemMods(pItem, static_cast<int16>(i), true);
                         else
                             pItem->RepairItem(_player, guildmoney, &totalcost);
@@ -1799,11 +1799,11 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
         if (item)
         {
             SlotResult* searchres = _player->GetItemInterface()->LastSearchResult(); //this never gets null since we get a pointer to the inteface internal var
-            uint32 dDurability = item->GetDurabilityMax() - item->GetDurability();
+            uint32 dDurability = item->getMaxDurability() - item->getDurability();
 
             if (dDurability)
             {
-                uint32 cDurability = item->GetDurability();
+                uint32 cDurability = item->getDurability();
                 //only apply item mods if they are on char equipped
                 if (item->RepairItem(_player) && cDurability == 0 && searchres->ContainerSlot == static_cast<int8>(INVALID_BACKPACK_SLOT) && searchres->Slot < static_cast<int8>(INVENTORY_SLOT_BAG_END))
                     _player->ApplyItemMods(item, searchres->Slot, true);
@@ -2238,8 +2238,8 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recvData)
 
     // set the giftwrapper fields
     dst->setGiftCreatorGuid(_player->getGuid());
-    dst->SetDurability(0);
-    dst->SetDurabilityMax(0);
+    dst->setDurability(0);
+    dst->setMaxDurability(0);
     dst->addFlags(ITEM_FLAG_WRAPPED);
 
     // save it

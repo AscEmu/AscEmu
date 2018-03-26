@@ -99,8 +99,8 @@ public:
                 else
                 {
                     plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
-                        item->GetItemRandomPropertyId(), item->getStackCount());
+                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
+                        item->getRandomPropertiesId(), item->getStackCount());
 
                 }
 

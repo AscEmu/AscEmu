@@ -5188,7 +5188,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     ItemProperties const* proto = item->getItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
-    if (!item->IsContainer() && item->GetDurability() == 0 && item->GetDurabilityMax() && justdrokedown == false)
+    if (!item->IsContainer() && item->getDurability() == 0 && item->getMaxDurability() && justdrokedown == false)
     {
         return;
     }
@@ -5977,8 +5977,8 @@ void Player::DeathDurabilityLoss(double percent)
     {
         if ((pItem = GetItemInterface()->GetInventoryItem(i)) != nullptr)
         {
-            pMaxDurability = pItem->GetDurabilityMax();
-            pDurability = pItem->GetDurability();
+            pMaxDurability = pItem->getMaxDurability();
+            pDurability = pItem->getDurability();
             if (pDurability)
             {
                 pNewDurability = (uint32)(pMaxDurability * percent);
@@ -5991,7 +5991,7 @@ void Player::DeathDurabilityLoss(double percent)
                     ApplyItemMods(pItem, i, false, true);
                 }
 
-                pItem->SetDurability(static_cast<uint32>(pNewDurability));
+                pItem->setDurability(static_cast<uint32>(pNewDurability));
                 pItem->m_isDirty = true;
             }
         }
@@ -9162,7 +9162,7 @@ void Player::SendTradeUpdate()
             // Enchantment stuff
             data << uint32(0);                                            // unknown
             data << uint64(pItem->getGiftCreatorGuid());    // gift creator     OK
-            data << uint32(pItem->GetEnchantmentId(0));    // Item Enchantment OK
+            data << uint32(pItem->getEnchantmentId(0));    // Item Enchantment OK
             for (uint8 i = 2; i < 5; i++)                                // Gem enchantments
             {
                 if (pItem->GetEnchantment(i) != NULL && pItem->GetEnchantment(i)->Enchantment != NULL)
@@ -9172,11 +9172,11 @@ void Player::SendTradeUpdate()
             }
             data << uint64(pItem->getCreatorGuid());        // item creator     OK
             data << uint32(pItem->getSpellCharges(0));    // Spell Charges    OK
-            data << uint32(pItem->GetItemRandomSuffixFactor());   // seems like time stamp or something like that
-            data << uint32(pItem->GetItemRandomPropertyId());
+            data << uint32(pItem->getPropertySeed());   // seems like time stamp or something like that
+            data << uint32(pItem->getRandomPropertiesId());
             data << uint32(pProto->LockId);                                        // lock ID          OK
-            data << uint32(pItem->GetDurabilityMax());
-            data << uint32(pItem->GetDurability());
+            data << uint32(pItem->getMaxDurability());
+            data << uint32(pItem->getDurability());
         }
     }
     data.resize(21 + count * 73);
@@ -14717,7 +14717,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             else
                 SendItemPushResult(false, true, false, true,
                 m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
-                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         }
     }
 

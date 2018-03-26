@@ -2049,7 +2049,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     uint32_t enchants = 0;
                     for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
                     {
-                        if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(ench))))
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
                         {
                             tabData << uint32_t(enchantId);
                             tabData << uint32_t(ench);
@@ -2066,9 +2066,9 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     tabData << uint32_t(slotId);
                     tabData << uint32_t(0);
                     tabData << uint32_t(tabItem->getEntry());
-                    tabData << uint32_t(tabItem->GetItemRandomPropertyId());
+                    tabData << uint32_t(tabItem->getRandomPropertiesId());
                     tabData << uint32_t(abs(0));
-                    tabData << uint32_t(tabItem->GetItemRandomSuffixFactor());
+                    tabData << uint32_t(tabItem->getPropertySeed());
                 }
             }
         }
@@ -2562,7 +2562,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             {
                 for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
                 {
-                    if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(enchSlot))))
+                    if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
                     {
                         tabData << uint32_t(enchantId);
                         tabData << uint32_t(enchSlot);
@@ -2580,9 +2580,9 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             tabData << uint32_t(*itr);
             tabData << uint32_t(0);
             tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
-            tabData << uint32_t(tabItem ? tabItem->GetItemRandomPropertyId() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
             tabData << uint32_t(tabItem ? 0 : 0);
-            tabData << uint32_t(tabItem ? tabItem->GetItemRandomSuffixFactor() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
         }
 
         data.flushBits();

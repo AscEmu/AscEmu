@@ -1472,7 +1472,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
         if (owner != nullptr)
         {
             uint32* played = owner->GetPlayedtime();
-            pItem->SetCreationTime(played[1]);
+            pItem->setCreatePlayedTime(played[1]);
         }
 #endif
 

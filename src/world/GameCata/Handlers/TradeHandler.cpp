@@ -150,22 +150,22 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
             {
                 data.WriteByteSeq(creatorGuid[1]);
 
-                data << uint32_t(item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+                data << uint32_t(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
                 for (uint32_t enchant_slot = 2; enchant_slot < 5; ++enchant_slot)
                 {
-                    data << uint32_t(item->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(enchant_slot))));
+                    data << uint32_t(item->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchant_slot))));
                 }
 
-                data << uint32_t(item->getUInt32Value(ITEM_FIELD_MAXDURABILITY));
+                data << uint32_t(item->getMaxDurability());
 
                 data.WriteByteSeq(creatorGuid[6]);
                 data.WriteByteSeq(creatorGuid[2]);
                 data.WriteByteSeq(creatorGuid[7]);
                 data.WriteByteSeq(creatorGuid[4]);
 
-                data << uint32_t(item->GetEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
-                data << uint32_t(item->getUInt32Value(ITEM_FIELD_DURABILITY));
-                data << uint32_t(item->GetItemRandomPropertyId());
+                data << uint32_t(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
+                data << uint32_t(item->getDurability());
+                data << uint32_t(item->getRandomPropertiesId());
 
                 data.WriteByteSeq(creatorGuid[3]);
 
@@ -174,7 +174,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
                 data.WriteByteSeq(creatorGuid[0]);
 
                 data << uint32_t(item->getSpellCharges(0));
-                data << uint32_t(item->GetItemRandomSuffixFactor());
+                data << uint32_t(item->getPropertySeed());
 
                 data.WriteByteSeq(creatorGuid[5]);
             }

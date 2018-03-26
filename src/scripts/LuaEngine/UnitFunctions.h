@@ -950,8 +950,8 @@ class LuaUnit
             item_add->setStackCount(count);
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
-                player->GetItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(),
-                item_add->GetItemRandomPropertyId(), item_add->getStackCount());
+                player->GetItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->getPropertySeed(),
+                item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
         else
         {
@@ -959,7 +959,7 @@ class LuaUnit
             item_add->SetDirty();
             player->SendItemPushResult(false, true, false, false,
                                        static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0xFFFFFFFF,
-                                       count, item_add->getEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->getStackCount());
+                                       count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
         PUSH_ITEM(L, item_add);
         return 1;
@@ -4221,20 +4221,20 @@ class LuaUnit
                         pItem = pContainer->GetItem(j);
                         if (pItem != NULL)
                         {
-                            pItem->SetDurabilityToMax();
+                            pItem->setDurabilityToMax();
                         }
                     }
                 }
                 else
                 {
-                    if (pItem->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
+                    if (pItem->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->getDurability() <= 0)
                     {
-                        pItem->SetDurabilityToMax();
+                        pItem->setDurabilityToMax();
                         plr->ApplyItemMods(pItem, i, true);
                     }
                     else
                     {
-                        pItem->SetDurabilityToMax();
+                        pItem->setDurabilityToMax();
                     }
                 }
             }

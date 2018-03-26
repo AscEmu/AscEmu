@@ -96,10 +96,10 @@ void Spell::SendSpellStart()
                     */
 
                     // burlex - added a check here anyway (wpe suckers :P)
-                    if (item->GetDurability() > 0)
+                    if (item->getDurability() > 0)
                     {
-                        item->SetDurability(item->GetDurability() - 1);
-                        if (item->GetDurability() == 0)
+                        item->setDurability(item->getDurability() - 1);
+                        if (item->getDurability() == 0)
                             p_caster->ApplyItemMods(item, EQUIPMENT_SLOT_RANGED, false, true);
                     }
                 }

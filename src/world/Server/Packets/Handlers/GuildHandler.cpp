@@ -715,8 +715,8 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);
-            i->SetEnchantmentId(0, c->GetID());
-            i->SetItemRandomSuffixFactor(57813883);
+            i->setEnchantmentId(0, c->GetID());
+            i->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
             {
                 c->Destroy();
@@ -726,7 +726,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->getPropertySeed(), i->getRandomPropertiesId(), i->getStackCount());
 
             _player->ModGold(-(int32)costs[arena_type]);
             _player->m_charters[arena_index] = c;
@@ -793,8 +793,8 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);
-            i->SetEnchantmentId(0, c->GetID());
-            i->SetItemRandomSuffixFactor(57813883);
+            i->setEnchantmentId(0, c->GetID());
+            i->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
             {
                 c->Destroy();
@@ -804,7 +804,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->getPropertySeed(), i->getRandomPropertiesId(), i->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = c;
             _player->ModGold(-1000);
@@ -1785,10 +1785,10 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
             data << uint8(j);                   // slot
             data << pTab->pSlots[j]->getEntry();
             data << uint32(0);                  // 3.3.0 (0x8000, 0x8020) from MaNGOS
-            data << (uint32)pTab->pSlots[j]->GetItemRandomPropertyId();
+            data << (uint32)pTab->pSlots[j]->getRandomPropertiesId();
 
-            if (pTab->pSlots[j]->GetItemRandomPropertyId())
-                data << (uint32)pTab->pSlots[j]->GetItemRandomSuffixFactor();
+            if (pTab->pSlots[j]->getRandomPropertiesId())
+                data << (uint32)pTab->pSlots[j]->getPropertySeed();
 
             data << uint32(pTab->pSlots[j]->getStackCount());
             data << uint32(0);                  // unknown value

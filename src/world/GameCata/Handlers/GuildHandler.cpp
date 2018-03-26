@@ -1072,8 +1072,8 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
-            item->SetEnchantmentId(0, charter->GetID());
-            item->SetItemRandomSuffixFactor(57813883);
+            item->setEnchantmentId(0, charter->GetID());
+            item->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->Destroy();
@@ -1083,7 +1083,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             charter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->ModGold(-(int32_t)costs[arena_type]);
             _player->m_charters[arenaIndex] = charter;
@@ -1152,8 +1152,8 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
-            item->SetEnchantmentId(0, charter->GetID());
-            item->SetItemRandomSuffixFactor(57813883);
+            item->setEnchantmentId(0, charter->GetID());
+            item->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->Destroy();
@@ -1164,7 +1164,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->SaveToDB();
 
             _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(),
-                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = charter;
             _player->ModGold(-1000);

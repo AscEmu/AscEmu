@@ -809,7 +809,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             {
                 SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
                 SlotResult* le = player->GetItemInterface()->LastSearchResult();
-                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 ++itemset_items_count;
             }
 
@@ -1402,22 +1402,22 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
                     player_item = item_container->GetItem(static_cast<uint16>(j));
                     if (player_item != nullptr)
                     {
-                        player_item->SetDurabilityToMax();
+                        player_item->setDurabilityToMax();
                         player_item->m_isDirty = true;
                     }
                 }
             }
             else
             {
-                if (player_item->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
+                if (player_item->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->getDurability() <= 0)
                 {
-                    player_item->SetDurabilityToMax();
+                    player_item->setDurabilityToMax();
                     player_item->m_isDirty = true;
                     player_target->ApplyItemMods(player_item, static_cast<uint16>(i), true);
                 }
                 else
                 {
-                    player_item->SetDurabilityToMax();
+                    player_item->setDurabilityToMax();
                     player_item->m_isDirty = true;
                 }
             }

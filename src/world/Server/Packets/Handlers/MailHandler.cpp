@@ -86,19 +86,19 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
             data << uint32(pItem->getGuidLow());
             data << uint32(pItem->getEntry());
 
-            for (uint16_t j = 0; j < 7; ++j)
+            for (uint8_t j = 0; j < MAX_ENCHANTMENT_SLOT; ++j)
             {
-                data << uint32(pItem->GetEnchantmentId(j));
-                data << uint32(pItem->GetEnchantmentDuration(j));
+                data << uint32(pItem->getEnchantmentId(j));
+                data << uint32(pItem->getEnchantmentDuration(j));
                 data << uint32(0);
             }
 
-            data << uint32(pItem->GetItemRandomPropertyId());
-            data << uint32(pItem->GetItemRandomSuffixFactor());
+            data << uint32(pItem->getRandomPropertiesId());
+            data << uint32(pItem->getPropertySeed());
             data << uint32(pItem->getStackCount());
             data << uint32(pItem->GetChargesLeft());
-            data << uint32(pItem->GetDurabilityMax());
-            data << uint32(pItem->GetDurability());
+            data << uint32(pItem->getMaxDurability());
+            data << uint32(pItem->getDurability());
             data << uint8(0);   // unknown
 
             delete pItem;
