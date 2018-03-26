@@ -176,14 +176,14 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
         ItemProperties const* itemProto = quest_giver->getItemProperties();
 
-        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
+        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->isSoulbound())     // SoulBind item will be used after SoulBind()
         {
             if (sScriptMgr.CallScriptedItem(quest_giver, GetPlayer()))
                 return;
         }
 
         if (itemProto->Bonding == ITEM_BIND_ON_USE)
-            quest_giver->SoulBind();
+            quest_giver->addFlags(ITEM_FLAG_SOULBOUND);
 
         bValid = true;
         status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, 1, false);

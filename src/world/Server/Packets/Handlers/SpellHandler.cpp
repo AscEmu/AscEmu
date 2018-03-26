@@ -72,7 +72,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (tmpItem->IsSoulbound() && tmpItem->getOwnerGuid() != _player->getGuid() && !tmpItem->IsAccountbound())
+    if (tmpItem->isSoulbound() && tmpItem->getOwnerGuid() != _player->getGuid() && !tmpItem->isAccountbound())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
         return;
@@ -151,8 +151,8 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     if (itemProto->Bonding == ITEM_BIND_ON_USE || itemProto->Bonding == ITEM_BIND_ON_PICKUP || itemProto->Bonding == ITEM_BIND_QUEST)
     {
-        if (!tmpItem->IsSoulbound())
-            tmpItem->SoulBind();
+        if (!tmpItem->isSoulbound())
+            tmpItem->addFlags(ITEM_FLAG_SOULBOUND);
     }
 
     // Combat check

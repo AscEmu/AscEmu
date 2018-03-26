@@ -198,7 +198,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     // Charter stuff
     if (getEntry() == ITEM_ENTRY_GUILD_CHARTER)
     {
-        SoulBind();
+        addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_GUILD])
@@ -207,7 +207,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     if (getEntry() == ARENA_TEAM_CHARTER_2v2)
     {
-        SoulBind();
+        addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_2V2])
@@ -216,7 +216,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     if (getEntry() == ARENA_TEAM_CHARTER_3v3)
     {
-        SoulBind();
+        addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_3V3])
@@ -225,7 +225,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     if (getEntry() == ARENA_TEAM_CHARTER_5v5)
     {
-        SoulBind();
+        addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_5V5])

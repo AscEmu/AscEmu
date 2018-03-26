@@ -114,7 +114,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
             data.writeBit(giftCreatorGuid[7]);
             data.writeBit(giftCreatorGuid[1]);
-            bool notWrapped = data.writeBit(!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED));     //wrapped
+            bool notWrapped = data.writeBit(!item->hasFlags(ITEM_FLAG_WRAPPED));     //wrapped
             data.writeBit(giftCreatorGuid[3]);
 
             if (notWrapped)
@@ -146,7 +146,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
             ObjectGuid creatorGuid = item->getCreatorGuid();
             ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
-            if (!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED))
+            if (!item->hasFlags(ITEM_FLAG_WRAPPED))
             {
                 data.WriteByteSeq(creatorGuid[1]);
 
@@ -489,12 +489,12 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
         {
             if (trade_items[i])
             {
-                trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->getGuid());
+                trade_items[i]->setCreatorGuid(_player->getGuid());
                 _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->getGuid(), true);
             }
             if (target_trade_items[i])
             {
-                target_trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->getGuid());
+                target_trade_items[i]->setCreatorGuid(trade_target->getGuid());
                 trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->getGuid(), true);
             }
         }
@@ -591,7 +591,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
     }
 
     Item* item = _player->GetItemInterface()->GetInventoryItem(sourceBag, sourceSlot);
-    if (item == nullptr || (tradeSlot != TRADE_SLOT_NONTRADED && (item->IsAccountbound() || item->IsSoulbound())))
+    if (item == nullptr || (tradeSlot != TRADE_SLOT_NONTRADED && (item->isAccountbound() || item->isSoulbound())))
     {
         sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
         return;

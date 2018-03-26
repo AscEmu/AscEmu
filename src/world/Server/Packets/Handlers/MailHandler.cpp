@@ -154,12 +154,12 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         recv_data >> itemguid;
 
         pItem = _player->GetItemInterface()->GetItemByGUID(itemguid);
-        if (pItem == nullptr || pItem->IsSoulbound() || pItem->IsConjured())
+        if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
             SendMailError(MAIL_ERR_INTERNAL_ERROR);
             return;
         }
-        if (pItem->IsAccountbound() && GetAccountId() != player->acct) // don't mail account-bound items to another account
+        if (pItem->isAccountbound() && GetAccountId() != player->acct) // don't mail account-bound items to another account
         {
             WorldPacket data(SMSG_SEND_MAIL_RESULT, 16);
             data << uint32(0);

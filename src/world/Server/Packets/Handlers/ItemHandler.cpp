@@ -318,7 +318,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         if (dstslot < INVENTORY_SLOT_BAG_END)
         {
             if (srcitem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                srcitem->SoulBind();
+                srcitem->addFlags(ITEM_FLAG_SOULBOUND);
         }
     }
 
@@ -614,7 +614,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
     if (eitem != nullptr)
     {
         if (eitem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-            eitem->SoulBind();
+            eitem->addFlags(ITEM_FLAG_SOULBOUND);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->getItemProperties()->ItemId, 0, 0);
         // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
@@ -2317,7 +2317,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (dst->IsSoulbound())
+    if (dst->isSoulbound())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BOUND_CANT_BE_WRAPPED);
         return;
@@ -2409,7 +2409,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     dst->setGiftCreatorGuid(_player->getGuid());
     dst->SetDurability(0);
     dst->SetDurabilityMax(0);
-    dst->Wrap();
+    dst->addFlags(ITEM_FLAG_WRAPPED);
 
     // save it
     dst->m_isDirty = true;

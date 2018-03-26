@@ -236,31 +236,13 @@ public:
     ItemProperties const* getItemProperties() const;
     void setItemProperties(ItemProperties const* itemProperties);
 
+    bool isSoulbound() const { return hasFlags(ITEM_FLAG_SOULBOUND); }
+    bool isAccountbound() const { return hasFlags(ITEM_FLAG_ACCOUNTBOUND); }
+
     // MIT End
 
         Item();
         virtual ~Item();
-
-        /////////////////////////////////////////////////// FLAGS ////////////////////////////////////////////////////////////
-
-        void SoulBind() { addFlags(ITEM_FLAG_SOULBOUND); }
-        bool IsSoulbound() const { return hasFlags(ITEM_FLAG_SOULBOUND); }
-
-        void AccountBind() { addFlags(ITEM_FLAG_ACCOUNTBOUND); }
-        bool IsAccountbound() const { return hasFlags(ITEM_FLAG_ACCOUNTBOUND);  }
-
-        void MakeConjured() { addFlags(ITEM_FLAG_CONJURED); }
-        bool IsConjured() const { return hasFlags(ITEM_FLAG_CONJURED); }
-
-        void Lock() { removeFlags(ITEM_FLAG_LOOTABLE); }
-        void UnLock() { addFlags(ITEM_FLAG_LOOTABLE); }
-
-        void Wrap() { addFlags(ITEM_FLAG_WRAPPED); }
-        void UnWrap() { removeFlags(ITEM_FLAG_WRAPPED); }
-
-        void ClearFlags() { setFlags(ITEM_FLAGS_NONE); }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         void SetDirty(){ m_isDirty = true; }
 

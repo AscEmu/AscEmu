@@ -377,13 +377,13 @@ namespace luaItem
 
     int IsSoulbound(lua_State* L, Item* ptr)
     {
-        ptr->IsSoulbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isSoulbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 
     int IsAccountbound(lua_State* L, Item* ptr)
     {
-        ptr->IsAccountbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isAccountbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 

@@ -714,7 +714,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
-            i->SoulBind();
+            i->addFlags(ITEM_FLAG_SOULBOUND);
             i->SetEnchantmentId(0, c->GetID());
             i->SetItemRandomSuffixFactor(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
@@ -792,7 +792,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
-            i->SoulBind();
+            i->addFlags(ITEM_FLAG_SOULBOUND);
             i->SetEnchantmentId(0, c->GetID());
             i->SetItemRandomSuffixFactor(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
@@ -1559,7 +1559,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         if (pSourceItem != NULL)
         {
             // make sure its not a soulbound item
-            if (pSourceItem->IsSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
+            if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_CANT_DROP_SOULBOUND);
                 return;

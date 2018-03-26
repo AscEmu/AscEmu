@@ -237,9 +237,9 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
         return;
     if (TradeSlot < 6)
     {
-        if (pItem->IsAccountbound())
+        if (pItem->isAccountbound())
             return;                     //dual accounting is not allowed so noone can trade Accountbound items. Btw the client doesn't send any client-side notification
-        if (pItem->IsSoulbound())
+        if (pItem->isSoulbound())
         {
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
             Disconnect();

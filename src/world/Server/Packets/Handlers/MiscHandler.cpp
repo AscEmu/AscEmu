@@ -2541,9 +2541,9 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         pItem->setItemProperties(it);
 
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
-            pItem->SoulBind();
+            pItem->addFlags(ITEM_FLAG_SOULBOUND);
         else
-            pItem->ClearFlags();
+            pItem->setFlags(ITEM_FLAGS_NONE);
 
         if (it->MaxDurability)
         {

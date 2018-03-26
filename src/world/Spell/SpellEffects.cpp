@@ -3476,7 +3476,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     {
                         v = lock->minlockskill[j];
                         itemTarget->locked = false;
-                        itemTarget->UnLock();
+                        itemTarget->addFlags(ITEM_FLAG_LOOTABLE);
                         DetermineSkillUp(SKILL_LOCKPICKING, v / 5);
                         break;
                     }

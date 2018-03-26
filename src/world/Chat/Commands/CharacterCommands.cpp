@@ -794,9 +794,9 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             if (it->Bonding == ITEM_BIND_ON_PICKUP)
             {
                 if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)
-                    item->AccountBind();
+                    item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
                 else
-                    item->SoulBind();
+                    item->addFlags(ITEM_FLAG_SOULBOUND);
             }
 
             if (!player->GetItemInterface()->AddItemToFreeSlot(item))

@@ -230,9 +230,9 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
             if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
             {
                 if (item->getItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND)       // don't "Soulbind" account-bound items
-                    item->AccountBind();
+                    item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
                 else
-                    item->SoulBind();
+                    item->addFlags(ITEM_FLAG_SOULBOUND);
             }
 
             if (m_pOwner->IsInWorld() && !item->IsInWorld())
@@ -3125,7 +3125,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
             // handle bind on equip
             if (m_pItems[(int)srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)srcslot]->SoulBind();
+                m_pItems[(int)srcslot]->addFlags(ITEM_FLAG_SOULBOUND);
         }
         else
         {
@@ -3167,7 +3167,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
             // handle bind on equip
             if (m_pItems[(int)srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)srcslot]->SoulBind();
+                m_pItems[(int)srcslot]->addFlags(ITEM_FLAG_SOULBOUND);
         }
         else
         {
@@ -3204,7 +3204,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
             // handle bind on equip
             if (m_pItems[(int)dstslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)dstslot]->SoulBind();
+                m_pItems[(int)dstslot]->addFlags(ITEM_FLAG_SOULBOUND);
 
         }
         else
@@ -3248,7 +3248,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
             // handle bind on equip
             if (m_pItems[(int)dstslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)dstslot]->SoulBind();
+                m_pItems[(int)dstslot]->addFlags(ITEM_FLAG_SOULBOUND);
 
         }
         else
@@ -4027,9 +4027,9 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
         {
             if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)   // don't "Soulbind" account-bound items
-                item->AccountBind();
+                item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
             else
-                item->SoulBind();
+                item->addFlags(ITEM_FLAG_SOULBOUND);
         }
 
         // Let's try to autogenerate randomprop / randomsuffix
@@ -4232,7 +4232,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
     if (SrcItem && DstSlot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET)   //equip - bags can be soulbound too
     {
         if (SrcItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-            SrcItem->SoulBind();
+            SrcItem->addFlags(ITEM_FLAG_SOULBOUND);
 
 #if VERSION_STRING > TBC
         m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, SrcItem->getItemProperties()->ItemId, 0, 0);
@@ -4253,7 +4253,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
     if (DstItem && SrcSlot < INVENTORY_SLOT_BAG_END && SrcInvSlot == INVENTORY_SLOT_NOT_SET)   //equip - make sure to soulbind items swapped from equip slot to bag slot
     {
         if (DstItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-            DstItem->SoulBind();
+            DstItem->addFlags(ITEM_FLAG_SOULBOUND);
 #if VERSION_STRING > TBC
         m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, DstItem->getItemProperties()->ItemId, 0, 0);
         if (SrcSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement

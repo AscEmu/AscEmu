@@ -158,9 +158,9 @@ bool Container::AddItem(int16 slot, Item* item)
     if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
     {
         if (item->getItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
-            item->AccountBind();
+            item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
         else
-            item->SoulBind();
+            item->addFlags(ITEM_FLAG_SOULBOUND);
     }
 
     SetSlot(slot, item->getGuid());

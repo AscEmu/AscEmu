@@ -1070,8 +1070,8 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->PetitionSignerCount = petitionSignerCount;
             memcpy(charter->Data, charterData, sizeof(charterData));
 
-            item->setUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
-            item->SoulBind();
+            item->setStackCount(1);
+            item->addFlags(ITEM_FLAG_SOULBOUND);
             item->SetEnchantmentId(0, charter->GetID());
             item->SetItemRandomSuffixFactor(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
@@ -1151,7 +1151,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             memcpy(charter->Data, charterData, sizeof(charterData));
 
             item->setStackCount(1);
-            item->SoulBind();
+            item->addFlags(ITEM_FLAG_SOULBOUND);
             item->SetEnchantmentId(0, charter->GetID());
             item->SetItemRandomSuffixFactor(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))

@@ -102,12 +102,12 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     for (uint8_t i = 0; i < items_count; ++i)
     {
         pItem = _player->GetItemInterface()->GetItemByGUID(itemGUIDs[i]);
-        if (pItem == nullptr || pItem->IsSoulbound() || pItem->IsConjured())
+        if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
             SendMailError(MAIL_ERR_INTERNAL_ERROR);
             return;
         }
-        if (pItem->IsAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
+        if (pItem->isAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
         {
             WorldPacket data(SMSG_SEND_MAIL_RESULT, 16);
             data << uint32_t(0);
@@ -512,7 +512,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
     if (!pItem)
         return;
 
-    pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
+    pItem->addFlags(ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))
