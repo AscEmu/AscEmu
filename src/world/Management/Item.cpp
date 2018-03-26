@@ -171,11 +171,7 @@ void Item::setOwner(Player* owner)
     m_owner = owner;
 }
 
-void Item::setContainer(Container* container)
-{
-    setContainerGuid(container ? container->getGuid() : 0UL);
-}
+void Item::setContainer(Container* container) { setContainerGuid(container ? container->getGuid() : 0UL); }
 
 ItemProperties const* Item::getItemProperties() const { return m_itemProperties; }
 void Item::setItemProperties(ItemProperties const* itemProperties) { m_itemProperties = itemProperties; }
-

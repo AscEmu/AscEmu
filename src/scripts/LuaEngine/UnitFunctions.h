@@ -1238,7 +1238,7 @@ class LuaUnit
                 Container* bag = static_cast< Container* >(plr->GetItemInterface()->GetInventoryItem(contslot));
                 if (bag == NULL)
                     continue;
-                for (uint8 bslot = 0; bslot != bag->GetNumSlots(); bslot++)
+                for (uint8 bslot = 0; bslot != bag->getSlotCount(); bslot++)
                 {
                     if (bag->GetItem(bslot) && bag->GetItem(bslot)->getEntry() == entry)
                     {

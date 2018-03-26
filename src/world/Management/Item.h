@@ -469,13 +469,11 @@ public:
         std::string text;
 };
 
+//\todo move these functions to ItemProperties/Player class.
 uint32 GetSkillByProto(uint32, uint32);
 
 uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count);
 uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor);
-
-uint32 GetSellPriceForItem(uint32 itemid, uint32 count);
-uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor);
 
 std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language);
 

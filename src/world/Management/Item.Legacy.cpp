@@ -525,22 +525,6 @@ uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr
     return cost * count;
 }
 
-uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
-{
-    if (ItemProperties const* proto = sMySQLStore.getItemProperties(itemid))
-        return GetSellPriceForItem(proto, count);
-    else
-        return 1;
-}
-
-uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor)
-{
-    if (ItemProperties const* proto = sMySQLStore.getItemProperties(itemid))
-        return GetBuyPriceForItem(proto, count, plr, vendor);
-    else
-        return 1;
-}
-
 void Item::RemoveFromWorld()
 {
     // if we have an owner->send destroy
