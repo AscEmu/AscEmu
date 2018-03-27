@@ -29,12 +29,76 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Objects/ObjectMgr.h"
+#include "Data/WoWDynamicObject.h"
 
- // MIT Start
+// MIT Start
+
+ //////////////////////////////////////////////////////////////////////////////////////////
+ // WoWData
+
+uint64_t DynamicObject::getCasterGuid() const { return dynamicObjectData()->caster_guid; }
+void DynamicObject::setCasterGuid(uint64_t guid) { write(dynamicObjectData()->caster_guid, guid); }
+
+//bytes start
+uint8_t DynamicObject::getDynamicType() const { return dynamicObjectData()->dynamicobject_bytes.s.type; }
+void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, type); }
+//bytes end
+
+uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }
+void DynamicObject::setSpellId(uint32_t id) { write(dynamicObjectData()->spell_id, id); }
+
+float_t DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
+void DynamicObject::setRadius(float_t radius) { write(dynamicObjectData()->radius, radius); }
+
+// Position set for classic and TBC
+float_t DynamicObject::getDynamicX() const { return m_position.x; }
+void DynamicObject::setDynamicX(float_t x)
+{
+    m_position.x = x;
+#if VERSION_STRING <= TBC
+    write(dynamicObjectData()->x, x);
+#endif
+}
+
+float_t DynamicObject::getDynamicY() const { return m_position.y; }
+void DynamicObject::setDynamicY(float_t y)
+{
+    m_position.y = y;
+#if VERSION_STRING <= TBC
+    write(dynamicObjectData()->y, y);
+#endif
+}
+
+float_t DynamicObject::getDynamicZ() const { return m_position.z; }
+void DynamicObject::setDynamicZ(float_t z)
+{
+    m_position.z = z;
+#if VERSION_STRING <= TBC
+    write(dynamicObjectData()->z, z);
+#endif
+}
+
+float_t DynamicObject::getDynamicO() const { return m_position.x; }
+void DynamicObject::setDynamicO(float_t o)
+{
+    m_position.o = o;
+#if VERSION_STRING <= TBC
+    write(dynamicObjectData()->o, o);
+#endif
+}
+
+#if VERSION_STRING > Classic
+uint32_t DynamicObject::getCastTime() const { return dynamicObjectData()->cast_time; }
+void DynamicObject::setCastTime(uint32_t time) { write(dynamicObjectData()->cast_time, time); }
+#endif
+
+ //////////////////////////////////////////////////////////////////////////////////////////
+ // Misc
 void DynamicObject::Create(Unit* caster, Spell* spell, LocationVector lv, uint32 duration, float radius, uint32 type)
 {
     Create(caster, spell, lv.x, lv.y, lv.z, duration, radius, type);
 }
+
 // MIT End
 
 DynamicObject::DynamicObject(uint32 high, uint32 low)
@@ -93,15 +157,22 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     m_spellProto = pSpell->GetSpellInfo();
     setEntry(m_spellProto->getId());
     setScale(1.0f);
-    setUInt64Value(DYNAMICOBJECT_CASTER, caster->getGuid());
-    setByteFlag(DYNAMICOBJECT_BYTES, 0, static_cast<uint8_t>(type));
-    setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->getId());
-    setFloatValue(DYNAMICOBJECT_RADIUS, radius);
-    setUInt32Value(DYNAMICOBJECT_CASTTIME,Util::getMSTime());
-    m_position.x = x; //m_floatValues[DYNAMICOBJECT_POS_X]  = x;
-    m_position.y = y; //m_floatValues[DYNAMICOBJECT_POS_Y]  = y;
-    m_position.z = z; //m_floatValues[DYNAMICOBJECT_POS_Z]  = z;
 
+    setCasterGuid(caster->getGuid());
+
+    setDynamicType(static_cast<uint8_t>(type));
+
+    setSpellId(m_spellProto->getId());
+    setRadius(radius);
+
+#if VERSION_STRING > Classic
+    setCastTime(Util::getMSTime());
+#endif
+
+    setDynamicX(x);
+    setDynamicY(y);
+    setDynamicZ(z);
+    setDynamicO(0.f);
 
     m_aliveDuration = duration;
     u_caster = caster;

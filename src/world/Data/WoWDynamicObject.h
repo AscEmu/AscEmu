@@ -15,11 +15,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWObject.h"
 #pragma pack(push, 1)
 
+union
+{
+    struct
+    {
+        uint8_t type;
+        uint8_t unk1;
+        uint8_t unk2;
+        uint8_t unk3;
+    } s;
+    uint32_t raw;
+} typedef dynamic_bytes_union;
+
 #if VERSION_STRING == Classic
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
-    uint32_t dynamicobject_bytes;
+    dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
     float_t radius;
     float_t x;
@@ -34,7 +46,7 @@ struct WoWDynamicObject : WoWObject
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
-    uint32_t dynamicobject_bytes;
+    dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
     float_t radius;
     float_t x;
@@ -49,7 +61,7 @@ struct WoWDynamicObject : WoWObject
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
-    uint32_t dynamicobject_bytes;
+    dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
     float_t radius;
     uint32_t cast_time;
@@ -60,7 +72,7 @@ struct WoWDynamicObject : WoWObject
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
-    uint32_t dynamicobject_bytes;
+    dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
     float_t radius;
     uint32_t cast_time;

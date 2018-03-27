@@ -5838,9 +5838,6 @@ void Player::KillPlayer()
 
 void Player::CreateCorpse()
 {
-    Corpse* pCorpse;
-    uint32 _cfb1, _cfb2;
-
     objmgr.DelinkPlayerCorpses(this);
     if (!bCorpseCreateable)
     {
@@ -5848,25 +5845,25 @@ void Player::CreateCorpse()
         return; // No corpse allowed!
     }
 
-    pCorpse = objmgr.CreateCorpse();
+    Corpse* pCorpse = objmgr.CreateCorpse();
     pCorpse->SetInstanceID(GetInstanceID());
     pCorpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
-    uint8 race = getRace();
-    uint8 skin = getSkinColor();
-    uint8 face = getFace();
-    uint8 hairstyle = getHairStyle();
-    uint8 haircolor = getHairColor();
-    uint8 facialhair = getFacialFeatures();
-
-    _cfb1 = ((0x00) | (race << 8) | (0x00 << 16) | (skin << 24));
-    _cfb2 = ((face) | (hairstyle << 8) | (haircolor << 16) | (facialhair << 24));
-
     pCorpse->SetZoneId(GetZoneId());
-    pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_1, _cfb1);
-    pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_2, _cfb2);
-    pCorpse->setUInt32Value(CORPSE_FIELD_FLAGS, 4);
-    pCorpse->SetDisplayId(getDisplayId());
+
+    //bytes1
+    pCorpse->setRace(getRace());
+    pCorpse->setSkinColor(getSkinColor());
+
+    //bytes2
+    pCorpse->setFace(getFace());
+    pCorpse->setHairStyle(getHairStyle());
+    pCorpse->setHairColor(getHairColor());
+    pCorpse->setFacialFeatures(getFacialFeatures());
+
+    pCorpse->setFlags(CORPSE_FLAG_UNK1);
+
+    pCorpse->setDisplayId(getDisplayId());
 
     if (m_bg)
     {
@@ -5884,7 +5881,7 @@ void Player::CreateCorpse()
         else
         {
             // Hope this works
-            pCorpse->setUInt32Value(CORPSE_FIELD_FLAGS, 60);
+            pCorpse->setFlags(CORPSE_FLAG_UNK1 | CORPSE_FLAG_HIDDEN_HELM | CORPSE_FLAG_HIDDEN_CLOAK | CORPSE_FLAG_LOOT);
         }
 
         // Now that our corpse is created, don't do it again
@@ -5907,7 +5904,7 @@ void Player::CreateCorpse()
             iIventoryType = (uint16)pItem->getItemProperties()->InventoryType;
 
             _cfi = (uint16(iDisplayID)) | (iIventoryType) << 24;
-            pCorpse->setUInt32Value(CORPSE_FIELD_ITEM + i, _cfi);
+            pCorpse->setItem(i, _cfi);
         }
     }
     // Save corpse in db for future use
@@ -6836,7 +6833,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         if (myCorpseInstanceId == GetInstanceID())
         {
-            if (obj->IsCorpse() && static_cast< Corpse* >(obj)->GetOwner() == getGuid())
+            if (obj->IsCorpse() && static_cast< Corpse* >(obj)->getOwnerGuid() == getGuid())
                 return true;
 
             if (obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)

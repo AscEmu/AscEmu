@@ -39,8 +39,47 @@ struct WoWDynamicObject;
 class SERVER_DECL DynamicObject : public Object
 {
     // MIT Start
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
     const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
+
 public:
+
+    uint64_t getCasterGuid() const;
+    void setCasterGuid(uint64_t guid);
+
+    //bytes start
+    uint8_t getDynamicType() const;
+    void setDynamicType(uint8_t type);
+    //bytes end
+
+    uint32_t getSpellId() const;
+    void setSpellId(uint32_t id);
+
+    float_t getRadius() const;
+    void setRadius(float_t radius);
+
+    // Position set for classic and TBC
+    float_t getDynamicX() const;
+    void setDynamicX(float_t x);
+
+    float_t getDynamicY() const;
+    void setDynamicY(float_t y);
+
+    float_t getDynamicZ() const;
+    void setDynamicZ(float_t z);
+
+    float_t getDynamicO() const;
+    void setDynamicO(float_t o);
+
+    //\todo really not used on Classic?
+#if VERSION_STRING > Classic
+    uint32_t getCastTime() const;
+    void setCastTime(uint32_t time);
+#endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
     void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32 duration, float radius, uint32 type);
     // MIT End
 

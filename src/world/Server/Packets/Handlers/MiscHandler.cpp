@@ -1163,7 +1163,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     if (pCorpse == NULL)	return;
 
     // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->getGuidLow() && pCorpse->getUInt32Value(CORPSE_FIELD_FLAGS) == 5)
+    if (GET_LOWGUID_PART(pCorpse->getOwnerGuid()) != _player->getGuidLow() && pCorpse->getFlags() == 5)
     {
         WorldPacket data(SMSG_RESURRECT_FAILED, 4);
         data << uint32(1); // this is a real guess!

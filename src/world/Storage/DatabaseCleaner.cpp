@@ -110,7 +110,7 @@ void DatabaseCleaner::CleanCharacters()
 
             //\todo is this really necessary?
             //pCorpse->setGuidLow(0);
-            if (pCorpse->GetDisplayId() == 0 || GET_LOWGUID_PART(pCorpse->GetOwner()) == 0 || chr_guids.find(GET_LOWGUID_PART(pCorpse->GetOwner())) == chr_guids.end())
+            if (pCorpse->getOwnerGuid() == 0 || GET_LOWGUID_PART(pCorpse->getOwnerGuid()) == 0 || chr_guids.find(GET_LOWGUID_PART(pCorpse->getOwnerGuid())) == chr_guids.end())
             {
                 tokill_corpses.push_back(pCorpse->getGuidLow());
             }

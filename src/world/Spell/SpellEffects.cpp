@@ -2332,7 +2332,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->GetOwner()));
+        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
         if (!playerTarget) return;
     }
 
@@ -5488,7 +5488,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->GetOwner()));
+        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
         if (!playerTarget) return;
     }
 
@@ -5559,7 +5559,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     else if (corpse)
     {
         // find the corpses' owner
-        Player* owner = objmgr.GetPlayer(GET_LOWGUID_PART(corpse->GetOwner()));
+        Player* owner = objmgr.GetPlayer(GET_LOWGUID_PART(corpse->getOwnerGuid()));
         if (owner)
         {
             if (!owner->m_bg) return;
@@ -5572,7 +5572,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             corpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
 
         // remove skinnable flag
-        corpse->setUInt32Value(CORPSE_FIELD_FLAGS, 5);
+        corpse->setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
 
         // remove owner association
         corpse->SetOwner(0);
