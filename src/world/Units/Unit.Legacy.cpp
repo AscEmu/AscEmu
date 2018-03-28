@@ -10485,13 +10485,6 @@ void Unit::DropAurasOnDeath()
         }
 }
 
-bool Unit::IsControlledByPlayer()
-{
-    if (IS_PLAYER_GUID(getCharmedByGuid()) || IsPlayer())
-        return true;
-    return false;
-}
-
 void Unit::UpdateSpeed()
 {
     if (getMountDisplayId() == 0)
