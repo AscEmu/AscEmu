@@ -631,14 +631,14 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     {
         if (GetSpellInfo()->getId() == 32445 || GetSpellInfo()->getId() == 28883)
         {
-            int32 reduce = (int32)(GetSpellInfo()->getDmg_multiplier(effectIndex) * 100.0f);
+            int32 reduce = (int32)(GetSpellInfo()->getEffectDamageMultiplier(effectIndex) * 100.0f);
             reduce -= 100;
 
             if (reduce && chaindamage)
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
                 }
                 chaindamage += ((GetSpellInfo()->getEffectBasePoints(effectIndex) + 51) * reduce / 100);
             }
@@ -650,13 +650,13 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
         }
         else
         {
-            int32 reduce = (int32)(GetSpellInfo()->getDmg_multiplier(effectIndex) * 100.0f);
+            int32 reduce = (int32)(GetSpellInfo()->getEffectDamageMultiplier(effectIndex) * 100.0f);
 
             if (reduce && chaindamage)
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
                 }
                 chaindamage = chaindamage * reduce / 100;
             }
@@ -1438,7 +1438,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     uint32 spellId = GetSpellInfo()->getId();
 
     // Portals
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_COORDINATES))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_COORDINATES))
     {
         TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(spellId);
         if (teleport_coord == nullptr)
@@ -1452,7 +1452,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Hearthstone and co.
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT))
     {
         if (unitTarget->IsPlayer())
         {
@@ -1464,7 +1464,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Summon
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_CASTER))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_CASTER))
     {
         if (u_caster == nullptr)
             return;
@@ -1474,7 +1474,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Shadowstep for example
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_BEHIND_TARGET))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_BEHIND_TARGET))
     {
         if (p_caster == nullptr)
             return;
@@ -1718,7 +1718,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         uint32 Duration = GetDuration();
 
         // Handle diminishing returns, if it should be resisted, it'll make duration 0 here.
-        if (!(GetSpellInfo()->IsPassive())) // Passive
+        if (!(GetSpellInfo()->isPassive())) // Passive
         {
             unitTarget->applyDiminishingReturnTimer(&Duration, GetSpellInfo());
         }
@@ -1967,7 +1967,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             int32 reduce = GetSpellInfo()->getEffectDieSides(effectIndex) + 1;
             if (u_caster != nullptr)
             {
-                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
             }
             chaindamage -= (reduce * chaindamage) / 100;
             Heal((int32)chaindamage);
@@ -4564,8 +4564,8 @@ void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
 
     int32 amount = GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->getSpellGroupType());
-    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->getSpellGroupType());
+    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->getSpellFamilyFlags());
+    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->getSpellFamilyFlags());
 
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
@@ -5108,8 +5108,8 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
             int32 amt = 20;
-            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
-            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
+            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->getSpellFamilyFlags());
+            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->getSpellFamilyFlags());
             health = uint32((unitTarget->getMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -5382,8 +5382,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     Pet* pPet = p_caster->GetSummon();
     if (pPet)
     {
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
 
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
@@ -5401,8 +5401,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         if (pPet == nullptr)//no pets to Revive
             return;
 
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
 
         pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
     }

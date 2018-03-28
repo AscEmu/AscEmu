@@ -1121,7 +1121,7 @@ bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
     {
         if (m_auras[i] == nullptr)
             continue;
-        if (m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(type))
+        if (m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(type))
             return true;
     }
     return false;
@@ -1135,7 +1135,7 @@ bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) con
         {
             if (caster->m_auras[i] == nullptr)
                 continue;
-            if (!caster->m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+            if (!caster->m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                 continue;
             if (caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(spellInfo))
                 return true;
@@ -1152,15 +1152,15 @@ void Unit::addAuraStateAndAuras(AuraState state)
         if (IsPlayer())
         {
             // Activate passive spells which require this aurastate
-            auto playerSpellMap = static_cast<Player*>(this)->mSpells;
+            const auto playerSpellMap = static_cast<Player*>(this)->mSpells;
             for (auto spellId : playerSpellMap)
             {
                 // Skip deleted spells, i.e. spells with lower rank than the current rank
                 auto deletedSpell = static_cast<Player*>(this)->mDeletedSpells.find(spellId);
                 if ((deletedSpell != static_cast<Player*>(this)->mDeletedSpells.end()))
                     continue;
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
-                if (spellInfo == nullptr || !spellInfo->IsPassive())
+                SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+                if (spellInfo == nullptr || !spellInfo->isPassive())
                     continue;
                 if (spellInfo->getCasterAuraState() == uint32_t(state))
                     CastSpell(this, spellId, true);
@@ -1184,7 +1184,7 @@ void Unit::removeAuraStateAndAuras(AuraState state)
                 continue;
             if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != uint32_t(state))
                 continue;
-            if (m_auras[i]->GetSpellInfo()->IsPassive() || state != AURASTATE_FLAG_ENRAGED)
+            if (m_auras[i]->GetSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
                 RemoveAura(m_auras[i]);
         }
     }
@@ -1210,7 +1210,7 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
         Aura* aura = m_auras[i];
-        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(aura_effect))
+        if (aura != nullptr && aura->GetSpellInfo()->hasEffectApplyAuraName(aura_effect))
             return aura;
     }
 
