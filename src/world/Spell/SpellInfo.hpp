@@ -21,9 +21,9 @@ public:
     ~SpellInfo();
 
     // helper functions
-    bool HasEffect(uint32_t effect) const;
-    bool HasEffectApplyAuraName(uint32_t aura_name);
-    bool HasCustomFlagForEffect(uint32_t effect, uint32_t flag);
+    bool hasEffect(uint32_t effect) const;
+    bool hasEffectApplyAuraName(uint32_t auraType) const;
+    bool hasCustomFlagForEffect(uint32_t effectIndex, uint32_t flag) const;
 
     bool isDamagingSpell() const;
     bool isHealingSpell() const;
@@ -32,27 +32,28 @@ public:
     // Checks if spell (in most cases an aura) affects another spell, based on spell group mask
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
 
-    uint32_t getSpellDuration(Unit* caster) const;
+    uint32_t getSpellDefaultDuration(Unit const* caster) const;
 
     bool hasTargetType(uint32_t type) const;
     int aiTargetType() const;
     bool isTargetingStealthed() const;
     bool isRequireCooldownSpell() const;
 
-    bool IsPassive();
-    bool IsProfession();
-    bool IsPrimaryProfession();
-    bool IsPrimaryProfessionSkill(uint32_t skill_id);
+    bool isPassive() const;
+    bool isProfession() const;
+    bool isPrimaryProfession() const;
+    bool isPrimaryProfessionSkill(uint32_t skill_id) const;
 
     bool isDeathPersistent() const;
 
-    bool appliesAreaAura(uint32_t aura) const;
-    uint32_t GetAreaAuraEffectId();
+    bool appliesAreaAura(uint32_t auraType) const;
+    uint32_t getAreaAuraEffect() const;
 
     uint32_t getId() const { return Id; }
     void setId(uint32_t value) { Id = value; }
 
     uint32_t getCategory() const { return Category; }
+    void setCategory(uint32_t value) { Category = value; }
 
     uint32_t getDispelType() const { return DispelType; }
     void setDispelType(uint32_t value) { DispelType = value; }              // used in HackFixes.cpp
@@ -88,11 +89,20 @@ public:
     uint32_t getAttributesExG() const { return AttributesExG; }
     void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used in SpellCustomizations.cpp
 
-    uint32_t getRequiredShapeShift() const { return RequiredShapeShift; }
-    void setRequiredShapeShift(uint32_t value) { RequiredShapeShift = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
+    uint32_t getAttributesExH() const { return AttributesExH; }
+    void setAttributesExH(uint32_t value) { AttributesExH = value; }        // used in SpellCustomizations.cpp
 
-    uint32_t getShapeshiftExclude() const { return ShapeshiftExclude; }
-    void setShapeshiftExclude(uint32_t value) { ShapeshiftExclude = value; } // used in SpellCustomizations.cpp
+    uint32_t getAttributesExI() const { return AttributesExI; }
+    void setAttributesExI(uint32_t value) { AttributesExI = value; }        // used in SpellCustomizations.cpp
+
+    uint32_t getAttributesExJ() const { return AttributesExJ; }
+    void setAttributesExJ(uint32_t value) { AttributesExJ = value; }        // used in SpellCustomizations.cpp
+
+    uint32_t getRequiredShapeShift() const { return Shapeshifts; }
+    void setRequiredShapeShift(uint32_t value) { Shapeshifts = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
+
+    uint32_t getShapeshiftExclude() const { return ShapeshiftsExcluded; }
+    void setShapeshiftExclude(uint32_t value) { ShapeshiftsExcluded = value; } // used in SpellCustomizations.cpp
 
     uint32_t getTargets() const { return Targets; }                           // not used!
     void setTargets(uint32_t value) { Targets = value; }                    // used in SpellCustomizations.cpp
@@ -193,8 +203,8 @@ public:
     float getSpeed() const { return speed; }
     void setSpeed(float value) { speed = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32_t getMaxstack() const { return maxstack; }
-    void setMaxstack(uint32_t value) { maxstack = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+    uint32_t getMaxstack() const { return MaxStackAmount; }
+    void setMaxstack(uint32_t value) { MaxStackAmount = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32_t getTotem(uint8_t idx) const
     {
@@ -237,6 +247,9 @@ public:
 
     int32_t getEquippedItemSubClass() const { return EquippedItemSubClass; }
     void setEquippedItemSubClass(int32_t value) { EquippedItemSubClass = value; }    // used in SpellCustomizations.cpp
+
+    int32_t getEquippedItemInventoryTypeMask() const { return EquippedItemInventoryTypeMask; }
+    void setEquippedItemInventoryTypeMask(int32_t value) { EquippedItemInventoryTypeMask = value; }
 
     uint32_t getEffect(uint8_t idx) const
     {
@@ -286,13 +299,13 @@ public:
         EffectBasePoints[idx] = pointsPerLevel;
     }
 
-    int32_t getEffectMechanic(uint8_t idx) const
+    uint32_t getEffectMechanic(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectMechanic[idx];
     }
 
-    void setEffectMechanic(int32_t mechanic, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setEffectMechanic(uint32_t mechanic, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectMechanic[idx] = mechanic;
@@ -445,26 +458,21 @@ public:
     uint32_t getSpellVisual() const { return SpellVisual; }
     void setSpellVisual(uint32_t value) { SpellVisual = value; }                 // used in SpellCustomizations.cpp
 
-    uint32_t getField114() const { return field114; }
-    void setField114(uint32_t value) { field114 = value; }                       // used in SpellCustomizations.cpp
-
     uint32_t getSpellIconID() const { return spellIconID; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }                 // used in SpellCustomizations.cpp
 
     uint32_t getActiveIconID() const { return activeIconID; }
     void setActiveIconID(uint32_t value) { activeIconID = value; }               // used in SpellCustomizations.cpp
 
+    // todo: implement
+    uint32_t getSpellPriority() const { return spellPriority; }
+    void setSpellPriority(uint32_t value) { spellPriority = value; }
+
     std::string getName() const { return Name; }
     void setName(std::string value) { Name = value; }               // used in SpellCustomizations.cpp
 
     std::string getRank() const { return Rank; }
     void setRank(std::string value) { Rank = value; }               // used in SpellCustomizations.cpp
-
-    std::string getDescription() const { return Description; }
-    void setDescription(std::string value) { Description = value; }               // used in SpellCustomizations.cpp
-
-    std::string getBuffDescription() const { return BuffDescription; }
-    void setBuffDescription(std::string value) { BuffDescription = value; }               // used in SpellCustomizations.cpp
 
     uint32_t getManaCostPercentage() const { return ManaCostPercentage; }
     void setManaCostPercentage(uint32_t value) { ManaCostPercentage = value; }        // used in SpellCustomizations.cpp
@@ -481,42 +489,44 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
     void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32_t getSpellGroupType(uint8_t idx) const
+    // todo: classic has only two mask fields while other versions have three mask fields
+    uint32_t getSpellFamilyFlags(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
-        return SpellGroupType[idx];
+        return SpellFamilyFlags[idx];
     }
 
-    uint32_t* getSpellGroupType()
+    uint32_t* getSpellFamilyFlags()
     {
-        return SpellGroupType;
+        return SpellFamilyFlags;
     }
 
-    void setSpellGroupType(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
+    // todo: classic has only two mask fields while other versions have three mask fields
+    void setSpellFamilyFlags(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
-        SpellGroupType[idx] = value;
+        SpellFamilyFlags[idx] = value;
     }
 
     uint32_t getMaxTargets() const { return MaxTargets; }
     void setMaxTargets(uint32_t value) { MaxTargets = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32_t getSpell_Dmg_Type() const { return Spell_Dmg_Type; }
-    void setSpell_Dmg_Type(uint32_t value) { Spell_Dmg_Type = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
+    uint32_t getDmgClass() const { return DmgClass; }
+    void setDmgClass(uint32_t value) { DmgClass = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32_t getPreventionType() const { return PreventionType; }
     void setPreventionType(uint32_t value) { PreventionType = value; }        // used in SpellCustomizations.cpp
 
-    float getDmg_multiplier(uint8_t idx) const
+    float getEffectDamageMultiplier(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
-        return dmg_multiplier[idx];
+        return EffectDamageMultiplier[idx];
     }
 
-    void setDmg_multiplier(float dmgMultiplier, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
-        dmg_multiplier[idx] = dmgMultiplier;
+        EffectDamageMultiplier[idx] = dmgMultiplier;
     }
 
     uint32_t getTotemCategory(uint8_t idx) const
@@ -531,8 +541,8 @@ public:
         TotemCategory[idx] = category;
     }
 
-    int32_t getRequiresAreaId() const { return RequiresAreaId; }
-    void setRequiresAreaId(int32_t value) { RequiresAreaId = value; }   // used in SpellCustomizations.cpp
+    int32_t getRequiresAreaId() const { return AreaGroupId; }
+    void setRequiresAreaId(int32_t value) { AreaGroupId = value; }   // used in SpellCustomizations.cpp
 
     uint32_t getSchool() const { return School; }
     void setSchool(uint32_t value) { School = value; }                  // used in HackFixes.cpp / SpellCustomizations.cpp
@@ -540,15 +550,8 @@ public:
     uint32_t getRuneCostID() const { return RuneCostID; }
     void setRuneCostID(uint32_t value) { RuneCostID = value; }          // used in pellCustomizations.cpp
 
-    uint32_t getSpellDifficultyID() const { return SpellDifficultyID; }
-    void setSpellDifficultyID(uint32_t value) { SpellDifficultyID = value; }          // used in pellCustomizations.cpp
-
-#if VERSION_STRING != Cata
-    uint32_t getModalNextSpell() const { return modalNextSpell; }           // not used!
-    void setModalNextSpell(uint32_t value) { modalNextSpell = value; }    // used in SpellCustomizations.cpp
-
-    uint32_t getRequiredItemFlags() const { return RequiredItemFlags; }
-    void setRequiredItemFlags(uint32_t value) { RequiredItemFlags = value; }    // used in SpellCustomizations.cpp
+    uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
+    void setSpellDifficultyID(uint32_t value) { SpellDifficultyId = value; }          // used in pellCustomizations.cpp
 
     uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
     {
@@ -568,21 +571,31 @@ public:
         EffectSpellClassMask[idx1][idx2] = spellClass;
     }
 
-    uint32_t getSpellPriority() const { return spellPriority; }
-    void setSpellPriority(uint32_t value) { spellPriority = value; }               // used in SpellCustomizations.cpp
+    void setEffectBonusMultiplier(float value, uint8_t idx)
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        EffectBonusMultiplier[idx] = value;
+    }
 
-    int32_t getStanceBarOrder() const { return StanceBarOrder; }
-    void setStanceBarOrder(int32_t value) { StanceBarOrder = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
+#if VERSION_STRING >= Cata
+    void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx)
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        EffectRadiusMaxIndex[idx] = value;
+    }
 
-    uint32_t getMinFactionID() const { return MinFactionID; }
-    void setMinFactionID(uint32_t value) { MinFactionID = value; }        // used in SpellCustomizations.cpp
+    void setEffectSpellId(uint32_t value, uint8_t idx)
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        EffectSpellId[idx] = value;
+    }
 
-    uint32_t getMinReputation() const { return MinReputation; }
-    void setMinReputation(uint32_t value) { MinReputation = value; }        // used in SpellCustomizations.cpp
-
-    uint32_t getRequiredAuraVision() const { return RequiredAuraVision; }
-    void setRequiredAuraVision(uint32_t value) { RequiredAuraVision = value; }        // used in SpellCustomizations.cpp
-
+    void setEffectIndex(uint32_t value, uint8_t idx)
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        EffectIndex[idx] = value;
+    }
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
@@ -615,16 +628,17 @@ public:
         return EffectCustomFlag[idx];
     }
 
-    bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
+    bool checkLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = nullptr) const;
         
 private:
-
     //////////////////////////////////////////////////////////////////////////////////////////
-    // from dbc files
+    // Applied values from DBC
     uint32_t Id;
+    // Data from SpellCategories.dbc (in Cataclysm)
     uint32_t Category;
     uint32_t DispelType;
     uint32_t MechanicsType;
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t Attributes;
     uint32_t AttributesEx;
     uint32_t AttributesExB;
@@ -633,12 +647,19 @@ private:
     uint32_t AttributesExE;
     uint32_t AttributesExF;
     uint32_t AttributesExG;
-    uint32_t RequiredShapeShift;          // (12-13 Stances[2])
-    uint32_t ShapeshiftExclude;           // (14-15 StancesExcluded[2])
-    uint32_t Targets;                     // not used!
+    uint32_t AttributesExH;
+    uint32_t AttributesExI;
+    uint32_t AttributesExJ;
+    // Data from SpellShapeshift.dbc (in Cataclysm)
+    uint32_t Shapeshifts;
+    uint32_t ShapeshiftsExcluded;
+    // Data from SpellTargetRestrictions.dbc (in Cataclysm)
+    uint32_t Targets;
     uint32_t TargetCreatureType;
+    // Data from SpellCastingRequirements.dbc (in Cataclysm)
     uint32_t RequiresSpellFocus;
     uint32_t FacingCasterFlags;
+    // Data from SpellAuraRestrictions.dbc (in Cataclysm)
     uint32_t CasterAuraState;
     uint32_t TargetAuraState;
     uint32_t CasterAuraStateNot;
@@ -647,39 +668,51 @@ private:
     uint32_t targetAuraSpell;
     uint32_t casterAuraSpellNot;
     uint32_t targetAuraSpellNot;
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t CastingTimeIndex;
+    // Data from SpellCooldowns.dbc (in Cataclysm)
     uint32_t RecoveryTime;
     uint32_t CategoryRecoveryTime;
+    // Data from SpellInterrupts.dbc (in Cataclysm)
     uint32_t InterruptFlags;
     uint32_t AuraInterruptFlags;
     uint32_t ChannelInterruptFlags;
+    // Data from SpellAuraOptions.dbc (in Cataclysm)
     uint32_t procFlags;
     uint32_t procChance;
     uint32_t procCharges;
+    // Data from SpellLevels.dbc (in Cataclysm)
     uint32_t maxLevel;
     uint32_t baseLevel;
     uint32_t spellLevel;
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t DurationIndex;
     int32_t powerType;
+    // Data from SpellPower.dbc (in Cataclysm)
     uint32_t manaCost;
-    uint32_t manaCostPerlevel;        // not used!
-    uint32_t manaPerSecond;           // not used!
-    uint32_t manaPerSecondPerLevel;   // not used!
+    uint32_t manaCostPerlevel;
+    uint32_t manaPerSecond;
+    uint32_t manaPerSecondPerLevel;
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t rangeIndex;
     float speed;
-    uint32_t modalNextSpell;          // not used!
-    uint32_t maxstack;
+    // Data from SpellAuraOptions.dbc (in Cataclysm)
+    uint32_t MaxStackAmount;
+    // Data from SpellTotems.dbc (in Cataclysm)
     uint32_t Totem[MAX_SPELL_TOTEMS];
-    uint32_t Reagent[MAX_SPELL_REAGENTS];
+    // Data from SpellReagents.dbc (in Cataclysm)
+    int32_t Reagent[MAX_SPELL_REAGENTS];
     uint32_t ReagentCount[MAX_SPELL_REAGENTS];
+    // Data from SpellEquippedItems.dbc (in Cataclysm)
     int32_t EquippedItemClass;
     int32_t EquippedItemSubClass;
-    uint32_t RequiredItemFlags;
+    int32_t EquippedItemInventoryTypeMask;
+    // Data from SpellEffect.dbc (in Cataclysm)
     uint32_t Effect[MAX_SPELL_EFFECTS];
     int32_t EffectDieSides[MAX_SPELL_EFFECTS];
     float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];
     int32_t EffectBasePoints[MAX_SPELL_EFFECTS];
-    int32_t EffectMechanic[MAX_SPELL_EFFECTS];
+    uint32_t EffectMechanic[MAX_SPELL_EFFECTS];
     uint32_t EffectImplicitTargetA[MAX_SPELL_EFFECTS];
     uint32_t EffectImplicitTargetB[MAX_SPELL_EFFECTS];
     uint32_t EffectRadiusIndex[MAX_SPELL_EFFECTS];
@@ -692,299 +725,146 @@ private:
     int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];                //can be: speed slot-type, summon
     uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
     float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
-    uint32_t EffectSpellClassMask[3][3];
+    uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS][3];
+#if VERSION_STRING >= Cata
+    uint32_t EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
+    uint32_t EffectSpellId[MAX_SPELL_EFFECTS];
+    uint32_t EffectIndex[MAX_SPELL_EFFECTS];
+#endif
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t SpellVisual;
-    uint32_t field114;                                          // (131-132 SpellVisual[2])
     uint32_t spellIconID;
     uint32_t activeIconID;
     uint32_t spellPriority;
     std::string Name;
     std::string Rank;
-    std::string Description;
-    std::string BuffDescription;
+    // Data from SpellPower.dbc (in Cataclysm)
     uint32_t ManaCostPercentage;
+    // Data from SpellCategories.dbc (in Cataclysm)
     uint32_t StartRecoveryCategory;
+    // Data from SpellCooldowns.dbc (in Cataclysm)
     uint32_t StartRecoveryTime;
+    // Data from SpellTargetRestrictions.dbc (in Cataclysm)
     uint32_t MaxTargetLevel;
+    // Data from SpellClassOptions.dbc (in Cataclysm)
     uint32_t SpellFamilyName;
-    uint32_t SpellGroupType[MAX_SPELL_EFFECTS];
+    uint32_t SpellFamilyFlags[MAX_SPELL_EFFECTS];
+    // Data from SpellTargetRestrictions.dbc (in Cataclysm)
     uint32_t MaxTargets;
-    uint32_t Spell_Dmg_Type;
+    // Data from SpellCategories.dbc (in Cataclysm)
+    uint32_t DmgClass;
     uint32_t PreventionType;
-    int32_t StanceBarOrder;
-    float dmg_multiplier[MAX_SPELL_EFFECTS];
-    uint32_t MinFactionID;          // not used!
-    uint32_t MinReputation;         // not used!
-    uint32_t RequiredAuraVision;    // not used!
+    // Data from SpellEffect.dbc (in Cataclysm)
+    float EffectDamageMultiplier[MAX_SPELL_EFFECTS];
+    // Data from SpellTotems.dbc (in Cataclysm)
     uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];     // not used!
-    int32_t RequiresAreaId;
+    // Data from SpellCastingRequirements.dbc (in Cataclysm)
+    int32_t AreaGroupId;
+    // Data from Spell.dbc (in Cataclysm)
     uint32_t School;
     uint32_t RuneCostID;
-    //uint32_t SpellMissileID;
-    //uint32_t SpellDescriptionVariable;
-    uint32_t SpellDifficultyID;
+    // Data from SpellEffect.dbc (in Cataclysm)
+    float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
+    // Data from SpellDifficulty.dbc (in Cataclysm)
+    uint32_t SpellDifficultyId;
 
 public:
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //custom values
-        
-        // from MySQL table spell_proc - 1887 spells
-        uint32_t custom_proc_interval;
-
-        // from MySQL table spell_custom_assign - 1970 spells
-        uint32_t custom_BGR_one_buff_on_target;
-
-        // from MySQL table spell_custom_assign - 353 spells
-        // also flags added in SpellCustomizations::SetMissingCIsFlags
-        uint32_t custom_c_is_flags;
-
-        // from MySQL table spell_ranks - 6546 spells
-        uint32_t custom_RankNumber;
-
-        // set in HackFixes.cpp for all Dummy Trigger
-        uint32_t custom_NameHash;
-
-        // from MySQL table ai_threattospellid - 144 spells
-        int32_t custom_ThreatForSpell;
-
-        // from MySQL table ai_threattospellid - 118 spells
-        float custom_ThreatForSpellCoef;
-
-        // from MySQL table spell_coef_flags - 16499 spells
-        uint32_t custom_spell_coef_flags;
-
-        // set in HackFixes.cpp for all spells
-        float custom_base_range_or_radius_sqr;
-
-        // set in HackFixes.cpp - 1 spell (26029)
-        float cone_width;
-
-        // set in HackFixes.cpp for all spells
-        float casttime_coef;
-
-        // set in HackFixes.cpp for most spells
-        float fixed_dddhcoef;
-
-        // set in HackFixes.cpp for most spells
-        float fixed_hotdotcoef;
-
-        // from MySQL table spell_coef_override - 151 spells
-        float Dspell_coef_override;
-
-        // from MySQL table spell_coef_override - 151 spells
-        float OTspell_coef_override;
-
-        // set in HackFixes.cpp for all spells
-        // check out SpellInfo::aiTargetType
-        int ai_target_type;
-
-        // set in Hackfixes.cpp - 5 spells
-        // from MySQL table spell_custom_assign - 6 spells
-        bool custom_self_cast_only;
-
-        // SpellCustomizations::SetOnShapeshiftChange - 2 spells
-        bool custom_apply_on_shapeshift_change;
-
-        // set in Hackfixes.cpp - 3 spells
-        // set in SpellCustomizations::SetMeleeSpellBool based on school and effect
-        bool custom_is_melee_spell;
-
-        // set in Hackfixes.cpp - 1 spells (2094)
-        // set in SpellCustomizations::SetRangedSpellBool based on school and dmg type
-        bool custom_is_ranged_spell;
-
-        // set in HackFixes.cpp for all spells, based on school
-        uint32_t custom_SchoolMask;
-
-        // SpellCustomizations::SetCustomFlags - 1 spell (781)
-        uint32_t CustomFlags;
-
-        // from MySQL table spell_effects_override - 374 spells
-        uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
-#else
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Applied values from DBC
-        uint32_t Id;
-        uint32_t Attributes;
-        uint32_t AttributesEx;
-        uint32_t AttributesExB;
-        uint32_t AttributesExC;
-        uint32_t AttributesExD;
-        uint32_t AttributesExE;
-        uint32_t AttributesExF;
-        uint32_t AttributesExG;
-        uint32_t AttributesExH;
-        uint32_t AttributesExI;
-        uint32_t AttributesExJ;
-        uint32_t CastingTimeIndex;
-        uint32_t DurationIndex;
-        int32_t powerType;            // uint32_t  error: case value evaluates to -2, which cannot be narrowed to type 'uint32' (aka 'unsigned int') [-Wc++11-narrowing]
-        uint32_t rangeIndex;
-        float speed;
-        uint32_t SpellVisual;
-        uint32_t field114;
-        uint32_t spellIconID;
-        uint32_t activeIconID;
-        std::string Name;
-        std::string Rank;
-        std::string Description;
-        std::string BuffDescription;
-        uint32_t School;
-        uint32_t RuneCostID;
-        //uint32_t SpellMissileID;
-        //uint32_t spellDescriptionVariableID;
-        uint32_t SpellDifficultyID;
-
-        //dbc links
-        uint32_t SpellScalingId;                              // SpellScaling.dbc
-        uint32_t SpellAuraOptionsId;                          // SpellAuraOptions.dbc
-        uint32_t SpellAuraRestrictionsId;                     // SpellAuraRestrictions.dbc
-        uint32_t SpellCastingRequirementsId;                  // SpellCastingRequirements.dbc
-        uint32_t SpellCategoriesId;                           // SpellCategories.dbc
-        uint32_t SpellClassOptionsId;                         // SpellClassOptions.dbc
-        uint32_t SpellCooldownsId;                            // SpellCooldowns.dbc
-        uint32_t SpellEquippedItemsId;                        // SpellEquippedItems.dbc
-        uint32_t SpellInterruptsId;                           // SpellInterrupts.dbc
-        uint32_t SpellLevelsId;                               // SpellLevels.dbc
-        uint32_t SpellPowerId;                                // SpellPower.dbc
-        uint32_t SpellReagentsId;                             // SpellReagents.dbc
-        uint32_t SpellShapeshiftId;                           // SpellShapeshift.dbc
-        uint32_t SpellTargetRestrictionsId;                   // SpellTargetRestrictions.dbc
-        uint32_t SpellTotemsId;                               // SpellTotems.dbc
-
-        // data from SpellScaling.dbc
-        // data from SpellAuraOptions.dbc
-        uint32_t maxstack;
-        uint32_t procChance;
-        uint32_t procCharges;
-        uint32_t procFlags;
-
-        // data from SpellAuraRestrictions.dbc
-        uint32_t CasterAuraState;
-        uint32_t TargetAuraState;
-        uint32_t CasterAuraStateNot;
-        uint32_t TargetAuraStateNot;
-        uint32_t casterAuraSpell;
-        uint32_t targetAuraSpell;
-        uint32_t casterAuraSpellNot;
-        uint32_t targetAuraSpellNot;
-
-        // data from SpellCastingRequirements.dbc
-        uint32_t FacingCasterFlags;
-        int32_t RequiresAreaId;
-        uint32_t RequiresSpellFocus;
-
-        // data from SpellCategories.dbc
-        uint32_t Category;
-        uint32_t DispelType;
-        uint32_t Spell_Dmg_Type;
-        uint32_t MechanicsType;
-        uint32_t PreventionType;
-        uint32_t StartRecoveryCategory;
-
-        // data from SpellClassOptions.dbc
-        uint32_t SpellGroupType[3];
-        uint32_t SpellFamilyName;
-
-        // data from SpellCooldowns.dbc
-        uint32_t CategoryRecoveryTime;
-        uint32_t RecoveryTime;
-        uint32_t StartRecoveryTime;
-
-        // data from SpellEquippedItems.dbc
-        int32_t EquippedItemClass;
-        int32_t EquippedItemInventoryTypeMask;
-        int32_t EquippedItemSubClass;
-
-        // data from SpellInterrupts.dbc
-        uint32_t AuraInterruptFlags;
-        uint32_t ChannelInterruptFlags;
-        uint32_t InterruptFlags;
-
-        // data from SpellLevels.dbc
-        uint32_t baseLevel;
-        uint32_t maxLevel;
-        uint32_t spellLevel;
-
-        // data from SpellPower.dbc
-        uint32_t manaCost;
-        uint32_t manaCostPerlevel;
-        uint32_t ManaCostPercentage;
-        uint32_t manaPerSecond;
-        uint32_t manaPerSecondPerLevel;
-
-        // data from SpellReagents.dbc
-        uint32_t Reagent[MAX_SPELL_REAGENTS];
-        uint32_t ReagentCount[MAX_SPELL_REAGENTS];
-
-        // data from SpellShapeshift.dbc
-        uint32_t RequiredShapeShift;
-        uint32_t ShapeshiftExclude;
-
-        // data from SpellTargetRestrictions.dbc
-        uint32_t MaxTargets;
-        uint32_t MaxTargetLevel;
-        uint32_t TargetCreatureType;
-        uint32_t Targets;
-
-        // data from SpellTotems.dbc
-        uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
-        uint32_t Totem[MAX_SPELL_TOTEMS];
-
-        // data from SpellEffect.dbc
-        uint32_t Effect[MAX_SPELL_EFFECTS];
-        float EffectMultipleValue[MAX_SPELL_EFFECTS];
-        uint32_t EffectApplyAuraName[MAX_SPELL_EFFECTS];
-        uint32_t EffectAmplitude[MAX_SPELL_EFFECTS];
-        int32_t EffectBasePoints[MAX_SPELL_EFFECTS];
-        float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
-        float dmg_multiplier[MAX_SPELL_EFFECTS];
-        uint32_t EffectChainTarget[MAX_SPELL_EFFECTS];
-        int32_t EffectDieSides[MAX_SPELL_EFFECTS];
-        uint32_t EffectItemType[MAX_SPELL_EFFECTS];
-        uint32_t EffectMechanic[MAX_SPELL_EFFECTS];
-        int32_t EffectMiscValue[MAX_SPELL_EFFECTS];
-        int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];
-        float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
-        uint32_t EffectRadiusIndex[MAX_SPELL_EFFECTS];
-        uint32_t EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
-        float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];
-        uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS];
-        uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
-        uint32_t EffectImplicitTargetA[MAX_SPELL_EFFECTS];
-        uint32_t EffectImplicitTargetB[MAX_SPELL_EFFECTS];
-        uint32_t EffectSpellId[MAX_SPELL_EFFECTS];
-        uint32_t EffectIndex[MAX_SPELL_EFFECTS];
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // custom values
-        uint32_t custom_proc_interval;
-        uint32_t custom_BGR_one_buff_on_target;
-        uint32_t custom_c_is_flags;
-        uint32_t custom_RankNumber;
-        uint32_t custom_NameHash;
-        uint32_t custom_ThreatForSpell;
-        float custom_ThreatForSpellCoef;
-        uint32_t custom_spell_coef_flags;
-        float custom_base_range_or_radius_sqr;
-        float cone_width;
-        float casttime_coef;
-        float fixed_dddhcoef;
-        float fixed_hotdotcoef;
-        float Dspell_coef_override;
-        float OTspell_coef_override;
-        int ai_target_type;
-        bool custom_self_cast_only;
-        bool custom_apply_on_shapeshift_change;
-        bool custom_is_melee_spell;
-        bool custom_is_ranged_spell;
-        bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
-        uint32_t custom_SchoolMask;
-        uint32_t CustomFlags;
-        uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
+#if VERSION_STRING >= Cata
+    // DBC links
+    uint32_t SpellScalingId;                              // SpellScaling.dbc
+    uint32_t SpellAuraOptionsId;                          // SpellAuraOptions.dbc
+    uint32_t SpellAuraRestrictionsId;                     // SpellAuraRestrictions.dbc
+    uint32_t SpellCastingRequirementsId;                  // SpellCastingRequirements.dbc
+    uint32_t SpellCategoriesId;                           // SpellCategories.dbc
+    uint32_t SpellClassOptionsId;                         // SpellClassOptions.dbc
+    uint32_t SpellCooldownsId;                            // SpellCooldowns.dbc
+    uint32_t SpellEquippedItemsId;                        // SpellEquippedItems.dbc
+    uint32_t SpellInterruptsId;                           // SpellInterrupts.dbc
+    uint32_t SpellLevelsId;                               // SpellLevels.dbc
+    uint32_t SpellPowerId;                                // SpellPower.dbc
+    uint32_t SpellReagentsId;                             // SpellReagents.dbc
+    uint32_t SpellShapeshiftId;                           // SpellShapeshift.dbc
+    uint32_t SpellTargetRestrictionsId;                   // SpellTargetRestrictions.dbc
+    uint32_t SpellTotemsId;                               // SpellTotems.dbc
 #endif
-        void* (*SpellFactoryFunc);
-        void* (*AuraFactoryFunc);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //custom values
+    
+    // from MySQL table spell_proc - 1887 spells
+    uint32_t custom_proc_interval;
+
+    // from MySQL table spell_custom_assign - 1970 spells
+    uint32_t custom_BGR_one_buff_on_target;
+
+    // from MySQL table spell_custom_assign - 353 spells
+    // also flags added in SpellCustomizations::SetMissingCIsFlags
+    uint32_t custom_c_is_flags;
+
+    // from MySQL table spell_ranks - 6546 spells
+    uint32_t custom_RankNumber;
+
+    // set in HackFixes.cpp for all Dummy Trigger
+    uint32_t custom_NameHash;
+
+    // from MySQL table ai_threattospellid - 144 spells
+    int32_t custom_ThreatForSpell;
+
+    // from MySQL table ai_threattospellid - 118 spells
+    float custom_ThreatForSpellCoef;
+
+    // from MySQL table spell_coef_flags - 16499 spells
+    uint32_t custom_spell_coef_flags;
+
+    // set in HackFixes.cpp for all spells
+    float custom_base_range_or_radius_sqr;
+
+    // set in HackFixes.cpp - 1 spell (26029)
+    float cone_width;
+
+    // set in HackFixes.cpp for all spells
+    float casttime_coef;
+
+    // set in HackFixes.cpp for most spells
+    float fixed_dddhcoef;
+
+    // set in HackFixes.cpp for most spells
+    float fixed_hotdotcoef;
+
+    // from MySQL table spell_coef_override - 151 spells
+    float Dspell_coef_override;
+
+    // from MySQL table spell_coef_override - 151 spells
+    float OTspell_coef_override;
+
+    // set in HackFixes.cpp for all spells
+    // check out SpellInfo::aiTargetType
+    int ai_target_type;
+
+    // set in Hackfixes.cpp - 5 spells
+    // from MySQL table spell_custom_assign - 6 spells
+    bool custom_self_cast_only;
+
+    // SpellCustomizations::SetOnShapeshiftChange - 2 spells
+    bool custom_apply_on_shapeshift_change;
+
+    // set in Hackfixes.cpp - 3 spells
+    // set in SpellCustomizations::SetMeleeSpellBool based on school and effect
+    bool custom_is_melee_spell;
+
+    // set in Hackfixes.cpp - 1 spells (2094)
+    // set in SpellCustomizations::SetRangedSpellBool based on school and dmg type
+    bool custom_is_ranged_spell;
+
+    // set in HackFixes.cpp for all spells, based on school
+    uint32_t custom_SchoolMask;
+
+    // SpellCustomizations::SetCustomFlags - 1 spell (781)
+    uint32_t CustomFlags;
+
+    // from MySQL table spell_effects_override - 374 spells
+    uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
+
+    void* (*SpellFactoryFunc);
+    void* (*AuraFactoryFunc);
 };
