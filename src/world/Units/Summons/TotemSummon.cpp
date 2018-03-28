@@ -140,11 +140,11 @@ void TotemSummon::SetupSpells()
     // Set up AI, depending on our spells.
     bool castingtotem = true;
 
-    if (TotemSpell->HasEffect(SPELL_EFFECT_SUMMON) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
-        (TotemSpell->HasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
+    if (TotemSpell->hasEffect(SPELL_EFFECT_SUMMON) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
+        (TotemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
         castingtotem = false;
 
     if (!castingtotem)
@@ -156,7 +156,7 @@ void TotemSummon::SetupSpells()
         Spell* pSpell = sSpellFactoryMgr.NewSpell(this, TotemSpell, true, 0);
         SpellCastTargets targets;
 
-        if (!TotemSpell->HasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
+        if (!TotemSpell->hasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
         {
             targets.setDestination(GetPosition());
             targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;

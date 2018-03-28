@@ -38,10 +38,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!_player->isAlive() && _player->getShapeShiftForm() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
+    if (!_player->isAlive() && _player->getShapeShiftForm() != FORM_SPIRITOFREDEMPTION && !(spellInfo->getAttributes() & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
-    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
+    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->getName().c_str(), recvPacket.size());
 
     // Check does player have the spell
     if (!GetPlayer()->HasSpell(spellId))
@@ -52,7 +52,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check is player trying to cast a passive spell
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
         LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
@@ -81,7 +81,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         if (targets.m_unitTarget && targets.m_unitTarget != _player->getGuid())
         {
             // send the error message
-            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
+            _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
             return;
         }
     }
@@ -229,7 +229,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         return;
     }
