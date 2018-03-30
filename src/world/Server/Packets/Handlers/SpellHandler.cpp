@@ -427,7 +427,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check is player trying to cast a passive spell
-    if (spellInfo->isPassive())
+    if (spellInfo->IsPassive())
     {
         sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), spellPacket.spell_id);
         LogDetail("WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), spellPacket.spell_id);
@@ -528,7 +528,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     }
 
     // You can't cancel a passive aura
-    if (spellInfo->isPassive())
+    if (spellInfo->IsPassive())
     {
         return;
     }
@@ -633,7 +633,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->isPassive())
+    if (spellInfo->IsPassive())
     {
         return;
     }

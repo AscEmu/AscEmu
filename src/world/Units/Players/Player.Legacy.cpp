@@ -2466,11 +2466,10 @@ void Player::addSpell(uint32 spell_id)
     {
         // miscvalue1==777 for mounts, 778 for pets
         // make sure it's a companion pet, not some other summon-type spell
-        // temporary solution since spell description is no longer loaded -Appled
-        const auto creatureEntry = spell->getEffectMiscValue(0);
-        auto creatureProperties = sMySQLStore.getCreatureProperties(creatureEntry);
-        if (creatureProperties != nullptr && creatureProperties->Type == UNIT_TYPE_NONCOMBAT_PET)
+        if (strncmp(spell->getDescription().c_str(), "Right Cl", 8) == 0) // "Right Click to summon and dismiss " ...
+        {
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
+        }
     }
 #endif
 }
@@ -7266,8 +7265,8 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     float dist = CalcDistance(this, target);
     float maxr = GetMaxRange(spell_range) + 2.52f;
 
-    spellModFlatFloatValue(this->SM_FRange, &maxr, spell_info->getSpellFamilyFlags());
-    spellModPercentageFloatValue(this->SM_PRange, &maxr, spell_info->getSpellFamilyFlags());
+    spellModFlatFloatValue(this->SM_FRange, &maxr, spell_info->getSpellGroupType());
+    spellModPercentageFloatValue(this->SM_PRange, &maxr, spell_info->getSpellGroupType());
 
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
@@ -10353,7 +10352,7 @@ void Player::CompleteLoading()
         spellInfo = sSpellCustomizations.GetSpellInfo(*itr);
 
         if (spellInfo != nullptr
-            && (spellInfo->isPassive())  // passive
+            && (spellInfo->IsPassive())  // passive
             && !(spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
         {
             if (spellInfo->getRequiredShapeShift())
@@ -11588,7 +11587,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                         removeSpell(removeSpellId, true, true, skill_line_ability->next);
                     }
                     // if passive spell, apply it now
-                    if (sp->isPassive())
+                    if (sp->IsPassive())
                     {
                         SpellCastTargets targets;
                         targets.m_unitTarget = this->getGuid();
@@ -12190,8 +12189,8 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 spell_category_recovery_time = pSpell->getCategoryRecoveryTime();
     if (spell_category_recovery_time > 0 && category_id)
     {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
+        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellGroupType());
+        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellGroupType());
 
         AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->getItemProperties()->ItemId : 0);
     }
@@ -12199,8 +12198,8 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 spell_recovery_t = pSpell->getRecoveryTime();
     if (spell_recovery_t > 0)
     {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
+        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellGroupType());
+        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellGroupType());
 
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, spell_id, spell_recovery_t + mstime, spell_id, pItemCaster ? pItemCaster->getItemProperties()->ItemId : 0);
     }
@@ -12219,8 +12218,8 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     else
         atime = float2int32(pSpell->getStartRecoveryTime() * getModCastSpeed());
 
-    spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellFamilyFlags());
-    spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellFamilyFlags());
+    spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellGroupType());
+    spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellGroupType());
 
     if (atime < 0)
         return;
@@ -13425,7 +13424,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                 }
             }
 
-            if (spellInfo->isPassive() || ((spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
+            if (spellInfo->IsPassive() || ((spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
                 spellInfo->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
                 spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 && ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
@@ -13602,12 +13601,12 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             }
 
             int32 ss = getShapeShiftMask();
-            if (spellInfo->getRequiredShapeShift() == 0 || (ss & spellInfo->getRequiredShapeShift()) != 0)
+            if (spellInfo->RequiredShapeShift == 0 || (ss & spellInfo->RequiredShapeShift) != 0)
             {
-                if (spellInfo->isPassive()
-                     || (spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
-                         spellInfo->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
-                         spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL))
+                if (spellInfo->IsPassive()
+                     || (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
+                         spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
+                         spellInfo->Effect[2] == SPELL_EFFECT_LEARN_SPELL))
                 {
                     Spell* sp = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);
                     SpellCastTargets tgt;
@@ -15300,7 +15299,7 @@ void Player::CastSpellArea()
     {
         if (m_auras[i] != nullptr)
         {
-            if (m_auras[i]->GetSpellInfo()->checkLocation(GetMapId(), ZoneId, AreaId, this) == false)
+            if (m_auras[i]->GetSpellInfo()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
             {
                 SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
                 if (sab.first != sab.second)

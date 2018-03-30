@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 SpellInfo::SpellInfo()
 {
+#if VERSION_STRING != Cata
     Id = 0;
     Category = 0;
     DispelType = 0;
@@ -24,11 +25,8 @@ SpellInfo::SpellInfo()
     AttributesExE = 0;
     AttributesExF = 0;
     AttributesExG = 0;
-    AttributesExH = 0;
-    AttributesExI = 0;
-    AttributesExJ = 0;
-    Shapeshifts = 0;
-    ShapeshiftsExcluded = 0;
+    RequiredShapeShift = 0;
+    ShapeshiftExclude = 0;
     Targets = 0;
     TargetCreatureType = 0;
     RequiresSpellFocus = 0;
@@ -40,6 +38,61 @@ SpellInfo::SpellInfo()
     casterAuraSpell = 0;
     targetAuraSpell = 0;
     casterAuraSpellNot = 0;
+
+    CustomFlags = 0;
+
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        EffectCustomFlag[i] = 0;
+
+    SpellFactoryFunc = NULL;
+    AuraFactoryFunc = NULL;
+    custom_proc_interval = 0;
+    custom_BGR_one_buff_on_target = 0;
+    custom_c_is_flags = 0;
+    custom_RankNumber = 0;
+    custom_NameHash = 0;
+    custom_ThreatForSpell = 0;
+    custom_ThreatForSpellCoef = 0;
+    custom_spell_coef_flags = 0;
+    custom_base_range_or_radius_sqr = 0;
+    cone_width = 0;
+    casttime_coef = 0;
+    fixed_dddhcoef = 0;
+    fixed_hotdotcoef = 0;
+    Dspell_coef_override = 0;
+    OTspell_coef_override = 0;
+    ai_target_type = 0;
+    custom_self_cast_only = false;
+    custom_apply_on_shapeshift_change = false;
+    custom_is_melee_spell = false;
+    custom_is_ranged_spell = false;
+
+    custom_SchoolMask = 0;
+    SpellVisual = 0;
+    field114 = 0;
+    spellIconID = 0;
+    activeIconID = 0;
+    spellPriority = 0;
+    Name = "";
+    Rank = "";
+    Description = "";
+    BuffDescription = "";
+    ManaCostPercentage = 0;
+    StartRecoveryCategory = 0;
+    StartRecoveryTime = 0;
+    MaxTargetLevel = 0;
+    SpellFamilyName = 0;
+    MaxTargets = 0;
+    Spell_Dmg_Type = 0;
+    PreventionType = 0;
+    StanceBarOrder = 0;
+    MinFactionID = 0;
+    MinReputation = 0;
+    RequiredAuraVision = 0;
+    RequiresAreaId = 0;
+    School = 0;
+    RuneCostID = 0;
+    SpellDifficultyID = 0;
     targetAuraSpellNot = 0;
     CastingTimeIndex = 0;
     RecoveryTime = 0;
@@ -61,69 +114,45 @@ SpellInfo::SpellInfo()
     manaPerSecondPerLevel = 0;
     rangeIndex = 0;
     speed = 0;
-    MaxStackAmount = 0;
-    for (auto i = 0; i < MAX_SPELL_TOTEMS; ++i)
-        Totem[i] = 0;
-    for (auto i = 0; i < MAX_SPELL_REAGENTS; ++i)
-    {
-        Reagent[i] = 0;
-        ReagentCount[i] = 0;
-    }
+    modalNextSpell = 0;
+    maxstack = 0;
     EquippedItemClass = 0;
     EquippedItemSubClass = 0;
-    EquippedItemInventoryTypeMask = 0;
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        Effect[i] = 0;
-        EffectDieSides[i] = 0;
-        EffectRealPointsPerLevel[i] = 0;
-        EffectBasePoints[i] = 0;
-        EffectMechanic[i] = 0;
-        EffectImplicitTargetA[i] = 0;
-        EffectImplicitTargetB[i] = 0;
-        EffectRadiusIndex[i] = 0;
-        EffectApplyAuraName[i] = 0;
-        EffectAmplitude[i] = 0;
-        EffectMultipleValue[i] = 0;
-        EffectChainTarget[i] = 0;
-        EffectItemType[i] = 0;
-        EffectMiscValue[i] = 0;
-        EffectMiscValueB[i] = 0;
-        EffectTriggerSpell[i] = 0;
-        EffectPointsPerComboPoint[i] = 0;
-        for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
-            EffectSpellClassMask[i][u] = 0;
-#if VERSION_STRING >= Cata
-        EffectRadiusMaxIndex[i] = 0;
-        EffectSpellId[i] = 0;
-        EffectIndex[i] = 0;
-#endif
-        SpellFamilyFlags[i] = 0;
-        EffectDamageMultiplier[i] = 0;
-    }
+    RequiredItemFlags = 0;
+#else
+    Id = 0;
+    Category = 0;
+    DispelType = 0;
+    MechanicsType = 0;
+    Attributes = 0;
+    AttributesEx = 0;
+    AttributesExB = 0;
+    AttributesExC = 0;
+    AttributesExD = 0;
+    AttributesExE = 0;
+    AttributesExF = 0;
+    AttributesExG = 0;
+    AttributesExH = 0;
+    AttributesExI = 0;
+    AttributesExJ = 0;
+    CastingTimeIndex = 0;
+    DurationIndex = 0;
+    powerType = 0;
+    rangeIndex = 0;
+    speed = 0;
     SpellVisual = 0;
+    field114 = 0;
     spellIconID = 0;
     activeIconID = 0;
-    spellPriority = 0;
     Name = "";
     Rank = "";
-    ManaCostPercentage = 0;
-    StartRecoveryCategory = 0;
-    StartRecoveryTime = 0;
-    MaxTargetLevel = 0;
-    SpellFamilyName = 0;
-    MaxTargets = 0;
-    DmgClass = 0;
-    PreventionType = 0;
-    for (auto i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
-        TotemCategory[i] = 0;
-    AreaGroupId = 0;
+    Description = "";
+    BuffDescription = "";
     School = 0;
     RuneCostID = 0;
-    SpellDifficultyId = 0;
-    
-#if VERSION_STRING >= Cata
-    // DBC links
+    SpellDifficultyID = 0;
+
+    //dbc links
     SpellScalingId = 0;
     SpellAuraOptionsId = 0;
     SpellAuraRestrictionsId = 0;
@@ -139,9 +168,122 @@ SpellInfo::SpellInfo()
     SpellShapeshiftId = 0;
     SpellTargetRestrictionsId = 0;
     SpellTotemsId = 0;
-#endif
 
-    // Custom values
+    // data from SpellScaling.dbc
+    // data from SpellAuraOptions.dbc
+    maxstack = 0;
+    procChance = 0;
+    procCharges = 0;
+    procFlags = 0;
+
+    // data from SpellAuraRestrictions.dbc
+    CasterAuraState = 0;
+    TargetAuraState = 0;
+    CasterAuraStateNot = 0;
+    TargetAuraStateNot = 0;
+    casterAuraSpell = 0;
+    targetAuraSpell = 0;
+    casterAuraSpellNot = 0;
+    targetAuraSpellNot = 0;
+
+    // data from SpellCastingRequirements.dbc
+    FacingCasterFlags = 0;
+    RequiresAreaId = 0;
+    RequiresSpellFocus = 0;
+
+    // data from SpellCategories.dbc
+    Category = 0;
+    DispelType = 0;
+    Spell_Dmg_Type = 0;
+    MechanicsType = 0;
+    PreventionType = 0;
+    StartRecoveryCategory = 0;
+
+    // data from SpellClassOptions.dbc
+    SpellFamilyName = 0;
+    for (uint8_t i = 0; i < 3; ++i)
+        SpellGroupType[i] = 0;
+
+    // data from SpellCooldowns.dbc
+    CategoryRecoveryTime = 0;
+    RecoveryTime = 0;
+    StartRecoveryTime = 0;
+
+    // data from SpellEquippedItems.dbc
+    EquippedItemClass = 0;
+    EquippedItemInventoryTypeMask = 0;
+    EquippedItemSubClass = 0;
+
+    // data from SpellInterrupts.dbc
+    AuraInterruptFlags = 0;
+    ChannelInterruptFlags = 0;
+    InterruptFlags = 0;
+
+    // data from SpellLevels.dbc
+    baseLevel = 0;
+    maxLevel = 0;
+    spellLevel = 0;
+
+    // data from SpellPower.dbc
+    manaCost = 0;
+    manaCostPerlevel = 0;
+    ManaCostPercentage = 0;
+    manaPerSecond = 0;
+    manaPerSecondPerLevel = 0;
+
+    // data from SpellReagents.dbc
+    for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
+    {
+        Reagent[i] = 0;
+        ReagentCount[i] = 0;
+    }
+
+    // data from SpellShapeshift.dbc
+    RequiredShapeShift = 0;
+    ShapeshiftExclude = 0;
+
+    // data from SpellTargetRestrictions.dbc
+    MaxTargets = 0;
+    MaxTargetLevel = 0;
+    TargetCreatureType = 0;
+    Targets = 0;
+
+    // data from SpellTotems.dbc
+    for (uint8_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
+    {
+        TotemCategory[i] = 0;
+        Totem[i] = 0;
+    }
+
+    // data from SpellEffect.dbc
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        Effect[i] = 0;
+        EffectMultipleValue[i] = 0;
+        EffectApplyAuraName[i] = 0;
+        EffectAmplitude[i] = 0;
+        EffectBasePoints[i] = 0;
+        EffectBonusMultiplier[i] = 0;
+        dmg_multiplier[i] = 0;
+        EffectChainTarget[i] = 0;
+        EffectDieSides[i] = 0;
+        EffectItemType[i] = 0;
+        EffectMechanic[i] = 0;
+        EffectMiscValue[i] = 0;
+        EffectMiscValueB[i] = 0;
+        EffectPointsPerComboPoint[i] = 0;
+        EffectRadiusIndex[i] = 0;
+        EffectRadiusMaxIndex[i] = 0;
+        EffectRealPointsPerLevel[i] = 0;
+        EffectSpellClassMask[i] = 0;
+        EffectTriggerSpell[i] = 0;
+        EffectImplicitTargetA[i] = 0;
+        EffectImplicitTargetB[i] = 0;
+        EffectSpellId[i] = 0;
+        EffectIndex[i] = 0;
+    }
+
+    // custom values
     custom_proc_interval = 0;
     custom_BGR_one_buff_on_target = 0;
     custom_c_is_flags = 0;
@@ -166,59 +308,62 @@ SpellInfo::SpellInfo()
     custom_SchoolMask = 0;
     CustomFlags = 0;
 
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
         EffectCustomFlag[i] = 0;
+    }
 
     SpellFactoryFunc = nullptr;
     AuraFactoryFunc = nullptr;
+#endif
 }
 
 SpellInfo::~SpellInfo() {}
 
 
-bool SpellInfo::hasEffect(uint32_t effect) const
+bool SpellInfo::HasEffect(uint32_t effect) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == effect)
+        {
             return true;
+        }
     }
 
     return false;
 }
 
-bool SpellInfo::hasEffectApplyAuraName(uint32_t auraType) const
+bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name)
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == auraType)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == aura_name)
             return true;
-    }
 
     return false;
 }
 
-bool SpellInfo::hasCustomFlagForEffect(uint32_t effectIndex, uint32_t flag) const
+bool SpellInfo::HasCustomFlagForEffect(uint32_t effect, uint32_t flag)
 {
-    if (effectIndex >= MAX_SPELL_EFFECTS)
+    if (effect >= MAX_SPELL_EFFECTS)
         return false;
 
-    if ((EffectCustomFlag[effectIndex] & flag) != 0)
+    if ((EffectCustomFlag[effect] & flag) != 0)
         return true;
-
-    return false;
+    else
+        return false;
 }
 
 bool SpellInfo::isDamagingSpell() const
 {
-    if (hasEffect(SPELL_EFFECT_SCHOOL_DAMAGE)          ||
-        hasEffect(SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)   ||
-        hasEffect(SPELL_EFFECT_HEALTH_LEECH)           ||
-        hasEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL) ||
-        hasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS)      ||
-        hasEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)  ||
-        hasEffect(SPELL_EFFECT_POWER_BURN)             ||
-        hasEffect(SPELL_EFFECT_ATTACK))
+    if (HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE)          ||
+        HasEffect(SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)   ||
+        HasEffect(SPELL_EFFECT_HEALTH_LEECH)           ||
+        HasEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL) ||
+        HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS)      ||
+        HasEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)  ||
+        HasEffect(SPELL_EFFECT_POWER_BURN)             ||
+        HasEffect(SPELL_EFFECT_ATTACK))
         return true;
 
     if (appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE)         ||
@@ -233,7 +378,9 @@ bool SpellInfo::isDamagingSpell() const
 bool SpellInfo::isHealingSpell() const
 {
     if (firstBeneficialEffect() != -1)
+    {
         return true;
+    }
 
     switch (Id)
     {
@@ -291,7 +438,9 @@ bool SpellInfo::isHealingSpell() const
         case 68009: // Flash of Light Rank 9
         case 68010: // Flash of Light Rank 9
         case 71930:
+        {
             return true;
+        }
         default:
             break;
     }
@@ -305,26 +454,26 @@ int SpellInfo::firstBeneficialEffect() const
     {
         switch (Effect[i])
         {
-            case SPELL_EFFECT_HEALTH_LEECH:
-            case SPELL_EFFECT_HEAL:
-            case SPELL_EFFECT_HEAL_MAX_HEALTH:
-                return i;
-            case SPELL_EFFECT_APPLY_AURA:
-            case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
-            case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
+        case SPELL_EFFECT_HEALTH_LEECH:
+        case SPELL_EFFECT_HEAL:
+        case SPELL_EFFECT_HEAL_MAX_HEALTH:
+            return i;
+        case SPELL_EFFECT_APPLY_AURA:
+        case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
+        case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
+        {
+            switch (EffectApplyAuraName[i])
             {
-                switch (EffectApplyAuraName[i])
-                {
-                    case SPELL_AURA_PERIODIC_HEAL:
-                    case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                        return i;
-                    default:
-                        break;
-                }
-                break;
-            }
+            case SPELL_AURA_PERIODIC_HEAL:
+            case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
+                return i;
             default:
                 break;
+            }
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -333,49 +482,57 @@ int SpellInfo::firstBeneficialEffect() const
 
 bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
 {
+    // TODO: Verify for cata
+#if VERSION_STRING != Cata
     if (spellInfo == nullptr)
         return false;
 
     if (spellInfo->SpellFamilyName != SpellFamilyName)
         return false;
 
-    // If any of the effect indexes contain same mask, the spells affect each other
-    // TODO: this always returns false on classic and TBC since EffectSpellClassMask field does not exist there
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
         {
-            // todo: test on Cata
-            if (EffectSpellClassMask[u][i] && (EffectSpellClassMask[u][i] & spellInfo->SpellFamilyFlags[i]))
+            // If any of the effect indexes contain same mask, the spells affect each other
+            if (EffectSpellClassMask[u][i] && (EffectSpellClassMask[u][i] & spellInfo->SpellGroupType[i]))
                 return true;
         }
     }
+#endif
     return false;
 }
 
-uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const
+uint32_t SpellInfo::getSpellDuration(Unit* caster) const
 {
     auto spell_duration = sSpellDurationStore.LookupEntry(DurationIndex);
     if (spell_duration == nullptr)
+    {
         return 0;
+    }
 
     if (caster == nullptr)
+    {
         return spell_duration->Duration1;
+    }
 
     auto ret = spell_duration->Duration1 + (spell_duration->Duration2 * caster->getLevel());
     if (ret > spell_duration->Duration3)
+    {
         return spell_duration->Duration3;
-
+    }
     return ret;
 }
 
 bool SpellInfo::hasTargetType(uint32_t type) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (auto i = 0; i < 3; ++i)
     {
         if (EffectImplicitTargetA[i] == type ||
             EffectImplicitTargetB[i] == type)
+        {
             return true;
+        }
     }
 
     return false;
@@ -385,23 +542,31 @@ int SpellInfo::aiTargetType() const
 {
     /*  this is not good as one spell effect can target self and other one an enemy,
     maybe we should make it for each spell effect or use as flags */
-    if (hasTargetType(EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
+    if (
+        hasTargetType(EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         hasTargetType(EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS)       ||
         hasTargetType(EFF_TARGET_ALL_ENEMY_IN_AREA)                              ||
         hasTargetType(EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)                      ||
         hasTargetType(EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED)                    ||
-        hasTargetType(EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME))
+        hasTargetType(EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME)
+    )
+    {
         return TTYPE_DESTINATION;
+    }
 
-    if (hasTargetType(EFF_TARGET_LOCATION_TO_SUMMON)      ||
+    if (
+        hasTargetType(EFF_TARGET_LOCATION_TO_SUMMON)      ||
         hasTargetType(EFF_TARGET_IN_FRONT_OF_CASTER)      ||
         hasTargetType(EFF_TARGET_ALL_FRIENDLY_IN_AREA)    ||
         hasTargetType(EFF_TARGET_PET_SUMMON_LOCATION)     ||
         hasTargetType(EFF_TARGET_LOCATION_INFRONT_CASTER) ||
-        hasTargetType(EFF_TARGET_CONE_IN_FRONT))
+        hasTargetType(EFF_TARGET_CONE_IN_FRONT)
+    )
+    {
         return TTYPE_SOURCE;
-
-    if (hasTargetType(EFF_TARGET_SINGLE_ENEMY)                      ||
+    }
+    if (
+        hasTargetType(EFF_TARGET_SINGLE_ENEMY)                      ||
         hasTargetType(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER)         ||
         hasTargetType(EFF_TARGET_DUEL)                              ||
         hasTargetType(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET)         ||
@@ -409,10 +574,14 @@ int SpellInfo::aiTargetType() const
         hasTargetType(EFF_TARGET_CURRENT_SELECTION)                 ||
         hasTargetType(EFF_TARGET_TARGET_AT_ORIENTATION_TO_CASTER)   ||
         hasTargetType(EFF_TARGET_MULTIPLE_GUARDIAN_SUMMON_LOCATION) ||
-        hasTargetType(EFF_TARGET_SELECTED_ENEMY_CHANNELED))
+        hasTargetType(EFF_TARGET_SELECTED_ENEMY_CHANNELED)
+    )
+    {
         return TTYPE_SINGLETARGET;
+    }
 
-    if (hasTargetType(EFF_TARGET_ALL_PARTY_AROUND_CASTER)     ||
+    if (
+        hasTargetType(EFF_TARGET_ALL_PARTY_AROUND_CASTER)     ||
         hasTargetType(EFF_TARGET_SINGLE_FRIEND)               ||
         hasTargetType(EFF_TARGET_PET_MASTER)                  ||
         hasTargetType(EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED) ||
@@ -421,14 +590,21 @@ int SpellInfo::aiTargetType() const
         hasTargetType(EFF_TARGET_ALL_PARTY)                   ||
         hasTargetType(EFF_TARGET_ALL_RAID)                    ||
         hasTargetType(EFF_TARGET_PARTY_MEMBER)                ||
-        hasTargetType(EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS))
+        hasTargetType(EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
+    )
+    {
         return TTYPE_OWNER;
+    }
 
-    if (hasTargetType(EFF_TARGET_SELF) ||
+    if (
+        hasTargetType(EFF_TARGET_SELF) ||
         hasTargetType(4) ||
         hasTargetType(EFF_TARGET_PET) ||
-        hasTargetType(EFF_TARGET_MINION))
+        hasTargetType(EFF_TARGET_MINION)
+    )
+    {
         return TTYPE_CASTER;
+    }
 
     return TTYPE_NULL;
 }
@@ -439,7 +615,9 @@ bool SpellInfo::isTargetingStealthed() const
         hasTargetType(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
         hasTargetType(EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED) ||
         hasTargetType(EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT))
+    {
         return true;
+    }
 
     switch (Id)
     {
@@ -458,7 +636,9 @@ bool SpellInfo::isTargetingStealthed() const
         case 58732: // Magma Totem Rank 6
         case 58734: // Magma Totem Rank 7
         case 58735: // Magma Totem Rank 7
+        {
             return true;
+        }
         default:
             break;
     }
@@ -474,51 +654,50 @@ bool SpellInfo::isRequireCooldownSpell() const
     return cond1 || cond2;
 }
 
-bool SpellInfo::isPassive() const
+bool SpellInfo::IsPassive()
 {
     return (Attributes & ATTRIBUTES_PASSIVE) != 0;
 }
 
-bool SpellInfo::isProfession() const
+bool SpellInfo::IsProfession()
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            auto skill = EffectMiscValue[i];
+            uint32_t skill = EffectMiscValue[i];
 
             //Profession skill
             if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
                 return true;
 
-            if (isPrimaryProfessionSkill(skill))
+            if (IsPrimaryProfessionSkill(skill))
                 return true;
         }
     }
     return false;
 }
 
-bool SpellInfo::isPrimaryProfession() const
+bool SpellInfo::IsPrimaryProfession()
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            auto skill = EffectMiscValue[i];
-            if (isPrimaryProfessionSkill(skill))
+            uint32_t skill = EffectMiscValue[i];
+
+            if (IsPrimaryProfessionSkill(skill))
                 return true;
         }
     }
     return false;
 }
 
-bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
+bool SpellInfo::IsPrimaryProfessionSkill(uint32_t skill_id)
 {
-    if (auto skill_line = sSkillLineStore.LookupEntry(skill_id))
-    {
+    if (DBC::Structures::SkillLineEntry const* skill_line = sSkillLineStore.LookupEntry(skill_id))
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
             return true;
-    }
 
     return false;
 }
@@ -528,9 +707,9 @@ bool SpellInfo::isDeathPersistent() const
     return (AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD) != 0;
 }
 
-bool SpellInfo::appliesAreaAura(uint32_t auraType) const
+bool SpellInfo::appliesAreaAura(uint32_t aura) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         switch (Effect[i])
         {
@@ -541,8 +720,10 @@ bool SpellInfo::appliesAreaAura(uint32_t auraType) const
             case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
             case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
             case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-                if (EffectApplyAuraName[i] == auraType)
+                if (EffectApplyAuraName[i] == aura)
+                {
                     return true;
+                }
                 break;
             default:
                 break;
@@ -552,9 +733,9 @@ bool SpellInfo::appliesAreaAura(uint32_t auraType) const
     return false;
 }
 
-uint32_t SpellInfo::getAreaAuraEffect() const
+uint32_t SpellInfo::GetAreaAuraEffectId()
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||

@@ -435,9 +435,9 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
         if (created_by_spell != NULL)
         {
-            if (created_by_spell->hasEffect(SPELL_EFFECT_SUMMON_PET) ||
-                created_by_spell->hasEffect(SPELL_EFFECT_TAME_CREATURE) ||
-                created_by_spell->hasEffect(SPELL_EFFECT_TAMECREATURE))
+            if (created_by_spell->HasEffect(SPELL_EFFECT_SUMMON_PET) ||
+                created_by_spell->HasEffect(SPELL_EFFECT_TAME_CREATURE) ||
+                created_by_spell->HasEffect(SPELL_EFFECT_TAMECREATURE))
                 SetNameForEntry(entry);
 
             setCreatedBySpellId(created_by_spell->getId());
@@ -779,7 +779,7 @@ void Pet::InitializeSpells()
         SpellInfo* info = itr->first;
 
         // Check that the spell isn't passive
-        if (info->isPassive())
+        if (info->IsPassive())
         {
             // Cast on self..
             Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
@@ -1388,7 +1388,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     if (sp == NULL)
         return;
 
-    if (sp->isPassive())        // Cast on self if we're a passive spell
+    if (sp->IsPassive())        // Cast on self if we're a passive spell
     {
         if (IsInWorld())
         {

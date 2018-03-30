@@ -2973,7 +2973,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM; /*| PROC_ON_SPELL_HIT_VICTIM;*/
 
     //A school damage is not necessarily magic
-    switch (spellInfo->getDmgClass())
+    switch (spellInfo->getSpell_Dmg_Type())
     {
         case SPELL_DMG_TYPE_RANGED:
         {
@@ -3023,7 +3023,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         {
             res = this->GetCriticalDamageBonusForSpell(pVictim, spellInfo, res);
 
-            switch (spellInfo->getDmgClass())
+            switch (spellInfo->getSpell_Dmg_Type())
             {
                 case SPELL_DMG_TYPE_RANGED:
                 {

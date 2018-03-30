@@ -877,11 +877,11 @@ CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChanc
     {
         uint32_t spellDuration = duration * 1000;
         if (spellDuration == 0)
-            spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
+            spellDuration = spellInfo->getSpellDuration(nullptr);
 
         uint32_t spellCooldown = cooldown * 1000;
         if (spellCooldown == 0)
-            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+            spellCooldown = spellInfo->getSpellDuration(nullptr);
 
         CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
 

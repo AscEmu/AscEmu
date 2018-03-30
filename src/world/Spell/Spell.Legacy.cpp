@@ -546,8 +546,8 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         r = GetSpellInfo()->custom_base_range_or_radius_sqr;
         if (u_caster != nullptr)
         {
-            spellModFlatFloatValue(u_caster->SM_FRadius, &r, GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(u_caster->SM_PRadius, &r, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatFloatValue(u_caster->SM_FRadius, &r, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageFloatValue(u_caster->SM_PRadius, &r, GetSpellInfo()->getSpellGroupType());
         }
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
@@ -601,8 +601,8 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         r = GetSpellInfo()->custom_base_range_or_radius_sqr;
         if (u_caster != nullptr)
         {
-            spellModFlatFloatValue(u_caster->SM_FRadius, &r, GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(u_caster->SM_PRadius, &r, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatFloatValue(u_caster->SM_FRadius, &r, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageFloatValue(u_caster->SM_PRadius, &r, GetSpellInfo()->getSpellGroupType());
         }
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
@@ -816,12 +816,12 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
     if (GetSpellInfo()->getEffect(static_cast<uint8_t>(effindex)) == SPELL_EFFECT_DISPEL)
     {
-        spellModFlatFloatValue(u_victim->SM_FRezist_dispell, &resistchance, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageFloatValue(u_victim->SM_PRezist_dispell, &resistchance, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatFloatValue(u_victim->SM_FRezist_dispell, &resistchance, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageFloatValue(u_victim->SM_PRezist_dispell, &resistchance, GetSpellInfo()->getSpellGroupType());
     }
 
     float hitchance = 0;
-    spellModFlatFloatValue(u_caster->SM_FHitchance, &hitchance, GetSpellInfo()->getSpellFamilyFlags());
+    spellModFlatFloatValue(u_caster->SM_FHitchance, &hitchance, GetSpellInfo()->getSpellGroupType());
     resistchance -= hitchance;
 
     if (hasAttribute(ATTRIBUTES_IGNORE_INVULNERABILITY))
@@ -878,8 +878,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
         if (m_castTime && u_caster != nullptr)
         {
-            spellModFlatIntValue(u_caster->SM_FCastTime, (int32*)&m_castTime, GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(u_caster->SM_PCastTime, (int32*)&m_castTime, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(u_caster->SM_FCastTime, (int32*)&m_castTime, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(u_caster->SM_PCastTime, (int32*)&m_castTime, GetSpellInfo()->getSpellGroupType());
         }
 
         // handle MOD_CAST_TIME
@@ -965,7 +965,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->IsPassive()))
             {
                 p_caster->RemoveAura(p_caster->m_stealth);
                 p_caster->m_stealth = 0;
@@ -1343,7 +1343,7 @@ void Spell::castMe(bool check)
                 && GetSpellInfo()->getId() != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->IsPassive()))
                 {
                     p_caster->RemoveAura(p_caster->m_stealth);
                     p_caster->m_stealth = 0;
@@ -1733,7 +1733,7 @@ void Spell::AddTime(uint32 type)
         }
 
         float ch = 0;
-        spellModFlatFloatValue(u_caster->SM_PNonInterrupt, &ch, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatFloatValue(u_caster->SM_PNonInterrupt, &ch, GetSpellInfo()->getSpellGroupType());
         if (Rand(ch))
             return;
 
@@ -2776,7 +2776,7 @@ void Spell::SendChannelUpdate(uint32 time)
 
         if (p_caster != nullptr)
         {
-            if (m_spellInfo->hasEffect(SPELL_EFFECT_SUMMON) && (p_caster->getCharmGuid() != 0))
+            if (m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON) && (p_caster->getCharmGuid() != 0))
             {
                 Unit* u = p_caster->GetMapMgr()->GetUnit(p_caster->getCharmGuid());
                 if ((u != nullptr) && (u->getCreatedBySpellId() == m_spellInfo->getId()))
@@ -2971,8 +2971,8 @@ bool Spell::HasPower()
     //apply modifiers
     if (u_caster != nullptr)
     {
-        spellModFlatIntValue(u_caster->SM_FCost, &cost, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PCost, &cost, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FCost, &cost, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(u_caster->SM_PCost, &cost, GetSpellInfo()->getSpellGroupType());
     }
 
     if (cost <= 0)
@@ -3129,8 +3129,8 @@ bool Spell::TakePower()
     //apply modifiers
     if (u_caster != nullptr)
     {
-        spellModFlatIntValue(u_caster->SM_FCost, &cost, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PCost, &cost, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FCost, &cost, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(u_caster->SM_PCost, &cost, GetSpellInfo()->getSpellGroupType());
     }
 
     if (cost <= 0)
@@ -3620,8 +3620,8 @@ void Spell::HandleAddAura(uint64 guid)
     {
         if (u_caster != nullptr)
         {
-            spellModFlatIntValue(u_caster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(u_caster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(u_caster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(u_caster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
         }
         for (int i = 0; i < (charges - 1); ++i)
         {
@@ -3806,8 +3806,8 @@ uint32 Spell::GetDuration()
 
             if (u_caster != nullptr)
             {
-                ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->getSpellFamilyFlags());
-                ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->getSpellFamilyFlags());
+                ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->getSpellGroupType());
+                ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->getSpellGroupType());
             }
         }
         else
@@ -3831,8 +3831,8 @@ float Spell::GetRadius(uint32 i)
     Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->getEffectRadiusIndex(static_cast<uint8_t>(i))));
     if (u_caster != nullptr)
     {
-        ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->getSpellFamilyFlags());
-        ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->getSpellFamilyFlags());
+        ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->getSpellGroupType());
+        ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->getSpellGroupType());
     }
 
     return Rad[i];
@@ -4449,8 +4449,10 @@ uint8 Spell::CanCast(bool tolerate)
                 if (GetSpellInfo()->getEquippedItemSubClass() && !(GetSpellInfo()->getEquippedItemSubClass() & (1 << proto->SubClass)))
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (GetSpellInfo()->getEquippedItemInventoryTypeMask() && !(GetSpellInfo()->getEquippedItemInventoryTypeMask() & (1 << proto->InventoryType)))
+#if VERSION_STRING != Cata
+                if (GetSpellInfo()->getRequiredItemFlags() && !(GetSpellInfo()->getRequiredItemFlags() & (1 << proto->InventoryType)))
                     return SPELL_FAILED_BAD_TARGETS;
+#endif
 
                 if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM &&
                     GetSpellInfo()->getBaseLevel() && (GetSpellInfo()->getBaseLevel() > proto->ItemLevel))
@@ -4599,8 +4601,8 @@ uint8 Spell::CanCast(bool tolerate)
      */
     if (u_caster != nullptr)
     {
-        spellModFlatFloatValue(u_caster->SM_FRange, &maxRange, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageFloatValue(u_caster->SM_PRange, &maxRange, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatFloatValue(u_caster->SM_FRange, &maxRange, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageFloatValue(u_caster->SM_PRange, &maxRange, GetSpellInfo()->getSpellGroupType());
     }
 
     // Targeted Location Checks (AoE spells)
@@ -4922,7 +4924,7 @@ uint8 Spell::CanCast(bool tolerate)
                 /* burlex: units are always facing the target! */
                 if (p_caster && facing_flags != SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK)
                 {
-                    if (GetSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+                    if (GetSpellInfo()->getSpell_Dmg_Type() == SPELL_DMG_TYPE_RANGED)
                     {
                         // our spell is a ranged spell
                         if (!p_caster->isInFront(target))
@@ -5561,28 +5563,28 @@ exit:
         int32 spell_flat_modifers = 0;
         int32 spell_pct_modifers = 100;
 
-        spellModFlatIntValue(u_caster->SM_FMiscEffect, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PMiscEffect, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FMiscEffect, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(u_caster->SM_PMiscEffect, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
 
-        spellModFlatIntValue(u_caster->SM_FEffectBonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PEffectBonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FEffectBonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(u_caster->SM_PEffectBonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
 
-        spellModFlatIntValue(u_caster->SM_FDamageBonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PDamageBonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FDamageBonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(u_caster->SM_PDamageBonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
 
         switch (i)
         {
             case 0:
-                spellModFlatIntValue(u_caster->SM_FEffect1_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-                spellModPercentageIntValue(u_caster->SM_PEffect1_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+                spellModFlatIntValue(u_caster->SM_FEffect1_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+                spellModPercentageIntValue(u_caster->SM_PEffect1_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
                 break;
             case 1:
-                spellModFlatIntValue(u_caster->SM_FEffect2_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-                spellModPercentageIntValue(u_caster->SM_PEffect2_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+                spellModFlatIntValue(u_caster->SM_FEffect2_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+                spellModPercentageIntValue(u_caster->SM_PEffect2_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
                 break;
             case 2:
-                spellModFlatIntValue(u_caster->SM_FEffect3_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-                spellModPercentageIntValue(u_caster->SM_PEffect3_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+                spellModFlatIntValue(u_caster->SM_FEffect3_Bonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+                spellModPercentageIntValue(u_caster->SM_PEffect3_Bonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
                 break;
         }
 
@@ -5598,11 +5600,11 @@ exit:
             int32 spell_flat_modifers = 0;
             int32 spell_pct_modifers = 100;
 
-            spellModFlatIntValue(item_creator->SM_FMiscEffect, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(item_creator->SM_PMiscEffect, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(item_creator->SM_FMiscEffect, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(item_creator->SM_PMiscEffect, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
 
-            spellModFlatIntValue(item_creator->SM_FEffectBonus, &spell_flat_modifers, GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(item_creator->SM_PEffectBonus, &spell_pct_modifers, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(item_creator->SM_FEffectBonus, &spell_flat_modifers, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(item_creator->SM_PEffectBonus, &spell_pct_modifers, GetSpellInfo()->getSpellGroupType());
 
             value = float2int32(value * (float)(spell_pct_modifers / 100.0f)) + spell_flat_modifers;
         }
@@ -5804,7 +5806,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
             {
-                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
+                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getDmg_multiplier(static_cast<uint8_t>(i))));
                 p_caster->SetPower(POWER_TYPE_ENERGY, 0);
             }
         } break;
@@ -6030,8 +6032,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             value = value * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
             if (p_caster != nullptr)
             {
-                spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, GetSpellInfo()->getSpellFamilyFlags());
-                spellModPercentageIntValue(p_caster->SM_PMiscEffect, &value, GetSpellInfo()->getSpellFamilyFlags());
+                spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, GetSpellInfo()->getSpellGroupType());
+                spellModPercentageIntValue(p_caster->SM_PMiscEffect, &value, GetSpellInfo()->getSpellGroupType());
             }
         } break;
 
@@ -6508,11 +6510,11 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
         int penalty_pct = 0;
         int penalty_flt = 0;
-        spellModFlatIntValue(u_caster->SM_PPenalty, &penalty_pct, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_PPenalty, &penalty_pct, GetSpellInfo()->getSpellGroupType());
         bonus += amount * penalty_pct / 100;
-        spellModFlatIntValue(u_caster->SM_FPenalty, &penalty_flt, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FPenalty, &penalty_flt, GetSpellInfo()->getSpellGroupType());
         bonus += penalty_flt;
-        spellModFlatIntValue(u_caster->SM_CriticalChance, &critchance, GetSpellInfo()->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_CriticalChance, &critchance, GetSpellInfo()->getSpellGroupType());
 
 
         if (p_caster != nullptr)
@@ -6643,12 +6645,12 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         amount += amount * (int32)(u_caster->HealDonePctMod[school]);
         amount += float2int32(amount * unitTarget->HealTakenPctMod[school]);
 
-        spellModPercentageIntValue(u_caster->SM_PDamageBonus, &amount, GetSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageIntValue(u_caster->SM_PDamageBonus, &amount, GetSpellInfo()->getSpellGroupType());
 
         if (ForceCrit || ((critical = Rand(critchance)) != 0))
         {
             int32 critical_bonus = 100;
-            spellModFlatIntValue(u_caster->SM_PCriticalDamage, &critical_bonus, GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(u_caster->SM_PCriticalDamage, &critical_bonus, GetSpellInfo()->getSpellGroupType());
 
             if (critical_bonus > 0)
             {
@@ -6731,7 +6733,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     }
 }
 
-uint32 Spell::GetType() { return (GetSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->getDmgClass()); }
+uint32 Spell::GetType() { return (GetSpellInfo()->getSpell_Dmg_Type() == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->getSpell_Dmg_Type()); }
 
 Item* Spell::GetItemTarget() const
 {
@@ -7166,7 +7168,7 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
     //CHAIN SPELLS ALWAYS CHAIN!
     uint32 jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));
     if (u_caster != nullptr)
-        spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->getSpellFamilyFlags());
+        spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->getSpellGroupType());
     if (jumps != 0)
         type |= SPELL_TARGET_AREA_CHAIN;
 

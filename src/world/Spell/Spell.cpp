@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 SpellCastResult Spell::canCast(bool tolerate)
 {
-    if (p_caster != nullptr && !GetSpellInfo()->isPassive() && !m_triggeredSpell)
+    if (p_caster != nullptr && !GetSpellInfo()->IsPassive() && !m_triggeredSpell)
     {
         // You can't cast other spells if you have the player flag preventing cast
         if (p_caster->hasPlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST))
@@ -34,7 +34,7 @@ SpellCastResult Spell::canCast(bool tolerate)
             {
                 if (u_caster->m_auras[i] == nullptr)
                     continue;
-                if (!u_caster->m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+                if (!u_caster->m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                     continue;
                 if (u_caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(GetSpellInfo()))
                 {

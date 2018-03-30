@@ -1330,11 +1330,11 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     else if (achievementCriteria->number_of_mounts.unknown == 778 && sp && (sp->getEffect(0) == SPELL_EFFECT_SUMMON))
                     {
                         // Companion pet? Make sure it's a companion pet, not some other summon-type spell
-                        // temporary solution since spell description is no longer loaded -Appled
-                        const auto creatureEntry = sp->getEffectMiscValue(0);
-                        auto creatureProperties = sMySQLStore.getCreatureProperties(creatureEntry);
-                        if (creatureProperties != nullptr && creatureProperties->Type == UNIT_TYPE_NONCOMBAT_PET)
+                        if (strncmp(sp->getDescription().c_str(), "Right Cl", 8) == 0)
+                        {
+                            // "Right Click to summon and dismiss " ...
                             ++nm;
+                        }
                     }
                     ++sl;
                 }

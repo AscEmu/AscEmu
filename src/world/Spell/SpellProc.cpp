@@ -51,9 +51,9 @@ bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 /*misc*/)
 bool SpellProc::CheckClassMask(Unit* /*victim*/, SpellInfo* CastingSpell)
 {
     if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
-        mProcClassMask[0] & CastingSpell->getSpellFamilyFlags(0) ||
-        mProcClassMask[1] & CastingSpell->getSpellFamilyFlags(1) ||
-        mProcClassMask[2] & CastingSpell->getSpellFamilyFlags(2))
+        mProcClassMask[0] & CastingSpell->getSpellGroupType(0) ||
+        mProcClassMask[1] & CastingSpell->getSpellGroupType(1) ||
+        mProcClassMask[2] & CastingSpell->getSpellGroupType(2))
         return true;
     
     return false;

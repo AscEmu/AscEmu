@@ -348,14 +348,14 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
     return true;
 }
 
-bool SpellInfo::checkLocation(uint32_t /*map_id*/, uint32_t zone_id, uint32_t area_id, Player* player) const
+bool SpellInfo::CheckLocation(uint32_t /*map_id*/, uint32_t zone_id, uint32_t area_id, Player* player)
 {
 #if VERSION_STRING > TBC
     // normal case
-    if (AreaGroupId > 0)
+    if (RequiresAreaId > 0)
     {
         bool found = false;
-        auto area_group = sAreaGroupStore.LookupEntry(AreaGroupId);
+        auto area_group = sAreaGroupStore.LookupEntry(RequiresAreaId);
         while (area_group)
         {
             for (uint8 i = 0; i < 6; ++i)

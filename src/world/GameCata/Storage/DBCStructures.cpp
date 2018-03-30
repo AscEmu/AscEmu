@@ -131,7 +131,7 @@ uint32_t DBC::Structures::SpellEntry::GetStartRecoveryTime() const
 uint32_t DBC::Structures::SpellEntry::GetMechanic() const
 {
     SpellCategoriesEntry const* cat = GetSpellCategories();
-    return cat ? cat->MechanicsType : 0;
+    return cat ? cat->Mechanic : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetRecoveryTime() const
@@ -179,7 +179,7 @@ uint32_t DBC::Structures::SpellEntry::GetDmgClass() const
 uint32_t DBC::Structures::SpellEntry::GetDispel() const
 {
     SpellCategoriesEntry const* cat = GetSpellCategories();
-    return cat ? cat->DispelType : 0;
+    return cat ? cat->Dispel : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetMaxAffectedTargets() const
@@ -191,7 +191,7 @@ uint32_t DBC::Structures::SpellEntry::GetMaxAffectedTargets() const
 uint32_t DBC::Structures::SpellEntry::GetStackAmount() const
 {
     SpellAuraOptionsEntry const* aura = GetSpellAuraOptions();
-    return aura ? aura->MaxStackAmount : 0;
+    return aura ? aura->StackAmount : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetManaCostPercentage() const
@@ -293,13 +293,13 @@ int32_t DBC::Structures::SpellEntry::GetEffectMiscValue(SpellEffectIndex index) 
 uint32_t DBC::Structures::SpellEntry::GetStances() const
 {
     SpellShapeshiftEntry const* ss = GetSpellShapeshift();
-    return ss ? ss->Shapeshifts : 0;
+    return ss ? ss->Stances : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetStancesNot() const
 {
     SpellShapeshiftEntry const* ss = GetSpellShapeshift();
-    return ss ? ss->ShapeshiftsExcluded : 0;
+    return ss ? ss->StancesNot : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetProcFlags() const

@@ -1432,7 +1432,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
             }
         }
 
-        spellModFlatIntValue(SM_FChanceOfSuccess, (int32*)&proc_Chance, ospinfo->getSpellFamilyFlags());
+        spellModFlatIntValue(SM_FChanceOfSuccess, (int32*)&proc_Chance, ospinfo->getSpellGroupType());
         if (!Rand(proc_Chance))
             continue;
 
@@ -5892,7 +5892,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    switch (CastingSpell->getAreaAuraEffect())
+                    switch (CastingSpell->GetAreaAuraEffectId())
                     {
                         //SPELL_HASH_SHIELD_SLAM
                         case 8242:
@@ -6524,7 +6524,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         break;
                         case 14177: // Cold blood will get removed on offensive spell
                         {
-                            if (!(CastingSpell->getSpellFamilyFlags(0) & 0x6820206 || CastingSpell->getSpellFamilyFlags(1) & 0x240009))
+                            if (!(CastingSpell->getSpellGroupType(0) & 0x6820206 || CastingSpell->getSpellGroupType(1) & 0x240009))
                                 continue;
                         }
                         break;
@@ -7152,7 +7152,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 
     if (ability != nullptr)
     {
-        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellFamilyFlags());
+        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellGroupType());
     }
 
     if (ability && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
@@ -7477,8 +7477,8 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
     if (ability != nullptr)
     {
-        spellModFlatFloatValue(SM_CriticalChance, &crit, ability->getSpellFamilyFlags());
-        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellFamilyFlags());
+        spellModFlatFloatValue(SM_CriticalChance, &crit, ability->getSpellGroupType());
+        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellGroupType());
     }
 
     // by ratings
@@ -7725,7 +7725,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 else
                 {
                     if (weapon_damage_type == MELEE && ability)
-                        dmg.full_damage = CalculateDamage(this, pVictim, MELEE, ability->getSpellFamilyFlags(), ability);
+                        dmg.full_damage = CalculateDamage(this, pVictim, MELEE, ability->getSpellGroupType(), ability);
                     else
                         dmg.full_damage = CalculateDamage(this, pVictim, weapon_damage_type, 0, ability);
                 }
@@ -7904,7 +7904,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                         if (ability != nullptr)
                         {
                             int32 dmg_bonus_pct = 100;
-                            spellModFlatIntValue(SM_PCriticalDamage, &dmg_bonus_pct, ability->getSpellFamilyFlags());
+                            spellModFlatIntValue(SM_PCriticalDamage, &dmg_bonus_pct, ability->getSpellGroupType());
                             dmgbonus = dmgbonus * dmg_bonus_pct / 100;
                         }
 
@@ -8554,8 +8554,8 @@ void Unit::AddAura(Aura* aur)
                 Unit* ucaster = aur->GetUnitCaster();
                 if (ucaster != nullptr)
                 {
-                    spellModFlatIntValue(ucaster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
-                    spellModPercentageIntValue(ucaster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
+                    spellModFlatIntValue(ucaster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
+                    spellModPercentageIntValue(ucaster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
                 }
                 maxStack = charges;
             }
@@ -9151,8 +9151,8 @@ void Unit::AddAura(Aura* aur)
                 Unit* ucaster = aur->GetUnitCaster();
                 if (ucaster != nullptr)
                 {
-                    spellModFlatIntValue(ucaster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
-                    spellModPercentageIntValue(ucaster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellFamilyFlags());
+                    spellModFlatIntValue(ucaster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
+                    spellModPercentageIntValue(ucaster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
                 }
                 maxStack = charges;
             }
@@ -9966,7 +9966,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
                 if (caster->IsPlayer())
                 {
                     int32 durmod = 0;
-                    spellModFlatIntValue(caster->SM_FDur, &durmod, spellInfo->getSpellFamilyFlags());
+                    spellModFlatIntValue(caster->SM_FDur, &durmod, spellInfo->getSpellGroupType());
                     plus_damage += static_cast<float>(plus_damage * durmod / 15000);
                 }
             }
@@ -10115,12 +10115,12 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
 
 
         int32 bonus_damage = 0;
-        spellModFlatIntValue(caster->SM_FPenalty, &bonus_damage, spellInfo->getSpellFamilyFlags());
-        spellModFlatIntValue(caster->SM_FDamageBonus, &bonus_damage, spellInfo->getSpellFamilyFlags());
+        spellModFlatIntValue(caster->SM_FPenalty, &bonus_damage, spellInfo->getSpellGroupType());
+        spellModFlatIntValue(caster->SM_FDamageBonus, &bonus_damage, spellInfo->getSpellGroupType());
 
         int32 dmg_bonus_pct = 0;
-        spellModFlatIntValue(caster->SM_PPenalty, &dmg_bonus_pct, spellInfo->getSpellFamilyFlags());
-        spellModFlatIntValue(caster->SM_PDamageBonus, &dmg_bonus_pct, spellInfo->getSpellFamilyFlags());
+        spellModFlatIntValue(caster->SM_PPenalty, &dmg_bonus_pct, spellInfo->getSpellGroupType());
+        spellModFlatIntValue(caster->SM_PDamageBonus, &dmg_bonus_pct, spellInfo->getSpellGroupType());
 
         plus_damage += static_cast<float>((base_dmg + bonus_damage) * dmg_bonus_pct / 100);
 
@@ -13871,7 +13871,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
                 CritChance += static_cast<float>(static_cast<Player*>(this)->m_RootedCritChanceBonus);
         }
 
-        spellModFlatFloatValue(SM_CriticalChance, &CritChance, spell->getSpellFamilyFlags());
+        spellModFlatFloatValue(SM_CriticalChance, &CritChance, spell->getSpellGroupType());
 
         if (victim->IsPlayer())
             resilience_type = PCR_SPELL_CRIT_RESILIENCE;
@@ -13959,7 +13959,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
 float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellInfo* spell, float amount)
 {
     int32 critical_bonus = 100;
-    spellModFlatIntValue(SM_PCriticalDamage, &critical_bonus, spell->getSpellFamilyFlags());
+    spellModFlatIntValue(SM_PCriticalDamage, &critical_bonus, spell->getSpellGroupType());
 
     if (critical_bonus > 0)
     {
@@ -14048,7 +14048,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo* spell)
         }
     }
 
-    spellModFlatIntValue(this->SM_CriticalChance, &crit_chance, spell->getSpellFamilyFlags());
+    spellModFlatIntValue(this->SM_CriticalChance, &crit_chance, spell->getSpellGroupType());
 
     return Rand(crit_chance);
 }
@@ -14056,7 +14056,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo* spell)
 float Unit::GetCriticalHealBonusForSpell(Object* /*victim*/, SpellInfo* spell, float amount)
 {
     int32 critical_bonus = 100;
-    spellModFlatIntValue(this->SM_PCriticalDamage, &critical_bonus, spell->getSpellFamilyFlags());
+    spellModFlatIntValue(this->SM_PCriticalDamage, &critical_bonus, spell->getSpellGroupType());
 
     if (critical_bonus > 0)
     {
