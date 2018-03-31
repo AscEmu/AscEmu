@@ -138,8 +138,8 @@ class SERVER_DECL Pet : public Creature
         Pet(uint64 guid);
         ~Pet();
 
-        /// Override superclass method that returns false
-        bool IsPet() { return true; }
+        // Override superclass method that returns false
+        bool isPet() { return true; }
 
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.

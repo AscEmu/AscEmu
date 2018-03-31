@@ -564,7 +564,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         case 48001:
         case 48002:
         {
-            if (!u_caster || !u_caster->IsPet())
+            if (!u_caster || !u_caster->isPet())
                 return;
 
             //TO< Pet* >(u_caster)->Dismiss(true);
@@ -584,7 +584,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     //SPELL_HASH_DEMONIC_SACRIFICE
     if (GetSpellInfo()->getId() == 18788)
     {
-        if (!p_caster || !unitTarget || !unitTarget->IsPet())
+        if (!p_caster || !unitTarget || !unitTarget->isPet())
             return;
 
         //TO< Pet* >(unitTarget)->Dismiss(true);
@@ -599,7 +599,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     else
     {
         // moar cheaters
-        if (!p_caster || (u_caster && u_caster->IsPet()))
+        if (!p_caster || (u_caster && u_caster->isPet()))
             return;
 
         if (p_caster->GetSession()->GetPermissionCount() == 0)
@@ -2303,12 +2303,12 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->isCreature() && unitTarget->IsPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-                    if (!unitTarget->IsPet())
+                    if (!unitTarget->isPet())
                     {
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
@@ -3711,7 +3711,7 @@ void Spell::SpellEffectApplyGroupAA(uint8_t effectIndex)
 
 void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 {
-    if (playerTarget == nullptr && unitTarget && unitTarget->IsPet()) // something's wrong with this logic here.
+    if (playerTarget == nullptr && unitTarget && unitTarget->isPet()) // something's wrong with this logic here.
     {
         // bug in target map fill?
         //playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.m_unitTarget);
@@ -4411,13 +4411,13 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
 {
     /*if (unitTarget && m_caster->getObjectTypeId() == TYPEID_PLAYER)
     {
-    if (unitTarget->IsPet() && unitTarget->getObjectTypeId() == TYPEID_UNIT)
+    if (unitTarget->isPet() && unitTarget->getObjectTypeId() == TYPEID_UNIT)
     {
     TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->getEntry());
     }
     }*/
 
-    if (unitTarget && unitTarget->IsPet() && p_caster)
+    if (unitTarget && unitTarget->isPet() && p_caster)
     {
         Pet* pPet = static_cast< Pet* >(unitTarget);
         if (pPet->IsSummonedPet())
@@ -4607,7 +4607,7 @@ void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)
 
 void Spell::SpellEffectPowerFunnel(uint8_t /*effectIndex*/) // Power Funnel
 {
-    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsPet())
+    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->isPet())
         return;
 
     //does not exist
@@ -5460,12 +5460,12 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->isCreature() && unitTarget->IsPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-                    if (!unitTarget->IsPet())
+                    if (!unitTarget->isPet())
                     {
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
@@ -6104,7 +6104,7 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
     if (!p_caster || !unitTarget)
         return;
 
-    if ((unitTarget->isPlayer() && p_caster->GetGroup() != static_cast< Player* >(unitTarget)->GetGroup()) || (unitTarget->isCreature() && !unitTarget->IsPet()))
+    if ((unitTarget->isPlayer() && p_caster->GetGroup() != static_cast< Player* >(unitTarget)->GetGroup()) || (unitTarget->isCreature() && !unitTarget->isPet()))
         return;
 
     p_caster->SetMisdirectionTarget(unitTarget->getGuid());
@@ -6313,7 +6313,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->IsPet() ||
+    if (!unitTarget || !unitTarget->isPet() ||
         !static_cast< Pet* >(unitTarget)->GetPetOwner() || static_cast< Pet* >(unitTarget)->GetPetOwner()->getClass() != HUNTER)
         return;
 

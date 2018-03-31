@@ -1137,7 +1137,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     bool yieldXP = CalculateXpToGive(pUnit, GetPlayer()) > 0;
                     if (pUnit->isCreature())
                     {
-                        crTotem = pUnit->IsTotem();
+                        crTotem = pUnit->isTotem();
                         crType = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Type;
                         if ((achievementCriteria->ID == 4944)                                  // Total NPC kills              refAch==1197
                             || ((achievementCriteria->ID == 4946) && (yieldXP))                // Kill an NPC that yields XP   refAch==1198

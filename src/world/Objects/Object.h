@@ -385,6 +385,11 @@ public:
     bool isCorpse() const;
     bool isContainer() const;
 
+    virtual bool isPet() const { return false; }
+    virtual bool isTotem() const { return false; }
+    virtual bool isSummon() const { return false; }
+    virtual bool isVehicle() const { return false; }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Position functions
     bool isInRange(LocationVector location, float square_r) const;
@@ -504,12 +509,6 @@ public:
 
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
-
-        // typeId
-        virtual bool IsPet() { return false; }
-        virtual bool IsTotem() { return false; }
-        virtual bool IsSummon() { return false; }
-        virtual bool IsVehicle() { return false; }
 
         //! This includes any nested objects we have, inventory for example.
         virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);

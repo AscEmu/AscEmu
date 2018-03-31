@@ -41,7 +41,7 @@ class TotemSummon : public Summon
 
         void OnPreRemoveFromWorld();
 
-        bool IsTotem() { return true; }
+        bool isTotem() { return true; }
 
         Group* GetGroup();
 

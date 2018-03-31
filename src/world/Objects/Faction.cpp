@@ -189,13 +189,13 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         return false;
 
     // Neutral Creature Check
-    if (objA->isPlayer() || objA->IsPet())
+    if (objA->isPlayer() || objA->isPet())
     {
 
         if ((objB->m_factionEntry->RepListId == -1) && (objB->m_factionTemplate->HostileMask == 0) && (objB->m_factionTemplate->FriendlyMask == 0))
             return true;
     }
-    else if (objB->isPlayer() || objB->IsPet())
+    else if (objB->isPlayer() || objB->isPet())
     {
         if ((objA->m_factionEntry->RepListId == -1) && (objA->m_factionTemplate->HostileMask == 0) && (objA->m_factionTemplate->FriendlyMask == 0))
             return true;
@@ -220,7 +220,7 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
     if (!objA->isCreature() || !objB->isCreature()) return false;    // cebernic: lowchance crashfix.
     // also if it's not a unit, it shouldn't support combat anyways.
 
-    if (objA->IsPet() || objB->IsPet())   // fixes an issue where horde pets would chain aggro horde guards and vice versa for alliance.
+    if (objA->isPet() || objB->isPet())   // fixes an issue where horde pets would chain aggro horde guards and vice versa for alliance.
         return false;
 
     if (!(objA->m_phase & objB->m_phase))   //What you can't see, you can't support either...

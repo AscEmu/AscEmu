@@ -82,7 +82,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
         if (selected_creature == nullptr)
             return false;
 
-        if (!selected_creature->IsPet())
+        if (!selected_creature->isPet())
             return false;
 
         selected_pet = static_cast< Pet* >(selected_creature);
@@ -239,7 +239,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
         if (selected_creature == nullptr)
             return false;
 
-        if (!selected_creature->IsPet())
+        if (!selected_creature->isPet())
             return false;
 
         selected_pet = static_cast< Pet* >(selected_creature);

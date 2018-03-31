@@ -164,7 +164,7 @@ void MapCell::RemoveObjects()
         switch ((*itr)->getObjectTypeId())
         {
             case TYPEID_UNIT:
-                if (!(*itr)->IsPet())
+                if (!(*itr)->isPet())
                 {
                     _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
                     reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;

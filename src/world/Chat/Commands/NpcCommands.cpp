@@ -226,14 +226,14 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
     if (creature_target == nullptr)
         return true;
 
-    if (creature_target->IsPet())
+    if (creature_target->isPet())
     {
         SystemMessage(m_session, "You can't delete a pet.");
         return true;
     }
 
     bool save_to_db = atoi(args) == 1 ? true : false;
-    if (creature_target->IsSummon())
+    if (creature_target->isSummon())
     {
         creature_target->Delete();
     }
@@ -455,7 +455,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     // owner/summoner
     Unit* unit_owner = nullptr;
     bool owner_header_set = false;
-    if (creature_target->IsSummon())
+    if (creature_target->isSummon())
         unit_owner = static_cast<Summon*>(creature_target)->GetOwner();
 
     if (unit_owner != nullptr)
@@ -464,7 +464,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
         if (unit_owner->isPlayer())
             SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->GetName());
-        if (unit_owner->IsPet())
+        if (unit_owner->isPet())
             SystemMessage(m_session, "Owner is Pet: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
         if (unit_owner->isCreature())
             SystemMessage(m_session, "Owner is Creature: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
@@ -774,7 +774,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
     auto unit_target = GetSelectedUnit(m_session);
     if (unit_target != nullptr)
     {
-        if (unit_target->IsPet() || unit_target->getCreatedByGuid() != 0)
+        if (unit_target->isPet() || unit_target->getCreatedByGuid() != 0)
         {
             RedSystemMessage(m_session, "You can not possess a pet!");
             return false;
@@ -1149,7 +1149,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
         return true;
     }
 
-    if (m_session->GetPlayer()->linkTarget->IsPet())
+    if (m_session->GetPlayer()->linkTarget->isPet())
     {
         RedSystemMessage(m_session, "A pet can not be a master of a formation!");
         return true;

@@ -165,7 +165,7 @@ public:
         Player* QuestHolder = NULL;
         if (pKiller->isPlayer())
             QuestHolder = static_cast<Player*>(pKiller);
-        else if (pKiller->IsPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
+        else if (pKiller->isPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
             QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();
 
         if (QuestHolder == NULL)

@@ -949,7 +949,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     {
         if (pUnit->isPlayer())
             name = static_cast<Player*>(pUnit)->GetName();
-        else if (pUnit->IsPet())
+        else if (pUnit->isPet())
             name = static_cast<Pet*>(pUnit)->GetName();
         else
             name = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Name;

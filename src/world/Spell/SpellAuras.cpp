@@ -1455,7 +1455,7 @@ void Aura::EventUpdateOwnerAA(float r)
         return;
 
     Creature* c = static_cast<Creature*>(o);
-    if (!c->IsSummon())
+    if (!c->isSummon())
         return;
 
     Unit* ou = nullptr;
@@ -1982,7 +1982,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 {
     Unit* u_caster = GetUnitCaster();
 
-    if (m_target->IsTotem())
+    if (m_target->isTotem())
         return;
 
     if (apply)
@@ -2052,14 +2052,14 @@ void Aura::SpellAuraModCharm(bool apply)
 
     Creature* target = static_cast< Creature* >(m_target);
 
-    if (target->IsTotem())
+    if (target->isTotem())
         return;
 
     SetPositive(3); //we ignore the other 2 effect of this spell and force it to be a positive spell
 
     if (apply)
     {
-        if ((int32)m_target->getLevel() > mod->m_amount || m_target->IsPet())
+        if ((int32)m_target->getLevel() > mod->m_amount || m_target->isPet())
             return;
 
         // this should be done properly
@@ -2128,7 +2128,7 @@ void Aura::SpellAuraModFear(bool apply)
     Unit* u_caster = GetUnitCaster();
 
     if (m_target->isCreature() &&
-        (m_target->IsTotem() || static_cast< Creature* >(m_target)->isRooted()))
+        (m_target->isTotem() || static_cast< Creature* >(m_target)->isRooted()))
         return;
 
     if (apply)
@@ -5911,7 +5911,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
     if ((m_spellInfo->getEffect(mod->m_effectIndex) == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
         (caster != nullptr) &&
         (m_target != nullptr) &&
-        caster->IsPet() &&
+        caster->isPet() &&
         caster->getGuid() == m_target->getGuid())
         return;
 
@@ -7060,7 +7060,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
         m_target->ModMaxHealth(mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(p_target->GetHealthFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
-        //		else if (m_target->IsPet())
+        //		else if (m_target->isPet())
         //			TO< Pet* >(m_target)->SetHealthFromSpell(((Pet*)m_target)->GetHealthFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
     }
     else
@@ -7070,7 +7070,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
             m_target->setHealth(m_target->getMaxHealth());
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
-        //		else if (m_target->IsPet())
+        //		else if (m_target->isPet())
         //			TO< Pet* >(m_target)->SetHealthFromSpell(((Pet*)m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
     }
 }
@@ -8885,7 +8885,7 @@ void Aura::SpellAuraModPossessPet(bool apply)
     if (pCaster == nullptr || !pCaster->IsInWorld())
         return;
 
-    if (!m_target->IsPet())
+    if (!m_target->isPet())
         return;
 
     std::list<Pet*> summons = pCaster->GetSummons();
@@ -8938,7 +8938,7 @@ void Aura::HandleAuraControlVehicle(bool apply)
     if (!GetCaster()->isCreatureOrPlayer())
         return;
 
-    if (!m_target->IsVehicle())
+    if (!m_target->isVehicle())
         return;
 
     Unit* caster = static_cast<Unit*>(GetCaster());
@@ -9486,7 +9486,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
     if (m_target == nullptr || !m_target->isCreature())
         return;
 
-    if (apply && m_target->IsSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
+    if (apply && m_target->isSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
     {
         Summon* s = static_cast< Summon* >(m_target);
 
@@ -9504,7 +9504,7 @@ void Aura::SpellAuraMirrorImage2(bool apply)
     if (m_target == nullptr)
         return;
 
-    if (apply && m_target->IsSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
+    if (apply && m_target->isSummon() && (m_target->getCreatedByGuid() == GetCasterGUID()))
     {
         if (GetCaster()->isPlayer())
         {

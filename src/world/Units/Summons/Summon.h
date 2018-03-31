@@ -59,7 +59,7 @@ class Summon : public Creature
             else
                 return false;
         }
-        bool IsSummon() { return true; }
+        bool isSummon() { return true; }
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Returns the owner unit of this creature

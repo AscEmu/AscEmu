@@ -6779,7 +6779,7 @@ void Unit::RegeneratePower(bool isinterrupted)
     if (!isAlive())
         return;
 
-    if (!isPlayer() && IsVehicle())
+    if (!isPlayer() && isVehicle())
     {
         uint8_t powertype = getPowerType();
         float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
@@ -7818,7 +7818,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 }
 
                 //pet happiness state dmg modifier
-                if (IsPet() && !static_cast<Pet*>(this)->IsSummonedPet())
+                if (isPet() && !static_cast<Pet*>(this)->IsSummonedPet())
                     dmg.full_damage = (dmg.full_damage <= 0) ? 0 : float2int32(dmg.full_damage * static_cast<Pet*>(this)->GetHappinessDmgMod());
 
                 if (dmg.full_damage <0)
@@ -10280,7 +10280,7 @@ void Unit::CalcDamage()
         static_cast<Player*>(this)->CalcDamage();
     else
     {
-        if (IsPet())
+        if (isPet())
             static_cast<Pet*>(this)->UpdateAP();
         float r;
         float delta;
@@ -10294,9 +10294,9 @@ void Unit::CalcDamage()
         mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
         r = (BaseDamage[0] + bonus) * mult + delta;
         // give some diversity to pet damage instead of having a 77-78 damage range (as an example)
-        setMinDamage(r > 0 ? (IsPet() ? r * 0.9f : r) : 0);
+        setMinDamage(r > 0 ? (isPet() ? r * 0.9f : r) : 0);
         r = (BaseDamage[1] + bonus) * mult + delta;
-        setMaxDamage(r > 0 ? (IsPet() ? r * 1.1f : r) : 0);
+        setMaxDamage(r > 0 ? (isPet() ? r * 1.1f : r) : 0);
 
         //	setMinRangedDamage(BaseRangedDamage[0]*mult+delta);
         //	setMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
@@ -12701,9 +12701,9 @@ bool CombatStatusHandler::IsInCombat() const
     {
         case TYPEID_UNIT:
         {
-            if (m_Unit->IsPet() && static_cast<Pet*>(m_Unit)->GetPetAction() == PET_ACTION_ATTACK)
+            if (m_Unit->isPet() && static_cast<Pet*>(m_Unit)->GetPetAction() == PET_ACTION_ATTACK)
                 return true;
-            else if (m_Unit->IsPet())
+            else if (m_Unit->isPet())
                 return m_lastStatus;
             else
                 return m_Unit->GetAIInterface()->getAITargetsCount() == 0 ? false : true;
@@ -13648,7 +13648,7 @@ bool Unit::IsTagged()
 
 bool Unit::IsTaggable()
 {
-    if (!IsPet() && !Tagged)
+    if (!isPet() && !Tagged)
         return true;
     else
         return false;
@@ -13661,7 +13661,7 @@ uint64 Unit::GetTaggerGUID()
 
 bool Unit::isLootable()
 {
-    if (IsTagged() && !IsPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !IsVehicle())
+    if (IsTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
     {
         auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
         if (isCreature() && !lootmgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
@@ -14496,7 +14496,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     // update target faction set
     pTarget->updateInRangeOppositeFactionSet();
 
-    if (!(pTarget->IsPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
         pTarget->BuildPetSpellList(data);
@@ -14547,12 +14547,12 @@ void Unit::UnPossess()
     // send "switch mover" packet
     pThis->SetClientControl(pTarget, 0);
 
-    if (!(pTarget->IsPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
         pThis->SendEmptyPetSpellList();
 
     setMoveRoot(false);
 
-    if (!pTarget->IsPet() && (pTarget->getCreatedByGuid() == getGuid()))
+    if (!pTarget->isPet() && (pTarget->getCreatedByGuid() == getGuid()))
     {
         sEventMgr.AddEvent(static_cast< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
         return;

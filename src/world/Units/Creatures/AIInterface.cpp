@@ -1338,7 +1338,7 @@ void AIInterface::Update(unsigned long time_passed)
     {
         if (isAiScriptType(AI_SCRIPT_PET))
         {
-            if (!m_Unit->bInvincible && m_Unit->IsPet())
+            if (!m_Unit->bInvincible && m_Unit->isPet())
             {
                 Pet* pPet = static_cast<Pet*>(m_Unit);
                 if (pPet->GetPetAction() == PET_ACTION_ATTACK || pPet->GetPetState() != PET_STATE_PASSIVE)
@@ -1346,7 +1346,7 @@ void AIInterface::Update(unsigned long time_passed)
                     _UpdateCombat(time_passed);
                 }
             }
-            else if (!m_Unit->IsPet())      //we just use any creature as a pet guardian
+            else if (!m_Unit->isPet())      //we just use any creature as a pet guardian
             {
                 _UpdateCombat(time_passed);
             }
@@ -1564,7 +1564,7 @@ void AIInterface::_UpdateTargets()
                     AttackReaction(target, 1, 0);
             }
         }
-        else if (m_aiTargets.empty() && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && mIsMeleeDisabled == false)))
+        else if (m_aiTargets.empty() && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->isPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->isPet() && mIsMeleeDisabled == false)))
         {
             Unit* target = FindTarget();
             if (target)
@@ -1801,7 +1801,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             //as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
                             if (getNextTarget() && m_Unit->m_factionEntry &&
                                 !(m_Unit->m_factionEntry->RepListId == -1 && m_Unit->m_factionTemplate->FriendlyMask == 0 && m_Unit->m_factionTemplate->HostileMask == 0) /* neutral creature */
-                                && getNextTarget()->isPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->getHealth()
+                                && getNextTarget()->isPlayer() && !m_Unit->isPet() && health_before_strike > getNextTarget()->getHealth()
                                 && Rand(m_Unit->get_chance_to_daze(getNextTarget())))
                             {
                                 float our_facing = m_Unit->calcRadAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY());
@@ -2219,7 +2219,7 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
         return false;
 
     //don't agro neutrals
-    if ((pUnit->isPlayer() || pUnit->IsPet())
+    if ((pUnit->isPlayer() || pUnit->isPet())
         && m_Unit->m_factionEntry
         && m_Unit->m_factionEntry->RepListId == -1
         && m_Unit->m_factionTemplate->HostileMask == 0
@@ -2228,7 +2228,7 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
     {
         return false;
     }
-    else if ((m_Unit->isPlayer() || m_Unit->IsPet())
+    else if ((m_Unit->isPlayer() || m_Unit->isPet())
         && pUnit->m_factionEntry
         && pUnit->m_factionEntry->RepListId == -1
         && pUnit->m_factionTemplate->HostileMask == 0
@@ -3121,7 +3121,7 @@ AI_Spell* AIInterface::getSpell()
     uint32 cool_time2;
     uint32 nowtime = Util::getMSTime();
 
-    if (m_Unit->IsPet())
+    if (m_Unit->isPet())
     {
         sp = def_spell = static_cast<Pet*>(m_Unit)->HandleAutoCastEvent();
     }
@@ -4532,7 +4532,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         SetUnitToFollow(m_PetOwner);
         FollowDistance = 3.0f;
         m_lastFollowX = m_lastFollowY = 0;
-        if (m_Unit->IsPet())
+        if (m_Unit->isPet())
         {
             static_cast< Pet* >(m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
             if (m_Unit->isAlive() && m_Unit->IsInWorld())
@@ -4622,7 +4622,7 @@ void AIInterface::EventFollowOwner(Unit* /*pUnit*/, uint32 /*misc1*/)
         return;
 
     setAiState(AI_STATE_FOLLOWING);
-    if (m_Unit->IsPet())
+    if (m_Unit->isPet())
         static_cast< Pet* >(m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
 
     SetUnitToFollow(m_PetOwner);
@@ -4776,7 +4776,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
 
     if (m_Unit->GetMapMgr()
         && m_Unit->isCreature()
-        && !m_Unit->IsPet()
+        && !m_Unit->isPet()
         && pInstance
         && (pInstance->m_mapInfo->type == INSTANCE_RAID
         || pInstance->m_mapInfo->type == INSTANCE_NONRAID
@@ -4907,7 +4907,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (properties_difficulty != nullptr)
         {
-            if (!properties_difficulty->isTrainingDummy && !m_Unit->IsVehicle())
+            if (!properties_difficulty->isTrainingDummy && !m_Unit->isVehicle())
             {
                 m_Unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             }
@@ -5008,7 +5008,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
                 m_Unit->m_invisible = false;
 
-            if (m_Unit->IsVehicle())
+            if (m_Unit->isVehicle())
             {
                 m_Unit->AddVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
                 m_Unit->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);

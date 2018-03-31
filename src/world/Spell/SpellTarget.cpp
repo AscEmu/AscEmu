@@ -156,14 +156,14 @@ void Spell::FillTargetMap(uint32 i)
     //targets party, not raid
     if ((TargetType & SPELL_TARGET_AREA_PARTY) && !(TargetType & SPELL_TARGET_AREA_RAID))
     {
-        if (p_caster == nullptr && !m_caster->IsPet() && (!m_caster->isCreature() || !m_caster->IsTotem()))
+        if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
             AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
             AddPartyTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_RAID)
     {
-        if (p_caster == nullptr && !m_caster->IsPet() && (!m_caster->isCreature() || !m_caster->IsTotem()))
+        if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
             AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
             AddRaidTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
@@ -307,7 +307,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
             continue;
 
         //only affect players and pets
-        if (!itr->isPlayer() && !itr->IsPet())
+        if (!itr->isPlayer() && !itr->isPet())
             continue;
 
         if (!p->InParty(static_cast<Unit*>(itr)))
@@ -338,7 +338,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
             continue;
 
         //only affect players and pets
-        if (!itr->isPlayer() && !itr->IsPet())
+        if (!itr->isPlayer() && !itr->isPet())
             continue;
 
         if (!p->InRaid(static_cast<Unit*>(itr)))
@@ -356,7 +356,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
     LocationVector source;
 
     //cant do raid/party stuff here, seperate functions for it
-    if (targetType & (SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && !(p_caster == nullptr && !m_caster->IsPet() && (!m_caster->isCreature() || !m_caster->IsTotem())))
+    if (targetType & (SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && !(p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem())))
         return;
 
     Object* tarobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
@@ -409,7 +409,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     if (obj->isItem() && !(TargetType & SPELL_TARGET_REQUIRE_ITEM) && !m_triggeredSpell)
         return false;
 
-    if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->isPlayer() || obj->IsPet()) || (p_caster != nullptr || m_caster->IsPet())))
+    if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->isPlayer() || obj->isPet()) || (p_caster != nullptr || m_caster->isPet())))
         return false;
 
     if (TargetType & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, obj))
@@ -423,9 +423,9 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
         if (originaltarget == nullptr || (originaltarget->isPlayer() && obj->isPlayer() && static_cast<Player*>(originaltarget)->getClass() != static_cast<Player*>(obj)->getClass()) || (originaltarget->isPlayer() && !obj->isPlayer()) || (!originaltarget->isPlayer() && obj->isPlayer()))
             return false;
     }
-    if (TargetType & SPELL_TARGET_OBJECT_CURPET && !obj->IsPet())
+    if (TargetType & SPELL_TARGET_OBJECT_CURPET && !obj->isPet())
         return false;
-    if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->isCreatureOrPlayer() && !static_cast<Unit*>(obj)->isAlive()) || (obj->isCreature() && obj->IsTotem())))
+    if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->isCreatureOrPlayer() && !static_cast<Unit*>(obj)->isAlive()) || (obj->isCreature() && obj->isTotem())))
         return false;
 
     uint8 hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? DidHit(i, static_cast<Unit*>(obj)) : SPELL_DID_HIT_SUCCESS;
@@ -599,7 +599,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                     }
                     result = true;
                 }
-                else if (u_caster->isCreature() && u_caster->IsTotem())
+                else if (u_caster->isCreature() && u_caster->isTotem())
                 {
                     Unit* target = u_caster->GetMapMgr()->GetUnit(GetSinglePossibleEnemy(i));
                     if (target != nullptr)

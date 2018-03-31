@@ -113,7 +113,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (!_player->isInRange(unitTarget, MAX_INTERACTION_RANGE))
         return;
 
-    if (unitTarget->IsVehicle())
+    if (unitTarget->isVehicle())
     {
         if (unitTarget->GetVehicleComponent() != nullptr)
             unitTarget->GetVehicleComponent()->AddPassenger(_player);

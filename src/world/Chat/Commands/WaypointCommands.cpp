@@ -27,7 +27,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
         }
 
         creature_target = static_cast<Creature*>(ai->GetUnit());
-        if (creature_target == nullptr || creature_target->IsPet())
+        if (creature_target == nullptr || creature_target->isPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
             return true;
@@ -118,7 +118,7 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
         }
 
         creature_target = static_cast<Creature*>(ai->GetUnit());
-        if (creature_target == nullptr || creature_target->IsPet())
+        if (creature_target == nullptr || creature_target->isPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
             return true;

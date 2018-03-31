@@ -894,7 +894,7 @@ void Creature::CalcResistance(uint8_t type)
     else
         pos = (BaseResistance[type] * BaseResistanceModPct[type]) / 100;
 
-    if (IsPet() && isAlive() && IsInWorld())
+    if (isPet() && isAlive() && IsInWorld())
     {
         Player* owner = static_cast<Pet*>(this)->GetPetOwner();
         if (type == 0 && owner)
@@ -933,7 +933,7 @@ void Creature::CalcStat(uint8_t type)
     else
         pos = (BaseStats[type] * StatModPct[type]) / 100;
 
-    if (IsPet())
+    if (isPet())
     {
         Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
@@ -965,7 +965,7 @@ void Creature::CalcStat(uint8_t type)
         case STAT_STRENGTH:
         {
             //Attack Power
-            if (!IsPet())  //We calculate pet's later
+            if (!isPet())  //We calculate pet's later
             {
                 uint32 str = getStat(STAT_STRENGTH);
                 int32 AP = (str * 2 - 20);
@@ -1451,7 +1451,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     GetAIInterface()->setSplineWalk();
 
-    if (!creature_properties->isTrainingDummy && !IsVehicle())
+    if (!creature_properties->isTrainingDummy && !isVehicle())
     {
         GetAIInterface()->SetAllowedToEnterCombat(isattackable(spawn));
     }
@@ -1542,7 +1542,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     this->m_position.z = spawn->z;
     this->m_position.o = spawn->o;
 
-    if (IsVehicle())
+    if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
@@ -1559,7 +1559,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 {
     creature_properties = properties_;
 
-    if (creature_properties->isTrainingDummy == 0 && !IsVehicle())
+    if (creature_properties->isTrainingDummy == 0 && !isVehicle())
     {
         GetAIInterface()->SetAllowedToEnterCombat(true);
     }
@@ -1720,7 +1720,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     if (m_invisFlag > 0)
         m_invisible = true;
 
-    if (IsVehicle())
+    if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
@@ -2455,7 +2455,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     GetAIInterface()->OnDeath(pAttacker);
 
     // Add Kills if Player is in Vehicle
-    if (pAttacker->IsVehicle())
+    if (pAttacker->isVehicle())
     {
         Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
 
@@ -2623,7 +2623,7 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     data << uint16(creature_properties->Family);
     data << uint32(0);
 
-    if (!IsVehicle())
+    if (!isVehicle())
         data << uint32(0);
     else
         data << uint32(0x8000101);
@@ -2657,7 +2657,7 @@ Object* Creature::GetPlayerOwner()
     return NULL;
 }
 
-bool Creature::IsVehicle()
+bool Creature::isVehicle()
 {
     if (creature_properties->vehicleid != 0)
         return true;

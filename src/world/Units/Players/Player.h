@@ -1507,7 +1507,7 @@ public:
             }
         }
 
-        bool IsVehicle()
+        bool isVehicle()
         {
             if (mountvehicleid != 0)
                 return true;

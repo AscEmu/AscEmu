@@ -1215,7 +1215,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
         if (IsType(TYPE_DYNAMICOBJECT) || IsType(TYPE_CORPSE) || IsType(TYPE_PLAYER))
             updatetype = UPDATETYPE_CREATE_YOURSELF;
 
-        if (target->IsPet() && updateflags & UPDATEFLAG_SELF)
+        if (target->isPet() && updateflags & UPDATEFLAG_SELF)
             updatetype = UPDATETYPE_CREATE_YOURSELF;
 
         if (IsType(TYPE_GAMEOBJECT))
@@ -1243,7 +1243,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
         }
     }
 
-    if (IsVehicle())
+    if (isVehicle())
         updateflags |= UPDATEFLAG_VEHICLE;
 #else
     switch (m_objectTypeId)
@@ -1585,7 +1585,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
 
-    if (IsVehicle())
+    if (isVehicle())
     {
         Unit* u = static_cast< Unit* >(this);
         if (u->GetVehicleComponent() != nullptr)
@@ -3401,7 +3401,7 @@ bool Object::CanActivate()
     {
         case TYPEID_UNIT:
         {
-            if (!IsPet())
+            if (!isPet())
                 return true;
         }
         break;

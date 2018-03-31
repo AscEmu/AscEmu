@@ -2977,7 +2977,7 @@ class LuaUnit
     {
         if (ptr)
         {
-            if (ptr->IsPet())
+            if (ptr->isPet())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -6178,7 +6178,7 @@ class LuaUnit
     static int IsOnVehicle(lua_State *L, Unit *ptr){
         TEST_UNITPLAYER()
 
-            if ((ptr->GetCurrentVehicle() != NULL) || (ptr->isPlayer() && ptr->IsVehicle()))
+            if ((ptr->GetCurrentVehicle() != NULL) || (ptr->isPlayer() && ptr->isVehicle()))
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -6204,7 +6204,7 @@ class LuaUnit
         if (creature_entry == 0)
             return 0;
 
-        if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->isPlayer() || !ptr->IsVehicle()))
+        if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->isPlayer() || !ptr->isVehicle()))
             return 0;
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);

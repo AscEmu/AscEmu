@@ -344,7 +344,7 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 {
     // add rep for on kill
-    if (!pUnit->isCreature() || pUnit->IsPet() || pUnit->isCritter())
+    if (!pUnit->isCreature() || pUnit->isPet() || pUnit->isCritter())
         return;
 
     Group* m_Group = GetGroup();

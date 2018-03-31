@@ -153,7 +153,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             i_caster = nullptr;
             p_caster = nullptr;
             u_caster = static_cast<Unit*>(Caster);
-            if (u_caster->IsPet() && static_cast<Pet*>(u_caster)->GetPetOwner() != nullptr && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->GetPetOwner() != nullptr && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
         }
         break;
@@ -411,7 +411,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         if (itr)
         {
             auto obj = itr;
-            if (!itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())      //|| (TO< Creature* >(*itr)->IsTotem() && !TO< Unit* >(*itr)->isPlayer())) why shouldn't we fill totems?
+            if (!itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())      //|| (TO< Creature* >(*itr)->isTotem() && !TO< Unit* >(*itr)->isPlayer())) why shouldn't we fill totems?
                 continue;
 
             if (p_caster && (itr)->isPlayer() && p_caster->GetGroup() && static_cast<Player*>(itr)->GetGroup() && static_cast<Player*>(itr)->GetGroup() == p_caster->GetGroup())      //Don't attack party members!!
@@ -1208,7 +1208,7 @@ void Spell::castMe(bool check)
             if (MagnetTarget && MagnetTarget->isCreature())
             {
                 Creature* MagnetCreature = static_cast<Creature*>(MagnetTarget);
-                if (MagnetCreature->IsTotem())
+                if (MagnetCreature->isTotem())
                     MagnetCreature->Despawn(1, 0);
             }
         }
@@ -2725,7 +2725,7 @@ void Spell::SendInterrupted(uint8 result)
 
     // send the failure to pet owner if we're a pet
     Player* plr = p_caster;
-    if (plr == nullptr && m_caster->IsPet())
+    if (plr == nullptr && m_caster->isPet())
     {
         static_cast<Pet*>(m_caster)->SendCastFailed(m_spellInfo->getId(), result);
     }
@@ -4820,7 +4820,7 @@ uint8 Spell::CanCast(bool tolerate)
                         result = PETTAME_INVALIDCREATURE;
                     else if (!tame->isAlive())
                         result = PETTAME_DEAD;
-                    else if (tame->IsPet())
+                    else if (tame->isPet())
                         result = PETTAME_CREATUREALREADYOWNED;
                     else if (tame->GetCreatureProperties()->Type != UNIT_TYPE_BEAST || !tame->GetCreatureProperties()->Family || !(tame->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_TAMEABLE))
                         result = PETTAME_NOTTAMEABLE;
@@ -4868,7 +4868,7 @@ uint8 Spell::CanCast(bool tolerate)
             }
 
             // if the target is not the unit caster and not the masters pet
-            if (target != u_caster && !m_caster->IsPet())
+            if (target != u_caster && !m_caster->isPet())
             {
 
                 /***********************************************************
@@ -7061,7 +7061,7 @@ bool Spell::DuelSpellNoMoreValid() const
 {
     if (duelSpell && (
         (p_caster != nullptr && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
-        (u_caster != nullptr && u_caster->IsPet() && static_cast<Pet*>(u_caster)->GetPetOwner() && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->GetPetOwner() && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
         return true;
     else
         return false;

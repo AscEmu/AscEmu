@@ -60,7 +60,7 @@ class SERVER_DECL Creature : public Unit
     GameEvent* mEvent = nullptr;
 
         /// For derived subclasses of Creature
-        bool IsVehicle();
+        bool isVehicle();
 
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();

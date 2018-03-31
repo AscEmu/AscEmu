@@ -1030,7 +1030,7 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
     }
 
     // Check if we don't apply to pve
-    if (!PvE && !isPlayer() && !IsPet())
+    if (!PvE && !isPlayer() && !isPet())
     {
         return;
     }
@@ -1047,7 +1047,7 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
 
     //100%, 50%, 25% bitwise
     localDuration >>= count;
-    if ((isPlayer() || IsPet()) && localDuration > uint32_t(10000 >> count))
+    if ((isPlayer() || isPet()) && localDuration > uint32_t(10000 >> count))
     {
         localDuration = 10000 >> count;
         if (status == DIMINISHING_GROUP_NOT_DIMINISHED)
@@ -1078,7 +1078,7 @@ void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
     }
 
     // Check if we don't apply to pve
-    if (!pve && !isPlayer() && !IsPet())
+    if (!pve && !isPlayer() && !isPet())
     {
         return;
     }

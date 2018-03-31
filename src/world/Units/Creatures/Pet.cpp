@@ -2254,7 +2254,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //Experience
-        if (pVictim->getCreatedByGuid() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
+        if (pVictim->getCreatedByGuid() == 0 && !pVictim->isPet() && pVictim->IsTagged())
         {
             auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
 
@@ -2265,7 +2265,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                 if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
-                if ((unit_tagger->IsPet() || unit_tagger->IsSummon()) && unit_tagger->GetPlayerOwner())
+                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->GetPlayerOwner())
                     player_tagger = static_cast<Player*>(unit_tagger->GetPlayerOwner());
 
                 if (player_tagger != nullptr)
