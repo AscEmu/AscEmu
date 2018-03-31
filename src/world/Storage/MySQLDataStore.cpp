@@ -157,7 +157,8 @@ void MySQLDataStore::loadItemPropertiesTable()
     for (tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
-        QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s base "
+            "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
         //                                                         0      1       2        3       4        5         6       7       8       9          10
         /*QueryResult* item_result = WorldDatabase.Query("SELECT entry, class, subclass, field4, name1, displayid, quality, flags, flags2, buyprice, sellprice, "
@@ -503,7 +504,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
     for (tableiterator = CreaturePropertiesTables.begin(); tableiterator != CreaturePropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
-        //                                                                 0          1           2             3                 4               5                  6
+        //                                                                      0          1           2             3                 4               5                  6
         QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //                                                         7      8         9         10       11     12     13       14            15              16           17
                                                                 "name, subname, info_str, type_flags, type, family, rank, encounter, base_attack_mod, range_attack_mod, leader, "
@@ -518,7 +519,9 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         //                                                          55      56      57      58      59        60           61               62            63         64           65
                                                                 "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
         //                                                          66         67        68          69          70          71          72          73         74
-                                                                "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid FROM %s", table_name.c_str());
+                                                                "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid FROM %s base "
+        //
+                                                                "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
         if (creature_properties_result == nullptr)
         {
@@ -795,7 +798,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
     for (tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
-        //                                                                  0       1        2        3         4              5          6          7            8             9
+        //                                                                        0       1        2        3         4              5          6          7            8             9
         QueryResult* gameobject_properties_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
         //                                                                10           11          12           13           14            15           16           17           18
                                                                     "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
@@ -804,7 +807,8 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         //                                                                27            28            29            30        31        32          33          34         35
                                                                     "parameter_20, parameter_21, parameter_22, parameter_23, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
         //                                                                36          37
-                                                                    "QuestItem5, QuestItem6 FROM %s", table_name.c_str());
+                                                                    "QuestItem5, QuestItem6 FROM %s base "
+                                                                    "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
         if (gameobject_properties_result == nullptr)
         {
@@ -961,7 +965,8 @@ void MySQLDataStore::loadQuestPropertiesTable()
         //                                                      139                 140                     141                   142                    143                 144
                                                         "completionemote4, completionemotedelay1, completionemotedelay2, completionemotedelay3, completionemotedelay4, completeemote, "
         //                                                     145                   146              147
-                                                        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM %s", table_name.c_str());
+                                                        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM %s base "
+                                                        "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
         if (quest_result == nullptr)
         {
@@ -1786,7 +1791,8 @@ void MySQLDataStore::loadWorldMapInfoTable()
     //                                                           10       11      12         13           14                15              16
                                                             "area_name, flags, cooldown, lvl_mod_a, required_quest_A, required_quest_H, required_item, "
     //                                                              17              18              19                20
-                                                            "heroic_keyid_1, heroic_keyid_2, viewingDistance, required_checkpoint FROM worldmap_info");
+                                                            "heroic_keyid_1, heroic_keyid_2, viewingDistance, required_checkpoint FROM worldmap_info base "
+                                                            "WHERE build=(SELECT MAX(build) FROM worldmap_info buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
     if (worldmap_info_result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `worldmap_info` is empty!");
