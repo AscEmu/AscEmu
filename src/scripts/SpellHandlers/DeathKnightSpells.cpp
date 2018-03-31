@@ -46,7 +46,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
         int inc = (u_caster->HasAura(59309) ? 10 : 5);
         for (const auto& itr : u_caster->getInRangeObjectsSet())
         {
-            if (!itr || !itr->IsUnit())
+            if (!itr || !itr->isCreatureOrPlayer())
                 continue;
 
             Unit* Target = static_cast<Unit*>(itr);
@@ -112,7 +112,7 @@ bool Strangulate(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (!apply)
         return true;
 
-    if (!pAura->GetTarget()->IsPlayer())
+    if (!pAura->GetTarget()->isPlayer())
         return true;
 
     Unit* unitTarget = pAura->GetTarget();
@@ -175,7 +175,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
     if (unitTarget->isRooted())
         return false;
 
-    if (unitTarget->IsPlayer())
+    if (unitTarget->isPlayer())
     {
         Player* playerTarget = static_cast<Player*>(unitTarget);
 
@@ -236,7 +236,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         data << posY;
         data << posZ;
 
-        if (unitTarget->IsCreature())
+        if (unitTarget->isCreature())
             unitTarget->GetAIInterface()->StopMovement(2000);
 
         unitTarget->SendMessageToSet(&data, true);
@@ -264,7 +264,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     {
         s->p_caster->CastSpell(unitTarget, 47632, dmg, true);
     }
-    else if (unitTarget->IsPlayer() && unitTarget->getRace() == RACE_UNDEAD)
+    else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
         dmg = static_cast<int32>((dmg * multiplier));

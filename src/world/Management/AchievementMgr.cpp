@@ -1135,7 +1135,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     uint32 crType = UNIT_TYPE_NONE;
                     bool crTotem = false;
                     bool yieldXP = CalculateXpToGive(pUnit, GetPlayer()) > 0;
-                    if (pUnit->IsCreature())
+                    if (pUnit->isCreature())
                     {
                         crTotem = pUnit->IsTotem();
                         crType = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Type;

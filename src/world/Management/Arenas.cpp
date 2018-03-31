@@ -271,7 +271,7 @@ void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
         return;
     }
 #endif
-    if (pVictim->IsPlayer())
+    if (pVictim->isPlayer())
     {
         plr->m_bgScore.KillingBlows++;
     }

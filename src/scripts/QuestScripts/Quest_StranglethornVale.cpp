@@ -58,7 +58,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
             Creature* beka1 =mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
@@ -94,7 +94,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
             Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);

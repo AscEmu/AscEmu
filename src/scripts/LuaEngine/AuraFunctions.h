@@ -46,17 +46,17 @@ namespace LuaAura
         if (!aura)
             RET_NIL();
         Object* caster = aura->GetCaster();
-        if (caster->IsUnit())  //unit caster
+        if (caster->isCreatureOrPlayer())  //unit caster
         {
             PUSH_UNIT(L, caster);
             return 1;
         }
-        else if (caster->IsGameObject())  //gameobject
+        else if (caster->isGameObject())  //gameobject
         {
             PUSH_GO(L, caster);
             return 1;
         }
-        else if (caster->GetTypeId() == TYPEID_ITEM)  //item
+        else if (caster->getObjectTypeId() == TYPEID_ITEM)  //item
         {
             PUSH_ITEM(L, caster);
             return 1;

@@ -459,7 +459,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
     {
         if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast< Container* >(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->isContainer() && static_cast< Container* >(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;
@@ -468,7 +468,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
 
         if (Item* item = target_trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast<Container*>(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->isContainer() && static_cast<Container*>(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;

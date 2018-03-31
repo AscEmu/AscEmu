@@ -671,7 +671,7 @@ void Player::SendLootUpdate(Object* o)
     if (!IsVisible(o->getGuid()))
         return;
 
-    if (o->IsUnit())
+    if (o->isCreatureOrPlayer())
     {
         // Build the actual update.
         ByteBuffer buf(500);
@@ -741,7 +741,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
 
 void Player::TagUnit(Object* o)
 {
-    if (o->IsUnit())
+    if (o->isCreatureOrPlayer())
     {
         // For new players who get a create object
         uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();

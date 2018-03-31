@@ -389,14 +389,14 @@ namespace luaItem
 
     int IsContainer(lua_State* L, Item* ptr)
     {
-        ptr->IsContainer() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isContainer() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 
     int GetContainerItemCount(lua_State* L, Item* ptr)
     {
         uint32 itemid = CHECK_ULONG(L, 1);
-        if (!ptr->IsContainer() || !itemid) return 0;
+        if (!ptr->isContainer() || !itemid) return 0;
         Container* pCont = static_cast< Container* >(ptr);
         int16 TotalSlots = static_cast<int16>(pCont->getSlotCount());
         int cnt = 0;
@@ -431,7 +431,7 @@ namespace luaItem
 
     int Remove(lua_State* /*L*/, Item* ptr)
     {
-        if (ptr == NULL || !ptr->IsInWorld() || !ptr->IsItem())
+        if (ptr == NULL || !ptr->IsInWorld() || !ptr->isItem())
         {
             return 0;
         }

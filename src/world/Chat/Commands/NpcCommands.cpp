@@ -462,11 +462,11 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     {
         SystemMessage(m_session, "Owner/Summoner ===================");
 
-        if (unit_owner->IsPlayer())
+        if (unit_owner->isPlayer())
             SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->GetName());
         if (unit_owner->IsPet())
             SystemMessage(m_session, "Owner is Pet: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
-        if (unit_owner->IsCreature())
+        if (unit_owner->isCreature())
             SystemMessage(m_session, "Owner is Creature: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
 
         owner_header_set = true;
@@ -597,7 +597,7 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
     if (creature_target == nullptr)
         return true;
 
-    if (creature_target->IsCreature() && creature_target->getDeathState() == CORPSE && creature_target->spawnid != 0)
+    if (creature_target->isCreature() && creature_target->getDeathState() == CORPSE && creature_target->spawnid != 0)
     {
         sEventMgr.RemoveEvents(creature_target, EVENT_CREATURE_RESPAWN);
 
@@ -667,7 +667,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
     auto player = m_session->GetPlayer();
     for (const auto& itr : player->getInRangeObjectsSet())
     {
-        if (itr && (dist2 = player->GetDistance2dSq(itr)) < dist && (itr)->IsCreature())
+        if (itr && (dist2 = player->GetDistance2dSq(itr)) < dist && (itr)->isCreature())
         {
             near_creature = static_cast<Creature*>(itr);
             dist = dist2;
@@ -779,13 +779,13 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
             RedSystemMessage(m_session, "You can not possess a pet!");
             return false;
         }
-        else if (unit_target->IsPlayer())
+        else if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
             BlueSystemMessage(m_session, "Player %s selected.", player->GetName());
             sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->GetName());
         }
-        else if (unit_target->IsCreature())
+        else if (unit_target->isCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
             BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureProperties()->Name.c_str());
@@ -939,12 +939,12 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
 
     if (unit_target != nullptr)
     {
-        if (unit_target->IsPlayer())
+        if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
             BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->GetName());
         }
-        else if (unit_target->IsCreature())
+        else if (unit_target->isCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
             BlueSystemMessage(m_session, "Creature %s is no longer possessed by you.", creature->GetCreatureProperties()->Name.c_str());

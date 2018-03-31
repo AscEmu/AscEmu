@@ -109,7 +109,7 @@ Object* Summon::GetPlayerOwner()
     if (owner == NULL)
         return NULL;
 
-    if (owner->IsPlayer())
+    if (owner->isPlayer())
         return owner;
     else
         return NULL;

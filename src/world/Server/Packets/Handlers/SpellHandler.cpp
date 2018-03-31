@@ -314,7 +314,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     recvPacket >> unitGuid;
 
     Unit* unitTarget = _player->GetMapMgr()->GetUnit(unitGuid);
-    if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->IsCreature())
+    if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->isCreature())
     {
         return;
     }
@@ -661,7 +661,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
             }
         }
 
-        if (!found && petUnit->IsCreature())
+        if (!found && petUnit->isCreature())
         {
             Creature* petCreature = static_cast<Creature*>(petUnit);
             if (petCreature->GetCreatureProperties()->spelldataid != 0)

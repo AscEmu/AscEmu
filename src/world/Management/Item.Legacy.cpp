@@ -405,7 +405,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
 
 void Item::DeleteFromDB()
 {
-    if (m_itemProperties->ContainerSlots > 0 && IsContainer())
+    if (m_itemProperties->ContainerSlots > 0 && isContainer())
     {
         /* deleting a container */
         for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
@@ -1013,7 +1013,7 @@ bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchan
 
 uint32 Item::GetSocketsCount()
 {
-    if (IsContainer()) // no sockets on containers.
+    if (isContainer()) // no sockets on containers.
         return 0;
 
     uint32 c = 0;

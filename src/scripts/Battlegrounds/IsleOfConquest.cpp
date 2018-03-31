@@ -795,7 +795,7 @@ void IsleOfConquest::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 
 void IsleOfConquest::HookOnUnitDied(Unit *victim)
 {
-    if (victim->IsCreature())
+    if (victim->isCreature())
     {
         Creature *c = static_cast<Creature*>(victim);
 

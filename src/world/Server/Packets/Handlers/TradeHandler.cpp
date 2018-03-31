@@ -257,7 +257,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
     plr->mTradeStatus = TradeStatus;
     _player->mTradeStatus = TradeStatus;
 
-    if (pItem->IsContainer())
+    if (pItem->isContainer())
     {
         if (static_cast< Container* >(pItem)->HasItems())
         {
@@ -396,7 +396,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = _player->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->isContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -408,7 +408,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = pTarget->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->isContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;

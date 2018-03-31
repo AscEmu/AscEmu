@@ -530,7 +530,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
     if (inf == nullptr || obj->GetMapId() >= NUM_MAPS)
         return nullptr;
 
-    if (obj->IsPlayer())
+    if (obj->isPlayer())
     {
         // players can join instances based on their groups/solo status.
         Player* plr = static_cast< Player* >(obj);

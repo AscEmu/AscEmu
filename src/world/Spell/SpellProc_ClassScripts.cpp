@@ -46,7 +46,7 @@ public:
     bool CanProc(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
     {
         // Allow only proc for player unit
-        if (!mTarget->IsPlayer())
+        if (!mTarget->isPlayer())
             return false;
         return true;
     }
@@ -283,7 +283,7 @@ public:
 
     bool CanProc(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
     {
-        if (mTarget->IsPlayer())
+        if (mTarget->isPlayer())
             return true;
         return false;
     }
@@ -835,7 +835,7 @@ public:
     bool DoEffect(Unit* /*victim*/, SpellInfo* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(castingSpell->getSpellFamilyFlags(0) & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
+        if (!(castingSpell->getSpellFamilyFlags(0) & mProcClassMask[0] && mTarget->isPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
             return true;
 
         return false;
@@ -946,7 +946,7 @@ public:
         mProcFlags = PROC_ON_MELEE_ATTACK;
 
         /* The formula for SoC proc rate is: [ 7 / (60 / Weapon Speed) - from wowwiki */
-        if (!mTarget->IsPlayer())
+        if (!mTarget->isPlayer())
             return;
 
         uint32 weapspeed = 1;

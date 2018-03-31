@@ -551,7 +551,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     // remove icon
-    /*if (qst_giver->GetTypeId() == TYPEID_UNIT)
+    /*if (qst_giver->getObjectTypeId() == TYPEID_UNIT)
     {
     qst_giver->BuildFieldUpdatePacket(GetPlayer(), UNIT_DYNAMIC_FLAGS, qst_giver->GetUInt32Value(UNIT_DYNAMIC_FLAGS));
     }*/
@@ -564,7 +564,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
-    //if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
+    //if (qst_giver->getObjectTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
     if (qst->next_quest_id)
     {

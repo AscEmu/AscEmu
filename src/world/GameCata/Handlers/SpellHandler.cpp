@@ -143,7 +143,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
             if (sp == nullptr)
             {
-                if (unitTarget->IsCreature())
+                if (unitTarget->isCreature())
                 {
                     Creature* c = static_cast<Creature*>(unitTarget);
 
@@ -168,7 +168,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
     if (sp == nullptr)
     {
-        if (unitTarget->IsCreature())
+        if (unitTarget->isCreature())
         {
             Creature* c = static_cast< Creature* >(unitTarget);
 

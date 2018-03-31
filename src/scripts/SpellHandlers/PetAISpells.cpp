@@ -191,7 +191,7 @@ public:
             Summon* s = static_cast<Summon*>(getCreature());
             Unit* owner = s->GetOwner();
 
-            if (owner->IsPlayer())
+            if (owner->isPlayer())
             {
                 Player* pOwner = static_cast<Player*>(owner);
                 Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);

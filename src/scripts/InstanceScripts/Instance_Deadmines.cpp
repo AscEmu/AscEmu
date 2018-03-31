@@ -309,7 +309,7 @@ class VanCleefAI : public CreatureAIScript
     void OnTargetDied(Unit* pTarget) override
     {
         char msg[200];
-        if (pTarget->IsPlayer())
+        if (pTarget->isPlayer())
             sprintf(msg, "And stay down, %s.", static_cast<Player*>(pTarget)->GetName());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
             sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());

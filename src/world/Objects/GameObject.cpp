@@ -933,7 +933,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
 
             Object* o = itr;
 
-            if (!o || !o->IsUnit())
+            if (!o || !o->isCreatureOrPlayer())
                 continue;
 
             if ((m_summoner != NULL) && (o->getGuid() == m_summoner->getGuid()))

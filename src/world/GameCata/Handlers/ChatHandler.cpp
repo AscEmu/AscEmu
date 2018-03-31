@@ -622,7 +622,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     Unit* unit = _player->GetMapMgr()->GetUnit(guid);
     if (unit)
     {
-        if (unit->IsPlayer())
+        if (unit->isPlayer())
         {
             name = static_cast<Player*>(unit)->GetName();
             namelen = (uint32_t)strlen(name) + 1;

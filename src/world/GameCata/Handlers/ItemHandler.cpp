@@ -343,7 +343,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         }
     }
 
-    if (srcitem->IsContainer())
+    if (srcitem->isContainer())
     {
         //source has items and dst is a backpack or bank
         if (static_cast< Container* >(srcitem)->HasItems())
@@ -356,7 +356,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         if (dstitem)
         {
             //source is a bag and dst slot is a bag inventory and has items
-            if (dstitem->IsContainer())
+            if (dstitem->isContainer())
             {
                 if (static_cast< Container* >(dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(srcslot))
                 {
@@ -436,7 +436,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
 
     if (it)
     {
-        if (it->IsContainer())
+        if (it->isContainer())
         {
             if (static_cast< Container* >(it)->HasItems())
             {
@@ -1025,7 +1025,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 
     ItemProperties const* it = item->getItemProperties();
 
-    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
+    if (item->isContainer() && static_cast< Container* >(item)->HasItems())
     {
         SendSellItem(vendorguid, itemguid, 6);
         return;
@@ -1615,7 +1615,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recvData)
     if (srcitem)
     {
         //src containers cant be moved if they have items inside
-        if (srcitem->IsContainer() && static_cast< Container* >(srcitem)->HasItems())
+        if (srcitem->isContainer() && static_cast< Container* >(srcitem)->HasItems())
         {
             _player->GetItemInterface()->BuildInventoryChangeError(srcitem, nullptr, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
             return;
@@ -1663,7 +1663,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recvData)
             if (dstitem)
             {
                 //dstitem exists, detect if its a container
-                if (dstitem->IsContainer())
+                if (dstitem->isContainer())
                 {
                     NewSlot = static_cast< Container* >(dstitem)->FindFreeSlot();
                     if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
@@ -1770,7 +1770,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
             Item * pItem = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(i));
             if (pItem != nullptr)
             {
-                if (pItem->IsContainer())
+                if (pItem->isContainer())
                 {
                     Container * pContainer = static_cast< Container* >(pItem);
                     for (uint32 j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
@@ -2166,7 +2166,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (dst->IsContainer())
+    if (dst->isContainer())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BAGS_CANT_BE_WRAPPED);
         return;

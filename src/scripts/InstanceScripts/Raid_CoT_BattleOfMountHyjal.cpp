@@ -449,7 +449,7 @@ class DoomfireAI : public CreatureAIScript
 
             for (const auto& itr : getCreature()->getInRangeOppositeFactionSet())
             {
-                if (!itr || !itr->IsUnit())
+                if (!itr || !itr->isCreatureOrPlayer())
                     continue;
 
                 pUnit = static_cast<Unit*>(itr);

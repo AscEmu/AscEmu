@@ -32,7 +32,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(10482, 0, 0);
         }
@@ -47,7 +47,7 @@ public:
     Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         static_cast<Player*>(mKiller)->AddQuestKill(10255, 0, 0);

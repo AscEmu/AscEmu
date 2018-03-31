@@ -1349,7 +1349,7 @@ void Player::_EventAttack(bool offhand)
         setAttackTimer(0, offhand);
 
         //pvp timeout reset
-        if (pVictim->IsPlayer())
+        if (pVictim->isPlayer())
         {
             if (static_cast< Player* >(pVictim)->cannibalize)
             {
@@ -1432,11 +1432,11 @@ void Player::_EventCharmAttack()
         }
         else
         {
-            //if (pVictim->GetTypeId() == TYPEID_UNIT)
+            //if (pVictim->getObjectTypeId() == TYPEID_UNIT)
             //    pVictim->GetAIInterface()->StopMovement(5000);
 
             //pvp timeout reset
-            /*if (pVictim->IsPlayer())
+            /*if (pVictim->isPlayer())
             {
             if (TO<Player*>(pVictim)->DuelingWith == NULL)//Dueling doesn't trigger PVP
             TO<Player*>(pVictim)->PvPTimeoutUpdate(false); //update targets timer
@@ -5160,7 +5160,7 @@ void Player::RemoveFromWorld()
             {
                 m_SummonedObject->RemoveFromWorld(true);
             }
-            ARCEMU_ASSERT(m_SummonedObject->IsGameObject());
+            ARCEMU_ASSERT(m_SummonedObject->isGameObject());
             delete m_SummonedObject;
         }
         m_SummonedObject = nullptr;
@@ -5189,7 +5189,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     ItemProperties const* proto = item->getItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
-    if (!item->IsContainer() && item->getDurability() == 0 && item->getMaxDurability() && justdrokedown == false)
+    if (!item->isContainer() && item->getDurability() == 0 && item->getMaxDurability() && justdrokedown == false)
     {
         return;
     }
@@ -6815,11 +6815,11 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
     if (obj == this)
         return true;
 
-    uint32 object_type = obj->GetTypeId();
+    uint32 object_type = obj->getObjectTypeId();
 
     if (getDeathState() == CORPSE) // we are dead and we have released our spirit
     {
-        if (obj->IsPlayer())
+        if (obj->isPlayer())
         {
             Player* pObj = static_cast< Player* >(obj);
 
@@ -6834,7 +6834,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         if (myCorpseInstanceId == GetInstanceID())
         {
-            if (obj->IsCorpse() && static_cast< Corpse* >(obj)->getOwnerGuid() == getGuid())
+            if (obj->isCorpse() && static_cast< Corpse* >(obj)->getOwnerGuid() == getGuid())
                 return true;
 
             if (obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
@@ -6844,7 +6844,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
         if (m_deathVision) // if we have arena death-vision we can see everything
             return true;
 
-        if (obj->IsCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
+        if (obj->isCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
             return true; // we can see spirit healers
 
         return false;
@@ -6924,7 +6924,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
             Unit* uObj = static_cast< Unit* >(obj);
 
             // can't see spirit-healers when alive
-            if (uObj->IsCreature() && static_cast<Creature*>(uObj)->isSpiritHealer())
+            if (uObj->isCreature() && static_cast<Creature*>(uObj)->isSpiritHealer())
                 return false;
 
             // always see our units
@@ -7000,7 +7000,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 void Player::addToInRangeObjects(Object* pObj)
 {
     //Send taxi move if we're on a taxi
-    if (m_CurrentTaxiPath && pObj->IsPlayer())
+    if (m_CurrentTaxiPath && pObj->isPlayer())
     {
         uint32 ntime = Util::getMSTime();
 
@@ -7013,7 +7013,7 @@ void Player::addToInRangeObjects(Object* pObj)
     Unit::addToInRangeObjects(pObj);
 
     //if the object is a unit send a move packet if they have a destination
-    if (pObj->IsCreature())
+    if (pObj->isCreature())
     {
         static_cast< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
     }
@@ -7698,7 +7698,7 @@ void Player::UpdateNearbyGameObjects()
     for (const auto& itr : getInRangeObjectsSet())
     {
         Object* obj = itr;
-        if (obj && obj->IsGameObject())
+        if (obj && obj->isGameObject())
         {
             bool activate_quest_object = false;
             GameObject* go = static_cast<GameObject*>(obj);
@@ -8320,7 +8320,7 @@ void Player::AddItemsToWorld()
                 UpdateKnownCurrencies(pItem->getEntry(), true);
             }
 
-            if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
+            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(i))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -8357,7 +8357,7 @@ void Player::AddItemsToWorld()
                 UpdateKnownCurrencies(pItem->getEntry(), true);
             }
 
-            if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
+            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(i))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -8392,7 +8392,7 @@ void Player::RemoveItemsFromWorld()
                 pItem->RemoveFromWorld();
             }
 
-            if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(static_cast<int16>(i)))
+            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(static_cast<int16>(i)))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; e++)
                 {
@@ -10074,7 +10074,7 @@ void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
         if (iter)
         {
             Object* curObj = iter;
-            if (curObj->IsPlayer())
+            if (curObj->isPlayer())
             {
                 Group* pGroup = static_cast<Player*>(curObj)->GetGroup();
                 if (!pGroup && pGroup != GetGroup())
@@ -12843,7 +12843,7 @@ void Player::RemoveTempEnchantsOnArena()
 
         if (it != nullptr)
         {
-            if (it->IsContainer())
+            if (it->isContainer())
             {
                 Container* bag = static_cast< Container* >(it);
                 for (uint32 ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
@@ -13880,11 +13880,11 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
+    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (this != pVictim)
@@ -13914,7 +13914,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
     if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
         damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
 
-    if (pVictim->IsCreature() && pVictim->IsTaggable())
+    if (pVictim->isCreature() && pVictim->IsTaggable())
     {
         pVictim->Tag(getGuid());
         TagUnit(pVictim);
@@ -13931,7 +13931,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
     }
 
     // Duel
-    if (pVictim->IsPlayer() && DuelingWith != nullptr && DuelingWith->getGuid() == pVictim->getGuid())
+    if (pVictim->isPlayer() && DuelingWith != nullptr && DuelingWith->getGuid() == pVictim->getGuid())
     {
         if (pVictim->getHealth() <= damage)
         {
@@ -13960,11 +13960,11 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
         {
             m_bg->HookOnUnitKill(this, pVictim);
 
-            if (pVictim->IsPlayer())
+            if (pVictim->isPlayer())
                 m_bg->HookOnPlayerKill(this, static_cast< Player* >(pVictim));
         }
 
-        if (pVictim->IsPlayer())
+        if (pVictim->isPlayer())
         {
 
             Player* playerVictim = static_cast<Player*>(pVictim);
@@ -13995,7 +13995,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
         }
         else
         {
-            if (pVictim->IsCreature())
+            if (pVictim->isCreature())
             {
                 Reputation_OnKilledUnit(pVictim, false);
 
@@ -14059,7 +14059,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
             {
                 Player* player_tagger = nullptr;
 
-                if (unit_tagger->IsPlayer())
+                if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
                 if ((unit_tagger->IsPet() || unit_tagger->IsSummon()) && unit_tagger->GetPlayerOwner())
@@ -14071,7 +14071,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
                     {
                         player_tagger->GiveGroupXP(pVictim, player_tagger);
                     }
-                    else if (IsUnit())
+                    else if (isCreatureOrPlayer())
                     {
                         uint32 xp = CalculateXpToGive(pVictim, unit_tagger);
 
@@ -14099,7 +14099,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    if (pVictim->IsCreature())
+                    if (pVictim->isCreature())
                     {
                         sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
 #if VERSION_STRING > TBC
@@ -14221,17 +14221,17 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
 #if VERSION_STRING > TBC
     // A Player has died
-    if (IsPlayer())
+    if (isPlayer())
     {
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
 
         // A Player killed a Player
-        if (pAttacker->IsPlayer())
+        if (pAttacker->isPlayer())
         {
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
         }// A Creature killed a Player
-        else if (pAttacker->IsCreature())
+        else if (pAttacker->isCreature())
         {
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
         }
@@ -14255,7 +14255,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         pAttacker->m_procCounter = 0;
     }
 
-    if (!pAttacker->IsPlayer())
+    if (!pAttacker->isPlayer())
         DeathDurabilityLoss(0.10);
 
 
@@ -14652,7 +14652,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     if (HasQuest(qst->id))
         return;
 
-    if (qst_giver->IsCreature() && static_cast< Creature* >(qst_giver)->m_escorter != nullptr)
+    if (qst_giver->isCreature() && static_cast< Creature* >(qst_giver)->m_escorter != nullptr)
     {
         m_session->SystemMessage("You cannot accept this quest at this time.");
         return;
@@ -14721,7 +14721,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     if (qst->srcitem && qst->srcitem != qst->receive_items[0])
     {
-        if (!qst_giver->IsItem() || (qst_giver->getEntry() != qst->srcitem))
+        if (!qst_giver->isItem() || (qst_giver->getEntry() != qst->srcitem))
         {
             Item *item = objmgr.CreateItem(qst->srcitem, this);
             if (item != nullptr)
@@ -14733,7 +14733,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         }
     }
 
-    if (qst->count_required_item || qst_giver->IsGameObject())    // gameobject quests deactivate
+    if (qst->count_required_item || qst_giver->isGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
     // Some spells applied at quest activation
@@ -15194,7 +15194,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     LocationVector pos = LocationVector(x, y, z, o);
 
-    if (GetTypeId() == TYPEID_UNIT)
+    if (getObjectTypeId() == TYPEID_UNIT)
         SetPosition(pos);
 
     ObjectGuid guid = getGuid();
@@ -15202,7 +15202,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
     WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
     movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
 
-    if (GetTypeId() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
     {
         WorldPacket data2(MSG_MOVE_TELEPORT, 38);
         data2.writeBit(guid[6]);
@@ -15236,7 +15236,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
         SendPacket(&data2);
     }
 
-    if (GetTypeId() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
         SetPosition(pos);
     else
         SetPosition(oldPos);

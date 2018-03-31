@@ -46,18 +46,18 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     if (objA == objB)
         return false;   // can't attack self.. this causes problems with buffs if we don't have it :p
 
-    if (objA->IsCorpse() || objB->IsCorpse())
+    if (objA->isCorpse() || objB->isCorpse())
         return false;
 
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
         return false;
 
-    if (objA->IsPlayer() && static_cast<Player*>(objA)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objB->IsCreature() && reinterpret_cast<Unit*>(objB)->GetAIInterface()->m_isNeutralGuard)
+    if (objA->isPlayer() && static_cast<Player*>(objA)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objB->isCreature() && reinterpret_cast<Unit*>(objB)->GetAIInterface()->m_isNeutralGuard)
         return true;
-    if (objB->IsPlayer() && static_cast<Player*>(objB)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objA->IsCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
+    if (objB->isPlayer() && static_cast<Player*>(objB)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objA->isCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
-    if (objB->IsUnit() && static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))
+    if (objB->isCreatureOrPlayer() && static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))
         return false;
 
     if (!objB->m_factionTemplate || !objA->m_factionTemplate)
@@ -92,11 +92,11 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     }
 
     // Reputation System Checks
-    if (objA->IsPlayer() && !objB->IsPlayer())
+    if (objA->isPlayer() && !objB->isPlayer())
         if (objB->m_factionEntry->RepListId >= 0)
             hostile = reinterpret_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionEntry);
 
-    if (objB->IsPlayer() && !objA->IsPlayer())
+    if (objB->isPlayer() && !objA->isPlayer())
         if (objA->m_factionEntry->RepListId >= 0)
             hostile = reinterpret_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionEntry);
 
@@ -143,14 +143,14 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, you can't attack either...
         return false;
 
-    if (objA->IsCorpse() || objB->IsCorpse())
+    if (objA->isCorpse() || objB->isCorpse())
         return false;
 
     // Checks for untouchable, unattackable
-    if (objA->IsUnit() && static_cast<Unit*>(objA)->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DEAD))
+    if (objA->isCreatureOrPlayer() && static_cast<Unit*>(objA)->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DEAD))
         return false;
 
-    if (objB->IsUnit())
+    if (objB->isCreatureOrPlayer())
     {
         if (static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DEAD))
             return false;
@@ -189,13 +189,13 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         return false;
 
     // Neutral Creature Check
-    if (objA->IsPlayer() || objA->IsPet())
+    if (objA->isPlayer() || objA->IsPet())
     {
 
         if ((objB->m_factionEntry->RepListId == -1) && (objB->m_factionTemplate->HostileMask == 0) && (objB->m_factionTemplate->FriendlyMask == 0))
             return true;
     }
-    else if (objB->IsPlayer() || objB->IsPet())
+    else if (objB->isPlayer() || objB->IsPet())
     {
         if ((objA->m_factionEntry->RepListId == -1) && (objA->m_factionTemplate->HostileMask == 0) && (objA->m_factionTemplate->FriendlyMask == 0))
             return true;
@@ -211,13 +211,13 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
     if (!objA || !objB)
         return false;
 
-    if (objA->IsCorpse())
+    if (objA->isCorpse())
         return false;
 
-    if (objB->IsCorpse())
+    if (objB->isCorpse())
         return false;
 
-    if (!objA->IsCreature() || !objB->IsCreature()) return false;    // cebernic: lowchance crashfix.
+    if (!objA->isCreature() || !objB->isCreature()) return false;    // cebernic: lowchance crashfix.
     // also if it's not a unit, it shouldn't support combat anyways.
 
     if (objA->IsPet() || objB->IsPet())   // fixes an issue where horde pets would chain aggro horde guards and vice versa for alliance.

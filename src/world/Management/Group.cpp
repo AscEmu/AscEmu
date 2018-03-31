@@ -1291,7 +1291,7 @@ void Group::SetRaidDifficulty(uint8 diff)
 
 void Group::SendLootUpdates(Object* o)
 {
-    if (o->IsUnit())
+    if (o->isCreatureOrPlayer())
     {
         // Build the actual update.
         ByteBuffer buf(500);

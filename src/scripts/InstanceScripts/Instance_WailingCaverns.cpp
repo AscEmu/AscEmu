@@ -263,7 +263,7 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
         }
         void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
         {
-            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
+            Creature* pCreature = (pObject->isCreature()) ? static_cast<Creature*>(pObject) : nullptr;
             if (pCreature == nullptr)
             {
                 return;

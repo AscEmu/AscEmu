@@ -276,12 +276,9 @@ inline float normalizeOrientation(float orientation)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// class Object:Base object for every item, unit, player, corpse, container, etc
-//////////////////////////////////////////////////////////////////////////////////////////
+// MIT Start
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
-    // MIT Start
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object values
 
@@ -369,6 +366,24 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object update
     void updateObject();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Object Type Id
+protected:
+
+    uint8_t m_objectTypeId;
+
+public:
+
+    uint8_t getObjectTypeId() const;
+
+    bool isCreatureOrPlayer() const;
+    bool isPlayer() const;
+    bool isCreature() const;
+    bool isItem() const;
+    bool isGameObject() const;
+    bool isCorpse() const;
+    bool isContainer() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Position functions
@@ -468,48 +483,16 @@ public:
         void PushToWorld(MapMgr*);
         virtual void RemoveFromWorld(bool free_guid);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // virtual void OnPrePushToWorld()
         // Virtual method that is called, BEFORE pushing the Object in the game world
-        //
-        // \param none
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPrePushToWorld() {}
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // virtual void OnPushToWorld()
         // Virtual method that is called, AFTER pushing the Object in the game world
-        //
-        // \param none
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPushToWorld() {}
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // virtual void OnPreRemoveFromWorld()
         // Virtual method that is called, BEFORE removing the Object from the game world
-        //
-        // \param none
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPreRemoveFromWorld() {}
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // virtual void OnRemoveFromWorld()
         // Virtual method that is called, AFTER removing the Object from the game world
-        //
-        // \param none
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnRemoveFromWorld() {}
 
         // Guid always comes first
@@ -519,21 +502,14 @@ public:
         const uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
         const uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
 
-        // type
-        const uint8 & GetTypeId() const { return m_objectTypeId; }
+        // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
-        bool IsUnit() { return (m_objectTypeId == TYPEID_UNIT || m_objectTypeId == TYPEID_PLAYER); }
-        bool IsPlayer() { return m_objectTypeId == TYPEID_PLAYER; }
-        bool IsCreature() { return m_objectTypeId == TYPEID_UNIT; }
-        bool IsItem() { return m_objectTypeId == TYPEID_ITEM; }
+        // typeId
         virtual bool IsPet() { return false; }
         virtual bool IsTotem() { return false; }
         virtual bool IsSummon() { return false; }
         virtual bool IsVehicle() { return false; }
-        bool IsGameObject() { return m_objectTypeId == TYPEID_GAMEOBJECT; }
-        bool IsCorpse() { return m_objectTypeId == TYPEID_CORPSE; }
-        bool IsContainer() { return m_objectTypeId == TYPEID_CONTAINER; }
 
         //! This includes any nested objects we have, inventory for example.
         virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
@@ -839,9 +815,6 @@ public:
 
         // Type mask
         uint16 m_objectType;
-
-        // Type id.
-        uint8 m_objectTypeId;
 
         //update flag
         uint16 m_updateFlag;

@@ -119,7 +119,7 @@ class KirithAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            if(mKiller->IsPlayer())
+            if(mKiller->isPlayer())
             {
                 Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(7729, getCreature()->GetPositionX() + 2, getCreature()->GetPositionY() + 2, getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
                 if(NewCreature != NULL)
@@ -137,7 +137,7 @@ class AllianceGryphon : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            if(!mTarget->IsPlayer())
+            if(!mTarget->isPlayer())
                 return;
 
             Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9526, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
@@ -159,7 +159,7 @@ class AllianceHippogryph : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            if(!mTarget->IsPlayer())
+            if(!mTarget->isPlayer())
                 return;
 
             Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9527, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
@@ -180,7 +180,7 @@ class HordeWyvern : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            if(!mTarget->IsPlayer())
+            if(!mTarget->isPlayer())
                 return;
 
             Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9297, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
@@ -201,7 +201,7 @@ class HordeBat : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            if(!mTarget->IsPlayer())
+            if(!mTarget->isPlayer())
                 return;
 
             Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9521, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);

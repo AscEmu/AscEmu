@@ -511,7 +511,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     m_ExpireTime = expiretime;
     bExpires = m_ExpireTime > 0 ? true : false;
 
-    if (!bExpires && owner->IsPlayer())
+    if (!bExpires && owner->isPlayer())
     {
         // Create PlayerPet struct (Rest done by UpdatePetInfo)
         PlayerPet* pp = new PlayerPet;
@@ -2117,11 +2117,11 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
+    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (pVictim != this)
@@ -2148,7 +2148,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     }
 
     // Duel
-    if (pVictim->IsPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
+    if (pVictim->isPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
     {
         if (pVictim->getHealth() <= damage)
         {
@@ -2176,11 +2176,11 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         {
             m_Owner->m_bg->HookOnUnitKill(m_Owner, pVictim);
 
-            if (pVictim->IsPlayer())
+            if (pVictim->isPlayer())
                 m_Owner->m_bg->HookOnPlayerKill(m_Owner, static_cast< Player* >(pVictim));
         }
 
-        if (pVictim->IsPlayer())
+        if (pVictim->isPlayer())
         {
 
             Player* playerVictim = static_cast<Player*>(pVictim);
@@ -2212,7 +2212,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         }
         else
         {
-            if (pVictim->IsCreature())
+            if (pVictim->isCreature())
             {
                 m_Owner->Reputation_OnKilledUnit(pVictim, false);
 #if VERSION_STRING > TBC
@@ -2262,7 +2262,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
             {
                 Player* player_tagger = nullptr;
 
-                if (unit_tagger->IsPlayer())
+                if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
                 if ((unit_tagger->IsPet() || unit_tagger->IsSummon()) && unit_tagger->GetPlayerOwner())
@@ -2275,7 +2275,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                     {
                         player_tagger->GiveGroupXP(pVictim, player_tagger);
                     }
-                    else if (IsUnit())
+                    else if (isCreatureOrPlayer())
                     {
                         uint32 xp = CalculateXpToGive(pVictim, unit_tagger);
 
@@ -2301,7 +2301,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                         }
                         //////////////////////////////////////////////////////////////////////////////////////////
 
-                        if (pVictim->IsCreature())
+                        if (pVictim->isCreature())
                         {
                             sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
 

@@ -46,7 +46,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+            Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if (pCreature == NULL)
                 return;
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
@@ -78,7 +78,7 @@ class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+            Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if (pCreature == NULL)
                 return;
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern

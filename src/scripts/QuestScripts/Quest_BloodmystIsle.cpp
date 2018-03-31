@@ -121,7 +121,7 @@ public:
     void OnDied(Unit* mKiller) override
     {
         fulborgskilled++;
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
 
@@ -163,7 +163,7 @@ public:
     void OnDied(Unit* pKiller) override
     {
         Player* QuestHolder = NULL;
-        if (pKiller->IsPlayer())
+        if (pKiller->isPlayer())
             QuestHolder = static_cast<Player*>(pKiller);
         else if (pKiller->IsPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
             QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();

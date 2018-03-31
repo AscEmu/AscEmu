@@ -2990,7 +2990,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
 {
     uint32 team = pPlayer->GetTeam();
 
-    if (!pVictim->IsCreature())
+    if (!pVictim->isCreature())
         return false;
 
     std::unordered_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(pVictim->GetMapId());

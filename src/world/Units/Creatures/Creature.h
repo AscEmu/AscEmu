@@ -41,7 +41,7 @@ class GameEvent;
 struct QuestRelation;
 struct QuestProperties;
 
-#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
+#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 
 uint8 get_byte(uint32 buffer, uint32 index);
 

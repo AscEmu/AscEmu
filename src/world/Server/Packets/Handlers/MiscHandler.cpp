@@ -1783,7 +1783,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             if (obj->GetGameObjectProperties()->spell_caster.party_only != 0)
             {
-                if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer())
+                if (obj->m_summoner != NULL && obj->m_summoner->isPlayer())
                 {
                     Player* summoner = static_cast<Player*>(obj->m_summoner);
 

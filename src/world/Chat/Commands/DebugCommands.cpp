@@ -174,7 +174,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 
     uint32 attackerscount = static_cast<uint32>(selected_unit->GetAIInterface()->getAITargetsCount());
 
-    if (selected_unit->IsCreature())
+    if (selected_unit->isCreature())
         BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
     else
         BlueSystemMessage(m_session, "Showing player moveinfo for %s", static_cast<Player*>(selected_unit)->GetName());

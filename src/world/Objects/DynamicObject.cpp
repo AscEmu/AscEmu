@@ -148,7 +148,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     if (pSpell->p_caster == nullptr)
     {
         // try to find player caster here
-        if (caster->IsPlayer())
+        if (caster->isPlayer())
             p_caster = static_cast< Player* >(caster);
     }
     else
@@ -203,7 +203,7 @@ void DynamicObject::addToInRangeObjects(Object* pObj)
 
 void DynamicObject::onRemoveInRangeObject(Object* pObj)
 {
-    if (pObj->IsUnit())
+    if (pObj->isCreatureOrPlayer())
     {
         targets.erase(pObj->getGuid());
     }
@@ -226,7 +226,7 @@ void DynamicObject::UpdateTargets()
         for (const auto& itr : getInRangeObjectsSet())
         {
             Object* o = itr;
-            if (!o || !o->IsUnit() || !static_cast< Unit* >(o)->isAlive())
+            if (!o || !o->isCreatureOrPlayer() || !static_cast< Unit* >(o)->isAlive())
                 continue;
 
             target = static_cast<Unit*>(o);

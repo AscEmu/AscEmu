@@ -324,7 +324,7 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 {
     for (const auto& itr : getInRangeObjectsSet())
     {
-        if (!itr || !itr->IsUnit())
+        if (!itr || !itr->isCreatureOrPlayer())
             continue;
 
         Unit * pUnit = static_cast<Unit*>(itr);
@@ -344,7 +344,7 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 {
     // add rep for on kill
-    if (!pUnit->IsCreature() || pUnit->IsPet() || pUnit->isCritter())
+    if (!pUnit->isCreature() || pUnit->IsPet() || pUnit->isCritter())
         return;
 
     Group* m_Group = GetGroup();

@@ -137,7 +137,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             pVictim->updateInRangeOppositeFactionSet();
             for (const auto& itr : pVictim->getInRangeOppositeFactionSet())
             {
-                if (!itr || !itr->IsPlayer())
+                if (!itr || !itr->isPlayer())
                     continue;
 
                 bool added = false;

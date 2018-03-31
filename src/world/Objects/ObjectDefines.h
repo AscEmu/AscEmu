@@ -2,6 +2,28 @@
 
 #pragma once
 
+
+//\brief: TypeFlags, mostly used to define updatePackets.
+//\note: check out class inheritance. it is not true that every unit is "just" a creature.
+
+/*
+ object
+- unit
+- - player
+- - creature
+- - - pet   <- probably wrong inheritance from summon not from creature
+- - - totem <- probably wrong inheritance from summon not from creature
+- - - vehicle
+- - - summon (pets and totems are always summons)
+- - - - pet
+- - - - totem
+- gameobject
+- dynamicobject
+- corpse
+- item
+- - container
+ */
+
 enum TYPE
 {
     TYPE_OBJECT = 1,
@@ -12,11 +34,12 @@ enum TYPE
     TYPE_GAMEOBJECT = 32,
     TYPE_DYNAMICOBJECT = 64,
     TYPE_CORPSE = 128,
-    TYPE_AIGROUP = 256,
-    TYPE_AREATRIGGER = 512,
-    TYPE_IN_GUILD = 1024
+    //TYPE_AIGROUP = 256,       not used
+    //TYPE_AREATRIGGER = 512,   not used
+    //TYPE_IN_GUILD = 1024      not used
 };
 
+//\todo: remove these typeIds and use flags instead. No reason to use two different enums to define a object type.
 enum TYPEID
 {
     TYPEID_OBJECT = 0,
@@ -27,8 +50,8 @@ enum TYPEID
     TYPEID_GAMEOBJECT = 5,
     TYPEID_DYNAMICOBJECT = 6,
     TYPEID_CORPSE = 7,
-    TYPEID_AIGROUP = 8,
-    TYPEID_AREATRIGGER = 9
+    //TYPEID_AIGROUP = 8,       not used
+    //TYPEID_AREATRIGGER = 9    not used (WoWTrigger is a thing on Cata)
 };
 
 #ifdef AE_CATA

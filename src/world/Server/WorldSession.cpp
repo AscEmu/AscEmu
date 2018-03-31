@@ -278,7 +278,7 @@ void WorldSession::LogoutPlayer(bool Save)
             Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
             if (obj != NULL)
             {
-                switch (obj->GetTypeId())
+                switch (obj->getObjectTypeId())
                 {
                     case TYPEID_UNIT:
                         static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
@@ -1195,7 +1195,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
-    if (Caster->IsPlayer())
+    if (Caster->isPlayer())
     {
         Player* pcaster = static_cast <Player*>(Caster);
 

@@ -481,7 +481,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
 
             for (const auto& Itr : m_session->GetPlayer()->getInRangeObjectsSet())
             {
-                if (Itr && Itr->IsGameObject())
+                if (Itr && Itr->isGameObject())
                 {
                     // Find the current go, move to the next one
                     if (bUseNext)
@@ -506,7 +506,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
     {
         for (const auto& Itr : m_session->GetPlayer()->getInRangeObjectsSet())
         {
-            if (Itr && Itr->IsGameObject())
+            if (Itr && Itr->isGameObject())
             {
                 if ((nDist = m_session->GetPlayer()->CalcDistance(Itr)) < cDist)
                 {

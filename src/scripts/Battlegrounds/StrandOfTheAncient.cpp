@@ -505,7 +505,7 @@ void StrandOfTheAncient::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 
 void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 {
-    if (victim->IsCreature())
+    if (victim->isCreature())
     {
         for (uint8 i = 0; i < SOTA_NUM_DEMOLISHERS; ++i)
         {

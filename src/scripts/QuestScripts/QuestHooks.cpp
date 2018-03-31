@@ -98,7 +98,7 @@ void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
 
 void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->isCreature())
         return;
 
     switch (pQuest->id)
@@ -189,7 +189,7 @@ void MaybellComplete(Player* /*pPlayer*/, Object* pObject)
 
 void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->isCreature())
         return;
 
     switch (pQuest->id)

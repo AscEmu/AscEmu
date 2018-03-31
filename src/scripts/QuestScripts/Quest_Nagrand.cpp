@@ -288,7 +288,7 @@ public:
         if (getCreature()->GetHealthPct() < 30)
         {
             Unit* pUnit = getCreature()->GetAIInterface()->GetMostHated();
-            if (pUnit != nullptr && pUnit->IsPlayer())
+            if (pUnit != nullptr && pUnit->isPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 
             getCreature()->SetFaction(35);

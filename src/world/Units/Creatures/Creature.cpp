@@ -2284,11 +2284,11 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
+    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (pVictim != this)
@@ -2459,7 +2459,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     {
         Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
 
-        if (vehicle_owner != nullptr && vehicle_owner->IsPlayer())
+        if (vehicle_owner != nullptr && vehicle_owner->isPlayer())
         {
             sQuestMgr.OnPlayerKill(static_cast<Player*>(vehicle_owner), this, true);
         }
@@ -2480,7 +2480,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         //remove owner warlock soul link from caster
         Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
 
-        if (owner != NULL && owner->IsPlayer())
+        if (owner != NULL && owner->isPlayer())
             static_cast<Player*>(owner)->EventDismissPet();
     }
 

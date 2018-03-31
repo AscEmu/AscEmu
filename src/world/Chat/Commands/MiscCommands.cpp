@@ -60,7 +60,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
         return true;
     }
 
-    if (unit_target->IsPlayer())
+    if (unit_target->isPlayer())
         static_cast<Player*>(unit_target)->Dismount();
 
     unit_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
@@ -263,7 +263,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
     {
         if (unit_target != nullptr)
         {
-            switch (unit_target->GetTypeId())
+            switch (unit_target->getObjectTypeId())
             {
                 case TYPEID_UNIT:
                 {
@@ -391,7 +391,7 @@ bool ChatHandler::HandleRootCommand(const char* /*args*/, WorldSession* m_sessio
 
     unit->setMoveRoot(true);
 
-    if (unit->IsPlayer())
+    if (unit->isPlayer())
     {
         SystemMessage(m_session, "Rooting Player %s.", static_cast<Player*>(unit)->GetName());
         BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
@@ -415,7 +415,7 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
 
     unit->setMoveRoot(false);
 
-    if (unit->IsPlayer())
+    if (unit->isPlayer())
     {
         SystemMessage(m_session, "Unrooting Player %s.", static_cast<Player*>(unit)->GetName());
         BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());

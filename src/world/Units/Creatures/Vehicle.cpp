@@ -146,7 +146,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
     passenger->RemoveAllAuraType(SPELL_AURA_MOUNTED);
 
-    if (passenger->IsPlayer())
+    if (passenger->isPlayer())
         static_cast<Player*>(passenger)->DismissActivePets();
 
     if (passenger->GetCurrentVehicle() != nullptr)
@@ -171,7 +171,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passenger->SetPosition(v, false);
 
     // Player's client sets these
-    if (passenger->IsCreature())
+    if (passenger->isCreature())
     {
 #if VERSION_STRING != Cata
         passenger->obj_movement_info.transport_data.transportGuid = owner->getGuid();
@@ -179,7 +179,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 #endif
     }
 
-    if (passenger->IsPlayer())
+    if (passenger->isPlayer())
     {
         WorldPacket pack(SMSG_CONTROL_VEHICLE, 0);
         passenger->SendPacket(&pack);
@@ -215,9 +215,9 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passengercount++;
     freeseats--;
 
-    if (passenger->IsPlayer() && passengercount == 1)
+    if (passenger->isPlayer() && passengercount == 1)
     {
-        if (owner->IsCreature())
+        if (owner->isCreature())
         {
             Creature* c = static_cast<Creature*>(owner);
             c->SetFaction(passenger->getFactionTemplate());
@@ -232,7 +232,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
     }
 
-    if (passenger->IsCreature())
+    if (passenger->isCreature())
     {
         Creature* c = static_cast<Creature*>(passenger);
 
@@ -242,7 +242,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         }
     }
 
-    if (owner->IsCreature())
+    if (owner->isCreature())
     {
         Creature* c = static_cast<Creature*>(owner);
 
@@ -304,7 +304,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         passenger->setCharmGuid(0);
         owner->setCharmedByGuid(0);
 
-        if (passenger->IsPlayer())
+        if (passenger->isPlayer())
         {
 
             owner->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -320,7 +320,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         }
     }
 
-    if (passenger->IsPlayer())
+    if (passenger->isPlayer())
         static_cast<Player*>(passenger)->SetFarsightTarget(0);
 
     // if we are on a flying vehicle, add a parachute!
@@ -343,16 +343,16 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
     if (HasEmptySeat())
     {
-        if (owner->IsPlayer())
+        if (owner->isPlayer())
             owner->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
         else
             owner->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
     }
 
-    if (passenger->IsPlayer())
+    if (passenger->isPlayer())
         static_cast<Player*>(passenger)->SpawnActivePet();
 
-    if (passenger->IsCreature())
+    if (passenger->isCreature())
     {
         Creature* c = static_cast<Creature*>(passenger);
 
@@ -361,7 +361,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
             c->GetScript()->OnExitVehicle();
         }
     }
-    if (owner->IsCreature())
+    if (owner->isCreature())
     {
         Creature* c = static_cast<Creature*>(owner);
 

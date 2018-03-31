@@ -295,7 +295,7 @@ void Spell::SendSpellGo()
 
 void Spell::SendChannelStart(uint32 duration)
 {
-    if (!m_caster->IsGameObject())
+    if (!m_caster->isGameObject())
     {
         // Send Channel Start
         WorldPacket data(MSG_CHANNEL_START, 22);

@@ -63,7 +63,7 @@ class ZerekethAI : public CreatureAIScript
                 if (itr)
                 {
                     Object* obj = itr;
-                    if (obj->IsCreature())
+                    if (obj->isCreature())
                     {
                         auto creature = static_cast<Creature*>(obj);
 
@@ -97,7 +97,7 @@ class ZerekethAI : public CreatureAIScript
             std::vector<Player*> TargetTable;
             for (const auto& itr : getCreature()->getInRangePlayersSet())
             {
-                if (!itr || !itr->IsPlayer())
+                if (!itr || !itr->isPlayer())
                     continue;
 
                 Player* RandomTarget = static_cast<Player*>(itr);

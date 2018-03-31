@@ -1394,7 +1394,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
         auto player_item = player_target->GetItemInterface()->GetInventoryItem(static_cast<uint16>(i));
         if (player_item != nullptr)
         {
-            if (player_item->IsContainer())
+            if (player_item->isContainer())
             {
                 auto item_container = static_cast<Container*>(player_item);
                 for (uint32 j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)

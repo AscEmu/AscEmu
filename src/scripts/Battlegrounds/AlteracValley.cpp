@@ -1729,7 +1729,7 @@ void AlteracValley::RemoveReinforcements(uint32 teamId, uint32 amt)
 
 void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
 {
-    if (pVictim->IsPlayer())
+    if (pVictim->isPlayer())
     {
         plr->m_bgScore.KillingBlows++;
         UpdatePvPData();
@@ -1738,7 +1738,7 @@ void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
 
 void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
 {
-    if (pVictim->IsPlayer())
+    if (pVictim->isPlayer())
         return;
 
     Player* plr2;

@@ -195,7 +195,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     std::list<QuestRelation*>::const_iterator q_end;
     bool bValid = false;
 
-    if (quest_giver->IsGameObject())
+    if (quest_giver->isGameObject())
     {
         bValid = false;
 
@@ -213,7 +213,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
             q_end = go_quest_giver->QuestsEnd();
         }
     }
-    else if (quest_giver->IsCreature())
+    else if (quest_giver->isCreature())
     {
         bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
@@ -222,13 +222,13 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
             q_end = static_cast< Creature* >(quest_giver)->QuestsEnd();
         }
     }
-    else if (quest_giver->IsItem())
+    else if (quest_giver->isItem())
     {
         if (static_cast< Item* >(quest_giver)->getItemProperties()->QuestId)
             bValid = true;
     }
     //This will be handled at quest share so nothing important as status
-    else if (quest_giver->IsPlayer())
+    else if (quest_giver->isPlayer())
     {
         status = QMGR_QUEST_AVAILABLE;
     }
@@ -236,11 +236,11 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     if (!bValid)
     {
         //annoying message that is not needed since all objects don't exactly have quests
-        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
+        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
         return status;
     }
 
-    if (quest_giver->IsItem())
+    if (quest_giver->isItem())
     {
         QuestProperties const* pQuest = sMySQLStore.getQuestProperties(static_cast< Item* >(quest_giver)->getItemProperties()->QuestId);
         if (pQuest)
@@ -275,7 +275,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     std::list<QuestRelation*>::const_iterator q_end;
     bool bValid = false;
 
-    if (quest_giver->IsGameObject())
+    if (quest_giver->isGameObject())
     {
         bValid = false;
 
@@ -294,7 +294,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
         }
     }
-    else if (quest_giver->IsCreature())
+    else if (quest_giver->isCreature())
     {
         bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
@@ -306,7 +306,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
+        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
         return 0;
     }
 
@@ -433,7 +433,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
     *data << qst_giver->getGuid();			// npc guid
-    *data << uint64(qst_giver->IsPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
+    *data << uint64(qst_giver->isPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
     *data << qst->id;						// quest id
 
     if (lq != nullptr)
@@ -672,7 +672,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     *data << uint32(1);//Emote
 
     bool bValid = false;
-    if (qst_giver->IsGameObject())
+    if (qst_giver->isGameObject())
     {
         GameObject* go = static_cast<GameObject*>(qst_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
@@ -688,7 +688,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
             ed = go_quest_giver->QuestsEnd();
         }
     }
-    else if (qst_giver->IsCreature())
+    else if (qst_giver->isCreature())
     {
         bValid = static_cast< Creature* >(qst_giver)->HasQuests();
         if (bValid)
@@ -1092,10 +1092,10 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
                 break;
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
-            if (qst_giver->IsCreature())
+            if (qst_giver->isCreature())
                 if (static_cast< Creature* >(qst_giver)->m_factionEntry != NULL)
                     fact = static_cast< Creature* >(qst_giver)->m_factionEntry->ID;
-            if (qst_giver->IsGameObject())
+            if (qst_giver->isGameObject())
                 fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }
         else
@@ -1154,7 +1154,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     qle->Finish();
 
 
-    if (qst_giver->IsCreature())
+    if (qst_giver->isCreature())
     {
         if (!static_cast< Creature* >(qst_giver)->HasQuest(qst->id, 2))
         {
@@ -1449,9 +1449,9 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
             uint64 itemGuid = 0;
 
-            if (qst_giver->IsCreature())
+            if (qst_giver->isCreature())
                 mailType = MAIL_TYPE_CREATURE;
-            else if (qst_giver->IsGameObject())
+            else if (qst_giver->isGameObject())
                 mailType = MAIL_TYPE_GAMEOBJECT;
 
             if (qst->MailSendItem != 0)
@@ -1773,7 +1773,7 @@ void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 {
-    if (qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
+    if (qst_giver->getObjectTypeId() == TYPEID_GAMEOBJECT)
     {
         GameObject* gameobject = static_cast<GameObject*>(qst_giver);
         if (gameobject->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
@@ -1800,7 +1800,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         bool bValid = false;
 
-        if (qst_giver->IsGameObject())
+        if (qst_giver->isGameObject())
         {
             bValid = false;
 
@@ -1818,7 +1818,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
                 q_end = go_quest_giver->QuestsEnd();
             }
         }
-        else if (qst_giver->IsCreature())
+        else if (qst_giver->isCreature())
         {
             bValid = static_cast< Creature* >(qst_giver)->HasQuests();
             if (bValid)
@@ -1830,7 +1830,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->GetTypeId());
+            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->getObjectTypeId());
             return false;
         }
 

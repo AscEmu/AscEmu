@@ -198,7 +198,7 @@ class LuaUnit
             return 1;
         }
 
-        if (ptr->IsPlayer())
+        if (ptr->isPlayer())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -214,7 +214,7 @@ class LuaUnit
             return 1;
         }
 
-        if (ptr->IsCreature())
+        if (ptr->isCreature())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -243,7 +243,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        switch (ptr->GetTypeId())
+        switch (ptr->getObjectTypeId())
         {
             case TYPEID_UNIT:
                 lua_pushstring(L, static_cast<Creature*>(ptr)->GetCreatureProperties() ? static_cast<Creature*>(ptr)->GetCreatureProperties()->Name.c_str() : "Unknown");
@@ -272,7 +272,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        switch (ptr->GetTypeId())
+        switch (ptr->getObjectTypeId())
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
@@ -308,7 +308,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        switch (ptr->GetTypeId())
+        switch (ptr->getObjectTypeId())
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
@@ -344,7 +344,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        switch (ptr->GetTypeId())
+        switch (ptr->getObjectTypeId())
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
@@ -426,7 +426,7 @@ class LuaUnit
 
             Object* obj = itr;
             // Object Isn't a Unit, Unit is Dead
-            if (!obj->IsUnit() || static_cast<Unit*>(obj)->IsDead())
+            if (!obj->isCreatureOrPlayer() || static_cast<Unit*>(obj)->IsDead())
                 continue;
 
             if (!isFriendly(obj, ptr))
@@ -737,7 +737,7 @@ class LuaUnit
     static int GetNativeFaction(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-            if (ptr->IsPlayer())
+            if (ptr->isPlayer())
             {
                 RET_INT(static_cast<Player*>(ptr)->GetInitialFactionId());
             }
@@ -902,7 +902,7 @@ class LuaUnit
     }
     static int DeleteAllWaypoints(lua_State* /*L*/, Unit* ptr)
     {
-        if (ptr != nullptr && ptr->IsCreature())
+        if (ptr != nullptr && ptr->isCreature())
             ptr->GetAIInterface()->deleteAllWayPoints();
         return 0;
     }
@@ -1102,7 +1102,7 @@ class LuaUnit
             case RANDOM_NOT_MAINTANK:
             {
                 Unit* mt = ptr->GetAIInterface()->GetMostHated();
-                if (mt == nullptr || !mt->IsPlayer())
+                if (mt == nullptr || !mt->isPlayer())
                     return 0;
 
                 for (const auto& itr : ptr->getInRangePlayersSet())
@@ -1133,7 +1133,7 @@ class LuaUnit
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
             Object* obj = itr;
-            if (obj && obj->IsUnit() && isFriendly(obj, ptr))
+            if (obj && obj->isCreatureOrPlayer() && isFriendly(obj, ptr))
                 allies.push_back(obj);
         }
         if (allies.size())
@@ -1151,7 +1151,7 @@ class LuaUnit
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
             Object* obj = itr;
-            if (obj && obj->IsUnit() && isHostile(ptr, obj))
+            if (obj && obj->isCreatureOrPlayer() && isHostile(ptr, obj))
                 enemies.push_back(obj);
         }
         if (enemies.size())
@@ -1430,7 +1430,7 @@ class LuaUnit
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->IsUnit() && isFriendly(ptr, itr))
+            if (itr && itr->isCreatureOrPlayer() && isFriendly(ptr, itr))
             {
                 count++,
                 lua_pushinteger(L, count);
@@ -1450,7 +1450,7 @@ class LuaUnit
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->IsUnit() && !isFriendly(ptr, itr))
+            if (itr && itr->isCreatureOrPlayer() && !isFriendly(ptr, itr))
             {
                 count++,
                 lua_pushinteger(L, count);
@@ -1470,7 +1470,7 @@ class LuaUnit
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->IsUnit())
+            if (itr && itr->isCreatureOrPlayer())
             {
                 ++count;
                 lua_pushinteger(L, count);
@@ -1915,7 +1915,7 @@ class LuaUnit
 
     static int GetPlayerClass(lua_State* L, Unit* ptr)
     {
-        if (!ptr || !ptr->IsPlayer())
+        if (!ptr || !ptr->isPlayer())
         {
             lua_pushstring(L, "Unknown");
             return 1;
@@ -2049,7 +2049,7 @@ class LuaUnit
         float z = ptr->GetSpawnZ();
         float o = ptr->GetSpawnO();
 
-        if (ptr->IsCreature())
+        if (ptr->isCreature())
         {
             ptr->GetAIInterface()->MoveTo(x, y, z);
             ptr->SetOrientation(o);
@@ -2370,7 +2370,7 @@ class LuaUnit
 
     static int IsCreatureMoving(lua_State* L, Unit* ptr)
     {
-        if (ptr && ptr->IsCreature())
+        if (ptr && ptr->isCreature())
         {
             if (ptr->GetAIInterface()->isCreatureState(MOVING))
                 lua_pushboolean(L, 1);
@@ -3181,7 +3181,7 @@ class LuaUnit
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangePlayersSet())
         {
-            if (itr && itr->IsPlayer())
+            if (itr && itr->isPlayer())
             {
                 count++,
                 lua_pushinteger(L, count);
@@ -3231,7 +3231,7 @@ class LuaUnit
         MODE_HEROIC_10MEN   =   2,
         MODE_HEROIC_25MEN   =   3
         */
-        if (ptr->IsPlayer())
+        if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
             if (plr->GetGroup())
@@ -3343,7 +3343,7 @@ class LuaUnit
             return 0;
         if (ptr->IsInInstance())
         {
-            if (ptr->IsPlayer())
+            if (ptr->isPlayer())
             {
                 Player* plr = static_cast<Player*>(ptr);
                 if (plr->GetGroup())
@@ -3380,7 +3380,7 @@ class LuaUnit
         uint32 count = 0;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->IsGameObject())
+            if (itr && itr->isGameObject())
             {
                 count++,
                 lua_pushinteger(L, count);
@@ -3675,7 +3675,7 @@ class LuaUnit
         uint32 repeats = CHECK_ULONG(L, 4);
         if (ptr && sp)
         {
-            switch (ptr->GetTypeId())
+            switch (ptr->getObjectTypeId())
             {
                 case TYPEID_PLAYER:
                     sEventMgr.AddEvent(ptr, &Player::EventCastSpell, target, sSpellCustomizations.GetSpellInfo(sp), EVENT_PLAYER_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3863,7 +3863,7 @@ class LuaUnit
         uint32 level = CHECK_ULONG(L, 1);
         if (level <= worldConfig.player.playerLevelCap && level > 0)
         {
-            if (ptr->IsPlayer())
+            if (ptr->isPlayer())
             {
                 LevelInfo* Info = objmgr.GetLevelInfo(ptr->getRace(), ptr->getClass(), level);
                 if (Info)
@@ -4213,7 +4213,7 @@ class LuaUnit
             pItem = plr->GetItemInterface()->GetInventoryItem(i);
             if (pItem != NULL)
             {
-                if (pItem->IsContainer())
+                if (pItem->isContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
@@ -4689,7 +4689,7 @@ class LuaUnit
     {
         if (!ptr)
             return 0;
-        if (ptr->IsPlayer())
+        if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
             plr->RemoveAura(plr->m_MountSpellId);
@@ -4881,7 +4881,7 @@ class LuaUnit
     static int IsMounted(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        if (ptr->IsPlayer())
+        if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
             if (plr != NULL && plr->IsMounted())
@@ -5863,7 +5863,7 @@ class LuaUnit
         Unit* ret = nullptr;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (!itr || !itr->IsUnit() || !isHostile(ptr, itr))
+            if (!itr || !itr->isCreatureOrPlayer() || !isHostile(ptr, itr))
                 continue;
 
             current_dist = ptr->GetDistance2dSq(itr);
@@ -5885,7 +5885,7 @@ class LuaUnit
         Unit* ret = nullptr;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (!itr || !itr->IsUnit() || isHostile(itr, ptr))
+            if (!itr || !itr->isCreatureOrPlayer() || isHostile(itr, ptr))
                 continue;
 
             current_dist = itr->getDistanceSq(ptr);
@@ -5907,7 +5907,7 @@ class LuaUnit
         Unit* ret = nullptr;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (!itr || !itr->IsUnit())
+            if (!itr || !itr->isCreatureOrPlayer())
                 continue;
 
             current_dist = ptr->GetDistance2dSq(itr);
@@ -5924,7 +5924,7 @@ class LuaUnit
     static int GetObjectType(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-            if (ptr->IsPlayer())
+            if (ptr->isPlayer())
                 lua_pushstring(L, "Player");
             else
                 lua_pushstring(L, "Unit");
@@ -6018,9 +6018,9 @@ class LuaUnit
         TEST_UNIT();
         uint64 guid = CHECK_GUID(L, 1);
         Object* obj = ptr->GetMapMgr()->_GetObject(guid);
-        if (obj != NULL && obj->IsUnit())
+        if (obj != NULL && obj->isCreatureOrPlayer())
             PUSH_UNIT(L, obj);
-        else if (obj != NULL && obj->IsGameObject())
+        else if (obj != NULL && obj->isGameObject())
             PUSH_GO(L, obj);
         else
             lua_pushnil(L);
@@ -6178,7 +6178,7 @@ class LuaUnit
     static int IsOnVehicle(lua_State *L, Unit *ptr){
         TEST_UNITPLAYER()
 
-            if ((ptr->GetCurrentVehicle() != NULL) || (ptr->IsPlayer() && ptr->IsVehicle()))
+            if ((ptr->GetCurrentVehicle() != NULL) || (ptr->isPlayer() && ptr->IsVehicle()))
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -6204,7 +6204,7 @@ class LuaUnit
         if (creature_entry == 0)
             return 0;
 
-        if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->IsPlayer() || !ptr->IsVehicle()))
+        if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->isPlayer() || !ptr->IsVehicle()))
             return 0;
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
@@ -6212,7 +6212,7 @@ class LuaUnit
             return 0;
 
         Player* p = nullptr;
-        if (ptr->IsPlayer())
+        if (ptr->isPlayer())
             p = static_cast<Player*>(ptr);
 
         if ((cp->vehicleid == 0) && (p == NULL) && (!p->GetSession()->HasGMPermissions()))
@@ -6238,7 +6238,7 @@ class LuaUnit
         if (ptr->GetCurrentVehicle() != nullptr)
             v = ptr->GetCurrentVehicle();
         else
-            if (ptr->IsPlayer() && (ptr->GetVehicleComponent() != nullptr))
+            if (ptr->isPlayer() && (ptr->GetVehicleComponent() != nullptr))
                 v = ptr->GetVehicleComponent();
 
         if (v == nullptr)
@@ -6248,7 +6248,7 @@ class LuaUnit
 
         Unit* o = v->GetOwner();
 
-        if (o->IsPlayer())
+        if (o->isPlayer())
             o->RemoveAllAuraType(SPELL_AURA_MOUNTED);
         else
             o->Delete();
@@ -6264,7 +6264,7 @@ class LuaUnit
         if (ptr->GetCurrentVehicle() != NULL)
             v = ptr->GetCurrentVehicle();
         else
-            if (ptr->IsPlayer() && (ptr->GetVehicleComponent() != NULL))
+            if (ptr->isPlayer() && (ptr->GetVehicleComponent() != NULL))
                 v = ptr->GetVehicleComponent();
 
         if (v == NULL)
@@ -6300,7 +6300,7 @@ class LuaUnit
         if (ptr->GetCurrentVehicle() != NULL)
             v = ptr->GetCurrentVehicle();
         else
-            if (ptr->IsPlayer() && (ptr->GetVehicleComponent() != NULL))
+            if (ptr->isPlayer() && (ptr->GetVehicleComponent() != NULL))
                 v = ptr->GetVehicleComponent();
 
         if (v == NULL)
@@ -6334,7 +6334,7 @@ class LuaUnit
             if (ptr->GetCurrentVehicle() != nullptr)
                 ptr->GetCurrentVehicle()->EjectPassenger(ptr);
             else
-                if (ptr->IsPlayer() && ptr->GetVehicleComponent() != nullptr)
+                if (ptr->isPlayer() && ptr->GetVehicleComponent() != nullptr)
                     ptr->RemoveAllAuraType(SPELL_AURA_MOUNTED);
 
         return 0;
