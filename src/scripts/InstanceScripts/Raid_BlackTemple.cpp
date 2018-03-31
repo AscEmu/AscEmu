@@ -3029,7 +3029,7 @@ class AkamaAI : public CreatureAIScript
                     mOlumAI  = spawnCreatureAndGetAIScript(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
                     if (mUdaloAI == nullptr || mOlumAI == nullptr)
                     {
-                        pGate->SetState(GO_STATE_OPEN);
+                        pGate->setState(GO_STATE_OPEN);
                         break;
                     }
                     break;
@@ -3056,7 +3056,7 @@ class AkamaAI : public CreatureAIScript
                     }
                     break;
                 case 11:
-                    pGate->SetState(GO_STATE_OPEN);
+                    pGate->setState(GO_STATE_OPEN);
                     if (pDoorTrigger != NULL)
                     {
                         pDoorTrigger->CastSpell(pDoorTrigger, sSpellCustomizations.GetSpellInfo(GATE_FAILURE), true);
@@ -3177,11 +3177,11 @@ class AkamaAI : public CreatureAIScript
                     GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GO_STATE_CLOSED);
+                        pRightGate->setState(GO_STATE_CLOSED);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GO_STATE_CLOSED);
+                        pLeftGate->setState(GO_STATE_CLOSED);
                     }
 
                     setRooted(false);
@@ -3708,11 +3708,11 @@ class MaievAI : public CreatureAIScript
                             GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                             if (pRightGate != NULL)
                             {
-                                pRightGate->SetState(GO_STATE_OPEN);
+                                pRightGate->setState(GO_STATE_OPEN);
                             }
                             if (pLeftGate != NULL)
                             {
-                                pLeftGate->SetState(GO_STATE_OPEN);
+                                pLeftGate->setState(GO_STATE_OPEN);
                             }
 
                             mIllidanAI->getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
@@ -3940,11 +3940,11 @@ class IllidanStormrageAI : public CreatureAIScript
             GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
             {
-                pRightGate->SetState(GO_STATE_CLOSED);
+                pRightGate->setState(GO_STATE_CLOSED);
             }
             if (pLeftGate != NULL)
             {
-                pLeftGate->SetState(GO_STATE_CLOSED);
+                pLeftGate->setState(GO_STATE_CLOSED);
             }
 
             getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
@@ -4005,11 +4005,11 @@ class IllidanStormrageAI : public CreatureAIScript
                 GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GO_STATE_OPEN);
+                    pRightGate->setState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GO_STATE_OPEN);
+                    pLeftGate->setState(GO_STATE_OPEN);
                 }
 
                 Creature* pMaiev = getNearestCreature(CN_MAIEV);
@@ -4041,11 +4041,11 @@ class IllidanStormrageAI : public CreatureAIScript
                 GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GO_STATE_OPEN);
+                    pRightGate->setState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GO_STATE_OPEN);
+                    pLeftGate->setState(GO_STATE_OPEN);
                 }
             }
         }
@@ -4856,7 +4856,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pUnit = static_cast<Unit*>(itr);
                             if (pUnit)
                             {
-                                CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->GetFaction());
+                                CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->getFactionTemplate());
                                 getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
                                 if (pAI != nullptr)
                                 {
@@ -4998,11 +4998,11 @@ class IllidanStormrageAI : public CreatureAIScript
                     GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GO_STATE_OPEN);
+                        pRightGate->setState(GO_STATE_OPEN);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GO_STATE_OPEN);
+                        pLeftGate->setState(GO_STATE_OPEN);
                     }*/
 
             delete this;
@@ -5241,7 +5241,7 @@ class CageTrapGO : public GameObjectAIScript
 
         void OnActivate(Player* /*pPlayer*/) override
         {
-            _gameobject->SetFlags(GO_FLAG_NONSELECTABLE);
+            _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {

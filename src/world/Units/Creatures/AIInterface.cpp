@@ -922,7 +922,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
 
             wpCreature->setLevel(wayPoint->id);
             wpCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-            wpCreature->SetFaction(player->GetFaction());
+            wpCreature->SetFaction(player->getFactionTemplate());
             wpCreature->setHealth(1);
             wpCreature->setMaxHealth(1);
             wpCreature->setStat(STAT_STRENGTH, wayPoint->flags);
@@ -1799,8 +1799,8 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
 #ifdef ENABLE_CREATURE_DAZE
                             //now if the target is facing his back to us then we could just cast dazed on him :P
                             //as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
-                            if (getNextTarget() && m_Unit->m_factionDBC &&
-                                !(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask == 0 && m_Unit->m_faction->HostileMask == 0) /* neutral creature */
+                            if (getNextTarget() && m_Unit->m_factionEntry &&
+                                !(m_Unit->m_factionEntry->RepListId == -1 && m_Unit->m_factionTemplate->FriendlyMask == 0 && m_Unit->m_factionTemplate->HostileMask == 0) /* neutral creature */
                                 && getNextTarget()->IsPlayer() && !m_Unit->IsPet() && health_before_strike > getNextTarget()->getHealth()
                                 && Rand(m_Unit->get_chance_to_daze(getNextTarget())))
                             {
@@ -2220,19 +2220,19 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
 
     //don't agro neutrals
     if ((pUnit->IsPlayer() || pUnit->IsPet())
-        && m_Unit->m_factionDBC
-        && m_Unit->m_factionDBC->RepListId == -1
-        && m_Unit->m_faction->HostileMask == 0
-        && m_Unit->m_faction->FriendlyMask == 0
+        && m_Unit->m_factionEntry
+        && m_Unit->m_factionEntry->RepListId == -1
+        && m_Unit->m_factionTemplate->HostileMask == 0
+        && m_Unit->m_factionTemplate->FriendlyMask == 0
         )
     {
         return false;
     }
     else if ((m_Unit->IsPlayer() || m_Unit->IsPet())
-        && pUnit->m_factionDBC
-        && pUnit->m_factionDBC->RepListId == -1
-        && pUnit->m_faction->HostileMask == 0
-        && pUnit->m_faction->FriendlyMask == 0
+        && pUnit->m_factionEntry
+        && pUnit->m_factionEntry->RepListId == -1
+        && pUnit->m_factionTemplate->HostileMask == 0
+        && pUnit->m_factionTemplate->FriendlyMask == 0
         )
     {
         return false;
@@ -2392,7 +2392,7 @@ Unit* AIInterface::FindTarget()
                 //on blizz there is no Z limit check
                 float dist = m_Unit->GetDistance2dSq(pUnit);
 
-                if (pUnit->m_faction && pUnit->m_faction->Faction == 28)// only Attack a critter if there is no other Enemy in range
+                if (pUnit->m_factionTemplate && pUnit->m_factionTemplate->Faction == 28)// only Attack a critter if there is no other Enemy in range
                 {
                     if (dist < 225.0f)    // was 10
                         critterTarget = pUnit;
@@ -3678,7 +3678,7 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
     if (!Attacker)
         return 0; // No attacker means no threat and we prevent crashes this way
 
-    if (m_Unit->m_faction != nullptr && Attacker->m_faction != nullptr)
+    if (m_Unit->m_factionTemplate != nullptr && Attacker->m_factionTemplate != nullptr)
         if (isSameFaction(m_Unit, Attacker))
             return 0;
 
@@ -4952,7 +4952,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->SetFaction(properties_difficulty->Faction);
 
-            if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
+            if (!(m_Unit->m_factionEntry->RepListId == -1 && m_Unit->m_factionTemplate->HostileMask == 0 && m_Unit->m_factionTemplate->FriendlyMask == 0))
             {
                 m_Unit->GetAIInterface()->m_canCallForHelp = true;
             }

@@ -118,9 +118,9 @@ Guild::~Guild()
         free(m_guildName);
 }
 
-void Guild::sendCommandResult(WorldSession* pClient, GuildCommandType iCmd, GuildCommandError iType, const char* szMsg)
+void Guild::sendCommandResult(WorldSession* pClient, GuildCommandType iCmd, GuildCommandError iType, std::string szMsg)
 {
-    WorldPacket data(SMSG_GUILD_COMMAND_RESULT, (9 + strlen(szMsg)));
+    WorldPacket data(SMSG_GUILD_COMMAND_RESULT, (9 + szMsg.size()));
     data << uint32_t(iCmd);
     data << szMsg;
     data << uint32_t(iType);

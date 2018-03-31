@@ -270,10 +270,10 @@ bool Transporter::Create(uint32 entry, int32 Time)
         return false;
 
     // Override these flags to avoid mistakes in proto
-    SetFlags(40);
-    SetAnimProgress(255);
+    setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
+    setAnimationProgress(255);
 
-    SetType(GAMEOBJECT_TYPE_MO_TRANSPORT);
+    setOType(GAMEOBJECT_TYPE_MO_TRANSPORT);
 
     m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE;
 
@@ -282,7 +282,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     // Set position
     SetMapId(mapid);
     SetPosition(x, y, z, o);
-    SetLevel(m_period);
+    setLevel(m_period);
 
     return true;
 }
@@ -685,14 +685,14 @@ int32 Transporter::GetPeriod()
 
 void Transporter::BuildStartMovePacket(MapMgr* /*targetMap*/)
 {
-    SetFlag(GAMEOBJECT_FLAGS, 1);
-    SetState(GO_STATE_OPEN);
+    setFlags(GO_FLAG_NONSELECTABLE);
+    setState(GO_STATE_OPEN);
 }
 
 void Transporter::BuildStopMovePacket(MapMgr* /*targetMap*/)
 {
-    RemoveFlag(GAMEOBJECT_FLAGS, 1);
-    SetState(GO_STATE_CLOSED);
+    removeFlags(GO_FLAG_NONSELECTABLE);
+    setState(GO_STATE_CLOSED);
 }
 
 uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim)

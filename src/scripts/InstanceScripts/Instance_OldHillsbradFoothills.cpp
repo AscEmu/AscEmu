@@ -280,7 +280,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    {
 //        GameObject* pGO = getNearestGameObject();
 //        if (pGO)
-//            pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+//            pGO->setState(pGO->getState() == 1 ? 0 : 1);
 //
 //        _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 //        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);

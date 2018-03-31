@@ -921,7 +921,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
 
     SOTAControlPoint &cp = controlpoint[point];
 
-    if (cp.banner->GetFaction() == 14)
+    if (cp.banner->getFactionTemplate() == 14)
         return;
 
     switch (cp.state)

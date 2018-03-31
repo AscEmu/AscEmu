@@ -37,7 +37,7 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
 
     Creature::Load(properties_, position.x, position.y, position.z, position.o);
 
-    SetFaction(pOwner->GetFaction());
+    SetFaction(pOwner->getFactionTemplate());
     Phase(PHASE_SET, pOwner->GetPhase());
     SetZoneId(pOwner->GetZoneId());
     setCreatedBySpellId(spellid);

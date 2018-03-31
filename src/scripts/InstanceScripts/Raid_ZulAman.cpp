@@ -153,7 +153,7 @@ class AkilzonAI : public CreatureAIScript
                 for (uint8 x = 0; x < 3; x++)
                 {
                     /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + Util::getRandomFloat(12) - 10), (getCreature()->GetPositionY() + Util::getRandomFloat(12) - 15),
-                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
                 }
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
@@ -245,7 +245,7 @@ class HalazziAI : public CreatureAIScript
             {
                 if (_isTimerFinished(mTotemTimer))
                 {
-                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + Util::getRandomFloat(3) - 3), (getCreature()->GetPositionY() + Util::getRandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->GetFaction());
+                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + Util::getRandomFloat(3) - 3), (getCreature()->GetPositionY() + Util::getRandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->getFactionTemplate());
                     if (Totem)
                     {
                         Totem->despawn(60000); // Despawn in 60 seconds

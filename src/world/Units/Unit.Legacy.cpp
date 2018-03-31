@@ -12241,7 +12241,7 @@ void Unit::EventHealthChangeSinceLastUpdate()
 
 int32 Unit::GetAP()
 {
-    int32 baseap = GetAttackPower() + GetAttackPowerMods();
+    int32 baseap = getAttackPower() + GetAttackPowerMods();
     float totalap = baseap * (getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + 1);
     if (totalap >= 0)
         return float2int32(totalap);
@@ -13190,7 +13190,7 @@ void Unit::setAttackTimer(int32 time, bool offhand)
     if (!time)
         time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
-    time = std::max(1000, float2int32(time * GetCastSpeedMod()));
+    time = std::max(1000, float2int32(time * getModCastSpeed()));
     if (time> 300000)		// just in case.. shouldn't happen though
         time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
 
@@ -14489,10 +14489,10 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     m_noInterrupt++;
     setCharmGuid(pTarget->getGuid());
     pTarget->setCharmedByGuid(getGuid());
-    pTarget->SetCharmTempVal(pTarget->GetFaction());
+    pTarget->SetCharmTempVal(pTarget->getFactionTemplate());
     pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
-    pTarget->SetFaction(GetFaction());
+    pTarget->SetFaction(getFactionTemplate());
     pTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);

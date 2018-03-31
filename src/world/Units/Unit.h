@@ -287,6 +287,9 @@ public:
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
 
+    uint32_t getFactionTemplate() const;
+    void setFactionTemplate(uint32_t id);
+
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
@@ -358,6 +361,10 @@ public:
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
 
+    float_t getModCastSpeed() const;
+    void setModCastSpeed(float_t modifier);
+    void modModCastSpeed(float_t modifier);
+
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
 
@@ -404,11 +411,18 @@ public:
     uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
     //bytes_2 end
 
+    uint32_t getAttackPower() const;
+    void setAttackPower(uint32_t value);
+
     float_t getMinRangedDamage() const;
     void setMinRangedDamage(float_t damage);
 
     float_t getMaxRangedDamage() const;
     void setMaxRangedDamage(float_t damage);
+
+    float_t getPowerCostMultiplier(uint16_t school) const;
+    void setPowerCostMultiplier(uint16_t school, float_t multiplier);
+    void modPowerCostMultiplier(uint16_t school, float_t multiplier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -524,7 +538,6 @@ public:
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
     void setAuraSlotLevel(uint32_t slot, bool positive);
 #endif
-
 
     // Do not alter anything below this line
     // -------------------------------------
@@ -956,12 +969,10 @@ public:
 
     bool IsSitting();
 
-    uint32 GetFaction() { return getUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
-
     void SetFaction(uint32 factionId)
     {
-        setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, factionId);
-        _setFaction();
+        setFactionTemplate(factionId);
+        setServersideFaction();
     }
 
     virtual void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) = 0;
@@ -1182,26 +1193,14 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
-    float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
-    void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    void ModPowerCostMultiplier(uint16_t school, float amt) { modFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    float GetPowerCostMultiplier(uint16_t school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
-    int32 GetAttackPower() { return getInt32Value(UNIT_FIELD_ATTACK_POWER); }
-
     //\todo fix this
     void SetAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1211,11 +1210,11 @@ public:
 #if VERSION_STRING != Cata
         return getInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
@@ -1240,7 +1239,8 @@ public:
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1250,11 +1250,11 @@ public:
 #if VERSION_STRING != Cata
         return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModRangedAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata

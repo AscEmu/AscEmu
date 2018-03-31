@@ -205,7 +205,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 Unit* Gnome = NULL;
                 for (uint8 i = 0; i < 3; i++)
                 {
-                    Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->GetFaction());
+                    Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->getFactionTemplate());
                     if (Gnome)
                     {
                         Gnome->GetAIInterface()->SetUnitToFollow(getCreature());
@@ -306,14 +306,14 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             GameObject* Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GO_STATE_OPEN);
+                Gate->setState(GO_STATE_OPEN);
 
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->m_canMove = true;

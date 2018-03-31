@@ -398,7 +398,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         }
                         else
                         {
-                            item_add->setStackCount(item_add->GetStackCount() + qst->reward_itemcount[i]);
+                            item_add->setStackCount(item_add->getStackCount() + qst->reward_itemcount[i]);
                             item_add->m_isDirty = true;
                         }
                     }
@@ -437,7 +437,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     }
                     else
                     {
-                        item_add->setStackCount(item_add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
+                        item_add->setStackCount(item_add->getStackCount() + qst->reward_choiceitemcount[reward_slot]);
                         item_add->m_isDirty = true;
                     }
                 }

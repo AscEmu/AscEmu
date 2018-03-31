@@ -188,59 +188,77 @@ class SERVER_DECL Item : public Object
 public:
     void init(uint32_t high, uint32_t low);
     void create(uint32_t itemId, Player* owner);
-    Player* getOwner() const;
-    void setOwner(Player* owner);
-    ItemProperties const* getItemProperties() const;
-    void setItemProperties(ItemProperties const* itemProperties);
-    void setContainer(Container* container);
-    void setContainerGuid(uint64_t guid);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
     uint64_t getOwnerGuid() const;
     uint32_t getOwnerGuidLow() const;
     uint32_t getOwnerGuidHigh() const;
     void setOwnerGuid(uint64_t guid);
+
+    void setContainerGuid(uint64_t guid);
+
+    uint64_t getCreatorGuid() const;
+    void setCreatorGuid(uint64_t guid);
+
+    uint64_t getGiftCreatorGuid() const;
+    void setGiftCreatorGuid(uint64_t guid);
+
+    uint32_t getStackCount() const;
     void setStackCount(uint32_t count);
-    void setDuration(uint32_t seconds);
+    void modStackCount(int32_t mod);
+
     uint32_t getDuration() const;
-    void setSpellCharges(uint32_t idx, int32_t count);
+    void setDuration(uint32_t seconds);
+
+    int32_t getSpellCharges(uint8_t index) const;
+    void setSpellCharges(uint8_t index, int32_t count);
+    void modSpellCharges(uint8_t index, int32_t mod);
+
+    uint32_t getFlags() const;
+    void setFlags(uint32_t flags);
+    void addFlags(uint32_t flags);
+    void removeFlags(uint32_t flags);
+    bool hasFlags(uint32_t flags) const;
+
     void setDurability(uint32_t durability);
+
     void setMaxDurability(uint32_t maxDurability);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+
+    Player* getOwner() const;
+    void setOwner(Player* owner);
+
+    void setContainer(Container* container);
+
+    ItemProperties const* getItemProperties() const;
+    void setItemProperties(ItemProperties const* itemProperties);
 
     // MIT End
 
         Item();
         virtual ~Item();
 
-        void SetCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_CREATOR, GUID); }
-        void SetGiftCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_GIFTCREATOR, GUID); }
-
-        uint64 GetCreatorGUID() { return getUInt64Value(ITEM_FIELD_CREATOR); }
-        uint64 GetGiftCreatorGUID() { return getUInt64Value(ITEM_FIELD_GIFTCREATOR); }
-
-        uint32 GetStackCount() { return getUInt32Value(ITEM_FIELD_STACK_COUNT); }
-        void ModStackCount(int32 val) { modUInt32Value(ITEM_FIELD_STACK_COUNT, val); }
-
-        void SetCharges(uint16_t index, uint32 charges) { setInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
-        void ModCharges(uint16_t index, int32 val) { modInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }
-        uint32 GetCharges(uint16_t index) const { return getInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
-
         /////////////////////////////////////////////////// FLAGS ////////////////////////////////////////////////////////////
 
-        void SoulBind() { SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND); }
-        uint32 IsSoulbound() { return HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND); }
+        void SoulBind() { addFlags(ITEM_FLAG_SOULBOUND); }
+        bool IsSoulbound() const { return hasFlags(ITEM_FLAG_SOULBOUND); }
 
-        void AccountBind() { SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_ACCOUNTBOUND); }
-        uint32 IsAccountbound() { return HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_ACCOUNTBOUND);  }
+        void AccountBind() { addFlags(ITEM_FLAG_ACCOUNTBOUND); }
+        bool IsAccountbound() const { return hasFlags(ITEM_FLAG_ACCOUNTBOUND);  }
 
-        void MakeConjured() { SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_CONJURED); }
-        uint32 IsConjured() { return HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_CONJURED); }
+        void MakeConjured() { addFlags(ITEM_FLAG_CONJURED); }
+        bool IsConjured() const { return hasFlags(ITEM_FLAG_CONJURED); }
 
-        void Lock() { RemoveFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_LOOTABLE); }
-        void UnLock() { SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_LOOTABLE); }
+        void Lock() { removeFlags(ITEM_FLAG_LOOTABLE); }
+        void UnLock() { addFlags(ITEM_FLAG_LOOTABLE); }
 
-        void Wrap() { SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED); }
-        void UnWrap() { RemoveFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED); }
+        void Wrap() { addFlags(ITEM_FLAG_WRAPPED); }
+        void UnWrap() { removeFlags(ITEM_FLAG_WRAPPED); }
 
-        void ClearFlags() { SetFlag(ITEM_FIELD_FLAGS, 0); }
+        void ClearFlags() { setFlags(ITEM_FLAGS_NONE); }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -313,40 +331,40 @@ public:
         bool IsEligibleForRefund();
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// uint32 GetChargesLeft()
-        /// Finds an on-use spell on the item and returns the charges left
-        ///
-        /// \param none
-        ///
-        /// \returns the charges left if an on-use spell is found, 0 if no such spell found.
-        ///
+        // uint32 GetChargesLeft()
+        // Finds an on-use spell on the item and returns the charges left
+        //
+        // \param none
+        //
+        // \returns the charges left if an on-use spell is found, 0 if no such spell found.
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetChargesLeft() const
         {
-            for (uint16_t x = 0; x < 5; ++x)
+            for (uint8_t x = 0; x < 5; ++x)
                 if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
-                    return GetCharges(x);
+                    return getSpellCharges(x) > 0 ? getSpellCharges(x) : 0;
 
             return 0;
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void SetChargesLeft(uint32 charges)
-        /// Finds an on-use spell on the item, and sets the remaining charges.
-        /// If no such spell found, nothing changes.
-        ///
-        /// \param uint32 charges  -  Number to be set as charges left.
-        ///
-        /// \returns none
-        ///
+        // void SetChargesLeft(uint32 charges)
+        // Finds an on-use spell on the item, and sets the remaining charges.
+        // If no such spell found, nothing changes.
+        //
+        // \param uint32 charges  -  Number to be set as charges left.
+        //
+        // \returns none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void SetChargesLeft(uint32 charges)
         {
-            for (uint16_t x = 0; x < 5; ++x)
+            for (uint8_t x = 0; x < 5; ++x)
             {
                 if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
                 {
-                    SetCharges(x, charges);
+                    setSpellCharges(x, charges);
                     break;
                 }
             }

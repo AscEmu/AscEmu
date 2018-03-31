@@ -95,7 +95,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
             data << uint32(pItem->GetItemRandomPropertyId());
             data << uint32(pItem->GetItemRandomSuffixFactor());
-            data << uint32(pItem->GetStackCount());
+            data << uint32(pItem->getStackCount());
             data << uint32(pItem->GetChargesLeft());
             data << uint32(pItem->GetDurabilityMax());
             data << uint32(pItem->GetDurability());
@@ -422,7 +422,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     // send complete packet
     data << uint32(MAIL_OK);
     data << item->getGuidLow();
-    data << item->GetStackCount();
+    data << item->getStackCount();
 
     message->items.erase(itr);
 
@@ -577,7 +577,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     if (pItem == nullptr)
         return;
 
-    pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
+    pItem->setFlags(ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))

@@ -597,7 +597,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
             }
             // reset faction
             if (field == UNIT_FIELD_FACTIONTEMPLATE)
-                cr->_setFaction();
+                cr->setServersideFaction();
 
             // Only actually save the change if we are modifying a spawn
             if (cr->GetSQL_id() != 0)

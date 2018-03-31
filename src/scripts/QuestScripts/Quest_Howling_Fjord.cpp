@@ -100,7 +100,7 @@ public:
                 {
                     plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
                         plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
-                        item->GetItemRandomPropertyId(), item->GetStackCount());
+                        item->GetItemRandomPropertyId(), item->getStackCount());
 
                 }
 

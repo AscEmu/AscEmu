@@ -1004,7 +1004,7 @@ bool Player::Create(WorldPacket& data)
     EventModelChange();
     //setMinDamage(info->mindmg);
     //setMaxDamage(info->maxdmg);
-    SetAttackPower(info->attackpower);
+    setAttackPower(info->attackpower);
 
     // PLAYER_BYTES
     setSkinColor(skin);
@@ -1026,7 +1026,7 @@ bool Player::Create(WorldPacket& data)
 
     setNextLevelXp(400);
     setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -2335,7 +2335,7 @@ void Player::SpawnPet(uint32 pet_number)
     else
         pPet->RemoveSanctuaryFlag();
 
-    pPet->SetFaction(this->GetFaction());
+    pPet->SetFaction(this->getFactionTemplate());
 
     if (itr->second->spellid)
     {
@@ -2692,8 +2692,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << uint32(getClass()) << ","
         << uint32(getGender()) << ",";
 
-    if (GetFaction() != info->factiontemplate)
-        ss << GetFaction() << ",";
+    if (getFactionTemplate() != info->factiontemplate)
+        ss << getFactionTemplate() << ",";
     else
         ss << "0,";
 
@@ -3381,7 +3381,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     EventModelChange();
 
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -4142,7 +4142,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     EventModelChange();
 
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
 #if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
@@ -6419,7 +6419,7 @@ void Player::ModAttackSpeed(int32 mod, ModType type)
         m_attack_speed[type] /= 1.0f + ((float)(-mod) / 100.0f);
 
     if (type == MOD_SPELL)
-        SetCastSpeedMod(1.0f / (m_attack_speed[MOD_SPELL] * SpellHasteRatingBonus));
+        setModCastSpeed(1.0f / (m_attack_speed[MOD_SPELL] * SpellHasteRatingBonus));
 }
 
 void Player::UpdateAttackSpeed()
@@ -6557,7 +6557,7 @@ void Player::UpdateStats()
     if (RAP < 0)RAP = 0;
     if (AP < 0)AP = 0;
 
-    SetAttackPower(AP);
+    setAttackPower(AP);
     SetRangedAttackPower(RAP);
 
     LevelInfo* levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
@@ -6686,9 +6686,9 @@ void Player::UpdateStats()
     float haste = 1.0f + CalcRating(PCR_SPELL_HASTE) / 100.0f;
     if (haste != SpellHasteRatingBonus)
     {
-        float value = GetCastSpeedMod() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
+        float value = getModCastSpeed() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
 
-        SetCastSpeedMod(value);
+        setModCastSpeed(value);
         SpellHasteRatingBonus = haste;    // keep value for next run
     }
 
@@ -6974,7 +6974,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
             if (gObj->invisible) // Invisibility - Detection of GameObjects
             {
-                uint64 owner = gObj->getUInt64Value(OBJECT_FIELD_CREATED_BY);
+                uint64 owner = gObj->getCreatedByGuid();
 
                 if (getGuid() == owner) // the owner of an object can always see it
                     return true;
@@ -7751,7 +7751,7 @@ void Player::UpdateNearbyGameObjects()
                 }
             }
             bool bPassed = !deactivate;
-            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
                 GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
 
@@ -9157,11 +9157,11 @@ void Player::SendTradeUpdate()
 
             data << uint32(pProto->ItemId);
             data << uint32(pProto->DisplayInfoID);
-            data << uint32(pItem->GetStackCount());    // Amount           OK
+            data << uint32(pItem->getStackCount());    // Amount           OK
 
             // Enchantment stuff
             data << uint32(0);                                            // unknown
-            data << uint64(pItem->GetGiftCreatorGUID());    // gift creator     OK
+            data << uint64(pItem->getGiftCreatorGuid());    // gift creator     OK
             data << uint32(pItem->GetEnchantmentId(0));    // Item Enchantment OK
             for (uint8 i = 2; i < 5; i++)                                // Gem enchantments
             {
@@ -9170,8 +9170,8 @@ void Player::SendTradeUpdate()
                 else
                     data << uint32(0);
             }
-            data << uint64(pItem->GetCreatorGUID());        // item creator     OK
-            data << uint32(pItem->GetCharges(0));    // Spell Charges    OK
+            data << uint64(pItem->getCreatorGuid());        // item creator     OK
+            data << uint32(pItem->getSpellCharges(0));    // Spell Charges    OK
             data << uint32(pItem->GetItemRandomSuffixFactor());   // seems like time stamp or something like that
             data << uint32(pItem->GetItemRandomPropertyId());
             data << uint32(pProto->LockId);                                        // lock ID          OK
@@ -9212,9 +9212,9 @@ void Player::RequestDuel(Player* pTarget)
     pGameObj->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
 
     //Spawn the Flag
-    pGameObj->setUInt64Value(OBJECT_FIELD_CREATED_BY, getGuid());
-    pGameObj->SetFaction(GetFaction());
-    pGameObj->SetLevel(getLevel());
+    pGameObj->setCreatedByGuid(getGuid());
+    pGameObj->SetFaction(getFactionTemplate());
+    pGameObj->setLevel(getLevel());
 
     //Assign the Flag
     setDuelArbiter(pGameObj->getGuid());
@@ -9861,12 +9861,12 @@ void Player::SetGuildId(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setType(getType() | 0x00010000);
+            setOType(getOType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setType(getType() & ~0x00010000);
+            setOType(getOType() & ~0x00010000);
         }
 
         //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
@@ -9884,12 +9884,12 @@ void Player::SetInGuild(uint32 guildId)
         if (m_GuildId == 0)
         {
             setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setType(getType() | 0x00010000);
+            setOType(getOType() | 0x00010000);
         }
         else
         {
             setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setType(getType() & ~0x00010000);
+            setOType(getOType() & ~0x00010000);
         }
 
         ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0 );
@@ -12216,10 +12216,10 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     uint32 mstime = Util::getMSTime();
     int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
 
-    if (GetCastSpeedMod() >= 1.0f)
+    if (getModCastSpeed() >= 1.0f)
         atime = pSpell->getStartRecoveryTime();
     else
-        atime = float2int32(pSpell->getStartRecoveryTime() * GetCastSpeedMod());
+        atime = float2int32(pSpell->getStartRecoveryTime() * getModCastSpeed());
 
     spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellGroupType());
     spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellGroupType());
@@ -14717,7 +14717,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             else
                 SendItemPushResult(false, true, false, true,
                 m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
-                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         }
     }
 

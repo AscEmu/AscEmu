@@ -52,16 +52,17 @@ class Player;
 class GameObjectAIScript;
 class GameObjectModel;
 
+//\todo check this enum - do we (ae) really handle this stuff this way?
 enum GameObjectOverrides
 {
-    GAMEOBJECT_INFVIS = 0x01,                   /// Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
-    GAMEOBJECT_MAPWIDE = 0x02,                  /// When you enter its map, the gameobject gets pushed to you no matter how far it is (but only for players), especially for Deeprun and Ulduar Trams.
-    GAMEOBJECT_AREAWIDE = 0x04,                 ///\todo UNIMPLEMENTED, but will work like this: the Map will get marked that it contains an object like this, and on player movement these objects will get distance-checked to spawn them from a greater distance than normal if needed - for few objects on smaller maps, like on battlegrounds; maybe they'll get area-triggered, haven't decided yet.
-    GAMEOBJECT_ONMOVEWIDE = 0x08,               /// When this gameobject moves and sends updates about it's position, do so in the second range - MapMgr::ChangeObjectLocation, +/- 6 units wide instead of +/- 1.
-    GAMEOBJECT_OVERRIDE_FLAGS = 0x10,           ///\todo UNIMPLEMENTED, Let the core decide about the flags sent in the A9 - example: 252 instead of 352 for Deeprun Tram.
-    GAMEOBJECT_OVERRIDE_BYTES1 = 0x20,          ///\todo UNIMPLEMENTED, Let the core use the full field instead an uint8 in GAMEOBJECT_BYTES_1, if the database creator knows what to do with it.
-    GAMEOBJECT_OVERRIDE_PARENTROT = 0x40,       /// Makes it possible for the core to skip calculating these fields and use whatever was specified in the spawn.
-    /// Later other types might folow, or the upper bytes might get used for the AREAWIDE option in the overrides variable...
+    GAMEOBJECT_INFVIS = 0x01,                   // Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
+    GAMEOBJECT_MAPWIDE = 0x02,                  // When you enter its map, the gameobject gets pushed to you no matter how far it is (but only for players), especially for Deeprun and Ulduar Trams.
+    GAMEOBJECT_AREAWIDE = 0x04,                 //\todo UNIMPLEMENTED, but will work like this: the Map will get marked that it contains an object like this, and on player movement these objects will get distance-checked to spawn them from a greater distance than normal if needed - for few objects on smaller maps, like on battlegrounds; maybe they'll get area-triggered, haven't decided yet.
+    GAMEOBJECT_ONMOVEWIDE = 0x08,               // When this gameobject moves and sends updates about it's position, do so in the second range - MapMgr::ChangeObjectLocation, +/- 6 units wide instead of +/- 1.
+    GAMEOBJECT_OVERRIDE_FLAGS = 0x10,           //\todo UNIMPLEMENTED, Let the core decide about the flags sent in the A9 - example: 252 instead of 352 for Deeprun Tram.
+    GAMEOBJECT_OVERRIDE_BYTES1 = 0x20,          //\todo UNIMPLEMENTED, Let the core use the full field instead an uint8 in GAMEOBJECT_BYTES_1, if the database creator knows what to do with it.
+    GAMEOBJECT_OVERRIDE_PARENTROT = 0x40,       // Makes it possible for the core to skip calculating these fields and use whatever was specified in the spawn.
+    // Later other types might folow, or the upper bytes might get used for the AREAWIDE option in the overrides variable...
 };
 
 typedef std::unordered_map<QuestProperties const*, uint32 > GameObjectGOMap;
@@ -70,7 +71,7 @@ typedef std::unordered_map<QuestProperties const*, std::map<uint32, uint32> > Ga
 struct GameObjectProperties
 {
     uint32 entry;
-    uint32 type;
+    uint32 type;    //uint8_t
     uint32 display_id;
     std::string name;
     std::string category_name;
@@ -378,16 +379,59 @@ struct WoWGameObject;
 class SERVER_DECL GameObject : public Object
 {
     // MIT Start
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+
 public:
+
+    uint64_t getCreatedByGuid() const;
+    void setCreatedByGuid(uint64_t guid);
+
+    uint32_t getDisplayId() const;
+    void setDisplayId(uint32_t id);
+
+    uint32_t getFlags() const;
+    void setFlags(uint32_t flags);
+    void addFlags(uint32_t flags);
+    void removeFlags(uint32_t flags);
+    bool hasFlags(uint32_t flags) const;
+
+    float_t getParentRotation(uint8_t type) const;
+    void setParentRotation(uint8_t type, float_t rotation);
+
+    uint32_t getDynamic() const;
+    void setDynamic(uint32_t dynamic);
+
+    uint32_t getFactionTemplate() const;
+    void setFactionTemplate(uint32_t id);
+
+    uint32_t getLevel() const;
+    void setLevel(uint32_t level);
+
+    //bytes1
+    uint8_t getState() const;
+    void setState(uint8_t state);
+
+    uint8_t getGoType() const;
+    void setGoType(uint8_t type);
+
+    uint8_t getArtKit() const;
+    void setArtKit(uint8_t artkit);
+
+    uint8_t getAnimationProgress() const;
+    void setAnimationProgress(uint8_t progress);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Type helper
     bool isQuestGiver() const;
+    bool isFishingNode() const;
+
     // MIT End
 
         GameObject(uint64 guid);
         ~GameObject();
-    bool isFishingNode() const;
-    uint32_t getDynamic() const;
-    void setDynamic(uint32_t dynamic);
 
     GameEvent* mEvent = nullptr;
 
@@ -446,76 +490,18 @@ public:
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
-    uint32 GetType() const;
     MapCell* m_respawnCell;
-
-#if VERSION_STRING < WotLK
-        void SetState(uint8 state) { setUInt32Value(GAMEOBJECT_STATE, state); }
-        uint8 GetState() { return getUInt32Value(GAMEOBJECT_STATE); }
-
-        void SetType(uint8 type) { setUInt32Value(GAMEOBJECT_TYPE_ID, type); }
-        //uint32 GetType() const;
-
-        void SetArtKit(uint8 artkit) { setUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
-        uint8 GetArtkKit() { return getUInt32Value(GAMEOBJECT_ARTKIT); }
-
-        void SetAnimProgress(uint8 progress) { setUInt32Value(GAMEOBJECT_ANIMPROGRESS, progress); }
-        uint8 GetAnimProgress() { return getUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
-#else
-        void SetState(uint8 state) { setByteValue(GAMEOBJECT_BYTES_1, 0, state); }
-        uint8 GetState() { return getByteValue(GAMEOBJECT_BYTES_1, 0); }
-
-        void SetType(uint8 type) { setByteValue(GAMEOBJECT_BYTES_1, 1, type); }
-        uint32 GetType() { return this->GetGameObjectProperties()->type; }
-
-        void SetArtKit(uint8 artkit) { setByteValue(GAMEOBJECT_BYTES_1, 2, artkit); }
-        uint8 GetArtkKit() { return getByteValue(GAMEOBJECT_BYTES_1, 2); }
-
-        void SetAnimProgress(uint8 progress) { setByteValue(GAMEOBJECT_BYTES_1, 3, progress); }
-        uint8 GetAnimProgress() { return getByteValue(GAMEOBJECT_BYTES_1, 3); }
-#endif
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
 
-        void Deactivate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
-        void Activate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
-        bool IsActive()
-        {
-            if (getUInt32Value(GAMEOBJECT_DYNAMIC) == 1)
-                return true;
-            else
-                return false;
-        }
-
-        void SetDisplayId(uint32 id) { setUInt32Value(GAMEOBJECT_DISPLAYID, id); }
-        uint32 GetDisplayId() { return getUInt32Value(GAMEOBJECT_DISPLAYID); }
-
         void SetRotationQuat(float qx, float qy, float qz, float qw);
 
-        void SetParentRotation(uint8 rot, float value) { setFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
-        float GetParentRotation(uint8 rot) { return getFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
-
+        //\todo serverdie faction can be handled in update.
         void SetFaction(uint32 id)
         {
-            setUInt32Value(GAMEOBJECT_FACTION, id);
-            _setFaction();
-        }
-        uint32 GetFaction() { return getUInt32Value(GAMEOBJECT_FACTION); }
-
-        void SetLevel(uint32 level) { setUInt32Value(GAMEOBJECT_LEVEL, level); }
-        uint32 GetLevel() { return getUInt32Value(GAMEOBJECT_LEVEL); }
-
-        void SetFlags(uint32 flags) { setUInt32Value(GAMEOBJECT_FLAGS, flags); }
-        uint32 GetFlags() { return getUInt32Value(GAMEOBJECT_FLAGS); }
-        void RemoveFlags(uint32 flags) { RemoveFlag(GAMEOBJECT_FLAGS, flags); }
-
-        bool HasFlags(uint32 flags)
-        {
-            if (HasFlag(GAMEOBJECT_FLAGS, flags) != 0)
-                return true;
-            else
-                return false;
+            setFactionTemplate(id);
+            setServersideFaction();
         }
 
         GameObjectModel* m_model;
@@ -528,7 +514,7 @@ public:
         GameObjectAIScript* myScript;
         uint32 _fields[GAMEOBJECT_END];
 
-        uint32 m_overrides;             ///See enum GAMEOBJECT_OVERRIDES!
+        uint32 m_overrides;             //See enum GAMEOBJECT_OVERRIDES!
 
         uint64 m_rotation;
 

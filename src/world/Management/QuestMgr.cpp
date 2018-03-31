@@ -201,7 +201,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
         GameObject* go = static_cast<GameObject*>(quest_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -281,7 +281,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
         GameObject* go = static_cast<GameObject*>(quest_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -676,7 +676,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     {
         GameObject* go = static_cast<GameObject*>(qst_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
@@ -1093,10 +1093,10 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
             if (qst_giver->IsCreature())
-                if (static_cast< Creature* >(qst_giver)->m_factionDBC != NULL)
-                    fact = static_cast< Creature* >(qst_giver)->m_factionDBC->ID;
+                if (static_cast< Creature* >(qst_giver)->m_factionEntry != NULL)
+                    fact = static_cast< Creature* >(qst_giver)->m_factionEntry->ID;
             if (qst_giver->IsGameObject())
-                fact = static_cast< GameObject* >(qst_giver)->GetFaction();
+                fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }
         else
         {
@@ -1202,7 +1202,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        item_add->setStackCount(item_add->GetStackCount() + qst->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->getStackCount() + qst->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -1241,7 +1241,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 }
                 else
                 {
-                    item_add->setStackCount(item_add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
+                    item_add->setStackCount(item_add->getStackCount() + qst->reward_choiceitemcount[reward_slot]);
                     item_add->m_isDirty = true;
                 }
             }
@@ -1315,7 +1315,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        item_add->setStackCount(item_add->GetStackCount() + qst->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->getStackCount() + qst->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -1353,7 +1353,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 }
                 else
                 {
-                    item_add->setStackCount(item_add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
+                    item_add->setStackCount(item_add->getStackCount() + qst->reward_choiceitemcount[reward_slot]);
                     item_add->m_isDirty = true;
                 }
             }
@@ -1482,7 +1482,7 @@ void QuestMgr::LoadNPCQuests(Creature* qst_giver)
 
 void QuestMgr::LoadGOQuests(GameObject* go)
 {
-    if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+    if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
     {
         GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
         go_quest_giver->SetQuestList(GetGOQuestList(go->getEntry()));
@@ -1776,7 +1776,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
     if (qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
     {
         GameObject* gameobject = static_cast<GameObject*>(qst_giver);
-        if (gameobject->GetType() != GAMEOBJECT_TYPE_QUESTGIVER)
+        if (gameobject->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
             return false;
 
         GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(gameobject);
@@ -1806,7 +1806,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
             GameObject* gameobject = static_cast<GameObject*>(qst_giver);
             GameObject_QuestGiver* go_quest_giver = nullptr;
-            if (gameobject->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            if (gameobject->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
                 go_quest_giver = static_cast<GameObject_QuestGiver*>(gameobject);
                 if (go_quest_giver->HasQuests())

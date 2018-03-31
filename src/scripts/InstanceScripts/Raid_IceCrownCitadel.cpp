@@ -87,7 +87,7 @@ class IceCrownCitadelScript : public InstanceScript
                 case GO_TELE_4:
                 case GO_TELE_5:
                 {
-                    pGameObject->SetFlags(0);
+                    pGameObject->setFlags(GO_FLAG_NONE);
                 } break;
             }
         }

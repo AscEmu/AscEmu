@@ -194,7 +194,7 @@ void WorldSession::HandleQueryTimeOpcode(WorldPacket& /*recvData*/)
 void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 12);
-    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 900);
+    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 150);
 
     uint32 entryID;
     uint64 guid;
@@ -257,7 +257,6 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recvData)
     data << gameobject_info->raw.parameter_22;
     data << gameobject_info->raw.parameter_23;
     data << float(gameobject_info->size);       // scaling of the GO
-
                                                 // questitems that the go can contain
     for (uint8 i = 0; i < 6; ++i)
     {

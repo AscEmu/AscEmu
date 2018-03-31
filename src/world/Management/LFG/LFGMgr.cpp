@@ -1738,7 +1738,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
             if (Player* victim = objmgr.GetPlayer(GET_LOWGUID_PART(pBoot->victim)))
             {
             TeleportPlayer(victim, true, false);
-            SetState(pBoot->victim, LFG_STATE_NONE);
+            setState(pBoot->victim, LFG_STATE_NONE);
             }
             OfferContinue(grp);
             DecreaseKicksLeft(gguid);
@@ -1953,7 +1953,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->setStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->getStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -2047,7 +2047,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->setStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->getStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }

@@ -96,13 +96,13 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_FORCE_MOVE_UNROOT_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_KNOCK_BACK_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_HOVER_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
-    //WorldPacketHandlers[CMSG_MOVE_SET_CAN_FLY_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
-    //WorldPacketHandlers[MSG_MOVE_START_DESCEND].handler = &WorldSession::HandleMovementOpcodes;
+    WorldPacketHandlers[CMSG_MOVE_SET_CAN_FLY_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
+    WorldPacketHandlers[MSG_MOVE_START_DESCEND].handler = &WorldSession::HandleMovementOpcodes;
     //WorldPacketHandlers[CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
 
     // Action Buttons
     //WorldPacketHandlers[CMSG_SET_ACTION_BUTTON].handler = &WorldSession::HandleSetActionButtonOpcode;
-    //WorldPacketHandlers[CMSG_REPOP_REQUEST].handler = &WorldSession::HandleRepopRequestOpcode;
+    WorldPacketHandlers[CMSG_REPOP_REQUEST].handler = &WorldSession::HandleRepopRequestOpcode;
 
     // Loot
     //WorldPacketHandlers[CMSG_AUTOSTORE_LOOT_ITEM].handler = &WorldSession::HandleAutostoreLootItemOpcode;
@@ -152,10 +152,10 @@ void WorldSession::loadSpecificHandlers()
     // Player Interaction
     //WorldPacketHandlers[CMSG_GAMEOBJ_USE].handler = &WorldSession::HandleGameObjectUse;
     //WorldPacketHandlers[CMSG_PLAYED_TIME].handler = &WorldSession::HandlePlayedTimeOpcode;
-    //WorldPacketHandlers[CMSG_SETSHEATHED].handler = &WorldSession::HandleSetSheathedOpcode;
+    WorldPacketHandlers[CMSG_SETSHEATHED].handler = &WorldSession::HandleSetSheathedOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT].handler = &WorldSession::handleMessageChatOpcode;
     //WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::HandleEmoteOpcode;
-    //WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
+    WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
     //WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
     //WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
 
@@ -224,10 +224,10 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_TRAINER_BUY_SPELL].handler = &WorldSession::HandleTrainerBuySpellOpcode;
     //WorldPacketHandlers[CMSG_PETITION_SHOWLIST].handler = &WorldSession::HandleCharterShowListOpcode;
     //WorldPacketHandlers[MSG_AUCTION_HELLO].handler = &WorldSession::HandleAuctionHelloOpcode;
-    //WorldPacketHandlers[CMSG_GOSSIP_HELLO].handler = &WorldSession::HandleGossipHelloOpcode;
-    //WorldPacketHandlers[CMSG_GOSSIP_SELECT_OPTION].handler = &WorldSession::HandleGossipSelectOptionOpcode;
+    WorldPacketHandlers[CMSG_GOSSIP_HELLO].handler = &WorldSession::HandleGossipHelloOpcode;
+    WorldPacketHandlers[CMSG_GOSSIP_SELECT_OPTION].handler = &WorldSession::HandleGossipSelectOptionOpcode;
     //WorldPacketHandlers[CMSG_SPIRIT_HEALER_ACTIVATE].handler = &WorldSession::HandleSpiritHealerActivateOpcode;
-    //WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::HandleNpcTextQueryOpcode;
+    WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::HandleNpcTextQueryOpcode;
     //WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::HandleBinderActivateOpcode;
     //WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::HandleMultipleActivateTaxiOpcode;
     // Item / Vendors
@@ -240,7 +240,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_SELL_ITEM].handler = &WorldSession::HandleSellItemOpcode;
     //WorldPacketHandlers[CMSG_BUY_ITEM_IN_SLOT].handler = &WorldSession::HandleBuyItemInSlotOpcode;
     //WorldPacketHandlers[CMSG_BUY_ITEM].handler = &WorldSession::HandleBuyItemOpcode;
-    //WorldPacketHandlers[CMSG_LIST_INVENTORY].handler = &WorldSession::HandleListInventoryOpcode;
+    WorldPacketHandlers[CMSG_LIST_INVENTORY].handler = &WorldSession::HandleListInventoryOpcode;
     //WorldPacketHandlers[CMSG_AUTOSTORE_BAG_ITEM].handler = &WorldSession::HandleAutoStoreBagItemOpcode;
     //WorldPacketHandlers[CMSG_SET_AMMO].handler = &WorldSession::HandleAmmoSetOpcode;
     //WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
@@ -261,7 +261,7 @@ void WorldSession::loadSpecificHandlers()
 
     // Spell System / Talent System
     //WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::HandleUseItemOpcode;
-    //WorldPacketHandlers[CMSG_CAST_SPELL].handler = &WorldSession::HandleCastSpellOpcode;
+    WorldPacketHandlers[CMSG_CAST_SPELL].handler = &WorldSession::HandleCastSpellOpcode;
     //WorldPacketHandlers[CMSG_SPELLCLICK].handler = &WorldSession::HandleSpellClick;
     //WorldPacketHandlers[CMSG_CANCEL_CAST].handler = &WorldSession::HandleCancelCastOpcode;
     //WorldPacketHandlers[CMSG_CANCEL_AURA].handler = &WorldSession::HandleCancelAuraOpcode;
@@ -275,8 +275,8 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
 
     // Combat / Duel
-    //WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
-    //WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
+    WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
+    WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
     //WorldPacketHandlers[CMSG_DUEL_ACCEPTED].handler = &WorldSession::HandleDuelAccepted;
     //WorldPacketHandlers[CMSG_DUEL_CANCELLED].handler = &WorldSession::HandleDuelCancelled;
 

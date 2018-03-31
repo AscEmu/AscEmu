@@ -1999,7 +1999,7 @@ class SapphironAI : public CreatureAIScript
         GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
-            Waterfall->SetState(GO_STATE_CLOSED);
+            Waterfall->setState(GO_STATE_CLOSED);
         }
 
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
@@ -2030,7 +2030,7 @@ class SapphironAI : public CreatureAIScript
         GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
-            Waterfall->SetState(GO_STATE_OPEN);
+            Waterfall->setState(GO_STATE_OPEN);
         }
 
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -2143,7 +2143,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
 
@@ -2167,7 +2167,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }
@@ -2186,7 +2186,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }
@@ -2529,7 +2529,7 @@ class KelthuzadAI : public CreatureAIScript
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
 
         if (KelGate)
-            KelGate->SetState(GO_STATE_CLOSED);
+            KelGate->setState(GO_STATE_CLOSED);
 
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
@@ -2548,13 +2548,13 @@ class KelthuzadAI : public CreatureAIScript
     {
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
-            KelGate->SetState(GO_STATE_OPEN);
+            KelGate->setState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
-                WindowGate->SetState(GO_STATE_CLOSED);
+                WindowGate->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->setChannelObjectGuid(0);
@@ -2598,13 +2598,13 @@ class KelthuzadAI : public CreatureAIScript
     {
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
-            KelGate->SetState(GO_STATE_OPEN);
+            KelGate->setState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
-                WindowGate->SetState(GO_STATE_CLOSED);
+                WindowGate->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
@@ -2825,7 +2825,7 @@ class KelthuzadAI : public CreatureAIScript
                 {
                     GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
                     if (WindowGate)
-                        WindowGate->SetState(GO_STATE_OPEN);
+                        WindowGate->setState(GO_STATE_OPEN);
                 }
             }
 

@@ -75,6 +75,9 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
+uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
+void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
+
 uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
 void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id) { write(unitData()->virtual_item_slot_display[slot], item_id); }
 
@@ -155,6 +158,15 @@ void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_fl
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 
+float_t Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
+void Unit::setModCastSpeed(float_t modifier) { write(unitData()->mod_cast_speed, modifier); }
+void Unit::modModCastSpeed(float_t modifier)
+{
+    float_t currentMod = getModCastSpeed();
+    currentMod += modifier;
+    setModCastSpeed(currentMod);
+}
+
 uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
 void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
 
@@ -200,11 +212,23 @@ uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.sha
 void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
 //bytes_2 end
 
+uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
+void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
+
 float_t Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
 void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged_damage, damage); }
 
 float_t Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
 void Unit::setMaxRangedDamage(float_t damage) { write(unitData()->maximum_ranged_ddamage, damage); }
+
+float_t Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
+void Unit::setPowerCostMultiplier(uint16_t school, float_t multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
+void Unit::modPowerCostMultiplier(uint16_t school, float_t multiplier)
+{
+    float_t currentMultiplier = getPowerCostMultiplier(school);
+    currentMultiplier += multiplier;
+    setPowerCostMultiplier(school, currentMultiplier);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement

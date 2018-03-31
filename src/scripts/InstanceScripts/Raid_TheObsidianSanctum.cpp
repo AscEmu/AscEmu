@@ -151,7 +151,7 @@ class ObsidianSanctumScript : public InstanceScript
 //    for (uint8 i = 0; i < 2; ++i)
 //    {
 //        uint32 j = Util::getRandomUInt(5);
-//        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->GetFaction());
+//        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->getFactionTemplate());
 //    }
 //}
 

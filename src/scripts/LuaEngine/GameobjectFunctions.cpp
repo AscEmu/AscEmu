@@ -843,7 +843,7 @@ int LuaGameObject::GetGUID(lua_State* L, GameObject* ptr)
 int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    if (ptr->GetState())
+    if (ptr->getState())
     RET_BOOL(true)
     RET_BOOL(false)
 }
@@ -851,11 +851,11 @@ int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 int LuaGameObject::Activate(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    if (ptr->GetState() == 1)
-        ptr->SetState(GO_STATE_OPEN);
+    if (ptr->getState() == 1)
+        ptr->setState(GO_STATE_OPEN);
     else
-        ptr->SetState(GO_STATE_CLOSED);
-    ptr->SetFlags((ptr->GetFlags() & ~1));
+        ptr->setState(GO_STATE_CLOSED);
+    ptr->removeFlags(GO_FLAG_NONSELECTABLE);
     RET_BOOL(true)
 }
 

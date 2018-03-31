@@ -3729,13 +3729,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == nullptr)
                         return;
 
-                    if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_OPEN);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
                     }
                     else
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
                     }
                 }
                 else
@@ -3744,13 +3744,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == nullptr)
                         return;
 
-                    if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_OPEN);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
                     }
                     else
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
                     }
                 }
             }

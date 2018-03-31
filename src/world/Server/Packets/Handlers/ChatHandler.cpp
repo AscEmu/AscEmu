@@ -34,6 +34,7 @@
 #include "Server/Packets/CmsgMessageChat.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgChatPlayerNotFound.h"
+#include "Server/Packets/CmsgTextEmote.h"
 
 using namespace AscEmu::Packets;
 
@@ -912,21 +913,13 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    CHECK_PACKET_SIZE(recv_data, 16);
     if (!_player->isAlive())
-    {
         return;
-    }
 
-    uint64 guid;
-    uint32 text_emote;
-    uint32 unk;
-    uint32 namelen = 1;
-    const char* name = " ";
+    CmsgTextEmote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    recv_data >> text_emote;
-    recv_data >> unk;
-    recv_data >> guid;
     if (m_muted && m_muted >= (uint32)UNIXTIME)
     {
         SystemMessage("Your voice is currently muted by a moderator.");
@@ -947,28 +940,24 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
             return;
         }
     }
-    Unit* pUnit = _player->GetMapMgr()->GetUnit(guid);
+
+    uint32 namelen = 1;
+    std::string name;
+
+    Unit* pUnit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
     if (pUnit)
     {
         if (pUnit->IsPlayer())
-        {
-            name = static_cast< Player* >(pUnit)->GetName();
-            namelen = (uint32)strlen(name) + 1;
-        }
+            name = static_cast<Player*>(pUnit)->GetName();
         else if (pUnit->IsPet())
-        {
-            name = static_cast< Pet* >(pUnit)->GetName().c_str();
-            namelen = (uint32)strlen(name) + 1;
-        }
+            name = static_cast<Pet*>(pUnit)->GetName();
         else
-        {
-            Creature* p = static_cast< Creature* >(pUnit);
-            name = p->GetCreatureProperties()->Name.c_str();
-            namelen = (uint32)strlen(name) + 1;
-        }
+            name = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Name;
+
+        namelen = static_cast<uint32_t>(name.length() + 1);
     }
 
-    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
+    auto emote_text_entry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
     if (emote_text_entry)
     {
         WorldPacket data(SMSG_EMOTE, 28 + namelen);
@@ -998,23 +987,19 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 
         data.Initialize(SMSG_TEXT_EMOTE);
         data << uint64(GetPlayer()->getGuid());
-        data << uint32(text_emote);
-        data << unk;
+        data << uint32(recv_packet.text_emote);
+        data << recv_packet.unk;
         data << uint32(namelen);
         if (namelen > 1)
-        {
-            data.append(name, namelen);
-        }
+            data.append(name.c_str(), namelen);
         else
-        {
             data << uint8(0x00);
-        }
 
         GetPlayer()->SendMessageToSet(&data, true);
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, text_emote, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.text_emote, 0, 0);
 #endif
-        sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
+        sQuestMgr.OnPlayerEmote(_player, recv_packet.text_emote, recv_packet.guid);
     }
 }
 #endif

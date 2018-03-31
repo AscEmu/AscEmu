@@ -218,7 +218,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
     {
         Item* item = items[i];
 
-        if (item->GetStackCount() < finalCount)
+        if (item->getStackCount() < finalCount)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_INTERNAL_DB);
             return;
@@ -231,7 +231,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
 
         AuctionHouse* auctionHouse = pCreature->auctionHouse;
 
-        uint32_t item_worth = item->getItemProperties()->SellPrice * item->GetStackCount();
+        uint32_t item_worth = item->getItemProperties()->SellPrice * item->getStackCount();
         uint32_t item_deposit = (uint32_t)(item_worth * auctionHouse->deposit_percent) * (uint32_t)(etime / 240.0f);
 
         if (!_player->HasGold((uint64_t)item_deposit))

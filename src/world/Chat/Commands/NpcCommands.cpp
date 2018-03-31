@@ -311,7 +311,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
     RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
     SystemMessage(m_session, "GUID: %u", guid);
-    SystemMessage(m_session, "Faction: %u", creature_target->GetFaction());
+    SystemMessage(m_session, "Faction: %u", creature_target->getFactionTemplate());
     SystemMessage(m_session, "Phase: %u", creature_target->GetPhase());
 
     SystemMessage(m_session, "DisplayID: %u", creature_target->getDisplayId());
@@ -345,8 +345,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
 
-    if (creature_target->m_faction)
-        SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_faction->FriendlyMask);
+    if (creature_target->m_factionTemplate)
+        SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_factionTemplate->FriendlyMask);
 
     if (creature_target->CombatStatus.IsInCombat())
         SystemMessage(m_session, "Is in combat!");

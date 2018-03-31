@@ -114,8 +114,8 @@ public:
     {
         pPlayer->AddQuestKill(11602, 0, 0);
 
-        _gameobject->SetState(GO_STATE_CLOSED);
-        _gameobject->SetState(GO_STATE_OPEN);
+        _gameobject->setState(GO_STATE_CLOSED);
+        _gameobject->setState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
     }
 };
@@ -193,8 +193,8 @@ public:
         pPlayer->AddQuestKill(11936, 0, 0);
 
         //\todo why setting gameobject state 1 and 0?!?!
-        _gameobject->SetState(GO_STATE_CLOSED);
-        _gameobject->SetState(GO_STATE_OPEN);
+        _gameobject->setState(GO_STATE_CLOSED);
+        _gameobject->setState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
     }
 };
@@ -355,9 +355,9 @@ public:
 
         Creature* Twonky = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f);
         if (Twonky->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -383,9 +383,9 @@ public:
 
         Creature* Ed210 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f);
         if (Ed210->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -411,9 +411,9 @@ public:
 
         Creature* MaxBlasto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f);
         if (MaxBlasto->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -439,9 +439,9 @@ public:
 
         Creature* TheGrinder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f);
         if (TheGrinder->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -474,9 +474,9 @@ public:
         Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
         GearmasterMechazod->setTargetGuid(pPlayer->getGuid());
         if (GearmasterMechazod->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 

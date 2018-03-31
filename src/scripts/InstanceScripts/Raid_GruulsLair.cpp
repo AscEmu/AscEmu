@@ -152,7 +152,7 @@ class HighKingMaulgarAI : public CreatureAIScript
             GameObject* pDoor = mKiller->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(95.26f, 251.836f, 0.47f, 183817);
             if (pDoor != NULL)
             {
-                pDoor->SetState(GO_STATE_OPEN);
+                pDoor->setState(GO_STATE_OPEN);
             }
         }
 
@@ -461,7 +461,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
 
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GO_STATE_CLOSED);
+                pGate->setState(GO_STATE_CLOSED);
         }
 
         void OnCastSpell(uint32 spellId) override
@@ -478,14 +478,14 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         {
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GO_STATE_OPEN);
+                pGate->setState(GO_STATE_OPEN);
         }
 
         void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GO_STATE_OPEN);
+                pGate->setState(GO_STATE_OPEN);
         }
 
         void AIUpdate() override

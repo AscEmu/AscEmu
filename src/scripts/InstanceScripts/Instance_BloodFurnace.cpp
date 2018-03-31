@@ -101,7 +101,7 @@ class BroggokAI : public CreatureAIScript
         {
             GameObject* pDoor = getNearestGameObject(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
             if (pDoor)
-                pDoor->SetState(GO_STATE_OPEN);
+                pDoor->setState(GO_STATE_OPEN);
         }
 };
 
@@ -132,7 +132,7 @@ class TheMakerAI : public CreatureAIScript
         {
             GameObject* pDoor = getNearestGameObject(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)
-                pDoor->SetState(GO_STATE_OPEN);
+                pDoor->setState(GO_STATE_OPEN);
         }
 };
 

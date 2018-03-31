@@ -109,8 +109,8 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
     {
         if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
-            ObjectGuid creatorGuid = item->GetCreatorGUID();
-            ObjectGuid giftCreatorGuid = item->GetGiftCreatorGUID();
+            ObjectGuid creatorGuid = item->getCreatorGuid();
+            ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
             data.writeBit(giftCreatorGuid[7]);
             data.writeBit(giftCreatorGuid[1]);
@@ -143,8 +143,8 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
     {
         if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
-            ObjectGuid creatorGuid = item->GetCreatorGUID();
-            ObjectGuid giftCreatorGuid = item->GetGiftCreatorGUID();
+            ObjectGuid creatorGuid = item->getCreatorGuid();
+            ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
             if (!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED))
             {
@@ -173,7 +173,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
                 data.WriteByteSeq(creatorGuid[0]);
 
-                data << uint32_t(item->GetCharges(0));
+                data << uint32_t(item->getSpellCharges(0));
                 data << uint32_t(item->GetItemRandomSuffixFactor());
 
                 data.WriteByteSeq(creatorGuid[5]);
@@ -188,7 +188,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
             data.WriteByteSeq(giftCreatorGuid[0]);
 
-            data << uint32_t(item->GetStackCount());
+            data << uint32_t(item->getStackCount());
 
             data.WriteByteSeq(giftCreatorGuid[5]);
 

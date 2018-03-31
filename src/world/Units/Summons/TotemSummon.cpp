@@ -87,7 +87,7 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setCombatReach(1.0f);
     setDisplayId(displayID);
     setNativeDisplayId(creature_properties->Male_DisplayID);
-    SetCastSpeedMod(1.0f);
+    setModCastSpeed(1.0f);
     //\note remove all dynamic flags
     setDynamicFlags(0);
 

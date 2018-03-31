@@ -39,6 +39,7 @@
 #include "Server/Packets/CmsgWho.h"
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
+#include "Server/Packets/CmsgSetSheathed.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -435,7 +436,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 item->getEntry(),
                 item->GetItemRandomSuffixFactor(),
                 item->GetItemRandomPropertyId(),
-                item->GetStackCount()
+                item->getStackCount()
             );
 #if VERSION_STRING > TBC
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
@@ -446,7 +447,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->setStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->getStackCount() + amt);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
@@ -461,7 +462,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             add->getEntry(),
             add->GetItemRandomSuffixFactor(),
             add->GetItemRandomPropertyId(),
-            add->GetStackCount()
+            add->getStackCount()
         );
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
@@ -764,7 +765,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pGO == NULL)
             return;
 
-        switch (pGO->GetType())
+        switch (pGO->getGoType())
         {
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
@@ -799,7 +800,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 if (despawn)
                                     pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
                                 else
-                                    pGO->SetState(GO_STATE_CLOSED);
+                                    pGO->setState(GO_STATE_CLOSED);
 
                                 return;
                             }
@@ -811,7 +812,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     //we still have loot inside.
                                     if (pLGO->HasLoot())
                                     {
-                                        pGO->SetState(GO_STATE_CLOSED);
+                                        pGO->setState(GO_STATE_CLOSED);
                                         ///\todo redo this temporary fix, because for some reason hasloot is true even when we loot everything my guess is we need to set up some even that rechecks the GO in 10 seconds or something
                                         //pGO->Despawn(600000 + (RandomUInt(300000)));
                                         return;
@@ -825,7 +826,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             {
                                 if (pLGO->HasLoot())
                                 {
-                                    pGO->SetState(GO_STATE_CLOSED);
+                                    pGO->setState(GO_STATE_CLOSED);
                                     return;
                                 }
                                 pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
@@ -836,7 +837,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                         {
                             if (pLGO->HasLoot())
                             {
-                                pGO->SetState(1);
+                                pGO->setState(1);
                                 return;
                             }
                             pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
@@ -848,7 +849,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 {
                     if (pLGO->HasLoot())
                     {
-                        pGO->SetState(GO_STATE_CLOSED);
+                        pGO->setState(GO_STATE_CLOSED);
                         return;
                     }
                     pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
@@ -1621,7 +1622,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
     _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
 
-    uint32 type = obj->GetType();
+    uint32 type = obj->getGoType();
     switch (type)
     {
         case GAMEOBJECT_TYPE_CHAIR:
@@ -1982,11 +1983,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
 void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
 
-    uint32 active;
-    recv_data >> active;
-    _player->setSheathType((uint8)active);
+    CmsgSetSheathed recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    _player->setSheathType(static_cast<uint8>(recv_packet.type));
 }
 
 void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
@@ -2190,7 +2192,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data.put<uint16>(enchant_mask_pos, enchant_mask);
 
         data << uint16(0);   // UNKNOWN
-        FastGUIDPack(data, item->GetCreatorGUID());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
+        FastGUIDPack(data, item->getCreatorGuid());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
         data << uint32(0);   // UNKNOWN
     }
     data.put<uint32>(slot_mask_pos, slot_mask);
@@ -2220,20 +2222,9 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
 }
 
 #if VERSION_STRING != Cata
-// Handlers for acknowledgement opcodes (removes some 'unknown opcode' flood from the logs)
 void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    switch (recv_data.GetOpcode())
-    {
-        case CMSG_MOVE_WATER_WALK_ACK:
-            break;
-
-        /*case CMSG_MOVE_SET_CAN_FLY_ACK:
-            _player->FlyCheat = _player->m_setflycheat;
-            break;*/
-    }
+    LogDebugFlag(LF_OPCODE, "Opcode %s (%u) received. This opcode is not known/implemented right now!", getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode());
 }
 #endif
 
@@ -2357,7 +2348,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
             return;
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGameObject);
-        pGameObject->SetState(GO_STATE_OPEN);
+        pGameObject->setState(GO_STATE_OPEN);
         pLoot = &pLGO->loot;
     }
 
@@ -2436,7 +2427,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
@@ -2497,7 +2488,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
         if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
             return;
 
-        if (pGO->GetType() == GAMEOBJECT_TYPE_CHEST)
+        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
             li = pLGO->loot.items[slotid].roll;
     }
     else if (guidtype == HIGHGUID_TYPE_UNIT)
@@ -2538,13 +2529,13 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
 
     // gift wrapping handler
-    if (pItem->GetGiftCreatorGUID() && pItem->wrapped_item_id)
+    if (pItem->getGiftCreatorGuid() && pItem->wrapped_item_id)
     {
         ItemProperties const* it = sMySQLStore.getItemProperties(pItem->wrapped_item_id);
         if (it == nullptr)
             return;
 
-        pItem->SetGiftCreatorGUID(0);
+        pItem->setGiftCreatorGuid(0);
         pItem->setEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
         pItem->setItemProperties(it);

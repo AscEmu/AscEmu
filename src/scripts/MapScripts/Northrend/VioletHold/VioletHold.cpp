@@ -57,7 +57,7 @@ public:
                 pInstance->setData(608, InProgress);
                 GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
                 if (pVioletHoldDoor != nullptr)
-                    pVioletHoldDoor->SetState(GO_STATE_CLOSED);
+                    pVioletHoldDoor->setState(GO_STATE_CLOSED);
             } break;
         }
     }

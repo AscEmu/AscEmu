@@ -370,7 +370,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
                     if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
@@ -452,7 +452,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                 }
                 else //cast from GO
                 {
-                    if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
+                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->m_summoner != nullptr)
                     {
                         //trap, check not to attack owner and friendly
                         if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
@@ -519,7 +519,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                 }
                 else //cast from GO
                 {
-                    if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
+                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->m_summoner != nullptr)
                     {
                         //trap, check not to attack owner and friendly
                         if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
@@ -577,7 +577,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
                     if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
@@ -631,7 +631,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
                     if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
@@ -885,7 +885,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         // handle MOD_CAST_TIME
         if (u_caster != nullptr && m_castTime)
         {
-            m_castTime = float2int32(m_castTime * u_caster->GetCastSpeedMod());
+            m_castTime = float2int32(m_castTime * u_caster->getModCastSpeed());
         }
     }
 
@@ -1513,7 +1513,7 @@ void Spell::castMe(bool check)
 
                     uint32 channelDuration = GetDuration();
                     if (u_caster != nullptr)
-                        channelDuration = static_cast<uint32>(channelDuration * u_caster->GetCastSpeedMod());
+                        channelDuration = static_cast<uint32>(channelDuration * u_caster->getModCastSpeed());
                     m_spellState = SPELL_STATE_CASTING;
                     SendChannelStart(channelDuration);
                     if (p_caster != nullptr)
@@ -2957,7 +2957,7 @@ bool Spell::HasPower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
+        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost
@@ -3115,7 +3115,7 @@ bool Spell::TakePower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
+        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost
@@ -4218,7 +4218,7 @@ uint8 Spell::CanCast(bool tolerate)
             if (i_caster->getItemProperties()->Spells[0].Charges != 0)
             {
                 // check if the item has the required charges
-                if (i_caster->GetCharges(0) == 0)
+                if (i_caster->getSpellCharges(0) <= 0)
                     return SPELL_FAILED_NO_CHARGES_REMAIN;
             }
         }
@@ -4269,7 +4269,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!obj || !itr->IsGameObject())
                     continue;
 
-                if ((static_cast<GameObject*>(itr))->GetType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                if ((static_cast<GameObject*>(itr))->getGoType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
                     continue;
 
                 if (!(p_caster->GetPhase() & itr->GetPhase()))    //We can't see this, can't be the focus, skip further checks
@@ -5379,17 +5379,17 @@ void Spell::RemoveItems()
     if (i_caster)
     {
         // Stackable Item -> remove 1 from stack
-        if (i_caster->GetStackCount() > 1)
+        if (i_caster->getStackCount() > 1)
         {
-            i_caster->ModStackCount(-1);
+            i_caster->modStackCount(-1);
             i_caster->m_isDirty = true;
             i_caster = nullptr;
         }
         else
         {
-            for (uint16_t x = 0; x < 5; x++)
+            for (uint8_t x = 0; x < 5; x++)
             {
-                int32 charges = static_cast<int32>(i_caster->GetCharges(x));
+                int32 charges = i_caster->getSpellCharges(x);
 
                 if (charges == 0)
                     continue;
@@ -5412,13 +5412,13 @@ void Spell::RemoveItems()
                     }
                     else
                     {
-                        i_caster->ModCharges(x, 1);
+                        i_caster->modSpellCharges(x, 1);
                     }
 
                 }
                 else
                 {
-                    i_caster->ModCharges(x, -1);
+                    i_caster->modSpellCharges(x, -1);
                 }
 
                 i_caster = nullptr;
@@ -5593,7 +5593,7 @@ exit:
     else if (i_caster != nullptr && target != nullptr)
     {
         //we should inherit the modifiers from the conjured food caster
-        Unit* item_creator = target->GetMapMgr()->GetUnit(i_caster->GetCreatorGUID());
+        Unit* item_creator = target->GetMapMgr()->GetUnit(i_caster->getCreatorGuid());
 
         if (item_creator != nullptr)
         {

@@ -510,7 +510,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32 id)
 
     plr->CastSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
-    m_dropFlag->SetFlags(GO_FLAG_NONSELECTABLE);
+    m_dropFlag->setFlags(GO_FLAG_NONSELECTABLE);
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -539,7 +539,7 @@ void EyeOfTheStorm::EventResetFlag()
         return;
 
     m_dropFlag->RemoveFromWorld(false);
-    m_dropFlag->SetFlags(0);
+    m_dropFlag->setFlags(GO_FLAG_NONE);
     m_standFlag->PushToWorld(m_mapMgr);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
@@ -603,10 +603,10 @@ void EyeOfTheStorm::OnCreate()
         }
 
         m_bubbles[i]->setScale(0.1f);
-        m_bubbles[i]->SetState(GO_STATE_CLOSED);
-        m_bubbles[i]->SetFlags(GO_FLAG_NEVER_DESPAWN);
+        m_bubbles[i]->setState(GO_STATE_CLOSED);
+        m_bubbles[i]->setFlags(GO_FLAG_NEVER_DESPAWN);
         m_bubbles[i]->SetFaction(114);
-        m_bubbles[i]->SetAnimProgress(100);
+        m_bubbles[i]->setAnimationProgress(100);
 
         m_bubbles[i]->PushToWorld(m_mapMgr);
     }
@@ -894,11 +894,10 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
     {
         EOTSm_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3], 0, 114, 1);
 
-        EOTSm_buffs[x]->SetParentRotation(2, EOTSBuffRotations[x][0]);
-        EOTSm_buffs[x]->SetParentRotation(3, EOTSBuffRotations[x][1]);
-        EOTSm_buffs[x]->SetState(GO_STATE_CLOSED);
-        EOTSm_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-        EOTSm_buffs[x]->SetAnimProgress(100);
+        EOTSm_buffs[x]->SetRotationQuat(0.f, 0.f, EOTSBuffRotations[x][0], EOTSBuffRotations[x][1]);
+        EOTSm_buffs[x]->setState(GO_STATE_CLOSED);
+        EOTSm_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+        EOTSm_buffs[x]->setAnimationProgress(100);
         EOTSm_buffs[x]->PushToWorld(m_mapMgr);
     }
     else

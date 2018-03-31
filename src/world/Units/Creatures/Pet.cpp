@@ -423,8 +423,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
-    SetFaction(owner->GetFaction());
-    SetCastSpeedMod(1.0f);    // better set this one
+    SetFaction(owner->getFactionTemplate());
+    setModCastSpeed(1.0f);    // better set this one
 
     if (type == 1)
         Summon = true;
@@ -477,7 +477,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setPetFlags(PET_RENAME_ALLOWED);    // 0x3 -> Enable pet rename.
         setPowerType(POWER_TYPE_FOCUS);
     }
-    SetFaction(owner->GetFaction());
+    SetFaction(owner->getFactionTemplate());
 
     if (owner->IsPvPFlagged())
         this->SetPvPFlag();
@@ -904,11 +904,11 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     }
 
     //Preventing overbuffs
-    SetAttackPower(0);
+    setAttackPower(0);
     SetAttackPowerMods(0);
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
-    SetCastSpeedMod(1.0f);          // better set this one
+    setModCastSpeed(1.0f);          // better set this one
 
     setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
@@ -961,7 +961,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
     setCreatedBySpellId(mPi->spellid);
-    SetFaction(owner->GetFaction());
+    SetFaction(owner->getFactionTemplate());
 
     ApplyStatsForLevel();
 
@@ -1017,7 +1017,7 @@ void Pet::InitializeMe(bool first)
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
     SetPetDiet();
-    _setFaction();
+    setServersideFaction();
 
     // Load our spells
     if (Summon)         // Summons - always
@@ -1780,7 +1780,7 @@ void Pet::ApplySummonLevelAbilities()
     BaseDamage[1] = float(pet_max_dmg);
 
     // Apply attack power.
-    SetAttackPower((uint32)(pet_pwr));
+    setAttackPower((uint32)(pet_pwr));
 
     BaseResistance[0] = (uint32)(pet_arm);
     CalcResistance(0);
@@ -1931,8 +1931,9 @@ void Pet::UpdateAP()
     uint32 AP = (str * 2 - 20);
     if (m_Owner)
         AP += m_Owner->GetRAP() * 22 / 100;
-    if (static_cast<int32>(AP) < 0) AP = 0;
-    SetAttackPower(AP);
+    if (static_cast<int32>(AP) < 0)
+        AP = 0;
+    setAttackPower(AP);
 }
 
 uint32 Pet::CanLearnSpell(SpellInfo* sp)

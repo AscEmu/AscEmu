@@ -34,7 +34,7 @@ Container::Container(uint32 high, uint32 low) : Item()
     memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
     m_updateMask.SetCount(CONTAINER_END);
 
-    setType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+    setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
     setGuidLow(low);
     setGuidHigh(high);
@@ -68,10 +68,10 @@ void Container::LoadFromDB(Field* fields)
     setEntry(itemid);
 
 
-    SetCreatorGUID(fields[5].GetUInt32());
+    setCreatorGuid(fields[5].GetUInt32());
     setStackCount(1);
 
-    setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
+    setFlags(fields[8].GetUInt32());
     SetItemRandomPropertyId(fields[9].GetUInt32());
 
     SetDurabilityMax(m_itemProperties->MaxDurability);
@@ -176,7 +176,7 @@ bool Container::AddItem(int16 slot, Item* item)
         m_owner->PushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
-    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->GetStackCount(), 0);
+    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->getStackCount(), 0);
 #endif
     return true;
 }
@@ -193,25 +193,25 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
     uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
-        uint32 total = m_Slot[SrcSlot]->GetStackCount() + m_Slot[DstSlot]->GetStackCount();
+        uint32 total = m_Slot[SrcSlot]->getStackCount() + m_Slot[DstSlot]->getStackCount();
         m_Slot[DstSlot]->m_isDirty = m_Slot[SrcSlot]->m_isDirty = true;
         if (total <= destMaxCount)
         {
-            m_Slot[DstSlot]->ModStackCount(m_Slot[SrcSlot]->GetStackCount());
+            m_Slot[DstSlot]->modStackCount(m_Slot[SrcSlot]->getStackCount());
             SafeFullRemoveItemFromSlot(SrcSlot);
             return;
         }
         else
         {
-            if (m_Slot[DstSlot]->GetStackCount() == destMaxCount)
+            if (m_Slot[DstSlot]->getStackCount() == destMaxCount)
             {
 
             }
             else
             {
-                int32 delta = destMaxCount - m_Slot[DstSlot]->GetStackCount();
+                int32 delta = destMaxCount - m_Slot[DstSlot]->getStackCount();
                 m_Slot[DstSlot]->setStackCount(destMaxCount);
-                m_Slot[SrcSlot]->ModStackCount(-delta);
+                m_Slot[SrcSlot]->modStackCount(-delta);
                 return;
             }
         }
@@ -325,7 +325,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
                 *r_slot = slot;
 
 #if VERSION_STRING > TBC
-            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->getItemProperties()->ItemId, pItem->GetStackCount(), 0);
+            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->getItemProperties()->ItemId, pItem->getStackCount(), 0);
 #endif
             return true;
         }

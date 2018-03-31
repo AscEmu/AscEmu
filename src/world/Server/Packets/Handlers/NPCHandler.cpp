@@ -31,6 +31,11 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/CmsgGossipHello.h"
+#include "Server/Packets/CmsgNpcTextQuery.h"
+#include "Server/Packets/CmsgGossipSelectOption.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 trainertype trainer_types[TRAINER_TYPE_MAX] =
@@ -119,7 +124,7 @@ void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
     Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     if (!train) return;
 
-    _player->Reputation_OnTalk(train->m_factionDBC);
+    _player->Reputation_OnTalk(train->m_factionEntry);
     SendTrainerList(train);
 }
 
@@ -390,17 +395,15 @@ void WorldSession::SendAuctionList(Creature* auctioneer)
     SendPacket(&data);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_GOSSIP_HELLO:
-//////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
+    CmsgGossipHello gossipPacket;
+    if (!gossipPacket.deserialise(recv_data))
+        return;
 
-    recv_data >> guid;
-    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(gossipPacket.guid));
 
     if (qst_giver != nullptr)
     {
@@ -413,9 +416,9 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
             _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
 
         // reputation
-        _player->Reputation_OnTalk(qst_giver->m_factionDBC);
+        _player->Reputation_OnTalk(qst_giver->m_factionEntry);
 
-        LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(guid));
+        LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(gossipPacket.guid));
 
         Arcemu::Gossip::Script* script = Arcemu::Gossip::Script::GetInterface(qst_giver);
         if (script != nullptr)
@@ -423,36 +426,31 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_GOSSIP_SELECT_OPTION:
-//////////////////////////////////////////////////////////////////////////////////////////
+
 void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 option;
-    uint32 gossipId;
-    uint64 guid;
+    CmsgGossipSelectOption gossipSelectPacket;
+    if (!gossipSelectPacket.deserialise(recv_data))
+        return;
 
-    recv_data >> guid;
-    recv_data >> gossipId;
-    recv_data >> option;
-
-    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X", gossipId, option, guid);
+    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X",
+        gossipSelectPacket.gossip_id, gossipSelectPacket.option, gossipSelectPacket.guid);
 
     Arcemu::Gossip::Script* script = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 guidtype = GET_TYPE_FROM_GUID(gossipSelectPacket.guid);
 
     Object* object;
     if (guidtype == HIGHGUID_TYPE_ITEM)         //Item objects are retrieved differently.
     {
-        object = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        object = GetPlayer()->GetItemInterface()->GetItemByGUID(gossipSelectPacket.guid);
         if (object != nullptr)
             script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(object));
     }
     else
     {
-        object = GetPlayer()->GetMapMgr()->_GetObject(guid);
+        object = GetPlayer()->GetMapMgr()->_GetObject(gossipSelectPacket.guid);
     }
 
     if (object != nullptr)
@@ -465,14 +463,10 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
 
     if (script != nullptr)
     {
-        std::string str;
-        if (recv_data.rpos() != recv_data.wpos())
-            recv_data >> str;
-
-        if (str.length() > 0)
-            script->OnSelectOption(object, GetPlayer(), option, str.c_str(), gossipId);
+        if (gossipSelectPacket.input.length() > 0)
+            script->OnSelectOption(object, GetPlayer(), gossipSelectPacket.option, gossipSelectPacket.input.c_str(), gossipSelectPacket.gossip_id);
         else
-            script->OnSelectOption(object, GetPlayer(), option, nullptr, gossipId);
+            script->OnSelectOption(object, GetPlayer(), gossipSelectPacket.option, nullptr, gossipSelectPacket.gossip_id);
     }
 }
 
@@ -514,30 +508,25 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
     GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///This function handles CMSG_NPC_TEXT_QUERY:
-//////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgNpcTextQuery npcTextPacket;
+    if (!npcTextPacket.deserialise(recv_data))
+        return;
+
+    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", npcTextPacket.text_id);
+
+    GetPlayer()->setTargetGuid(npcTextPacket.guid);
+
+    auto lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(npcTextPacket.text_id, language) : nullptr;
+
     WorldPacket data;
-    uint32 textID;
-    uint64 targetGuid;
-
-    recv_data >> textID;
-    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
-
-    recv_data >> targetGuid;
-    GetPlayer()->setTargetGuid(targetGuid);
-
-    MySQLStructure::NpcText const* pGossip = sMySQLStore.getNpcText(textID);
-    MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;
-
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
-    data << textID;
+    data << npcTextPacket.text_id;
 
-    if (pGossip)
+    if (const auto pGossip = sMySQLStore.getNpcText(npcTextPacket.text_id))
     {
         for (uint8 i = 0; i < 8; i++)
         {
@@ -546,43 +535,28 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             if (lnc)
             {
                 if (strlen(lnc->texts[i][0]) == 0)
-                {
                     data << lnc->texts[i][1];
-                }
                 else
-                {
                     data << lnc->texts[i][0];
-                }
 
                 if (strlen(lnc->texts[i][1]) == 0)
-                {
                     data << lnc->texts[i][0];
-                }
                 else
-                {
                     data << lnc->texts[i][1];
-                }
             }
             else
             {
-                if (pGossip->textHolder[i].texts[0].size() == 0)
-                {
+                if (pGossip->textHolder[i].texts[0].empty())
                     data << pGossip->textHolder[i].texts[1];
-                }
                 else
-                {
                     data << pGossip->textHolder[i].texts[0];
-                }
 
-                if (pGossip->textHolder[i].texts[1].size() == 0)
-                {
+                if (pGossip->textHolder[i].texts[1].empty())
                     data << pGossip->textHolder[i].texts[0];
-                }
                 else
-                {
                     data << pGossip->textHolder[i].texts[1];
-                }
             }
+
             data << pGossip->textHolder[i].language;
 
             for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
@@ -610,7 +584,6 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     }
 
     SendPacket(&data);
-    return;
 }
 
 void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)

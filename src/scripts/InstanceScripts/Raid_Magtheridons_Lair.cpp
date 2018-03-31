@@ -301,7 +301,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     // If Gate is found we close it
                     GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                     if (Gate)
-                        Gate->SetState(GO_STATE_CLOSED);
+                        Gate->setState(GO_STATE_CLOSED);
                 }
             }
             // We use different functions for each phase
@@ -387,7 +387,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         {
                             GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                             if (Gate)
-                                Gate->SetState(GO_STATE_OPEN);
+                                Gate->setState(GO_STATE_OPEN);
                         }
                         // After doing our job we can clear temporary channeler list
                         AliveChannelers.clear();
@@ -809,7 +809,7 @@ class MagtheridonAI : public CreatureAIScript
 
             GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
@@ -822,16 +822,16 @@ class MagtheridonAI : public CreatureAIScript
             {
                 Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
-                    Gate->SetState(GO_STATE_CLOSED);
+                    Gate->setState(GO_STATE_CLOSED);
             }
 
             Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
 
             Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GO_STATE_OPEN);
+                Gate->setState(GO_STATE_OPEN);
         }
 
         void AIUpdate() override
@@ -964,12 +964,12 @@ class MagtheridonAI : public CreatureAIScript
                     {
                         Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
-                            Gate->SetState(GO_STATE_OPEN);
+                            Gate->setState(GO_STATE_OPEN);
                     }
 
                     Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
                     if (Gate)
-                        Gate->SetState(GO_STATE_OPEN);
+                        Gate->setState(GO_STATE_OPEN);
                 }
 
                 if (timer_caveIn == 5)

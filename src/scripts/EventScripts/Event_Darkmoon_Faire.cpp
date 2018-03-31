@@ -79,7 +79,7 @@ public:
 
         CurrentPlayer->setMoveRoot(false);
         CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
-        _gameobject->SetFlags(0);
+        _gameobject->setFlags(GO_FLAG_NONE);
         mPlayerGuid = 0;
         RemoveAIUpdateEvent();
     }
@@ -124,7 +124,7 @@ tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p
 
 // Open and disable the Tonk Console
 tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);
-tonkConsole->SetState(GO_STATE_OPEN);
+tonkConsole->setState(GO_STATE_OPEN);
 
 // Spawn Steam Tonk
 pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
@@ -156,7 +156,7 @@ Tonk->Despawn(10000,0);
 
 // Close the console so others can access it
 Console->SetFlags(0);
-Console->SetState(GO_STATE_CLOSED);
+Console->setState(GO_STATE_CLOSED);
 RemoveAIUpdateEvent();
 }
 }

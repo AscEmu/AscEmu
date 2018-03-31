@@ -1018,7 +1018,7 @@ void InstanceScript::setGameObjectStateForEntry(uint32_t entry, uint8_t state)
     for (auto gameobject : gameObjectSet)
     {
         if (gameobject != nullptr)
-            gameobject->SetState(state);
+            gameobject->setState(state);
     }
 }
 
