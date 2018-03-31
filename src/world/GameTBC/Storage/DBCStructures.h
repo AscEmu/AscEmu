@@ -655,7 +655,7 @@ namespace DBC
             uint32_t StartRecoveryTime;                                 // 197
             uint32_t MaxTargetLevel;                                    // 198
             uint32_t SpellFamilyName;                                   // 199
-            uint32_t SpellFamilyFlags[MAX_SPELL_EFFECTS];               // 200 - 201
+            uint32_t SpellFamilyFlags[2];                               // 200 - 201
             uint32_t MaxTargets;                                        // 202
             uint32_t DmgClass;                                          // 203
             uint32_t PreventionType;                                    // 204
