@@ -300,7 +300,7 @@ namespace DBC
             char const spell_cooldowns_format[] = "diii";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiifixiissxxiixxixiiiiiiixiiiiiiiix";
             char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
             //char const skill_race_class_info_format[] = "diiiiixxx"; new
             char const spell_radius_format[] = "nfff";
