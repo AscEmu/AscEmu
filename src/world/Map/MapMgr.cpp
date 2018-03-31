@@ -1467,20 +1467,15 @@ Object* MapMgr::_GetObject(const uint64 & guid)
     {
         case HIGHGUID_TYPE_GAMEOBJECT:
             return GetGameObject(GET_LOWGUID_PART(guid));
-            break;
         case HIGHGUID_TYPE_UNIT:
         case HIGHGUID_TYPE_VEHICLE:
             return GetCreature(GET_LOWGUID_PART(guid));
-            break;
         case HIGHGUID_TYPE_DYNAMICOBJECT:
             return GetDynamicObject((uint32)guid);
-            break;
         case HIGHGUID_TYPE_TRANSPORTER:
             return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(guid));
-            break;
         default:
             return GetUnit(guid);
-            break;
     }
 }
 
@@ -2095,7 +2090,7 @@ void MapMgr::CallScriptUpdate()
     mInstanceScript->updateTimers();
 };
 
-const uint32 MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/)
+uint32 MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/) const
 {
     uint32 mogp_flags;
     int32 adt_id;

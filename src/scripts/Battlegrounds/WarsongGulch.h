@@ -66,33 +66,33 @@ class WarsongGulch : public CBattleground
         ~WarsongGulch();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr);
-        void HookFlagDrop(Player* plr, GameObject* obj);
-        void HookFlagStand(Player* plr, GameObject* obj);
-        void HookOnMount(Player* plr);
-        void HookOnAreaTrigger(Player* plr, uint32 id);
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
-        void OnCreate();
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnHK(Player* plr);
-        void HookOnShadowSight();
-        void HookGenerateLoot(Player* plr, Object* pCorpse);
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookFlagDrop(Player* plr, GameObject* obj) override;
+        void HookFlagStand(Player* plr, GameObject* obj) override;
+        void HookOnMount(Player* plr) override;
+        void HookOnAreaTrigger(Player* plr, uint32 id) override;
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
+        void OnCreate() override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnHK(Player* plr) override;
+        void HookOnShadowSight() override;
+        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
         void SpawnBuff(uint32 x);
-        LocationVector GetStartingCoords(uint32 Team);
-        void HookOnFlagDrop(Player* plr);
+        LocationVector GetStartingCoords(uint32 Team) override;
+        void HookOnFlagDrop(Player* plr) override;
         void ReturnFlag(PlayerTeam team);
 
         void EventReturnFlags();
 
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new WarsongGulch(m, i, l, t); }
 
-        uint32 GetNameID() { return 39; }
-        uint64 GetFlagHolderGUID(uint32 faction) const { return m_flagHolders[faction]; }
-        void OnStart();
+        uint32 GetNameID() override { return 39; }
+        uint64 GetFlagHolderGUID(uint32 faction) const override { return m_flagHolders[faction]; }
+        void OnStart() override;
 
-        void SetIsWeekend(bool isweekend);
+        void SetIsWeekend(bool isweekend) override;
         void DespawnGates(uint32 delay);
 };

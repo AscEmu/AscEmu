@@ -160,28 +160,28 @@ class AlteracValley : public CBattleground
         void EventAssaultControlPoint(uint32 x);
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr);
-        void HookFlagDrop(Player* plr, GameObject* obj);
-        void HookFlagStand(Player* plr, GameObject* obj);
-        void HookOnMount(Player* plr);
-        void HookOnAreaTrigger(Player* plr, uint32 trigger);
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
-        void OnCreate();
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnHK(Player* plr);
-        LocationVector GetStartingCoords(uint32 Team);
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookFlagDrop(Player* plr, GameObject* obj) override;
+        void HookFlagStand(Player* plr, GameObject* obj) override;
+        void HookOnMount(Player* plr) override;
+        void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
+        void OnCreate() override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnHK(Player* plr) override;
+        LocationVector GetStartingCoords(uint32 Team) override;
         void DropFlag(Player* plr);
 
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
 
         const char* GetName() { return "Alterac Valley"; }
-        void OnStart();
+        void OnStart() override;
 
         void EventUpdateResources();
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
+        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
         // AV Functions
         void AddReinforcements(uint32 teamId, uint32 amt);
@@ -190,13 +190,13 @@ class AlteracValley : public CBattleground
 
         // loot
         bool SupportsPlayerLoot() { return true; }
-        void HookGenerateLoot(Player* plr, Object* pCorpse);
+        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
 
         // herald
         void Herald(const char* format, ...);
 
-        void HookOnFlagDrop(Player* plr);
-        void HookOnShadowSight();
+        void HookOnFlagDrop(Player* plr) override;
+        void HookOnShadowSight() override;
 
         class AVNode
         {

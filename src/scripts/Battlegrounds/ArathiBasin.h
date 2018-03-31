@@ -84,36 +84,36 @@ class ArathiBasin : public CBattleground
         ~ArathiBasin();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr);
-        void HookFlagDrop(Player* plr, GameObject* obj);
-        void HookFlagStand(Player* plr, GameObject* obj);
-        void HookOnMount(Player* plr);
-        void HookOnAreaTrigger(Player* plr, uint32 trigger);
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
-        void OnCreate();
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnHK(Player* plr);
-        void HookOnShadowSight();
-        void HookGenerateLoot(Player* plr, Object* pCorpse);
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookFlagDrop(Player* plr, GameObject* obj) override;
+        void HookFlagStand(Player* plr, GameObject* obj) override;
+        void HookOnMount(Player* plr) override;
+        void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
+        void OnCreate() override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnHK(Player* plr) override;
+        void HookOnShadowSight() override;
+        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
         void SpawnBuff(uint32 x);
-        LocationVector GetStartingCoords(uint32 Team);
-        void HookOnFlagDrop(Player* plr);
+        LocationVector GetStartingCoords(uint32 Team) override;
+        void HookOnFlagDrop(Player* plr) override;
 
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new ArathiBasin(m, i, l, t); }
 
-        uint32 GetNameID() { return 40; }
-        void OnStart();
+        uint32 GetNameID() override { return 40; }
+        void OnStart() override;
 
         void EventUpdateResources(uint32 Team);
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
+        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
         // AB Game Mechanics
         void SpawnControlPoint(uint32 Id, uint32 Type);
         void CaptureControlPoint(uint32 Id, uint32 Team);
         void AssaultControlPoint(Player* pPlayer, uint32 Id);
 
-        void SetIsWeekend(bool isweekend);
+        void SetIsWeekend(bool isweekend) override;
 };

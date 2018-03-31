@@ -1507,12 +1507,11 @@ public:
             }
         }
 
-        bool isVehicle()
+        bool isVehicle() const override
         {
             if (mountvehicleid != 0)
                 return true;
-            else
-                return false;
+            return false;
         }
 
 
@@ -1685,17 +1684,17 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         uint32 m_pvpTimer;
 
-        bool IsPvPFlagged();
-        void SetPvPFlag();
-        void RemovePvPFlag();
+        bool IsPvPFlagged() override;
+        void SetPvPFlag() override;
+        void RemovePvPFlag() override;
 
-        bool IsFFAPvPFlagged();
-        void SetFFAPvPFlag();
-        void RemoveFFAPvPFlag();
+        bool IsFFAPvPFlagged() override;
+        void SetFFAPvPFlag() override;
+        void RemoveFFAPvPFlag() override;
 
-        bool IsSanctuaryFlagged();
-        void SetSanctuaryFlag();
-        void RemoveSanctuaryFlag();
+        bool IsSanctuaryFlagged() override;
+        void SetSanctuaryFlag() override;
+        void RemoveSanctuaryFlag() override;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player gold

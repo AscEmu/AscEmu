@@ -24,10 +24,8 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Class that implements Totems. Totems are stationary, and don't attack with melee,
-/// however they can cast spells
-//////////////////////////////////////////////////////////////////////////////////////////
+
+// Totems are stationary, and don't attack with melee, however they can cast spells
 class TotemSummon : public Summon
 {
     public:
@@ -41,16 +39,13 @@ class TotemSummon : public Summon
 
         void OnPreRemoveFromWorld();
 
-        bool isTotem() { return true; }
+        bool isTotem() const override { return true; }
 
         Group* GetGroup();
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Sets up the spells the totem will cast. This code was almost directly copied
-        /// from SpellEffects.cpp, it requires further refactoring!
-        /// For example totems should cast like other units..
-        /// \param none      \returns none
-        //////////////////////////////////////////////////////////////////////////////////////////
+        //\brief: Sets up the spells the totem will cast. This code was almost directly copied
+        //        from SpellEffects.cpp, it requires further refactoring!
+        //        For example totems should cast like other units..
         void SetupSpells();
 
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);

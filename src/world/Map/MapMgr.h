@@ -83,9 +83,9 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         CObjectFactory ObjectFactory;
 
-        const uint32 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr);
+        uint32 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr) const;
 
-        /// This will be done in regular way soon
+        // This will be done in regular way soon
         std::set<MapCell*> m_forcedcells;
 
         void AddForcedCell(MapCell* c);
@@ -160,7 +160,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		Unit* GetUnit(const uint64 & guid);
 		Object* _GetObject(const uint64 & guid);
 
-		bool runThread();
+		bool runThread() override;
 		bool Do();
 
 		MapMgr(Map* map, uint32 mapid, uint32 instanceid);

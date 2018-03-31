@@ -24,9 +24,7 @@
 #include "SummonDefines.hpp"
 #include "Units/Creatures/Creature.h"
 
-/////////////////////////////////////////////////////////////////////////
-/// Base class for Summoned creatures
-/////////////////////////////////////////////////////////////////////////
+// Base class for Summoned creatures
 class Summon : public Creature
 {
     public:
@@ -44,10 +42,6 @@ class Summon : public Creature
         //  LocationVector &position  -   Position of the summoned creature in the game world
         //  uint32 spellid            -   The spell that summoned this creature
         //  int32 summonslot          -   The summon slot of the creature, -1 means no slot
-        //
-        //Return Value
-        //  None
-        //
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
         void OnPushToWorld();
@@ -56,15 +50,10 @@ class Summon : public Creature
         {
             if (summonslot != -1)
                 return true;
-            else
-                return false;
+            return false;
         }
-        bool isSummon() { return true; }
+        bool isSummon() const override { return true; }
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Returns the owner unit of this creature
-        /// \param none  \return Returns a pointer to the owner unit of this creature
-        //////////////////////////////////////////////////////////////////////////////////////////
         Unit* GetOwner() { return owner; }
         Object* GetPlayerOwner();
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);

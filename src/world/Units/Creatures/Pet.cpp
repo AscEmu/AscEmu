@@ -2110,7 +2110,7 @@ Group* Pet::GetGroup()
 {
     if (m_Owner)
         return m_Owner->GetGroup();
-    return NULL;
+    return nullptr;
 }
 
 void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 spellId, bool no_remove_auras)

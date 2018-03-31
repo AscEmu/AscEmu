@@ -156,15 +156,15 @@ class SERVER_DECL WoWGuid
 
     uint32_t getGuidLow() const { return static_cast<uint32_t>(oldguid); }
     uint32_t getGuidHigh() const { return static_cast<uint32_t>(oldguid >> 32); }
-        const uint64 GetOldGuid() const { return oldguid; }
+        uint64 GetOldGuid() const { return oldguid; }
         const uint8* GetNewGuid() const { return guidfields; }
-        const uint8 GetNewGuidLen() const { return BitCount8(guidmask); }
-        const uint8 GetNewGuidMask() const { return guidmask; }
-        const bool operator !() const { return (!oldguid); }
-        const bool operator ==(uint64 someval) const { return (oldguid == someval); }
-        const bool operator !=(uint64 someval) const { return (oldguid != someval); }
-        const uint64 operator &(uint64 someval) const { return (oldguid & someval); }
-        const uint64 operator &(unsigned int someval) const { return (oldguid & someval); }
+        uint8 GetNewGuidLen() const { return BitCount8(guidmask); }
+        uint8 GetNewGuidMask() const { return guidmask; }
+        bool operator !() const { return (!oldguid); }
+        bool operator ==(uint64 someval) const { return (oldguid == someval); }
+        bool operator !=(uint64 someval) const { return (oldguid != someval); }
+        uint64 operator &(uint64 someval) const { return (oldguid & someval); }
+        uint64 operator &(unsigned int someval) const { return (oldguid & someval); }
         operator bool() { return (oldguid > 0); }
         operator uint64() { return oldguid; }
         void operator =(uint64 someval) { Clear(); Init((uint64)someval); }

@@ -139,7 +139,7 @@ class SERVER_DECL Pet : public Creature
         ~Pet();
 
         // Override superclass method that returns false
-        bool isPet() { return true; }
+        bool isPet() const override { return true; }
 
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.
@@ -264,11 +264,11 @@ class SERVER_DECL Pet : public Creature
 
         virtual Group* GetGroup();
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
+        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false) override;
+        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
 
-        Object* GetPlayerOwner();
+        Object* GetPlayerOwner() override;
 
     protected:
 
