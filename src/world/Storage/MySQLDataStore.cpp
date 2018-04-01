@@ -2499,7 +2499,9 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
     for (uint32_t level = 0; level < worldConfig.player.playerLevelCap; ++level)
         _playerXPperLevelStore[level] = 0;
 
-    QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");
+    QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level base "
+        "WHERE build=(SELECT MAX(build) FROM player_xp_for_level spec WHERE base.player_lvl = spec.player_lvl AND build <= %u)", VERSION_STRING);
+
     if (player_xp_to_level_result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `player_xp_for_level` is empty!");
