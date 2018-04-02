@@ -507,6 +507,7 @@ uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
             }
         }
         break;
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
         {
             switch (Stat)
@@ -529,6 +530,7 @@ uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
             }
         }
         break;
+#endif
     }
     return gain;
 }

@@ -74,6 +74,7 @@ bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSes
             BlueSystemMessage(m_session, "Cleared all Priest cooldowns.");
             break;
         }
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
         {
             player_target->ClearCooldownsOnLine(770, static_cast<uint32>(guid));
@@ -82,6 +83,7 @@ bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSes
             BlueSystemMessage(m_session, "Cleared all Death Knight cooldowns.");
             break;
         }
+#endif
         case SHAMAN:
         {
             player_target->ClearCooldownsOnLine(373, static_cast<uint32>(guid));

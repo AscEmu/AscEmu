@@ -158,7 +158,7 @@ void MySQLDataStore::loadItemPropertiesTable()
     {
         std::string table_name = *tableiterator;
         QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s base "
-            "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
+            "WHERE build=(SELECT MAX(build) FROM %s spec WHERE base.entry = spec.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
         //                                                         0      1       2        3       4        5         6       7       8       9          10
         /*QueryResult* item_result = WorldDatabase.Query("SELECT entry, class, subclass, field4, name1, displayid, quality, flags, flags2, buyprice, sellprice, "
@@ -230,74 +230,74 @@ void MySQLDataStore::loadItemPropertiesTable()
             ItemProperties& itemProperties = _itemPropertiesStore[entry];
 
             itemProperties.ItemId = entry;
-            itemProperties.Class = fields[1].GetUInt32();
-            itemProperties.SubClass = fields[2].GetUInt16();
-            itemProperties.unknown_bc = fields[3].GetUInt32();
-            itemProperties.Name = fields[4].GetString();
-            itemProperties.DisplayInfoID = fields[5].GetUInt32();
-            itemProperties.Quality = fields[6].GetUInt32();
-            itemProperties.Flags = fields[7].GetUInt32();
-            itemProperties.Flags2 = fields[8].GetUInt32();
-            itemProperties.BuyPrice = fields[9].GetUInt32();
-            itemProperties.SellPrice = fields[10].GetUInt32();
+            itemProperties.Class = fields[2].GetUInt32();
+            itemProperties.SubClass = fields[3].GetUInt16();
+            itemProperties.unknown_bc = fields[4].GetUInt32();
+            itemProperties.Name = fields[5].GetString();
+            itemProperties.DisplayInfoID = fields[6].GetUInt32();
+            itemProperties.Quality = fields[7].GetUInt32();
+            itemProperties.Flags = fields[8].GetUInt32();
+            itemProperties.Flags2 = fields[9].GetUInt32();
+            itemProperties.BuyPrice = fields[10].GetUInt32();
+            itemProperties.SellPrice = fields[11].GetUInt32();
 
-            itemProperties.InventoryType = fields[11].GetUInt32();
-            itemProperties.AllowableClass = fields[12].GetUInt32();
-            itemProperties.AllowableRace = fields[13].GetUInt32();
-            itemProperties.ItemLevel = fields[14].GetUInt32();
-            itemProperties.RequiredLevel = fields[15].GetUInt32();
-            itemProperties.RequiredSkill = fields[16].GetUInt32();
-            itemProperties.RequiredSkillRank = fields[17].GetUInt32();
-            itemProperties.RequiredSkillSubRank = fields[18].GetUInt32();
-            itemProperties.RequiredPlayerRank1 = fields[19].GetUInt32();
-            itemProperties.RequiredPlayerRank2 = fields[20].GetUInt32();
-            itemProperties.RequiredFaction = fields[21].GetUInt32();
-            itemProperties.RequiredFactionStanding = fields[22].GetUInt32();
-            itemProperties.Unique = fields[23].GetUInt32();
-            itemProperties.MaxCount = fields[24].GetUInt32();
-            itemProperties.ContainerSlots = fields[25].GetUInt32();
-            itemProperties.itemstatscount = fields[26].GetUInt32();
+            itemProperties.InventoryType = fields[12].GetUInt32();
+            itemProperties.AllowableClass = fields[13].GetUInt32();
+            itemProperties.AllowableRace = fields[14].GetUInt32();
+            itemProperties.ItemLevel = fields[15].GetUInt32();
+            itemProperties.RequiredLevel = fields[16].GetUInt32();
+            itemProperties.RequiredSkill = fields[17].GetUInt32();
+            itemProperties.RequiredSkillRank = fields[18].GetUInt32();
+            itemProperties.RequiredSkillSubRank = fields[19].GetUInt32();
+            itemProperties.RequiredPlayerRank1 = fields[20].GetUInt32();
+            itemProperties.RequiredPlayerRank2 = fields[21].GetUInt32();
+            itemProperties.RequiredFaction = fields[22].GetUInt32();
+            itemProperties.RequiredFactionStanding = fields[23].GetUInt32();
+            itemProperties.Unique = fields[24].GetUInt32();
+            itemProperties.MaxCount = fields[25].GetUInt32();
+            itemProperties.ContainerSlots = fields[26].GetUInt32();
+            itemProperties.itemstatscount = fields[27].GetUInt32();
 
             for (uint8_t i = 0; i < itemProperties.itemstatscount; ++i)
             {
-                itemProperties.Stats[i].Type = fields[27 + i * 2].GetUInt32();
-                itemProperties.Stats[i].Value = fields[28 + i * 2].GetUInt32();
+                itemProperties.Stats[i].Type = fields[28 + i * 2].GetUInt32();
+                itemProperties.Stats[i].Value = fields[29 + i * 2].GetUInt32();
             }
 
-            itemProperties.ScalingStatsEntry = fields[47].GetUInt32();
-            itemProperties.ScalingStatsFlag = fields[48].GetUInt32();
+            itemProperties.ScalingStatsEntry = fields[48].GetUInt32();
+            itemProperties.ScalingStatsFlag = fields[49].GetUInt32();
 
             for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
             {
-                itemProperties.Damage[i].Min = fields[49 + i * 3].GetFloat();
-                itemProperties.Damage[i].Max = fields[50 + i * 3].GetFloat();
-                itemProperties.Damage[i].Type = fields[51 + i * 3].GetUInt32();
+                itemProperties.Damage[i].Min = fields[50 + i * 3].GetFloat();
+                itemProperties.Damage[i].Max = fields[51 + i * 3].GetFloat();
+                itemProperties.Damage[i].Type = fields[52 + i * 3].GetUInt32();
             }
 
-            itemProperties.Armor = fields[55].GetUInt32();
-            itemProperties.HolyRes = fields[56].GetUInt32();
-            itemProperties.FireRes = fields[57].GetUInt32();
-            itemProperties.NatureRes = fields[58].GetUInt32();
-            itemProperties.FrostRes = fields[59].GetUInt32();
-            itemProperties.ShadowRes = fields[60].GetUInt32();
-            itemProperties.ArcaneRes = fields[61].GetUInt32();
-            itemProperties.Delay = fields[62].GetUInt32();
-            itemProperties.AmmoType = fields[63].GetUInt32();
-            itemProperties.Range = fields[64].GetFloat();
+            itemProperties.Armor = fields[56].GetUInt32();
+            itemProperties.HolyRes = fields[57].GetUInt32();
+            itemProperties.FireRes = fields[58].GetUInt32();
+            itemProperties.NatureRes = fields[59].GetUInt32();
+            itemProperties.FrostRes = fields[60].GetUInt32();
+            itemProperties.ShadowRes = fields[61].GetUInt32();
+            itemProperties.ArcaneRes = fields[62].GetUInt32();
+            itemProperties.Delay = fields[63].GetUInt32();
+            itemProperties.AmmoType = fields[64].GetUInt32();
+            itemProperties.Range = fields[65].GetFloat();
 
             for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
             {
-                itemProperties.Spells[i].Id = fields[65 + i * 6].GetUInt32();
-                itemProperties.Spells[i].Trigger = fields[66 + i * 6].GetUInt32();
-                itemProperties.Spells[i].Charges = fields[67 + i * 6].GetInt32();
-                itemProperties.Spells[i].Cooldown = fields[68 + i * 6].GetInt32();
-                itemProperties.Spells[i].Category = fields[69 + i * 6].GetUInt32();
-                itemProperties.Spells[i].CategoryCooldown = fields[70 + i * 6].GetInt32();
+                itemProperties.Spells[i].Id = fields[66 + i * 6].GetUInt32();
+                itemProperties.Spells[i].Trigger = fields[67 + i * 6].GetUInt32();
+                itemProperties.Spells[i].Charges = fields[68 + i * 6].GetInt32();
+                itemProperties.Spells[i].Cooldown = fields[69 + i * 6].GetInt32();
+                itemProperties.Spells[i].Category = fields[70 + i * 6].GetUInt32();
+                itemProperties.Spells[i].CategoryCooldown = fields[71 + i * 6].GetInt32();
             }
 
-            itemProperties.Bonding = fields[95].GetUInt32();
-            itemProperties.Description = fields[96].GetString();
-            uint32_t page_id = fields[97].GetUInt32();
+            itemProperties.Bonding = fields[96].GetUInt32();
+            itemProperties.Description = fields[97].GetString();
+            uint32_t page_id = fields[98].GetUInt32();
             if (page_id != 0)
             {
                 MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
@@ -316,36 +316,36 @@ void MySQLDataStore::loadItemPropertiesTable()
                 itemProperties.PageId = page_id;
             }
 
-            itemProperties.PageLanguage = fields[98].GetUInt32();
-            itemProperties.PageMaterial = fields[99].GetUInt32();
-            itemProperties.QuestId = fields[100].GetUInt32();
-            itemProperties.LockId = fields[101].GetUInt32();
-            itemProperties.LockMaterial = fields[102].GetUInt32();
-            itemProperties.SheathID = fields[103].GetUInt32();
-            itemProperties.RandomPropId = fields[104].GetUInt32();
-            itemProperties.RandomSuffixId = fields[105].GetUInt32();
-            itemProperties.Block = fields[106].GetUInt32();
-            itemProperties.ItemSet = fields[107].GetInt32();
-            itemProperties.MaxDurability = fields[108].GetUInt32();
-            itemProperties.ZoneNameID = fields[109].GetUInt32();
-            itemProperties.MapID = fields[110].GetUInt32();
-            itemProperties.BagFamily = fields[111].GetUInt32();
-            itemProperties.TotemCategory = fields[112].GetUInt32();
+            itemProperties.PageLanguage = fields[99].GetUInt32();
+            itemProperties.PageMaterial = fields[100].GetUInt32();
+            itemProperties.QuestId = fields[101].GetUInt32();
+            itemProperties.LockId = fields[102].GetUInt32();
+            itemProperties.LockMaterial = fields[103].GetUInt32();
+            itemProperties.SheathID = fields[104].GetUInt32();
+            itemProperties.RandomPropId = fields[105].GetUInt32();
+            itemProperties.RandomSuffixId = fields[106].GetUInt32();
+            itemProperties.Block = fields[107].GetUInt32();
+            itemProperties.ItemSet = fields[108].GetInt32();
+            itemProperties.MaxDurability = fields[109].GetUInt32();
+            itemProperties.ZoneNameID = fields[110].GetUInt32();
+            itemProperties.MapID = fields[111].GetUInt32();
+            itemProperties.BagFamily = fields[112].GetUInt32();
+            itemProperties.TotemCategory = fields[113].GetUInt32();
 
             for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
             {
-                itemProperties.Sockets[i].SocketColor = uint32_t(fields[113 + i * 2].GetUInt8());
-                itemProperties.Sockets[i].Unk = fields[114 + i * 2].GetUInt32();
+                itemProperties.Sockets[i].SocketColor = uint32_t(fields[114 + i * 2].GetUInt8());
+                itemProperties.Sockets[i].Unk = fields[115 + i * 2].GetUInt32();
             }
 
-            itemProperties.SocketBonus = fields[119].GetUInt32();
-            itemProperties.GemProperties = fields[120].GetUInt32();
-            itemProperties.DisenchantReqSkill = fields[121].GetInt32();
-            itemProperties.ArmorDamageModifier = fields[122].GetUInt32();
-            itemProperties.ExistingDuration = fields[123].GetUInt32();
-            itemProperties.ItemLimitCategory = fields[124].GetUInt32();
-            itemProperties.HolidayId = fields[125].GetUInt32();
-            itemProperties.FoodType = fields[126].GetUInt32();
+            itemProperties.SocketBonus = fields[120].GetUInt32();
+            itemProperties.GemProperties = fields[121].GetUInt32();
+            itemProperties.DisenchantReqSkill = fields[122].GetInt32();
+            itemProperties.ArmorDamageModifier = fields[123].GetUInt32();
+            itemProperties.ExistingDuration = fields[124].GetUInt32();
+            itemProperties.ItemLimitCategory = fields[125].GetUInt32();
+            itemProperties.HolidayId = fields[126].GetUInt32();
+            itemProperties.FoodType = fields[127].GetUInt32();
 
             //lowercase
             std::string lower_case_name = itemProperties.Name;
@@ -2239,7 +2239,8 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     //                                                                11            12           13           14           15           16         17        18        19
                                                                 "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
     //                                                                20         21         22      23       24       25
-                                                                "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo;");
+                                                                "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo base "
+                                                                "WHERE build=(SELECT MAX(build) FROM playercreateinfo spec WHERE base.Index = spec.Index AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `playercreateinfo` is empty!");
@@ -2304,7 +2305,8 @@ void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
     auto startTime = Util::TimeNow();
 
     //                                                                              0       1       2        3
-    QueryResult* player_create_info_skills_result = WorldDatabase.Query("SELECT Indexid, skillid, level, maxlevel FROM playercreateinfo_skills;");
+    QueryResult* player_create_info_skills_result = WorldDatabase.Query("SELECT Indexid, skillid, level, maxlevel FROM playercreateinfo_skills "
+                                                                        "WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_skills_result == nullptr)
     {
@@ -2352,7 +2354,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
     auto startTime = Util::TimeNow();
 
     //                                                                            0       1
-    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT indexid, spellid FROM playercreateinfo_spells");
+    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT indexid, spellid FROM playercreateinfo_spells WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -2395,7 +2397,7 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
     auto startTime = Util::TimeNow();
 
     //                                                                            0        1       2        3
-    QueryResult* player_create_info_items_result = WorldDatabase.Query("SELECT indexid, protoid, slotid, amount FROM playercreateinfo_items;");
+    QueryResult* player_create_info_items_result = WorldDatabase.Query("SELECT indexid, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_items_result == nullptr)
     {
@@ -2447,7 +2449,8 @@ void MySQLDataStore::loadPlayerCreateInfoBarsTable(uint32_t player_info_index)
     PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
 
     //                                                                          0     1      2        3      4     5
-    QueryResult* player_create_info_bars_result = WorldDatabase.Query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE class = %u;", uint32_t(playerCreateInfo.class_));
+    QueryResult* player_create_info_bars_result = WorldDatabase.Query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars "
+                                                                      "WHERE build = %u AND class = %u", VERSION_STRING, uint32_t(playerCreateInfo.class_));
 
     if (player_create_info_bars_result == nullptr)
     {

@@ -2283,6 +2283,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalManaGain += 54;
                         break;
+#if VERSION_STRING > TBC
                     case DEATHKNIGHT: // Based on 55-56 more testing will be done.
                         if (Level < 60)
                             TotalHealthGain += 92;
@@ -2291,6 +2292,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalHealthGain += 92;
                         break;
+#endif
                 }
 
                 // Apply HP/Mana
@@ -2575,9 +2577,11 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
         case PRIEST:
             result = new Priest(guid);
             break;
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
             result = new DeathKnight(guid);
             break;
+#endif
         case SHAMAN:
             result = new Shaman(guid);
             break;

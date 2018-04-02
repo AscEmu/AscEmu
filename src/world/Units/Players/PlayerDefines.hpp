@@ -92,7 +92,9 @@ enum Classes
     HUNTER          = 3,
     ROGUE           = 4,
     PRIEST          = 5,
+#if VERSION_STRING > TBC
     DEATHKNIGHT     = 6,
+#endif
     SHAMAN          = 7,
     MAGE            = 8,
     WARLOCK         = 9,
@@ -113,8 +115,10 @@ enum Races
 #if VERSION_STRING == Cata
     RACE_GOBLIN     = 9,
 #endif
+#if VERSION_STRING > Classic
     RACE_BLOODELF   = 10,
     RACE_DRAENEI    = 11,
+#endif
 #if VERSION_STRING != Cata
     NUM_RACES
 #else

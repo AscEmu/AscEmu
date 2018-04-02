@@ -6438,7 +6438,13 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     {
         //Basic bonus
         if (p_caster == nullptr ||
-            !(p_caster->getClass() == ROGUE || p_caster->getClass() == WARRIOR || p_caster->getClass() == HUNTER || p_caster->getClass() == DEATHKNIGHT))
+            !(p_caster->getClass() == ROGUE
+            || p_caster->getClass() == WARRIOR
+            || p_caster->getClass() == HUNTER
+#if VERSION_STRING > TBC
+            || p_caster->getClass() == DEATHKNIGHT
+#endif
+            ))
             bonus += u_caster->HealDoneMod[school];
 
         bonus += unitTarget->HealTakenMod[school];

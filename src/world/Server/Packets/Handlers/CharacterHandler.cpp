@@ -257,6 +257,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         delete result;
     }
 
+#if VERSION_STRING > TBC
     // Check if player got Death Knight already on this realm.
     if (worldConfig.player.deathKnightLimit && has_dk && (class_ == DEATHKNIGHT))
     {
@@ -264,6 +265,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
+#endif
 
     // loading characters
 
@@ -312,6 +314,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         }
     }
 
+#if VERSION_STRING > TBC
     //Check if player has a level 55 or higher character on this realm and allow him to create DK.
     //This check can be turned off in world.conf
     if (worldConfig.player.deathKnightPreReq && !has_level_55_char && (class_ == DEATHKNIGHT))
@@ -323,6 +326,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
+#endif
 
     pNewChar->UnSetBanned();
     pNewChar->addSpell(22027);      // Remove Insignia
@@ -613,9 +617,11 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
         case PRIEST:
             plr = new Priest(static_cast<uint32>(playerGuid));
             break;
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
             plr = new DeathKnight(static_cast<uint32>(playerGuid));
             break;
+#endif
         case SHAMAN:
             plr = new Shaman(static_cast<uint32>(playerGuid));
             break;

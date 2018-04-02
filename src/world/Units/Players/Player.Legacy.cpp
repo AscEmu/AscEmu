@@ -860,9 +860,11 @@ bool Player::Create(WorldPacket& data)
         // info not found... disconnect
         //sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
         m_session->Disconnect();
+#if VERSION_STRING > TBC
         if (class_ == DEATHKNIGHT)
             LOG_ERROR("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
         else
+#endif
             LOG_ERROR("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), race, class_);
         return false;
     }
@@ -874,12 +876,14 @@ bool Player::Create(WorldPacket& data)
         return false;
     }
 
+#if VERSION_STRING > TBC
     // check that the account can create deathknights, if we're making one
     if (class_ == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
     {
         m_session->Disconnect();
         return false;
     }
+#endif
 
     m_mapId = info->mapId;
     SetZoneId(info->zoneId);
@@ -942,21 +946,28 @@ bool Player::Create(WorldPacket& data)
     setBaseMana(info->mana);
     SetFaction(info->factiontemplate);
 
+#if VERSION_STRING > TBC
     if (class_ == DEATHKNIGHT)
         SetTalentPointsForAllSpec(worldConfig.player.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
     else
+#endif
         SetTalentPointsForAllSpec(0);
+
+#if VERSION_STRING > TBC
     if (class_ != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
+#endif
     {
         setLevel(worldConfig.player.playerStartingLevel);
-        if (worldConfig.player.playerStartingLevel >= 10 && class_ != DEATHKNIGHT)
+        if (worldConfig.player.playerStartingLevel >= 10)
             SetTalentPointsForAllSpec(worldConfig.player.playerStartingLevel - 9);
     }
+#if VERSION_STRING > TBC
     else
     {
         setLevel(55);
         setNextLevelXp(148200);
     }
+#endif
 
 #if VERSION_STRING > TBC
     UpdateGlyphs();
@@ -3733,9 +3744,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         case SHAMAN:
             armor_proficiency |= (1 << 9);  //TOTEM
             break;
-        case DEATHKNIGHT:
-            armor_proficiency |= (1 << 10);  //SIGIL
-            break;
         case WARLOCK:
         case HUNTER:
             _LoadPet(results[5].result);
@@ -4916,10 +4924,8 @@ void Player::OnPushToWorld()
     {
         uint8 my_class = getClass();
         uint8 start_level = 1;
-        if (my_class == DEATHKNIGHT)
-            start_level = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
-        else
-            start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
+
+        start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
 
         sHookInterface.OnFirstEnterWorld(this);
         LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), start_level);
@@ -5821,7 +5827,7 @@ void Player::KillPlayer()
 
     if (getClass() == WARRIOR)   // Rage resets on death
         SetPower(POWER_TYPE_RAGE, 0);
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING > TBC
     else if (getClass() == DEATHKNIGHT)
         SetPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
@@ -6537,6 +6543,7 @@ void Player::UpdateStats()
 
 
         case WARRIOR:
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
             //(Strength x 2) + (Character Level x 3) - 20
             AP = (str * 2) + (lev * 3) - 20;
@@ -6544,7 +6551,7 @@ void Player::UpdateStats()
             RAP = lev + agi - 10;
 
             break;
-
+#endif
         default:    //mage,priest,warlock
             AP = agi - 10;
     }
@@ -6620,7 +6627,11 @@ void Player::UpdateStats()
         setHealth(res);
     }
 
-    if (cl != WARRIOR && cl != ROGUE && cl != DEATHKNIGHT)
+    if (cl != WARRIOR && cl != ROGUE
+#if VERSION_STRING > TBC
+        && cl != DEATHKNIGHT
+#endif
+        )
     {
         // MP
         uint32 mana = getBaseMana();
@@ -8540,7 +8551,7 @@ void Player::ResetAllCooldowns()
             ClearCooldownsOnLine(613, guid);
         }
         break;
-
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
         {
             ClearCooldownsOnLine(770, guid);
@@ -8548,7 +8559,7 @@ void Player::ResetAllCooldowns()
             ClearCooldownsOnLine(772, guid);
         }
         break;
-
+#endif
         case SHAMAN:
         {
             ClearCooldownsOnLine(373, guid);

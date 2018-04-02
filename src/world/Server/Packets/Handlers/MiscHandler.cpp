@@ -1491,7 +1491,9 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
         case SHAMAN: // these don't get messed up since they don't use wands, but they don't get to use bows/guns/crossbows anyways
         case DRUID:  // we wouldn't want them cheating extra stats from ammo, would we?
         case PALADIN:
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
+#endif
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM); // good error message?
             _player->SetAmmoId(0);
             _player->CalcDamage();

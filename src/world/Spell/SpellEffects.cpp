@@ -1372,7 +1372,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case WARRIOR:
             case ROGUE:
             case HUNTER:
+#if VERSION_STRING > TBC
             case DEATHKNIGHT:
+#endif
                 static_damage = true; //No spells from these classes benefit from spell damage. Prevents Arc hunters, frost DKs, etc.
                 break;
             default:
