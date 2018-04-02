@@ -143,7 +143,6 @@ namespace MySQLStructure
         }
     };
 
-    //creature_staticspawns
     //creature_timed_emotes
     //creature_waypoints
     //creature_waypoints_manual
@@ -202,7 +201,6 @@ namespace MySQLStructure
         uint32_t overrides;
     };
 
-    //gameobject_staticspawns
     //gameobject_teleports
 
     //gossip_menu

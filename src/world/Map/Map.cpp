@@ -216,12 +216,13 @@ void Map::LoadSpawns(bool reload)
                     if (cspawn->phase == 0)
                         cspawn->phase = 0xFFFFFFFF;
 
-                    if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
+                    //\todo add flag to declare a spawn as static. E.g. gameobject_spawns
+                    /*if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
                     {
                         staticSpawns.CreatureSpawns.push_back(cspawn);
                         ++CreatureSpawnCount;
                     }
-                    else
+                    else*/
                     {
                         spawns[cellx][celly]->CreatureSpawns.push_back(cspawn);
                         ++CreatureSpawnCount;
@@ -285,7 +286,7 @@ void Map::LoadSpawns(bool reload)
 
                     go_spawn->overrides = fields[17].GetUInt32();
 
-                    if (go_spawn->overrides & GAMEOBJECT_MAPWIDE || !stricmp((*tableiterator).c_str(), "gameobject_staticspawns"))
+                    if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
                     {
                         staticSpawns.GameobjectSpawns.push_back(go_spawn); //We already have a staticSpawns in the Map class, and it does just the right thing
                         ++GameObjectSpawnCount;
