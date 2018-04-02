@@ -1949,8 +1949,9 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
     auto startTime = Util::TimeNow();
 
 #if VERSION_STRING != Cata
-    //                                                                      0         1        2       3
-    QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid FROM totemdisplayids");
+    //                                                                  0     1        2
+    QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT race, totem, displayid FROM totemdisplayids base "
+        "WHERE build=(SELECT MAX(build) FROM totemdisplayids spec WHERE base.race = spec.race AND base.totem = spec.totem AND build <= %u)", VERSION_STRING);
 #else
     //                                                                      0         1        2       3       4         5         6
     QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid, taurenid, dwarfid, goblinid FROM totemdisplayids");
@@ -1963,41 +1964,34 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     LogNotice("MySQLDataLoads : Table `totemdisplayids` has %u columns", totemdisplayids_result->GetFieldCount());
 
-    _totemDisplayIdsStore.rehash(totemdisplayids_result->GetRowCount());
-
     uint32_t totemdisplayids_count = 0;
     do
     {
         Field* fields = totemdisplayids_result->Fetch();
 
-        uint32_t entry = fields[0].GetUInt32();
+        MySQLStructure::TotemDisplayIds totemDisplayId;
 
-        MySQLStructure::TotemDisplayIds& totemDisplayId = _totemDisplayIdsStore[entry];
+        totemDisplayId._race = fields[0].GetUInt32();
+        totemDisplayId.display_id = fields[1].GetUInt32();
+        totemDisplayId.race_specific_id = fields[2].GetUInt32();
 
-        totemDisplayId.displayId = entry;
-        totemDisplayId.draeneiId = fields[1].GetUInt32();
-        totemDisplayId.trollId = fields[2].GetUInt32();
-        totemDisplayId.orcId = fields[3].GetUInt32();
-#if VERSION_STRING == Cata
-        totemDisplayId.taurenId = fields[4].GetUInt32();
-        totemDisplayId.dwarfId = fields[5].GetUInt32();
-        totemDisplayId.goblinId = fields[6].GetUInt32();
-#endif
+        _totemDisplayIdsStore.push_back(totemDisplayId);
 
         ++totemdisplayids_count;
     } while (totemdisplayids_result->NextRow());
 
     delete totemdisplayids_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", _totemDisplayIdsStore.size(), Util::GetTimeDifferenceToNow(startTime));
 }
 
-MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint32_t entry)
+MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint8_t race, uint32_t entry)
 {
-    TotemDisplayIdContainer::const_iterator itr = _totemDisplayIdsStore.find(entry);
-    if (itr != _totemDisplayIdsStore.end())
-        return &(itr->second);
-
+    for (auto & i : _totemDisplayIdsStore)
+    {
+        if (i._race == race && i.display_id == entry)
+            return &i;
+    }
     return nullptr;
 }
 

@@ -521,15 +521,9 @@ namespace MySQLStructure
     //totemdisplayids
     struct TotemDisplayIds
     {
-        uint32_t displayId;
-        uint32_t draeneiId;
-        uint32_t trollId;
-        uint32_t orcId;
-#if VERSION_STRING == Cata
-        uint32_t taurenId;
-        uint32_t dwarfId;
-        uint32_t goblinId;
-#endif
+        uint8_t _race;
+        uint32_t display_id;
+        uint32_t race_specific_id;
     };
 
     //trainer_defs
