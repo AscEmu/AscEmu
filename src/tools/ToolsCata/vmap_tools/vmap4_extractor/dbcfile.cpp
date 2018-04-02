@@ -74,7 +74,7 @@ bool DBCFile::open()
 
     size_t data_size = _recordSize * _recordCount + _stringSize;
     readBytes = 0;
-    SFileReadFile(_file, _data, data_size, &readBytes, NULL);
+    SFileReadFile(_file, _data, (DWORD)data_size, &readBytes, nullptr);
     if (readBytes != data_size)
         return false;
 

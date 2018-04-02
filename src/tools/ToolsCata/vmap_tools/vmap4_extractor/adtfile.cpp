@@ -214,9 +214,8 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
         }
 
         //======================
-        ADT.seek(nextpos);
+        ADT.seek(static_cast<int>(nextpos));
     }
-
     ADT.close();
     fclose(dirfile);
     return true;

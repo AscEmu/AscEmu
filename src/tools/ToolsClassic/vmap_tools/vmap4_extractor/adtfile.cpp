@@ -82,7 +82,7 @@ ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansNam
 
 bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 {
-    if(ADT.isEof ())
+    if (ADT.isEof())
         return false;
 
     uint32 size;
@@ -199,7 +199,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
             }
         }
         //======================
-        ADT.seek(nextpos);
+        ADT.seek(static_cast<int>(nextpos));
     }
     ADT.close();
     fclose(dirfile);

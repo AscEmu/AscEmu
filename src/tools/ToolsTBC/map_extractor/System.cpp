@@ -33,6 +33,11 @@
 #include <unistd.h>
 #endif
 
+#include <stdlib.h>
+#include <errno.h>
+
+#include <experimental/filesystem>
+
 #include "dbcfile.h"
 #include "mpq_libmpq04.h"
 
@@ -104,25 +109,15 @@ const char* CONF_mpq_list[] = {
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
 
-void CreateDir( const std::string& Path )
+void CreateDir(std::experimental::filesystem::path const& path)
 {
-    if(chdir(Path.c_str()) == 0)
-    {
-            chdir("../");
-            return;
-    }
+    namespace fs = std::experimental::filesystem;
 
-    int ret;
-    #ifdef _WIN32
-    ret = _mkdir( Path.c_str());
-    #else
-    ret = mkdir( Path.c_str(), 0777 );
-    #endif
-    if (ret != 0)
-    {
-        printf("Fatal Error: Could not create directory %s check your permissions", Path.c_str());
-        exit(1);
-    }
+    if (fs::exists(path))
+        return;
+
+    if (!fs::create_directory(path))
+        throw new std::runtime_error("Unable to create directory" + path.string());
 }
 
 bool FileExists( const char* FileName )
@@ -268,7 +263,7 @@ uint32 ReadMapDBC()
         map_ids[x].name[max_map_name_length - 1] = '\0';
     }
     printf("Done! (%u maps loaded)\n", (uint32)map_count);
-    return map_count;
+    return static_cast<uint32_t>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -290,7 +285,7 @@ void ReadAreaTableDBC()
     for(uint32 x = 0; x < area_count; ++x)
         areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
-    maxAreaId = dbc.getMaxId();
+    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
     printf("Done! (%u areas loaded)\n", (uint32)area_count);
 }

@@ -58,7 +58,7 @@ class ModelInstance
 public:
     uint32 id;
     Vec3D pos, rot;
-    uint16 scale, flags;
+    uint16_t scale, flags;
     float sc;
 
     ModelInstance() : id(0), scale(0), flags(0), sc(0.0f) {}
