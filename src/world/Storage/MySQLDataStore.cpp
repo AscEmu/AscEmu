@@ -1948,14 +1948,10 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 {
     auto startTime = Util::TimeNow();
 
-#if VERSION_STRING != Cata
     //                                                                  0     1        2
     QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT race, totem, displayid FROM totemdisplayids base "
         "WHERE build=(SELECT MAX(build) FROM totemdisplayids spec WHERE base.race = spec.race AND base.totem = spec.totem AND build <= %u)", VERSION_STRING);
-#else
-    //                                                                      0         1        2       3       4         5         6
-    QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid, taurenid, dwarfid, goblinid FROM totemdisplayids");
-#endif
+
     if (totemdisplayids_result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `totemdisplayids` is empty!");
