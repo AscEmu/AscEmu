@@ -386,10 +386,7 @@ void SpellCustomizations::StartSpellCustomization()
 
     LOG_DEBUG("Successfull started");
 
-    LoadSpellRanks();
-    LoadSpellCustomAssign();
-    LoadSpellCustomCoefFlags();
-    LoadSpellProcs();
+    LoadSpellCustomOverride();
 
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
@@ -412,160 +409,73 @@ void SpellCustomizations::StartSpellCustomization()
     }
 }
 
-void SpellCustomizations::LoadSpellRanks()
+void SpellCustomizations::LoadSpellCustomOverride()
 {
-    uint32 spell_rank_count = 0;
-
-    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank FROM spell_ranks"))
+    uint32 override_count = 0;
+    //                                                        0       1           2                          3                              4                    5
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank, assign_on_target_flag, assign_from_caster_on_self_flag, assign_self_cast_only, assign_c_is_flag, "
+    //                                                   6            7            8               9             10              11             12           13
+                                                  " coef_flags, coef_Dspell, coef_Otspell, proc_on_namehash, proc_flags, proc_target_selfs, proc_chance, proc_charges, "
+    //                                                   14                     15                           16                          17         
+                                                  "proc_interval, proc_effect_trigger_spell_0, proc_effect_trigger_spell_1, proc_effect_trigger_spell_2 FROM spell_custom_override"))
     {
         do
         {
-            uint32 spell_id = result->Fetch()[0].GetUInt32();
-            uint32 pRank = result->Fetch()[1].GetUInt32();
+            Field* fields = result->Fetch();
 
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(fields[0].GetUInt32());
             if (spell_entry != nullptr)
             {
-                spell_entry->custom_RankNumber = pRank;
-                ++spell_rank_count;
-            }
-            else
-            {
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : your spell_ranks table includes an invalid spell %u.", spell_id);
-                continue;
-            }
+                if (fields[1].isSet())
+                    spell_entry->custom_RankNumber = fields[1].GetUInt32();
 
-        } while (result->NextRow());
-        delete result;
-    }
+                if (fields[2].isSet())
+                    spell_entry->custom_BGR_one_buff_on_target = fields[2].GetUInt32();
 
-    if (spell_rank_count > 0)
-    {
-        LOG_DETAIL("Loaded %u custom_RankNumbers from spell_ranks table", spell_rank_count);
-    }
-    else
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : Your spell_ranks table is empty!");
-    }
+                //fields[3] not used
 
-}
+                if (fields[4].isSet())
+                    spell_entry->custom_self_cast_only = fields[4].GetBool();
 
-void SpellCustomizations::LoadSpellCustomAssign()
-{
-    uint32 spell_custom_assign_count = 0;
+                if (fields[5].isSet())
+                    spell_entry->custom_c_is_flags = fields[5].GetUInt32();
 
-    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, self_cast_only, c_is_flag FROM spell_custom_assign"))
-    {
-        do
-        {
-            uint32 spell_id = result->Fetch()[0].GetUInt32();
-            uint32 on_target = result->Fetch()[1].GetUInt32();
+                if (fields[6].isSet())
+                    spell_entry->custom_spell_coef_flags = fields[6].GetUInt32();
 
-            // loaded but not used!
-            // uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
+                if (fields[7].isSet())
+                    spell_entry->Dspell_coef_override = fields[7].GetFloat();
 
-            bool self_cast_only = result->Fetch()[3].GetBool();
-            uint32 c_is_flag = result->Fetch()[4].GetUInt32();
+                if (fields[8].isSet())
+                    spell_entry->OTspell_coef_override = fields[8].GetFloat();
 
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
-            if (spell_entry != nullptr)
-            {
-                spell_entry->custom_BGR_one_buff_on_target = on_target;
-                spell_entry->custom_self_cast_only = self_cast_only;
-                spell_entry->custom_c_is_flags = c_is_flag;
+                //proc
 
-                ++spell_custom_assign_count;
-            }
-            else
-            {
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "your spell_custom_assign table includes an invalid spell %u.", spell_id);
-                continue;
-            }
-
-        } while (result->NextRow());
-        delete result;
-    }
-
-    if (spell_custom_assign_count > 0)
-    {
-        LOG_DETAIL("Loaded %u attributes from spell_custom_assign table", spell_custom_assign_count);
-    }
-    else
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
-    }
-}
-
-void SpellCustomizations::LoadSpellCustomCoefFlags()
-{
-    uint32 spell_custom_coef_flags_count = 0;
-
-    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, spell_coef_flags FROM spell_coef_flags"))
-    {
-        do
-        {
-            uint32 spell_id = result->Fetch()[0].GetUInt32();
-            uint32 coef_flags = result->Fetch()[1].GetUInt32();
-
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
-            if (spell_entry != nullptr)
-            {
-                spell_entry->custom_spell_coef_flags = coef_flags;
-                ++spell_custom_coef_flags_count;
-            }
-            else
-            {
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : your spell_coef_flags table includes an invalid spell %u.", spell_id);
-                continue;
-            }
-
-        } while (result->NextRow());
-        delete result;
-    }
-
-    if (spell_custom_coef_flags_count > 0)
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Loaded %u attributes from spell_coef_flags table", spell_custom_coef_flags_count);
-    }
-    else
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Your spell_coef_flags table is empty!");
-    }
-}
-
-void SpellCustomizations::LoadSpellProcs()
-{
-    uint32 spell_procs_count = 0;
-
-    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, proc_on_name_hash, proc_flags, target_self, proc_chance, proc_charges, proc_interval, effect_trigger_spell_0, effect_trigger_spell_1, effect_trigger_spell_2, description FROM spell_proc"))
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            uint32 spell_id = f[0].GetUInt32();
-            // uint32 name_hash = f[1].GetUInt32();
-
-            auto spell_entry = GetSpellInfo(spell_id);
-            if (spell_entry != nullptr)
-            {
-                if (f[2].GetInt32() >= 0)
-                    spell_entry->setProcFlags(f[2].GetUInt32());
-
-                if (f[3].GetBool())
+                //fields[9] proc_on_namehash not used
+                //proc_flags
+                if (fields[10].isSet())
+                    spell_entry->setProcFlags(fields[10].GetUInt32());
+                //proc_target_selfs
+                if (fields[11].isSet() && fields[11].GetBool())
                     spell_entry->addProcFlags(PROC_TARGET_SELF);
-                if (f[4].GetInt32() >= 0)
-                    spell_entry->setProcChance(f[4].GetUInt32());
-                if (f[5].GetInt32() >= 0)
-                    spell_entry->setProcCharges(f[5].GetInt32());
-
-                spell_entry->custom_proc_interval = f[6].GetUInt32();
-
-                if (f[7].GetInt32() >= 0)
-                    spell_entry->setEffectTriggerSpell(f[7].GetUInt32(), 0);
-                if (f[8].GetInt32() >= 0)
-                    spell_entry->setEffectTriggerSpell(f[8].GetUInt32(), 1);
-                if (f[9].GetInt32() >= 0)
-                    spell_entry->setEffectTriggerSpell(f[9].GetUInt32(), 2);
+                //proc_chance
+                if (fields[12].isSet())
+                    spell_entry->setProcChance(fields[12].GetUInt32());
+                //proc_charges
+                if (fields[13].isSet())
+                    spell_entry->setProcCharges(fields[13].GetUInt32());
+                //proc_interval
+                if (fields[14].isSet())
+                    spell_entry->custom_proc_interval = fields[14].GetUInt32();
+                //proc_effect_trigger_spell_0
+                if (fields[15].isSet())
+                    spell_entry->setEffectTriggerSpell(fields[15].GetUInt32(), 0);
+                //proc_effect_trigger_spell_1
+                if (fields[16].isSet())
+                    spell_entry->setEffectTriggerSpell(fields[16].GetUInt32(), 1);
+                //proc_effect_trigger_spell_2
+                if (fields[17].isSet())
+                    spell_entry->setEffectTriggerSpell(fields[17].GetUInt32(), 2);
 
                 if (spell_entry->getEffectTriggerSpell(0) > 0)
                     spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
@@ -574,24 +484,17 @@ void SpellCustomizations::LoadSpellProcs()
                 if (spell_entry->getEffectTriggerSpell(2) > 0)
                     spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
 
-                ++spell_procs_count;
+                ++override_count;
             }
-            else
-            {
-                LOG_ERROR("Invalid spellID %u in table spell_proc", spell_id);
-            }
+
         } while (result->NextRow());
         delete result;
     }
 
-    if (spell_procs_count > 0)
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Loaded %u proc definitions from spell_proc table", spell_procs_count);
-    }
+    if (override_count > 0)
+        LOG_DETAIL("Loaded %u override values from spell_custom_override table", override_count);
     else
-    {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Your spell_proc table is empty!");
-    }
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : Your spell_custom_override table is empty!");
 }
 
 // Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
@@ -600,17 +503,13 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
     for (uint8 y = 0; y < 3; y++)
     {
         if (spell_entry->getEffect(y) != SPELL_EFFECT_APPLY_AURA)
-        {
             continue;
-        }
-        else
-        {
-            if ((spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL || spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && spell_entry->getEffectApplyAuraName(y) == 0)
-            {
-                spell_entry->setEffectAmplitude(1000, y);
 
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
-            }
+        if ((spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL || spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && spell_entry->getEffectApplyAuraName(y) == 0)
+        {
+            spell_entry->setEffectAmplitude(1000, y);
+
+            LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
         }
     }
 }
@@ -622,17 +521,13 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
     for (uint8 y = 0; y < 3; y++)
     {
         if (spell_entry->getEffect(y) != SPELL_EFFECT_APPLY_AURA)
-        {
             continue;
-        }
-        else
-        {
-            if (spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == nullptr)
-            {
-                spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
 
-                spell_aura_factory_functions_loaded = true;
-            }
+        if (spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == nullptr)
+        {
+            spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
+
+            spell_aura_factory_functions_loaded = true;
         }
     }
 
@@ -753,7 +648,7 @@ bool SpellCustomizations::isAlwaysApply(SpellInfo* spell_entry)
         case 65545:
         {
             return true;
-        } break;
+        }
         default:
             return false;
     }

@@ -155,8 +155,8 @@ SpellInfo::SpellInfo()
     casttime_coef = 0;
     fixed_dddhcoef = 0;
     fixed_hotdotcoef = 0;
-    Dspell_coef_override = 0;
-    OTspell_coef_override = 0;
+    Dspell_coef_override = -1;
+    OTspell_coef_override = -1;
     ai_target_type = 0;
 
     custom_self_cast_only = false;

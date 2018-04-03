@@ -35,11 +35,9 @@ public:
 
     void StartSpellCustomization();
 
-    // functions for setting up custom vars
-    void LoadSpellRanks();
-    void LoadSpellCustomAssign();
-    void LoadSpellCustomCoefFlags();
-    void LoadSpellProcs();
+    // function for setting up custom vars from db
+    void LoadSpellCustomOverride();
+
 
     void SetEffectAmplitude(SpellInfo* spell_entry);
     void SetAuraFactoryFunc(SpellInfo* spell_entry);
