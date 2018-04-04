@@ -594,8 +594,8 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         {
             creatureName1 = creatureResult1->Name;
 
-            my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1;
-            QueryResult* spawnResult1 = WorldDatabase.Query(my_query1.c_str());
+            my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1 + " AND min_build <= %u AND max_build >= %u";
+            QueryResult* spawnResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
 
             std::string spawnId1;
             if (spawnResult1)
@@ -1173,8 +1173,8 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         {
             creatureName1 = creatureResult1->Name;
 
-            my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1;
-            QueryResult* spawnResult1 = WorldDatabase.Query(my_query1.c_str());
+            my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1 + " AND min_build <= %u AND max_build >= %u";
+            QueryResult* spawnResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
 
             std::string spawnId1;
             if (spawnResult1)
@@ -1306,8 +1306,8 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
         return true;
     }
 
-    my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + starterId;
-    QueryResult* spawnResult = WorldDatabase.Query(my_query.c_str());
+    my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + starterId + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* spawnResult = WorldDatabase.Query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (!spawnResult)
     {
@@ -1377,8 +1377,8 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
         return true;
     }
 
-    my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + finisherId;
-    QueryResult* spawnResult = WorldDatabase.Query(my_query.c_str());
+    my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + finisherId + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* spawnResult = WorldDatabase.Query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (!spawnResult)
     {

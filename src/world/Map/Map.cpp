@@ -134,11 +134,11 @@ void Map::LoadSpawns(bool reload)
     CreatureSpawnCount = 0;
     for (std::set<std::string>::iterator tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
     {
-        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);
+        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, VERSION_STRING, VERSION_STRING);
         if (creature_spawn_result)
         {
             uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
-            if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT)
+            if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT + 2 + 2)
             {
                 LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
                 continue;
@@ -152,7 +152,7 @@ void Map::LoadSpawns(bool reload)
                     cspawn->id = fields[0].GetUInt32();
                     cspawn->form = sMySQLStore.getCreatureFormationBySpawnId(cspawn->id);
 
-                    uint32 creature_entry = fields[1].GetUInt32();
+                    uint32 creature_entry = fields[3].GetUInt32();
                     auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
                     if (creature_properties == nullptr)
                     {
@@ -162,10 +162,10 @@ void Map::LoadSpawns(bool reload)
                     }
 
                     cspawn->entry = creature_entry;
-                    cspawn->x = fields[3].GetFloat();
-                    cspawn->y = fields[4].GetFloat();
-                    cspawn->z = fields[5].GetFloat();
-                    cspawn->o = fields[6].GetFloat();
+                    cspawn->x = fields[5].GetFloat();
+                    cspawn->y = fields[6].GetFloat();
+                    cspawn->z = fields[7].GetFloat();
+                    cspawn->o = fields[8].GetFloat();
 
                     uint32 cellx = CellHandler<MapMgr>::GetPosX(cspawn->x);
                     uint32 celly = CellHandler<MapMgr>::GetPosY(cspawn->y);
@@ -178,8 +178,8 @@ void Map::LoadSpawns(bool reload)
                     if (!spawns[cellx][celly])
                         spawns[cellx][celly] = new CellSpawns;
 
-                    cspawn->movetype = fields[7].GetUInt8();
-                    cspawn->displayid = fields[8].GetUInt32();
+                    cspawn->movetype = fields[9].GetUInt8();
+                    cspawn->displayid = fields[10].GetUInt32();
                     if (cspawn->displayid != 0)
                     {
                         DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
@@ -194,25 +194,25 @@ void Map::LoadSpawns(bool reload)
                         cspawn->displayid = creature_properties->GetRandomModelId();
                     }
 
-                    cspawn->factionid = fields[9].GetUInt32();
-                    cspawn->flags = fields[10].GetUInt32();
-                    cspawn->bytes0 = fields[11].GetUInt32();
-                    cspawn->bytes1 = fields[12].GetUInt32();
-                    cspawn->bytes2 = fields[13].GetUInt32();
-                    cspawn->emote_state = fields[14].GetUInt32();
-                    //cspawn->respawnNpcLink = fields[15].GetUInt32();
-                    cspawn->channel_spell = fields[16].GetUInt16();
-                    cspawn->channel_target_go = fields[17].GetUInt32();
-                    cspawn->channel_target_creature = fields[18].GetUInt32();
-                    cspawn->stand_state = fields[19].GetUInt16();
-                    cspawn->death_state = fields[20].GetUInt32();
-                    cspawn->MountedDisplayID = fields[21].GetUInt32();
-                    cspawn->Item1SlotDisplay = fields[22].GetUInt32();
-                    cspawn->Item2SlotDisplay = fields[23].GetUInt32();
-                    cspawn->Item3SlotDisplay = fields[24].GetUInt32();
-                    cspawn->CanFly = fields[25].GetUInt32();
+                    cspawn->factionid = fields[11].GetUInt32();
+                    cspawn->flags = fields[12].GetUInt32();
+                    cspawn->bytes0 = fields[13].GetUInt32();
+                    cspawn->bytes1 = fields[14].GetUInt32();
+                    cspawn->bytes2 = fields[15].GetUInt32();
+                    cspawn->emote_state = fields[16].GetUInt32();
+                    //cspawn->respawnNpcLink = fields[17].GetUInt32();
+                    cspawn->channel_spell = fields[18].GetUInt16();
+                    cspawn->channel_target_go = fields[19].GetUInt32();
+                    cspawn->channel_target_creature = fields[20].GetUInt32();
+                    cspawn->stand_state = fields[21].GetUInt16();
+                    cspawn->death_state = fields[22].GetUInt32();
+                    cspawn->MountedDisplayID = fields[23].GetUInt32();
+                    cspawn->Item1SlotDisplay = fields[24].GetUInt32();
+                    cspawn->Item2SlotDisplay = fields[25].GetUInt32();
+                    cspawn->Item3SlotDisplay = fields[26].GetUInt32();
+                    cspawn->CanFly = fields[27].GetUInt32();
 
-                    cspawn->phase = fields[26].GetUInt32();
+                    cspawn->phase = fields[28].GetUInt32();
                     if (cspawn->phase == 0)
                         cspawn->phase = 0xFFFFFFFF;
 

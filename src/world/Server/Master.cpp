@@ -54,7 +54,7 @@ ConfigMgr Config;
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "1.3.29_spell_custom_override";
+static const char* REQUIRED_WORLD_DB_VERSION = "1.3.30_build_creature_spawns";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
 static const char* REQUIRED_WORLD_DB_VERSION = "2018-01-01_01_gameobject_spawns";

@@ -922,7 +922,7 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns");
+    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiCreatureSpawnId = result->Fetch()[0].GetUInt32();

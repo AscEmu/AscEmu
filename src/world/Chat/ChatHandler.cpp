@@ -579,7 +579,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
                 case UNIT_FIELD_FACTIONTEMPLATE:
                     {
                         if (cr->m_spawn)
-                            WorldDatabase.Execute("UPDATE creature_spawns SET faction = %u WHERE entry = %u", av, cr->m_spawn->entry);
+                            WorldDatabase.Execute("UPDATE creature_spawns SET faction = %u WHERE entry = %u AND min_build <= %u AND max_build >= %u", av, cr->m_spawn->entry, VERSION_STRING, VERSION_STRING);
                     }
                     break;
                 case UNIT_NPC_FLAGS:

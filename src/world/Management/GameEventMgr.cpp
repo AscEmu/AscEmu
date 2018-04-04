@@ -148,14 +148,14 @@ void GameEventMgr::LoadFromDB()
     // Loading event_creature from WorldDB
     LogNotice("GameEventMgr : Start loading game event creature spawns");
     {
-        const char* loadEventCreatureSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, position_z, \
+        const char* loadEventCreatureSpawnsQuery = "SELECT id, entry, map, position_x, position_y, position_z, \
                                                     orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
                                                     emote_state, npc_respawn_link, channel_spell, channel_target_sqlid, \
                                                     channel_target_sqlid_creature, standstate, death_state, mountdisplayid, \
-                                                    slot1item, slot2item, slot3item, CanFly, phase, waypoint_group \
-                                                    FROM event_creature_spawns";
+                                                    slot1item, slot2item, slot3item, CanFly, phase, waypoint_group, event_entry \
+                                                    FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0";
         bool success = false;
-        QueryResult* result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery);
+        QueryResult* result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             LOG_ERROR("Query failed: %s", loadEventCreatureSpawnsQuery);
@@ -169,51 +169,51 @@ void GameEventMgr::LoadFromDB()
             {
                 Field* field = result->Fetch();
 
-                uint32 event_id = field[0].GetUInt32();
+                uint32 event_id = field[28].GetUInt32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    LOG_ERROR("Could not find event for event_creature_spawns entry %u", event_id);
+                    LOG_ERROR("Could not find event for creature_spawns entry %u", event_id);
                     continue;
                 }
 
                 EventCreatureSpawnsQueryResult dbResult;
-                dbResult.event_entry = field[0].GetUInt32();
-                dbResult.id = field[1].GetUInt32();
-                dbResult.entry = field[2].GetUInt32();
+                dbResult.event_entry = field[28].GetUInt32();
+                dbResult.id = field[0].GetUInt32();
+                dbResult.entry = field[1].GetUInt32();
                 auto creature_properties = sMySQLStore.getCreatureProperties(dbResult.entry);
                 if (creature_properties == nullptr)
                 {
                     LOG_ERROR("Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
                     continue;
                 }
-                dbResult.map_id = field[3].GetUInt16();
-                dbResult.position_x = field[4].GetFloat();
-                dbResult.position_y = field[5].GetFloat();
-                dbResult.position_z = field[6].GetFloat();
-                dbResult.orientation = field[7].GetFloat();
-                dbResult.movetype = field[8].GetUInt8();
-                dbResult.displayid = field[9].GetUInt32();
-                dbResult.faction = field[10].GetUInt32();
-                dbResult.flags = field[11].GetUInt32();
-                dbResult.bytes0 = field[12].GetUInt32();
-                dbResult.bytes1 = field[13].GetUInt32();
-                dbResult.bytes2 = field[14].GetUInt32();
-                dbResult.emote_state = field[15].GetUInt16();
-                dbResult.npc_respawn_link = field[16].GetUInt32();
-                dbResult.channel_spell = field[17].GetUInt32();
-                dbResult.channel_target_sqlid = field[18].GetUInt32();
-                dbResult.channel_target_sqlid_creature = field[19].GetUInt32();
-                dbResult.standstate = field[20].GetUInt8();
-                dbResult.death_state = field[21].GetUInt8();
-                dbResult.mountdisplayid = field[22].GetUInt32();
-                dbResult.slot1item = field[23].GetUInt32();
-                dbResult.slot2item = field[24].GetUInt32();
-                dbResult.slot3item = field[25].GetUInt32();
-                dbResult.CanFly = field[26].GetUInt16();
-                dbResult.phase = field[27].GetUInt32();
-                dbResult.waypoint_group = field[28].GetUInt32();
+                dbResult.map_id = field[2].GetUInt16();
+                dbResult.position_x = field[3].GetFloat();
+                dbResult.position_y = field[4].GetFloat();
+                dbResult.position_z = field[5].GetFloat();
+                dbResult.orientation = field[6].GetFloat();
+                dbResult.movetype = field[7].GetUInt8();
+                dbResult.displayid = field[8].GetUInt32();
+                dbResult.faction = field[9].GetUInt32();
+                dbResult.flags = field[10].GetUInt32();
+                dbResult.bytes0 = field[11].GetUInt32();
+                dbResult.bytes1 = field[12].GetUInt32();
+                dbResult.bytes2 = field[13].GetUInt32();
+                dbResult.emote_state = field[14].GetUInt16();
+                dbResult.npc_respawn_link = field[15].GetUInt32();
+                dbResult.channel_spell = field[16].GetUInt32();
+                dbResult.channel_target_sqlid = field[17].GetUInt32();
+                dbResult.channel_target_sqlid_creature = field[18].GetUInt32();
+                dbResult.standstate = field[19].GetUInt8();
+                dbResult.death_state = field[20].GetUInt8();
+                dbResult.mountdisplayid = field[21].GetUInt32();
+                dbResult.slot1item = field[22].GetUInt32();
+                dbResult.slot2item = field[23].GetUInt32();
+                dbResult.slot3item = field[24].GetUInt32();
+                dbResult.CanFly = field[25].GetUInt16();
+                dbResult.phase = field[26].GetUInt32();
+                dbResult.waypoint_group = field[27].GetUInt32();
 
                 gameEvent->npc_data.push_back(dbResult);
 

@@ -79,7 +79,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         return true;
     }
 
-    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id=%u", spawn_id);
+    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", spawn_id, VERSION_STRING, VERSION_STRING);
     if (!query_result)
     {
         RedSystemMessage(m_session, "No creature found in creature_spawns table with id %u.", spawn_id);

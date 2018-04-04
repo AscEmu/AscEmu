@@ -2942,7 +2942,7 @@ void MySQLDataStore::loadCreatureFormationsTable()
         Field* fields = creature_formations_result->Fetch();
 
         uint32_t spawnId = fields[0].GetInt32();
-        QueryResult* spawn_result = WorldDatabase.Query("SELECT id FROM creature_spawns WHERE id = %u", spawnId);
+        QueryResult* spawn_result = WorldDatabase.Query("SELECT id FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u;", spawnId, VERSION_STRING, VERSION_STRING);
         if (spawn_result == nullptr)
         {
             LogError("Table `creature_formations` includes formation data for invalid spawn id %u. Skipped!", spawnId);
