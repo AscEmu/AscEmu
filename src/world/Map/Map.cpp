@@ -238,11 +238,11 @@ void Map::LoadSpawns(bool reload)
     GameObjectSpawnCount = 0;
     for (std::set<std::string>::iterator tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
     {
-        QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u", (*tableiterator).c_str(), this->_mapId);
+        QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, VERSION_STRING, VERSION_STRING);
         if (gobject_spawn_result)
         {
             uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
-            if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT)
+            if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT + 1 + 2)
             {
                 LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
                 continue;
@@ -255,7 +255,7 @@ void Map::LoadSpawns(bool reload)
                     MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                     go_spawn->id = fields[0].GetUInt32();
 
-                    uint32 gameobject_entry = fields[1].GetUInt32();
+                    uint32 gameobject_entry = fields[3].GetUInt32();
                     auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                     if (gameobject_info == nullptr)
                     {
@@ -265,26 +265,26 @@ void Map::LoadSpawns(bool reload)
                     }
 
                     go_spawn->entry = gameobject_entry;
-                    go_spawn->map = fields[2].GetUInt32();
-                    go_spawn->position_x = fields[3].GetFloat();
-                    go_spawn->position_y = fields[4].GetFloat();
-                    go_spawn->position_z = fields[5].GetFloat();
-                    go_spawn->orientation = fields[6].GetFloat();
-                    go_spawn->rotation_0 = fields[7].GetFloat();
-                    go_spawn->rotation_1 = fields[8].GetFloat();
-                    go_spawn->rotation_2 = fields[9].GetFloat();
-                    go_spawn->rotation_3 = fields[10].GetFloat();
-                    go_spawn->state = fields[11].GetUInt32();
-                    go_spawn->flags = fields[12].GetUInt32();
-                    go_spawn->faction = fields[13].GetUInt32();
-                    go_spawn->scale = fields[14].GetFloat();
-                    //gspawn->stateNpcLink = fields[15].GetUInt32();
-                    go_spawn->phase = fields[16].GetUInt32();
+                    go_spawn->map = fields[4].GetUInt32();
+                    go_spawn->position_x = fields[5].GetFloat();
+                    go_spawn->position_y = fields[6].GetFloat();
+                    go_spawn->position_z = fields[7].GetFloat();
+                    go_spawn->orientation = fields[8].GetFloat();
+                    go_spawn->rotation_0 = fields[9].GetFloat();
+                    go_spawn->rotation_1 = fields[10].GetFloat();
+                    go_spawn->rotation_2 = fields[11].GetFloat();
+                    go_spawn->rotation_3 = fields[12].GetFloat();
+                    go_spawn->state = fields[13].GetUInt32();
+                    go_spawn->flags = fields[14].GetUInt32();
+                    go_spawn->faction = fields[15].GetUInt32();
+                    go_spawn->scale = fields[16].GetFloat();
+                    //gspawn->stateNpcLink = fields[17].GetUInt32();
+                    go_spawn->phase = fields[18].GetUInt32();
 
                     if (go_spawn->phase == 0)
                         go_spawn->phase = 0xFFFFFFFF;
 
-                    go_spawn->overrides = fields[17].GetUInt32();
+                    go_spawn->overrides = fields[19].GetUInt32();
 
                     if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
                     {

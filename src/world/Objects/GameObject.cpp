@@ -421,7 +421,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
 void GameObject::DeleteFromDB()
 {
     if (m_spawn != NULL)
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", m_spawn->id);
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

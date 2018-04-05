@@ -155,8 +155,6 @@ namespace MySQLStructure
         float boundradius;
     };
 
-    //event_creature_spawns
-    //event_gameobject_spawns
     //event_properties
 
     //event_scripts

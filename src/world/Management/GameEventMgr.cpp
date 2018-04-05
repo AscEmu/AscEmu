@@ -229,12 +229,12 @@ void GameEventMgr::LoadFromDB()
     // Loading event_gameobject from WorldDB
     LogNotice("GameEventMgr : Start loading game event gameobject spawns");
     {
-        const char* loadEventGameobjectSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, \
+        const char* loadEventGameobjectSpawnsQuery = "SELECT id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
                                                       orientation4, state, flags, faction, scale, respawnNpcLink, phase, \
-                                                      overrides FROM event_gameobject_spawns";
+                                                      overrides, event_entry FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0;";
         bool success = false;
-        QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery);
+        QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             LOG_ERROR("Query failed: %s", loadEventGameobjectSpawnsQuery);
@@ -247,41 +247,41 @@ void GameEventMgr::LoadFromDB()
             do
             {
                 Field* field = result->Fetch();
-                uint32 event_id = field[0].GetUInt32();
+                uint32 event_id = field[18].GetUInt32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    LOG_ERROR("ould not find event for event_gameobject_spawns entry %u", event_id);
+                    LOG_ERROR("ould not find event for gameobject_spawns entry %u", event_id);
                     continue;
                 }
 
                 EventGameObjectSpawnsQueryResult dbResult;
-                dbResult.event_entry = field[0].GetUInt32();
-                dbResult.id = field[1].GetUInt32();
-                dbResult.entry = field[2].GetUInt32();
+                dbResult.event_entry = field[18].GetUInt32();
+                dbResult.id = field[0].GetUInt32();
+                dbResult.entry = field[1].GetUInt32();
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
                     LOG_ERROR("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
                     continue;
                 }
-                dbResult.map_id = field[3].GetUInt32();
-                dbResult.position_x = field[4].GetFloat();
-                dbResult.position_y = field[5].GetFloat();
-                dbResult.position_z = field[6].GetFloat();
-                dbResult.facing = field[7].GetFloat();
-                dbResult.orientation1 = field[8].GetFloat();
-                dbResult.orientation2 = field[9].GetFloat();
-                dbResult.orientation3 = field[10].GetFloat();
-                dbResult.orientation4 = field[11].GetFloat();
-                dbResult.state = field[12].GetUInt32();
-                dbResult.flags = field[13].GetUInt32();
-                dbResult.faction = field[14].GetUInt32();
-                dbResult.scale = field[15].GetFloat();
-                dbResult.stateNpcLink = field[16].GetUInt32();
-                dbResult.phase = field[17].GetUInt32();
-                dbResult.overrides = field[18].GetUInt32();
+                dbResult.map_id = field[2].GetUInt32();
+                dbResult.position_x = field[3].GetFloat();
+                dbResult.position_y = field[4].GetFloat();
+                dbResult.position_z = field[5].GetFloat();
+                dbResult.facing = field[6].GetFloat();
+                dbResult.orientation1 = field[7].GetFloat();
+                dbResult.orientation2 = field[8].GetFloat();
+                dbResult.orientation3 = field[9].GetFloat();
+                dbResult.orientation4 = field[10].GetFloat();
+                dbResult.state = field[11].GetUInt32();
+                dbResult.flags = field[12].GetUInt32();
+                dbResult.faction = field[13].GetUInt32();
+                dbResult.scale = field[14].GetFloat();
+                dbResult.stateNpcLink = field[15].GetUInt32();
+                dbResult.phase = field[16].GetUInt32();
+                dbResult.overrides = field[17].GetUInt32();
 
                 gameEvent->gameobject_data.push_back(dbResult);
 
@@ -292,7 +292,7 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        LogDetail("GameEventMgr : %u gameobject spawns for %u events from table event_gameobject_spawns loaded.", pCount, mGameEvents.size());
+        LogDetail("GameEventMgr : %u gameobject spawns for %u events from table gameobject_spawns loaded.", pCount, mGameEvents.size());
     }
 
     StartArenaEvents();

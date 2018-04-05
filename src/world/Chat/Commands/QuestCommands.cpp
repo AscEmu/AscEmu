@@ -649,8 +649,8 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         {
             itemName2 = itemResult2->Name;
 
-            my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2;
-            QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str());
+            my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2 + " min_build <= %u AND max_build >= %u";
+            QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
 
             std::string spawnId2;
             if (spawnResult2)
@@ -1227,8 +1227,8 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         {
             itemName2 = itemResult2->Name;
 
-            my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2;
-            QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str());
+            my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2 + " min_build <= %u AND max_build >= %u";
+            QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
 
             std::string spawnId2;
             if (spawnResult2)
