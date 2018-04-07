@@ -101,7 +101,9 @@ namespace MySQLStructure
     //creature_spawns
     struct CreatureSpawn
     {
-        uint32_t id;          // spawn ID
+        uint32_t id;
+        //min_build
+        //max_build
         uint32_t entry;
         float x;
         float y;
@@ -128,6 +130,8 @@ namespace MySQLStructure
         uint32_t Item3SlotDisplay;
         uint32_t CanFly;
         uint32_t phase;
+        //event_entry
+        //waypoint_group
 
         // sets one of the bytes of an uint32
         uint32_t setbyte(uint32_t buffer, uint8_t index, uint32_t byte)
@@ -176,7 +180,9 @@ namespace MySQLStructure
     //gameobject_spawns
     struct GameobjectSpawn
     {
-        uint32_t id;        // spawn ID
+        uint32_t id;
+        //min_build
+        //max_build
         uint32_t entry;
         uint32_t map;
         float position_x;
@@ -197,6 +203,7 @@ namespace MySQLStructure
         //uint32_t stateNpcLink;
         uint32_t phase;
         uint32_t overrides;
+        //event_entry
     };
 
     //gameobject_teleports

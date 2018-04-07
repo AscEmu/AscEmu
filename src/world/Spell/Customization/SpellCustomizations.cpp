@@ -1,21 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "SpellCustomizations.hpp"
@@ -37,8 +23,6 @@ initialiseSingleton(SpellCustomizations);
 SpellCustomizations::SpellCustomizations() {}
 SpellCustomizations::~SpellCustomizations() {}
 
-// APGL End
-// MIT Start
 void SpellCustomizations::LoadSpellInfoData()
 {
     for (auto i = 0; i < MAX_SPELL_ID; ++i)
@@ -363,8 +347,6 @@ void SpellCustomizations::LoadSpellInfoData()
     }
 #endif
 }
-// MIT End
-// APGL Start
 
 SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id)
 {
@@ -432,7 +414,7 @@ void SpellCustomizations::LoadSpellCustomOverride()
                 if (fields[2].isSet())
                     spell_entry->custom_BGR_one_buff_on_target = fields[2].GetUInt32();
 
-                //fields[3] not used
+                //fields[3] not used todo remove this
 
                 if (fields[4].isSet())
                     spell_entry->custom_self_cast_only = fields[4].GetBool();
@@ -451,7 +433,8 @@ void SpellCustomizations::LoadSpellCustomOverride()
 
                 //proc
 
-                //fields[9] proc_on_namehash not used
+                //fields[9] proc_on_namehash not used todo remove this!
+
                 //proc_flags
                 if (fields[10].isSet())
                     spell_entry->setProcFlags(fields[10].GetUInt32());
@@ -467,22 +450,28 @@ void SpellCustomizations::LoadSpellCustomOverride()
                 //proc_interval
                 if (fields[14].isSet())
                     spell_entry->custom_proc_interval = fields[14].GetUInt32();
+
                 //proc_effect_trigger_spell_0
                 if (fields[15].isSet())
+                {
                     spell_entry->setEffectTriggerSpell(fields[15].GetUInt32(), 0);
+                    if (spell_entry->getEffectTriggerSpell(0) > 0)
+                        spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                }
                 //proc_effect_trigger_spell_1
                 if (fields[16].isSet())
+                {
                     spell_entry->setEffectTriggerSpell(fields[16].GetUInt32(), 1);
+                    if (spell_entry->getEffectTriggerSpell(1) > 0)
+                        spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                }
                 //proc_effect_trigger_spell_2
                 if (fields[17].isSet())
+                {
                     spell_entry->setEffectTriggerSpell(fields[17].GetUInt32(), 2);
-
-                if (spell_entry->getEffectTriggerSpell(0) > 0)
-                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-                if (spell_entry->getEffectTriggerSpell(1) > 0)
-                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-                if (spell_entry->getEffectTriggerSpell(2) > 0)
-                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
+                    if (spell_entry->getEffectTriggerSpell(2) > 0)
+                        spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
+                }
 
                 ++override_count;
             }
