@@ -458,8 +458,10 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             { 0 },                                  // TAUREN
             { 0 },                                  // GNOME
             { 0 },                                  // TROLL
+#if VERSION_STRING > Classic
             { 34767, 34769, 31892, 53736, 0 },      // BLOODELF  Summon Charger, Summon Warhorse, Seal of Blood, Seal of Corruption
             { 23214, 13819, 31801, 53720, 0 },      // DRAENEI  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
+#endif
         };
 #else
         static uint32 paladinspellarray[NUM_RACES][3] =
@@ -502,8 +504,10 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             { 2825, 0 },                            // TAUREN Bloodlust
             { 0 },                                  // GNOME
             { 2825, 0 },                            // TROLL Bloodlust
+#if VERSION_STRING > Classic
             { 0 },                                  // BLOODELF
             { 32182, 0 },                           // DRAENEI Heroism
+#endif
 #else
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
@@ -542,8 +546,10 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },                                              // TAUREN
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // GNOME
             { 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // TROLL
+#if VERSION_STRING > Classic
             { 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // BLOODELF
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // DRAENEI
+#endif
         };
 #else
         static uint32 magespellarray[NUM_RACES][17] =
@@ -1368,6 +1374,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
         SystemMessage(m_session, "Set %s's gender to %s(%u).", player_target->GetName(), gender ? "Female" : "Male", gender);
     }
 
+#if VERSION_STRING > Classic
     if (player_target->getGender() == 0)
     {
         player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
@@ -1378,6 +1385,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
         player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
         player_target->setNativeDisplayId(displayId);
     }
+#endif
 
     player_target->EventModelChange();
 

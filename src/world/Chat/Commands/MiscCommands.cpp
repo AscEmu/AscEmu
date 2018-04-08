@@ -1029,7 +1029,8 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     static const char* classes[MAX_PLAYER_CLASSES] =
     { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
 #if VERSION_STRING != Cata
-    static const char* races[NUM_RACES] =
+    // wrong for classic!
+    static const char* races[11 + 1] =
     { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
 #else
     static const char* races[NUM_RACES] =

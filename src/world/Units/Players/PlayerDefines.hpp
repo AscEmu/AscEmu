@@ -73,7 +73,11 @@ enum PlayerTeam : uint8_t
 // Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 
+#if VERSION_STRING > Classic
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
+#else
+#define PLAYER_EXPLORED_ZONES_LENGTH 64
+#endif
 
 #define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 #define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
@@ -85,6 +89,7 @@ enum Gender
     GENDER_NONE     = 2
 };
 
+//\note defined for all versions!
 enum Classes
 {
     WARRIOR         = 1,
@@ -92,9 +97,7 @@ enum Classes
     HUNTER          = 3,
     ROGUE           = 4,
     PRIEST          = 5,
-#if VERSION_STRING > TBC
     DEATHKNIGHT     = 6,
-#endif
     SHAMAN          = 7,
     MAGE            = 8,
     WARLOCK         = 9,

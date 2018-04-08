@@ -781,10 +781,12 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DWARVEN));
             break;
+#if VERSION_STRING > Classic
         case RACE_DRAENEI:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DRAENEI));
             break;
+#endif
         case RACE_GNOME:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GNOMISH));
@@ -805,10 +807,12 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_TROLL));
             break;
+#if VERSION_STRING > Classic
         case RACE_BLOODELF:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_THALASSIAN));
             break;
+#endif
 #if VERSION_STRING == Cata
         case RACE_WORGEN:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
@@ -869,8 +873,13 @@ bool Player::Create(WorldPacket& data)
         return false;
     }
 
-    // check that the account can create TBC characters, if we're making some
+    // check that the account creates only new ones with available races, if we're making some
+#if VERSION_STRING > Classic
     if (race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
+#else
+    if (race >= RACE_TROLL)
+
+#endif
     {
         m_session->Disconnect();
         return false;
@@ -1002,12 +1011,14 @@ bool Player::Create(WorldPacket& data)
     setStat(STAT_SPIRIT, info->spirit);
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
+#if VERSION_STRING > Classic
     if (race != RACE_BLOODELF)
     {
         setDisplayId(info->displayId + gender);
         setNativeDisplayId(info->displayId + gender);
     }
     else
+#endif
     {
         setDisplayId(info->displayId - gender);
         setNativeDisplayId(info->displayId - gender);
@@ -3321,6 +3332,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
 #if VERSION_STRING > Classic
     setChosenTitle(get_next_field.GetUInt32());
+#else
+    get_next_field; //skip selected_pvp_titles
 #endif
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
 
@@ -3362,7 +3375,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
 
     // Normal processing...
+    //\todo investigate
+#if VERSION_STRING != Classic
     UpdateStats();
+#endif
 
     // Initialize 'normal' fields
     setScale(1.0f);
@@ -3381,12 +3397,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
 
+#if VERSION_STRING > Classic
     if (getRace() != RACE_BLOODELF)
     {
         setDisplayId(info->displayId + getGender());
         setNativeDisplayId(info->displayId + getGender());
     }
     else
+#endif
     {
         setDisplayId(info->displayId - getGender());
         setNativeDisplayId(info->displayId - getGender());
@@ -10384,7 +10402,7 @@ void Player::CompleteLoading()
     {
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*i).id);
 
-        if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+        if (sp != nullptr && sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
             continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
         Aura* aura = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
@@ -11050,7 +11068,10 @@ void Player::CalcDamage()
                 cr = itr->second;
         }
     }
+    //\todo investigate
+#if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL, cr);
+#endif
     /////////////// MAIN HAND END
 
     /////////////// OFF HAND START
@@ -11088,8 +11109,10 @@ void Player::CalcDamage()
                 cr = itr->second;
         }
     }
+    //\todo investigate
+#if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL, cr);
-
+#endif
     /////////////second hand end
     ///////////////////////////RANGED
     cr = 0;
@@ -11141,8 +11164,10 @@ void Player::CalcDamage()
         }
 
     }
+    //\todo investigate
+#if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, cr);
-
+#endif
     /////////////////////////////////RANGED end
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
@@ -11352,6 +11377,7 @@ void Player::SetNoseLevel()
             if (getGender()) m_noseLevel = 2.02f;
             else m_noseLevel = 1.93f;
             break;
+#if VERSION_STRING > Classic
         case RACE_BLOODELF:
             if (getGender()) m_noseLevel = 1.83f;
             else m_noseLevel = 1.93f;
@@ -11360,6 +11386,7 @@ void Player::SetNoseLevel()
             if (getGender()) m_noseLevel = 2.09f;
             else m_noseLevel = 2.36f;
             break;
+#endif
 #if VERSION_STRING == Cata
         case RACE_WORGEN:
             if (getGender()) m_noseLevel = 1.72f;
