@@ -66,29 +66,14 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             charEnum.guid = fields[0].GetUInt64();
             charEnum.level = fields[1].GetUInt8();
             charEnum.race = fields[2].GetUInt8();
-
-#if VERSION_STRING == Classic
-            if (charEnum.race == 9 || charEnum.race == 10 || charEnum.race == 11 || charEnum.race == 22)
-            {
-                LogDebugFlag(LF_OPCODE, "Your character table includes an unsupported race %u! You are running AscEmu for Classic clients - skip!", charEnum.race);
-                continue;
-            }
-#elif VERSION_STRING < Cata
-            if (charEnum.race == 9 || charEnum.race == 22)
-            {
-                LogDebugFlag(LF_OPCODE, "Your character table includes an unsupported race %u! You need to run AscEmu for Cata to load them - skip!", charEnum.race);
-                continue;
-            }
-#endif
-
             charEnum.Class = fields[3].GetUInt8();
-#if VERSION_STRING <= TBC
-            if (charEnum.Class == DEATHKNIGHT)
+
+            if (!isClassRaceCombinationPossible(charEnum.Class, charEnum.race))
             {
-                LogDebugFlag(LF_OPCODE, "Your character table includes DeathKnights! You need to run AscEmu for WotLK to use them - skip!");
+                LogDebugFlag(LF_OPCODE, "Class %u and race %u is not a valid combination for Version %u - skipped", charEnum.Class, charEnum.race, VERSION_STRING);
                 continue;
             }
-#endif
+
             charEnum.gender = fields[4].GetUInt8();
             charEnum.bytes = fields[5].GetUInt32();
             charEnum.bytes2 = fields[6].GetUInt32();
