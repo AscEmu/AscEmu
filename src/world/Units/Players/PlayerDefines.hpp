@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 
 #include <ctime>
+#include <string>
 
 enum PlayerTeam : uint8_t
 {
@@ -700,6 +701,56 @@ enum PlayerCheats
     PLAYER_CHEAT_ITEM_STACK     = 0x040,
     PLAYER_CHEAT_TRIGGERPASS    = 0x080,
     PLAYER_CHEAT_TAXI           = 0x100,
+};
+
+//char enum
+struct PlayerItem
+{
+    uint32_t displayId;
+    uint8_t inventoryType;
+    uint32_t enchantmentId;
+};
+
+struct CharEnum_Pet
+{
+    uint32_t display_id;
+    uint32_t level;
+    uint32_t family;
+};
+
+struct CharEnumData
+{
+    uint64_t guid;
+    uint8_t level;
+    uint8_t race;
+    uint8_t Class;
+    uint8_t gender;
+    uint32_t bytes;
+    uint32_t bytes2;
+    std::string name;
+    float x;
+    float y;
+    float z;
+    uint32_t mapId;
+    uint32_t zoneId;
+    uint32_t banned;
+
+    uint32_t deathState;
+    uint32_t loginFlags;
+    uint32_t flags;
+    uint32_t guildId;
+
+    uint32_t char_flags;
+    uint32_t customization_flag;
+
+    CharEnum_Pet pet_data;
+
+    //\todo verfify this!
+#if VERSION_STRING <= TBC
+    PlayerItem player_items[20];
+#else
+    PlayerItem player_items[23];
+#endif
 };
 
 // action button defines
