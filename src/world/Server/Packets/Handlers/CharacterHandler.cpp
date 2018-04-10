@@ -333,7 +333,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             QueryResult* item_db_result = CharacterDatabase.Query("SELECT containerslot, slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot < 23", dbGuid);
 
-            memset(player_items, 0, sizeof(player_items));
+            memset(charEnum.player_items, 0, sizeof(charEnum.player_items));
 
             if (item_db_result)
             {
@@ -350,8 +350,8 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                             if (!(item_slot == EQUIPMENT_SLOT_HEAD && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOHELM) != 0) &&
                                 !(item_slot == EQUIPMENT_SLOT_BACK && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOCLOAK) != 0))
                             {
-                                player_items[item_slot].displayId = itemProperties->DisplayInfoID;
-                                player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
+                                charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                charEnum.player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
 
                                 if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
                                 {
@@ -360,9 +360,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                                     {
                                         DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
                                         if (spell_item_enchant != nullptr)
-                                            player_items[item_slot].enchantmentId = spell_item_enchant->visual;
+                                            charEnum.player_items[item_slot].enchantmentId = spell_item_enchant->visual;
                                         else
-                                            player_items[item_slot].enchantmentId = 0;
+                                            charEnum.player_items[item_slot].enchantmentId = 0;
                                     }
                                 }
                             }
@@ -378,9 +378,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
             {
-                buffer << uint8_t(player_items[i].inventoryType);
-                buffer << uint32_t(player_items[i].displayId);
-                buffer << uint32_t(player_items[i].enchantmentId);
+                buffer << uint8_t(charEnum.player_items[i].inventoryType);
+                buffer << uint32_t(charEnum.player_items[i].displayId);
+                buffer << uint32_t(charEnum.player_items[i].enchantmentId);
             }
 
             buffer << uint32_t(petFamily);
