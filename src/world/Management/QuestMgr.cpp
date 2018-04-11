@@ -391,7 +391,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 
     *data << uint32(0);
     uint32 xp = 0;
-    if (plr->getLevel() < plr->GetMaxLevel())
+    if (plr->getLevel() < plr->getMaxLevel())
     {
         xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     }
@@ -604,7 +604,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     uint32 rewardtalents = qst->rewardtalents;
     uint32 playerlevel = plr->getLevel();
 
-    if (playerlevel >= plr->GetMaxLevel())
+    if (playerlevel >= plr->getMaxLevel())
     {
         xp = 0;
     }

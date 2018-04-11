@@ -277,7 +277,8 @@ Player::Player(uint32 guid)
     m_session(nullptr),
     m_GroupInviter(0),
     m_SummonedObject(nullptr),
-    myCorpseLocation()
+    myCorpseLocation(),
+    max_level(60)
 #ifdef FT_ACHIEVEMENTS
         ,
     m_achievementMgr(this)
@@ -1049,9 +1050,7 @@ bool Player::Create(WorldPacket& data)
     setNextLevelXp(400);
     setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     setModCastSpeed(1.0f);
-#if VERSION_STRING != Classic
-    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
-#endif
+    setMaxLevel(worldConfig.player.playerLevelCap);
 
     // Gold Starting Amount
     SetGold(worldConfig.player.startGoldAmount);
@@ -1643,9 +1642,8 @@ void Player::_EventExploration()
 #if VERSION_STRING > TBC
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
 #endif
-        uint32 maxlevel = GetMaxLevel();
 
-        if (getLevel() < maxlevel && explore_xp > 0)
+        if (getLevel() < getMaxLevel() && explore_xp > 0)
         {
             SendExploreXP(at->id, explore_xp);
             GiveXP(explore_xp, 0, false);
@@ -1699,7 +1697,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     if (!m_XpGain)
         return;
 
-    if (getLevel() >= GetMaxLevel())
+    if (getLevel() >= getMaxLevel())
         return;
 
     uint32 restxp = xp;
@@ -1732,12 +1730,12 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         if (level > 9)
             AddTalentPointsToAllSpec(1);
 
-        if (level >= GetMaxLevel())
+        if (level >= getMaxLevel())
             break;
     }
 
-    if (level > GetMaxLevel())
-        level = GetMaxLevel();
+    if (level > getMaxLevel())
+        level = getMaxLevel();
 
     if (levelup)
     {
@@ -3410,9 +3408,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     setModCastSpeed(1.0f);
-#if VERSION_STRING != Classic
-    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
-#endif
+    setMaxLevel(worldConfig.player.playerLevelCap);
+
     SetFaction(info->factiontemplate);
     if (cfaction)
     {
@@ -4168,9 +4165,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     setModCastSpeed(1.0f);
-#if VERSION_STRING != Classic
-    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
-#endif
+    setMaxLevel(worldConfig.player.playerLevelCap);
+
     SetFaction(info->factiontemplate);
     if (cfaction)
     {
@@ -6750,7 +6746,7 @@ void Player::UpdateStats()
 
 uint32 Player::SubtractRestXP(uint32 amount)
 {
-    if (getLevel() >= GetMaxLevel()) // Save CPU, don't waste time on this if you've reached max_level
+    if (getLevel() >= getMaxLevel()) // Save CPU, don't waste time on this if you've reached max_level
         amount = 0;
 
     int32 restAmount = m_restAmount - (amount << 1); // remember , we are dealing with xp without restbonus, so multiply by 2
@@ -6807,7 +6803,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
 
 void Player::UpdateRestState()
 {
-    if (m_restAmount && getLevel() < GetMaxLevel())
+    if (m_restAmount && getLevel() < getMaxLevel())
         m_restState = RESTSTATE_RESTED;
     else
         m_restState = RESTSTATE_NORMAL;

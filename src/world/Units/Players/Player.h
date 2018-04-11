@@ -493,6 +493,9 @@ public:
     void setRangedAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
 
+    uint32_t getMaxLevel() const;
+    void setMaxLevel(uint32_t level);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
@@ -509,6 +512,9 @@ public:
     // Basic
 
 private:
+
+    //used for classic
+    uint32_t max_level;
 
     std::string m_name;
 
@@ -801,9 +807,14 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         bool HasQuests()
         {
+#if VERSION_STRING > Classic
             for (uint8 i = 0; i < 25; ++i)
+#else
+            for (uint8 i = 0; i < 20; ++i)
+
+#endif
             {
-                if (m_questlog[i] != 0)
+                if (m_questlog[i] != nullptr)
                     return true;
             }
             return false;
@@ -923,14 +934,6 @@ public:
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
-        uint32 GetMaxLevel()
-        {
-#if VERSION_STRING == Classic
-            return 60;      // world levelcap!
-#else
-            return getUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-#endif
-        }
 
         const uint64 & GetSelection() const { return m_curSelection; }
         const uint64 & GetTarget() const { return m_curTarget; }

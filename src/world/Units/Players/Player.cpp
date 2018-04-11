@@ -99,6 +99,24 @@ void Player::setExploredZone(uint32_t idx, uint32_t data)
     write(playerData()->explored_zones[idx], data);
 }
 
+uint32_t Player::getMaxLevel() const
+{
+#if VERSION_STRING > Classic
+    return playerData()->field_max_level;
+#else
+    return max_level;
+#endif
+}
+
+void Player::setMaxLevel(uint32_t level)
+{
+#if VERSION_STRING > Classic
+    write(playerData()->field_max_level, level);
+#else
+    max_level = level;
+#endif 
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

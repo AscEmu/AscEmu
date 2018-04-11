@@ -1334,7 +1334,7 @@ void WorldSession::FullLogin(Player* plr)
         plr->ApplyPlayerRestState(true);
 
     //Calculate rest bonus if there is time between lastlogoff and now
-    if (plr->m_timeLogoff > 0 && plr->getLevel() < plr->GetMaxLevel())    // if timelogoff = 0 then it's the first login
+    if (plr->m_timeLogoff > 0 && plr->getLevel() < plr->getMaxLevel())    // if timelogoff = 0 then it's the first login
     {
         uint32 currenttime = uint32(UNIXTIME);
         uint32 timediff = currenttime - plr->m_timeLogoff;
