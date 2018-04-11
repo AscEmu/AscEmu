@@ -882,7 +882,7 @@ inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
 }
 
 // table from http://www.wowwiki.com/Mana_regeneration
-const static float BaseRegen[DBC_PLAYER_LEVEL_CAP] =
+const static float BaseManaRegen[DBC_PLAYER_LEVEL_CAP] =
 {
     0.034965f,
     0.034191f,
@@ -976,6 +976,26 @@ const static float BaseRegen[DBC_PLAYER_LEVEL_CAP] =
     0.003345f,
 #endif
 };
+
+static uint8_t getSideByRace(uint8_t side)
+{
+    switch (side)
+    {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+#if VERSION_STRING > Classic
+        case RACE_DRAENEI:
+#endif
+#if VERSION_STRING > WotLK
+        case RACE_WORGEN:
+#endif
+            return TEAM_ALLIANCE;
+        default:
+            return TEAM_HORDE;
+    }
+}
 
 // action button defines
 #if VERSION_STRING != TBC

@@ -480,19 +480,7 @@ void ObjectMgr::LoadPlayersInfo()
                 delete result2;
             }
 
-#if VERSION_STRING != Cata
-#if VERSION_STRING > Classic
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI)
-#else
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF)
-
-#endif
-#else
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI || pn->race == RACE_WORGEN)
-#endif
-                pn->team = 0;
-            else
-                pn->team = 1;
+            pn->team = getSideByRace(pn->race);
 
             if (GetPlayerInfoByName(pn->name) != nullptr)
             {

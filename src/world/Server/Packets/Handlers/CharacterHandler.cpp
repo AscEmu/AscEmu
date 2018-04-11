@@ -91,15 +91,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             charEnum.guildId = fields[18].GetUInt32();
 
             if (_side < 0)
-            {
-#if VERSION_STRING == Classic
-                // pretti wrong since we have troll as max (9)
-                static uint8_t sides[11 + 1] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0 };
-#elif VERSION_STRING >= TBC
-                static uint8_t sides[RACE_DRAENEI + 1] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0 };
-#endif
-                _side = sides[charEnum.race];
-            }
+                _side = getSideByRace(charEnum.race);
 
 #if VERSION_STRING >= WotLK
             has_level_55_char = has_level_55_char || (charEnum.level >= 55);
@@ -259,10 +251,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             ObjectGuid guildGuid = MAKE_NEW_GUID(charEnum.guildId, 0, HIGHGUID_TYPE_GUILD);
 
             if (_side < 0)
-            {
-                static uint8_t sides[NUM_RACES] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                _side = sides[charEnum.race];
-            }
+                _side = getSideByRace(charEnum.race);
 
             has_level_55_char = has_level_55_char || (charEnum.level >= 55);
             has_dk = has_dk || (charEnum.Class == DEATHKNIGHT);
