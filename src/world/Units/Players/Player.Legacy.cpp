@@ -1809,7 +1809,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
 }
 
-#ifdef AE_TBC
+#if VERSION_STRING <= TBC
 void Player::smsg_InitialSpells()
 {
     const auto mstime = Util::getMSTime();
@@ -1850,9 +1850,7 @@ void Player::smsg_InitialSpells()
     uint32_t v = 0;
     GetSession()->OutPacket(SMSG_SEND_UNLEARN_SPELLS, 4, &v);
 }
-#endif
-
-#ifndef AE_TBC
+#else
 void Player::smsg_InitialSpells()
 {
     PlayerCooldownMap::iterator itr, itr2;
@@ -8678,7 +8676,7 @@ void Player::PushCreationData(ByteBuffer* data, uint32 updatecount)
     _bufferS.Release();
 
 }
-
+#if VERSION_STRING > Classic
 void Player::ProcessPendingUpdates()
 {
     _bufferS.Acquire();
@@ -8800,6 +8798,64 @@ void Player::ProcessPendingUpdates()
         resend_speed = false;
     }
 }
+#else
+void Player::ProcessPendingUpdates()
+{
+    _bufferS.Acquire();
+
+    uint32 buffer_size = uint32(bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9));
+    uint8 * update_buffer = new uint8[buffer_size];
+    uint32 c = 0;
+
+    *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);
+    c += 4;
+    update_buffer[c] = 1;
+    ++c;
+
+    // append any out of range updates
+    if (mOutOfRangeIdCount)
+    {
+        update_buffer[c] = UPDATETYPE_OUT_OF_RANGE_OBJECTS;
+        ++c;
+        *(uint32*)&update_buffer[c] = mOutOfRangeIdCount;
+        c += 4;
+        memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());
+        c += uint32(mOutOfRangeIds.size());
+        mOutOfRangeIds.clear();
+        mOutOfRangeIdCount = 0;
+    }
+
+    if (bUpdateBuffer.size())
+        memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());
+    c += uint32(bUpdateBuffer.size());
+
+    // clear our update buffer
+    bUpdateBuffer.clear();
+    bProcessPending = false;
+    mUpdateCount = 0;
+
+    _bufferS.Release();
+
+    // compress update packet
+    // while we said 350 before, i'm gonna make it 500 :D
+    if (c < 1000 || !CompressAndSendUpdateBuffer(c, update_buffer))
+    {
+        // send uncompressed packet -> because we failed
+        m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
+    }
+
+    delete[] update_buffer;
+
+    // send any delayed packets
+    WorldPacket * pck;
+    while (delayedPackets.size())
+    {
+        pck = delayedPackets.next();
+        m_session->SendPacket(pck);
+        delete pck;
+    }
+}
+#endif
 
 bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer)
 {
@@ -10483,7 +10539,7 @@ void Player::CompleteLoading()
     if (!IsMounted())
         SpawnActivePet();
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     // useless logon spell
     Spell* logonspell = sSpellFactoryMgr.NewSpell(this, sSpellCustomizations.GetSpellInfo(836), false, nullptr);
     logonspell->prepare(&targets);

@@ -1473,7 +1473,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     *data << tbc_flags;
     *data << tbc_flags_2;
+#if VERSION_STRING == TBC
     *data << uint8_t(0);
+#endif
     *data << Util::getMSTime();
 
     if (tbc_flags & UPDATEFLAG_HAS_POSITION)
@@ -1551,8 +1553,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (tbc_flags & UPDATEFLAG_LOWGUID)
     {
         *data << m_uint32Values[OBJECT_FIELD_GUID];
+#if VERSION_STRING == TBC
         if (tbc_flags & UPDATEFLAG_HIGHGUID)
             *data << m_uint32Values[OBJECT_FIELD_GUID + 1];
+#endif
     }
     else if (tbc_flags & UPDATEFLAG_HIGHGUID)
     {
