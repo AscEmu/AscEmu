@@ -375,7 +375,7 @@ Player::Player(uint32 guid)
     mPlayerControler = this;
 
     bProcessPending = false;
-    for (i = 0; i < 25; ++i)
+    for (i = 0; i < MAX_QUEST_SLOT; ++i)
         m_questlog[i] = nullptr;
 
     m_ItemInterface = new ItemInterface(this);
@@ -433,9 +433,7 @@ Player::Player(uint32 guid)
     m_resist_critical[0] = m_resist_critical[1] = 0;
 
     for (i = 0; i < 3; i++)
-    {
         m_attack_speed[i] = 1.0f;
-    }
 
     for (i = 0; i < SCHOOL_COUNT; i++)
         m_resist_hit_spell[i] = 0;
@@ -634,7 +632,7 @@ Player::~Player()
 
     // delete m_talenttree
 
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
     {
         if (m_questlog[i] != nullptr)
         {
@@ -684,67 +682,37 @@ uint32 GetSpellForLanguage(uint32 SkillID)
     {
         case SKILL_LANG_COMMON:
             return 668;
-            break;
-
         case SKILL_LANG_ORCISH:
             return 669;
-            break;
-
         case SKILL_LANG_TAURAHE:
             return 670;
-            break;
-
         case SKILL_LANG_DARNASSIAN:
             return 671;
-            break;
-
         case SKILL_LANG_DWARVEN:
             return 672;
-            break;
-
         case SKILL_LANG_THALASSIAN:
             return 813;
-            break;
-
         case SKILL_LANG_DRACONIC:
             return 814;
-            break;
-
         case SKILL_LANG_DEMON_TONGUE:
             return 815;
-            break;
-
         case SKILL_LANG_TITAN:
             return 816;
-            break;
-
         case SKILL_LANG_OLD_TONGUE:
             return 817;
-            break;
-
         case SKILL_LANG_GNOMISH:
             return 7430;
-            break;
-
         case SKILL_LANG_TROLL:
             return 7341;
-            break;
-
         case SKILL_LANG_GUTTERSPEAK:
             return 17737;
-            break;
-
         case SKILL_LANG_DRAENEI:
             return 29932;
-            break;
 #if VERSION_STRING == Cata
         case SKILL_LANG_GOBLIN:
             return 69269;
-            break;
-
         case SKILL_LANG_GILNEAN:
             return 69270;
-            break;
 #endif
     }
 
@@ -2494,9 +2462,9 @@ void Player::addSpell(uint32 spell_id)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Set Create Player Bits -- Sets bits required for creating a player in the updateMask.
-/// Note:  Doesn't set Quest or Inventory bits
-/// updateMask - the updatemask to hold the set bits
+// Set Create Player Bits -- Sets bits required for creating a player in the updateMask.
+// Note:  Doesn't set Quest or Inventory bits
+// updateMask - the updatemask to hold the set bits
 //////////////////////////////////////////////////////////////////////////////////////////
 void Player::_SetCreateBits(UpdateMask* updateMask, Player* target) const
 {
@@ -3101,7 +3069,8 @@ bool Player::canCast(SpellInfo* m_spellInfo)
                 {
                     if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))                            return false;
+                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
+                            return false;
                     }
                 }
             }
@@ -4761,7 +4730,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
     uint32 questid;
 
     // clear all fields
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
     {
         uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
         setUInt32Value(baseindex + 0, 0);
@@ -6177,7 +6146,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 
 bool Player::HasTimedQuest()
 {
-    for (uint8 i = 0; i < 25; i++)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; i++)
         if ((m_questlog[i] != nullptr) && (m_questlog[i]->GetQuest()->time != 0))
             return true;
 
@@ -6680,13 +6649,6 @@ void Player::UpdateStats()
         if (GetPower(POWER_TYPE_MANA) > res)
             SetPower(POWER_TYPE_MANA, res);
 
-        // Manaregen
-        // table from http://www.wowwiki.com/Mana_regeneration
-        const static float BaseRegen[80/*DBC_PLAYER_LEVEL_CAP*/] =
-        {
-            0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f, 0.008859f, 0.008415f, 0.007993f, 0.007592f, 0.007211f, 0.006849f, 0.006506f, 0.006179f, 0.005869f, 0.005575f
-        };
-
         uint32 level = getLevel();
 
         if (level > DBC_PLAYER_LEVEL_CAP)
@@ -7114,7 +7076,7 @@ void Player::EventCannibalize(uint32 amount)
     SendPeriodicHealAuraLog(GetNewGUID(), GetNewGUID(), 20577, amt, 0, false);
 }
 
-///The player sobers by 256 every 10 seconds
+// The player sobers by 256 every 10 seconds
 void Player::HandleSobering()
 {
     m_drunkTimer = 0;
@@ -7173,7 +7135,7 @@ void Player::LoadTaxiMask(const char* data)
 bool Player::HasQuestForItem(uint32 itemid)
 {
     QuestProperties const* qst;
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
     {
         if (m_questlog[i] != nullptr)
         {
@@ -7220,12 +7182,11 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
 
     if (resetnum == 0)
         return  10000;
-    else
-    {
-        if (resetnum > 10)
-            return  500000;
-        else return resetnum * 50000;
-    }
+
+    if (resetnum > 10)
+        return  500000;
+
+    return resetnum * 50000;
 }
 
 int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
@@ -11039,16 +11000,24 @@ void Player::CalcDamage()
 
         if (ss == FORM_CAT)
         {
-            if (lev < 42) x = lev - 1;
-            else if (lev < 46) x = lev;
-            else if (lev < 49) x = 2 * lev - 45;
-            else if (lev < 60) x = lev + 4;
-            else x = 64;
+            if (lev < 42)
+                x = lev - 1;
+            else if (lev < 46)
+                x = lev;
+            else if (lev < 49)
+                x = 2 * lev - 45;
+            else if (lev < 60)
+                x = lev + 4;
+            else
+            x = 64;
 
             // 3rd grade polinom for calculating blue two-handed weapon dps based on itemlevel (from Hyzenthlei)
-            if (x <= 28) feral_damage = 1.563e-03f * x * x * x - 1.219e-01f * x * x + 3.802e+00f * x - 2.227e+01f;
-            else if (x <= 41) feral_damage = -3.817e-03f * x * x * x + 4.015e-01f * x * x - 1.289e+01f * x + 1.530e+02f;
-            else feral_damage = 1.829e-04f * x * x * x - 2.692e-02f * x * x + 2.086e+00f * x - 1.645e+01f;
+            if (x <= 28)
+                feral_damage = 1.563e-03f * x * x * x - 1.219e-01f * x * x + 3.802e+00f * x - 2.227e+01f;
+            else if (x <= 41)
+                feral_damage = -3.817e-03f * x * x * x + 4.015e-01f * x * x - 1.289e+01f * x + 1.530e+02f;
+            else
+                feral_damage = 1.829e-04f * x * x * x - 2.692e-02f * x * x + 2.086e+00f * x - 1.645e+01f;
 
             r = feral_damage * 0.79f + delta + ap_bonus * 1000.0f;
             r *= tmp;
@@ -11060,14 +11029,22 @@ void Player::CalcDamage()
         }
         else // Bear or Dire Bear Form
         {
-            if (ss == FORM_BEAR) x = lev;
-            else x = lev + 5; // DIRE_BEAR dps is slightly better than bear dps
-            if (x > 70) x = 70;
+            if (ss == FORM_BEAR)
+                x = lev;
+            else
+                x = lev + 5; // DIRE_BEAR dps is slightly better than bear dps
+
+            if (x > 70)
+                x = 70;
 
             // 3rd grade polinom for calculating green two-handed weapon dps based on itemlevel (from Hyzenthlei)
-            if (x <= 30) feral_damage = 7.638e-05f * x * x * x + 1.874e-03f * x * x + 4.967e-01f * x + 1.906e+00f;
-            else if (x <= 44) feral_damage = -1.412e-03f * x * x * x + 1.870e-01f * x * x - 7.046e+00f * x + 1.018e+02f;
-            else feral_damage = 2.268e-04f * x * x * x - 3.704e-02f * x * x + 2.784e+00f * x - 3.616e+01f;
+            if (x <= 30)
+                feral_damage = 7.638e-05f * x * x * x + 1.874e-03f * x * x + 4.967e-01f * x + 1.906e+00f;
+            else if (x <= 44)
+                feral_damage = -1.412e-03f * x * x * x + 1.870e-01f * x * x - 7.046e+00f * x + 1.018e+02f;
+            else
+                feral_damage = 2.268e-04f * x * x * x - 3.704e-02f * x * x + 2.784e+00f * x - 3.616e+01f;
+
             feral_damage *= 2.5f; // Bear Form attack speed
 
             r = feral_damage * 0.79f + delta + ap_bonus * 2500.0f;
@@ -12064,7 +12041,7 @@ bool Player::HasQuestMob(uint32 entry) //Only for Kill Quests
 
 bool Player::HasQuest(uint32 entry)
 {
-    for (uint8 i = 0; i < 25; i++)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; i++)
     {
         if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->id == entry)
             return true;

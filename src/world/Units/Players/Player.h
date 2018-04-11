@@ -807,12 +807,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         bool HasQuests()
         {
-#if VERSION_STRING > Classic
-            for (uint8 i = 0; i < 25; ++i)
-#else
-            for (uint8 i = 0; i < 20; ++i)
-
-#endif
+            for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
             {
                 if (m_questlog[i] != nullptr)
                     return true;

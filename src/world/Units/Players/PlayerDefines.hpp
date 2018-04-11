@@ -881,6 +881,102 @@ inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
     return false;
 }
 
+// table from http://www.wowwiki.com/Mana_regeneration
+const static float BaseRegen[DBC_PLAYER_LEVEL_CAP] =
+{
+    0.034965f,
+    0.034191f,
+    0.033465f,
+    0.032526f,
+    0.031661f,
+    0.031076f,
+    0.030523f,
+    0.029994f,
+    0.029307f,
+    0.028661f,
+    0.027584f,
+    0.026215f,
+    0.025381f,
+    0.024300f,
+    0.023345f,
+    0.022748f,
+    0.021958f,
+    0.021386f,
+    0.020790f,
+    0.020121f,
+    0.019733f,
+    0.019155f,
+    0.018819f,
+    0.018316f,
+    0.017936f,
+    0.017576f,
+    0.017201f,
+    0.016919f,
+    0.016581f,
+    0.016233f,
+    0.015994f,
+    0.015707f,
+    0.015464f,
+    0.015204f,
+    0.014956f,
+    0.014744f,
+    0.014495f,
+    0.014302f,
+    0.014094f,
+    0.013895f,
+    0.013724f,
+    0.013522f,
+    0.013363f,
+    0.013175f,
+    0.012996f,
+    0.012853f,
+    0.012687f,
+    0.012539f,
+    0.012384f,
+    0.012233f,
+    0.012113f,
+    0.011973f,
+    0.011859f,
+    0.011714f,
+    0.011575f,
+    0.011473f,
+    0.011342f,
+    0.011245f,
+    0.011110f,
+    0.010999f,
+#if VERSION_STRING > Classic
+    0.010700f,
+    0.010522f,
+    0.010290f,
+    0.010119f,
+    0.009968f,
+    0.009808f,
+    0.009651f,
+    0.009553f,
+    0.009445f,
+    0.009327f,
+#endif
+#if VERSION_STRING > TBC
+    0.008859f,
+    0.008415f,
+    0.007993f,
+    0.007592f,
+    0.007211f,
+    0.006849f,
+    0.006506f,
+    0.006179f,
+    0.005869f,
+    0.005575f,
+#endif
+#if VERSION_STRING > WotLK
+    0.003345f,
+    0.003345f,
+    0.003345f,
+    0.003345f,
+    0.003345f,
+#endif
+};
+
 // action button defines
 #if VERSION_STRING != TBC
     #define PLAYER_ACTION_BUTTON_COUNT 144
@@ -907,4 +1003,8 @@ inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
 #endif
 
 
+#if VERSION_STRING == Classic
+#define MAX_QUEST_SLOT 20
+#else
 #define MAX_QUEST_SLOT 25
+#endif
