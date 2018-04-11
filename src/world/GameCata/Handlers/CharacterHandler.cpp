@@ -627,7 +627,7 @@ void WorldSession::FullLogin(Player* plr)
     if (plr->m_isResting)
         plr->ApplyPlayerRestState(true);
 
-    if (plr->m_timeLogoff > 0 && plr->getLevel() < plr->GetMaxLevel())
+    if (plr->m_timeLogoff > 0 && plr->getLevel() < plr->getMaxLevel())
     {
         uint32 currenttime = uint32(UNIXTIME);
         uint32 timediff = currenttime - plr->m_timeLogoff;

@@ -448,12 +448,6 @@ enum ModType
     MOD_SPELL     = 2
 };
 
-struct spells
-{
-    uint16 spellId;
-    uint16 slotId;
-};
-
 enum DrunkenState
 {
     DRUNKEN_SOBER    = 0,

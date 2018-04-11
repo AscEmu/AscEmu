@@ -349,7 +349,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     uint32_t rewardtalents = qst->rewardtalents;
     uint32_t playerlevel = plr->getLevel();
 
-    if (playerlevel >= plr->GetMaxLevel())
+    if (playerlevel >= plr->getMaxLevel())
     {
         xp = 0;
     }
