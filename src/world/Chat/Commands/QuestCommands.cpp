@@ -171,7 +171,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                         return true;
                     }
 
-                    sGMLog.writefromsession(m_session, "started quest %u [%s] for player %s", qst->id, qst->title.c_str(), plr->GetName());
+                    sGMLog.writefromsession(m_session, "started quest %u [%s] for player %s", qst->id, qst->title.c_str(), plr->getName().c_str());
 
                     QuestLogEntry* qle = new QuestLogEntry();
                     qle->Init(qst, plr, open_slot);
@@ -339,7 +339,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 recout += "The quest has now been completed for that player.";
             }
 
-            sGMLog.writefromsession(m_session, "completed quest %u [%s] for player %s", quest_id, qst->title.c_str(), plr->GetName());
+            sGMLog.writefromsession(m_session, "completed quest %u [%s] for player %s", quest_id, qst->title.c_str(), plr->getName().c_str());
             sQuestMgr.BuildQuestComplete(plr, qst);
             plr->AddToFinishedQuests(quest_id);
 
@@ -1458,7 +1458,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
     if (qst)
     {
         recout = RemoveQuestFromPlayer(plr, qst);
-        sGMLog.writefromsession(m_session, "removed quest %u [%s] from player %s%", qst->id, qst->title.c_str(), plr->GetName());
+        sGMLog.writefromsession(m_session, "removed quest %u [%s] from player %s%", qst->id, qst->title.c_str(), plr->getName().c_str());
     }
     else
         recout = "Invalid quest selected, unable to remove.\n\n";

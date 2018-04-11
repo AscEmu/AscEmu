@@ -55,7 +55,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     if (player->m_arenaTeams[internal_type] != NULL)
     {
-        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
+        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->getName().c_str());
         return true;
     }
 
@@ -71,7 +71,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     objmgr.AddArenaTeam(arena_team);
 
-    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->GetName(), team_type);
+    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), team_type);
 
     return true;
 }
@@ -99,14 +99,14 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 
     if (player->m_arenaTeams[internal_type] == NULL)
     {
-        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
+        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->getName().c_str());
         return true;
     }
 
     auto arena_team = player->m_arenaTeams[internal_type];
     arena_team->SetLeader(player->getPlayerInfo());
 
-    GreenSystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->GetName(), team_type);
+    GreenSystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->getName().c_str(), team_type);
 
     return true;
 }

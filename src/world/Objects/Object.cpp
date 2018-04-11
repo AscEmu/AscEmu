@@ -3744,7 +3744,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     if (CurrentTarget && CurrentTarget->isPlayer())
                     {
                         ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->GetName());
+                        newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->getName().c_str());
                     }
                 }
                 test = strstr((char*)text, "$C");

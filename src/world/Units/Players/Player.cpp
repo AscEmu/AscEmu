@@ -257,6 +257,12 @@ void Player::sendAuctionCommandResult(Auction* /*auction*/, uint32_t /*action*/,
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Basic
+
+std::string Player::getName() const { return m_name; }
+void Player::setName(std::string name) { m_name = name; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 void Player::updateAutoRepeatSpell()
 {

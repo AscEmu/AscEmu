@@ -1069,7 +1069,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
         Util::StringToLowerCase(strName);
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!stricmp(itr->second->GetNameString()->c_str(), strName.c_str()))
+            if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
             {
                 rv = itr->second;
                 break;
@@ -1080,7 +1080,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
     {
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!strcmp(itr->second->GetName(), name))
+            if (!strcmp(itr->second->getName().c_str(), name))
             {
                 rv = itr->second;
                 break;

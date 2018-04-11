@@ -533,16 +533,16 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
     Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
-        sGMLog.writefromsession(m_session, "used modify field value: %s, %u on %s", fieldname, av, plr->GetName());
+        sGMLog.writefromsession(m_session, "used modify field value: %s, %u on %s", fieldname, av, plr->getName().c_str());
         if (fieldmax)
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %d/%d.", fieldname, plr->GetName(), av, mv);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d/%d.", m_session->GetPlayer()->GetName(), fieldname, av, mv);
+            BlueSystemMessage(m_session, "You set the %s of %s to %d/%d.", fieldname, plr->getName().c_str(), av, mv);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d/%d.", m_session->GetPlayer()->getName().c_str(), fieldname, av, mv);
         }
         else
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %d.", fieldname, plr->GetName(), av);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d.", m_session->GetPlayer()->GetName(), fieldname, av);
+            BlueSystemMessage(m_session, "You set the %s of %s to %d.", fieldname, plr->getName().c_str(), av);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d.", m_session->GetPlayer()->getName().c_str(), fieldname, av);
         }
 
         if (field == UNIT_FIELD_STAT1) av /= 2;
@@ -654,16 +654,16 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint16 field, uint16
     Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
-        sGMLog.writefromsession(m_session, "used modify field value: %s, %f on %s", fieldname, av, plr->GetName());
+        sGMLog.writefromsession(m_session, "used modify field value: %s, %f on %s", fieldname, av, plr->getName().c_str());
         if (fieldmax)
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %.1f/%.1f.", fieldname, plr->GetName(), av, mv);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f/%.1f.", m_session->GetPlayer()->GetName(), fieldname, av, mv);
+            BlueSystemMessage(m_session, "You set the %s of %s to %.1f/%.1f.", fieldname, plr->getName().c_str(), av, mv);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f/%.1f.", m_session->GetPlayer()->getName().c_str(), fieldname, av, mv);
         }
         else
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %.1f.", fieldname, plr->GetName(), av);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->GetName(), fieldname, av);
+            BlueSystemMessage(m_session, "You set the %s of %s to %.1f.", fieldname, plr->getName().c_str(), av);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->getName().c_str(), fieldname, av);
         }
         plr->setFloatValue(field, av);
         if (fieldmax)

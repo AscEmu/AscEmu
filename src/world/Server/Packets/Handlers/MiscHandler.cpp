@@ -110,7 +110,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
         bool add = true;
 
         // Chat name
-        if (cname && recv_packet.player_name != *plr->GetNameString())
+        if (cname && recv_packet.player_name.compare(plr->getName()) != 0)
             continue;
 
         // Guild name
@@ -161,7 +161,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
             add = false;
             for (uint32 i = 0; i < recv_packet.name_count; ++i)
             {
-                if (!strnicmp(recv_packet.names[i].c_str(), plr->GetName(), recv_packet.names[i].length()))
+                if (!strnicmp(recv_packet.names[i].c_str(), plr->getName().c_str(), recv_packet.names[i].length()))
                 {
                     add = true;
                     break;
@@ -173,7 +173,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
             continue;
 
         // if we're here, it means we've passed all tests
-        data << plr->GetName();
+        data << plr->getName().c_str();
 
 #if VERSION_STRING != Cata
         if (plr->m_playerInfo->guild)
@@ -344,13 +344,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (lootSlot >= pLoot->items.size())
     {
         LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)",
-                  GetPlayer()->GetName(), lootSlot, pLoot->items.size());
+                  GetPlayer()->getName().c_str(), lootSlot, pLoot->items.size());
         return;
     }
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -976,7 +976,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
     data << msg;
     SendPacket(&data);
-    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
+    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", GetPlayer()->getName().c_str(), charname.c_str());
 }
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
@@ -1241,7 +1241,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     if (uiID > 8)
     {
         // Shit..
-        LOG_ERROR("WARNING: Accountdata > 8 (%d) was requested to be updated by %s of account %d!", uiID, GetPlayer()->GetName(), this->GetAccountId());
+        LOG_ERROR("WARNING: Accountdata > 8 (%d) was requested to be updated by %s of account %d!", uiID, GetPlayer()->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -1290,7 +1290,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
         {
             case Z_OK:				  //0 no error decompression is OK
                 SetAccountData(uiID, data, false, uiDecompressedSize);
-                LOG_DETAIL("WORLD: Successfully decompressed account data %d for %s, and updated storage array.", uiID, GetPlayer()->GetName());
+                LOG_DETAIL("WORLD: Successfully decompressed account data %d for %s, and updated storage array.", uiID, GetPlayer()->getName().c_str());
                 break;
 
             case Z_ERRNO:			   //-1
@@ -1301,13 +1301,13 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
             case Z_VERSION_ERROR:	   //-6
             {
                 delete[] data;
-                LOG_ERROR("WORLD WARNING: Decompression of account data %d for %s FAILED.", uiID, GetPlayer()->GetName());
+                LOG_ERROR("WORLD WARNING: Decompression of account data %d for %s FAILED.", uiID, GetPlayer()->getName().c_str());
                 break;
             }
 
             default:
                 delete[] data;
-                LOG_ERROR("WORLD WARNING: Decompression gave a unknown error: %x, of account data %d for %s FAILED.", ZlibResult, uiID, GetPlayer()->GetName());
+                LOG_ERROR("WORLD WARNING: Decompression gave a unknown error: %x, of account data %d for %s FAILED.", ZlibResult, uiID, GetPlayer()->getName().c_str());
                 break;
         }
     }
@@ -1338,7 +1338,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     if (id > 8)
     {
         // Shit..
-        LOG_ERROR("WARNING: Accountdata > 8 (%d) was requested by %s of account %d!", id, GetPlayer()->GetName(), this->GetAccountId());
+        LOG_ERROR("WARNING: Accountdata > 8 (%d) was requested by %s of account %d!", id, GetPlayer()->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -2365,7 +2365,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (slotid >= pLoot->items.size())
     {
         LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)",
-                  GetPlayer()->GetName(), slotid, pLoot->items.size());
+                  GetPlayer()->getName().c_str(), slotid, pLoot->items.size());
         return;
     }
 

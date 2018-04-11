@@ -200,7 +200,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
     case CHAT_MSG_EMOTE:
         // TODO Verify "strange gestures" for xfaction
         GetPlayer()->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, language, GetPlayer()->getGuid(), recv_packet.message, _player->isGMFlagSet()).serialise().get(), true, true);
-        LogDetail("[emote] %s: %s", _player->GetName(), recv_packet.message.c_str());
+        LogDetail("[emote] %s: %s", _player->getName().c_str(), recv_packet.message.c_str());
         break;
     case CHAT_MSG_SAY:
         if (is_gm_command || !player_can_speak_language)
@@ -247,7 +247,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     }
                 }
             }
-            LogDetail("[party] %s: %s", _player->GetName(), recv_packet.message.c_str());
+            LogDetail("[party] %s: %s", _player->getName().c_str(), recv_packet.message.c_str());
         }
     }
         break;
@@ -948,7 +948,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     if (pUnit)
     {
         if (pUnit->isPlayer())
-            name = static_cast<Player*>(pUnit)->GetName();
+            name = static_cast<Player*>(pUnit)->getName().c_str();
         else if (pUnit->isPet())
             name = static_cast<Pet*>(pUnit)->GetName();
         else
@@ -1073,7 +1073,7 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
         return;
     }
 
-    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->getGuid());
+    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->getName().c_str(), _player->getGuid());
     player->GetSession()->SendPacket(data);
     delete data;
 }
@@ -1083,6 +1083,6 @@ void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
     std::string channelName;
     recvPacket >> channelName;
 
-    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->getName().c_str(), channelName.c_str());
 }
 #endif

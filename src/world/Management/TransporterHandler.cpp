@@ -561,7 +561,7 @@ bool Transporter::AddPassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.insert(passenger->getGuidLow());
-    LOG_DEBUG("Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
+    LOG_DEBUG("Player %s boarded transport %u.", passenger->getName().c_str(), this->GetGameObjectProperties()->entry);
 
     if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -576,7 +576,7 @@ bool Transporter::RemovePassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.erase(passenger->getGuidLow());
-    LOG_DEBUG("Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
+    LOG_DEBUG("Player %s removed from transport %u.", passenger->getName().c_str(), this->GetGameObjectProperties()->entry);
 
     if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {

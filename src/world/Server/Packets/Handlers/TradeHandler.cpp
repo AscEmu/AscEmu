@@ -448,7 +448,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                     {
                         if (GetPermissionCount() > 0)
                         {
-                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->getItemProperties()->Name.c_str(), pTarget->GetName());
+                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->getItemProperties()->Name.c_str(), pTarget->getName().c_str());
                         }
                         // See CID53355 Unused value (overwritten before it can be used
                         //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);

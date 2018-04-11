@@ -3472,7 +3472,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs
-            sendReportToGmMessage(GetName(), dmgLog.str());
+            sendReportToGmMessage(getName().c_str(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
@@ -3642,7 +3642,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(GetName(), dmgLog.str());
+            sendReportToGmMessage(getName().c_str(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
@@ -4229,7 +4229,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs
-            sendReportToGmMessage(GetName(), dmgLog.str());
+            sendReportToGmMessage(getName().c_str(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
@@ -4413,7 +4413,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(GetName(), dmgLog.str());
+            sendReportToGmMessage(getName().c_str(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
@@ -6622,7 +6622,7 @@ void Player::UpdateStats()
         sCheatLog.writefromsession(GetSession(), dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(GetName(), dmgLog.str());
+            sendReportToGmMessage(getName().c_str(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
@@ -6668,7 +6668,7 @@ void Player::UpdateStats()
             sCheatLog.writefromsession(GetSession(), logmsg);
 
             if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
-                sendReportToGmMessage(GetName(), logmsg);
+                sendReportToGmMessage(getName().c_str(), logmsg);
 
             if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             {
@@ -9454,7 +9454,7 @@ void Player::EndDuel(uint8 WinCondition)
     //Announce Winner
     WorldPacket data(SMSG_DUEL_WINNER, 500);
     data << uint8(WinCondition);
-    data << GetName() << DuelingWith->GetName();
+    data << getName().c_str() << DuelingWith->getName().c_str();
     SendMessageToSet(&data, true);
 
     data.Initialize(SMSG_DUEL_COMPLETE);
@@ -9634,7 +9634,7 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     //VLack: 3.1.3, as a final step, send the player's talents, this will set the talent points right too...
     smsg_TalentsInfo(false);
 
-    LOG_DETAIL("Player %s set parameters to level %u", GetName(), Level);
+    LOG_DETAIL("Player %s set parameters to level %u", getName().c_str(), Level);
 }
 
 void Player::BroadcastMessage(const char* Format, ...)
@@ -13965,7 +13965,7 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
     }
 
     if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
-        sendReportToGmMessage(GetName(), dmglog.str());
+        sendReportToGmMessage(getName().c_str(), dmglog.str());
 
     return dmg;
 }
@@ -15221,13 +15221,13 @@ void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (mountvehicleid == 0)
     {
-        LOG_ERROR("Tried to add a vehicle component with 0 as vehicle id for player %u (%s)", getGuidLow(), GetName());
+        LOG_ERROR("Tried to add a vehicle component with 0 as vehicle id for player %u (%s)", getGuidLow(), getName().c_str());
         return;
     }
 
     if (vehicle != nullptr)
     {
-        LOG_ERROR("Tried to add a vehicle component, but there's already one for player %u (%s)", getGuidLow(), GetName());
+        LOG_ERROR("Tried to add a vehicle component, but there's already one for player %u (%s)", getGuidLow(), getName().c_str());
         return;
     }
 

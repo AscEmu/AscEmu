@@ -188,7 +188,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     if (uiType > 8)
     {
         LOG_ERROR("WARNING: Accountdata uiType > 8 (%u) was requested to be updated by %s of account %d!",
-            uiType, GetPlayer()->GetName(), this->GetAccountId());
+            uiType, GetPlayer()->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -226,7 +226,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
             {
                 SetAccountData(uiType, data, false, uiDecompressedSize);
                 LOG_DETAIL("Successfully decompressed account data %u for %s, and updated storage array.",
-                    uiType, GetPlayer()->GetName());
+                    uiType, GetPlayer()->getName().c_str());
             } break;
             case Z_ERRNO:			    //-1
             case Z_STREAM_ERROR:		//-2
@@ -236,13 +236,13 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
             case Z_VERSION_ERROR:	    //-6
             {
                 delete[] data;
-                LOG_ERROR("Decompression of account data %u for %s FAILED.", uiType, GetPlayer()->GetName());
+                LOG_ERROR("Decompression of account data %u for %s FAILED.", uiType, GetPlayer()->getName().c_str());
             } break;
             default:
             {
                 delete[] data;
                 LOG_ERROR("Decompression gave a unknown error: %x, of account data %u for %s FAILED.",
-                    ZlibResult, uiType, GetPlayer()->GetName());
+                    ZlibResult, uiType, GetPlayer()->getName().c_str());
             } break;
         }
     }
@@ -343,5 +343,5 @@ void WorldSession::HandleLogDisconnectOpcode(WorldPacket& recv_data)
 
     // 13 = close window
 
-    LOG_DEBUG("Player %s disconnected on %s - Reason %u", _player->GetName(), Util::GetCurrentDateTimeString().c_str(), disconnectReason);
+    LOG_DEBUG("Player %s disconnected on %s - Reason %u", _player->getName().c_str(), Util::GetCurrentDateTimeString().c_str(), disconnectReason);
 }

@@ -2603,7 +2603,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                     WorldPacket* data;
                     char msg[256];
-                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->GetName(), se->getName().c_str());
+                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
                     data = sChatHandler.FillMessageData(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, msg, p_caster->getGuid(), 0);
                     p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, data, 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
                     delete data;
@@ -4268,7 +4268,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
     }
 
     if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->GetName());
+        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
     itemTarget->RemoveProfessionEnchant();
@@ -6250,7 +6250,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
     }
 
     if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->GetName());
+        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant
     itemTarget->RemoveEnchantment(6);

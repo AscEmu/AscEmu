@@ -250,7 +250,7 @@ class LuaUnit
                 break;
 
             case TYPEID_PLAYER:
-                lua_pushstring(L, static_cast<Player*>(ptr)->GetName());
+                lua_pushstring(L, static_cast<Player*>(ptr)->getName().c_str());
                 break;
 
             default:
@@ -5069,7 +5069,7 @@ class LuaUnit
         TEST_PLAYER()
         Player* sender = static_cast<Player*>(ptr);
         Player* plyr = CHECK_PLAYER(L, 1);
-        std::string inviteeName = plyr->GetName();
+        std::string inviteeName = plyr->getName().c_str();
 
         Guild* pGuild = sender->GetGuild();
         if (!plyr)
@@ -5082,7 +5082,7 @@ class LuaUnit
         }
         else if (plyr->GetGuildId())
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->GetName());
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->getName().c_str());
         }
 #if VERSION_STRING != Cata
         else if (plyr->GetGuildInvitersGuid())
@@ -5090,7 +5090,7 @@ class LuaUnit
         else if (plyr->GetGuildIdInvited())
 #endif
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->GetName());
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
         }
         else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
         {
@@ -5100,7 +5100,7 @@ class LuaUnit
         {
             Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_SUCCESS, inviteeName.c_str());
             WorldPacket data(SMSG_GUILD_INVITE, 100);
-            data << sender->GetName();
+            data << sender->getName().c_str();
             data << pGuild->getGuildName();
             plyr->GetSession()->SendPacket(&data);
 #if VERSION_STRING != Cata
@@ -5379,7 +5379,7 @@ class LuaUnit
         {
             Player* plr = objmgr.GetPlayer(pGuild->GetGuildLeader());
             if (plr != NULL)
-                lua_pushstring(L, plr->GetName());
+                lua_pushstring(L, plr->getName().c_str());
             else
                 lua_pushnil(L);
         }

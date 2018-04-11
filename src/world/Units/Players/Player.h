@@ -506,6 +506,18 @@ public:
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Basic
+
+private:
+
+    std::string m_name;
+
+public:
+
+    std::string getName() const;
+    void setName(std::string name);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
 #if VERSION_STRING == Cata
@@ -745,8 +757,6 @@ public:
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
         void BuildPetSpellList(WorldPacket & data);
         void SetAFKReason(std::string reason) { m_cache->SetStringValue(CACHE_AFK_DND_REASON, reason); };
-        const char* GetName() { return m_name.c_str(); }
-        std::string* GetNameString() { return &m_name; }
 
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
@@ -1981,7 +1991,6 @@ public:
         bool resend_speed;
         uint32 login_flags;
         uint8 iInstanceType;
-        void SetName(std::string & name) { m_name = name; }
 
         FactionReputation* reputationByListId[128];
 
@@ -2117,7 +2126,7 @@ public:
         PlayerCreateInfo const* info;
         uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
         bool m_attacking;
-        std::string m_name;             // max 21 character name
+        
         uint32 m_Tutorials[8];
 
         // Character Ban

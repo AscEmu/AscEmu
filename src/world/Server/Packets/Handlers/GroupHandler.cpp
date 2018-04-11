@@ -66,7 +66,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     if (player->InGroup())
     {
         SendPartyCommandResult(_player, player->GetGroup()->getGroupType(), recv_packet.name, ERR_PARTY_ALREADY_IN_GROUP);
-        player->GetSession()->SendPacket(SmsgGroupInvite(0, GetPlayer()->GetName()).serialise().get());
+        player->GetSession()->SendPacket(SmsgGroupInvite(0, GetPlayer()->getName().c_str()).serialise().get());
         return;
     }
 
@@ -94,7 +94,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    player->GetSession()->SendPacket(SmsgGroupInvite(1, GetPlayer()->GetName()).serialise().get());
+    player->GetSession()->SendPacket(SmsgGroupInvite(1, GetPlayer()->getName().c_str()).serialise().get());
 
     SendPartyCommandResult(_player, 0, recv_packet.name, ERR_PARTY_NO_ERROR);
 
@@ -172,7 +172,7 @@ void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/)
     if (!player)
         return;
 
-    data << GetPlayer()->GetName();
+    data << GetPlayer()->getName().c_str();
 
     player->GetSession()->SendPacket(&data);
     player->SetInviter(0);
@@ -253,7 +253,7 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
         return;
     }
 
-    membername = player ? player->GetName() : info->name;
+    membername = player ? player->getName().c_str() : info->name;
 
     if (!_player->InGroup() || (info != NULL && info->m_Group != _player->GetGroup()))
     {
@@ -301,7 +301,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
     if (player == NULL)
     {
         //SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
-        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_CANNOT_FIND);
+        SendPartyCommandResult(_player, 0, _player->getName().c_str(), ERR_PARTY_CANNOT_FIND);
         return;
     }
 
@@ -314,7 +314,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
     if (player->GetGroup() != _player->GetGroup())
     {
         //SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
-        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
+        SendPartyCommandResult(_player, 0, _player->getName().c_str(), ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
         return;
     }
 

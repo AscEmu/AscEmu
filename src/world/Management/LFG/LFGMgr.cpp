@@ -1454,12 +1454,12 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 uint64 gguid = grp->GetGUID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
                 grp->AddMember(player->getPlayerInfo());
-                LOG_DEBUG("Add Player In Group %s", player->GetNameString());
+                LOG_DEBUG("Add Player In Group %s", player->getName().c_str());
             }
             else if (group != grp)
             {
                 grp->AddMember(player->getPlayerInfo());
-                LOG_DEBUG("Add Player In Group %s", player->GetNameString());
+                LOG_DEBUG("Add Player In Group %s", player->getName().c_str());
             }
 
             // Update timers

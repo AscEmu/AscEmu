@@ -104,13 +104,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (lootSlot >= pLoot->items.size())
     {
-        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), lootSlot, pLoot->items.size());
+        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), lootSlot, pLoot->items.size());
         return;
     }
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -641,7 +641,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (slotid >= pLoot->items.size())
     {
-        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), slotid, pLoot->items.size());
+        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), slotid, pLoot->items.size());
         return;
     }
 

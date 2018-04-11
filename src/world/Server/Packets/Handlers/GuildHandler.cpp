@@ -83,12 +83,12 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
 
     if (plyr->GetGuildId())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD_S, plyr->GetName());
+        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD_S, plyr->getName().c_str());
         return;
     }
     else if (plyr->GetGuildInvitersGuid())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->GetName());
+        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
         return;
     }
     else if (!_player->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
@@ -116,7 +116,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
     //41
 
     WorldPacket data(SMSG_GUILD_INVITE, 100);
-    data << _player->GetName();
+    data << _player->getName().c_str();
     data << pGuild->getGuildName();
     plyr->GetSession()->SendPacket(&data);
 
@@ -176,7 +176,7 @@ void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
         return;
 
     data.Initialize(SMSG_GUILD_DECLINE);
-    data << plyr->GetName();
+    data << plyr->getName().c_str();
     inviter->GetSession()->SendPacket(&data);
 }
 

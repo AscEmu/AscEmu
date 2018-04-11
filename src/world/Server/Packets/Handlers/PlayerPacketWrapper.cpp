@@ -595,7 +595,7 @@ void Player::SendInitialLogonPackets()
     m_session->SendPacket(&data);
 
     UpdateSpeed();
-    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
+    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", getName().c_str());
 }
 #endif
 
@@ -662,7 +662,7 @@ void Player::SendInitialLogonPackets()
 
     m_session->SendPacket(&ArenaSettings);
 #endif
-    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
+    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", getName().c_str());
 }
 #endif
 

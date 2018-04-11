@@ -1484,7 +1484,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     if (!unit->HasItems())
     {
         sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->GetName(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
+        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->getName().c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
         Arcemu::Gossip::Menu::Complete(GetPlayer());
         return;
     }

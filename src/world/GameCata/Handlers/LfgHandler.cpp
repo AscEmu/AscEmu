@@ -89,7 +89,7 @@ void WorldSession::HandleLfgJoinOpcode(WorldPacket& recvData)
 
     std::string comment;
     recvData >> comment;
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_JOIN: %s, roles: %u, Dungeons: %u, Comment: %s", GetPlayer()->GetName(), roles, uint8(newDungeons.size()), comment.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_JOIN: %s, roles: %u, Dungeons: %u, Comment: %s", GetPlayer()->getName().c_str(), roles, uint8(newDungeons.size()), comment.c_str());
     sLfgMgr.Join(GetPlayer(), uint8(roles), newDungeons, comment);
 }
 

@@ -194,7 +194,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     }
 
     // Check if we're sending mail to ourselves
-    if (strcmp(player->name, _player->GetName()) == 0 && !GetPermissionCount())
+    if (strcmp(player->name, _player->getName().c_str()) == 0 && !GetPermissionCount())
     {
         SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
         return;

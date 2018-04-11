@@ -1156,7 +1156,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->getName().c_str());
             break;
         case TYPEID_UNIT:
             sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());
@@ -1217,7 +1217,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, static_cast< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, static_cast< Player* >(target)->getName().c_str());
             break;
         case TYPEID_UNIT:
             sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellId, static_cast< Creature* >(target)->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());
@@ -1257,7 +1257,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     {
         case TYPEID_PLAYER:
             if (m_session->GetPlayer() != target)
-                sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->getName().c_str());
             break;
         case TYPEID_UNIT:
             sGMLog.writefromsession(m_session, "used castself with spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());

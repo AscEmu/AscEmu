@@ -463,7 +463,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
         SystemMessage(m_session, "Owner/Summoner ===================");
 
         if (unit_owner->isPlayer())
-            SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->GetName());
+            SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->getName().c_str());
         if (unit_owner->isPet())
             SystemMessage(m_session, "Owner is Pet: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
         if (unit_owner->isCreature())
@@ -782,8 +782,8 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
         else if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s selected.", player->GetName());
-            sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->GetName());
+            BlueSystemMessage(m_session, "Player %s selected.", player->getName().c_str());
+            sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->getName().c_str());
         }
         else if (unit_target->isCreature())
         {
@@ -942,7 +942,7 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
         if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->GetName());
+            BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->getName().c_str());
         }
         else if (unit_target->isCreature())
         {

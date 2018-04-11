@@ -499,7 +499,7 @@ void WorldSession::FullLogin(Player* plr)
         info->cl = plr->getClass();
         info->gender = plr->getGender();
         info->guid = plr->getGuidLow();
-        info->name = strdup(plr->GetName());
+        info->name = strdup(plr->getName().c_str());
         info->lastLevel = plr->getLevel();
         info->lastOnline = UNIXTIME;
         info->lastZone = plr->GetZoneId();
@@ -564,7 +564,7 @@ void WorldSession::FullLogin(Player* plr)
         }
     }
 
-    LOG_DEBUG("Player %s logged in.", plr->GetName());
+    LOG_DEBUG("Player %s logged in.", plr->getName().c_str());
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
@@ -574,7 +574,7 @@ void WorldSession::FullLogin(Player* plr)
         OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
     }
 
-    LOG_DETAIL("Created new player for existing players (%s)", plr->GetName());
+    LOG_DETAIL("Created new player for existing players (%s)", plr->getName().c_str());
 
     // Login time, will be used for played time calc
     plr->m_playedtime[2] = uint32(UNIXTIME);

@@ -1112,7 +1112,7 @@ void Spell::castMe(bool check)
     {
         Player* player = static_cast<Player*>(m_caster);
         LogDebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Players: %s (guid: %u)",
-                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), player->GetName(), player->getPlayerInfo()->guid);
+                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), player->getName().c_str(), player->getPlayerInfo()->guid);
     }
     else if (m_caster->isCreature())
     {

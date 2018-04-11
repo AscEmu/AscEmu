@@ -47,7 +47,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (!GetPlayer()->HasSpell(spellId))
     {
         sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
         return;
     }
 
@@ -55,7 +55,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
         return;
     }
 
@@ -302,7 +302,7 @@ void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
 
     if (slot >= UNIT_SUMMON_SLOTS)
     {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->getGuidLow(), _player->GetName(), slot);
+        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->getGuidLow(), _player->getName().c_str(), slot);
         return;
     }
 

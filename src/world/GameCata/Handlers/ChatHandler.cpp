@@ -281,7 +281,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 
     if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
     {
-        LogDebug("Command parsed for player %s, input: '%s'", playerSender->GetName(), msg.c_str());
+        LogDebug("Command parsed for player %s, input: '%s'", playerSender->getName().c_str(), msg.c_str());
         return;
     }
 
@@ -386,7 +386,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 
                 }
             }
-            LogDetail("[party] %s: %s", _player->GetName(), msg.c_str());
+            LogDetail("[party] %s: %s", _player->getName().c_str(), msg.c_str());
             delete data;
         }
         break;
@@ -624,7 +624,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     {
         if (unit->isPlayer())
         {
-            name = static_cast<Player*>(unit)->GetName();
+            name = static_cast<Player*>(unit)->getName().c_str();
             namelen = (uint32_t)strlen(name) + 1;
         }
         else if (unit->isPet())
@@ -696,5 +696,5 @@ void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
     std::string channelName;
     recvPacket >> channelName;
 
-    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->getName().c_str(), channelName.c_str());
 }
