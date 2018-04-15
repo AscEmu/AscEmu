@@ -6653,12 +6653,12 @@ void Player::UpdateStats()
 
         if (level > DBC_PLAYER_LEVEL_CAP)
             level = DBC_PLAYER_LEVEL_CAP;
-        //float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseManaRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
+        //float amt = (0.001f + sqrt((float)Intellect) * Spirit * getBaseManaRegen(level))*PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Mesmer: new Manaregen formula.
         uint32 Spirit = getStat(STAT_SPIRIT);
         uint32 Intellect = getStat(STAT_INTELLECT);
-        float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseManaRegen[level - 1]) * PctPowerRegenModifier[POWER_TYPE_MANA];
+        float amt = (0.001f + sqrt((float)Intellect) * Spirit * getBaseManaRegen(level)) * PctPowerRegenModifier[POWER_TYPE_MANA];
 #if VERSION_STRING > TBC
         setFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
         setFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
