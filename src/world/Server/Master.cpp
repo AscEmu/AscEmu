@@ -53,7 +53,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "1.3.31_build_gameobject_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "1.3.32_playercreateinfo";
 
 void Master::_OnSignal(int s)
 {
