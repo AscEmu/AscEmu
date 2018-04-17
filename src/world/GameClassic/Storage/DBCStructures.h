@@ -33,7 +33,6 @@ namespace DBC
             char const area_trigger_entry_format[] = "niffffffff";
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
-            char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
             char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
@@ -46,7 +45,6 @@ namespace DBC
             char const faction_format[] = "niiiiiiiiiiiiiiiiiissssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
             char const game_object_display_info_format[] = "nsxxxxxxxxxxffffff";
-            char const gem_properties_format[] = "nixxi";
             char const gt_chance_to_melee_crit_format[] = "f";
             char const gt_chance_to_melee_crit_base_format[] = "f";
             char const gt_chance_to_spell_crit_format[] = "f";
@@ -142,17 +140,6 @@ namespace DBC
         {
             uint32_t Id;              // 0
             uint32_t Price;           // 1
-        };
-
-        struct CharTitlesEntry
-        {
-            uint32_t ID;                      // 0, title ids
-            //uint32_t unk1;                  // 1 flags?
-            char* name_male[16];            // 2-17
-            //uint32_t name_flag;             // 18 string flag, unused
-            char* name_female[16];          // 19-34
-            //const char* name2_flag;       // 35 string flag, unused
-            uint32_t bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
         };
 
         struct ChatChannelsEntry
@@ -312,15 +299,6 @@ namespace DBC
             float maxX;                     // 15
             float maxY;                     // 16
             float maxZ;                     // 17
-        };
-
-        struct GemPropertiesEntry
-        {
-            uint32_t Entry;                   // 0
-            uint32_t EnchantmentID;           // 1
-            //uint32_t unk1;                  // 2 bool
-            //uint32_t unk2;                  // 3 bool
-            uint32_t SocketMask;              // 4
         };
 
         struct GtChanceToMeleeCritEntry

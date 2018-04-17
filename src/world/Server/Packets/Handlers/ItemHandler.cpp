@@ -2114,6 +2114,7 @@ void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
     item->RemoveAllEnchantments(true);
 }
 
+#if VERSION_STRING >= TBC
 void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -2274,6 +2275,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 
     TargetItem->m_isDirty = true;
 }
+#endif
 
 void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 {
