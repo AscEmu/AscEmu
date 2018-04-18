@@ -983,18 +983,28 @@ bool Player::Create(WorldPacket& data)
     setStat(STAT_SPIRIT, info->spirit);
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
-#if VERSION_STRING > Classic
-    if (race != RACE_BLOODELF)
+
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
     {
-        setDisplayId(info->displayId + gender);
-        setNativeDisplayId(info->displayId + gender);
+        switch (gender)
+        {
+            case GENDER_MALE:
+                setDisplayId(raceEntry->model_male);
+                setNativeDisplayId(raceEntry->model_male);
+                break;
+            case GENDER_FEMALE:
+                setDisplayId(raceEntry->model_female);
+                setNativeDisplayId(raceEntry->model_female);
+                break;
+            default:
+                LOG_ERROR("Gender %u is not valid for Player charecters!", gender);
+        }
     }
     else
-#endif
     {
-        setDisplayId(info->displayId - gender);
-        setNativeDisplayId(info->displayId - gender);
+        LOG_ERROR("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
     }
+
     EventModelChange();
     //setMinDamage(info->mindmg);
     //setMaxDamage(info->maxdmg);
@@ -4181,16 +4191,27 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
 
-    if (getRace() != RACE_BLOODELF)
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
     {
-        setDisplayId(info->displayId + getGender());
-        setNativeDisplayId(info->displayId + getGender());
+        switch (getGender())
+        {
+            case GENDER_MALE:
+                setDisplayId(raceEntry->model_male);
+                setNativeDisplayId(raceEntry->model_male);
+                break;
+            case GENDER_FEMALE:
+                setDisplayId(raceEntry->model_female);
+                setNativeDisplayId(raceEntry->model_female);
+                break;
+            default:
+                LOG_ERROR("Gender %u is not valid for Player charecters!", getGender());
+        }
     }
     else
     {
-        setDisplayId(info->displayId - getGender());
-        setNativeDisplayId(info->displayId - getGender());
+        LOG_ERROR("Race %u is not supported by this AEVersion (%u)", getRace(), getAEVersion());
     }
+
     EventModelChange();
 
     setModCastSpeed(1.0f);
