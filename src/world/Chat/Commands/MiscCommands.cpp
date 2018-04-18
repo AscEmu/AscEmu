@@ -1103,6 +1103,8 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'", (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions());
 
+    BlueSystemMessage(m_session, "Factiontemplate: %u", plr->getFactionTemplate());
+
     const char* client;
 
     if (sess->HasFlag(ACCOUNT_FLAG_XPACK_02) && sess->HasFlag(ACCOUNT_FLAG_XPACK_01))

@@ -107,7 +107,6 @@ struct PlayerCreateInfo
 {
     uint8 index;
     uint8 race;
-    uint32 factiontemplate;
     uint8 class_;
     uint32 mapId;
     uint32 zoneId;

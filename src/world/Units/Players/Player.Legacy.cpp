@@ -922,7 +922,10 @@ bool Player::Create(WorldPacket& data)
     //THIS IS NEEDED
     setBaseHealth(info->health);
     setBaseMana(info->mana);
-    SetFaction(info->factiontemplate);
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
+        SetFaction(raceEntry->faction_id);
+    else
+        SetFaction(0);
 
 #if VERSION_STRING > TBC
     if (class_ == DEATHKNIGHT)
@@ -2736,10 +2739,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << uint32(getClass()) << ","
         << uint32(getGender()) << ",";
 
-    if (getFactionTemplate() != info->factiontemplate)
-        ss << getFactionTemplate() << ",";
-    else
-        ss << "0,";
+    ss << getFactionTemplate() << ",";
 
     ss << uint32(getLevel()) << ","
         << getXp() << ","
@@ -3436,7 +3436,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setModCastSpeed(1.0f);
     setMaxLevel(worldConfig.player.playerLevelCap);
 
-    SetFaction(info->factiontemplate);
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+        SetFaction(raceEntry->faction_id);
+    else
+        SetFaction(0);
     if (cfaction)
     {
         SetFaction(cfaction);
@@ -4193,7 +4196,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setModCastSpeed(1.0f);
     setMaxLevel(worldConfig.player.playerLevelCap);
 
-    SetFaction(info->factiontemplate);
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+        SetFaction(raceEntry->faction_id);
+    else
+        SetFaction(0);
     if (cfaction)
     {
         SetFaction(cfaction);
@@ -13135,11 +13141,9 @@ void Player::SetKnownTitle(RankTitles title, bool set)
 uint32 Player::GetInitialFactionId()
 {
 
-    PlayerCreateInfo const* pci = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
-    if (pci != nullptr)
-        return pci->factiontemplate;
-    else
-        return 35;
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+        return raceEntry->faction_id;
+    return 0;
 }
 
 void Player::CalcExpertise()

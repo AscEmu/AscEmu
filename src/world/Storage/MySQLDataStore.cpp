@@ -2222,11 +2222,11 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                     0       1           2           3      4       5        6          7          8          9            10
-    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
-    //                                                                11            12           13           14           15           16         17        18        19
+    //                                                                     0       1      2       3      4       5          6          7           8            9
+    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
+    //                                                                10            11           12           13           14           15         16        17        18
                                                                 "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
-    //                                                                20         21         22      23       24
+    //                                                                19         20         21      22       23
                                                                 "BaseEnergy, attackpower, mindmg, maxdmg, taximask FROM playercreateinfo base "
                                                                 "WHERE build=(SELECT MAX(build) FROM playercreateinfo spec WHERE base.Index = spec.Index AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
@@ -2244,30 +2244,29 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
         PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
 
         playerCreateInfo.race = fields[1].GetUInt8();
-        playerCreateInfo.factiontemplate = fields[2].GetUInt32();
-        playerCreateInfo.class_ = fields[3].GetUInt8();
-        playerCreateInfo.mapId = fields[4].GetUInt32();
-        playerCreateInfo.zoneId = fields[5].GetUInt32();
-        playerCreateInfo.positionX = fields[6].GetFloat();
-        playerCreateInfo.positionY = fields[7].GetFloat();
-        playerCreateInfo.positionZ = fields[8].GetFloat();
-        playerCreateInfo.orientation = fields[9].GetFloat();
-        playerCreateInfo.displayId = fields[10].GetUInt16();
-        playerCreateInfo.strength = fields[11].GetUInt8();
-        playerCreateInfo.ability = fields[12].GetUInt8();
-        playerCreateInfo.stamina = fields[13].GetUInt8();
-        playerCreateInfo.intellect = fields[14].GetUInt8();
-        playerCreateInfo.spirit = fields[15].GetUInt8();
-        playerCreateInfo.health = fields[16].GetUInt32();
-        playerCreateInfo.mana = fields[17].GetUInt32();
-        playerCreateInfo.rage = fields[18].GetUInt32();
-        playerCreateInfo.focus = fields[19].GetUInt32();
-        playerCreateInfo.energy = fields[20].GetUInt32();
-        playerCreateInfo.attackpower = fields[21].GetUInt32();
-        playerCreateInfo.mindmg = fields[22].GetFloat();
-        playerCreateInfo.maxdmg = fields[23].GetFloat();
+        playerCreateInfo.class_ = fields[2].GetUInt8();
+        playerCreateInfo.mapId = fields[3].GetUInt32();
+        playerCreateInfo.zoneId = fields[4].GetUInt32();
+        playerCreateInfo.positionX = fields[5].GetFloat();
+        playerCreateInfo.positionY = fields[6].GetFloat();
+        playerCreateInfo.positionZ = fields[7].GetFloat();
+        playerCreateInfo.orientation = fields[8].GetFloat();
+        playerCreateInfo.displayId = fields[9].GetUInt16();
+        playerCreateInfo.strength = fields[10].GetUInt8();
+        playerCreateInfo.ability = fields[11].GetUInt8();
+        playerCreateInfo.stamina = fields[12].GetUInt8();
+        playerCreateInfo.intellect = fields[13].GetUInt8();
+        playerCreateInfo.spirit = fields[14].GetUInt8();
+        playerCreateInfo.health = fields[15].GetUInt32();
+        playerCreateInfo.mana = fields[16].GetUInt32();
+        playerCreateInfo.rage = fields[17].GetUInt32();
+        playerCreateInfo.focus = fields[18].GetUInt32();
+        playerCreateInfo.energy = fields[19].GetUInt32();
+        playerCreateInfo.attackpower = fields[20].GetUInt32();
+        playerCreateInfo.mindmg = fields[21].GetFloat();
+        playerCreateInfo.maxdmg = fields[22].GetFloat();
 
-        std::string taxiMaskStr = fields[24].GetString();
+        std::string taxiMaskStr = fields[23].GetString();
         std::vector<std::string> tokens = Util::SplitStringBySeperator(taxiMaskStr, " ");
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
