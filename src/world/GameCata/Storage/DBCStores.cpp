@@ -32,6 +32,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseSto
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore(DBC::Structures::bank_bag_slot_prices_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore(DBC::Structures::barber_shop_style_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BannedAddOnsEntry> sBannedAddOnsStore(DBC::Structures::banned_addons_entry_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::CharStartOutfitEntry> sCharStartOutfitStore(DBC::Structures::char_start_outfit_format);
+std::map<uint32_t, DBC::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore(DBC::Structures::chr_classes_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore(DBC::Structures::chr_races_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(DBC::Structures::char_titles_format);
@@ -134,6 +136,11 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCurrencyTypesStore, dbc_path, "CurrencyTypes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBannedAddOnsStore, dbc_path, "BannedAddOns.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCharStartOutfitStore, dbc_path, "CharStartOutfit.dbc");
+    for (uint32_t i = 0; i < sCharStartOutfitStore.GetNumRows(); ++i)
+        if (DBC::Structures::CharStartOutfitEntry const* outfit = sCharStartOutfitStore.LookupEntry(i))
+            sCharStartOutfitMap[outfit->Race | (outfit->Class << 8) | (outfit->Gender << 16)] = outfit;
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sEmotesStore, dbc_path, "Emotes.dbc");
@@ -348,6 +355,15 @@ bool LoadDBCs()
     }
 
     return true;
+}
+
+DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
+{
+    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
+    if (itr != sCharStartOutfitMap.end())
+        return itr->second;
+
+    return nullptr;
 }
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)

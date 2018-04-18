@@ -796,8 +796,8 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Create data from client to create a new character
-/// \param p_newChar
+// Create data from client to create a new character
+// \param p_newChar
 //////////////////////////////////////////////////////////////////////////////////////////
 bool Player::Create(WorldPacket& data)
 {
@@ -847,7 +847,6 @@ bool Player::Create(WorldPacket& data)
     if (race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
 #else
     if (race >= RACE_TROLL)
-
 #endif
     {
         m_session->Disconnect();
@@ -858,6 +857,7 @@ bool Player::Create(WorldPacket& data)
     // check that the account can create deathknights, if we're making one
     if (class_ == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
     {
+        LOG_ERROR("Account %s tried to create a DeathKnight, but Account flag is %u!", m_session->GetAccountName().c_str(), m_session->_accountFlags);
         m_session->Disconnect();
         return false;
     }
@@ -1064,6 +1064,63 @@ bool Player::Create(WorldPacket& data)
     for (std::list<CreateInfo_ActionBarStruct>::const_iterator itr = info->actionbars.begin(); itr != info->actionbars.end(); ++itr)
     {
         setAction(static_cast<uint8>(itr->button), static_cast<uint16>(itr->action), static_cast<uint8>(itr->type), static_cast<uint8>(itr->misc));
+    }
+
+    // add dbc items
+    if (const auto charStartOutfitEntry = getStartOutfitByRaceClass(race, class_, gender))
+    {
+        for (uint8_t j = 0; j < OUTFIT_ITEMS; ++j)
+        {
+            if (charStartOutfitEntry->ItemId[j] <= 0)
+                continue;
+
+            const uint32_t itemId = charStartOutfitEntry->ItemId[j];
+
+            const auto itemProperties = sMySQLStore.getItemProperties(itemId);
+            if (!itemProperties)
+            {
+                LogDebugFlag(LF_DB_TABLES, "StartOutfit - Item with entry %u not in item_properties table but in CharStartOutfit.dbc!", itemId);
+                continue;
+            }
+
+            auto item = objmgr.CreateItem(itemId, this);
+            if (item)
+            {
+                item->setStackCount(1);
+
+                int8_t itemSlot = 0;
+
+                //shitty db lets check for dbc/db2 values
+                if (itemProperties->InventoryType == 0)
+                {
+                    if (const auto itemDB2Properties = sItemStore.LookupEntry(itemId))
+                        itemSlot = GetItemInterface()->GetItemSlotByType(itemDB2Properties->InventoryType);
+                }
+                else
+                {
+                    itemSlot = GetItemInterface()->GetItemSlotByType(itemProperties->InventoryType);
+                }
+
+                //use safeadd only for equipmentset items... all other items will go to a free bag slot.
+                if (itemSlot < INVENTORY_SLOT_BAG_END && (itemProperties->Class == ITEM_CLASS_ARMOR || itemProperties->Class == ITEM_CLASS_WEAPON || itemProperties->Class == ITEM_CLASS_CONTAINER || itemProperties->Class == ITEM_CLASS_QUIVER))
+                {
+                    if (!GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
+                    {
+                        LogDebugFlag(LF_DB_TABLES, "StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
+                        item->DeleteMe();
+                    }
+                }
+                else
+                {
+                    item->setStackCount(itemProperties->MaxCount);
+                    if (!GetItemInterface()->AddItemToFreeSlot(item))
+                    {
+                        LogDebugFlag(LF_DB_TABLES, "StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
+                        item->DeleteMe();
+                    }
+                }
+            }
+        }
     }
 
     for (std::list<CreateInfo_ItemStruct>::const_iterator is = info->items.begin(); is != info->items.end(); ++is)

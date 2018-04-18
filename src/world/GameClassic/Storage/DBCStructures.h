@@ -33,10 +33,11 @@ namespace DBC
             char const area_trigger_entry_format[] = "niffffffff";
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
+            char const char_start_outfit_format[] = "dbbbXiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxx"; //1.12.1
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
-            char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
-            char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
+            char const chr_classes_format[] = "nxxixssssssssxxix"; // 1.12.1
+            char const chr_races_format[] = "nxixiixxixxxxxixissssssssxxxx"; //1.12.1
             char const creature_display_info_format[] = "nxxxxxxxxxxxxx";
             char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
             char const creature_spell_data_format[] = "niiiiiiii";
@@ -155,6 +156,21 @@ namespace DBC
             uint32_t bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
         };
 
+        #define OUTFIT_ITEMS 12
+
+        struct CharStartOutfitEntry
+        {
+            //uint32_t Id;                                    // 0
+            uint8_t Race;                                     // 1
+            uint8_t Class;                                    // 2
+            uint8_t Gender;                                   // 3
+            //uint8_t Unused;                                 // 4
+            int32_t ItemId[OUTFIT_ITEMS];                     // 5-16
+            //int32_t ItemDisplayId[OUTFIT_ITEMS];            // 17-28
+            //int32_t ItemInventorySlot[OUTFIT_ITEMS];        // 29-40
+        };
+
+
         struct ChatChannelsEntry
         {
             uint32_t id;                      // 0
@@ -169,40 +185,36 @@ namespace DBC
         {
             uint32_t class_id;                // 0
             //uint32_t unk1;                  // 1
-            uint32_t power_type;              // 2
-            //uint32_t unk2[2];               // 3-4
-            char* name[16];                 // 5-20
-            //uint32_t nameflags;             // 21
-            //char* name_female[16];        // 22-36
-            //uint32_t name_female_flags;     // 37
-            //char* name_neutral[16];       // 38-53
-            //uint32_t name_neutral_flags;    // 54
-            //uint32_t unk3;                  // 55
-            uint32_t spellfamily;             // 56
-            //uint32_t unk4;                  // 57
+            //uint32_t unk2;                  // 2
+            uint32_t power_type;              // 3
+            //uint32_t unk3;                  // 4
+            char* name[8];                    // 5-12
+            //uint32_t nameflags;             // 13
+            //uint32_t unk4;                  // 14
+            uint32_t spellfamily;             // 15
+            //uint32_t unk4;                  // 16
         };
 
         struct ChrRacesEntry
         {
             uint32_t race_id;                 // 0
-            uint32_t flags;                   // 1
+            //uint32_t flags;                 // 1
             uint32_t faction_id;              // 2
             //uint32_t unk1;                  // 3
             uint32_t model_male;              // 4
             uint32_t model_female;            // 5
             // uint32_t unk2;                 // 6
-            uint32_t team_id;                 // 7
-            //uint32_t unk3[4];               // 8-11
-            uint32_t cinematic_id;            // 12 CinematicSequences.dbc
-            //uint32_t unk4                   // 13
-            char* name[16];                 // 14-29
-            //uint32_t name_flags             // 30
-            //char* name_female[16];        // 31-46
-            //uint32_t name_female_flags      // 47
-            //char* name_neutral[16];       // 48-63
-            //uint32_t name_neutral_flags     // 64 string flags, unused
-            //uint32_t unk5[3]                // 65-67 unused
-            uint32_t expansion;               // 68
+            // uint32_t unk3;                 // 7
+            uint32_t team_id;                 // 8
+            //uint32_t unk4[4];               // 9-12
+            // uint32_t unk5;                 // 13
+            uint32_t start_taxi_mask;         // 14
+            // uint32_t unk6;                 // 15
+            uint32_t cinematic_id;            // 16 CinematicSequences.dbc
+            char* name[8];                    // 17-24
+            //uint32_t name_flags             // 25
+            //uint32_t unk7[2]                // 26-27
+            //uint32_t unk8;                  // 28
         };
 
         struct CreatureDisplayInfoEntry
