@@ -520,6 +520,8 @@ public:
     std::string getName() const;
     void setName(std::string name);
 
+    void setInitialDisplayIds(uint8_t gender, uint8_t race);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);

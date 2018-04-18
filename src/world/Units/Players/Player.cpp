@@ -280,6 +280,30 @@ void Player::sendAuctionCommandResult(Auction* /*auction*/, uint32_t /*action*/,
 std::string Player::getName() const { return m_name; }
 void Player::setName(std::string name) { m_name = name; }
 
+void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
+{
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
+    {
+        switch (gender)
+        {
+            case GENDER_MALE:
+                setDisplayId(raceEntry->model_male);
+                setNativeDisplayId(raceEntry->model_male);
+                break;
+            case GENDER_FEMALE:
+                setDisplayId(raceEntry->model_female);
+                setNativeDisplayId(raceEntry->model_female);
+                break;
+            default:
+                LOG_ERROR("Gender %u is not valid for Player charecters!", gender);
+        }
+    }
+    else
+    {
+        LOG_ERROR("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 void Player::updateAutoRepeatSpell()
