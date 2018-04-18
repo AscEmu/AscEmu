@@ -1249,9 +1249,18 @@ void WorldSession::FullLogin(Player* plr)
 
     if (plr->m_FirstLogin && !worldConfig.player.skipCinematics)
     {
-        uint32 introid = plr->info->introid;
-
-        OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
+#if VERSION_STRING > TBC
+        if (const auto charEntry = sChrClassesStore.LookupEntry(plr->getClass()))
+        {
+            if (charEntry->cinematic_id != 0)
+                OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &charEntry->cinematic_id);
+            else if (const auto raceEntry = sChrRacesStore.LookupEntry(plr->getRace()))
+                OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
+        }
+#else
+        if (const auto raceEntry = sChrRacesStore.LookupEntry(plr->getRace()))
+            OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
+#endif
     }
 
     LOG_DETAIL("WORLD: Created new player for existing players (%s)", plr->getName().c_str());

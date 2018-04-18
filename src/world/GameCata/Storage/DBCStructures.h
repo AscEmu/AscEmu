@@ -904,7 +904,7 @@ namespace DBC
             //char* name_capitalized            // 6
             uint32_t spellfamily;               // 7
             //uint32_t unk4;                    // 8
-            uint32_t cinematic_sequence;        // 9 CinematicSequences.dbc
+            uint32_t cinematic_id;              // 9 CinematicSequences.dbc
             uint32_t expansion;                 // 10
             uint32_t apPerStr;                  // 11
             uint32_t apPerAgi;                  // 12

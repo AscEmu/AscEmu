@@ -657,7 +657,7 @@ namespace DBC
             //uint32_t unk3;                  // 55
             uint32_t spellfamily;             // 56
             //uint32_t unk4;                  // 57
-            uint32_t cinematic_sequence;      // 58 CinematicSequences.dbc
+            uint32_t cinematic_id;            // 58 CinematicSequences.dbc
             uint32_t expansion;               // 59
         };
 

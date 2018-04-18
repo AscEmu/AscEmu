@@ -129,7 +129,6 @@ struct PlayerCreateInfo
     uint32 attackpower;
     float mindmg;
     float maxdmg;
-    uint32 introid;
     uint32 taximask[12];
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;

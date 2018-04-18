@@ -2226,8 +2226,8 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
     //                                                                11            12           13           14           15           16         17        18        19
                                                                 "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
-    //                                                                20         21         22      23       24       25
-                                                                "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo base "
+    //                                                                20         21         22      23       24
+                                                                "BaseEnergy, attackpower, mindmg, maxdmg, taximask FROM playercreateinfo base "
                                                                 "WHERE build=(SELECT MAX(build) FROM playercreateinfo spec WHERE base.Index = spec.Index AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
     {
@@ -2266,9 +2266,8 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
         playerCreateInfo.attackpower = fields[21].GetUInt32();
         playerCreateInfo.mindmg = fields[22].GetFloat();
         playerCreateInfo.maxdmg = fields[23].GetFloat();
-        playerCreateInfo.introid = fields[24].GetUInt32();
 
-        std::string taxiMaskStr = fields[25].GetString();
+        std::string taxiMaskStr = fields[24].GetString();
         std::vector<std::string> tokens = Util::SplitStringBySeperator(taxiMaskStr, " ");
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
