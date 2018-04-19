@@ -11,10 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 initialiseSingleton(MySQLDataStore);
 
+SERVER_DECL std::set<std::string> CreaturePropertiesTables;
+SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
+SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
-SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
@@ -50,10 +52,12 @@ MySQLDataStore::~MySQLDataStore()
 void MySQLDataStore::loadAdditionalTableConfig()
 {
     // init basic tables
+    CreaturePropertiesTables.insert(std::string("creature_properties"));
+    CreatureQuestStarterTables.insert(std::string("creature_quest_starter"));
+    CreatureQuestFinisherTables.insert(std::string("creature_quest_finisher"));
     CreatureSpawnsTables.insert(std::string("creature_spawns"));
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
     GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
-    CreaturePropertiesTables.insert(std::string("creature_properties"));
     ItemPropertiesTables.insert(std::string("item_properties"));
     QuestPropertiesTables.insert(std::string("quest_properties"));
 
@@ -78,6 +82,15 @@ void MySQLDataStore::loadAdditionalTableConfig()
         if (additional_table.empty() || target_table.empty())
             continue;
 
+        if (target_table.compare("creature_properties") == 0)
+            CreaturePropertiesTables.insert(additional_table);
+
+        if (target_table.compare("creature_quest_starter") == 0)
+            CreatureQuestStarterTables.insert(additional_table);
+
+        if (target_table.compare("creature_quest_finisher") == 0)
+            CreatureQuestFinisherTables.insert(additional_table);
+
         if (target_table.compare("creature_spawns") == 0)
             CreatureSpawnsTables.insert(additional_table);
 
@@ -86,9 +99,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (target_table.compare("gameobject_properties") == 0)
             GameObjectPropertiesTables.insert(additional_table);
-
-        if (target_table.compare("creature_properties") == 0)
-            CreaturePropertiesTables.insert(additional_table);
 
         if (target_table.compare("item_properties") == 0)
             ItemPropertiesTables.insert(additional_table);

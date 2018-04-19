@@ -13,10 +13,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/TeleportCoords.h"
 #include "MySQLStructures.h"
 
+extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
+extern SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
+extern SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
-extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
