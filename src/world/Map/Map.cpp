@@ -134,7 +134,7 @@ void Map::LoadSpawns(bool reload)
     CreatureSpawnCount = 0;
     for (std::set<std::string>::iterator tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
     {
-        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, VERSION_STRING, VERSION_STRING);
+        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, getAEVersion(), getAEVersion());
         if (creature_spawn_result)
         {
             uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
@@ -216,6 +216,8 @@ void Map::LoadSpawns(bool reload)
                     if (cspawn->phase == 0)
                         cspawn->phase = 0xFFFFFFFF;
 
+                    cspawn->table = *tableiterator;
+
                     //\todo add flag to declare a spawn as static. E.g. gameobject_spawns
                     /*if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
                     {
@@ -285,6 +287,8 @@ void Map::LoadSpawns(bool reload)
                         go_spawn->phase = 0xFFFFFFFF;
 
                     go_spawn->overrides = fields[19].GetUInt32();
+
+                    go_spawn->table = *tableiterator;
 
                     if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
                     {

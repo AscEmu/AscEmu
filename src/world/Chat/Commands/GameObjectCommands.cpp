@@ -302,6 +302,13 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
         SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
     }
 
+    SystemMessage(m_session, "=================================");
+
+    if (gameobject->m_spawn != nullptr)
+        SystemMessage(m_session, "Is part of table: %s", gameobject->m_spawn->table.c_str());
+    else
+        SystemMessage(m_session, "Is spawnd by an internal script");
+
     return true;
 }
 

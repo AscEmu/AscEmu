@@ -494,6 +494,11 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (owner_header_set)
         SystemMessage(m_session, "=================================");
 
+    if (creature_target->m_spawn != nullptr)
+        SystemMessage(m_session, "Is part of table: %s", creature_target->m_spawn->table.c_str());
+    else
+        SystemMessage(m_session, "Is spawnd by an internal script");
+
 
     return true;
 }
@@ -994,9 +999,9 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
 
         if (save_to_db)
         {
-            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 1 WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.Execute("UPDATE %s SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
             GreenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawn ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed npc CanFly for %s ID: %u [%s] from 0 to 1", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
         }
         else
         {
@@ -1008,9 +1013,9 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
         creature_target->GetAIInterface()->setSplineFlying();
         if (save_to_db)
         {
-            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 0 WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.Execute("UPDATE %s SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
             GreenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawn ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed npc CanFly for %s ID: %u [%s] from 1 to 0", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
         }
         else
         {
