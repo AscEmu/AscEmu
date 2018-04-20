@@ -63,14 +63,13 @@ void GameEventMgr::LoadFromDB()
     }
     // Loading event_properties
     {
-        const char* loadAllEventsQuery = "SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence,\
-                                          length, holiday, description, world_event, announce\
-                                          FROM event_properties WHERE entry > 0";
-        QueryResult* result = WorldDatabase.Query(loadAllEventsQuery);
+        QueryResult* result = WorldDatabase.Query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
+                                          "length, holiday, description, world_event, announce "
+                                          "FROM event_properties WHERE entry > 0 AND min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
         if (!result)
         {
             //mGameEvent.clear();
-            LOG_ERROR("Query failed: %s", loadAllEventsQuery);
+            LOG_ERROR("event_properties can not be read or does not include any version specific events!");
             return;
         }
 

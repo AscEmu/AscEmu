@@ -28,7 +28,7 @@
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {
     QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall "
-        "WHERE min_build <= %u AND max_build  ORDER BY name", getAEVersion(), getAEVersion());
+        "WHERE min_build <= %u AND max_build >= %u  ORDER BY name", getAEVersion(), getAEVersion());
 
     if (result == NULL)
         return false;
