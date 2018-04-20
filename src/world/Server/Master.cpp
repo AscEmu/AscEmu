@@ -53,7 +53,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "1.3.37_worgen_goblin_language";
+static const char* REQUIRED_WORLD_DB_VERSION = "1.3.38_recall";
 
 void Master::_OnSignal(int s)
 {
