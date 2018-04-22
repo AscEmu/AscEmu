@@ -1110,9 +1110,9 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
 
     if (save == 1)
     {
-        WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("UPDATE %s SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
         GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
-        sGMLog.writefromsession(m_session, "changed npc emote of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
+        sGMLog.writefromsession(m_session, "changed npc emote of %s ID: %u [%s] from %u to %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
     }
     else
     {
@@ -1247,8 +1247,8 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Flags changed in spawns table from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc flags of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_flags, npc_flags);
+        WorldDatabase.Execute("UPDATE %s SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        sGMLog.writefromsession(m_session, "changed npc flags of %s ID: %u [%s] from %u to %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_flags, npc_flags);
     }
     else
     {
@@ -1316,8 +1316,8 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc phase of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_phase, npc_phase);
+        WorldDatabase.Execute("UPDATE %s SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        sGMLog.writefromsession(m_session, "changed npc phase of %s ID: %u [%s] from %u to %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_phase, npc_phase);
     }
     else
     {
@@ -1353,8 +1353,8 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Standstate changed in spawns table from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc standstate of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_standstate, standstate);
+        WorldDatabase.Execute("UPDATE %s SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        sGMLog.writefromsession(m_session, "changed npc standstate of %s ID: %u [%s] from %u to %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_standstate, standstate);
     }
     else
     {
