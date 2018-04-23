@@ -53,7 +53,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "1.3.41_kezan_initiale_data";
+static const char* REQUIRED_WORLD_DB_VERSION = "1.3.42_missing_properties";
 
 void Master::_OnSignal(int s)
 {
