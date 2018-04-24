@@ -3838,8 +3838,9 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 void MySQLDataStore::loadTransportCreaturesTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                  0       1              2              3            4              5            6          7
-    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
+    //                                                  0       1        2            3             4              5            6              7         8
+    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, build, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures "
+                                              "WHERE build = %u", VERSION_STRING);
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_creatures` is empty!");
@@ -3877,8 +3878,8 @@ void MySQLDataStore::loadTransportCreaturesTable()
 void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                  0      1     2
-    QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
+    //                                                  0      1     2       3
+    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u)", VERSION_STRING);
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_data` is empty!");
