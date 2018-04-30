@@ -8,3 +8,4 @@ add_library(utf8cpp STATIC
 )
 
 target_link_libraries(utf8cpp)
+set_target_properties(utf8cpp PROPERTIES LINKER_LANGUAGE C)
