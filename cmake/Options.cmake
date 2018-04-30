@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 # general
 set(ASCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory for AscEmu modules." )
@@ -18,12 +18,17 @@ option(BUILD_MAPSCRIPTS "Build ascMapScripts." ON)
 option(BUILD_MISCSCRIPTS "Build ascMiscScripts." ON)
 option(BUILD_LUAENGINE "Build LuaEngine." ON)
 option(WITH_NEW_SPELL_SYSTEM "Use experimental spell system" OFF)
+option(EVAIRFAIRY_LOG_SKIP "Skip error logging (Evairfairy) - do not use" OFF)
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
-option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" OFF)
+option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" ON)
 option(USE_PCH "Enable precompiled headers - it will reduce compilation time" ON)
 
 if(NOT WITH_NEW_SPELL_SYSTEM)
     set(ASCEMU_COMMENT_WITH_NEW_SPELL_SYSTEM //)
+endif()
+
+if(NOT EVAIRFAIRY_LOG_SKIP)
+    set(ASCEMU_COMMENT_EVAIRFAIRY_LOG_SKIP //)
 endif()
 
 if(NOT USE_PCH)

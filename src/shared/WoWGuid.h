@@ -154,6 +154,8 @@ class SERVER_DECL WoWGuid
             _CompileByNew();
         }
 
+    uint32_t getGuidLow() const { return static_cast<uint32_t>(oldguid); }
+    uint32_t getGuidHigh() const { return static_cast<uint32_t>(oldguid >> 32); }
         const uint64 GetOldGuid() const { return oldguid; }
         const uint8* GetNewGuid() const { return guidfields; }
         const uint8 GetNewGuidLen() const { return BitCount8(guidmask); }

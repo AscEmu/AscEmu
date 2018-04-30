@@ -348,10 +348,10 @@ void Player::UpdateInrangeSetsBasedOnReputation()
             continue;
 
         Unit* pUnit = static_cast<Unit*>(itr);
-        if (pUnit->m_factionDBC == nullptr || pUnit->m_factionDBC->RepListId < 0)
+        if (pUnit->m_factionEntry == nullptr || pUnit->m_factionEntry->RepListId < 0)
             continue;
 
-        bool rep_value = IsHostileBasedOnReputation(pUnit->m_factionDBC);
+        bool rep_value = IsHostileBasedOnReputation(pUnit->m_factionEntry);
         bool enemy_current = isObjectInInRangeOppositeFactionSet(pUnit);
 
         if (rep_value && !enemy_current)   // We are now enemies.
@@ -389,7 +389,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     }
 
     uint32 team = GetTeam();
-    ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
+    ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->getEntry(), pUnit->m_factionEntry->ID);
     if (modifier != nullptr)
     {
         // Apply this data.
@@ -415,11 +415,11 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
         if (IS_INSTANCE(GetMapId()) && objmgr.HandleInstanceReputationModifiers(this, pUnit))
             return;
 
-        if (pUnit->m_factionDBC->RepListId < 0)
+        if (pUnit->m_factionEntry->RepListId < 0)
             return;
 
         int32 change = int32(-5.0f * worldConfig.getFloatRate(RATE_KILLREPUTATION));
-        ModStanding(pUnit->m_factionDBC->ID, change);
+        ModStanding(pUnit->m_factionEntry->ID, change);
     }
 }
 

@@ -62,7 +62,7 @@ public:
         creature->PushToWorld(pThis->GetMapMgr());
         creature->Despawn(180000, 0);
         creature->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, 35);
-        creature->_setFaction();
+        creature->setServersideFaction();
     }
 };
 

@@ -119,7 +119,7 @@ class ZerekethAI : public CreatureAIScript
             float vzZ = random_target->GetPositionZ();
 
             Creature* VoidZone = spawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ, 0.0f);
-            VoidZone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            VoidZone->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             VoidZone->m_noRespawn = true;
             if (!VoidZone->IsInWorld())
             {
@@ -199,7 +199,7 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
         {
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
-                door2->SetState(GO_STATE_OPEN);
+                door2->setState(GO_STATE_OPEN);
         }
 };
 
@@ -229,7 +229,7 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
         {
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
-                door1->SetState(GO_STATE_OPEN);
+                door1->setState(GO_STATE_OPEN);
         }
 };
 
@@ -326,11 +326,11 @@ class WardenMellicharAI : public CreatureAIScript
             Phase_Timer = _addTimer(55000);
 
             setCanEnterCombat(false);
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
+            getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
 
             shield = getNearestGameObject(445.786f, -169.263f, 43.0466f, 184802);
             if (shield)
-                shield->SetState(GO_STATE_CLOSED);
+                shield->setState(GO_STATE_CLOSED);
 
             getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
         }
@@ -355,7 +355,7 @@ class WardenMellicharAI : public CreatureAIScript
                     Spawncounter = 0;
                     orb1 = getNearestGameObject(482.929f, -151.114f, 43.654f, 183961);
                     if (orb1)
-                        orb1->SetState(GO_STATE_OPEN);
+                        orb1->setState(GO_STATE_OPEN);
 
                     switch (Util::getRandomUInt(1))
                     {
@@ -400,7 +400,7 @@ class WardenMellicharAI : public CreatureAIScript
                     Spawncounter = 0;
                     orb2 = getNearestGameObject(409.062f, -152.161f, 43.653f, 183963);
                     if (orb2)
-                        orb2->SetState(GO_STATE_OPEN);
+                        orb2->setState(GO_STATE_OPEN);
 
                     _resetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
@@ -443,7 +443,7 @@ class WardenMellicharAI : public CreatureAIScript
                     Spawncounter = 0;
                     orb3 = getNearestGameObject(415.167f, -174.338f, 43.654f, 183964);
                     if (orb3)
-                        orb3->SetState(GO_STATE_OPEN);
+                        orb3->setState(GO_STATE_OPEN);
 
                     switch (Util::getRandomUInt(1))
                     {
@@ -500,7 +500,7 @@ class WardenMellicharAI : public CreatureAIScript
                     Spawncounter = 0;
                     orb4 = getNearestGameObject(476.422f, -174.517f, 42.748f, 183962);
                     if (orb4)
-                        orb4->SetState(GO_STATE_OPEN);
+                        orb4->setState(GO_STATE_OPEN);
 
                     switch (Util::getRandomUInt(1))
                     {
@@ -555,22 +555,22 @@ class WardenMellicharAI : public CreatureAIScript
             setRooted(false);
             _setMeleeDisabled(false);
             _setCastDisabled(false);
-            getCreature()->SetStandState(STANDSTATE_KNEEL);
+            getCreature()->setStandState(STANDSTATE_KNEEL);
 
             if (shield)
-                shield->SetState(GO_STATE_OPEN);
+                shield->setState(GO_STATE_OPEN);
 
             if (orb1)
-                orb1->SetState(GO_STATE_CLOSED);
+                orb1->setState(GO_STATE_CLOSED);
 
             if (orb2)
-                orb2->SetState(GO_STATE_CLOSED);
+                orb2->setState(GO_STATE_CLOSED);
 
             if (orb3)
-                orb3->SetState(GO_STATE_CLOSED);
+                orb3->setState(GO_STATE_CLOSED);
 
             if (orb4)
-                orb4->SetState(GO_STATE_CLOSED);
+                orb4->setState(GO_STATE_CLOSED);
 
             if (NPC_orb1)
             {

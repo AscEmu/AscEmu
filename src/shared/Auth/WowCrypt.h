@@ -40,16 +40,16 @@ class WowCrypt
         RC4_KEY m_serverWotlkEncryptKey;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // TBC
+    // Legacy
     public:
         const static size_t cryptedSendLength = 4;
         const static size_t cryptedReceiveLength = 6;
 
-        void initTbcCrypt();
-        void decryptTbcReceive(uint8_t* data, size_t length);
-        void encryptTbcSend(uint8_t* data, size_t length);
+        void initLegacyCrypt();
+        void decryptLegacyReceive(uint8_t* data, size_t length);
+        void encryptLegacySend(uint8_t* data, size_t length);
+        void setLegacyKey(uint8_t* key, size_t length);
 
-        void setTbcKey(uint8_t* key, size_t length);
         static void generateTbcKey(uint8_t* key, uint8_t* sessionkey);
 
     private:

@@ -81,9 +81,9 @@ public:
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
 
     bool HasFireTotem = false;
-    uint8 CanCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        auto result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -158,11 +158,11 @@ public:
             return 0;
 
         // Check if damage will kill player.
-        uint32 cur_hlth = p_target->GetHealth();
+        uint32 cur_hlth = p_target->getHealth();
         if ((*dmg) < cur_hlth)
             return 0;
 
-        uint32 max_hlth = p_target->GetMaxHealth();
+        uint32 max_hlth = p_target->getMaxHealth();
         uint32 min_hlth = max_hlth / 10;
 
         /*
@@ -172,12 +172,12 @@ public:
         as long as proceeding cheat death is not so height (how many rogue at the same time_
         gonna get to this point?) so it's better to use it because we wont lose anything!!
         */
-        p_target->CastSpell(p_target->GetGUID(), dSpell, true);
+        p_target->CastSpell(p_target->getGuid(), dSpell, true);
 
         // set dummy effect,
         // this spell is used to procced the post effect of cheat death later.
         // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
-        p_target->CastSpell(p_target->GetGUID(), 45182, true);
+        p_target->CastSpell(p_target->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
         dSpell->setRecoveryTime(60000);
@@ -231,7 +231,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
         if (p_caster != NULL && i == 0 && target != NULL)
-            value = (uint32)(p_caster->GetBaseMana() * 0.225f);
+            value = (uint32)(p_caster->getBaseMana() * 0.225f);
 
         return value;
     }
@@ -327,7 +327,7 @@ public:
     {
         if (target != NULL)
         {
-            uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->GetGUID());
+            uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
             if (count)
                 value += value * count * (GetSpellInfo()->getEffectBasePoints(2) + 1) / 200;
         }
@@ -368,9 +368,9 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
-    uint8 CanCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        auto result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -420,7 +420,7 @@ public:
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
+            return caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
         else
             return mod->m_amount;
     }
@@ -496,8 +496,8 @@ public:
             return 0;
 
         int health_pct = caster->GetHealthPct();
-        uint32 cur_health = caster->GetHealth();
-        uint32 max_health = caster->GetMaxHealth();
+        uint32 cur_health = caster->getHealth();
+        uint32 max_health = caster->getMaxHealth();
         uint32 new_health_pct = (cur_health - *dmg) * 100 / max_health;
 
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
@@ -524,7 +524,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
+            value = p_caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
 
         return value;
     }

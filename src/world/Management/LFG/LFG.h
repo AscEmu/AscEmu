@@ -81,7 +81,7 @@ enum LfgLockStatusType
 struct LfgLockStatus
 {
     uint32_t dungeon;                     ///< Dungeon Id
-    LfgLockStatusType lockstatus;       ///< Lock type
+    LfgLockStatusType lockstatus;         ///< Lock type
 };
 
 typedef std::set<uint32_t> LfgDungeonSet;

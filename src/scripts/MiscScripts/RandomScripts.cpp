@@ -25,7 +25,7 @@ void GuardsOnSalute(Player* pPlayer, Unit* pUnit)
         return;
 
     // Check if we are friendly with our Guards (they will salute only when You are)
-    if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
+    if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
         uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Salute from Guard
@@ -39,7 +39,7 @@ void GaurdsOnKiss(Player* pPlayer, Unit* pUnit)
         return;
 
     // Check if we are friendly with our Guards (they will bow only when You are)
-    if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
+    if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
         uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
@@ -53,7 +53,7 @@ void GuardsOnWave(Player* pPlayer, Unit* pUnit)
         return;
 
     // Check if we are friendly with our Guards (they will wave only when You are)
-    if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
+    if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
         uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
@@ -88,7 +88,7 @@ class JeanPierrePoulain : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14500);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
         {
             menu.Send(plr);
@@ -114,7 +114,7 @@ public:
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14785);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 14785);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin

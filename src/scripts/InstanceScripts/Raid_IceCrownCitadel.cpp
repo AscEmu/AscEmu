@@ -79,7 +79,7 @@ class IceCrownCitadelScript : public InstanceScript
                 setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
             }
 
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_TELE_1:
                 case GO_TELE_2:
@@ -87,14 +87,14 @@ class IceCrownCitadelScript : public InstanceScript
                 case GO_TELE_4:
                 case GO_TELE_5:
                 {
-                    pGameObject->SetFlags(0);
+                    pGameObject->setFlags(GO_FLAG_NONE);
                 } break;
             }
         }
 
         void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_LORD_MARROWGAR:
                 {
@@ -141,7 +141,7 @@ public:
         if (!pInstance)
             return;
 
-        Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
+        Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)
@@ -338,7 +338,7 @@ class BoneSpikeAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
         BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
             getCreature()->Despawn(8000, 0);
         }
 

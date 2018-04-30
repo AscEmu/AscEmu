@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -122,15 +122,15 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             uint32_t char_flags = 0;
 
             if (charEnum.banned && (charEnum.banned < 10 || charEnum.banned > (uint32_t)UNIXTIME))
-                char_flags |= PLAYER_FLAG_IS_BANNED;
+                char_flags |= CHARACTER_SCREEN_FLAG_BANNED;
             if (charEnum.deathState != 0)
-                char_flags |= PLAYER_FLAG_IS_DEAD;
+                char_flags |= CHARACTER_SCREEN_FLAG_DEAD;
             if (charEnum.flags & PLAYER_FLAG_NOHELM)
-                char_flags |= PLAYER_FLAG_NOHELM;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_HELM;
             if (charEnum.flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= PLAYER_FLAG_NOCLOAK;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_CLOAK;
             if (charEnum.loginFlags == 1)
-                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
+                char_flags |= CHARACTER_SCREEN_FLAG_FORCED_RENAME;
 
             data << uint32_t(char_flags);
             data << uint8_t(0);

@@ -19,13 +19,13 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
     uint32_t seat = atoi(args);
 
     Player* p = session->GetPlayer();
-    if (p->GetTargetGUID() == 0)
+    if (p->getTargetGuid() == 0)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
 
-    Unit* u = p->GetMapMgr()->GetUnit(p->GetTargetGUID());
+    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
     if (u == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -45,12 +45,12 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
 bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
-    if (p->GetTargetGUID() == 0)
+    if (p->getTargetGuid() == 0)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->GetMapMgr()->GetUnit(p->GetTargetGUID());
+    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -69,12 +69,12 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
 bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
-    if (p->GetTargetGUID() == 0)
+    if (p->getTargetGuid() == 0)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->GetMapMgr()->GetUnit(p->GetTargetGUID());
+    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -93,12 +93,12 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
 bool ChatHandler::HandleVehicleRemoveAccessoriesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
-    if (p->GetTargetGUID() == 0)
+    if (p->getTargetGuid() == 0)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->GetMapMgr()->GetUnit(p->GetTargetGUID());
+    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -124,12 +124,12 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         RedSystemMessage(session, "You need to specify a creature id.");
         return false;
     }
-    if (session->GetPlayer()->GetTargetGUID() == 0)
+    if (session->GetPlayer()->getTargetGuid() == 0)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = session->GetPlayer()->GetMapMgr()->GetUnit(session->GetPlayer()->GetTargetGUID());
+    Unit* u = session->GetPlayer()->GetMapMgr()->GetUnit(session->GetPlayer()->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -155,6 +155,6 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
     c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
     c->PushToWorld(u->GetMapMgr());
-    c->EnterVehicle(u->GetGUID(), 1);
+    c->EnterVehicle(u->getGuid(), 1);
     return true;
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX GameCata/Handlers)
 
@@ -31,7 +31,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/ReportHandler.cpp
     ${PATH_PREFIX}/ReputationHandler.cpp
     ${PATH_PREFIX}/SkillHandler.cpp
-    ${PATH_PREFIX}/SocialHandler.cpp
     ${PATH_PREFIX}/SpellHandler.cpp
     ${PATH_PREFIX}/TaxiHandler.cpp
     ${PATH_PREFIX}/TradeHandler.cpp

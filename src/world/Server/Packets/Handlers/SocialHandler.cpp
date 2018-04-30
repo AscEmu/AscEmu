@@ -1,91 +1,71 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Server/WorldSession.h"
 #include "Log.hpp"
 #include "Units/Players/Player.h"
+#include "Server/Packets/CmsgDelIgnore.h"
+#include "Server/Packets/CmsgAddIgnore.h"
+#include "Server/Packets/CmsgDelFriend.h"
+#include "Server/Packets/CmsgAddFriend.h"
+#include "Server/Packets/CmsgContactList.h"
+#include "Server/Packets/CmsgSetContactNotes.h"
 
-#if VERSION_STRING != Cata
-void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)
+using namespace AscEmu::Packets;
+
+void WorldSession::handleFriendListOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgContactList recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    uint32 flag;
-    recv_data >> flag;
-    _player->Social_SendFriendList(flag);
+    _player->Social_SendFriendList(recv_packet.list_flag);
 }
 
-void WorldSession::HandleAddFriendOpcode(WorldPacket& recv_data)
+void WorldSession::handleAddFriendOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("WORLD: Received CMSG_ADD_FRIEND");
+    CmsgAddFriend recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    std::string name, note;
-    recv_data >> name;
-    recv_data >> note;
-
-    _player->Social_AddFriend(name.c_str(), note.size() ? note.c_str() : NULL);
+    _player->Social_AddFriend(recv_packet.name.c_str(), recv_packet.note.size() ? recv_packet.note.c_str() : nullptr);
 }
 
-void WorldSession::HandleDelFriendOpcode(WorldPacket& recv_data)
+void WorldSession::handleDelFriendOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("WORLD: Received CMSG_DEL_FRIEND");
+    CmsgDelFriend recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    uint64 FriendGuid;
-    recv_data >> FriendGuid;
-
-    _player->Social_RemoveFriend((uint32)FriendGuid);
+    _player->Social_RemoveFriend((uint32)recv_packet.guid);
 }
 
-void WorldSession::HandleAddIgnoreOpcode(WorldPacket& recv_data)
+void WorldSession::handleAddIgnoreOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("WORLD: Received CMSG_ADD_IGNORE");
+    CmsgAddIgnore recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    std::string ignoreName = "UNKNOWN";
-    recv_data >> ignoreName;
-
-    _player->Social_AddIgnore(ignoreName.c_str());
+    _player->Social_AddIgnore(recv_packet.name.c_str());
 }
 
-void WorldSession::HandleDelIgnoreOpcode(WorldPacket& recv_data)
+void WorldSession::handleDelIgnoreOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("WORLD: Received CMSG_DEL_IGNORE");
+    CmsgDelIgnore recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    uint64 IgnoreGuid;
-    recv_data >> IgnoreGuid;
-
-    _player->Social_RemoveIgnore((uint32)IgnoreGuid);
+    _player->Social_RemoveIgnore((uint32)recv_packet.guid);
 }
 
-void WorldSession::HandleSetFriendNote(WorldPacket& recv_data)
+void WorldSession::HandleSetFriendNote(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-        uint64 guid;
-    std::string note;
+    CmsgSetContactNotes recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    recv_data >> guid >> note;
-    _player->Social_SetNote((uint32)guid, note.size() ? note.c_str() : NULL);
+    _player->Social_SetNote((uint32)recv_packet.guid, recv_packet.note.size() ? recv_packet.note.c_str() : nullptr);
 }
-#endif

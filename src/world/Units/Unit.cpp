@@ -10,9 +10,295 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWUnit.h"
+#include "Storage/MySQLDataStore.hpp"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+
+uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
+void Unit::setCharmGuid(uint64_t guid) { write(unitData()->charm_guid.guid, guid); }
+
+uint64_t Unit::getSummonGuid() const { return unitData()->summon_guid.guid; };
+void Unit::setSummonGuid(uint64_t guid) { write(unitData()->summon_guid.guid, guid); }
+
+#if VERSION_STRING > TBC
+uint64_t Unit::getCritterGuid() const { return unitData()->critter_guid.guid; };
+void Unit::setCritterGuid(uint64_t guid) { write(unitData()->critter_guid.guid, guid); }
+#endif
+
+uint64_t Unit::getCharmedByGuid() const { return unitData()->charmed_by_guid.guid; };
+void Unit::setCharmedByGuid(uint64_t guid) { write(unitData()->charmed_by_guid.guid, guid); }
+
+uint64_t Unit::getSummonedByGuid() const { return unitData()->summoned_by_guid.guid; };
+void Unit::setSummonedByGuid(uint64_t guid) { write(unitData()->summoned_by_guid.guid, guid); }
+
+uint64_t Unit::getCreatedByGuid() const { return unitData()->created_by_guid.guid; };
+void Unit::setCreatedByGuid(uint64_t guid) { write(unitData()->created_by_guid.guid, guid); }
+
+uint64_t Unit::getTargetGuid() const { return unitData()->target_guid.guid; };
+void Unit::setTargetGuid(uint64_t guid) { write(unitData()->target_guid.guid, guid); }
+
+uint64_t Unit::getChannelObjectGuid() const { return unitData()->channel_object_guid.guid; };
+void Unit::setChannelObjectGuid(uint64_t guid) { write(unitData()->channel_object_guid.guid, guid); }
+
+uint32_t Unit::getChannelSpellId() const { return unitData()->channel_spell; };
+void Unit::setChannelSpellId(uint32_t spell_id) { write(unitData()->channel_spell, spell_id); }
+
+//bytes_0 begin
+uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
+void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
+
+uint8_t Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
+void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_class, class_); }
+
+uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
+void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
+
+uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
+void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
+//bytes_0 end
+
+uint32_t Unit::getHealth() const { return unitData()->health; }
+void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+
+uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
+void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+
+void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
+
+uint32_t Unit::getLevel() const { return unitData()->level; }
+void Unit::setLevel(uint32_t level)
+{
+    write(unitData()->level, level);
+    if (IsPlayer())
+        static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
+}
+
+uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
+void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
+
+uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
+void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id) { write(unitData()->virtual_item_slot_display[slot], item_id); }
+
+uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
+void Unit::setUnitFlags(uint32_t unitFlags) { write(unitData()->unit_flags, unitFlags); }
+void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unitFlags); }
+void Unit::removeUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() & ~unitFlags); }
+bool Unit::hasUnitFlags(uint32_t unitFlags) const { return (getUnitFlags() & unitFlags) != 0; }
+
+#if VERSION_STRING > Classic
+uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
+void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
+void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
+void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
+#endif
+
+uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
+void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
+void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
+void Unit::removeAuraState(uint32_t state) { setAuraState(getAuraState() & ~state); }
+
+uint32_t Unit::getBaseAttackTime(uint8_t slot) const { return unitData()->base_attack_time[slot]; }
+void Unit::setBaseAttackTime(uint8_t slot, uint32_t time) { write(unitData()->base_attack_time[slot], time); }
+void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
+{
+    int32_t newAttackTime = getBaseAttackTime(slot);
+    newAttackTime += modTime;
+
+    if (newAttackTime < 0)
+        newAttackTime = 0;
+
+    setBaseAttackTime(slot, newAttackTime);
+}
+
+float_t Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
+void Unit::setBoundingRadius(float_t radius) { write(unitData()->bounding_radius, radius); }
+
+float_t Unit::getCombatReach() const { return unitData()->combat_reach; }
+void Unit::setCombatReach(float_t radius) { write(unitData()->combat_reach, radius); }
+
+uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
+void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
+
+uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
+void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
+
+uint32_t Unit::getMountDisplayId() const { return unitData()->mount_display_id; }
+void Unit::setMountDisplayId(uint32_t id) { write(unitData()->mount_display_id, id); }
+
+float_t Unit::getMinDamage() const { return unitData()->minimum_damage; }
+void Unit::setMinDamage(float_t damage) { write(unitData()->minimum_damage, damage); }
+
+float_t Unit::getMaxDamage() const { return unitData()->maximum_damage; }
+void Unit::setMaxDamage(float_t damage) { write(unitData()->maximum_damage, damage); }
+
+float_t Unit::getMinOffhandDamage() const { return unitData()->minimum_offhand_damage; }
+void Unit::setMinOffhandDamage(float_t damage) { write(unitData()->minimum_offhand_damage, damage); }
+
+float_t Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_damage; }
+void Unit::setMaxOffhandDamage(float_t damage) { write(unitData()->maximum_offhand_damage, damage); }
+
+//bytes_1 begin
+uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
+void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
+
+uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
+void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
+
+uint8_t Unit::getStandStateFlags() const { return unitData()->field_bytes_1.s.stand_state_flag; }
+void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field_bytes_1.s.stand_state_flag, standStateFlags); }
+
+uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
+void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
+//bytes_1 end
+
+uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
+void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
+void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
+void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
+
+float_t Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
+void Unit::setModCastSpeed(float_t modifier) { write(unitData()->mod_cast_speed, modifier); }
+void Unit::modModCastSpeed(float_t modifier)
+{
+    float_t currentMod = getModCastSpeed();
+    currentMod += modifier;
+    setModCastSpeed(currentMod);
+}
+
+uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
+void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
+
+uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
+void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
+void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
+void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
+
+uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
+void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
+
+uint32_t Unit::getStat(uint8_t stat) const { return unitData()->stat[stat]; }
+void Unit::setStat(uint8_t stat, uint32_t value) { write(unitData()->stat[stat], value); }
+
+#if VERSION_STRING > Classic
+uint32_t Unit::getPosStat(uint8_t stat) const { return unitData()->positive_stat[stat]; }
+void Unit::setPosStat(uint8_t stat, uint32_t value) { write(unitData()->positive_stat[stat], value); }
+
+uint32_t Unit::getNegStat(uint8_t stat) const { return unitData()->negative_stat[stat]; }
+void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative_stat[stat], value); }
+#endif
+
+uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
+void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
+
+uint32_t Unit::getBaseMana() const { return unitData()->base_mana; }
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+
+uint32_t Unit::getBaseHealth() const { return unitData()->base_health; }
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
+
+//byte_2 begin
+uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
+void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
+
+uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
+void Unit::setPvpFlags(uint8_t pvpFlags) { write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags); }
+
+uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
+void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
+
+uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
+void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
+//bytes_2 end
+
+uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
+void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
+
+float_t Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
+void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged_damage, damage); }
+
+float_t Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
+void Unit::setMaxRangedDamage(float_t damage) { write(unitData()->maximum_ranged_ddamage, damage); }
+
+float_t Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
+void Unit::setPowerCostMultiplier(uint16_t school, float_t multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
+void Unit::modPowerCostMultiplier(uint16_t school, float_t multiplier)
+{
+    float_t currentMultiplier = getPowerCostMultiplier(school);
+    currentMultiplier += multiplier;
+    setPowerCostMultiplier(school, currentMultiplier);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
+
+#ifdef AE_TBC
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
+{
+    bool out;
+    return addAuraVisual(spell_id, count, positive, out);
+}
+
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive,
+    bool& skip_client_update)
+{
+    auto free = -1;
+    uint32_t start = positive ? MAX_POSITIVE_VISUAL_AURAS_START : MAX_POSITIVE_VISUAL_AURAS_END;
+    uint32_t end = positive ? MAX_NEGATIVE_VISUAL_AURAS_START : MAX_NEGATIVE_VISUAL_AURAS_END;
+
+    for (auto x = start; x < end; ++x)
+    {
+        if (free == -1 && m_uint32Values[UNIT_FIELD_AURA + x] == 0)
+            free = x;
+
+        if (m_uint32Values[UNIT_FIELD_AURA + x] == spell_id)
+        {
+            const auto aura = m_auras[x];
+            ModVisualAuraStackCount(aura, count);
+            skip_client_update = true;
+            return free;
+        }
+    }
+
+    skip_client_update = false;
+
+    if (free == -1)
+        return 0xff;
+
+    const auto flag_slot = static_cast<uint8_t>((free / 4));
+    const uint16_t val_slot = UNIT_FIELD_AURAFLAGS + flag_slot;
+    auto value = m_uint32Values[val_slot];
+    const auto aura_pos = free % 4 * 8;
+    value &= ~(0xff << aura_pos);
+    if (positive)
+        value |= 0x1f << aura_pos;
+    else
+        value |= 0x9 << aura_pos;
+
+    m_uint32Values[val_slot] = value;
+    m_uint32Values[UNIT_FIELD_AURA + free] = spell_id;
+    const auto aura = m_auras[free];
+    ModVisualAuraStackCount(aura, 1);
+    setAuraSlotLevel(free, positive);
+
+    return free;
+}
+
+void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
+{
+    const auto index = slot / 4;
+    auto value = m_uint32Values[UNIT_FIELD_AURALEVELS + index];
+    const auto bit = slot % 4 * 8;
+    value &= ~(0xff << bit);
+    if (positive)
+        value |= 0x46 << bit;
+    else
+        value |= 0x19 << bit;
+
+    m_uint32Values[UNIT_FIELD_AURALEVELS + index] = value;
+}
+#endif
 
 void Unit::setMoveWaterWalk()
 {
@@ -165,7 +451,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             AddUnitMovementFlag(MOVEFLAG_HOVER);
 
-            setByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -179,7 +465,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
-            removeByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(getAnimationFlags() &~UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -206,7 +492,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(2);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
@@ -222,7 +508,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(5);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
@@ -465,7 +751,7 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
-float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
+float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
 {
     switch (speed_type)
     {
@@ -491,6 +777,53 @@ float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
             return m_basicSpeedWalk;
     }
 }
+
+float Unit::getFlySpeed() const
+{
+    return getSpeedForType(TYPE_FLY);
+}
+
+float Unit::getSwimSpeed() const
+{
+    return getSpeedForType(TYPE_SWIM);
+}
+
+float Unit::getRunSpeed() const
+{
+    return getSpeedForType(TYPE_RUN);
+}
+
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    auto fastest_speed = 0.f;
+    auto fastest_speed_type = TYPE_WALK;
+    for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
+    {
+        const auto speed_type = static_cast<UnitSpeedType>(i + 1);
+
+        switch(speed_type)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+            default:
+            break;
+        }
+
+        const auto speed = getSpeedForType(speed_type);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speed_type : fastest_speed_type;
+    }
+    return fastest_speed_type;
+}
+
+
+float Unit::getFastestSpeed() const
+{
+    return getSpeedForType(getFastestSpeedType());
+}
+
 
 void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic)
 {
@@ -561,7 +894,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
         } break;
     }
 
-    Player* player_mover = GetMapMgrPlayer(GetCharmedByGUID());
+    Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
     {
         if (IsPlayer())
@@ -657,7 +990,7 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
     data << uint32_t(0);
     data << uint32_t(spell_id);
 
-    data << uint32_t(guid == GetGUID() ? 1 : 0);
+    data << uint32_t(guid == getGuid() ? 1 : 0);
 
     ObjectGuid targetGuid = guid;
     data.writeBit(targetGuid[4]);
@@ -806,6 +1139,81 @@ bool Unit::hasAurasWithId(uint32_t* auraId)
     return false;
 }
 
+bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
+{
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] == nullptr)
+            continue;
+        if (m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(type))
+            return true;
+    }
+    return false;
+}
+
+bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) const
+{
+    if (caster != nullptr && spellInfo != nullptr && caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+    {
+        for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+        {
+            if (caster->m_auras[i] == nullptr)
+                continue;
+            if (!caster->m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+                continue;
+            if (caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(spellInfo))
+                return true;
+        }
+    }
+    return getAuraState() & (1 << (state - 1));
+}
+
+void Unit::addAuraStateAndAuras(AuraState state)
+{
+    if (!(getAuraState() & (1 << (state - 1))))
+    {
+        addAuraState(uint32_t(1 << (state - 1)));
+        if (IsPlayer())
+        {
+            // Activate passive spells which require this aurastate
+            auto playerSpellMap = static_cast<Player*>(this)->mSpells;
+            for (auto spellId : playerSpellMap)
+            {
+                // Skip deleted spells, i.e. spells with lower rank than the current rank
+                auto deletedSpell = static_cast<Player*>(this)->mDeletedSpells.find(spellId);
+                if ((deletedSpell != static_cast<Player*>(this)->mDeletedSpells.end()))
+                    continue;
+                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+                if (spellInfo == nullptr || !spellInfo->IsPassive())
+                    continue;
+                if (spellInfo->getCasterAuraState() == uint32_t(state))
+                    CastSpell(this, spellId, true);
+            }
+        }
+    }
+}
+
+void Unit::removeAuraStateAndAuras(AuraState state)
+{
+    if (getAuraState() & (1 << (state - 1)))
+    {
+        removeAuraState(uint32_t(1 << (state - 1)));
+        // Remove self-applied passive auras requiring this aurastate
+        // Skip removing enrage effects
+        for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+        {
+            if (m_auras[i] == nullptr)
+                continue;
+            if (m_auras[i]->GetCasterGUID() != getGuid())
+                continue;
+            if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != uint32_t(state))
+                continue;
+            if (m_auras[i]->GetSpellInfo()->IsPassive() || state != AURASTATE_FLAG_ENRAGED)
+                RemoveAura(m_auras[i]);
+        }
+    }
+}
+
 Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -821,7 +1229,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithAuraEffect(uint32_t aura_effect)
+Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {

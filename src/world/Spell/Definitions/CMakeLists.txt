@@ -1,9 +1,11 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Spell/Definitions)
 
 set(SRC_SPELL_DEFINITIONS_FILES
+    ${PATH_PREFIX}/AuraEffects.h
     ${PATH_PREFIX}/AuraInterruptFlags.h
+    ${PATH_PREFIX}/AuraStates.h
     ${PATH_PREFIX}/CastInterruptFlags.h
     ${PATH_PREFIX}/ChannelInterruptFlags.h
     ${PATH_PREFIX}/DiminishingGroup.h

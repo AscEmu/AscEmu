@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -36,7 +36,7 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
     if (LuaGlobal::instance()->m_menu != NULL)
         delete LuaGlobal::instance()->m_menu;
 
-    LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+    LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
     if (autosend)
         LuaGlobal::instance()->m_menu->Send(target);
@@ -129,7 +129,7 @@ int LuaGameObject::GossipSendQuickMenu(lua_State* L, GameObject* ptr)
     if (player == NULL)
         return 0;
 
-    Arcemu::Gossip::Menu::SendQuickMenu(ptr->GetGUID(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+    Arcemu::Gossip::Menu::SendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
     return 0;
 }
@@ -313,9 +313,9 @@ int LuaGameObject::SpawnCreature(lua_State* L, GameObject* ptr)
     pCreature->Load(p, x, y, z, o);
     pCreature->m_loadedFromDB = true;
     pCreature->SetFaction(faction);
-    pCreature->SetEquippedItem(MELEE, equip1);
-    pCreature->SetEquippedItem(OFFHAND, equip2);
-    pCreature->SetEquippedItem(RANGED, equip3);
+    pCreature->setVirtualItemSlotId(MELEE, equip1);
+    pCreature->setVirtualItemSlotId(OFFHAND, equip2);
+    pCreature->setVirtualItemSlotId(RANGED, equip3);
     pCreature->Phase(PHASE_SET, phase);
     pCreature->m_noRespawn = true;
     pCreature->PushToWorld(ptr->GetMapMgr());
@@ -346,7 +346,7 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
     uint32_t mapid = ptr->GetMapId();
     go->CreateFromProto(entry_id, mapid, x, y, z, o);
     go->Phase(PHASE_SET, phase);
-    go->SetScale(scale);
+    go->setScale(scale);
     go->AddToWorld(ptr->GetMapMgr());
 
     if (duration)
@@ -424,7 +424,7 @@ int LuaGameObject::GetInRangePlayersCount(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetEntry(lua_State* L, GameObject* ptr)
 {
     TEST_GO()
-    lua_pushnumber(L, ptr->GetEntry());
+    lua_pushnumber(L, ptr->getEntry());
     return 1;
 }
 
@@ -650,7 +650,7 @@ int LuaGameObject::CastSpell(lua_State* L, GameObject* ptr)
     if (sp)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
-        SpellCastTargets tar(ptr->GetGUID());
+        SpellCastTargets tar(ptr->getGuid());
         tSpell->prepare(&tar);
     }
     return 0;
@@ -664,7 +664,7 @@ int LuaGameObject::CastSpellOnTarget(lua_State* L, GameObject* ptr)
     if (sp && target != NULL)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
-        SpellCastTargets spCastTargets(target->GetGUID());
+        SpellCastTargets spCastTargets(target->getGuid());
         tSpell->prepare(&spCastTargets);
     }
     return 0;
@@ -836,14 +836,14 @@ int LuaGameObject::SendPacket(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetGUID(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    PUSH_GUID(L, ptr->GetGUID());
+    PUSH_GUID(L, ptr->getGuid());
     return 1;
 }
 
 int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    if (ptr->GetState())
+    if (ptr->getState())
     RET_BOOL(true)
     RET_BOOL(false)
 }
@@ -851,11 +851,11 @@ int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 int LuaGameObject::Activate(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    if (ptr->GetState() == 1)
-        ptr->SetState(GO_STATE_OPEN);
+    if (ptr->getState() == 1)
+        ptr->setState(GO_STATE_OPEN);
     else
-        ptr->SetState(GO_STATE_CLOSED);
-    ptr->SetFlags((ptr->GetFlags() & ~1));
+        ptr->setState(GO_STATE_CLOSED);
+    ptr->removeFlags(GO_FLAG_NONSELECTABLE);
     RET_BOOL(true)
 }
 
@@ -887,9 +887,9 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
     if (perm)
     {
         float chance = CHECK_FLOAT(L, 5);
-        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->GetEntry(), itemid);
+        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
-        WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->GetEntry(), itemid, chance, mincount, maxcount);
+        WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
     lootmgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
@@ -1048,7 +1048,7 @@ int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
     float nScale = CHECK_FLOAT(L, 1);
     bool updateNow = CHECK_BOOL(L, 2);
     nScale = (nScale <= 0) ? 1 : nScale;
-    ptr->SetScale(nScale);
+    ptr->setScale(nScale);
     if (updateNow)
     {
         MapMgr* mapMgr = ptr->GetMapMgr();
@@ -1087,7 +1087,7 @@ int LuaGameObject::FullCastSpellOnTarget(lua_State* L, GameObject* ptr)
     if (sp && target != NULL)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
-        SpellCastTargets sct(target->GetGUID());
+        SpellCastTargets sct(target->getGuid());
         tSpell->prepare(&sct);
     }
     return 0;
@@ -1100,7 +1100,7 @@ int LuaGameObject::FullCastSpell(lua_State* L, GameObject* ptr)
     if (sp)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
-        SpellCastTargets sct(ptr->GetGUID());
+        SpellCastTargets sct(ptr->getGuid());
         tSpell->prepare(&sct);
     }
     return 0;
@@ -1173,12 +1173,12 @@ int LuaGameObject::RegisterEvent(lua_State* L, GameObject* ptr)
         TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_GAMEOBJ_EVENTS, delay, repeats);
         ptr->event_AddEvent(ev);
         std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-        std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->GetGUID());
+        std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
         if (itr == objRefs.end())
         {
             std::set<int> refs;
             refs.insert(functionRef);
-            objRefs.insert(make_pair(ptr->GetGUID(), refs));
+            objRefs.insert(make_pair(ptr->getGuid(), refs));
         }
         else
         {
@@ -1194,7 +1194,7 @@ int LuaGameObject::RemoveEvents(lua_State* L, GameObject* ptr)
     TEST_GO();
     sEventMgr.RemoveEvents(ptr, EVENT_LUA_GAMEOBJ_EVENTS);
     std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-    std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->GetGUID());
+    std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
     if (itr != objRefs.end())
     {
         std::set<int>& refs = itr->second;
@@ -1210,14 +1210,14 @@ int LuaGameObject::SetScale(lua_State* L, GameObject* ptr)
     TEST_GO();
     float scale = static_cast<float>(luaL_checknumber(L, 1));
     if (scale > 0)
-        ptr->SetScale(scale);
+        ptr->setScale(scale);
     return 0;
 }
 
 int LuaGameObject::GetScale(lua_State* L, GameObject* ptr)
 {
     TEST_GO();
-    lua_pushnumber(L, ptr->GetScale());
+    lua_pushnumber(L, ptr->getScale());
     return 1;
 }
 

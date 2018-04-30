@@ -42,9 +42,11 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_objectType |= TYPE_DYNAMICOBJECT;
     m_objectTypeId = TYPEID_DYNAMICOBJECT;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 
@@ -52,11 +54,11 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, (DYNAMICOBJECT_END)*sizeof(uint32));
     m_updateMask.SetCount(DYNAMICOBJECT_END);
-    m_uint32Values[OBJECT_FIELD_TYPE] = TYPE_DYNAMICOBJECT | TYPE_OBJECT;
+    setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
     m_uint32Values[OBJECT_FIELD_GUID] = low;
     m_uint32Values[OBJECT_FIELD_GUID + 1] = high;
-    m_wowGuid.Init(GetGUID());
-    SetScale(1);
+    m_wowGuid.Init(getGuid());
+    setScale(1.0f);
 
 
     m_parentSpell = nullptr;
@@ -89,9 +91,9 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
         p_caster = pSpell->p_caster;
 
     m_spellProto = pSpell->GetSpellInfo();
-    SetEntry(m_spellProto->getId());
-    setFloatValue(OBJECT_FIELD_SCALE_X, 1);
-    setUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
+    setEntry(m_spellProto->getId());
+    setScale(1.0f);
+    setUInt64Value(DYNAMICOBJECT_CASTER, caster->getGuid());
     setByteFlag(DYNAMICOBJECT_BYTES, 0, static_cast<uint8_t>(type));
     setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->getId());
     setFloatValue(DYNAMICOBJECT_RADIUS, radius);
@@ -103,8 +105,8 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
 
     m_aliveDuration = duration;
     u_caster = caster;
-    m_faction = caster->m_faction;
-    m_factionDBC = caster->m_factionDBC;
+    m_factionTemplate = caster->m_factionTemplate;
+    m_factionEntry = caster->m_factionEntry;
     m_phase = caster->GetPhase();
 
     if (pSpell->g_caster)
@@ -132,7 +134,7 @@ void DynamicObject::onRemoveInRangeObject(Object* pObj)
 {
     if (pObj->IsUnit())
     {
-        targets.erase(pObj->GetGUID());
+        targets.erase(pObj->getGuid());
     }
     Object::onRemoveInRangeObject(pObj);
 }
@@ -162,7 +164,7 @@ void DynamicObject::UpdateTargets()
                 continue;
 
             // skip units already hit, their range will be tested later
-            if (targets.find(target->GetGUID()) != targets.end())
+            if (targets.find(target->getGuid()) != targets.end())
                 continue;
 
             if (getDistanceSq(target) <= radius)
@@ -184,7 +186,7 @@ void DynamicObject::UpdateTargets()
                 }
 
                 // add to target list
-                targets.insert(target->GetGUID());
+                targets.insert(target->getGuid());
             }
         }
 
@@ -244,7 +246,7 @@ void DynamicObject::Remove()
 
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
 
-    data << GetGUID();
+    data << getGuid();
     SendMessageToSet(&data, false);
 
     if (IsInWorld())
@@ -252,8 +254,8 @@ void DynamicObject::Remove()
 
     if (u_caster != nullptr && m_spellProto->getChannelInterruptFlags() != 0)
     {
-        u_caster->SetChannelSpellTargetGUID(0);
-        u_caster->SetChannelSpellId(0);
+        u_caster->setChannelObjectGuid(0);
+        u_caster->setChannelSpellId(0);
     }
 
     delete this;

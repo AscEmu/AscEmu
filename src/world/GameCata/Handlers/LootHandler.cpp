@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -110,7 +110,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->GetLowGUID());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
         return;
     }
 
@@ -128,7 +128,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->getGuidLow());
         if (pLoot->items.at(lootSlot).has_looted.end() != itr)
         {
             GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
@@ -161,7 +161,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (item == nullptr)
             return;
 
-        item->SetStackCount(lootItemAmount);
+        item->setStackCount(lootItemAmount);
         if (pLoot->items.at(lootSlot).iRandomProperty != nullptr)
         {
             item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
@@ -176,20 +176,20 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (GetPlayer()->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
         {
             sQuestMgr.OnPlayerItemPickup(GetPlayer(), item);
-            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
         }
         else
             item->DeleteMe();
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + lootItemAmount);
+        add->setStackCount(add->getStackCount() + lootItemAmount);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
-        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 0xFFFFFFFF, lootItemAmount, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
+        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->getEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->getStackCount());
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
     }
 
     if (!pLoot->items.at(lootSlot).ffa_loot)
@@ -206,7 +206,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(lootSlot).has_looted.insert(_player->GetLowGUID());
+        pLoot->items.at(lootSlot).has_looted.insert(_player->getGuidLow());
         WorldPacket data(SMSG_LOOT_REMOVED, 1);
         data << uint8_t(lootSlot);
         _player->GetSession()->SendPacket(&data);
@@ -216,7 +216,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         {
             CALL_GO_SCRIPT_EVENT(pLootableGameObject, OnLootTaken)(_player, it);
 
-            if (pLootableGameObject->GetEntry() == GO_FISHING_BOBBER)
+            if (pLootableGameObject->getEntry() == GO_FISHING_BOBBER)
             {
                 uint32_t count = 0;
                 for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
@@ -379,7 +379,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
                         {
                             if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
                             {
-                                data << (*itr)->m_loggedInPlayer->GetGUID();
+                                data << (*itr)->m_loggedInPlayer->getGuid();
                                 ++real_count;
                             }
                         }
@@ -416,7 +416,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pCreature == nullptr)
             return;
 
-        pCreature->loot.looters.erase(_player->GetLowGUID());
+        pCreature->loot.looters.erase(_player->getGuidLow());
         if (pCreature->loot.gold <= 0)
         {
             for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
@@ -435,7 +435,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 
             if (!pCreature->Skinned)
             {
-                if (lootmgr.IsSkinnable(pCreature->GetEntry()))
+                if (lootmgr.IsSkinnable(pCreature->getEntry()))
                 {
                     pCreature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
                 }
@@ -448,12 +448,12 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pGO == nullptr)
             return;
 
-        switch (pGO->GetType())
+        switch (pGO->getGoType())
         {
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
                 if (pGO->IsInWorld())
                 {
                     pGO->RemoveFromWorld(true);
@@ -464,7 +464,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             case GAMEOBJECT_TYPE_CHEST:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
 
                 bool despawn = false;
                 if (pGO->GetGameObjectProperties()->chest.consumable == 1)
@@ -480,9 +480,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             if (pLock->locktype[i] == 1)
                             {
                                 if (despawn)
-                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
+                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
                                 else
-                                    pGO->SetState(GO_STATE_CLOSED);
+                                    pGO->setState(GO_STATE_CLOSED);
 
                                 return;
                             }
@@ -492,7 +492,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 {
                                     if (pLGO->HasLoot())
                                     {
-                                        pGO->SetState(GO_STATE_CLOSED);
+                                        pGO->setState(GO_STATE_CLOSED);
                                         return;
                                     }
 
@@ -504,10 +504,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             {
                                 if (pLGO->HasLoot())
                                 {
-                                    pGO->SetState(GO_STATE_CLOSED);
+                                    pGO->setState(GO_STATE_CLOSED);
                                     return;
                                 }
-                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                                 return;
                             }
                         }
@@ -515,10 +515,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                         {
                             if (pLGO->HasLoot())
                             {
-                                pGO->SetState(GO_STATE_CLOSED);
+                                pGO->setState(GO_STATE_CLOSED);
                                 return;
                             }
-                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                             return;
                         }
                     }
@@ -527,10 +527,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 {
                     if (pLGO->HasLoot())
                     {
-                        pGO->SetState(GO_STATE_CLOSED);
+                        pGO->setState(GO_STATE_CLOSED);
                         return;
                     }
-                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
+                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->getEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
 
                     return;
 
@@ -626,7 +626,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
             return;
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGameObject);
-        pGameObject->SetState(GO_STATE_OPEN);
+        pGameObject->setState(GO_STATE_OPEN);
         pLoot = &pLGO->loot;
     }
 
@@ -657,7 +657,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
     else
     {
-        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->getGuidLow());
 
         if (pLoot->items.at(slotid).has_looted.end() != itr)
         {
@@ -690,7 +690,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (item == nullptr)
         return;
 
-    item->SetStackCount(amt);
+    item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != nullptr)
     {
         item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
@@ -704,9 +704,9 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
     }
     else
         item->DeleteMe();
@@ -728,7 +728,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(slotid).has_looted.insert(player->GetLowGUID());
+        pLoot->items.at(slotid).has_looted.insert(player->getGuidLow());
     }
 }
 
@@ -755,7 +755,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
         if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
             return;
 
-        if (pGO->GetType() == GAMEOBJECT_TYPE_CHEST)
+        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
             li = pLGO->loot.items[slotid].roll;
     }
     else if (guidtype == HIGHGUID_TYPE_UNIT)

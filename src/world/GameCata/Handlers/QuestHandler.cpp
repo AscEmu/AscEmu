@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
 
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recvData)
 {
@@ -306,7 +308,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recvData)
         else
             return;
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
@@ -322,7 +324,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recvData)
         else
             return;
 
-        ItemProperties const* itemProto = quest_giver->GetItemProperties();
+        ItemProperties const* itemProto = quest_giver->getItemProperties();
 
         if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
         {
@@ -356,7 +358,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recvData)
         LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
         if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-            _player->AcceptQuest(qst_giver->GetGUID(), qst->id);
+            _player->AcceptQuest(qst_giver->getGuid(), qst->id);
     }
     else if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_FINISHED)
     {
@@ -478,7 +480,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recvData)
 
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
@@ -492,14 +494,14 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recvData)
         else
             return; // oops..
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
             qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
@@ -556,7 +558,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
@@ -570,13 +572,13 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         else
             return; // oops..
         bValid = false;
-        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
             qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
@@ -721,7 +723,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recvData)
         Group* pGroup = _player->GetGroup();
         if (pGroup)
         {
-            uint32 pguid = _player->GetLowGUID();
+            uint32 pguid = _player->getGuidLow();
             SubGroup* sgr = _player->GetGroup() ?
                 _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
 
@@ -732,10 +734,10 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recvData)
                 for (itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                 {
                     Player* pPlayer = (*itr)->m_loggedInPlayer;
-                    if (pPlayer && pPlayer->GetGUID() != pguid)
+                    if (pPlayer && pPlayer->getGuid() != pguid)
                     {
                         WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-                        data << uint64(pPlayer->GetGUID());
+                        data << uint64(pPlayer->getGuid());
                         data << uint8(QUEST_SHARE_MSG_SHARING_QUEST);
                         _player->GetSession()->SendPacket(&data);
 
@@ -773,7 +775,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recvData)
                         //or create a fake bad response, as we no longer have an out of range response. I'll go with the latter option and send that the other player is busy...
                         //Also, pPlayer's client can send a busy response automatically even if the players see each other, but they are still too far away.
                         //But sometimes nothing happens on pPlayer's client (near the end of mutual visibility line), no quest window and no busy response either. This has to be solved later, maybe a distance check here...
-                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->GetGUID()))
+                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->getGuid()))
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }
@@ -815,7 +817,7 @@ void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
         {
             WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
             if (recvPacket.size() >= 13)  //VLack: In case the packet was the longer one, its guid is the quest giver player, thus in the response we have to tell him that _this_ player reported the particular state. I think this type of response could also eliminate our SetQuestSharer/GetQuestSharer mess and its possible lock up conditions...
-                data << uint64(_player->GetGUID());
+                data << uint64(_player->getGuid());
             else
                 data << uint64(guid);
             data << uint8(msg);

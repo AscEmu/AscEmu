@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -93,7 +93,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[MSG_MOVE_STOP_ASCEND].handler = &WorldSession::HandleMovementOpcodes;
     WorldPacketHandlers[CMSG_MOVE_TIME_SKIPPED].handler = &WorldSession::HandleMoveTimeSkippedOpcode;
     WorldPacketHandlers[CMSG_MOVE_NOT_ACTIVE_MOVER].handler = &WorldSession::HandleMoveNotActiveMoverOpcode;
-    WorldPacketHandlers[CMSG_SET_ACTIVE_MOVER].handler = &WorldSession::HandleSetActiveMoverOpcode;
+    //WorldPacketHandlers[CMSG_SET_ACTIVE_MOVER].handler = &WorldSession::HandleSetActiveMoverOpcode;
     WorldPacketHandlers[CMSG_MOVE_CHNG_TRANSPORT].handler = &WorldSession::HandleMovementOpcodes;
 
     // ACK
@@ -129,7 +129,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::HandleLootMasterGiveOpcode;
 
     // Player Interaction
-    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::HandleWhoOpcode;
+    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::handleWhoOpcode;
     WorldPacketHandlers[CMSG_WHOIS].handler = &WorldSession::HandleWhoIsOpcode;
     WorldPacketHandlers[CMSG_LOGOUT_REQUEST].handler = &WorldSession::HandleLogoutRequestOpcode;
     //WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler = &WorldSession::HandlePlayerLogoutOpcode;
@@ -138,17 +138,17 @@ void WorldSession::loadSpecificHandlers()
 
     WorldPacketHandlers[CMSG_ZONEUPDATE].handler = &WorldSession::HandleZoneUpdateOpcode;
     // //WorldPacketHandlers[CMSG_SET_TARGET_OBSOLETE].handler = &WorldSession::HandleSetTargetOpcode;
-    WorldPacketHandlers[CMSG_SET_SELECTION].handler = &WorldSession::HandleSetSelectionOpcode;
-    WorldPacketHandlers[CMSG_STANDSTATECHANGE].handler = &WorldSession::HandleStandStateChangeOpcode;
+    WorldPacketHandlers[CMSG_SET_SELECTION].handler = &WorldSession::handleSetSelectionOpcode;
+    WorldPacketHandlers[CMSG_STANDSTATECHANGE].handler = &WorldSession::handleStandStateChangeOpcode;
     //WorldPacketHandlers[CMSG_CANCEL_MOUNT_AURA].handler = &WorldSession::HandleDismountOpcode;
 
     // Friends
-    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::HandleFriendListOpcode;
-    //WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::HandleAddFriendOpcode;
-    //WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::HandleDelFriendOpcode;
-    //WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::HandleAddIgnoreOpcode;
-    //WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::HandleDelIgnoreOpcode;
-    // WorldPacketHandlers[CMSG_SET_FRIEND_NOTE].handler = &WorldSession::HandleSetFriendNote;
+    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::handleFriendListOpcode;
+    //WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::handleAddFriendOpcode;
+    //WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::handleDelFriendOpcode;
+    //WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::handleAddIgnoreOpcode;
+    //WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::handleDelIgnoreOpcode;
+    // WorldPacketHandlers[CMSG_SET_CONTACT_NOTES].handler = &WorldSession::handleSetContactNotes;
 
     // Areatrigger
     //WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::HandleAreaTriggerOpcode;
@@ -157,7 +157,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].handler = &WorldSession::HandleUpdateAccountData;
     WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].status = STATUS_AUTHED;
     //WorldPacketHandlers[CMSG_REQUEST_ACCOUNT_DATA].handler = &WorldSession::HandleRequestAccountData;
-    WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::HandleTogglePVPOpcode;
+    WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::handleTogglePVPOpcode;
 
     // Faction / Reputation
     //WorldPacketHandlers[CMSG_SET_FACTION_ATWAR].handler = &WorldSession::HandleSetAtWarOpcode;
@@ -432,9 +432,9 @@ void WorldSession::loadSpecificHandlers()
 
 
     // Tutorials
-    WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::HandleTutorialFlag;
-    WorldPacketHandlers[CMSG_TUTORIAL_CLEAR].handler = &WorldSession::HandleTutorialClear;
-    WorldPacketHandlers[CMSG_TUTORIAL_RESET].handler = &WorldSession::HandleTutorialReset;
+    WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::handleTutorialFlag;
+    WorldPacketHandlers[CMSG_TUTORIAL_CLEAR].handler = &WorldSession::handleTutorialClear;
+    WorldPacketHandlers[CMSG_TUTORIAL_RESET].handler = &WorldSession::handleTutorialReset;
 
     // Pets
     //WorldPacketHandlers[CMSG_PET_ACTION].handler = &WorldSession::HandlePetAction;

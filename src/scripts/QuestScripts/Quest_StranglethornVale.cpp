@@ -25,7 +25,7 @@ class StrFever : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
 

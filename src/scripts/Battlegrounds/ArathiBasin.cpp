@@ -171,11 +171,10 @@ void ArathiBasin::SpawnBuff(uint32 x)
         m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
             BuffCoordinates[x][3], 0, 114, 1);
 
-        m_buffs[x]->SetParentRotation(2, BuffRotations[x][0]);
-        m_buffs[x]->SetParentRotation(3, BuffRotations[x][1]);
-        m_buffs[x]->SetState(GO_STATE_CLOSED);
-        m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-        m_buffs[x]->SetAnimProgress(100);
+        m_buffs[x]->SetRotationQuat(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
+        m_buffs[x]->setState(GO_STATE_CLOSED);
+        m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+        m_buffs[x]->setAnimationProgress(100);
         m_buffs[x]->PushToWorld(m_mapMgr);
     }
     else
@@ -184,10 +183,10 @@ void ArathiBasin::SpawnBuff(uint32 x)
         if (m_buffs[x]->IsInWorld())
             m_buffs[x]->RemoveFromWorld(false);
 
-        if (chosen_buffid != m_buffs[x]->GetEntry())
+        if (chosen_buffid != m_buffs[x]->getEntry())
         {
             m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-            m_buffs[x]->SetEntry(chosen_buffid);
+            m_buffs[x]->setEntry(chosen_buffid);
             m_buffs[x]->SetGameObjectProperties(gameobject_info);
         }
 
@@ -208,13 +207,12 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        m_controlPoints[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
-        m_controlPoints[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
-        m_controlPoints[Id]->SetState(GO_STATE_CLOSED);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
-        m_controlPoints[Id]->SetAnimProgress(100);
-        m_controlPoints[Id]->Activate();
-        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
+        m_controlPoints[Id]->setState(GO_STATE_CLOSED);
+        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setAnimationProgress(100);
+        m_controlPoints[Id]->setDynamic(1);
+        m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
 
         switch (Type)
         {
@@ -242,9 +240,9 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // assign it a new guid (client needs this to see the entry change?)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPoints[Id]->SetEntry(gameobject_info->entry);
-        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setEntry(gameobject_info->entry);
+        m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
 
         switch (Type)
         {
@@ -281,11 +279,10 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        m_controlPointAuras[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
-        m_controlPointAuras[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
-        m_controlPointAuras[Id]->SetState(GO_STATE_CLOSED);
-        m_controlPointAuras[Id]->SetType(GAMEOBJECT_TYPE_TRAP);
-        m_controlPointAuras[Id]->SetAnimProgress(100);
+        m_controlPointAuras[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
+        m_controlPointAuras[Id]->setState(GO_STATE_CLOSED);
+        m_controlPointAuras[Id]->setGoType(GAMEOBJECT_TYPE_TRAP);
+        m_controlPointAuras[Id]->setAnimationProgress(100);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
     else
@@ -295,8 +292,8 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // re-spawn the aura
         m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPointAuras[Id]->SetEntry(gi_aura->entry);
-        m_controlPointAuras[Id]->SetDisplayId(gi_aura->display_id);
+        m_controlPointAuras[Id]->setEntry(gi_aura->entry);
+        m_controlPointAuras[Id]->setDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetGameObjectProperties(gi_aura);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
@@ -306,13 +303,13 @@ void ArathiBasin::OnCreate()
 {
     // Alliance Gate
     GameObject* gate = SpawnGameObject(180255, 529, 1284.597290f, 1281.166626f, -15.977916f, 0.76f, 32, 114, 1.5799990f);
-    gate->SetAnimProgress(100);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // horde gate
     gate = SpawnGameObject(180256, 529, 708.0902710f, 708.4479370f, -17.3898964f, 3.92f, 32, 114, 1.5699990f);
-    gate->SetAnimProgress(100);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
@@ -351,8 +348,8 @@ void ArathiBasin::OnStart()
     // open gates
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
-        (*itr)->SetState(GO_STATE_OPEN);
+        (*itr)->setFlags(GO_FLAG_TRIGGERED);
+        (*itr)->setState(GO_STATE_OPEN);
     }
 
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
@@ -656,7 +653,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
             if (sp)
             {
                 Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, nullptr);
-                SpellCastTargets targets(plr->GetGUID());
+                SpellCastTargets targets(plr->getGuid());
                 pSpell->prepare(&targets);
             }
         }
@@ -780,7 +777,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     if (!m_started)
     {
         Anticheat_Log->writefromsession(pPlayer->GetSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->GetName(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->GetGUID(), "%s will be removed from the game for cheating.", pPlayer->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s will be removed from the game for cheating.", pPlayer->GetName());
         // Remove player from battleground.
         RemovePlayer(pPlayer, false);
         // Kick player from server.
@@ -873,7 +870,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     if (DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = false;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N defend %s", ControlPointNames[Id]);
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N defend %s", ControlPointNames[Id]);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED]++;
         UpdatePvPData();
@@ -881,7 +878,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     else if (!DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N assault %s !", ControlPointNames[Id]);
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N assault %s !", ControlPointNames[Id]);
         PlaySoundToAll(Team ? 8212 : 8174);
         if (Team)
         {
@@ -938,7 +935,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     else
     {
         DefFlag[Id][0] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", ControlPointNames[Id],
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", ControlPointNames[Id],
             Team ? "Horde" : "Alliance");
         PlaySoundToAll(8192);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -952,7 +949,7 @@ bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pS
     {
         if (m_controlPoints[cpid] == NULL)
             continue;
-        if (m_controlPoints[cpid]->GetGUID() == pGo->GetGUID())
+        if (m_controlPoints[cpid]->getGuid() == pGo->getGuid())
             break;
     }
 

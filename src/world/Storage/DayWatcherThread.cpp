@@ -69,7 +69,7 @@ DayWatcherThread::DayWatcherThread()
     this->threadInit();
 }
 
-DayWatcherThread::~DayWatcherThread() { m_thread->join(); }
+DayWatcherThread::~DayWatcherThread() { m_thread->killAndJoin(); }
 
 void DayWatcherThread::threadInit()
 {

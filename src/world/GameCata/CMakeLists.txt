@@ -1,5 +1,6 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
+include(GameCata/Data/CMakeLists.txt)
 include(GameCata/Handlers/CMakeLists.txt)
 include(GameCata/Management/CMakeLists.txt)
 include(GameCata/Movement/CMakeLists.txt)

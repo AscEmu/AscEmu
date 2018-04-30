@@ -103,7 +103,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             PhaseOneTimer = 0;
             Phase = 0;
             // Trigger settings
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
@@ -164,8 +164,8 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                     if (Magtheridon && Channeler->isAlive() && !Channeler->GetAIInterface()->getNextTarget())
                     {
-                        Channeler->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
-                        Channeler->SetChannelSpellId(SHADOW_GRASP);
+                        Channeler->setChannelObjectGuid(Magtheridon->getGuid());
+                        Channeler->setChannelSpellId(SHADOW_GRASP);
                     }
                 }
             }
@@ -233,7 +233,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 if (Magtheridon)
                 {
                     Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                     Magtheridon->RemoveAura(BANISHMENT);
                     Magtheridon->RemoveAura(BANISH);
                 }
@@ -301,7 +301,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     // If Gate is found we close it
                     GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                     if (Gate)
-                        Gate->SetState(GO_STATE_CLOSED);
+                        Gate->setState(GO_STATE_CLOSED);
                 }
             }
             // We use different functions for each phase
@@ -326,7 +326,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                                 Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                             }
 
-                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                            Magtheridon->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                             Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                             Magtheridon->RemoveAura(BANISHMENT);
                         }
@@ -339,7 +339,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (Magtheridon)
                         {
                             Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         }
 
                         Phase = 2;
@@ -387,7 +387,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         {
                             GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                             if (Gate)
-                                Gate->SetState(GO_STATE_OPEN);
+                                Gate->setState(GO_STATE_OPEN);
                         }
                         // After doing our job we can clear temporary channeler list
                         AliveChannelers.clear();
@@ -464,15 +464,15 @@ class ManticronCubeGO : public GameObjectAIScript
                 return;
 
             // We check if Cube Trigger is not in use
-            if (CubeTrigger && CubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+            if (CubeTrigger && CubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                 return;
 
             // We set player to channel spell "on Cube"
             pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(SHADOW_GRASP2), false);
 
             // We trigger channeling spell on Magtheridon for Cube Trigger
-            CubeTrigger->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
-            CubeTrigger->SetChannelSpellId(SHADOW_GRASP);
+            CubeTrigger->setChannelObjectGuid(Magtheridon->getGuid());
+            CubeTrigger->setChannelSpellId(SHADOW_GRASP);
 
             // We save player data in pointer as well as his position for further use
             x = pPlayer->GetPositionX();
@@ -493,8 +493,8 @@ class ManticronCubeGO : public GameObjectAIScript
             // We check if pointer has Channeler data and if so we check if that channeler is alive, in world and if channels Cube
             if (Channeler && (!Channeler->isAlive() || !Channeler->IsInWorld()))
             {
-                CubeTrigger->SetChannelSpellTargetGUID(0);
-                CubeTrigger->SetChannelSpellId(0);
+                CubeTrigger->setChannelObjectGuid(0);
+                CubeTrigger->setChannelSpellId(0);
 
                 Channeler = NULL;
             }
@@ -505,10 +505,10 @@ class ManticronCubeGO : public GameObjectAIScript
                 aura = Channeler->getAuraWithId(SHADOW_GRASP2);
 
             // If player doesn't have aura we interrupt channeling
-            if (Channeler && (!aura || !Channeler->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
+            if (Channeler && (!aura || !Channeler->getChannelObjectGuid()))
             {
-                CubeTrigger->SetChannelSpellTargetGUID(0);
-                CubeTrigger->SetChannelSpellId(0);
+                CubeTrigger->setChannelObjectGuid(0);
+                CubeTrigger->setChannelSpellId(0);
 
                 // If player's channeling went over (and he was hit before) aura won't be removed when channeling ends - core bug
                 Channeler->RemoveAura(SHADOW_GRASP2);
@@ -525,7 +525,7 @@ class ManticronCubeGO : public GameObjectAIScript
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                     if (Magtheridon != nullptr)
-                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                        if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                             Counter++;
                 }
 
@@ -543,8 +543,8 @@ class ManticronCubeGO : public GameObjectAIScript
             // We check if Magtheridon is spawned, is in world and so on
             if (!Magtheridon || (Magtheridon && (!Magtheridon->isAlive() || !Magtheridon->IsInWorld() || !Magtheridon->GetAIInterface()->getNextTarget())))
             {
-                CubeTrigger->SetChannelSpellTargetGUID(0);
-                CubeTrigger->SetChannelSpellId(0);
+                CubeTrigger->setChannelObjectGuid(0);
+                CubeTrigger->setChannelSpellId(0);
             }
 
             // We count Cubes that channel spell on Magtheridon
@@ -554,7 +554,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
-                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                    if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                         Counter++;
             }
 
@@ -613,7 +613,7 @@ class CubeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
         CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 };
@@ -701,8 +701,8 @@ class HellfireChannelerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
@@ -712,10 +712,10 @@ class HellfireChannelerAI : public CreatureAIScript
 
                 Unit* Magtheridon = NULL;
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
-                if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
+                if (Magtheridon && Magtheridon->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 {
-                    getCreature()->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
-                    getCreature()->SetChannelSpellId(SHADOW_GRASP);
+                    getCreature()->setChannelObjectGuid(Magtheridon->getGuid());
+                    getCreature()->setChannelSpellId(SHADOW_GRASP);
 
                     Magtheridon->CastSpell(Magtheridon, sSpellCustomizations.GetSpellInfo(BANISH), true);
                 }
@@ -730,8 +730,8 @@ class HellfireChannelerAI : public CreatureAIScript
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
         }
 };
 
@@ -784,14 +784,14 @@ class MagtheridonAI : public CreatureAIScript
             quake2 = addAISpell(QUAKE2, 0.0f, TARGET_VARIOUS);
             caveIn = addAISpell(CAVE_IN, 0.0f, TARGET_VARIOUS);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
             getCreature()->AddAura(aura);
 
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BANISH), true);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-            getCreature()->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+            getCreature()->setSheathType(SHEATH_STATE_MELEE);
 
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;
@@ -805,16 +805,16 @@ class MagtheridonAI : public CreatureAIScript
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;
 
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
+            if (getCreature()->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2))
                 return;
 
             GameObject* Gate = NULL;
@@ -822,16 +822,16 @@ class MagtheridonAI : public CreatureAIScript
             {
                 Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
-                    Gate->SetState(GO_STATE_CLOSED);
+                    Gate->setState(GO_STATE_CLOSED);
             }
 
             Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
 
             Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GO_STATE_OPEN);
+                Gate->setState(GO_STATE_OPEN);
         }
 
         void AIUpdate() override
@@ -964,12 +964,12 @@ class MagtheridonAI : public CreatureAIScript
                     {
                         Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
-                            Gate->SetState(GO_STATE_OPEN);
+                            Gate->setState(GO_STATE_OPEN);
                     }
 
                     Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
                     if (Gate)
-                        Gate->SetState(GO_STATE_OPEN);
+                        Gate->setState(GO_STATE_OPEN);
                 }
 
                 if (timer_caveIn == 5)

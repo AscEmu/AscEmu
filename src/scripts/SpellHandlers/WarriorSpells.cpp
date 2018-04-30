@@ -55,7 +55,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     }
 
     dmg = pSpell->CalculateEffect(effectIndex, pSpell->GetUnitTarget());
-    dmg += Caster->GetAttackPower() / 5;
+    dmg += Caster->getAttackPower() / 5;
     dmg += toadd;
 
     Caster->Strike(Target, 0, pSpell->GetSpellInfo(), 0, 0, dmg, false, false);
@@ -161,7 +161,7 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
     }
 
     SpellCastTargets tgt;
-    tgt.m_unitTarget = playerTarget->GetGUID();
+    tgt.m_unitTarget = playerTarget->getGuid();
 
     SpellInfo* inf = sSpellCustomizations.GetSpellInfo(12976);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);

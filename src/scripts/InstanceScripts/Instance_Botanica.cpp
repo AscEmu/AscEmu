@@ -123,7 +123,7 @@ class CommanderSarannisAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             GuardAdds = false;
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override

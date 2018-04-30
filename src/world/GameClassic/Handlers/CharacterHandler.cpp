@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -23,7 +23,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     {
         uint32_t displayId;
         uint8_t inventoryType;
-        uint32_t enchantmentId;
     };
 
     PlayerItem player_items[20];
@@ -60,7 +59,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     if (result)
         numchar = result->GetRowCount();
 
-    uint32_t start_time = getMSTime();
+    uint32_t start_time = Util::getMSTime();
 
     WorldPacket data(SMSG_CHAR_ENUM, 1 + numchar * 200);
     data << uint8_t(char_real_count);
@@ -79,7 +78,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             charEnum.Class = fields[3].GetUInt8();
             if (charEnum.Class == DEATHKNIGHT)
             {
-                LogDebugFlag(LF_OPCODE, "Your character Table includes DeathKnights! You are running AscEmu for TBC clients - skip!", getMSTime() - start_time);
+                LogDebugFlag(LF_OPCODE, "Your character Table includes DeathKnights! You are running AscEmu for TBC clients - skip!", Util::getMSTime() - start_time);
                 continue;
             }
             charEnum.gender = fields[4].GetUInt8();
@@ -122,15 +121,15 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             uint32_t char_flags = 0;
 
             if (charEnum.banned && (charEnum.banned < 10 || charEnum.banned > (uint32_t)UNIXTIME))
-                char_flags |= PLAYER_FLAG_IS_BANNED;
+                char_flags |= CHARACTER_SCREEN_FLAG_BANNED;
             if (charEnum.deathState != 0)
-                char_flags |= PLAYER_FLAG_IS_DEAD;
+                char_flags |= CHARACTER_SCREEN_FLAG_DEAD;
             if (charEnum.flags & PLAYER_FLAG_NOHELM)
-                char_flags |= PLAYER_FLAG_NOHELM;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_HELM;
             if (charEnum.flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= PLAYER_FLAG_NOCLOAK;
+                char_flags |= CHARACTER_SCREEN_FLAG_HIDE_CLOAK;
             if (charEnum.loginFlags == 1)
-                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
+                char_flags |= CHARACTER_SCREEN_FLAG_FORCED_RENAME;
 
             data << uint32_t(char_flags);
             data << uint8_t(0);
@@ -169,25 +168,12 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             {
                 do
                 {
-                    uint32_t enchantid;
-
                     int8_t item_slot = item_db_result->Fetch()[0].GetInt8();
                     ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
                     if (itemProperties)
                     {
                         player_items[item_slot].displayId = itemProperties->DisplayInfoID;
                         player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
-
-                        if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
-                        {
-                            const char* enchant_field = item_db_result->Fetch()[2].GetString();
-                            if (sscanf(enchant_field, "%u,0,0;", (unsigned int*)&enchantid) == 1 && enchantid > 0)
-                            {
-                                DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
-                                if (spell_item_enchant != nullptr)
-                                    player_items[item_slot].enchantmentId = spell_item_enchant->visual;
-                            }
-                        }
                     }
                 } while (item_db_result->NextRow());
                 delete item_db_result;
@@ -197,7 +183,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             {
                 data << uint32_t(player_items[i].displayId);
                 data << uint8_t(player_items[i].inventoryType);
-                data << uint32_t(player_items[i].enchantmentId);
             }
 
             ++char_real_count;
@@ -206,6 +191,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
     data.put<uint8_t>(0, char_real_count);
 
-    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
+    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", Util::getMSTime() - start_time);
     SendPacket(&data);
 }

@@ -96,12 +96,12 @@ public:
                     CreatureAIScript* pRazuunAI = spawnCreatureAndGetAIScript(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f);    // Spawn Razuun
                     if (pRazuunAI != nullptr)
                     {
-                        pRazuunAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        pRazuunAI->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         pRazuunAI->setCanEnterCombat(false);
                         pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->setRooted(true);
                     }
-                    getCreature()->SetStandState(STANDSTATE_KNEEL);
+                    getCreature()->setStandState(STANDSTATE_KNEEL);
                     getCreature()->Emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
                     mJovaanPhase = 1;
@@ -118,7 +118,7 @@ public:
                 break;
                 case 2:
                 {
-                    getCreature()->SetStandState(STANDSTATE_STAND);
+                    getCreature()->setStandState(STANDSTATE_STAND);
                     mJovaanPhase = 3;
                     _resetTimer(mJovaanTimer, 1000);
                 }
@@ -252,7 +252,7 @@ public:
     {
         if (plr->HasQuest(10814))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10613, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
             if (plr->HasQuest(10583))
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
 
@@ -266,19 +266,19 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10614, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
                 menu.Send(plr);
             } break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10615, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
                 menu.Send(plr);
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10616, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
                 menu.Send(plr);
             } break;
@@ -302,7 +302,7 @@ public:
     {
         Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
         setRooted(true);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
         AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
     }
 
@@ -346,7 +346,7 @@ public:
 
 void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
 {
-    Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+    Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
     if (plr->HasQuest(10583))
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
 
@@ -359,7 +359,7 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     if (item == nullptr)
         return;
 
-    item->SetStackCount(1);
+    item->setStackCount(1);
     if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
     {
         Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
@@ -368,8 +368,8 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     else
     {
         Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
-            item->GetItemRandomPropertyId(), item->GetStackCount());
+            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
+            item->GetItemRandomPropertyId(), item->getStackCount());
     }
 };
 

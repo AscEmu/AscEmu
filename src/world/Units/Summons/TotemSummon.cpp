@@ -80,15 +80,16 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setRace(0);
     setClass(1);
     setGender(2);
-    SetPowerType(1);
-    SetBaseAttackTime(MELEE, 2000);
-    SetBaseAttackTime(OFFHAND, 2000);
-    SetBoundingRadius(1.0f);
-    SetCombatReach(1.0f);
-    SetDisplayId(displayID);
-    SetNativeDisplayId(creature_properties->Male_DisplayID);
-    SetCastSpeedMod(1.0f);
-    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+    setPowerType(1);
+    setBaseAttackTime(MELEE, 2000);
+    setBaseAttackTime(OFFHAND, 2000);
+    setBoundingRadius(1.0f);
+    setCombatReach(1.0f);
+    setDisplayId(displayID);
+    setNativeDisplayId(creature_properties->Male_DisplayID);
+    setModCastSpeed(1.0f);
+    //\note remove all dynamic flags
+    setDynamicFlags(0);
 
     InheritSMMods(pOwner);
 
@@ -127,7 +128,7 @@ void TotemSummon::SetupSpells()
     if (GetOwner() == NULL)
         return;
 
-    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(GetCreatedBySpell());
+    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());
     SpellInfo* TotemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
 
     if (TotemSpell == NULL)

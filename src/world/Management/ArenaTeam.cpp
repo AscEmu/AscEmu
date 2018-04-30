@@ -419,7 +419,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     if (pTeam == nullptr)
         return;
 
-    if (!pTeam->HasMember(GetPlayer()->GetLowGUID()))
+    if (!pTeam->HasMember(GetPlayer()->getGuidLow()))
     {
         GetPlayer()->SoftDisconnect();
         return;
@@ -432,7 +432,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (pTeam->m_leader != _player->GetLowGUID())
+    if (pTeam->m_leader != _player->getGuidLow())
     {
         SystemMessage("You are not the captain of this arena team.");
         return;
@@ -493,7 +493,7 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (team->m_leader != _player->GetLowGUID())
+    if (team->m_leader != _player->getGuidLow())
     {
         SystemMessage("You are not the leader of this team.");
         return;
@@ -607,13 +607,13 @@ void WorldSession::HandleArenaTeamLeaveOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (team->m_leader == _player->GetLowGUID() && team->m_memberCount == 1)
+    if (team->m_leader == _player->getGuidLow() && team->m_memberCount == 1)
     {
         team->Destroy();
         return;
     }
 
-    if (team->m_leader == _player->GetLowGUID())
+    if (team->m_leader == _player->getGuidLow())
     {
         SystemMessage("You cannot leave the team yet, promote someone else to captain first.");
         return;
@@ -651,7 +651,7 @@ void WorldSession::HandleArenaTeamDisbandOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (team->m_leader != _player->GetLowGUID())
+    if (team->m_leader != _player->getGuidLow())
     {
         SystemMessage("You aren't the captain of this team.");
         return;
@@ -687,7 +687,7 @@ void WorldSession::HandleArenaTeamPromoteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (team->m_leader != _player->GetLowGUID())
+    if (team->m_leader != _player->getGuidLow())
     {
         SystemMessage("You aren't the captain of this team.");
         return;

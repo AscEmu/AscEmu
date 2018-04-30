@@ -162,11 +162,11 @@ public:
     void OnLoad() override
     {
         RegisterAIUpdateEvent(5000);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);
-        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
         getCreature()->GetAIInterface()->m_canMove = false;
         i = 1;
     }
@@ -213,7 +213,7 @@ public:
 
         if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
-            if (obelisk1->GetState() == 0 && obelisk2->GetState() == 0 && obelisk3->GetState() == 0 && obelisk4->GetState() == 0 && obelisk5->GetState() == 0)
+            if (obelisk1->getState() == 0 && obelisk2->getState() == 0 && obelisk3->getState() == 0 && obelisk4->getState() == 0 && obelisk5->getState() == 0)
             {
                 Creature* ct = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
                 if (ct != nullptr)
@@ -223,15 +223,15 @@ public:
 
 #if VERSION_STRING > TBC
         if (obelisk1 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk1, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk2 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk2, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk3 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk3, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk4 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk4, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk5 != nullptr)
-            sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+            sEventMgr.AddEvent(obelisk5, &GameObject::setState, (uint8)1, EVENT_UNK, 10000, 0, 1);
 #endif
     }
 
@@ -267,7 +267,7 @@ public:
     Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
-        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->setScale(0.4f);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -278,7 +278,7 @@ public:
     void OnTargetDied(Unit* /*mTarget*/) override
     {
         getCreature()->SetFaction(35);
-        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->setScale(0.4f);
     }
 };
 
@@ -301,7 +301,7 @@ public:
             if (pCreature != nullptr)
             {
                 pCreature->SetFaction(14);
-                pCreature->setFloatValue(OBJECT_FIELD_SCALE_X, 1);
+                pCreature->setScale(1.0f);
                 pCreature->GetAIInterface()->setNextTarget(pPlayer);
                 pCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
             }
@@ -365,9 +365,9 @@ public:
         if (getRangeToObject(Ogre->getCreature()) <= 5)
         {
             Ogre->_setDisplayWeaponIds(28562, 0);
-            Ogre->getCreature()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
+            Ogre->getCreature()->setEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
             Ogre->getCreature()->SetFaction(35);
-            Ogre->getCreature()->SetStandState(STANDSTATE_SIT);
+            Ogre->getCreature()->setStandState(STANDSTATE_SIT);
 
             NdGo = getNearestGameObject(184315);
             if (NdGo == nullptr)

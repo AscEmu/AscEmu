@@ -975,7 +975,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto blood_strike_spell = new AI_Spell;
     blood_strike_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
-    blood_strike_spell->entryId = getCreature()->GetEntry();
+    blood_strike_spell->entryId = getCreature()->getEntry();
     blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
     blood_strike_spell->spelltargetType = TTYPE_SINGLETARGET;
@@ -994,7 +994,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto bone_barrier_spell = new AI_Spell;
     bone_barrier_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
-    bone_barrier_spell->entryId = getCreature()->GetEntry();
+    bone_barrier_spell->entryId = getCreature()->getEntry();
     bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
     bone_barrier_spell->spelltargetType = TTYPE_CASTER;
@@ -1013,7 +1013,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     auto understudy_taunt_spell = new AI_Spell;
     understudy_taunt_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
-    understudy_taunt_spell->entryId = getCreature()->GetEntry();
+    understudy_taunt_spell->entryId = getCreature()->getEntry();
     understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
     understudy_taunt_spell->spelltargetType = TTYPE_SINGLETARGET;
@@ -1239,7 +1239,7 @@ class StickedSpewerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1268,7 +1268,7 @@ class SurgicalAssistantAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1301,7 +1301,7 @@ class SludgeBelcherAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1340,7 +1340,7 @@ class GrobbulusAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         getCreature()->CastSpell(getCreature(), poisonCloudGrob->mSpellInfo, poisonCloudGrob->mIsTriggered);
     }
 
@@ -1811,7 +1811,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
     FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->setSplineFlying();
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(7000, 0);
@@ -1849,9 +1849,9 @@ class FrostBreathTrigger2AI : public CreatureAIScript
     FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 #else
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 #endif
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1875,7 +1875,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1904,7 +1904,7 @@ class ChillTriggerAI : public CreatureAIScript
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -1999,10 +1999,10 @@ class SapphironAI : public CreatureAIScript
         GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
-            Waterfall->SetState(GO_STATE_CLOSED);
+            Waterfall->setState(GO_STATE_CLOSED);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         PhaseTimer = (uint32)time(NULL) + 35;
         ChillTarget = NULL;
@@ -2030,7 +2030,7 @@ class SapphironAI : public CreatureAIScript
         GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
-            Waterfall->SetState(GO_STATE_OPEN);
+            Waterfall->setState(GO_STATE_OPEN);
         }
 
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -2143,7 +2143,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
 
@@ -2167,7 +2167,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }
@@ -2186,7 +2186,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
                             }
                         }
                     }
@@ -2246,7 +2246,7 @@ class SapphironAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->setWayPointToMove(0);
 
                 RemoveAIUpdateEvent();
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
                 PhaseTimer = (uint32)time(NULL) + 67;
                 ChillTarget = NULL;
@@ -2471,8 +2471,6 @@ class KelthuzadAI : public CreatureAIScript
             SoulWeavers[i] = false;
         }
 
-        
-
         auto frostbolt = addAISpell(SFROSTBOLT, 7.0f, TARGET_ATTACKING);
         frostbolt->setAttackStopTimer(2000);
 
@@ -2501,7 +2499,7 @@ class KelthuzadAI : public CreatureAIScript
         channelKelthuzad->setAttackStopTimer(1000);
 
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+
         getCreature()->GetAIInterface()->m_canMove = true;
 
         DespawnTrash = false;
@@ -2524,16 +2522,16 @@ class KelthuzadAI : public CreatureAIScript
         TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
-            getCreature()->SetChannelSpellTargetGUID(TheLichKing->GetGUID());
-            getCreature()->SetChannelSpellId(29423);
+            getCreature()->setChannelObjectGuid(TheLichKing->getGuid());
+            getCreature()->setChannelSpellId(29423);
         }
 
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
 
         if (KelGate)
-            KelGate->SetState(GO_STATE_CLOSED);
+            KelGate->setState(GO_STATE_CLOSED);
 
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
 
@@ -2550,21 +2548,22 @@ class KelthuzadAI : public CreatureAIScript
     {
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
-            KelGate->SetState(GO_STATE_OPEN);
+            KelGate->setState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
-                WindowGate->SetState(GO_STATE_CLOSED);
+                WindowGate->setState(GO_STATE_CLOSED);
         }
 
-        getCreature()->SetChannelSpellTargetGUID(0);
-        getCreature()->SetChannelSpellId(0);
+        getCreature()->setChannelObjectGuid(0);
+        getCreature()->setChannelSpellId(0);
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+
+        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
 
@@ -2599,20 +2598,20 @@ class KelthuzadAI : public CreatureAIScript
     {
         GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
-            KelGate->SetState(GO_STATE_OPEN);
+            KelGate->setState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
-                WindowGate->SetState(GO_STATE_CLOSED);
+                WindowGate->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
         getCreature()->PlaySoundToSet(8814);
 
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->m_canMove = true;
 
         EventStart = false;
@@ -2742,19 +2741,17 @@ class KelthuzadAI : public CreatureAIScript
 
             if (!PhaseTimer)
             {
-                getCreature()->SetChannelSpellTargetGUID(0);
-                getCreature()->SetChannelSpellId(0);
+                getCreature()->setChannelObjectGuid(0);
+                getCreature()->setChannelSpellId(0);
                 _setMeleeDisabled(false);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 getCreature()->GetAIInterface()->m_canMove = true;
 
                 DespawnTrash = false;
                 HelpDialog = 0;
                 GCounter = 0;
                 m_phase = 2;
-                return;
             }
-
             else if (!WaveTimer && PhaseTimer > 5)
             {
                 uint32 SpawnPoint = Util::getRandomUInt(6);
@@ -2828,7 +2825,7 @@ class KelthuzadAI : public CreatureAIScript
                 {
                     GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
                     if (WindowGate)
-                        WindowGate->SetState(GO_STATE_OPEN);
+                        WindowGate->setState(GO_STATE_OPEN);
                 }
             }
 
@@ -2882,7 +2879,7 @@ class TheLichKingAI : public CreatureAIScript
 
     TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 };
 
@@ -2906,7 +2903,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3010,7 +3007,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         newposx = 0;
         newposy = 0;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3197,7 +3194,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
 
         OnStart = false;
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         LastPosX = 0;
         LastPosY = 0;

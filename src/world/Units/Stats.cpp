@@ -138,7 +138,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         return 0;
 
     // No xp reward for killing summons
-    if (pVictim->GetCreatedByGUID() != 0)
+    if (pVictim->getCreatedByGuid() != 0)
         return 0;
 
     CreatureProperties const* victimI = static_cast<Creature*>(pVictim)->GetCreatureProperties();
@@ -583,8 +583,8 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     float max_damage = pAttacker->getFloatValue(offset + 1);
     if (it)
     {
-        min_damage -= it->GetItemProperties()->Damage[0].Min;
-        max_damage -= it->GetItemProperties()->Damage[0].Max;
+        min_damage -= it->getItemProperties()->Damage[0].Min;
+        max_damage -= it->getItemProperties()->Damage[0].Max;
     }
 
     float ap = 0;
@@ -615,16 +615,16 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
             {
                 it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it)
-                    wspeed = (float)it->GetItemProperties()->Delay;
+                    wspeed = (float)it->getItemProperties()->Delay;
                 else
                     wspeed = 2000;
             }
             else
-                wspeed = (float)pAttacker->GetBaseAttackTime(RANGED);
+                wspeed = (float)pAttacker->getBaseAttackTime(RANGED);
         }
         else
         {
-            wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+            wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
 
         //ranged weapon normalization.
@@ -641,7 +641,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = static_cast< Player* >(pAttacker)->GetShapeShift();
+                uint8 ss = static_cast< Player* >(pAttacker)->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -650,7 +650,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
             }
         }
 
-        bonus = (wspeed - pAttacker->GetBaseAttackTime(RANGED)) / 14000.0f * ap;
+        bonus = (wspeed - pAttacker->getBaseAttackTime(RANGED)) / 14000.0f * ap;
         min_damage += bonus;
         max_damage += bonus;
     }
@@ -680,16 +680,16 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
                 it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
-                    wspeed = (float)it->GetItemProperties()->Delay;
+                    wspeed = (float)it->getItemProperties()->Delay;
                 else
                     wspeed = 2000;
             }
             else
-                wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+                wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
         else
         {
-            wspeed = (float)pAttacker->GetBaseAttackTime(MELEE);
+            wspeed = (float)pAttacker->getBaseAttackTime(MELEE);
         }
 
         //Normalized weapon damage checks.
@@ -701,11 +701,11 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
                 if (it)
                 {
-                    if (it->GetItemProperties()->Class == 2) //weapon
+                    if (it->getItemProperties()->Class == 2) //weapon
                     {
-                        if (it->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+                        if (it->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
                             wspeed = 3300;
-                        else if (it->GetItemProperties()->SubClass == 15)
+                        else if (it->getItemProperties()->SubClass == 15)
                             wspeed = 1700;
                         else wspeed = 2400;
                     }
@@ -718,7 +718,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = static_cast< Player* >(pAttacker)->GetShapeShift();
+                uint8 ss = static_cast< Player* >(pAttacker)->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -728,9 +728,9 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         }
 
         if (offset == UNIT_FIELD_MINDAMAGE)
-            bonus = (wspeed - pAttacker->GetBaseAttackTime(MELEE)) / 14000.0f * ap;
+            bonus = (wspeed - pAttacker->getBaseAttackTime(MELEE)) / 14000.0f * ap;
         else
-            bonus = (wspeed - pAttacker->GetBaseAttackTime(OFFHAND)) / 14000.0f * ap;
+            bonus = (wspeed - pAttacker->getBaseAttackTime(OFFHAND)) / 14000.0f * ap;
         min_damage += bonus;
         max_damage += bonus;
     }

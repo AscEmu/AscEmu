@@ -30,7 +30,7 @@ class Berthold : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(429), 2);     // Where is Medivh?
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(430), 3);     // How do you navigate the tower?
@@ -363,10 +363,10 @@ class BigBadWolfAI : public CreatureAIScript
         GameObject* DoorRightO = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
 
         if (DoorLeftO)
-            DoorLeftO->SetState(GO_STATE_OPEN);
+            DoorLeftO->setState(GO_STATE_OPEN);
 
         if (DoorRightO)
-            DoorRightO->SetState(GO_STATE_OPEN);
+            DoorRightO->setState(GO_STATE_OPEN);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -406,13 +406,13 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_CLOSED);
+            DoorLeft->setState(GO_STATE_CLOSED);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_OPEN);
+            DoorRight->setState(GO_STATE_OPEN);
 
         if (Curtain)
-            Curtain->SetState(GO_STATE_CLOSED);
+            Curtain->setState(GO_STATE_CLOSED);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -422,14 +422,14 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_OPEN);
+            DoorLeft->setState(GO_STATE_OPEN);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_OPEN);
+            DoorRight->setState(GO_STATE_OPEN);
 
         // Make sure the curtain stays up
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
 
         getCreature()->PlaySoundToSet(9275);
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
@@ -451,12 +451,12 @@ public:
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8975, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8975, 0);
             menu.Send(Plr);
         }
         else
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8970, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8970, 0);
             menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
             menu.Send(Plr);
         }
@@ -468,7 +468,7 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8971, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 8971, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(433), 2);     // Ok, I'll give it a try, then.
                 menu.Send(Plr);
             }
@@ -497,7 +497,7 @@ class GrandMother : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
         menu.Send(Plr);
     }
@@ -604,7 +604,7 @@ class BarnesAI : public CreatureAIScript
                         EventWOZ();
                         break;
                 }
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 1);
+                getCreature()->addUnitFlags(UNIT_FLAG_SERVER_CONTROLLED);
                 WayStartBBW[getCreature()->GetInstanceID()] = 5;
             } break;
             default:
@@ -619,13 +619,13 @@ class BarnesAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_CLOSED);
+            DoorLeft->setState(GO_STATE_CLOSED);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_OPEN);
+            DoorRight->setState(GO_STATE_OPEN);
 
         if (Curtain)
-            Curtain->SetState(GO_STATE_CLOSED);
+            Curtain->setState(GO_STATE_CLOSED);
 
         Creature* Julianne = getNearestCreature(-10883.0f, -1751.81f, 90.4765f, 17534);
         Creature* Romulo = getNearestCreature(-10883.0f, -1751.81f, 90.4765f, 17533);
@@ -695,15 +695,15 @@ class BarnesAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_CLOSED);
+            DoorLeft->setState(GO_STATE_CLOSED);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_CLOSED);
+            DoorRight->setState(GO_STATE_CLOSED);
 
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
 
         spawnCreature(17535, -10897.650f, -1755.8311f, 90.476f, 4.61f); //Dorothee
         spawnCreature(17543, -10904.088f, -1754.8988f, 90.476f, 4.61f); //Strawman
@@ -732,15 +732,15 @@ class BarnesAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_CLOSED);
+            DoorLeft->setState(GO_STATE_CLOSED);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_CLOSED);
+            DoorRight->setState(GO_STATE_CLOSED);
 
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); //Spawn Julianne
     }
 
@@ -765,15 +765,15 @@ class BarnesAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_CLOSED);
+            DoorLeft->setState(GO_STATE_CLOSED);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_CLOSED);
+            DoorRight->setState(GO_STATE_CLOSED);
 
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
 
-        getCreature()->SetDisplayId(16616);
+        getCreature()->setDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
 
     }
@@ -789,7 +789,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(StageLight);
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -1113,8 +1113,8 @@ class ShadeofAranAI : public CreatureAIScript
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
         {
-            SDoor->SetState(GO_STATE_CLOSED);
-            SDoor->SetFlags(33);
+            SDoor->setState(GO_STATE_CLOSED);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 
@@ -1124,7 +1124,7 @@ class ShadeofAranAI : public CreatureAIScript
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
-            SDoor->SetFlags(34);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1134,7 +1134,7 @@ class ShadeofAranAI : public CreatureAIScript
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
-            SDoor->SetFlags(34);
+            SDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -1204,11 +1204,11 @@ class ShadeofAranAI : public CreatureAIScript
                     getCreature()->CastSpell(getCreature(), info_mass_polymorph, true);
                     getCreature()->setAttackTimer(2000, false);
                 }
-                else if (getCreature()->GetStandState() != STANDSTATE_SIT)
+                else if (getCreature()->getStandState() != STANDSTATE_SIT)
                 {
                     getCreature()->setAttackTimer(3000, false);
                     getCreature()->CastSpell(getCreature(), info_conjure, false);
-                    getCreature()->SetStandState(STANDSTATE_SIT);
+                    getCreature()->setStandState(STANDSTATE_SIT);
                     getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
                 }
                 else
@@ -1222,7 +1222,7 @@ class ShadeofAranAI : public CreatureAIScript
             m_time_pyroblast--;
             if (!m_time_pyroblast)
             {
-                getCreature()->SetStandState(STANDSTATE_STAND);
+                getCreature()->setStandState(STANDSTATE_STAND);
                 getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                 getCreature()->CastSpell(getCreature(), info_pyroblast, false);
                 drinking = false;
@@ -1294,7 +1294,7 @@ class ShadeofAranAI : public CreatureAIScript
         {
             if (*itr)
             {
-                FlameWreathTarget[i] = (*itr)->GetGUID();
+                FlameWreathTarget[i] = (*itr)->getGuid();
                 FWTargPosX[i] = (*itr)->GetPositionX();
                 FWTargPosY[i] = (*itr)->GetPositionY();
                 getCreature()->CastSpell((*itr), FLAME_WREATH, true);
@@ -1726,7 +1726,6 @@ class FiendishImpAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) override
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
 
         if (getCreature()->GetDistance2dSq(mTarget) <= 1225.0f)
@@ -1734,7 +1733,7 @@ class FiendishImpAI : public CreatureAIScript
             setAIAgent(AGENT_SPELL);
         }
 
-        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1801,7 +1800,7 @@ class FiendPortal : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
 
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -1946,25 +1945,25 @@ class MalchezaarAI : public CreatureAIScript
         GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         if (MDoor != NULL)
         {
-            MDoor->SetState(GO_STATE_CLOSED);
-            MDoor->SetFlags(33);
+            MDoor->setState(GO_STATE_CLOSED);
+            MDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         // Reset weapon
-        getCreature()->SetEquippedItem(MELEE, 0);
+        getCreature()->setVirtualItemSlotId(MELEE, 0);
 
         // Off hand weapon
-        getCreature()->SetEquippedItem(OFFHAND, 0);
+        getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
         if (cp == nullptr)
             return;
 
-        getCreature()->SetMinDamage(cp->MinDamage);
-        getCreature()->SetMaxDamage(cp->MaxDamage);
+        getCreature()->setMinDamage(cp->MinDamage);
+        getCreature()->setMaxDamage(cp->MaxDamage);
 
         for (uint8 i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
@@ -1975,7 +1974,7 @@ class MalchezaarAI : public CreatureAIScript
         GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
         if (MDoor != NULL)
-            MDoor->SetState(GO_STATE_OPEN);
+            MDoor->setState(GO_STATE_OPEN);
 
         Creature* MAxes = NULL;
         MAxes = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_AXES);
@@ -1999,7 +1998,7 @@ class MalchezaarAI : public CreatureAIScript
         GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
         if (MDoor)
-            MDoor->SetState(GO_STATE_OPEN);
+            MDoor->setState(GO_STATE_OPEN);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -2091,17 +2090,17 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[7].info, spells[6].instant);*/
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(MELEE, AXE_ITEM_MODEL);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
+            getCreature()->setVirtualItemSlotId(OFFHAND, AXE_ITEM_MODEL);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(1.5f * cp->MinDamage);
-            getCreature()->SetMaxDamage(1.5f * cp->MaxDamage);
+            getCreature()->setMinDamage(1.5f * cp->MinDamage);
+            getCreature()->setMaxDamage(1.5f * cp->MaxDamage);
 
             m_phase = 2;
         }
@@ -2130,17 +2129,17 @@ class MalchezaarAI : public CreatureAIScript
             getCreature()->RemoveAura(WIELD_AXES);
 
             // Main hand weapon
-            getCreature()->SetEquippedItem(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
 
             //Off Hand
-            getCreature()->SetEquippedItem(OFFHAND, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            getCreature()->SetMinDamage(cp->MinDamage);
-            getCreature()->SetMaxDamage(cp->MaxDamage);
+            getCreature()->setMinDamage(cp->MinDamage);
+            getCreature()->setMaxDamage(cp->MaxDamage);
             m_phase = 3;
         }
     }
@@ -2187,10 +2186,10 @@ class MalchezaarAI : public CreatureAIScript
 
         /*for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
-            if ((*E_Itr)->GetGUID() != getCreature()->GetAIInterface()->GetMostHated()->GetGUID())
+            if ((*E_Itr)->getGuid() != getCreature()->GetAIInterface()->GetMostHated()->getGuid())
             {
-                Enfeeble_Targets[i] = (*E_Itr)->GetGUID();
-                Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
+                Enfeeble_Targets[i] = (*E_Itr)->getGuid();
+                Enfeeble_Health[i] = (*E_Itr)->getHealth();
 
                 getCreature()->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
                 (*E_Itr)->SetHealth(1);
@@ -2205,7 +2204,7 @@ class MalchezaarAI : public CreatureAIScript
         {
             Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
-                ETarget->setUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
+                ETarget->setHealth(Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;
             Enfeeble_Health[i] = 0;
         }
@@ -2219,7 +2218,7 @@ protected:
     uint32 m_enfeebleoff;
     uint32 m_spawn_infernal;
     uint64 Enfeeble_Targets[5];
-    uint64 Enfeeble_Health[5];
+    uint32 Enfeeble_Health[5];
 };
 
 class NetherInfernalAI : public CreatureAIScript
@@ -2231,7 +2230,7 @@ class NetherInfernalAI : public CreatureAIScript
     {
         setRooted(true);
         setCanEnterCombat(false);
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->m_noRespawn = true;
         RegisterAIUpdateEvent(6000);
         despawn(175000, 0);
@@ -2267,7 +2266,7 @@ class MAxesAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
     MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
         /*spells[0].info = sSpellCustomizations.GetSpellInfo(DEMONIC_FRENZY);
         spells[0].targettype = TARGET_SELF;
@@ -2363,8 +2362,8 @@ class NetherspiteAI : public CreatureAIScript
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
         {
-            NDoor->SetState(GO_STATE_CLOSED);
-            NDoor->SetFlags(33);
+            NDoor->setState(GO_STATE_CLOSED);
+            NDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
         }
     }
 
@@ -2374,14 +2373,14 @@ class NetherspiteAI : public CreatureAIScript
 
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
-            NDoor->SetState(GO_STATE_OPEN);
+            NDoor->setState(GO_STATE_OPEN);
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
-            NDoor->SetState(GO_STATE_OPEN);
+            NDoor->setState(GO_STATE_OPEN);
     }
 
     void AIUpdate() override
@@ -2424,7 +2423,7 @@ class VoidZoneAI : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
         getCreature()->DisableAI();
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -3067,13 +3066,13 @@ class CroneAI : public CreatureAIScript
             GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GO_STATE_CLOSED);
+                DoorLeft->setState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GO_STATE_OPEN);
+                DoorRight->setState(GO_STATE_OPEN);
 
             if (Curtain)
-                Curtain->SetState(GO_STATE_CLOSED);
+                Curtain->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->Despawn(1, 0);
@@ -3088,14 +3087,14 @@ class CroneAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_OPEN);
+            DoorLeft->setState(GO_STATE_OPEN);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_OPEN);
+            DoorRight->setState(GO_STATE_OPEN);
 
         // Make sure the curtain stays up
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -3114,7 +3113,7 @@ class CycloneOZ : public CreatureAIScript
     CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -3192,13 +3191,13 @@ class RomuloAI : public CreatureAIScript
             GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GO_STATE_CLOSED);
+                DoorLeft->setState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GO_STATE_OPEN);
+                DoorRight->setState(GO_STATE_OPEN);
 
             if (Curtain)
-                Curtain->SetState(GO_STATE_CLOSED);
+                Curtain->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->Despawn(1, 0);
@@ -3221,14 +3220,14 @@ class RomuloAI : public CreatureAIScript
         GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
-            DoorLeft->SetState(GO_STATE_OPEN);
+            DoorLeft->setState(GO_STATE_OPEN);
 
         if (DoorRight)
-            DoorRight->SetState(GO_STATE_OPEN);
+            DoorRight->setState(GO_STATE_OPEN);
 
         // Make sure the curtain stays up
         if (Curtain)
-            Curtain->SetState(GO_STATE_OPEN);
+            Curtain->setState(GO_STATE_OPEN);
 
     }
 
@@ -3298,13 +3297,13 @@ class JulianneAI : public CreatureAIScript
             GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GO_STATE_CLOSED);
+                DoorLeft->setState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GO_STATE_OPEN);
+                DoorRight->setState(GO_STATE_OPEN);
 
             if (Curtain)
-                Curtain->SetState(GO_STATE_CLOSED);
+                Curtain->setState(GO_STATE_CLOSED);
         }
 
         getCreature()->Despawn(1, 0);
@@ -3324,7 +3323,7 @@ class JulianneAI : public CreatureAIScript
 
         //_unit->RemoveAllAuras();
         //_unit->setEmoteState(EMOTE_ONESHOT_EAT);
-        //_unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        //_unit->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         spawnCreature(17533, -10891.582f, -1755.5177f, 90.476f, 4.61f);
         //_unit->setEmoteState(EMOTE_STATE_DEAD);
     }

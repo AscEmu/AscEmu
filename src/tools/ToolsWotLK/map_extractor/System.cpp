@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -109,9 +109,9 @@ static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koK
 
 void CreateDir( const std::string& Path )
 {
-    if(chdir(Path.c_str()) == 0)
+    if(_chdir(Path.c_str()) == 0)
     {
-            chdir("../");
+            _chdir("../");
             return;
     }
 
@@ -271,7 +271,7 @@ uint32 ReadMapDBC()
         map_ids[x].name[max_map_name_length - 1] = '\0';
     }
     printf("Done! (%u maps loaded)\n", (uint32)map_count);
-    return map_count;
+    return static_cast<uint32_t>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -293,7 +293,7 @@ void ReadAreaTableDBC()
     for(uint32 x = 0; x < area_count; ++x)
         areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
-    maxAreaId = dbc.getMaxId();
+    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
     printf("Done! (%u areas loaded)\n", (uint32)area_count);
 }
@@ -1002,7 +1002,7 @@ void ExtractMapsFromMpq(uint32 build)
                 if (!wdt.main->adt_list[y][x].exist)
                     continue;
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
-                sprintf(output_filename, "%s/maps/%03u%02u%02u.map", output_path, map_ids[z].id, y, x);
+                sprintf(output_filename, "%s/maps/%04u_%02u_%02u.map", output_path, map_ids[z].id, y, x);
                 ConvertADT(mpq_filename, output_filename, y, x, build);
             }
             // draw progress bar

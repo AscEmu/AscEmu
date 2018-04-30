@@ -78,8 +78,8 @@ class JainaAI : public CreatureAIScript
             Creature* Lich = getNearestCreature(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (Uther && Lich)
             {
-                Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
-                Lich->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                Lich->setDisplayId(11686); // HACK FIX makes invisible till needed
+                Lich->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
                 getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
 
@@ -135,7 +135,7 @@ class JainaAI : public CreatureAIScript
             if (!Lich)
                 return;
 
-            Lich->SetDisplayId(30721);
+            Lich->setDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f);
             Lich->SetOrientation(3.93f);
             RemoveAIUpdateEvent();
@@ -150,7 +150,7 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
+            Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
         }
 
         static void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/)
@@ -202,8 +202,8 @@ class Marwyn : public CreatureAIScript
         {
             if (_isHeroic() == true) // HEROIC MODE
             {
-                getCreature()->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-                getCreature()->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->setMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->setHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
                 _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
             }
         }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -97,10 +97,10 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (player_pet == nullptr)
         return;
 
-    if (guid != player_pet->GetGUID())
+    if (guid != player_pet->getGuid())
         return;
 
-    if (player_pet->GetTPs() < 1)
+    if (player_pet->getPetTalentPoints() < 1)
         return;
 
     DBC::Structures::TalentEntry const* talent_entry = sTalentStore.LookupEntry(talent_id);
@@ -139,7 +139,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (spell_info != nullptr)
     {
         player_pet->AddSpell(spell_info, true);
-        player_pet->SetTPs(player_pet->GetTPs() - 1);
+        player_pet->setPetTalentPoints(player_pet->getPetTalentPoints() - 1);
     }
 
     player_pet->SendTalentsToOwner();

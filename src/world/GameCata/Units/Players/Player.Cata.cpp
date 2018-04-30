@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -77,7 +77,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data;
-    ObjectGuid guid = GetGUID();
+    ObjectGuid guid = getGuid();
 
     switch (speed_type)
     {
@@ -165,18 +165,18 @@ void Player::handleFall(MovementInfo const& movementInfo)
 
     if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
     {
-        auto health_loss = static_cast<uint32_t>(GetHealth() * (falldistance - 12) * 0.017f);
+        auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
 
-        if (health_loss >= GetHealth())
+        if (health_loss >= getHealth())
         {
-            health_loss = GetHealth();
+            health_loss = getHealth();
         }
         else if ((falldistance >= 65))
         {
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, GetDrunkenstateByValue(GetDrunkValue()), 0);
         }
 
-        SendEnvironmentalDamageLog(GetGUID(), DAMAGE_FALL, health_loss);
+        SendEnvironmentalDamageLog(getGuid(), DAMAGE_FALL, health_loss);
         DealDamage(this, health_loss, 0, 0, 0);
     }
 
@@ -379,7 +379,7 @@ WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, 
     data << guid;
     data << uint32_t(0);
 
-    data << targetPlayer->GetGUID();
+    data << targetPlayer->getGuid();
 
     data << messageLength;
     data << message;
@@ -398,7 +398,7 @@ void Player::sendChatPacket(uint32_t type, uint32_t language, const char* messag
     for (const auto& itr : getInRangePlayersSet())
     {
         Player* p = static_cast<Player*>(itr);
-        if (p && p->GetSession() && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & senderPhase) != 0)
+        if (p && p->GetSession() && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & senderPhase) != 0)
         {
             WorldPacket data = p->buildChatMessagePacket(p, type, language, message, guid, flag);
             p->SendPacket(&data);

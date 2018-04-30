@@ -36,7 +36,7 @@ void Auction::DeleteFromDB()
 
 void Auction::SaveToDB(uint32 AuctionHouseId)
 {
-    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->GetLowGUID(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
+    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->getGuidLow(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
 }
 
 void Auction::UpdateInDB()
@@ -157,23 +157,23 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         case AUCTION_REMOVE_EXPIRED:
         {
             // ItemEntry:0:3
-            snprintf(subject, 100, "%u:0:3", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:3", (unsigned int)auct->pItem->getEntry());
 
             // Auction expired, resend item, no money to owner.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
         }
         break;
 
         case AUCTION_REMOVE_WON:
         {
             // ItemEntry:0:1
-            snprintf(subject, 100, "%u:0:1", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:1", (unsigned int)auct->pItem->getEntry());
 
             // <owner player guid>:bid:buyout
             snprintf(body, 200, "%X:%u:%u", (unsigned int)auct->Owner, (unsigned int)auct->HighestBid, (unsigned int)auct->BuyoutPrice);
 
             // Auction won by highest bidder. He gets the item.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
             uint32 auction_cut = float2int32(cut_percent * auct->HighestBid);
@@ -182,7 +182,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
                 amount = 0;
 
             // ItemEntry:0:2
-            snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->getEntry());
 
             // <hex player guid>:bid:0:deposit:cut
             if (auct->HighestBid == auct->BuyoutPrice)       // Buyout
@@ -202,13 +202,13 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         break;
         case AUCTION_REMOVE_CANCELLED:
         {
-            snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = objmgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->HasGold(cut))
                 plr->ModGold(-(int32)cut);
 
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // return bidders money
             if (auct->HighestBidder)
@@ -251,7 +251,7 @@ void WorldSession::HandleAuctionListBidderItems(WorldPacket& recv_data)
 void Auction::AddToPacket(WorldPacket& data)
 {
     data << uint32(Id);
-    data << uint32(pItem->GetEntry());
+    data << uint32(pItem->getEntry());
 
     for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
     {
@@ -277,7 +277,7 @@ void Auction::AddToPacket(WorldPacket& data)
     * (Modifier / 10000) * enchantmentvalue = EnchantmentGain;
     */
 
-    data << pItem->GetStackCount();                     // Amount
+    data << pItem->getStackCount();                     // Amount
     data << pItem->GetChargesLeft();                    // Charges Left
     data << uint32(0);                                  // Unknown
     data << uint64(Owner);                              // Owner guid
@@ -304,7 +304,7 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
-        if (auct->HighestBidder == plr->GetGUID())
+        if (auct->HighestBidder == plr->getGuid())
         {
             if (auct->Deleted) continue;
 
@@ -351,7 +351,7 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
-        if (auct->Owner == plr->GetGUID())
+        if (auct->Owner == plr->getGuid())
         {
             if (auct->Deleted) continue;
 
@@ -381,7 +381,7 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
         data << uint64(newBidder);
         data << uint32(newHighestBid);
         data << uint32(outbid);
-        data << auct->pItem->GetEntry();
+        data << auct->pItem->getEntry();
         data << uint32(0);
         bidder->GetSession()->SendPacket(&data);
     }
@@ -402,7 +402,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         data << uint64(auct->HighestBidder);
         data << uint32(0);
         data << uint32(outbid);
-        data << auct->pItem->GetEntry();
+        data << auct->pItem->getEntry();
         data << uint32(0);
         bidder->GetSession()->SendPacket(&data);
     }
@@ -416,7 +416,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         ownerData << uint32(0);
         ownerData << uint32(0);
         ownerData << uint32(0);
-        ownerData << auct->pItem->GetEntry();
+        ownerData << auct->pItem->getEntry();
         ownerData << uint32(0);
         owner->GetSession()->SendPacket(&ownerData);
     }
@@ -435,7 +435,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //  data << uint32(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
     //  data << uint32(0);
     //  data << uint32(0);
-    //  data << auct->pItem->GetEntry();
+    //  data << auct->pItem->getEntry();
     //  data << uint32(0);
     //  owner->GetSession()->SendPacket(&data);
     //}
@@ -475,7 +475,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
         return;
     }
 
-    if (auct->Owner == _player->GetGUID())
+    if (auct->Owner == _player->getGuid())
     {
         SendAuctionPlaceBidResultPacket(0, AUCTION_ERROR_BID_OWN_AUCTION);
         return;
@@ -498,17 +498,17 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     {
         // Return the money to the last highest bidder.
         char subject[100];
-        snprintf(subject, 100, "%u:0:0", (int)auct->pItem->GetEntry());
+        snprintf(subject, 100, "%u:0:0", (int)auct->pItem->getEntry());
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, ah->GetID(), auct->HighestBidder, subject, "", auct->HighestBid, 0, 0, MAIL_STATIONERY_AUCTION);
 
         // Do not send out bid notification, when current highest bidder and new bidder are the same player..
-        if (auct->HighestBidder != (uint32)_player->GetLowGUID())
-            ah->SendAuctionOutBidNotificationPacket(auct, _player->GetGUID(), price);
+        if (auct->HighestBidder != (uint32)_player->getGuidLow())
+            ah->SendAuctionOutBidNotificationPacket(auct, _player->getGuid(), price);
     }
 
     if (auct->BuyoutPrice == price)
     {
-        auct->HighestBidder = _player->GetLowGUID();
+        auct->HighestBidder = _player->getGuidLow();
         auct->HighestBid = price;
 
         // we used buyout on the item.
@@ -520,7 +520,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     else
     {
         // update most recent bid
-        auct->HighestBidder = _player->GetLowGUID();
+        auct->HighestBidder = _player->getGuidLow();
         auct->HighestBid = price;
         auct->UpdateInDB();
 
@@ -595,7 +595,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     AuctionHouse* ah = pCreature->auctionHouse;
 
-    uint32 item_worth = pItem->GetItemProperties()->SellPrice * pItem->GetStackCount();
+    uint32 item_worth = pItem->getItemProperties()->SellPrice * pItem->getStackCount();
     uint32 item_deposit = (uint32)(item_worth * ah->deposit_percent) * (uint32)(etime / 240.0f); // deposit is per 4 hours
 
     if (!_player->HasGold(item_deposit))   // player cannot afford deposit
@@ -624,7 +624,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         pItem->RemoveFromWorld();
     }
 
-    pItem->SetOwner(NULL);
+    pItem->setOwner(NULL);
     pItem->m_isDirty = true;
     pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
 
@@ -636,7 +636,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     auct->HighestBid = 0;
     auct->HighestBidder = 0;    // hm
     auct->Id = sAuctionMgr.GenerateAuctionId();
-    auct->Owner = _player->GetLowGUID();
+    auct->Owner = _player->getGuidLow();
     auct->pItem = pItem;
     auct->Deleted = false;
     auct->DeletedReason = 0;
@@ -701,7 +701,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        proto = itr->second->pItem->getItemProperties();
 
         // Check the auction for parameters
 
@@ -870,7 +870,7 @@ void Auction::DeleteFromDB()
 
 void Auction::SaveToDB(uint32 AuctionHouseId)
 {
-    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->GetLowGUID(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
+    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->getGuidLow(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
 }
 
 void Auction::UpdateInDB()
@@ -991,23 +991,23 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         case AUCTION_REMOVE_EXPIRED:
         {
             // ItemEntry:0:3
-            snprintf(subject, 100, "%u:0:3", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:3", (unsigned int)auct->pItem->getEntry());
 
             // Auction expired, resend item, no money to owner.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
         }
         break;
 
         case AUCTION_REMOVE_WON:
         {
             // ItemEntry:0:1
-            snprintf(subject, 100, "%u:0:1", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:1", (unsigned int)auct->pItem->getEntry());
 
             // <owner player guid>:bid:buyout
             snprintf(body, 200, "%X:%u:%u", (unsigned int)auct->Owner, (unsigned int)auct->HighestBid, (unsigned int)auct->BuyoutPrice);
 
             // Auction won by highest bidder. He gets the item.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
             uint32 auction_cut = float2int32(cut_percent * auct->HighestBid);
@@ -1016,7 +1016,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
                 amount = 0;
 
             // ItemEntry:0:2
-            snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->getEntry());
 
             // <hex player guid>:bid:0:deposit:cut
             if (auct->HighestBid == auct->BuyoutPrice)       // Buyout
@@ -1036,13 +1036,13 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         break;
         case AUCTION_REMOVE_CANCELLED:
         {
-            snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->GetEntry());
+            snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = objmgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->HasGold(cut))
                 plr->ModGold(-(int32)cut);
 
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->GetGUID(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // return bidders money
             if (auct->HighestBidder)
@@ -1081,7 +1081,7 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
     for (; itr != auctions.end(); ++itr)
     {
         Auction* auct = itr->second;
-        if (auct->HighestBidder == plr->GetGUID())
+        if (auct->HighestBidder == plr->getGuid())
         {
             if (auct->Deleted) continue;
 
@@ -1133,7 +1133,7 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
-        if (auct->Owner == plr->GetGUID())
+        if (auct->Owner == plr->getGuid())
         {
             if (auct->Deleted)
                 continue;
@@ -1156,11 +1156,11 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
 {
     if (!pItem)
     {
-        LOG_ERROR("Auction %u has a non-existent item: %u", Id, pItem->GetEntry());
+        LOG_ERROR("Auction %u has a non-existent item: %u", Id, pItem->getEntry());
         return false;
     }
     data << uint32(Id);
-    data << uint32(pItem->GetEntry());
+    data << uint32(pItem->getEntry());
 
     for (uint8 i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i) // PROP_ENCHANTMENT_SLOT_0 = 10
     {
@@ -1171,7 +1171,7 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
 
     data << int32(pItem->GetItemRandomPropertyId());                // Random item property id
     data << uint32(pItem->GetItemRandomSuffixFactor());             // SuffixFactor
-    data << uint32(pItem->GetStackCount());                         // item->count
+    data << uint32(pItem->getStackCount());                         // item->count
     data << uint32(pItem->GetChargesLeft());                        // item->charge FFFFFFF
     data << uint32(0);                                              // Unknown
     data << uint64(Owner);                                          // Auction->owner
@@ -1201,7 +1201,7 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
         data << uint64(newBidder);
         data << uint32(newHighestBid);
         data << uint32(outbid);
-        data << auct->pItem->GetEntry();
+        data << auct->pItem->getEntry();
         data << uint32(0);
         bidder->GetSession()->SendPacket(&data);
     }
@@ -1222,7 +1222,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         data << uint64(auct->HighestBidder);
         data << uint32(0);
         data << uint32(outbid);
-        data << auct->pItem->GetEntry();
+        data << auct->pItem->getEntry();
         data << uint32(0);
         bidder->GetSession()->SendPacket(&data);
     }
@@ -1236,7 +1236,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         ownerData << uint32(0);
         ownerData << uint32(0);
         ownerData << uint32(0);
-        ownerData << auct->pItem->GetEntry();
+        ownerData << auct->pItem->getEntry();
         ownerData << uint32(0);
         owner->GetSession()->SendPacket(&ownerData);
     }
@@ -1256,7 +1256,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //  data << uint32(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
     //  data << uint32(0);
     //  data << uint32(0);
-    //  data << auct->pItem->GetEntry();
+    //  data << auct->pItem->getEntry();
     //  data << uint32(0);
     //  owner->GetSession()->SendPacket(&data);
     //}
@@ -1316,7 +1316,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        proto = itr->second->pItem->getItemProperties();
 
         // Check the auction for parameters
 

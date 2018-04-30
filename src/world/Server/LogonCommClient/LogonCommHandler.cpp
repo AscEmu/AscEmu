@@ -165,7 +165,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
         return;
     }
 
-    LogDefault("Authentication successfull.");
+    LogDefault("Authentication successful.");
     LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->address.c_str(), server->port);
 
     // Send the initial ping
@@ -372,7 +372,7 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
 uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSocket* Socket)
 {
     uint32_t request_id = next_request++;
-    
+
     LOG_DEBUG(" Send Request for Account: `%s` (request ID: %u).", AccountName.c_str(), request_id);
 
     // Send request packet to server.
@@ -452,14 +452,8 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmStructure->timeZone = Config.MainConfig.getIntDefault(realmString.str(), "TimeZone", 1);
             realmStructure->population = Config.MainConfig.getFloatDefault(realmString.str(), "Population", 0.0f);
             realmStructure->lock = static_cast<uint8_t>(Config.MainConfig.getIntDefault(realmString.str(), "Lock", 0));
-            realmStructure->gameBuild = Config.MainConfig.getIntDefault(realmString.str(), "GameBuild", 0);
 
-            if (realmStructure->gameBuild == 0)
-            {
-                LOG_ERROR("Supported client build not found in world.config!");
-                delete realmStructure;
-                return;
-            }
+            realmStructure->gameBuild = VERSION_STRING;
 
             std::string realmType = Config.MainConfig.getStringDefault(realmString.str(), "Icon", "Normal");
             Util::StringToLowerCase(realmType);

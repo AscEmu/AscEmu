@@ -51,8 +51,8 @@ class LfgGroupData
     private:
 
         // General
-        LfgState m_State;       ///< State if group in LFG
-        LfgState m_OldState;    ///< Old State
+        LfgState m_State;         ///< State if group in LFG
+        LfgState m_OldState;      ///< Old State
         // Dungeon
         uint32_t m_Dungeon;       ///< Dungeon entry
         // Vote Kick

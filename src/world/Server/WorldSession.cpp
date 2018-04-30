@@ -32,6 +32,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Auth/MD5.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
@@ -74,7 +75,7 @@ WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     memset(movement_packet, 0, sizeof(movement_packet));
 
 #if VERSION_STRING != Cata
-    movement_info.redirectVelocity = 0;
+    movement_info.redirect_velocity = 0;
 #endif
 
     for (uint8 x = 0; x < 8; x++)
@@ -280,7 +281,7 @@ void WorldSession::LogoutPlayer(bool Save)
                 switch (obj->GetTypeId())
                 {
                     case TYPEID_UNIT:
-                        static_cast <Creature*>(obj)->loot.looters.erase(_player->GetLowGUID());
+                        static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
                         break;
                     case TYPEID_GAMEOBJECT:
                         GameObject* go = static_cast<GameObject*>(obj);
@@ -289,7 +290,7 @@ void WorldSession::LogoutPlayer(bool Save)
                             break;
 
                         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
-                        pLGO->loot.looters.erase(_player->GetLowGUID());
+                        pLGO->loot.looters.erase(_player->getGuidLow());
 
                         break;
                 }
@@ -297,7 +298,7 @@ void WorldSession::LogoutPlayer(bool Save)
         }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-        GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());
+        GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
         if (ticket != NULL)
         {
             // Send status change to gm_sync_channel
@@ -364,7 +365,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->GetItemInterface()->removeLootableItems();
 
         // Save HP/Mana
-        _player->load_health = _player->getUInt32Value(UNIT_FIELD_HEALTH);
+        _player->load_health = _player->getHealth();
         _player->load_mana = _player->GetPower(POWER_TYPE_MANA);
 
 
@@ -395,7 +396,7 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->m_playerInfo->m_Group->Update();
 
         // Remove the "player locked" flag, to allow movement on next login
-        GetPlayer()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        GetPlayer()->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         // Save Honor Points
         // _player->SaveHonorFields();
@@ -742,9 +743,9 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (item_extended_cost == nullptr)
             return;
 
-        ItemProperties const* proto = item->GetItemProperties();
+        ItemProperties const* proto = item->getItemProperties();
 
-        item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
+        item->setFlags(ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
         // As of 3.2.0a the server sends this packet to provide refund info on
         // an item
@@ -815,6 +816,10 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 {
 #if VERSION_STRING == TBC
     StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+    for (auto i = 0; i < 32; ++i)
+        data << uint32(0);
+    SendPacket(&data);
+    return;
 
     MD5Hash md5hash;
     for (int i = 0; i < 8; ++i)
@@ -964,15 +969,16 @@ void WorldSession::SendMOTD()
         }
         pos = nextpos + 1;
     }
-        if (pos < str_motd.length())
-        {
-            data << str_motd.substr(pos);
-            ++linecount;
-        }
 
-        data.put(0, linecount);
+    if (pos < str_motd.length())
+    {
+        data << str_motd.substr(pos);
+        ++linecount;
+    }
 
-        SendPacket(&data);
+    data.put(0, linecount);
+
+    SendPacket(&data);
 }
 
 #if VERSION_STRING > TBC
@@ -1020,7 +1026,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
-            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
+            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->getItemProperties(), false, false);
             if (EquipError == INV_ERR_OK)
             {
                 dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
@@ -1032,7 +1038,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                     auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!check)
                     {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->GetNameString());
                         result = 0;
                     }
                     else
@@ -1091,12 +1097,12 @@ void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
 
     if (success)
     {
-        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), set->SetGUID, set->SetID);
         _player->SendEquipmentSetSaved(set->SetID, set->SetGUID);
     }
     else
     {
-        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->getGuidLow(), set->SetGUID, set->SetID);
     }
 }
 
@@ -1174,10 +1180,10 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Image == NULL)
         return;					// ups no unit found with that GUID on the map. Spoofed packet?
 
-    if (Image->GetCreatedByGUID() == 0)
+    if (Image->getCreatedByGuid() == 0)
         return;
 
-    uint64 CasterGUID = Image->GetCreatedByGUID();
+    uint64 CasterGUID = Image->getCreatedByGuid();
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
     if (Caster == NULL)
@@ -1186,7 +1192,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
 
     data << uint64(GUID);
-    data << uint32(Caster->GetDisplayId());
+    data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
     if (Caster->IsPlayer())
@@ -1196,12 +1202,12 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->getGender());
         data << uint8(pcaster->getClass());
 
-        // facial features, like big nose, piercings, bonehead, etc
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 0));	// skin color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 1));	// face
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 2));	// hair style
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 3));	// hair color
-        data << uint8(pcaster->getByteValue(PLAYER_BYTES_2, 0));	// facial hair
+        // facial features
+        data << uint8(pcaster->getSkinColor());
+        data << uint8(pcaster->getFace());
+        data << uint8(pcaster->getHairStyle());
+        data << uint8(pcaster->getHairColor());
+        data << uint8(pcaster->getFacialFeatures());
 
 #if VERSION_STRING != Cata
         if (pcaster->IsInGuild())
@@ -1234,7 +1240,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
             if (item != nullptr)
-                data << uint32(item->GetItemProperties()->DisplayInfoID);
+                data << uint32(item->getItemProperties()->DisplayInfoID);
             else
                 data << uint32(0);
         }
@@ -1277,19 +1283,20 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 
 void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     uint64 GUID;
 
     recv_data >> GUID;
 
-    if (_player->GetSummonedCritterGUID() == 0)
+    if (_player->getCritterGuid() == 0)
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->GetLowGUID());
+        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
-    if (_player->GetSummonedCritterGUID() != GUID)
+    if (_player->getCritterGuid() != GUID)
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->GetLowGUID());
+        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
     }
 
@@ -1300,7 +1307,8 @@ void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
         companion->Delete();
     }
 
-    _player->SetSummonedCritterGUID(0);
+    _player->setCritterGuid(0);
+#endif
 }
 
 #if VERSION_STRING > TBC

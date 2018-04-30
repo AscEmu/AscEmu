@@ -97,7 +97,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
 {
         void OnHello(Object* pObject, Player* pPlayer) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), MORRIDUNE_ON_HELLO, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
             if (pPlayer->IsTeamAlliance())
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
             else

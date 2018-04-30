@@ -153,7 +153,7 @@ class AkilzonAI : public CreatureAIScript
                 for (uint8 x = 0; x < 3; x++)
                 {
                     /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + Util::getRandomFloat(12) - 10), (getCreature()->GetPositionY() + Util::getRandomFloat(12) - 15),
-                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
                 }
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
@@ -215,7 +215,7 @@ class HalazziAI : public CreatureAIScript
         {
             mTotemTimer = _addTimer(5000); // Just to make the Timer ID
             SplitCount = 1;
-            MaxHealth = getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+            MaxHealth = getCreature()->getMaxHealth();
             mLynx = NULL;
         }
 
@@ -245,7 +245,7 @@ class HalazziAI : public CreatureAIScript
             {
                 if (_isTimerFinished(mTotemTimer))
                 {
-                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + Util::getRandomFloat(3) - 3), (getCreature()->GetPositionY() + Util::getRandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->GetFaction());
+                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + Util::getRandomFloat(3) - 3), (getCreature()->GetPositionY() + Util::getRandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->getFactionTemplate());
                     if (Totem)
                     {
                         Totem->despawn(60000); // Despawn in 60 seconds
@@ -266,10 +266,10 @@ class HalazziAI : public CreatureAIScript
 
         void Split()
         {
-            CurrentHealth = getCreature()->getUInt32Value(UNIT_FIELD_HEALTH);
+            CurrentHealth = getCreature()->getHealth();
             _setDisplayId(24144);
-            getCreature()->SetHealth(240000);
-            getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
+            getCreature()->setHealth(240000);
+            getCreature()->setMaxHealth(240000);
 
             mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
             if (mLynx)
@@ -291,9 +291,9 @@ class HalazziAI : public CreatureAIScript
             }
 
             if (CurrentHealth)
-                getCreature()->SetHealth(CurrentHealth);
+                getCreature()->setHealth(CurrentHealth);
             if (MaxHealth)
-                getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, MaxHealth);
+                getCreature()->setMaxHealth(MaxHealth);
             _setDisplayId(21632);
 
             SplitCount++;

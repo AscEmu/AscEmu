@@ -1,79 +1,104 @@
 /*
-Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "StdAfx.h"
-#include "Server/Packets/Movement/SmsgMonsterMove.hpp"
 #include "Units/Unit.h"
 
 namespace Packets
 {
     namespace Movement
     {
+#if VERSION_STRING == TBC
         void SendMoveToPacket(Unit* pUnit)
         {
             auto spline = pUnit->m_movementManager.m_spline;
             auto splineFlags = spline.GetSplineFlags();
             auto midpoints = pUnit->m_movementManager.m_spline.GetMidPoints();
 
-            ::Packets::Movement::SmsgMonsterMove MovePacket;
-            MovePacket.data << pUnit->GetNewGUID();
+            WorldPacket data(SMSG_MONSTER_MOVE, 60);
+            data << pUnit->GetNewGUID();
+            data << float(pUnit->GetPositionX());
+            data << float(pUnit->GetPositionY());
+            data << float(pUnit->GetPositionZ());
+            data << uint32(Util::getMSTime());
             // Id of first spline, so always 0
-            MovePacket.data << uint8(0);
+            data << uint8(0);
+
+            data << uint32(0x1000); //move flags: run
+            data << uint32(0); //movetime
+            data << uint32(1); //1 point
+            data << pUnit->GetPositionX();
+            data << pUnit->GetPositionY();
+            data << pUnit->GetPositionZ();
+
+            pUnit->SendMessageToSet(&data, true);
+        }
+#else
+        void SendMoveToPacket(Unit* pUnit)
+        {
+            auto spline = pUnit->m_movementManager.m_spline;
+            auto splineFlags = spline.GetSplineFlags();
+            auto midpoints = pUnit->m_movementManager.m_spline.GetMidPoints();
+
+            WorldPacket data(SMSG_MONSTER_MOVE, 100);
+            data << pUnit->GetNewGUID();
+            // Id of first spline, so always 0
+            data << uint8(0);
             if (spline.IsSplineEmpty())
             {
-                MovePacket.data << float(pUnit->GetPositionX());
-                MovePacket.data << float(pUnit->GetPositionY());
-                MovePacket.data << float(pUnit->GetPositionZ());
-                MovePacket.data << uint32(Util::getMSTime());
-                MovePacket.data << uint8(1);
+                data << float(pUnit->GetPositionX());
+                data << float(pUnit->GetPositionY());
+                data << float(pUnit->GetPositionZ());
+                data << uint32(Util::getMSTime());
+                data << uint8(1);
             }
             else
             {
                 auto splineStart = spline.GetFirstSplinePoint();
-                MovePacket.data << splineStart.pos.x;
-                MovePacket.data << splineStart.pos.y;
-                MovePacket.data << splineStart.pos.z;
-                MovePacket.data << splineStart.setoff;
+                data << splineStart.pos.x;
+                data << splineStart.pos.y;
+                data << splineStart.pos.z;
+                data << splineStart.setoff;
 
                 switch (spline.m_splineFaceType.GetFlag())
                 {
                     case ::Movement::Spline::MonsterMoveFacingAngle:
-                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
-                        MovePacket.data << spline.m_splineFaceType.GetAngle();
+                        data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
+                        data << spline.m_splineFaceType.GetAngle();
                         break;
                     case ::Movement::Spline::MonsterMoveFacingLocation:
-                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingLocation);
-                        MovePacket.data << spline.m_splineFaceType.GetX();
-                        MovePacket.data << spline.m_splineFaceType.GetY();
-                        MovePacket.data << spline.m_splineFaceType.GetZ();
+                        data << uint8(::Movement::Spline::MonsterMoveFacingLocation);
+                        data << spline.m_splineFaceType.GetX();
+                        data << spline.m_splineFaceType.GetY();
+                        data << spline.m_splineFaceType.GetZ();
                         break;
                     case ::Movement::Spline::MonsterMoveFacingTarget:
-                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingTarget);
-                        MovePacket.data << spline.m_splineFaceType.GetGuid();
+                        data << uint8(::Movement::Spline::MonsterMoveFacingTarget);
+                        data << spline.m_splineFaceType.GetGuid();
                         break;
                     default:
-                        MovePacket.data << uint8(0);
+                        data << uint8(0);
                         break;
                 }
 
                 splineFlags->m_splineFlagsRaw.enter_cycle = splineFlags->m_splineFlagsRaw.cyclic;
-                
-                MovePacket.data << splineFlags->GetFlagsForMonsterMove();
+
+                data << splineFlags->GetFlagsForMonsterMove();
 
                 if (splineFlags->m_splineFlagsRaw.animation)
                 {
-                    MovePacket.data << splineFlags->m_splineFlagsRaw.animation_id;
-                    MovePacket.data << spline.m_splineTrajectoryTime;
+                    data << splineFlags->m_splineFlagsRaw.animation_id;
+                    data << spline.m_splineTrajectoryTime;
                 }
 
-                MovePacket.data << spline.m_currentSplineTotalMoveTime;
+                data << spline.m_currentSplineTotalMoveTime;
 
                 if (splineFlags->m_splineFlagsRaw.trajectory)
                 {
-                    MovePacket.data << spline.m_splineTrajectoryVertical;
-                    MovePacket.data << spline.m_splineTrajectoryTime;
+                    data << spline.m_splineTrajectoryVertical;
+                    data << spline.m_splineTrajectoryTime;
 
                 }
 
@@ -83,34 +108,34 @@ namespace Packets
                     auto pointCount = spline.GetSplinePoints()->size() - 1;
                     if (splineFlags->m_splineFlagsRaw.cyclic)
                     {
-                        MovePacket.data << uint32(pointCount + 1);
+                        data << uint32(pointCount + 1);
                         // This is discarded by the client
-                        MovePacket.data << finalPoint.pos.x;
-                        MovePacket.data << finalPoint.pos.y;
-                        MovePacket.data << finalPoint.pos.z;
+                        data << finalPoint.pos.x;
+                        data << finalPoint.pos.y;
+                        data << finalPoint.pos.z;
                         // This is the real data
-                        MovePacket.data << finalPoint.pos.x;
-                        MovePacket.data << finalPoint.pos.y;
-                        MovePacket.data << finalPoint.pos.z;
+                        data << finalPoint.pos.x;
+                        data << finalPoint.pos.y;
+                        data << finalPoint.pos.z;
                     }
                     else
                     {
-                        MovePacket.data << uint32(pointCount);
-                        MovePacket.data << finalPoint.pos.x;
-                        MovePacket.data << finalPoint.pos.y;
-                        MovePacket.data << finalPoint.pos.z;
+                        data << uint32(pointCount);
+                        data << finalPoint.pos.x;
+                        data << finalPoint.pos.y;
+                        data << finalPoint.pos.z;
                     }
                 }
                 else
                 {
                     // This is the index of the last spline point
                     // Possibly requires [first,last,other] ordering?
-                    MovePacket.data << uint32(spline.GetSplinePoints()->size() - 1);
+                    data << uint32(spline.GetSplinePoints()->size() - 1);
                     auto finalpoint = pUnit->m_movementManager.m_spline.GetLastSplinePoint();
-                    MovePacket.data << finalpoint.pos.x;
-                    MovePacket.data << finalpoint.pos.y;
-                    MovePacket.data << finalpoint.pos.z;
-                    
+                    data << finalpoint.pos.x;
+                    data << finalpoint.pos.y;
+                    data << finalpoint.pos.z;
+
                     // If there are more than 2 points
                     if (spline.GetSplinePoints()->size() > 2)
                     {
@@ -125,14 +150,15 @@ namespace Packets
                             float tmpz = (midz - point.pos.z) * 4;
 
                             //pack it
-                            MovePacket.data << uint32(int(tmpx) & 0x7FF | ((int(tmpy) & 0x7FF) << 11) | ((int(tmpz) & 0x3FF) << 22));
-                            
+                            data << uint32(int(tmpx) & 0x7FF | ((int(tmpy) & 0x7FF) << 11) | ((int(tmpz) & 0x3FF) << 22));
+
                         }
                     }
                 }
             }
 
-            pUnit->SendMessageToSet(&MovePacket.data, true);
+            pUnit->SendMessageToSet(&data, true);
         }
+#endif
     }
-} 
+}

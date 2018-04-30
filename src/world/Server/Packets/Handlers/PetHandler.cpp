@@ -62,7 +62,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                 {
                     if (!sEventMgr.HasEvent(_player, EVENT_PLAYER_CHARM_ATTACK))
                     {
-                        uint32 timer = pCharm->GetBaseAttackTime(MELEE);
+                        uint32 timer = pCharm->getBaseAttackTime(MELEE);
                         if (!timer) timer = 2000;
 
                         sEventMgr.AddEvent(_player, &Player::_EventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -98,7 +98,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
         if (!pPet->isAlive())
             continue;
         alive_summon = true;//we found a an alive summon
-        uint64 GUID = pPet->GetGUID();
+        uint64 GUID = pPet->getGuid();
         switch (action)
         {
             case PET_ACTION_ACTION:
@@ -246,16 +246,22 @@ void WorldSession::HandlePetInfo(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    //nothing
+    // nothing
     LOG_DEBUG("HandlePetInfo is called");
+
+    // uint32_t petNumber = 0;
+    // uint64_t petGuid = 0;
+
+    // recv_data >> petNumber;
+    // recv_data >> petGuid;
 }
 
 void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 petNumber = 0;
-    uint64 petGuid = 0;
+    uint32_t petNumber = 0;
+    uint64_t petGuid = 0;
 
     recv_data >> petNumber;
     recv_data >> petGuid;
@@ -264,12 +270,11 @@ void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
     if (!pPet)
         return;
 
-    WorldPacket data(9 + pPet->GetName().size());
-    data.SetOpcode(SMSG_PET_NAME_QUERY_RESPONSE);
-    data << petNumber;
-    data << pPet->GetName();
+    WorldPacket data(SMSG_PET_NAME_QUERY_RESPONSE, 10 + pPet->GetName().size());
+    data << uint32_t(petNumber);
+    data << pPet->GetName().c_str();
     data << pPet->getUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP);
-    data << uint8(0);
+    data << uint8_t(0);
     SendPacket(&data);
 }
 
@@ -309,7 +314,7 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->GetGUID(), petnumber);
+        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->getGuid(), petnumber);
         return;
     }
     //unstable selected pet but spawn it only if it's alive
@@ -336,7 +341,7 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->GetGUID(), petnumber);
+        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->getGuid(), petnumber);
         return;
     }
     Pet* pPet = _player->GetSummon();
@@ -455,7 +460,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     std::list<Pet*> summons = _player->GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        if ((*itr)->GetGUID() == guid)
+        if ((*itr)->getGuid() == guid)
         {
             pet = (*itr);
             break;
@@ -471,7 +476,8 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     pet->Rename(name);
 
     // Disable pet rename.
-    pet->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | /* (0x28 << 8) | */ (PET_RENAME_NOT_ALLOWED << 16));
+    pet->setSheathType(SHEATH_STATE_MELEE);
+    pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
 
     ARCEMU_ASSERT(pet->GetPetOwner() != NULL);
 
@@ -509,7 +515,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     recv_data >> guid;
 
     Pet* pPet = _player->GetSummon();
-    if (pPet == NULL || pPet->GetGUID() != guid)
+    if (pPet == NULL || pPet->getGuid() != guid)
     {
         sChatHandler.SystemMessage(this, "That pet is not your current pet, or you do not have a pet.");
         return;
@@ -519,7 +525,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     if (!_player->HasGold(cost))
     {
         WorldPacket data(SMSG_BUY_FAILED, 12);
-        data << uint64(_player->GetGUID());
+        data << uint64(_player->getGuid());
         data << uint32(0);
         data << uint8(2);        //not enough money
         SendPacket(&data);
@@ -528,7 +534,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     _player->ModGold(-cost);
 
     pPet->WipeTalents();
-    pPet->SetTPs(pPet->GetTPsForLevel(pPet->getLevel()));
+    pPet->setPetTalentPoints(pPet->GetTPsForLevel(pPet->getLevel()));
     pPet->SendTalentsToOwner();
 }
 
@@ -591,7 +597,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         return;
 
     // check talent points first
-    if (pPet->GetTPs() < 1)
+    if (pPet->getPetTalentPoints() < 1)
         return;
 
     // find talent entry
@@ -636,7 +642,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (sp != NULL)
     {
         pPet->AddSpell(sp, true);
-        pPet->SetTPs(pPet->GetTPs() - 1);
+        pPet->setPetTalentPoints(pPet->getPetTalentPoints() - 1);
         auto id = sp->getId();
         OutPacket(SMSG_PET_LEARNED_SPELL, 4, &id);
     }

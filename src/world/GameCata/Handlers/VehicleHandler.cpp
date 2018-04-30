@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
 {
-    uint64 currentVehicleGuid = _player->GetCharmedUnitGUID();
+    uint64 currentVehicleGuid = _player->getCharmGuid();
 
     // wait what no vehicle
     if (currentVehicleGuid == 0)
@@ -53,7 +53,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recvData)
         recvData >> vehicle;
         recvData >> seat;
 
-        if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+        if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
         {
             _player->GetCurrentVehicle()->MovePassengerToSeat(_player, seat);
         }
@@ -67,7 +67,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recvData)
                 return;
 
             // Has to be same vehicle, or an accessory of the vehicle
-            if (_player->GetVehicleBase()->GetGUID() != u->GetVehicleBase()->GetGUID())
+            if (_player->GetVehicleBase()->getGuid() != u->GetVehicleBase()->getGuid())
                 return;
 
             _player->GetCurrentVehicle()->EjectPassenger(_player);

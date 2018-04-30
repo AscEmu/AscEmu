@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -128,7 +128,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64 caster)
                 auto player = objmgr.GetPlayer(static_cast<uint32_t>(caster));
                 if (player)
                 {
-                    m_unitTarget = player->GetTargetGUID();
+                    m_unitTarget = player->getTargetGuid();
                 }
             }
             break;
@@ -233,10 +233,10 @@ void SpellCastTargets::write(WorldPacket& data) const
 
 bool SpellCastTargets::hasSource() const
 {
-    return GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION;
+    return (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION) != 0;
 }
 
 bool SpellCastTargets::hasDestination() const
 {
-    return GetTargetMask() & TARGET_FLAG_DEST_LOCATION;
+    return (GetTargetMask() & TARGET_FLAG_DEST_LOCATION) != 0;
 }

@@ -27,6 +27,9 @@ enum PlayerSkills
     SKILL_ARMS                    = 26,
     SKILL_COMBAT                  = 38,
     SKILL_SUBTLETY                = 39,
+#if VERSION_STRING <= TBC
+    SKILL_POISONS = 40,
+#endif
     SKILL_SWORDS                  = 43,
     SKILL_AXES                    = 44,
     SKILL_BOWS                    = 45,

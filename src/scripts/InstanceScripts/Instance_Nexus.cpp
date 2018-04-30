@@ -22,8 +22,6 @@
 #include "Setup.h"
 #include "Instance_Nexus.h"
 
-#define GO_FLAG_UNCLICKABLE 0x00000010
-
 class AnomalusAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
@@ -107,7 +105,7 @@ class AnomalusAI : public CreatureAIScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
@@ -291,7 +289,7 @@ class TelestraBossAI : public CreatureAIScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
@@ -399,7 +397,7 @@ class OrmorokAI : public CreatureAIScript
             for (auto goSphere : sphereSet)
             {
                 if (goSphere != nullptr)
-                    goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
             }
         }
     }
@@ -422,7 +420,7 @@ class CrystalSpikeAI : public CreatureAIScript
     {
         setCanEnterCombat(false);
         setRooted(true);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
         despawn(4500, 0);
         RegisterAIUpdateEvent(500);
@@ -546,7 +544,7 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
 
@@ -556,7 +554,7 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
 
@@ -566,60 +564,60 @@ class NexusScript : public InstanceScript
                 for (auto goSphere : sphereSet)
                 {
                     if (goSphere != nullptr)
-                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        goSphere->removeFlags(GO_FLAG_NOT_SELECTABLE);
                 }
             }
         }
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_KERISTRASZA:
-                    mKeristraszaGUID = pCreature->GetLowGUID();
+                    mKeristraszaGUID = pCreature->getGuidLow();
                     break;
                 case CN_ANOMALUS:
-                    mAnomalusGUID = pCreature->GetLowGUID();
+                    mAnomalusGUID = pCreature->getGuidLow();
                     break;
                 case CN_TELESTRA:
-                    mTelestraGUID = pCreature->GetLowGUID();
+                    mTelestraGUID = pCreature->getGuidLow();
                     break;
                 case CN_ORMOROK:
-                    mOrmorokGUID = pCreature->GetLowGUID();
+                    mOrmorokGUID = pCreature->getGuidLow();
                     break;
             }
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     break;
             }
         }
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
+                    pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
                     ++mCSCount;
                     break;
                 default:

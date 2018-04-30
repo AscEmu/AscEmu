@@ -20,7 +20,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
     if (percentDamage == 0)
         return true;
 
-    uint32_t health = selected_unit->GetHealth();
+    uint32_t health = selected_unit->getHealth();
 
     uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
 
@@ -382,9 +382,91 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     WorldPacket data(SMSG_PVP_CREDIT, 12);
     data << points;
-    data << player_target->GetGUID();
+    data << player_target->getGuid();
     data << rank;
     m_session->SendPacket(&data);
+
+    return true;
+}
+
+//.debug setunitbyte
+bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t bytes;
+    uint32_t offset;
+    uint32_t value;
+    if (sscanf(args, "%u %u %u", &bytes, &offset, &value) != 3)
+    {
+        RedSystemMessage(m_session, "Command must be in format <bytes> <offset> <value>.");
+        return true;
+    }
+
+    auto unit_target = GetSelectedUnit(m_session, true);
+    if (unit_target == nullptr)
+        return true;
+
+    if (offset > 3)
+        return true;
+
+    switch (bytes)
+    {
+        case 0:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_0, offset, value);
+        } break;
+        case 1:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_1, offset, value);
+        } break;
+        case 2:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_2, offset, value);
+        } break;
+        default:
+        {
+            RedSystemMessage(m_session, "Bytes %u are not existent. Choose from 0, 1 or 2", bytes);
+            return true;
+        }
+    }
+
+    GreenSystemMessage(m_session, "Unit Bytes %u Offset %u set to Value %u", bytes, offset, value);
+
+    return true;
+}
+
+//.debug setplayerflag
+bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t flags;
+    if (sscanf(args, "%u", &flags) != 1)
+    {
+        RedSystemMessage(m_session, "Command must contain at least 1 flag.");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true);
+    if (player_target == nullptr)
+        return true;
+
+    const auto current_flags = player_target->getPlayerFlags();
+
+    player_target->addPlayerFlags(flags);
+
+    GreenSystemMessage(m_session, "Player flag %u added (before %u)", flags, current_flags);
+
+    return true;
+}
+
+//.debug getplayerflag
+bool ChatHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    const auto player_target = GetSelectedPlayer(m_session, true);
+    if (player_target == nullptr)
+        return true;
+
+    const auto current_flags = player_target->getPlayerFlags();
+
+    GreenSystemMessage(m_session, "Current player flags: %u", current_flags);
 
     return true;
 }

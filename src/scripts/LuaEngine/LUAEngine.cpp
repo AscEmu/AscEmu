@@ -1779,7 +1779,7 @@ class LuaCreature : public CreatureAIScript
             }
             LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
             LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->GetGUID()));
+            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->getGuid()));
         }
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
@@ -1914,8 +1914,8 @@ class LuaCreature : public CreatureAIScript
             {
                 typedef std::multimap<uint32, LuaCreature*> CMAP;
                 CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
-                CMAP::iterator itr = cMap.find(getCreature()->GetEntry());
-                CMAP::iterator itend = cMap.upper_bound(getCreature()->GetEntry());
+                CMAP::iterator itr = cMap.find(getCreature()->getEntry());
+                CMAP::iterator itend = cMap.upper_bound(getCreature()->getEntry());
                 CMAP::iterator it;
                 for (; itr != cMap.end() && itr != itend;)
                 {
@@ -1929,7 +1929,7 @@ class LuaCreature : public CreatureAIScript
             {
                 //Function Ref clean up
                 std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->GetGUID());
+                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->getGuid());
                 if (itr != objRefs.end())
                 {
                     std::set<int>& refs = itr->second;
@@ -2043,10 +2043,10 @@ class LuaGameObjectScript : public GameObjectAIScript
         {
             typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
             GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
-            GMAP::iterator itr = gMap.find(_gameobject->GetEntry());
-            GMAP::iterator itend = gMap.upper_bound(_gameobject->GetEntry());
+            GMAP::iterator itr = gMap.find(_gameobject->getEntry());
+            GMAP::iterator itend = gMap.upper_bound(_gameobject->getEntry());
             GMAP::iterator it;
-            //uint64 guid = _gameobject->GetGUID(); Unused?
+            //uint64 guid = _gameobject->getGuid(); Unused?
             for (; itr != itend;)
             {
                 it = itr++;
@@ -2057,7 +2057,7 @@ class LuaGameObjectScript : public GameObjectAIScript
             }
 
             std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
+            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->getGuid());
             std::set<int>::iterator it2;
             if (itr2 != objRefs.end())
             {
@@ -2502,7 +2502,7 @@ CreatureAIScript* CreateLuaCreature(Creature* src)
     LuaCreature* script = nullptr;
     if (src != nullptr)
     {
-        uint32 id = src->GetEntry();
+        uint32 id = src->getEntry();
         LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getUnitBinding(id);
         if (pBinding != nullptr)
         {

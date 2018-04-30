@@ -191,7 +191,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
 
 
     // players without raid groups cannot enter raid instances
-    if (pGroup != NULL && pGroup->GetGroupType() != GROUP_TYPE_RAID && inf->type == INSTANCE_RAID && !plr->TriggerpassCheat)
+    if (pGroup != NULL && pGroup->getGroupType() != GROUP_TYPE_RAID && inf->type == INSTANCE_RAID && !plr->TriggerpassCheat)
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
     // We deny transfer if we requested a heroic instance of a map that has no heroic mode
@@ -458,7 +458,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     in->m_mapMgr = NULL;        // always start off without a map manager, it is created in GetInstance()
     in->m_isBattleground = false;
     in->m_persistent = IS_PERSISTENT_INSTANCE(in) && objmgr.m_InstanceBossInfoMap[mapid] == NULL;
-    in->m_creatorGuid = pGroup ? 0 : plr->GetLowGUID();        // creator guid is 0 if its owned by a group.
+    in->m_creatorGuid = pGroup ? 0 : plr->getGuidLow();        // creator guid is 0 if its owned by a group.
     in->m_creatorGroup = pGroup ? pGroup->GetID() : 0;
 
     if (worldConfig.instance.isRelativeExpirationEnabled)
@@ -802,7 +802,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
                 in = itr->second;
                 ++itr;
 
-                if (IS_RESETABLE_INSTANCE(in) && (CHECK_INSTANCE_GROUP(in, plr->GetGroup()) || plr->GetLowGUID() == in->m_creatorGuid))
+                if (IS_RESETABLE_INSTANCE(in) && (CHECK_INSTANCE_GROUP(in, plr->GetGroup()) || plr->getGuidLow() == in->m_creatorGuid))
                 {
                     if (in->m_mapMgr && in->m_mapMgr->HasPlayers())
                     {

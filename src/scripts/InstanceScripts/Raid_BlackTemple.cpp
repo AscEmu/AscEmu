@@ -41,7 +41,7 @@ class BlackTempleScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             // You don't have to use additional scripts to open any gates / doors
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_SUPREMUS:
                     setGameObjectStateForEntry(185882, GO_STATE_OPEN);    // Gate to Black Temple behind Supremus
@@ -726,7 +726,7 @@ class EnslavedServantAI : public CreatureAIScript
         {
             if (_isTimerFinished(mHealthResetTimer))
             {
-                getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
+                getCreature()->setHealth(getCreature()->getMaxHealth());    // Found such note about this mob
                 _resetTimer(mHealthResetTimer, 45000);
             }
         }
@@ -1311,7 +1311,7 @@ class SupremusAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
             timer = 0;
         }
 
@@ -1581,7 +1581,7 @@ class EssenceOfSufferingAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOS_AURA_OF_SUFFERING);
 
@@ -1635,7 +1635,7 @@ class EssenceOfDesireAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOD_AURA_OF_DESIRE);
 
@@ -1730,7 +1730,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             _setMeleeDisabled(false);
             _setRangedDisabled(true);
 
@@ -2037,7 +2037,7 @@ class GathiosAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         void AddEncounterCreature(Creature* pCreature)
@@ -2049,13 +2049,13 @@ class GathiosAI : public CreatureAIScript
         {
             for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
             {
-                if ((*itr) && (*itr)->isAlive() && (*itr)->GetEntry() != pCreatureEntry)
+                if ((*itr) && (*itr)->isAlive() && (*itr)->getEntry() != pCreatureEntry)
                 {
                     (*itr)->DealDamage((*itr), val, 0, 0, 0);
                 }
             }
 
-            if (isAlive() && getCreature()->GetEntry() != pCreatureEntry)
+            if (isAlive() && getCreature()->getEntry() != pCreatureEntry)
                 getCreature()->DealDamage(getCreature(), val, 0, 0, 0);
         }
 
@@ -2095,7 +2095,7 @@ class VerasAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2131,7 +2131,7 @@ class ZerevorAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
-            pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+            pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2167,7 +2167,7 @@ class MalandeAI : public CreatureAIScript
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
             if (pGethois != NULL)
-                pGethois->DealDamageToFriends(fAmount, getCreature()->GetEntry());
+                pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
         }
 
         GathiosAI* pGethois;
@@ -2222,7 +2222,7 @@ class ShadeofakamaAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             hm = 100;
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         }
 
         void OnTargetDied(Unit* /*mTarget*/) override
@@ -2600,7 +2600,7 @@ class UnselectableTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(UnselectableTriggerAI);
         UnselectableTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
 };
 
@@ -2637,7 +2637,7 @@ class GenericTriggerAI : public CreatureAIScript
             mSpellId = mDespawnTimer = 0;
             uint32 AIUpdate = 2000;
             bool OnSpawn = false;
-            switch (getCreature()->GetEntry())
+            switch (getCreature()->getEntry())
             {
                 case CN_DEMON_FIRE:
                     OnSpawn = true;
@@ -2664,29 +2664,29 @@ class GenericTriggerAI : public CreatureAIScript
 
             if (OnSpawn)
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 _applyAura(mSpellId);
                 _setMeleeDisabled(false);
                 despawn(mDespawnTimer, 0);
             }
             else
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(AIUpdate);
             }
         }
 
         void AIUpdate() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             _applyAura(mSpellId);
             _setMeleeDisabled(false);
             despawn(mDespawnTimer, 0);
             RemoveAIUpdateEvent();
 
-            if (getCreature()->GetEntry() == CN_FLAME_BURST)
+            if (getCreature()->getEntry() == CN_FLAME_BURST)
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             }
         }
 
@@ -2704,7 +2704,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI);
         EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             getCreature()->m_noRespawn = true;
 
@@ -2824,11 +2824,9 @@ class ParasiticShadowfiendAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ParasiticShadowfiendAI);
         ParasiticShadowfiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            
-
             addAISpell(PARASITIC_SHADOWFIEND_WITH_DAMAGE, 0.0f, TARGET_ATTACKING);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             _applyAura(PARASITIC_SHADOWFIEND_PASSIVE);
             getCreature()->m_noRespawn = true;
             _setScale(0.0f);
@@ -2860,13 +2858,13 @@ class SCRIPT_DECL AkamaGossip : public Arcemu::Gossip::Script
 
             if (pAI->GetCurrentWaypoint() >= 10)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229902);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
                 menu.Send(pPlayer);
             }
             else
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229901);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
                 menu.Send(pPlayer);
             }
@@ -3031,7 +3029,7 @@ class AkamaAI : public CreatureAIScript
                     mOlumAI  = spawnCreatureAndGetAIScript(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
                     if (mUdaloAI == nullptr || mOlumAI == nullptr)
                     {
-                        pGate->SetState(GO_STATE_OPEN);
+                        pGate->setState(GO_STATE_OPEN);
                         break;
                     }
                     break;
@@ -3058,7 +3056,7 @@ class AkamaAI : public CreatureAIScript
                     }
                     break;
                 case 11:
-                    pGate->SetState(GO_STATE_OPEN);
+                    pGate->setState(GO_STATE_OPEN);
                     if (pDoorTrigger != NULL)
                     {
                         pDoorTrigger->CastSpell(pDoorTrigger, sSpellCustomizations.GetSpellInfo(GATE_FAILURE), true);
@@ -3169,7 +3167,7 @@ class AkamaAI : public CreatureAIScript
                     mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11466, "You are not prepared!");
                     mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL05);
 
-                    getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                    getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                     break;
                 case 14:
                     mIllidanAI->_setWieldWeapon(true);
@@ -3179,11 +3177,11 @@ class AkamaAI : public CreatureAIScript
                     GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GO_STATE_CLOSED);
+                        pRightGate->setState(GO_STATE_CLOSED);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GO_STATE_CLOSED);
+                        pLeftGate->setState(GO_STATE_CLOSED);
                     }
 
                     setRooted(false);
@@ -3269,7 +3267,7 @@ class AkamaAI : public CreatureAIScript
                 }
                 else
                 {
-                    getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                    getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                     
                 }
             }
@@ -3309,27 +3307,27 @@ class AkamaAI : public CreatureAIScript
                         break;
                     case 3:
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11390, "I will deal with these mongrels! Strike now, friends! Strike at the Betrayer!");
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                         break;
                     case 4:
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                         break;
                     case 5:
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                         break;
                     case 6:
                         _setWieldWeapon(false);
                         getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
                         break;
                     case 7:
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                         _setWieldWeapon(true);
                         break;
                     case 8:
                         setRooted(false);
                         ForceWaypointMove(18);
                         RemoveAIUpdateEvent();
-                        //_unit->SetEmoteState(EMOTE_ONESHOT_NONE);
+                        //_unit->setEmoteState(EMOTE_ONESHOT_NONE);
 
                         mScenePart = 0;
                         return;
@@ -3425,7 +3423,7 @@ class AkamaAI : public CreatureAIScript
             {
                 Unit* pUnit = static_cast<Unit*>(itr);
 
-                if (!pUnit || pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (!pUnit || pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 z_diff = fabs(getCreature()->GetPositionZ() - pUnit->GetPositionZ());
@@ -3486,9 +3484,10 @@ class MaievAI : public CreatureAIScript
             mTrapSummon = addAISpell(MAIEV_CAGE_TRAP_SUMMON, 0.0f, TARGET_SELF);
 
             // HACK!
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
-            getCreature()->SetHealth(1000000);
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->setMaxHealth(1000000);
+            getCreature()->setHealth(1000000);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -3525,7 +3524,7 @@ class MaievAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
-            getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            getCreature()->setHealth(getCreature()->getMaxHealth());
         }
 
         void AIUpdate() override
@@ -3654,7 +3653,7 @@ class MaievAI : public CreatureAIScript
             }
 
             _setDisplayWeapon(false, false);
-            if (mIllidanAI->getCreature()->GetEmoteState() == 0)        // dunno if it's really needed
+            if (mIllidanAI->getCreature()->getEmoteState() == 0)        // dunno if it's really needed
             {
                 
             }
@@ -3694,13 +3693,13 @@ class MaievAI : public CreatureAIScript
                             mIllidanAI->getCreature()->interruptSpell();
                         break;
                     case 2:
-                        mIllidanAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_CUSTOMSPELL07);
+                        mIllidanAI->getCreature()->setEmoteState(EMOTE_ONESHOT_CUSTOMSPELL07);
 
                         getCreature()->GetAIInterface()->setNextTarget(mIllidanAI->getCreature());
                         break;
                     case 3:
                         mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11478, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                         _setWieldWeapon(false);
                         break;
                     case 4:
@@ -3709,15 +3708,15 @@ class MaievAI : public CreatureAIScript
                             GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                             if (pRightGate != NULL)
                             {
-                                pRightGate->SetState(GO_STATE_OPEN);
+                                pRightGate->setState(GO_STATE_OPEN);
                             }
                             if (pLeftGate != NULL)
                             {
-                                pLeftGate->SetState(GO_STATE_OPEN);
+                                pLeftGate->setState(GO_STATE_OPEN);
                             }
 
-                            mIllidanAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
-                            mIllidanAI->getCreature()->SetHealth(0);
+                            mIllidanAI->getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
+                            mIllidanAI->getCreature()->setHealth(0);
                             mIllidanAI->getCreature()->setDeathState(JUST_DIED);
                         }
                         break;
@@ -3908,8 +3907,8 @@ class IllidanStormrageAI : public CreatureAIScript
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, ForIllidan[i]));
             }
 
-            getCreature()->SetBaseAttackTime(RANGED, 1800);
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+            getCreature()->setBaseAttackTime(RANGED, 1800);
+            getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
             getCreature()->SetDualWield(true);
 
             mFoA1 = mFoA2 = NULL;
@@ -3941,14 +3940,14 @@ class IllidanStormrageAI : public CreatureAIScript
             GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
             {
-                pRightGate->SetState(GO_STATE_CLOSED);
+                pRightGate->setState(GO_STATE_CLOSED);
             }
             if (pLeftGate != NULL)
             {
-                pLeftGate->SetState(GO_STATE_CLOSED);
+                pLeftGate->setState(GO_STATE_CLOSED);
             }
 
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+            getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
 
             //mParasitic->mEnabled = false;
         }
@@ -3956,7 +3955,7 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             // General
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+            getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unsetTargetToChannel();
             setCanEnterCombat(true);
@@ -3990,8 +3989,8 @@ class IllidanStormrageAI : public CreatureAIScript
                 Creature* pBlade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                 if (pBlade != NULL)
                 {
-                    pBlade->SetChannelSpellTargetGUID(0);
-                    pBlade->SetChannelSpellId(0);
+                    pBlade->setChannelObjectGuid(0);
+                    pBlade->setChannelSpellId(0);
                     pBlade->Despawn(0, 0);
                 }
             }
@@ -4006,11 +4005,11 @@ class IllidanStormrageAI : public CreatureAIScript
                 GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GO_STATE_OPEN);
+                    pRightGate->setState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GO_STATE_OPEN);
+                    pLeftGate->setState(GO_STATE_OPEN);
                 }
 
                 Creature* pMaiev = getNearestCreature(CN_MAIEV);
@@ -4026,12 +4025,12 @@ class IllidanStormrageAI : public CreatureAIScript
             Creature* pMaiev = getNearestCreature(CN_MAIEV);
             if (pMaiev != NULL && pMaiev->isAlive())
             {
-                getCreature()->SetHealth(1);
+                getCreature()->setHealth(1);
                 setCanEnterCombat(false);
                 _applyAura(ILLIDAN_DEATH1);
                 _applyAura(ILLIDAN_DEATH2);
 
-                pMaiev->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                pMaiev->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pMaiev->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 pMaiev->GetAIInterface()->WipeTargetList();
                 pMaiev->GetAIInterface()->WipeHateList();
@@ -4042,11 +4041,11 @@ class IllidanStormrageAI : public CreatureAIScript
                 GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GO_STATE_OPEN);
+                    pRightGate->setState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GO_STATE_OPEN);
+                    pLeftGate->setState(GO_STATE_OPEN);
                 }
             }
         }
@@ -4055,7 +4054,7 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnHit(Unit* mVictim, float fAmount) override
         {
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT1!");
-            if (mVictim->IsCreature() && (mVictim->GetEntry() == CN_MAIEV || mVictim->GetEntry() == CN_AKAMA))
+            if (mVictim->IsCreature() && (mVictim->getEntry() == CN_MAIEV || mVictim->getEntry() == CN_AKAMA))
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT2!");
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
@@ -4078,7 +4077,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
-            if (mAttacker->IsCreature() && (mAttacker->GetEntry() == CN_MAIEV || mAttacker->GetEntry() == CN_AKAMA))
+            if (mAttacker->IsCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
             {
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
                 if (pTarget == NULL || !pTarget->IsPlayer())
@@ -4195,7 +4194,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 _setMeleeDisabled(false);
                 setFlyMode(true);
 
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                 getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
 
                 mFireWallTimer = 30000;
@@ -4205,7 +4204,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 return;
             }
 
-            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+            getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
             
         }
 
@@ -4241,7 +4240,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Creature* pBlade = spawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o);
                             if (pBlade != NULL)
                             {
-                                pBlade->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                                pBlade->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                                 pBlade->m_noRespawn = true;
                             }
                         }
@@ -4254,8 +4253,8 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->GetGUID());
-                                pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
+                                pBlade->setChannelObjectGuid(mFoA1->getCreature()->getGuid());
+                                pBlade->setChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
                         if (mFoA2 != nullptr)
@@ -4263,11 +4262,11 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->GetGUID());
-                                pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
+                                pBlade->setChannelObjectGuid(mFoA2->getCreature()->getGuid());
+                                pBlade->setChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
-                        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         break;
                     case 4:
                         {
@@ -4312,13 +4311,13 @@ class IllidanStormrageAI : public CreatureAIScript
                             }
 
                             getCreature()->GetAIInterface()->setNextTarget(getBestPlayerTarget(TargetFilter_Closest));
-                            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                            getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                             setCanEnterCombat(true);
                             _setMeleeDisabled(true);
                             setRooted(false);
                             _clearHateList();
                             setScriptPhase(3);
-                            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
                             SetAIUpdateFreq(1000);
 
@@ -4347,8 +4346,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
-                        pBlade->SetChannelSpellTargetGUID(0);
-                        pBlade->SetChannelSpellId(0);
+                        pBlade->setChannelObjectGuid(0);
+                        pBlade->setChannelSpellId(0);
                     }
 
                     mFoA1 = NULL;
@@ -4361,8 +4360,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
-                        pBlade->SetChannelSpellTargetGUID(0);
-                        pBlade->SetChannelSpellId(0);
+                        pBlade->setChannelObjectGuid(0);
+                        pBlade->setChannelSpellId(0);
                     }
 
                     mFoA2 = NULL;
@@ -4370,7 +4369,7 @@ class IllidanStormrageAI : public CreatureAIScript
             }
             if (getCreature()->GetAIInterface()->getWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !_isCasting())
             {
-                if (getCreature()->GetChannelSpellId() == 0)
+                if (getCreature()->getChannelSpellId() == 0)
                 {
                     if (mFoA1 == NULL && mFoA2 == NULL)
                     {
@@ -4477,7 +4476,7 @@ class IllidanStormrageAI : public CreatureAIScript
             if (pTransformation[mMiscEventPart - 1].mEmoteType == 0)
                 getCreature()->Emote((EmoteType)pTransformation[mMiscEventPart - 1].mEmote);
             else
-                getCreature()->SetEmoteState(pTransformation[mMiscEventPart - 1].mEmote);
+                getCreature()->setEmoteState(pTransformation[mMiscEventPart - 1].mEmote);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, pTransformation[mMiscEventPart - 1].mSoundId, pTransformation[mMiscEventPart - 1].mText);
             _applyAura(pTransformation[mMiscEventPart - 1].mAura);
             _removeAura(pTransformation[mMiscEventPart - 1].mUnAura);
@@ -4609,7 +4608,7 @@ class IllidanStormrageAI : public CreatureAIScript
             _setMeleeDisabled(true);
             setRooted(false);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
             mScenePart = 0;
         }
@@ -4671,7 +4670,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     {
                         float Facing = pMaievAI->getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pMaievAI->getCreature()->GetPositionX(), pMaievAI->getCreature()->GetPositionY());
                         getCreature()->SetFacing(Facing);
-                        getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                        getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                     }
                     break;
                 case 10:
@@ -4692,18 +4691,18 @@ class IllidanStormrageAI : public CreatureAIScript
                     setRooted(false);
                     setScriptPhase(5);
 
-                    getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
                     pMaievAI->RegisterAIUpdateEvent(1000);
                     pMaievAI->mYellTimer = pMaievAI->_addTimer((Util::getRandomUInt(20) + 20) * 1000);
                     pMaievAI->mTrapTimer = pMaievAI->_addTimer((Util::getRandomUInt(5) + 18) * 1000);
-                    pMaievAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                    pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                     pMaievAI->setCanEnterCombat(true);
                     pMaievAI->getCreature()->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                     pMaievAI->getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     pMaievAI->setRooted(false);
                     pMaievAI->getCreature()->GetAIInterface()->AttackReaction(getCreature(), 1, 0);
-                    pMaievAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                    pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                     pMaievAI->_setWieldWeapon(true);
                     pMaievAI->mIllidanAI = this;
 
@@ -4752,7 +4751,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 _setMeleeDisabled(false);
                 setRooted(true);
 
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
                 mTimeLeft = MaievTimers[0];
                 mScenePart = 1;
@@ -4769,7 +4768,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     setAIAgent(AGENT_SPELL);
                     SetAIUpdateFreq(250);
 
-                    getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                    getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
                     mMiscEventPart = 1;
                     mTimeLeft = Ascend[0].mTimer;
@@ -4782,7 +4781,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     return;
                 }*/
 
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 
             }
         }
@@ -4826,7 +4825,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 setAIAgent(AGENT_SPELL);
                 SetAIUpdateFreq(250);
 
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
                 mMiscEventPart = 1;
                 mTimeLeft = Descend[0].mTimer;
@@ -4857,7 +4856,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pUnit = static_cast<Unit*>(itr);
                             if (pUnit)
                             {
-                                CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->GetFaction());
+                                CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->getFactionTemplate());
                                 getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
                                 if (pAI != nullptr)
                                 {
@@ -4913,7 +4912,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     setAIAgent(AGENT_SPELL);
                     SetAIUpdateFreq(250);
 
-                    getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+                    getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
                     mMiscEventPart = 1;
                     mTimeLeft = Ascend[0].mTimer;
@@ -4936,14 +4935,14 @@ class IllidanStormrageAI : public CreatureAIScript
                 if (mYellTimer <= 0 && getCreature()->GetAIInterface()->getNextTarget() != NULL)
                 {
                     Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                    if (pTarget->IsCreature() && pTarget->GetEntry() == CN_MAIEV)
+                    if (pTarget->IsCreature() && pTarget->getEntry() == CN_MAIEV)
                     {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11470, "Feel the hatred of ten thousand years!");
                         mYellTimer = 25000;
                     }
                 }
 
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 
             }
         }
@@ -4954,7 +4953,7 @@ class IllidanStormrageAI : public CreatureAIScript
             {
                 _clearHateList();
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->GetEntry() != CN_FACE_TRIGGER))
+                if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->getEntry() != CN_FACE_TRIGGER))
                 {
                     Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                     if (pTrigger != NULL)
@@ -4999,11 +4998,11 @@ class IllidanStormrageAI : public CreatureAIScript
                     GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GO_STATE_OPEN);
+                        pRightGate->setState(GO_STATE_OPEN);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GO_STATE_OPEN);
+                        pLeftGate->setState(GO_STATE_OPEN);
                     }*/
 
             delete this;
@@ -5099,7 +5098,7 @@ class CageTrapTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CageTrapTriggerAI);
         CageTrapTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->m_canMove = false;
             getCreature()->m_noRespawn = true;
 
@@ -5137,7 +5136,7 @@ class CageTrapTriggerAI : public CreatureAIScript
                         CreatureAIScript* pTriggerAI = spawnCreatureAndGetAIScript(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                         if (pTriggerAI != nullptr)
                         {
-                            pTriggerAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            pTriggerAI->getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             pTriggerAI->getCreature()->GetAIInterface()->m_canMove = false;
                             pTriggerAI->getCreature()->m_noRespawn = true;
                             mTriggerAIList.push_back(pTriggerAI);
@@ -5186,7 +5185,7 @@ class CageTrapTriggerAI : public CreatureAIScript
                         pAI->stopMovement();
                         pAI->setAIAgent(AGENT_SPELL);
 
-                        pIllidan->SetEmoteState(EMOTE_ONESHOT_NONE);
+                        pIllidan->setEmoteState(EMOTE_ONESHOT_NONE);
 
                         pAI->SetAIUpdateFreq(250);
                         pAI->mMiscEventPart = 1;
@@ -5237,12 +5236,12 @@ class CageTrapGO : public GameObjectAIScript
     public:
         CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
         {
-            _gameobject->setFloatValue(OBJECT_FIELD_SCALE_X, 3);
+            _gameobject->setScale(3.0f);
         }
 
         void OnActivate(Player* /*pPlayer*/) override
         {
-            _gameobject->SetFlags(GO_FLAG_NONSELECTABLE);
+            _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {

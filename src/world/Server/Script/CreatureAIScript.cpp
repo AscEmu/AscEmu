@@ -298,18 +298,18 @@ float CreatureAIScript::getRangeToObject(Object* object)
     return _creature->CalcDistance(object);
 }
 
-CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/, uint32_t phase /*= 1*/)
 {
-    Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId);
+    Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId, phase);
     return (creature ? creature->GetScript() : nullptr);
 }
 
-Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/)
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/, uint32_t phase /*= 1*/)
 {
-    return spawnCreature(entry, pos.x, pos.y, pos.z, pos.o, factionId);
+    return spawnCreature(entry, pos.x, pos.y, pos.z, pos.o, factionId, phase);
 }
 
-Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/, uint32_t phase /*= 1*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
@@ -318,7 +318,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
         return nullptr;
     }
 
-    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0, phase);
     if (creature == nullptr)
         return nullptr;
 
@@ -491,11 +491,11 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
     //Zyres 10/21/2017 creatures can be attackable even if they can not enter combat... the following line is not correct.
     if (enterCombat)
     {
-        _creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        _creature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
     else
     {
-        _creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        _creature->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
 
     _creature->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
@@ -831,40 +831,40 @@ void CreatureAIScript::RemoveAIUpdateEvent()
 
 void CreatureAIScript::_setScale(float scale)
 {
-    _creature->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
+    _creature->setScale(scale);
 }
 
 float CreatureAIScript::_getScale()
 {
-    return _creature->getFloatValue(OBJECT_FIELD_SCALE_X);
+    return _creature->getScale();
 }
 
 void CreatureAIScript::_setDisplayId(uint32_t displayId)
 {
-    _creature->SetDisplayId(displayId);
+    _creature->setDisplayId(displayId);
 }
 
 void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 {
-    if (setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
+    if (setWieldWeapon && _creature->getSheathType() != SHEATH_STATE_MELEE)
     {
-        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        _creature->setSheathType(SHEATH_STATE_MELEE);
     }
-    else if (!setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
+    else if (!setWieldWeapon && _creature->getSheathType() != SHEATH_STATE_UNARMED)
     {
-        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
+        _creature->setSheathType(SHEATH_STATE_UNARMED);
     }
 }
 
 void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 {
-    _setDisplayWeaponIds(setMainHand ? _creature->GetEquippedItem(MELEE) : 0, setOffHand ? _creature->GetEquippedItem(OFFHAND) : 0);
+    _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemSlotId(MELEE) : 0, setOffHand ? _creature->getVirtualItemSlotId(OFFHAND) : 0);
 }
 
 void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 {
-    _creature->SetEquippedItem(MELEE, itemId1);
-    _creature->SetEquippedItem(OFFHAND, itemId2);
+    _creature->setVirtualItemSlotId(MELEE, itemId1);
+    _creature->setVirtualItemSlotId(OFFHAND, itemId2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -988,8 +988,8 @@ void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
 {
     if (target != nullptr)
     {
-        _creature->SetChannelSpellTargetGUID(target->GetGUID());
-        _creature->SetChannelSpellId(spellId);
+        _creature->setChannelObjectGuid(target->getGuid());
+        _creature->setChannelSpellId(spellId);
     }
     else
     {
@@ -999,13 +999,13 @@ void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
 
 void CreatureAIScript::_unsetTargetToChannel()
 {
-    _creature->SetChannelSpellTargetGUID(0);
-    _creature->SetChannelSpellId(0);
+    _creature->setChannelObjectGuid(0);
+    _creature->setChannelSpellId(0);
 }
 
 Unit* CreatureAIScript::_getTargetToChannel()
 {
-    return _creature->GetMapMgr()->GetUnit(_creature->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+    return _creature->GetMapMgr()->GetUnit(_creature->getChannelObjectGuid());
 }
 
 void CreatureAIScript::newAIUpdateSpellSystem()
@@ -1515,7 +1515,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
     if (UnitTarget->IsPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
         return false;
 
-    if (UnitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+    if (UnitTarget->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
         return false;
 
     // if we apply target filtering

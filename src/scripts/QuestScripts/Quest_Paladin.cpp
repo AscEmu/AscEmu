@@ -29,7 +29,7 @@ public:
 
     void OnLoad()
     {
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }
@@ -53,7 +53,7 @@ public:
             GameObject* Brazier = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
             if (Brazier)
             {
-                Brazier->SetState(GO_STATE_OPEN);
+                Brazier->setState(GO_STATE_OPEN);
                 pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17716, SSX, SSY, SSZ, SSO, true, false, 0, 0)->Despawn(600000, 0);
             }
         }
@@ -81,7 +81,7 @@ public:
         GameObject* Brazier = mKiller->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
         if (Brazier)
         {
-            Brazier->SetState(GO_STATE_CLOSED);
+            Brazier->setState(GO_STATE_CLOSED);
         }
     }
 };

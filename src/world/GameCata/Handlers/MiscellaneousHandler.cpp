@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -75,7 +75,7 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (_player->GetGUID() == guid)
+    if (_player->getGuid() == guid)
     {
         LogoutPlayer(true);
         return;
@@ -162,12 +162,12 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     uint64_t guid;
     recv_data >> guid;
 
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
     if (pCorpse == nullptr)
         return;
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)

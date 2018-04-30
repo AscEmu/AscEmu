@@ -32,6 +32,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Data/WoWPlayer.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -337,7 +338,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pNewChar->SaveToDB(true);
 
     PlayerInfo* pn = new PlayerInfo ;
-    pn->guid = pNewChar->GetLowGUID();
+    pn->guid = pNewChar->getGuidLow();
     pn->name = strdup(pNewChar->GetName());
     pn->cl = pNewChar->getClass();
     pn->race = pNewChar->getRace();
@@ -444,7 +445,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
 
         Corpse* c = objmgr.GetCorpseByOwner((uint32)guid);
         if (c)
-            CharacterDatabase.Execute("DELETE FROM corpses WHERE guid = %u", c->GetLowGUID());
+            CharacterDatabase.Execute("DELETE FROM corpses WHERE guid = %u", c->getGuidLow());
 
         CharacterDatabase.Execute("DELETE FROM playeritems WHERE ownerguid=%u", (uint32)guid);
         CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE playerguid = %u", (uint32)guid);
@@ -649,10 +650,10 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
 #if VERSION_STRING != Cata
 void WorldSession::FullLogin(Player* plr)
 {
-    LOG_DEBUG("Fully loading player %u", plr->GetLowGUID());
+    LOG_DEBUG("Fully loading player %u", plr->getGuidLow());
 
     SetPlayer(plr);
-    m_MoverWoWGuid.Init(plr->GetGUID());
+    m_MoverWoWGuid.Init(plr->getGuid());
 
     MapMgr* mgr = sInstanceMgr.GetInstance(plr);
     if (mgr && mgr->m_battleground)
@@ -741,15 +742,11 @@ void WorldSession::FullLogin(Player* plr)
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    StackWorldPacket<20> datab(SMSG_FEATURE_SYSTEM_STATUS);
-
-
-    datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS);
-
-    datab << uint8(2);
-    datab << uint8(0);
-
-    SendPacket(&datab);
+    //StackWorldPacket<20> datab(SMSG_FEATURE_SYSTEM_STATUS);
+    //datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS);
+    //datab << uint8(2); // Voice Chat
+    //datab << uint8(0); // Can use it?
+    //SendPacket(&datab);
 
 #if VERSION_STRING > TBC
     WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
@@ -762,14 +759,14 @@ void WorldSession::FullLogin(Player* plr)
     plr->UpdateAttackSpeed();
 
     // Make sure our name exists (for premade system)
-    PlayerInfo* info = objmgr.GetPlayerInfo(plr->GetLowGUID());
+    PlayerInfo* info = objmgr.GetPlayerInfo(plr->getGuidLow());
 
     if (info == NULL)
     {
         info = new PlayerInfo;
         info->cl = plr->getClass();
         info->gender = plr->getGender();
-        info->guid = plr->GetLowGUID();
+        info->guid = plr->getGuidLow();
         info->name = strdup(plr->GetName());
         info->lastLevel = plr->getLevel();
         info->lastOnline = UNIXTIME;
@@ -796,20 +793,22 @@ void WorldSession::FullLogin(Player* plr)
     SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
 
     // Set TIME OF LOGIN
-    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u" , plr->GetLowGUID());
+    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u" , plr->getGuidLow());
 
     bool enter_world = true;
 
+    auto data = plr->getXp();
+
     // Find our transporter and add us if we're on one.
-    if (plr->obj_movement_info.transporter_info.guid != 0)
+    if (plr->obj_movement_info.transport_data.transportGuid != 0)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transport_data.transportGuid));
         if (pTrans)
         {
             if (plr->IsDead())
             {
                 plr->ResurrectPlayer();
-                plr->SetHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->getMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 
@@ -876,7 +875,7 @@ void WorldSession::FullLogin(Player* plr)
 #endif
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
     if (ticket != NULL)
     {
         //Send status change to gm_sync_channel
@@ -911,7 +910,8 @@ void WorldSession::FullLogin(Player* plr)
     }
 
     // server Message Of The Day
-    SendMOTD();
+    //SendMOTD();
+    plr->SendDungeonDifficulty();
 
     //Set current RestState
     if (plr->m_isResting)

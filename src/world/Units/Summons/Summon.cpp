@@ -37,10 +37,10 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
 
     Creature::Load(properties_, position.x, position.y, position.z, position.o);
 
-    SetFaction(pOwner->GetFaction());
+    SetFaction(pOwner->getFactionTemplate());
     Phase(PHASE_SET, pOwner->GetPhase());
     SetZoneId(pOwner->GetZoneId());
-    SetCreatedBySpell(spellid);
+    setCreatedBySpellId(spellid);
     this->summonslot = pSummonslot;
 
     if (pOwner->IsPvPFlagged())
@@ -58,17 +58,17 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
     else
         RemoveSanctuaryFlag();
 
-    SetCreatedByGUID(pOwner->GetGUID());
+    setCreatedByGuid(pOwner->getGuid());
 
-    if (pOwner->GetSummonedByGUID() == 0)
-        SetSummonedByGUID(pOwner->GetGUID());
+    if (pOwner->getSummonedByGuid() == 0)
+        setSummonedByGuid(pOwner->getGuid());
     else
-        SetSummonedByGUID(pOwner->GetSummonedByGUID());
+        setSummonedByGuid(pOwner->getSummonedByGuid());
 
     this->owner = pOwner;
 
-    if (pOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (pOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
 }
 
@@ -88,8 +88,8 @@ void Summon::OnPreRemoveFromWorld()
     if (owner == NULL)
         return;
 
-    if (GetCreatedBySpell() != 0)
-        owner->RemoveAura(GetCreatedBySpell());
+    if (getCreatedBySpellId() != 0)
+        owner->RemoveAura(getCreatedBySpellId());
 
     if (summonslot != -1)
         owner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(summonslot), false);
@@ -134,7 +134,7 @@ void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 void Summon::onRemoveInRangeObject(Object* object)
 {
 
-    if ((owner != NULL) && (object->GetGUID() == owner->GetGUID()))
+    if ((owner != NULL) && (object->getGuid() == owner->getGuid()))
         Despawn(1, 0);
 
     Creature::onRemoveInRangeObject(object);

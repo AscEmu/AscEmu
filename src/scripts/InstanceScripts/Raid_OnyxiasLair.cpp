@@ -31,7 +31,7 @@ class OnyxiaAI : public CreatureAIScript
         OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_phase = 1;
-            m_entry = pCreature->GetEntry();
+            m_entry = pCreature->getEntry();
             m_useSpell = true;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
@@ -75,10 +75,10 @@ class OnyxiaAI : public CreatureAIScript
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            getCreature()->SetStandState(STANDSTATE_STAND);
+            getCreature()->setStandState(STANDSTATE_STAND);
             sendDBChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
-                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
             m_fBreath = false;
             m_kAway = false;
@@ -94,7 +94,7 @@ class OnyxiaAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->unsetSplineFlying();
             getCreature()->GetAIInterface()->m_canMove = true;
-            getCreature()->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->setStandState(STANDSTATE_SLEEP);
             /*if (_unit->m_pacified > 0)
                 _unit->m_pacified--;*/
             if (m_useSpell)
@@ -199,7 +199,7 @@ class OnyxiaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 65)
             {
                 m_phase = 2;
-                getCreature()->SetCastSpeedMod(0.01f);
+                getCreature()->setModCastSpeed(0.01f);
                 if (getCreature()->isCastingNonMeleeSpell())
                     getCreature()->interruptSpell();
 
@@ -221,7 +221,7 @@ class OnyxiaAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 40)
             {
                 m_phase = 3;
-                getCreature()->SetCastSpeedMod(1.0f);
+                getCreature()->setModCastSpeed(1.0f);
                 if (getCreature()->isCastingNonMeleeSpell())
                     getCreature()->interruptSpell();
                 getCreature()->GetAIInterface()->m_canMove = true;

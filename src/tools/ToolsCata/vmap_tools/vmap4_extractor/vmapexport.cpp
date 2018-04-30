@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -395,7 +395,7 @@ void ParsMapFiles()
     char id[10];
     for (unsigned int i=0; i<map_count; ++i)
     {
-        sprintf(id,"%03u",map_ids[i].id);
+        sprintf(id, "%04u", map_ids[i].id);
         sprintf(fn,"World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
         WDTFile WDT(fn,map_ids[i].name);
         if(WDT.init(id, map_ids[i].id))

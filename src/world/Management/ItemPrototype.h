@@ -497,6 +497,7 @@ enum ITEM_QUALITY
 
 enum ITEM_FLAG
 {
+    ITEM_FLAGS_NONE                 = 0x00000000,
     ITEM_FLAG_SOULBOUND             = 0x00000001, // not used in proto
     ITEM_FLAG_CONJURED              = 0x00000002,
     ITEM_FLAG_LOOTABLE              = 0x00000004,

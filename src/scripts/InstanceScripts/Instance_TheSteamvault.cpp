@@ -205,7 +205,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 Unit* Gnome = NULL;
                 for (uint8 i = 0; i < 3; i++)
                 {
-                    Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->GetFaction());
+                    Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->getFactionTemplate());
                     if (Gnome)
                     {
                         Gnome->GetAIInterface()->SetUnitToFollow(getCreature());
@@ -250,7 +250,7 @@ class NagaDistillerAI : public CreatureAIScript
 
         NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->m_canMove = false;
@@ -258,8 +258,8 @@ class NagaDistillerAI : public CreatureAIScript
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            getCreature()->SetChannelSpellTargetGUID(0);
-            getCreature()->SetChannelSpellId(0);
+            getCreature()->setChannelObjectGuid(0);
+            getCreature()->setChannelSpellId(0);
         }
 };
 
@@ -306,14 +306,14 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GO_STATE_CLOSED);
+                Gate->setState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             GameObject* Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GO_STATE_OPEN);
+                Gate->setState(GO_STATE_OPEN);
 
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->m_canMove = true;
@@ -329,9 +329,9 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (pDistiller)
             {
-                pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pDistiller->SetChannelSpellTargetGUID(0);
-                pDistiller->SetChannelSpellId(0);
+                pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                pDistiller->setChannelObjectGuid(0);
+                pDistiller->setChannelSpellId(0);
                 pDistiller->GetAIInterface()->WipeTargetList();
                 pDistiller->GetAIInterface()->WipeHateList();
             }
@@ -347,7 +347,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                 Unit* pDistiller = NULL;
                 pDistiller = GetClosestDistiller();
-                if (!pDistiller || (pDistiller->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
+                if (!pDistiller || (pDistiller->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
                 {
                     getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                     getCreature()->GetAIInterface()->m_canMove = true;
@@ -378,9 +378,9 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
-                            pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                            pDistiller->SetChannelSpellTargetGUID(getCreature()->GetGUID());
-                            pDistiller->SetChannelSpellId(31543);
+                            pDistiller->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                            pDistiller->setChannelObjectGuid(getCreature()->getGuid());
+                            pDistiller->setChannelSpellId(31543);
 
                             getCreature()->GetAIInterface()->StopMovement(0);
                             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
@@ -403,9 +403,9 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
-                        pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                        pDistiller->SetChannelSpellTargetGUID(0);
-                        pDistiller->SetChannelSpellId(0);
+                        pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                        pDistiller->setChannelObjectGuid(0);
+                        pDistiller->setChannelSpellId(0);
                         pDistiller->GetAIInterface()->WipeTargetList();
                         pDistiller->GetAIInterface()->WipeHateList();
 

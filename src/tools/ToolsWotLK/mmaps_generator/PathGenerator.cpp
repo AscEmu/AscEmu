@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -85,7 +85,7 @@ bool handleArgs(int argc, char** argv,
             if (!param)
                 return false;
 
-            float maxangle = atof(param);
+            float maxangle = static_cast<float>(atof(param));
             if (maxangle <= 90.f && maxangle >= 45.f)
                 maxAngle = maxangle;
             else
@@ -293,6 +293,6 @@ int main(int argc, char** argv)
         builder.buildAllMaps(threads);
 
     if (!silent)
-        printf("Finished. MMAPS were built in %u ms!\n", Util::GetTimeDifferenceToNow(startTime));
+        printf("Finished. MMAPS were built in %I64d ms!\n", Util::GetTimeDifferenceToNow(startTime));
     return 0;
 }

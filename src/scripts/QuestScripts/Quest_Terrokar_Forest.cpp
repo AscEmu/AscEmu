@@ -57,7 +57,7 @@ public:
             {
                 if (Rand(90))
                 {
-                    switch (getCreature()->GetEntry())
+                    switch (getCreature()->getEntry())
                     {
                         case 22307:
                             min = 4; max = 11;
@@ -163,7 +163,7 @@ public:
 
     void OnLoad()
     {
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }
@@ -174,7 +174,7 @@ class TheMomentofTruth : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
 

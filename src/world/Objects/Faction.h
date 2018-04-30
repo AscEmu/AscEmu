@@ -49,9 +49,9 @@ inline bool isFriendly(Object* objA, Object* objB)       /// B is friendly to A 
 
 inline bool isSameFaction(Object* objA, Object* objB)
 {
-    if (!objB->m_faction || !objA->m_faction)
+    if (!objB->m_factionTemplate || !objA->m_factionTemplate)
         return true;                                            /// we return true to not give any agro to this object since it might cause other problems later
-    return (objB->m_faction->Faction == objA->m_faction->Faction);
+    return (objB->m_factionTemplate->Faction == objA->m_factionTemplate->Faction);
 }
 
 #endif // FACTION_H

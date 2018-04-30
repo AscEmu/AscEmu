@@ -450,7 +450,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
-	uint32 entry = pCreature->GetEntry();
+	uint32 entry = pCreature->getEntry();
 
 	m_creaturesMutex.Acquire();
     CreatureCreateMap::iterator itr = _creatures.find(entry);
@@ -465,7 +465,7 @@ CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 
 GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32 /*uEntryId*/, GameObject* pGameObject)
 {
-    GameObjectCreateMap::iterator itr = _gameobjects.find(pGameObject->GetEntry());
+    GameObjectCreateMap::iterator itr = _gameobjects.find(pGameObject->getEntry());
     if (itr == _gameobjects.end())
         return NULL;
 
@@ -514,7 +514,7 @@ bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura
 
 bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 {
-    Arcemu::Gossip::Script* script = this->get_item_gossip(pItem->GetEntry());
+    Arcemu::Gossip::Script* script = this->get_item_gossip(pItem->getEntry());
     if (script != NULL)
     {
         script->OnHello(pItem, pPlayer);
@@ -897,7 +897,7 @@ CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*
         if (creature != nullptr)
         {
 
-            if (creature->GetEntry() == entry)
+            if (creature->getEntry() == entry)
             {
                 creatureSet.insert(creature);
                 ++countCreatures;
@@ -923,7 +923,7 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
         {
             for (auto entry : entryVector)
             {
-                if (creature->GetEntry() == entry)
+                if (creature->getEntry() == entry)
                     creatureSet.insert(creature);
             }
         }
@@ -984,7 +984,7 @@ GameObjectSet InstanceScript::getGameObjectsSetForEntry(uint32_t entry)
     {
         if (gameobject != nullptr)
         {
-            if (gameobject->GetEntry() == entry)
+            if (gameobject->getEntry() == entry)
                 gameobjectSet.insert(gameobject);
         }
     }
@@ -1018,7 +1018,7 @@ void InstanceScript::setGameObjectStateForEntry(uint32_t entry, uint8_t state)
     for (auto gameobject : gameObjectSet)
     {
         if (gameobject != nullptr)
-            gameobject->SetState(state);
+            gameobject->setState(state);
     }
 }
 

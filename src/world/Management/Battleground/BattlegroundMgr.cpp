@@ -90,7 +90,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
     if (from == 0)
-        data << uint64(m_session->GetPlayer()->GetGUID());
+        data << uint64(m_session->GetPlayer()->getGuid());
     else
         data << uint64(0);
 
@@ -160,7 +160,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
 {
     Player* plr = m_session->GetPlayer();
     uint64 guid;
-    uint32 pguid = plr->GetLowGUID();
+    uint32 pguid = plr->getGuidLow();
     uint32 lgroup = GetLevelGrouping(plr->getLevel());
     uint32 bgtype;
     uint32 instance;
@@ -205,7 +205,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     // Queue him!
     m_queueLock.Acquire();
     m_queuedPlayers[bgtype][lgroup].push_back(pguid);
-    LogNotice("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetLowGUID(), (instance + 1));
+    LogNotice("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->getGuidLow(), (instance + 1));
 
     plr->m_bgIsQueued = true;
     plr->m_bgQueueInstanceId = instance;
@@ -397,7 +397,7 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
         {
             if (team == plr->m_arenaTeams[type - BATTLEGROUND_ARENA_2V2])
             {
-                atm = team->GetMemberByGuid(plr->GetLowGUID());
+                atm = team->GetMemberByGuid(plr->getGuidLow());
                 if (atm)
                 {
                     rating += atm->PersonalRating;
@@ -412,18 +412,21 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
     return team->m_id;
 }
 
-void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, int nteam)
+void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint32 nteam)
 {
     ArenaTeam* team;
     Player* plr;
 
-    if (group == NULL || group->GetLeader() == NULL) return;
+    if (group == NULL || group->GetLeader() == NULL)
+        return;
 
     plr = group->GetLeader()->m_loggedInPlayer;
-    if (plr == NULL) return;
+    if (plr == NULL)
+        return;
 
     team = plr->m_arenaTeams[bg->GetType() - BATTLEGROUND_ARENA_2V2];
-    if (team == NULL) return;
+    if (team == NULL)
+        return;
 
     GroupMembersSet::iterator itx;
     for (itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
@@ -452,8 +455,8 @@ int CBattlegroundManager::CreateArenaType(int type, Group* group1, Group* group2
     }
     ar->rated_match = true;
 
-    AddGroupToArena(ar, group1, 0);
-    AddGroupToArena(ar, group2, 1);
+    AddGroupToArena(ar, group1, TEAM_ALLIANCE);
+    AddGroupToArena(ar, group2, TEAM_HORDE);
 
     return 0;
 }
@@ -469,7 +472,7 @@ void CBattlegroundManager::AddPlayerToBg(CBattleground* bg, std::deque<uint32> *
         if (bg->CanPlayerJoin(plr, bg->GetType()))
         {
             bg->AddPlayer(plr, plr->GetTeam());
-            ErasePlayerFromList(plr->GetLowGUID(), &m_queuedPlayers[i][j]);
+            ErasePlayerFromList(plr->getGuidLow(), &m_queuedPlayers[i][j]);
         }
         else
         {
@@ -720,7 +723,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                             plr->m_bgTeam = localeTeam;
                             arena->AddPlayer(plr, plr->m_bgTeam);
                             // remove from the main queue (painful!)
-                            ErasePlayerFromList(plr->GetLowGUID(), &m_queuedPlayers[i][j]);
+                            ErasePlayerFromList(plr->getGuidLow(), &m_queuedPlayers[i][j]);
                         }
                     }
                 }
@@ -904,9 +907,9 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     itr = m_queuedPlayers[plr->m_bgQueueType][lgroup].begin();
     while (itr != m_queuedPlayers[plr->m_bgQueueType][lgroup].end())
     {
-        if ((*itr) == plr->GetLowGUID())
+        if ((*itr) == plr->getGuidLow())
         {
-            LOG_DEBUG("Removing player %u from queue instance %u type %u", plr->GetLowGUID(), plr->m_bgQueueInstanceId, plr->m_bgQueueType);
+            LOG_DEBUG("Removing player %u from queue instance %u type %u", plr->getGuidLow(), plr->m_bgQueueInstanceId, plr->m_bgQueueType);
             m_queuedPlayers[plr->m_bgQueueType][lgroup].erase(itr);
             break;
         }
@@ -924,7 +927,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     group = plr->GetGroup();
     if (group)
     {
-        LOG_DEBUG("Player %u removed whilst in a group. Removing players group %u from queue", plr->GetLowGUID(), group->GetID());
+        LOG_DEBUG("Player %u removed whilst in a group. Removing players group %u from queue", plr->getGuidLow(), group->GetID());
         RemoveGroupFromQueues(group);
     }
 }
@@ -1277,7 +1280,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
 
 void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match)
 {
-    uint32 pguid = m_session->GetPlayer()->GetLowGUID();
+    uint32 pguid = m_session->GetPlayer()->getGuidLow();
     uint32 lgroup = GetLevelGrouping(m_session->GetPlayer()->getLevel());
     if (as_group && m_session->GetPlayer()->GetGroup() == NULL)
         return;
@@ -1407,7 +1410,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     // Queue him!
     m_queueLock.Acquire();
     m_queuedPlayers[BattlegroundType][lgroup].push_back(pguid);
-    LogNotice("BattlegroundMgr : Player %u is now in battleground queue for {Arena %u}", m_session->GetPlayer()->GetLowGUID(), BattlegroundType);
+    LogNotice("BattlegroundMgr : Player %u is now in battleground queue for {Arena %u}", m_session->GetPlayer()->getGuidLow(), BattlegroundType);
 
     // send the battleground status packet
     SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 0);

@@ -78,9 +78,9 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
     else
         mod = 6;
 
-    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
 
-    if (damage >= playerTarget->GetHealth())
+    if (damage >= playerTarget->getHealth())
         return false;
 
     s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->getId());
@@ -236,19 +236,19 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->GetEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416)    //in case it is imp
         casted_spell_id = 23759;
-    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860)    //VoidWalker
         casted_spell_id = 23760;
-    else if (unitTarget->GetEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863)    //Succubus
         casted_spell_id = 23761;
-    else if (unitTarget->GetEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417)    //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23762;
         inc_resist_by_level = 20;
     }
-    else if (unitTarget->GetEntry() == 17252)     //Felguard
+    else if (unitTarget->getEntry() == 17252)     //Felguard
     {
         casted_spell_id = 35702;
         inc_resist_by_level_spell = 23762;
@@ -258,12 +258,12 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt(s->p_caster->GetGUID());
+        SpellCastTargets tgt(s->p_caster->getGuid());
         sp->prepare(&tgt);
 
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -271,11 +271,11 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt(s->p_caster->GetGUID());
+        SpellCastTargets tgt(s->p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -294,19 +294,19 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->GetEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416)    //in case it is imp
         casted_spell_id = 23826;
-    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860)    //VoidWalker
         casted_spell_id = 23841;
-    else if (unitTarget->GetEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863)    //Succubus
         casted_spell_id = 23833;
-    else if (unitTarget->GetEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417)    //Felhunter
     {
         casted_spell_id = 1;
         inc_resist_by_level_spell = 23837;
         inc_resist_by_level = 40;
     }
-    else if (unitTarget->GetEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252)    //Felguard
     {
         casted_spell_id = 35703;
         inc_resist_by_level_spell = 23837;
@@ -316,23 +316,23 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
 
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -351,19 +351,19 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->GetEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416)    //in case it is imp
         casted_spell_id = 23827;
-    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860)    //VoidWalker
         casted_spell_id = 23842;
-    else if (unitTarget->GetEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863)    //Succubus
         casted_spell_id = 23834;
-    else if (unitTarget->GetEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417)    //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23838;
         inc_resist_by_level = 60;
     }
-    else if (unitTarget->GetEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252)    //Felguard
     {
         casted_spell_id = 35704;
         inc_resist_by_level_spell = 23838;
@@ -373,22 +373,22 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -407,19 +407,19 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->GetEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416)    //in case it is imp
         casted_spell_id = 23828;
-    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860)    //VoidWalker
         casted_spell_id = 23843;
-    else if (unitTarget->GetEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863)    //Succubus
         casted_spell_id = 23835;
-    else if (unitTarget->GetEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417)    //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23839;
         inc_resist_by_level = 80;
     }
-    else if (unitTarget->GetEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252)    //Felguard
     {
         casted_spell_id = 35705;
         inc_resist_by_level_spell = 23839;
@@ -429,22 +429,22 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -463,19 +463,19 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->GetEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416)    //in case it is imp
         casted_spell_id = 23829;
-    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860)    //VoidWalker
         casted_spell_id = 23844;
-    else if (unitTarget->GetEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863)    //Succubus
         casted_spell_id = 23836;
-    else if (unitTarget->GetEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417)    //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23840;
         inc_resist_by_level = 100;
     }
-    else if (unitTarget->GetEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252)    //Felguard
     {
         casted_spell_id = 35706;
         inc_resist_by_level_spell = 23840;
@@ -485,11 +485,11 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -497,11 +497,11 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -569,8 +569,8 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
         Player* PetOwner = static_cast<Pet*>(m_target)->GetPetOwner();
         if (PetOwner != nullptr)
         {
-            uint32 val1 = m_target->GetStat(STAT_STAMINA); // stamina
-            uint32 val2 = m_target->GetStat(STAT_INTELLECT); // intellect
+            uint32 val1 = m_target->getStat(STAT_STAMINA);
+            uint32 val2 = m_target->getStat(STAT_INTELLECT);
             uint32 val0 = val1 + val2;
             float dmginc = (float)(val0 * a->GetModAmount(effectIndex)) / 100;
 

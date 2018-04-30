@@ -29,6 +29,9 @@ public:
     bool isHealingSpell() const;
     int firstBeneficialEffect() const;
 
+    // Checks if spell (in most cases an aura) affects another spell, based on spell group mask
+    bool isAffectingSpell(SpellInfo const* spellInfo) const;
+
     uint32_t getSpellDuration(Unit* caster) const;
 
     bool hasTargetType(uint32_t type) const;

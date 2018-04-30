@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -47,7 +47,7 @@ void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvData)
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
     uint32_t TaxiMask[TAXIMASK_SIZE];
-    uint64_t guid = pCreature->GetGUID();
+    uint64_t guid = pCreature->getGuid();
 
     uint32_t curloc = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
     if (curloc == 0)

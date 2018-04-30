@@ -27,7 +27,7 @@ public:
     {
         if (plr->HasQuest(3520))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2039, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2039, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(495), 1);     // Goodbye
             menu.Send(plr);
         }
@@ -72,7 +72,7 @@ public:
     {
         if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9978, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(496), 1);     // Please take me to the Master's Lair
             menu.Send(plr);
         }

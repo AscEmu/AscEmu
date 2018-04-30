@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -135,7 +135,7 @@ namespace MMAP
     bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, Spot portion)
     {
         char mapFileName[255];
-        sprintf(mapFileName, "maps/%03u%02u%02u.map", mapID, tileY, tileX);
+        sprintf(mapFileName, "maps/%04u_%02u_%02u.map", mapID, tileY, tileX);
 
         FILE* mapFile = fopen(mapFileName, "rb");
         if (!mapFile)
@@ -711,7 +711,7 @@ namespace MMAP
                         uint8 type = NAV_EMPTY;
 
                         // convert liquid type to NavTerrain
-                        switch (liquid->GetType())
+                        switch (liquid->GetType() & 3)
                         {
                         case 0:
                         case 1:

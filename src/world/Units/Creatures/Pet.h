@@ -251,11 +251,9 @@ class SERVER_DECL Pet : public Creature
         void UpdateSpellList(bool showLearnSpells = true);
 
         // talents
-        void SendTalentsToOwner();        /// Send talentpoints and talent spells to owner
-        inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    /// pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline void SetTPs(uint8 TP) { setByteValue(UNIT_FIELD_BYTES_1, 1, TP); }            /// sets talent points
-        inline uint8 GetTPs() { return getByteValue(UNIT_FIELD_BYTES_1, 1); }                /// returns available talent points
-        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - GetTPs(); }    /// returns amount of spent talent points
+        void SendTalentsToOwner();        // Send talentpoints and talent spells to owner
+        inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    // pet gain first talent point at lvl 20, then every 4 lvls another point
+        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }    // returns amount of spent talent points
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();

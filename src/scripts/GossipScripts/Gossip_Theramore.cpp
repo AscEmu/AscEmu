@@ -28,7 +28,7 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
             if (plr->HasQuest(11142))
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
 
@@ -58,11 +58,11 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             //Send quests and gossip menu.
-            uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry());
+            uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
             if (sMySQLStore.getNpcText(Text) == nullptr)
                 Text = DefaultGossipTextId;
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
             sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
             if (plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0))
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
@@ -72,7 +72,7 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 1794, plr);
+            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 1794, plr);
         }
 
         void Destroy() override { delete this; }

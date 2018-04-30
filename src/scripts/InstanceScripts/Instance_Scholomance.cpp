@@ -208,7 +208,7 @@ class VectusAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), fireShield->mSpellInfo, true);
         }
 

@@ -249,13 +249,13 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
 
             if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 699, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 699, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
                 menu.Send(plr);
             }
             else
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 698, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 698, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
                 menu.Send(plr);
             }
@@ -370,7 +370,7 @@ class DofNaralexAI : public CreatureAIScript
                     _setDisplayId(17089);
                     Naralex->_setDisplayId(17089);
                     Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
-                    Naralex->getCreature()->SetStandState(STANDSTATE_STAND);
+                    Naralex->getCreature()->setStandState(STANDSTATE_STAND);
                     setFlyMode(true);
                     Naralex->setFlyMode(true);
                     moveTo(-6.704030f, 200.308838f, -26.938824f);
@@ -432,8 +432,8 @@ class Naralex : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Naralex);
         Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            getCreature()->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setStandState(STANDSTATE_SLEEP);
         }
 };
 

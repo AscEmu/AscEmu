@@ -27,7 +27,7 @@
 #if VERSION_STRING > TBC
 void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
 {
-    uint64 current_vehicle_guid = _player->GetCharmedUnitGUID();
+    uint64 current_vehicle_guid = _player->getCharmGuid();
 
     // wait what no vehicle
     if (current_vehicle_guid == 0)
@@ -68,7 +68,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             recv_data >> vehicle;
             recv_data >> seat;
 
-            if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+            if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
             {
                 _player->GetCurrentVehicle()->MovePassengerToSeat(_player, seat);
             }
@@ -82,7 +82,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
                     return;
 
                 // Has to be same vehicle, or an accessory of the vehicle
-                if (_player->GetVehicleBase()->GetGUID() != u->GetVehicleBase()->GetGUID())
+                if (_player->GetVehicleBase()->getGuid() != u->GetVehicleBase()->getGuid())
                     return;
 
                 _player->GetCurrentVehicle()->EjectPassenger(_player);
@@ -102,7 +102,30 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             MovementInfo mov;
 
             recv_data >> src_guid;
-            mov.init(recv_data);
+            
+            recv_data >> mov.flags >> mov.flags2 >> mov.time
+                >> mov.position >> mov.position.o;
+
+            if (mov.isOnTransport())
+            {
+                recv_data >> mov.transport_data.transportGuid >> mov.transport_data.relativePosition
+                    >> mov.transport_data.relativePosition.o >> mov.transport_time >> mov.transport_seat;
+
+                if (mov.isInterpolated())
+                    recv_data >> mov.transport_time2;
+            }
+
+            if (mov.isSwimmingOrFlying())
+                recv_data >> mov.pitch;
+
+            recv_data >> mov.fall_time;
+
+            if (mov.isFallingOrRedirected())
+                recv_data >> mov.redirect_velocity >> mov.redirect_sin >> mov.redirect_cos >> mov.redirect_2d_speed;
+
+            if (mov.isSplineMover())
+                recv_data >> mov.spline_elevation;
+
             recv_data >> dst_guid;
             recv_data >> seat;
 
@@ -113,7 +136,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             if (src_vehicle->GetVehicleComponent() == NULL)
                 return;
 
-            if (src_vehicle->GetGUID() != _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+            if (src_vehicle->getGuid() != _player->GetCurrentVehicle()->GetOwner()->getGuid())
                 return;
 
             Unit* dst_vehicle = _player->GetMapMgr()->GetUnit(dst_guid.GetOldGuid());
@@ -123,14 +146,14 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             if (dst_vehicle->GetVehicleComponent() == NULL)
                 return;
 
-            if (src_vehicle->GetGUID() == dst_vehicle->GetGUID())
+            if (src_vehicle->getGuid() == dst_vehicle->getGuid())
             {
                 src_vehicle->GetVehicleComponent()->MovePassengerToSeat(_player, seat);
             }
             else
             {
                 // Has to be the same vehicle or an accessory of the vehicle
-                if (src_vehicle->GetVehicleBase()->GetGUID() != dst_vehicle->GetVehicleBase()->GetGUID())
+                if (src_vehicle->GetVehicleBase()->getGuid() != dst_vehicle->GetVehicleBase()->getGuid())
                     return;
 
                 _player->GetCurrentVehicle()->EjectPassenger(_player);

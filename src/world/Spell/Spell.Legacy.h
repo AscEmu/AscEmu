@@ -52,6 +52,8 @@ class SERVER_DECL Spell : public EventableObject
         // MIT Starts
         int32_t getFullCastTime() const { return m_castTime; }
         int32_t getCastTimeLeft() const { return m_timer; }
+
+        virtual SpellCastResult canCast(bool tolerate);
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -114,7 +116,7 @@ class SERVER_DECL Spell : public EventableObject
         //void TriggerSpell();
 
         // Checks the caster is ready for cast
-        virtual uint8 CanCast(bool);
+        uint8 CanCast(bool);
 
         bool hasAttribute(SpellAttributes attribute);
         bool hasAttributeEx(SpellAttributesEx attribute);

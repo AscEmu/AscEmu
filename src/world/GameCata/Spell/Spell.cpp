@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -88,9 +88,9 @@ void Spell::SendSpellStart()
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
-                    ip = item->GetItemProperties();
+                    ip = item->getItemProperties();
                     /* Throwing Weapon Patch by Supalosa
-                    p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+                    p_caster->GetItemInterface()->RemoveItemAmt(it->getEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
                     We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
                     */
@@ -236,7 +236,7 @@ void Spell::SendSpellGo()
             {
                 Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it != nullptr)
-                    ip = it->GetItemProperties();
+                    ip = it->getItemProperties();
             }
             else
                 ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
@@ -311,7 +311,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     if (u_caster != nullptr)
     {
-        u_caster->SetChannelSpellId(GetSpellInfo()->getId());
+        u_caster->setChannelSpellId(GetSpellInfo()->getId());
         sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }

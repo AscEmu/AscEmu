@@ -19,7 +19,7 @@ public:
 
     void OnHello(Object* object, Player* player) override
     {
-        Arcemu::Gossip::Menu::SendQuickMenu(object->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+        Arcemu::Gossip::Menu::SendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
     }
 
     void OnSelectOption(Object* /*object*/, Player* player, uint32_t /*id*/, const char* /*enteredCode*/, uint32_t /*gossipId*/) override

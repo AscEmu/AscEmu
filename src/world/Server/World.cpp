@@ -277,7 +277,9 @@ void World::addSession(WorldSession* worldSession)
     if ((uint32_t)mActiveSessionMapStore.size() > getPeakSessionCount())
         setNewPeakSessionCount((uint32_t)mActiveSessionMapStore.size());
 
+#ifndef AE_TBC
     worldSession->SendAccountDataTimes(GLOBAL_CACHE_MASK);
+#endif
 
     mSessionLock.ReleaseWriteLock();
 }

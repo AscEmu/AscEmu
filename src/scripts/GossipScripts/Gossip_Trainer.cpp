@@ -30,7 +30,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_LEARN), 1);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_UNLEARN), 2);
 
@@ -87,7 +87,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
                     textid = 20009;
                 }
             }
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), textid, plr);
+            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
         }
 
         void Destroy() override { delete this; }
@@ -100,7 +100,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7247);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7247);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_LEARN), 1);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_UNLEARN), 2);
             menu.Send(plr);
@@ -158,7 +158,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
                     textid = 20009;
                 }
             }
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), textid, plr);
+            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
         }
 
 };
@@ -169,7 +169,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7243);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7243);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_LEARN), 1);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_UNLEARN), 2);
             menu.Send(plr);
@@ -228,7 +228,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
                     textid = 20009;
                 }
             }
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), textid, plr);
+            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
         }
 
 };

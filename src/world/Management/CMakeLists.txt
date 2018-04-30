@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Management)
 
@@ -35,6 +35,7 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/Guild.cpp
    ${PATH_PREFIX}/Guild.h
    ${PATH_PREFIX}/Item.cpp
+   ${PATH_PREFIX}/Item.Legacy.cpp
    ${PATH_PREFIX}/Item.h
    ${PATH_PREFIX}/ItemInterface.cpp
    ${PATH_PREFIX}/ItemInterface.h

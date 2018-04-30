@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Server/Packets/Handlers)
 
@@ -22,11 +22,13 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/NPCHandler.cpp
    ${PATH_PREFIX}/NPCHandler.h
    ${PATH_PREFIX}/MovementHandler.cpp
+   ${PATH_PREFIX}/MovementHandler.Legacy.cpp
    ${PATH_PREFIX}/PetHandler.cpp
    ${PATH_PREFIX}/PlayerCache.cpp
    ${PATH_PREFIX}/PlayerCache.h
    ${PATH_PREFIX}/PlayerPacketWrapper.cpp
    ${PATH_PREFIX}/QueryHandler.cpp
+   ${PATH_PREFIX}/QueryHandler.Legacy.cpp
    ${PATH_PREFIX}/QuestHandler.cpp
    ${PATH_PREFIX}/RaidHandler.cpp
    ${PATH_PREFIX}/ReputationHandler.cpp

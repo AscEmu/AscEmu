@@ -638,7 +638,7 @@ Corpse* ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
 void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 {
     //dupe protection agaisnt crashs
-    Corpse* c = this->GetCorpseByOwner(pOwner->GetLowGUID());
+    Corpse* c = this->GetCorpseByOwner(pOwner->getGuidLow());
     if (!c)
         return;
     sEventMgr.AddEvent(c, &Corpse::Delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -647,11 +647,12 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 
 void ObjectMgr::LoadGMTickets()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = false");
+    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
     if (result == nullptr)
+    {
+        LogDetail("ObjectMgr : 0 active GM Tickets loaded.");
         return;
-
-    uint32 deleted = 0;
+    }
 
     do
     {
@@ -668,19 +669,11 @@ void ObjectMgr::LoadGMTickets()
         ticket->posZ = fields[7].GetFloat();
         ticket->message = fields[8].GetString();
         ticket->timestamp = fields[9].GetUInt32();
-
-        deleted = fields[10].GetUInt32();
-
-        if (deleted == 1)
-            ticket->deleted = true;
-        else
-            ticket->deleted = false;
-
+        ticket->deleted = fields[10].GetUInt32() == 1;
         ticket->assignedToPlayer = fields[11].GetUInt64();
         ticket->comment = fields[12].GetString();
 
         AddGMTicket(ticket, true);
-
     }
     while (result->NextRow());
 
@@ -1465,15 +1458,15 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
     {
         Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, GenerateLowGuid(HIGHGUID_TYPE_CONTAINER));
         pContainer->Create(entry, owner);
-        pContainer->SetStackCount(1);
+        pContainer->setStackCount(1);
         return pContainer;
     }
     else
     {
         Item* pItem = new Item;
-        pItem->Init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
-        pItem->Create(entry, owner);
-        pItem->SetStackCount(1);
+        pItem->init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
+        pItem->create(entry, owner);
+        pItem->setStackCount(1);
 
 #if VERSION_STRING > TBC
         if (owner != nullptr)
@@ -1507,7 +1500,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
         else
         {
             Item* pItem = new Item;
-            pItem->Init(HIGHGUID_TYPE_ITEM, lowguid);
+            pItem->init(HIGHGUID_TYPE_ITEM, lowguid);
             pItem->LoadFromDB(result->Fetch(), nullptr, false);
             pReturn = pItem;
         }
@@ -1572,7 +1565,7 @@ void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
     if (!pCorpse->IsInWorld())
         delete pCorpse;
     else
-        sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->GetGUID(), EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->getGuid(), EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void ObjectMgr::CorpseCollectorUnload()
@@ -2604,14 +2597,14 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
 void ObjectMgr::AddPlayer(Player* p) //add it to global storage
 {
     _playerslock.AcquireWriteLock();
-    _players[p->GetLowGUID()] = p;
+    _players[p->getGuidLow()] = p;
     _playerslock.ReleaseWriteLock();
 }
 
 void ObjectMgr::RemovePlayer(Player* p)
 {
     _playerslock.AcquireWriteLock();
-    _players.erase(p->GetLowGUID());
+    _players.erase(p->getGuidLow());
     _playerslock.ReleaseWriteLock();
 
 }
@@ -2627,14 +2620,14 @@ Corpse* ObjectMgr::CreateCorpse()
 void ObjectMgr::AddCorpse(Corpse* p) //add it to global storage
 {
     _corpseslock.Acquire();
-    m_corpses[p->GetLowGUID()] = p;
+    m_corpses[p->getGuidLow()] = p;
     _corpseslock.Release();
 }
 
 void ObjectMgr::RemoveCorpse(Corpse* p)
 {
     _corpseslock.Acquire();
-    m_corpses.erase(p->GetLowGUID());
+    m_corpses.erase(p->getGuidLow());
     _corpseslock.Release();
 }
 
@@ -2653,7 +2646,7 @@ Transporter* ObjectMgr::GetTransporter(uint32 guid)
     Transporter* rv = nullptr;
     _TransportLock.Acquire();
     std::unordered_map<uint32, Transporter*>::const_iterator itr = m_Transports.find(guid);
-    rv = (itr != m_Transports.end()) ? itr->second : 0;
+    rv = (itr != m_Transports.end()) ? itr->second : nullptr;
     _TransportLock.Release();
     return rv;
 }
@@ -3736,13 +3729,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == nullptr)
                         return;
 
-                    if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_OPEN);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
                     }
                     else
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
                     }
                 }
                 else
@@ -3751,13 +3744,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == nullptr)
                         return;
 
-                    if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_OPEN);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
                     }
                     else
                     {
-                        static_cast<GameObject*>(target)->SetState(GO_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
                     }
                 }
             }

@@ -51,11 +51,11 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        switch (pObject->GetEntry())
+        switch (pObject->getEntry())
         {
             case CN_TORASTRASZA:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GT_TORASTRASZA, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TORASTRASZA, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_BOTTOM), 1);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_MIDDLE), 2);
                 menu.Send(plr);
@@ -63,7 +63,7 @@ public:
             break;
             case CN_AFRASASTRASZ:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GT_AFRASASTRASZ, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_AFRASASTRASZ, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_TOP), 3);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_BOTTOM), 4);
                 menu.Send(plr);
@@ -71,7 +71,7 @@ public:
             break;
             case CN_TARIOLSTRASZ:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GT_TARIOLSTRASZ, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TARIOLSTRASZ, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_TOP), 5);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_MIDDLE), 6);
                 menu.Send(plr);

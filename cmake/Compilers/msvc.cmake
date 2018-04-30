@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 if(MSVC_VERSION VERSION_LESS 19.0.24210) #2015 3
     message(FATAL_ERROR "AscEmu requires at least Visual Studio 2015 update 3")
@@ -20,8 +20,8 @@ endif()
 # enable/disable warnings
 # dll warning 4251 disabled by default.
 if (BUILD_WITH_WARNINGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4 /wd4251")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX /wd4251")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /wd4251")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")

@@ -273,7 +273,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                GrandWarlock->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                GrandWarlock->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 GrandWarlock->GetAIInterface()->SetAllowedToEnterCombat(false);
             }
         }
@@ -591,13 +591,13 @@ class HeadAI : public CreatureAIScript
     HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _setScale(4.0f);
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->m_noRespawn = true;
     }
 
     void AIUpdate() override
     {
-        if (getCreature()->GetEntry() != CN_RIGHT_HEAD)
+        if (getCreature()->getEntry() != CN_RIGHT_HEAD)
             return;
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 10322, "I... hate... you!");

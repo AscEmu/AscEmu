@@ -114,8 +114,8 @@ public:
     {
         pPlayer->AddQuestKill(11602, 0, 0);
 
-        _gameobject->SetState(GO_STATE_CLOSED);
-        _gameobject->SetState(GO_STATE_OPEN);
+        _gameobject->setState(GO_STATE_CLOSED);
+        _gameobject->setState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
     }
 };
@@ -193,8 +193,8 @@ public:
         pPlayer->AddQuestKill(11936, 0, 0);
 
         //\todo why setting gameobject state 1 and 0?!?!
-        _gameobject->SetState(GO_STATE_CLOSED);
-        _gameobject->SetState(GO_STATE_OPEN);
+        _gameobject->setState(GO_STATE_CLOSED);
+        _gameobject->setState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
     }
 };
@@ -228,7 +228,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(QUEST_THE_MECHAGNOMES))
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
 
@@ -241,55 +241,55 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
                 menu.Send(pPlayer);
             }break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
                 menu.Send(pPlayer);
             }break;
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
                 menu.Send(pPlayer);
             }break;
             case 4:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
                 menu.Send(pPlayer);
             }break;
             case 5:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
                 menu.Send(pPlayer);
             }break;
             case 6:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
                 menu.Send(pPlayer);
             }break;
             case 7:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
                 menu.Send(pPlayer);
             }break;
             case 8:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
                 menu.Send(pPlayer);
             }break;
             case 9:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
             }break;
         }
     }
@@ -311,13 +311,13 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
+        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
 
         // check if there is a entry in the db
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, pPlayer->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, pPlayer->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
 
         menu.AddItem(GOSSIP_ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
@@ -355,9 +355,9 @@ public:
 
         Creature* Twonky = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f);
         if (Twonky->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -383,9 +383,9 @@ public:
 
         Creature* Ed210 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f);
         if (Ed210->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -411,9 +411,9 @@ public:
 
         Creature* MaxBlasto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f);
         if (MaxBlasto->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -439,9 +439,9 @@ public:
 
         Creature* TheGrinder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f);
         if (TheGrinder->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -472,11 +472,11 @@ public:
         }
 
         Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
-        GearmasterMechazod->SetTargetGUID(pPlayer->GetGUID());
+        GearmasterMechazod->setTargetGuid(pPlayer->getGuid());
         if (GearmasterMechazod->isAlive())
-            _gameobject->SetState(GO_STATE_OPEN);
+            _gameobject->setState(GO_STATE_OPEN);
         else
-            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->setState(GO_STATE_CLOSED);
     }
 };
 
@@ -488,8 +488,8 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
     GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->SetEquippedItem(0, 28487);       // Mainhand
-        getCreature()->SetEquippedItem(1, 11587);       // Offhand
+        getCreature()->setVirtualItemSlotId(MELEE, 28487);
+        getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;
@@ -551,7 +551,7 @@ public:
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
             menu.Send(pPlayer);
         }
@@ -573,7 +573,7 @@ public:
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
             menu.Send(pPlayer);
         }
@@ -595,7 +595,7 @@ public:
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
             menu.Send(pPlayer);
         }
@@ -620,7 +620,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    if (pCreature->GetEntry() == 26248)
+    if (pCreature->getEntry() == 26248)
     {
         if (qle->GetMobCount(2) == 0)
         {
@@ -632,7 +632,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
         pPlayer->AddQuestKill(11897, 2, 0);
     }
 
-    if (pCreature->GetEntry() == 26249)
+    if (pCreature->getEntry() == 26249)
     {
         if (qle->GetMobCount(1) == 0)
         {
@@ -656,8 +656,8 @@ public:
     void OnLoad() override
     {
         getCreature()->setMoveRoot(true);
-        getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        getCreature()->Die(getCreature(), getCreature()->GetHealth(), 0);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
     }
 };
 

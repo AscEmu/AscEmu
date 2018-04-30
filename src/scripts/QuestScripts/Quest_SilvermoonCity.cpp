@@ -25,7 +25,7 @@ class PathoftheAdept : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9692))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
 
@@ -47,7 +47,7 @@ public:
     void OnLoad() override
     {
         getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }

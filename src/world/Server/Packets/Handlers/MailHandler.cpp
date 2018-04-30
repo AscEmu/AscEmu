@@ -83,8 +83,8 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
                 continue;
 
             data << uint8(i++);
-            data << uint32(pItem->GetLowGUID());
-            data << uint32(pItem->GetEntry());
+            data << uint32(pItem->getGuidLow());
+            data << uint32(pItem->getEntry());
 
             for (uint16_t j = 0; j < 7; ++j)
             {
@@ -95,7 +95,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
             data << uint32(pItem->GetItemRandomPropertyId());
             data << uint32(pItem->GetItemRandomSuffixFactor());
-            data << uint32(pItem->GetStackCount());
+            data << uint32(pItem->getStackCount());
             data << uint32(pItem->GetChargesLeft());
             data << uint32(pItem->GetDurabilityMax());
             data << uint32(pItem->GetDurability());
@@ -235,18 +235,18 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
-            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
+            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->getGuid(), false) != pItem)
                 continue;        // should never be hit.
 
             pItem->RemoveFromWorld();
-            pItem->SetOwner(nullptr);
+            pItem->setOwner(nullptr);
             pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
-            msg.items.push_back(pItem->GetLowGUID());
+            msg.items.push_back(pItem->getGuidLow());
 
             if (GetPermissionCount() > 0)
             {
                 /* log the message */
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->GetEntry(), player->name, msg.money);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->getEntry(), player->name, msg.money);
             }
 
             pItem->DeleteMe();
@@ -264,7 +264,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     // Fill in the rest of the info
     msg.player_guid = player->guid;
-    msg.sender_guid = _player->GetGUID();
+    msg.sender_guid = _player->getGuid();
 
     // 30 day expiry time for unread mail
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
@@ -395,7 +395,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     }
 
     //Find free slot
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == 0) //End of slots
     {
         data << uint32(MAIL_ERR_BAG_FULL);
@@ -421,8 +421,8 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // send complete packet
     data << uint32(MAIL_OK);
-    data << item->GetLowGUID();
-    data << item->GetStackCount();
+    data << item->getGuidLow();
+    data << item->getStackCount();
 
     message->items.erase(itr);
 
@@ -523,7 +523,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
 
     // re-assign the owner/sender
     message.player_guid = message.sender_guid;
-    message.sender_guid = _player->GetGUID();
+    message.sender_guid = _player->getGuid();
 
     message.deleted_flag = false;
     message.checked_flag = MAIL_CHECK_MASK_RETURNED;
@@ -577,7 +577,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     if (pItem == nullptr)
         return;
 
-    pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
+    pItem->setFlags(ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))

@@ -44,7 +44,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     }
 
     uint32 TextID = 820;
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->GetEntry());
+    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->getEntry());
     if (Text != 0)
     {
         MySQLStructure::NpcText const* text = sMySQLStore.getNpcText(Text);
@@ -53,7 +53,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
             TextID = Text;
         }
     }
-    Arcemu::Gossip::Menu menu(pCreature->GetGUID(), TextID, 0);
+    Arcemu::Gossip::Menu menu(pCreature->getGuid(), TextID, 0);
 
     // Halow's End started?
     tm * ct = localtime(&UNIXTIME);
@@ -100,7 +100,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
         case 3:     // WHAT CAN I DO ?
         {
             // Prepare second menu
-            Arcemu::Gossip::Menu::SendQuickMenu(pCreature->GetGUID(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
+            Arcemu::Gossip::Menu::SendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
         } break;
         case 4:     // EVENT OF HALLOWEEN
         {

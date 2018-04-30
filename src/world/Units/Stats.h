@@ -32,7 +32,8 @@ enum Stats
     STAT_AGILITY,
     STAT_STAMINA,
     STAT_INTELLECT,
-    STAT_SPIRIT
+    STAT_SPIRIT,
+    STAT_COUNT
 };
 
 SERVER_DECL uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl);

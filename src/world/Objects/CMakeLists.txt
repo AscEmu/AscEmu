@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Objects)
 
@@ -11,6 +11,7 @@ set(SRC_OBJECTS_FILES
    ${PATH_PREFIX}/Faction.h
    ${PATH_PREFIX}/GameObject.cpp
    ${PATH_PREFIX}/GameObject.h
+   ${PATH_PREFIX}/MovementInfo.h
    ${PATH_PREFIX}/Object.cpp
    ${PATH_PREFIX}/Object.h
    ${PATH_PREFIX}/ObjectMgr.cpp

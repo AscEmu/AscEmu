@@ -36,7 +36,7 @@ class NaxxramasScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             //Creature* KelThuzad = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case 16998: // Kel thuzads cat
                     {
@@ -385,7 +385,7 @@ void MaexxnaAI::AIUpdate()
 //
 //        WebWrap->getCreature()->m_noRespawn = true;
 //        WebWrap->RegisterAIUpdateEvent(5000);
-//        WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->GetGUID();
+//        WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->getGuid();
 //
 //        if (pTarget->isCastingNonMeleeSpell())
 //            pTarget->interruptSpell();
@@ -571,7 +571,7 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* /*pTarget*/)
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GO_STATE_CLOSED);
+        WebGate->setState(GO_STATE_CLOSED);
 }
 
 void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
@@ -580,7 +580,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GO_STATE_OPEN);
+        WebGate->setState(GO_STATE_OPEN);
 
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
@@ -897,7 +897,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            PlayerPtr = static_cast<Player*>(Iter);
-//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->GetGUID()));
+//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->getGuid()));
 //            if (PlayerIter != AnubRekhan->mUsedCorpseGuids.end())
 //            {
 //                if (PlayerPtr->isAlive())
@@ -913,7 +913,7 @@ void AnubRekhanAI::Destroy()
 //                spawnLocation = PlayerPtr->GetPosition();
 //            else if (PlayerPtr->getDeathState() == CORPSE)
 //            {
-//                Corpse* myCorpse = objmgr.GetCorpseByOwner(PlayerPtr->GetLowGUID());
+//                Corpse* myCorpse = objmgr.GetCorpseByOwner(PlayerPtr->getGuidLow());
 //                if (myCorpse == NULL || myCorpse->GetCorpseState() != CORPSE_STATE_BODY)
 //                    continue;
 //
@@ -937,7 +937,7 @@ void AnubRekhanAI::Destroy()
 //        {
 //            uint32 Id = Util::getRandomUInt(static_cast<uint32>(PlayerCorpses.size() - 1));
 //            PlayerPtr = PlayerCorpses[Id].first;
-//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->GetGUID()));
+//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->getGuid()));
 //
 //            for (uint8 i = 0; i < 5; ++i)
 //            {
@@ -967,7 +967,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            CreaturePtr = static_cast<Creature*>(*Iter);
-//            if (CreaturePtr->GetEntry() != CN_CRYPT_GUARD)
+//            if (CreaturePtr->getEntry() != CN_CRYPT_GUARD)
 //                continue;
 //
 //            if (CreaturePtr->isAlive() || !CreaturePtr->IsInWorld())
@@ -1061,13 +1061,13 @@ void StoneskinGargoyleAI::AIUpdate()
     bool HasAura = HasStoneskin();
     if (_isCasting() || HasAura)
         return;
-    else if (getCreature()->GetEmoteState() == EMOTE_STATE_SUBMERGED)
-        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+    else if (getCreature()->getEmoteState() == EMOTE_STATE_SUBMERGED)
+        getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 
     if (!_isCasting() && _getHealthPercent() <= 30)
     {
         _castAISpell(mStoneskin);
-        getCreature()->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
+        getCreature()->setEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
@@ -1201,11 +1201,11 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
     }
 }
 
@@ -1215,11 +1215,11 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
 
         Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
     }
 
     for (std::set< PlaguedWarriorAI* >::iterator Iter = mWarriors.begin(); Iter != mWarriors.end(); ++Iter)
@@ -1669,11 +1669,11 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_CLOSED);
+            Gate->setState(GO_STATE_CLOSED);
 
         if (mFissures.size() == 0)
         {
@@ -1687,7 +1687,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
                 if (Fissure->GetGameObjectProperties() == nullptr)
                     continue;
 
-                if (Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 6785 && Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 1287)
+                if (Fissure->getDisplayId() != 6785 && Fissure->getDisplayId() != 1287)
                     continue;
 
                 if (Fissure->GetScript() == nullptr)
@@ -1710,11 +1710,11 @@ void HeiganTheUncleanAI::OnCombatStop(Unit* /*pTarget*/)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
 
         Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GO_STATE_OPEN);
+            Gate->setState(GO_STATE_OPEN);
     }
 
     mFissures.clear();
@@ -1790,7 +1790,7 @@ PlagueFissureGO::PlagueFissureGO(GameObject* pGameObject) : GameObjectAIScript(p
 
 void PlagueFissureGO::SetState(uint8_t pState)
 {
-    _gameobject->SetState(pState);
+    _gameobject->setState(pState);
 }
 
 void PlagueFissureGO::DoErrupt()
@@ -2058,10 +2058,10 @@ ShadeOfNaxxramasAI::ShadeOfNaxxramasAI(Creature* pCreature) : CreatureAIScript(p
 
 void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
 {
-    CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+    CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
     if (Ghost != nullptr)
     {
-        Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
     }
 
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
@@ -2097,7 +2097,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : CreatureAIScript(pCr
     // We do not consider using a spell that summons these portals by anyone else than Shade of Naxxramas.
     // I must figure out why it's often not added if only one Shade is on the battlefield.
     // I don't like this method anyway.
-    if (getCreature()->GetSummonedByGUID() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         //mShadeAI = static_cast< ShadeOfNaxxramasAI* >(GetNearestCreature(CN_SHADE_OF_NAXXRAMAS));
         Creature* UnitPtr = getNearestCreature(CN_SHADE_OF_NAXXRAMAS);
@@ -2130,10 +2130,10 @@ void PortalOfShadowsAI::AIUpdate()
     {
         if (_isTimerFinished(mSpawnTimer))
         {
-            CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+            CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
             if (Ghost != nullptr)
             {
-                Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             }
 
             _resetTimer(mSpawnTimer, 15000);
@@ -2240,7 +2240,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 {
     if (mChargerAI != NULL)
     {
-        if (isAlive() && getCreature()->GetMount() == 0)
+        if (isAlive() && getCreature()->getMountDisplayId() == 0)
             getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
 
         mChargerAI->mDeathKnightAI = NULL;
@@ -2253,7 +2253,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 
 void DeathKnightCavalierAI::AIUpdate()
 {
-    if (mIsMounted && getCreature()->GetMount() == 0)
+    if (mIsMounted && getCreature()->getMountDisplayId() == 0)
         getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
     if (mIsMounted && Util::getRandomUInt(99) < 2)
     {
@@ -2284,7 +2284,7 @@ DeathchargerSteedAI::DeathchargerSteedAI(Creature* pCreature) : CreatureAIScript
 
     // We do not consider using a spell that summons this unit by anyone else than Death Knight Cavalier.
     // I don't like this method anyway.
-    if (getCreature()->GetSummonedByGUID() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         mDeathKnightAI = static_cast< DeathKnightCavalierAI* >(getNearestCreatureAI(CN_DEATH_KNIGHT_CAVALIER));
         if (mDeathKnightAI != NULL && mDeathKnightAI->mChargerAI == NULL)
@@ -2583,9 +2583,9 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    for (const auto& PlayerIter : pCreatureAI->getCreature()->getInRangePlayersSet())
 //    {
 //        if (PlayerIter && (static_cast<Player*>(PlayerIter))->isAlive() && PlayerIter->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
-//                && PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
+//                && PlayerIter->getHealth() > _mostHP)
 //        {
-//            _mostHP = PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH);
+//            _mostHP = PlayerIter->getHealth();
 //            pBestTarget = static_cast<Player*>(PlayerIter);
 //        }
 //    }

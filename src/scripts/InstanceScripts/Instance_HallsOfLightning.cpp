@@ -42,22 +42,22 @@ class HallsOfLightningScript : public InstanceScript
 
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_GENERAL_DOORS:
-                    mGeneralDoorsGUID = pGameObject->GetLowGUID();
+                    mGeneralDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_VOLKHAN_DOORS:
-                    mVolkhanDoorsGUID = pGameObject->GetLowGUID();
+                    mVolkhanDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_LOKEN_DOORS:
-                    mLokenDoorsGUID = pGameObject->GetLowGUID();
+                    mLokenDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_IONAR_DOORS1:
-                    mIonarDoors1GUID = pGameObject->GetLowGUID();
+                    mIonarDoors1GUID = pGameObject->getGuidLow();
                     break;
                 case GO_IONAR_DOORS2:
-                    mIonarDoors2GUID = pGameObject->GetLowGUID();
+                    mIonarDoors2GUID = pGameObject->getGuidLow();
                     break;
             }
         }
@@ -65,38 +65,38 @@ class HallsOfLightningScript : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             GameObject* pDoors = NULL;
-            switch (pVictim->GetEntry())
+            switch (pVictim->getEntry())
             {
                 case CN_GENERAL_BJARNGRIM:
                 {
                     pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_VOLKHAN:
                 {
                     pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_LOKEN:
                 {
                     pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_IONAR:
                 {
                     pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
 
                     pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
                     if (pDoors)
-                        pDoors->SetState(GO_STATE_OPEN);
+                        pDoors->setState(GO_STATE_OPEN);
                 }
                 break;
             }
@@ -317,7 +317,7 @@ class Volkhan : public CreatureAIScript
     {
         for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
-            if (itr && itr->IsCreature() && itr->GetEntry() == CN_BRITTLE_GOLEM)
+            if (itr && itr->IsCreature() && itr->getEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast<Creature*>(itr);
                 if (_isHeroic())
@@ -378,7 +378,7 @@ class VolkhansAnvil : public CreatureAIScript
     VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }
 

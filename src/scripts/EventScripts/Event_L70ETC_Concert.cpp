@@ -56,7 +56,7 @@ class SamAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -116,7 +116,7 @@ class BerAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -172,7 +172,7 @@ class SigAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -232,7 +232,7 @@ class MaiAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -291,7 +291,7 @@ class ThuAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -364,7 +364,7 @@ class UndeadAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -411,7 +411,7 @@ class Undead2AI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -459,7 +459,7 @@ class Undead3AI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -500,7 +500,7 @@ class TriggerAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -593,7 +593,7 @@ class Trigger2AI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -679,7 +679,7 @@ class Effectsground : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -691,7 +691,7 @@ class Effectsground : public CreatureAIScript
 
         void OnSpawn()
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
         }
 
@@ -796,7 +796,7 @@ class Effectsair : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -809,7 +809,7 @@ class Effectsair : public CreatureAIScript
         void OnSpawn()
         {
             timer = 0;
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void OnDespawn() override

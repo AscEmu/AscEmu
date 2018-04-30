@@ -194,7 +194,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
             {
                 if ((*itr)->m_isGmInvisible)
                     continue;
-                *data << (*itr)->GetGUID();
+                *data << (*itr)->getGuid();
                 bs = &(*itr)->m_bgScore;
                 *data << bs->KillingBlows;
 
@@ -227,7 +227,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
                 ARCEMU_ASSERT(*itr != NULL);
                 if ((*itr)->m_isGmInvisible)
                     continue;
-                *data << (*itr)->GetGUID();
+                *data << (*itr)->getGuid();
                 bs = &(*itr)->m_bgScore;
 
                 *data << bs->KillingBlows;
@@ -256,7 +256,7 @@ void CBattleground::AddPlayer(Player* plr, uint32 team)
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
     /* This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet */
-    m_pendPlayers[team].insert(plr->GetLowGUID());
+    m_pendPlayers[team].insert(plr->getGuidLow());
 
     /* Send a packet telling them that they can enter */
     plr->m_pendingBattleground = this;
@@ -270,7 +270,7 @@ void CBattleground::RemovePendingPlayer(Player* plr)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    m_pendPlayers[plr->m_bgTeam].erase(plr->GetLowGUID());
+    m_pendPlayers[plr->m_bgTeam].erase(plr->getGuidLow());
 
     /* send a null bg update (so they don't join) */
     BattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
@@ -309,7 +309,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
         return;
     }
 
-    m_pendPlayers[plr->m_bgTeam].erase(plr->GetLowGUID());
+    m_pendPlayers[plr->m_bgTeam].erase(plr->getGuidLow());
     if (m_players[plr->m_bgTeam].find(plr) != m_players[plr->m_bgTeam].end())
     {
         return;
@@ -321,7 +321,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     {
         //Do not let everyone know an invisible gm has joined.
         WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
-        data << plr->GetGUID();
+        data << plr->getGuid();
         DistributePacketToTeam(&data, plr->m_bgTeam);
     }
     else
@@ -394,8 +394,8 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
         go->CreateFromProto(entry, MapId, x, y, z, o);
 
         go->SetFaction(faction);
-        go->SetScale(scale);
-        go->SetFlags(flags);
+        go->setScale(scale);
+        go->setFlags(flags);
         go->SetPosition(x, y, z, o);
         go->SetInstanceID(m_mapMgr->GetInstanceID());
     }
@@ -621,7 +621,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
     WorldPacket data(SMSG_BATTLEGROUND_PLAYER_LEFT, 30);
-    data << plr->GetGUID();
+    data << plr->getGuid();
     if (plr->m_isGmInvisible == false)
     {
         //Don't show invisible gm's leaving the game.
@@ -651,7 +651,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* revive the player if he is dead */
     if (!plr->isAlive())
     {
-        plr->SetHealth(plr->GetMaxHealth());
+        plr->setHealth(plr->getMaxHealth());
         plr->ResurrectPlayer();
     }
 
@@ -864,15 +864,15 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->Create(m_mapMgr->GetMapId(), x, y, z, o);
 
-    pCreature->SetEntry(13116 + horde);
-    pCreature->SetScale(1.0f);
+    pCreature->setEntry(13116 + horde);
+    pCreature->setScale(1.0f);
 
-    pCreature->SetMaxHealth(10000);
+    pCreature->setMaxHealth(10000);
     pCreature->SetMaxPower(POWER_TYPE_MANA, 4868);
     pCreature->SetMaxPower(POWER_TYPE_FOCUS, 200);
     pCreature->SetMaxPower(POWER_TYPE_HAPPINESS, 2000000);
 
-    pCreature->SetHealth(100000);
+    pCreature->setHealth(100000);
     pCreature->SetPower(POWER_TYPE_MANA, 4868);
     pCreature->SetPower(POWER_TYPE_FOCUS, 200);
     pCreature->SetPower(POWER_TYPE_HAPPINESS, 2000000);
@@ -883,25 +883,26 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setRace(0);
     pCreature->setClass(2);
     pCreature->setGender(1);
-    pCreature->SetPowerType(0);
+    pCreature->setPowerType(0);
 
-    pCreature->SetEquippedItem(MELEE, 22802);
+    pCreature->setVirtualItemSlotId(MELEE, 22802);
 
-    pCreature->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
+    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
 
-    pCreature->SetBaseAttackTime(MELEE, 2000);
-    pCreature->SetBaseAttackTime(OFFHAND, 2000);
-    pCreature->SetBoundingRadius(0.208f);
-    pCreature->SetCombatReach(1.5f);
+    pCreature->setBaseAttackTime(MELEE, 2000);
+    pCreature->setBaseAttackTime(OFFHAND, 2000);
+    pCreature->setBoundingRadius(0.208f);
+    pCreature->setCombatReach(1.5f);
 
-    pCreature->SetDisplayId(13337 + horde);
-    pCreature->SetNativeDisplayId(13337 + horde);
+    pCreature->setDisplayId(13337 + horde);
+    pCreature->setNativeDisplayId(13337 + horde);
 
-    pCreature->SetChannelSpellId(22011);
-    pCreature->SetCastSpeedMod(1.0f);
+    pCreature->setChannelSpellId(22011);
+    pCreature->setModCastSpeed(1.0f);
 
     pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
-    pCreature->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | (0x10 << 8));
+    pCreature->setSheathType(SHEATH_STATE_MELEE);
+    pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
 
     pCreature->DisableAI();
 
@@ -927,8 +928,8 @@ void CBattleground::QueuePlayerForResurrect(Player* plr, Creature* spirit_healer
 
     std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
-        itr->second.insert(plr->GetLowGUID());
-    plr->m_areaSpiritHealer_guid = spirit_healer->GetGUID();
+        itr->second.insert(plr->getGuidLow());
+    plr->m_areaSpiritHealer_guid = spirit_healer->getGuid();
 }
 
 void CBattleground::RemovePlayerFromResurrect(Player* plr, Creature* spirit_healer)
@@ -937,7 +938,7 @@ void CBattleground::RemovePlayerFromResurrect(Player* plr, Creature* spirit_heal
 
     std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
-        itr->second.erase(plr->GetLowGUID());
+        itr->second.erase(plr->getGuidLow());
     plr->m_areaSpiritHealer_guid = 0;
 }
 
@@ -983,7 +984,7 @@ void CBattleground::EventResurrectPlayers()
                 data << uint16(0);
                 data << uint32(0);
                 data << uint16(2);
-                data << plr->GetGUID();
+                data << plr->getGuid();
                 plr->SendMessageToSet(&data, true);
 
                 data.Initialize(SMSG_SPELL_GO);
@@ -993,14 +994,14 @@ void CBattleground::EventResurrectPlayers()
                 data << uint8(0);
                 data << uint8(1);
                 data << uint8(1);
-                data << plr->GetGUID();
+                data << plr->getGuid();
                 data << uint8(0);
                 data << uint16(2);
-                data << plr->GetGUID();
+                data << plr->getGuid();
                 plr->SendMessageToSet(&data, true);
 
                 plr->ResurrectPlayer();
-                plr->SetHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->getMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
                 plr->SetPower(POWER_TYPE_ENERGY, plr->GetMaxPower(POWER_TYPE_ENERGY));
                 plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);
@@ -1055,8 +1056,8 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
 
     if (closest != nullptr)
     {
-        closest->insert(plr->GetLowGUID());
-        plr->m_areaSpiritHealer_guid = cl->GetGUID();
+        closest->insert(plr->getGuidLow());
+        plr->m_areaSpiritHealer_guid = cl->getGuid();
         plr->CastSpell(plr, 2584, true);
     }
 

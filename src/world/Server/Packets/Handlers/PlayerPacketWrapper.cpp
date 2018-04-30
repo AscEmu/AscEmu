@@ -23,12 +23,19 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgBindPointUpdate.h"
+#include "Server/Packets/SmsgSetProficiency.h"
+#include "Server/Packets/SmsgTutorialFlags.h"
+#include "Server/Packets/SmsgInstanceDifficulty.h"
+#include "Server/Packets/SmsgInitialSpells.h"
+
+using namespace AscEmu::Packets;
 
 void Player::SendTalentResetConfirm()
 {
     WorldPacket data(MSG_TALENT_WIPE_CONFIRM, 12);
 
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     data << uint32(CalcTalentResetCost(GetTalentResetTimes()));
 
     m_session->SendPacket(&data);
@@ -43,7 +50,7 @@ void Player::SendPetUntrainConfirm()
 
     WorldPacket data(SMSG_PET_UNLEARN_CONFIRM, 12);
 
-    data << uint64(pPet->GetGUID());
+    data << uint64(pPet->getGuid());
     data << uint32(pPet->GetUntrainCost());
 
     m_session->SendPacket(&data);
@@ -146,7 +153,7 @@ void Player::SendSpellCooldownEvent(uint32 SpellId)
     WorldPacket data(SMSG_COOLDOWN_EVENT, 12);
 
     data << uint32(SpellId);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
 
     m_session->SendPacket(&data);
 }
@@ -165,7 +172,7 @@ void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool 
 void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem, uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack)
 {
     WorldPacket data(SMSG_ITEM_PUSH_RESULT, 8 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
 
     if (recieved)
         data << uint32(1);
@@ -222,7 +229,7 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
 void Player::SendDungeonDifficulty()
 {
     WorldPacket data(MSG_SET_DUNGEON_DIFFICULTY, 12);
-    data << uint32(iInstanceType);
+    data << uint32(GetDungeonDifficulty());
     data << uint32(1);
     data << uint32(InGroup());
 
@@ -253,7 +260,7 @@ void Player::SendInstanceDifficulty(uint8 difficulty)
 void Player::SendNewDrunkState(uint32 state, uint32 itemid)
 {
     WorldPacket data(SMSG_CROSSED_INEBRIATION_THRESHOLD, (8 + 4 + 4));
-    data << GetGUID();
+    data << getGuid();
     data << uint32(state);
     data << uint32(itemid);
 
@@ -287,7 +294,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         Creature* pCreature = GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
         if (!pCreature)return;
         pLoot = &pCreature->loot;
-        m_currentLoot = pCreature->GetGUID();
+        m_currentLoot = pCreature->getGuid();
 
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -300,23 +307,23 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             return;
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-        pLGO->SetState(0);
+        pLGO->setState(0);
         pLoot = &pLGO->loot;
-        m_currentLoot = pLGO->GetGUID();
+        m_currentLoot = pLGO->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_PLAYER))
     {
         Player* p = GetMapMgr()->GetPlayer((uint32)guid);
         if (!p)return;
         pLoot = &p->loot;
-        m_currentLoot = p->GetGUID();
+        m_currentLoot = p->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_CORPSE))
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
         if (!pCorpse)return;
         pLoot = &pCorpse->loot;
-        m_currentLoot = pCorpse->GetGUID();
+        m_currentLoot = pCorpse->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_ITEM))
     {
@@ -324,7 +331,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (!pItem)
             return;
         pLoot = pItem->loot;
-        m_currentLoot = pItem->GetGUID();
+        m_currentLoot = pItem->getGuid();
     }
 
     if (!pLoot)
@@ -334,7 +341,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     }
 
     // add to looter set
-    pLoot->looters.insert(GetLowGUID());
+    pLoot->looters.insert(getGuidLow());
 
     WorldPacket data, data2(32);
     data.SetOpcode(SMSG_LOOT_RESPONSE);
@@ -358,7 +365,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (iter->iItemsCount == 0)
             continue;
 
-        LooterSet::iterator itr = iter->has_looted.find(GetLowGUID());
+        LooterSet::iterator itr = iter->has_looted.find(getGuidLow());
         if (iter->has_looted.end() != itr)
             continue;
 
@@ -549,9 +556,50 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
     m_session->SendPacket(&data);
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+    addUnitFlags(UNIT_FLAG_LOOTING);
 }
 
+#ifdef AE_TBC
+// MIT Start
+// TODO: Move to own file
+void Player::SendInitialLogonPackets()
+{
+    // SMSG_SET_REST_START
+    m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff); // Seem to be unused by client
+
+    m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
+    m_session->SendPacket(SmsgSetProficiency(4, armor_proficiency).serialise().get());
+    m_session->SendPacket(SmsgSetProficiency(2, weapon_proficiency).serialise().get());
+
+    std::vector<uint32_t> tutorials;
+    for (auto tutorial : m_Tutorials)
+        tutorials.push_back(tutorial);
+
+    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
+    // Normal difficulty - TODO implement
+    //m_session->SendPacket(SmsgInstanceDifficulty(0).serialise().get());
+
+    smsg_InitialSpells();
+
+    // MIT End
+
+    SendInitialActions();
+    smsg_InitialFactions();
+
+    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
+    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
+
+    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    data << float(0.0166666669777748f);    // Normal Game Speed
+
+    m_session->SendPacket(&data);
+
+    UpdateSpeed();
+    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
+}
+#endif
+
+#ifndef AE_TBC
 void Player::SendInitialLogonPackets()
 {
     // Initial Packets... they seem to be re-sent on port.
@@ -616,23 +664,27 @@ void Player::SendInitialLogonPackets()
 #endif
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }
+#endif
 
 void Player::SendLootUpdate(Object* o)
 {
-    if (!IsVisible(o->GetGUID()))
+    if (!IsVisible(o->getGuid()))
         return;
 
-    // Build the actual update.
-    ByteBuffer buf(500);
+    if (o->IsUnit())
+    {
+        // Build the actual update.
+        ByteBuffer buf(500);
 
-    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
+        uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();
 
-    Flags |= U_DYN_FLAG_LOOTABLE;
-    Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+        Flags |= U_DYN_FLAG_LOOTABLE;
+        Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
+        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
 
-    PushUpdateData(&buf, 1);
+        PushUpdateData(&buf, 1);
+    }
 }
 
 void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself)
@@ -689,25 +741,27 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
 
 void Player::TagUnit(Object* o)
 {
+    if (o->IsUnit())
+    {
+        // For new players who get a create object
+        uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();
+        Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-    // For new players who get a create object
-    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
-    Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+        // Update existing players.
+        ByteBuffer buf(500);
+        ByteBuffer buf1(500);
 
-    // Update existing players.
-    ByteBuffer buf(500);
-    ByteBuffer buf1(500);
+        o->BuildFieldUpdatePacket(&buf1, UNIT_DYNAMIC_FLAGS, Flags);
+        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, o->getUInt32Value(UNIT_DYNAMIC_FLAGS));
 
-    o->BuildFieldUpdatePacket(&buf1, UNIT_DYNAMIC_FLAGS, Flags);
-    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, o->getUInt32Value(UNIT_DYNAMIC_FLAGS));
-
-    SendUpdateDataToSet(&buf1, &buf, true);
+        SendUpdateDataToSet(&buf1, &buf, true);
+    }
 }
 
 void Player::SendPartyKillLog(uint64 GUID)
 {
     WorldPacket data(SMSG_PARTYKILLLOG, 16);
-    data << GetGUID();
+    data << getGuid();
     data << GUID;
 
     SendMessageToSet(&data, true);

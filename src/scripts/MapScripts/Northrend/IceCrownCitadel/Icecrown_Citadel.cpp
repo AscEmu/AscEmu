@@ -27,7 +27,7 @@ public:
         if (!pInstance)
             return;
 
-        Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
+        Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);          // Teleport to Light's Hammer.
 
         if (pInstance->isDataStateFinished(CN_LORD_MARROWGAR))
@@ -87,7 +87,7 @@ public:
 
     void OnCreate() override
     {
-        _gameobject->SetFlags(32);
+        _gameobject->setFlags(GO_FLAG_NEVER_DESPAWN);
     }
 
     void OnActivate(Player* player) override

@@ -29,8 +29,18 @@
 #include "Objects/Object.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Spell/Definitions/AuraEffects.h"
+#include "Spell/Definitions/AuraStates.h"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
+
+#if VERSION_STRING == Classic
+#include "GameClassic/Data/MovementInfoClassic.h"
+#elif VERSION_STRING == TBC
+#include "GameTBC/Data/MovementInfoTBC.h"
+#elif VERSION_STRING == WotLK
+#include "GameWotLK/Data/MovementInfoWotLK.h"
+#endif
 
 class AIInterface;
 class Aura;
@@ -171,9 +181,7 @@ class SERVER_DECL CombatStatusHandler
 
     uint64 m_primaryAttackTarget;
 
-    public:
-
-        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+public:CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
 
         AttackerMap m_attackers;
 
@@ -214,16 +222,214 @@ class SERVER_DECL CombatStatusHandler
 // AGPL End
 
 // MIT Start
+struct WoWUnit;
 class SERVER_DECL Unit : public Object
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Movement
-private:
-
-    int32_t m_rootCounter;
+    // WoWData
+    const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
 public:
 
+    uint64_t getCharmGuid() const;
+    void setCharmGuid(uint64_t guid);
+
+    uint64_t getSummonGuid() const;
+    void setSummonGuid(uint64_t guid);
+
+#if VERSION_STRING > TBC
+    uint64_t getCritterGuid() const;
+    void setCritterGuid(uint64_t guid);
+#endif
+
+    uint64_t getCharmedByGuid() const;
+    void setCharmedByGuid(uint64_t guid);
+
+    uint64_t getSummonedByGuid() const;
+    void setSummonedByGuid(uint64_t guid);
+
+    uint64_t getCreatedByGuid() const;
+    void setCreatedByGuid(uint64_t guid);
+
+    uint64_t getTargetGuid() const;
+    void setTargetGuid(uint64_t guid);
+
+    uint64_t getChannelObjectGuid() const;
+    void setChannelObjectGuid(uint64_t guid);
+
+    uint32_t getChannelSpellId() const;
+    void setChannelSpellId(uint32_t spell_id);
+
+    //bytes_0 begin
+    uint8_t getRace() const;
+    void setRace(uint8_t race);
+    uint32_t getRaceMask() { return 1 << (getRace() - 1); }
+
+    uint8_t getClass() const;
+    void setClass(uint8_t class_);
+    uint32_t getClassMask() { return 1 << (getClass() - 1); }
+
+    uint8_t getGender() const;
+    void setGender(uint8_t gender);
+
+    uint8_t getPowerType() const;
+    void setPowerType(uint8_t powerType);
+    //bytes_0 end
+
+    uint32_t getHealth() const;
+    void setHealth(uint32_t health);
+
+    uint32_t getMaxHealth() const;
+    void setMaxHealth(uint32_t maxHealth);
+
+    void setMaxMana(uint32_t maxMana);
+
+    uint32_t getLevel() const;
+    void setLevel(uint32_t level);
+
+    uint32_t getFactionTemplate() const;
+    void setFactionTemplate(uint32_t id);
+
+    uint32_t getVirtualItemSlotId(uint8_t slot) const;
+    void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
+
+    uint32_t getUnitFlags() const;
+    void setUnitFlags(uint32_t unitFlags);
+    void addUnitFlags(uint32_t unitFlags);
+    void removeUnitFlags(uint32_t unitFlags);
+    bool hasUnitFlags(uint32_t unitFlags) const;
+
+#if VERSION_STRING > Classic
+    uint32_t getUnitFlags2() const;
+    void setUnitFlags2(uint32_t unitFlags2);
+    void addUnitFlags2(uint32_t unitFlags2);
+    void removeUnitFlags2(uint32_t unitFlags2);
+#endif
+
+    uint32_t getAuraState() const;
+    void setAuraState(uint32_t state);
+    void addAuraState(uint32_t state);
+    void removeAuraState(uint32_t state);
+
+    uint32_t getBaseAttackTime(uint8_t slot) const;
+    void setBaseAttackTime(uint8_t slot, uint32_t time);
+    void modBaseAttackTime(uint8_t slot, int32_t modTime);
+
+    float_t getBoundingRadius() const;
+    void setBoundingRadius(float_t radius);
+
+    float_t getCombatReach() const;
+    void setCombatReach(float_t radius);
+
+    uint32_t getDisplayId() const;
+    void setDisplayId(uint32_t id);
+
+    uint32_t getNativeDisplayId() const;
+    void setNativeDisplayId(uint32_t id);
+
+    uint32_t getMountDisplayId() const;
+    void setMountDisplayId(uint32_t id);
+
+    float_t getMinDamage() const;
+    void setMinDamage(float_t damage);
+
+    float_t getMaxDamage() const;
+    void setMaxDamage(float_t damage);
+
+    float_t getMinOffhandDamage() const;
+    void setMinOffhandDamage(float_t damage);
+
+    float_t getMaxOffhandDamage() const;
+    void setMaxOffhandDamage(float_t damage);
+
+    //bytes_1 begin
+    uint8_t getStandState() const;
+    void setStandState(uint8_t standState);
+
+    uint8_t getPetTalentPoints() const;
+    void setPetTalentPoints(uint8_t talentPoints);
+
+    uint8_t getStandStateFlags() const;
+    void setStandStateFlags(uint8_t standStateFlags);
+
+    uint8_t getAnimationFlags() const;
+    void setAnimationFlags(uint8_t animationFlags);
+    //bytes_1 end
+
+    uint32_t getDynamicFlags() const;
+    void setDynamicFlags(uint32_t dynamicFlags);
+    void addDynamicFlags(uint32_t dynamicFlags);
+    void removeDynamicFlags(uint32_t dynamicFlags);
+
+    float_t getModCastSpeed() const;
+    void setModCastSpeed(float_t modifier);
+    void modModCastSpeed(float_t modifier);
+
+    uint32_t getCreatedBySpellId() const;
+    void setCreatedBySpellId(uint32_t id);
+
+    uint32_t getNpcFlags() const;
+    void setNpcFlags(uint32_t npcFlags);
+    void addNpcFlags(uint32_t npcFlags);
+    void removeNpcFlags(uint32_t npcFlags);
+
+    uint32_t getEmoteState() const;
+    void setEmoteState(uint32_t id);
+
+    uint32_t getStat(uint8_t stat) const;
+    void setStat(uint8_t stat, uint32_t value);
+
+#if VERSION_STRING > Classic
+    uint32_t getPosStat(uint8_t stat) const;
+    void setPosStat(uint8_t stat, uint32_t value);
+
+    uint32_t getNegStat(uint8_t stat) const;
+    void setNegStat(uint8_t stat, uint32_t value);
+#endif
+
+    uint32_t getResistance(uint8_t type) const;
+    void setResistance(uint8_t type, uint32_t value);
+
+    uint32_t getBaseMana() const;
+    void setBaseMana(uint32_t baseMana);
+
+    uint32_t getBaseHealth() const;
+    void setBaseHealth(uint32_t baseHealth);
+
+    //byte_2 begin
+    uint8_t getSheathType() const;
+    void setSheathType(uint8_t sheathType);
+
+    uint8_t getPvpFlags() const;
+    void setPvpFlags(uint8_t pvpFlags);
+
+    uint8_t getPetFlags() const;
+    void setPetFlags(uint8_t petFlags);
+
+    uint8_t getShapeShiftForm() const;
+    void setShapeShiftForm(uint8_t shapeShiftForm);
+    uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
+    //bytes_2 end
+
+    uint32_t getAttackPower() const;
+    void setAttackPower(uint32_t value);
+
+    float_t getMinRangedDamage() const;
+    void setMinRangedDamage(float_t damage);
+
+    float_t getMaxRangedDamage() const;
+    void setMaxRangedDamage(float_t damage);
+
+    float_t getPowerCostMultiplier(uint16_t school) const;
+    void setPowerCostMultiplier(uint16_t school, float_t multiplier);
+    void modPowerCostMultiplier(uint16_t school, float_t multiplier);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement
+private:
+    int32_t m_rootCounter;
+
+public:
     void setMoveWaterWalk();
     void setMoveLandWalk();
     void setMoveFeatherFall();
@@ -236,7 +442,7 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
-
+ 
     // Speed
 private:
 
@@ -262,7 +468,13 @@ private:
 
 public:
 
-    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false);
+    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false) const;
+    float getFlySpeed() const;
+    float getSwimSpeed() const;
+    float getRunSpeed() const;
+    UnitSpeedType getFastestSpeedType() const;
+    float getFastestSpeed() const;
+
     void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
     void resetCurrentSpeed();
 
@@ -297,12 +509,16 @@ public:
     Aura* getAuraWithId(uint32_t spell_id);
     Aura* getAuraWithId(uint32_t* auraId);
     Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
-
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* getAuraWithAuraEffect(uint32_t aura_effect);
+    Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
 
     bool hasAurasWithId(uint32_t auraId);
     bool hasAurasWithId(uint32_t* auraId);
+    bool hasAuraWithAuraEffect(AuraEffect type) const;
+    bool hasAuraState(AuraState state, SpellInfo *spellInfo = nullptr, Unit* caster = nullptr) const;
+
+    void addAuraStateAndAuras(AuraState state);
+    void removeAuraStateAndAuras(AuraState state);
 
     uint32_t getAuraCountForId(uint32_t auraId);
 
@@ -317,6 +533,11 @@ public:
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
 
+#ifdef AE_TBC
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
+    void setAuraSlotLevel(uint32_t slot, bool positive);
+#endif
 
     // Do not alter anything below this line
     // -------------------------------------
@@ -360,14 +581,6 @@ public:
     void SetDualWield(bool enabled);
 
     bool  canReachWithAttack(Unit* pVictim);
-
-    /// Stats
-    uint32 getLevel() { return getUInt32Value(UNIT_FIELD_LEVEL); };
-    void setLevel(uint32 level);
-    void modLevel(int32 mod) { modUInt32Value(UNIT_FIELD_LEVEL, mod); };
-    uint32 getClassMask() { return 1 << (getClass() - 1); }
-    uint32 getRaceMask() { return 1 << (getRace() - 1); }
-    uint8 getStandState() { return ((uint8)getUInt32Value(UNIT_FIELD_BYTES_1)); }
 
     //// Combat
     uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability);
@@ -518,6 +731,7 @@ public:
 
     /// Combat / Death Status
     bool isAlive() { return m_deathState == ALIVE; };
+    bool justDied() const;
     bool IsDead() { return  m_deathState != ALIVE; };
     virtual void setDeathState(DeathState s)
     {
@@ -602,8 +816,8 @@ public:
     uint32 SchoolCastPrevent[SCHOOL_COUNT];
     int32 MechanicDurationPctMod[28];
 
-    virtual int32 GetDamageDoneMod(uint32 /*school*/) { return 0; }
-    virtual float GetDamageDonePctMod(uint32 /*school*/) { return 0; }
+    virtual int32 GetDamageDoneMod(uint16_t /*school*/) { return 0; }
+    virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
 
     int32 DamageTakenMod[SCHOOL_COUNT];
     float DamageTakenPctMod[SCHOOL_COUNT];
@@ -707,9 +921,7 @@ public:
     void Emote(EmoteType emote);
     void EventAddEmote(EmoteType emote, uint32 time);
     void EmoteExpire();
-    void setEmoteState(uint8 emote) { m_emoteState = emote; };
     uint32 GetOldEmote() { return m_oldEmote; }
-    void EventAurastateExpire(uint32 aurastateflag) { RemoveFlag(UNIT_FIELD_AURASTATE, aurastateflag); }    //hmm this looks like so not necessary :S
     void EventHealthChangeSinceLastUpdate();
 
     // Stun Immobilize
@@ -756,20 +968,11 @@ public:
     void EventChill(Unit* proc_target, bool is_victim = false);
 
     bool IsSitting();
-    void SetStandState(uint8 standstate);
-
-    StandState GetStandState()
-    {
-        uint32 bytes1 = getUInt32Value(UNIT_FIELD_BYTES_1);
-        return StandState(uint8(bytes1));
-    }
-
-    uint32 GetFaction() { return getUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
 
     void SetFaction(uint32 factionId)
     {
-        setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, factionId);
-        _setFaction();
+        setFactionTemplate(factionId);
+        setServersideFaction();
     }
 
     virtual void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) = 0;
@@ -780,13 +983,13 @@ public:
     int GetHealthPct()
     {
         //shitty db? pet/guardian bug?
-        if (getUInt32Value(UNIT_FIELD_HEALTH) == 0 || getUInt32Value(UNIT_FIELD_MAXHEALTH) == 0)
+        if (getHealth() == 0 || getMaxHealth() == 0)
             return 0;
 
-        return (int)(getUInt32Value(UNIT_FIELD_HEALTH) * 100 / getUInt32Value(UNIT_FIELD_MAXHEALTH));
+        return (int)(getHealth() * 100 / getMaxHealth());
     };
 
-    void SetHealthPct(uint32 val) { if (val > 0) SetHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
+    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
     int GetManaPct()
     {
@@ -941,7 +1144,7 @@ public:
 
     void SendFullAuraUpdate();
     void SendAuraUpdate(uint32 AuraSlot, bool remove);
-    uint32 ModVisualAuraStackCount(Aura* aur, int32 count);
+    void ModVisualAuraStackCount(Aura* aur, int32 count);
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
@@ -973,7 +1176,7 @@ public:
     void SendPeriodicHealAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 healed, uint32 over_healed, bool is_critical);
 
     void EventModelChange();
-    inline float GetModelHalfSize() { return m_modelhalfsize * GetScale(); }
+    inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }
 
     void RemoveFieldSummon();
 
@@ -986,127 +1189,9 @@ public:
 
     void AggroPvPGuards();
 
-    virtual void SetShapeShift(uint8 ss) { setByteValue(UNIT_FIELD_BYTES_2, 3, ss); }
-    uint8 GetShapeShift() { return getByteValue(UNIT_FIELD_BYTES_2, 3); }
-    uint32 GetShapeShiftMask() { return ((uint32)1 << (GetShapeShift() - 1)); }
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
-    void SetCharmedUnitGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHARM, GUID); }
-    void SetSummonedUnitGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_SUMMON, GUID); }
-    void SetSummonedCritterGUID(uint64 GUID)
-    {
-        //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING != TBC
-        setUInt64Value(UNIT_FIELD_CRITTER, GUID);
-#endif
-    }
-
-    void SetCharmedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHARMEDBY, GUID); }
-    void SetSummonedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_SUMMONEDBY, GUID); }
-    void SetCreatedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CREATEDBY, GUID); }
-
-
-    uint64 GetCharmedUnitGUID() { return getUInt64Value(UNIT_FIELD_CHARM); }
-    uint64 GetSummonedUnitGUID() { return getUInt64Value(UNIT_FIELD_SUMMON); }
-    uint64 GetSummonedCritterGUID()
-    {
-        //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING != TBC
-        return getUInt64Value(UNIT_FIELD_CRITTER);
-#else
-        return 0;
-#endif
-    }
-
-    uint64 GetCharmedByGUID() { return getUInt64Value(UNIT_FIELD_CHARMEDBY); }
-    uint64 GetSummonedByGUID() { return getUInt64Value(UNIT_FIELD_SUMMONEDBY); }
-    uint64 GetCreatedByGUID() { return getUInt64Value(UNIT_FIELD_CREATEDBY); }
-
-    void SetTargetGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_TARGET, GUID); }
-    uint64 GetTargetGUID() { return getUInt64Value(UNIT_FIELD_TARGET); }
-
-    void SetChannelSpellTargetGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, GUID); }
-    void SetChannelSpellId(uint32 SpellId) { setUInt32Value(UNIT_CHANNEL_SPELL, SpellId); }
-
-    uint64 GetChannelSpellTargetGUID() { return getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT); }
-    uint32 GetChannelSpellId() { return getUInt32Value(UNIT_CHANNEL_SPELL); }
-
-    void SetEquippedItem(uint8 slot, uint32 id) { setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, id); }
-    uint32 GetEquippedItem(uint8 slot) { return getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot); }
-
-    void SetBaseAttackTime(uint8 slot, uint32 time) { setUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, time); }
-    uint32 GetBaseAttackTime(uint8 slot) { return getUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot); }
-    void ModBaseAttackTime(uint8 slot, int32 mod) { modUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
-
-    void SetBoundingRadius(float rad) { setFloatValue(UNIT_FIELD_BOUNDINGRADIUS, rad); }
-    float GetBoundingRadius() { return getFloatValue(UNIT_FIELD_BOUNDINGRADIUS); }
-
-    void SetCombatReach(float len) { setFloatValue(UNIT_FIELD_COMBATREACH, len); }
-    float GetCombatReach() { return getFloatValue(UNIT_FIELD_COMBATREACH); }
-
-    void SetDisplayId(uint32 id) { setUInt32Value(UNIT_FIELD_DISPLAYID, id); }
-    uint32 GetDisplayId() { return getUInt32Value(UNIT_FIELD_DISPLAYID); }
-
-    void SetNativeDisplayId(uint32 id) { setUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, id); }
-    uint32 GetNativeDisplayId() { return getUInt32Value(UNIT_FIELD_NATIVEDISPLAYID); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetMinDamage(float amt) { setFloatValue(UNIT_FIELD_MINDAMAGE, amt); }
-    float GetMinDamage() { return getFloatValue(UNIT_FIELD_MINDAMAGE); }
-
-    void SetMaxDamage(float amt) { setFloatValue(UNIT_FIELD_MAXDAMAGE, amt); }
-    float GetMaxDamage() { return getFloatValue(UNIT_FIELD_MAXDAMAGE); }
-
-    void SetMinOffhandDamage(float amt) { setFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE, amt); }
-    float GetMinOffhandDamage() { return getFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE); }
-
-    void SetMaxOffhandDamage(float amt) { setFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE, amt); }
-    float GetMaxOffhandDamage() { return getFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE); }
-
-    void SetMinRangedDamage(float amt) { setFloatValue(UNIT_FIELD_MINRANGEDDAMAGE, amt); }
-    float GetMinRangedDamage() { return getFloatValue(UNIT_FIELD_MINRANGEDDAMAGE); }
-
-    void SetMaxRangedDamage(float amt) { setFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, amt); }
-    float GetMaxRangedDamage() { return getFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetMount(uint32 id) { setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, id); }
-    uint32 GetMount() { return getUInt32Value(UNIT_FIELD_MOUNTDISPLAYID); }
-
-    void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
-    float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
-    void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
-
-    void SetCreatedBySpell(uint32 id) { setUInt32Value(UNIT_CREATED_BY_SPELL, id); }
-    uint32 GetCreatedBySpell() { return getUInt32Value(UNIT_CREATED_BY_SPELL); }
-
-    void SetEmoteState(uint32 id) { setUInt32Value(UNIT_NPC_EMOTESTATE, id); }
-    uint32 GetEmoteState() { return getUInt32Value(UNIT_NPC_EMOTESTATE); }
-
-    void SetStat(uint16_t stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
-    uint32 GetStat(uint16_t stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }
-
-    void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
-    uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
-
-    void SetBaseMana(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_MANA, amt); }
-    uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
-
-    void SetBaseHealth(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_HEALTH, amt); }
-    uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
-
-    void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    void ModPowerCostMultiplier(uint16_t school, float amt) { modFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    float GetPowerCostMultiplier(uint16_t school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
-    int32 GetAttackPower() { return getInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
     //\todo fix this
     void SetAttackPowerMods(int32 amt)
@@ -1114,7 +1199,8 @@ public:
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1124,11 +1210,11 @@ public:
 #if VERSION_STRING != Cata
         return getInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
@@ -1153,7 +1239,8 @@ public:
 #if VERSION_STRING != Cata
         setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
 #else
-        if (amt == 0) { return; }
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
+        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
 #endif
     }
 
@@ -1163,11 +1250,11 @@ public:
 #if VERSION_STRING != Cata
         return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
 #else
-        return 0;
+        return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
 #endif
     }
 
-    //\todo fix this
+    //\todo fix this - bad style
     void ModRangedAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
@@ -1181,27 +1268,7 @@ public:
     float GetRangedAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
     void ModRangedAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // bytes 0
-
-    void setRace(uint8 race) { setByteValue(UNIT_FIELD_BYTES_0, 0, race); }
-    uint8 getRace() { return getByteValue(UNIT_FIELD_BYTES_0, 0); }
-
-    void setClass(uint8 class_) { setByteValue(UNIT_FIELD_BYTES_0, 1, class_); }
-    uint8 getClass() { return getByteValue(UNIT_FIELD_BYTES_0, 1); }
-
-    uint8 getGender() { return getByteValue(UNIT_FIELD_BYTES_0, 2); }
-    void setGender(uint8 gender) { setByteValue(UNIT_FIELD_BYTES_0, 2, gender); }
-
-    void SetPowerType(uint8 type) { setByteValue(UNIT_FIELD_BYTES_0, 3, type); }
-    uint8 GetPowerType() { return getByteValue(UNIT_FIELD_BYTES_0, 3); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetHealth(uint32 val) { setUInt32Value(UNIT_FIELD_HEALTH, val); }
-    void SetMaxHealth(uint32 val) { setUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
-
-    uint32 GetHealth()    const { return getUInt32Value(UNIT_FIELD_HEALTH); }
-    uint32 GetMaxHealth() const { return getUInt32Value(UNIT_FIELD_MAXHEALTH); }
 
     void ModHealth(int32 val) { modUInt32Value(UNIT_FIELD_HEALTH, val); }
     void ModMaxHealth(int32 val) { modUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
@@ -1293,7 +1360,6 @@ protected:
     uint32 m_manaShieldId;
 
     // Quest emote
-    uint8 m_emoteState;
     uint32 m_oldEmote;
 
     // Some auras can only be cast on one target at a time

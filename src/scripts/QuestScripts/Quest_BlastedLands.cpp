@@ -57,7 +57,7 @@ public:
         if (general == nullptr)
             return;
 
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(2702) || plr->HasFinishedQuest(2702))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(453), 1);     // I need to speak with Corporal.
 

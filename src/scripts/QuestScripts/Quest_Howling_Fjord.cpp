@@ -68,7 +68,7 @@ class Plaguethis_Gossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
 
         if (plr->HasQuest(11332))
@@ -89,7 +89,7 @@ public:
                 if (item == nullptr)
                     return;
 
-                item->SetStackCount(10);
+                item->setStackCount(10);
 
                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                 {
@@ -99,12 +99,12 @@ public:
                 else
                 {
                     plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
-                        item->GetItemRandomPropertyId(), item->GetStackCount());
+                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
+                        item->GetItemRandomPropertyId(), item->getStackCount());
 
                 }
 
-                if (pCreature->GetEntry() == 23859)
+                if (pCreature->getEntry() == 23859)
                 {
                     TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
                     plr->TaxiStart(path, 17759, 0);

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -62,7 +62,7 @@ void TradeData::setItem(TradeSlots slot, Item* item)
 
     if (item)
     {
-        itemGuid = item->GetGUID();
+        itemGuid = item->getGuid();
     }
     else
     {
@@ -88,7 +88,7 @@ void TradeData::setSpell(uint32_t spell_id, Item* cast_item /*= nullptr*/)
 
     if (cast_item)
     {
-        itemGuid = cast_item->GetGUID();
+        itemGuid = cast_item->getGuid();
     }
     else
     {

@@ -71,9 +71,9 @@ public:
             LocationVector pos = pPlayer->GetPosition();
 
             GameObject* pBeacon = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
-            if (pBeacon != nullptr && pBeacon->GetFlags() > 0)
+            if (pBeacon != nullptr && pBeacon->getFlags() > 0)
             {
-                pBeacon->SetFlags((pBeacon->GetFlags() - 1));
+                pBeacon->removeFlags(GO_FLAG_NONSELECTABLE);
             }
 
             // Northern Zeth'Gor Tower
@@ -161,7 +161,7 @@ public:
     {
         int32 i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
-        switch (pPrisoner->GetEntry())
+        switch (pPrisoner->getEntry())
         {
             case 20677:
                 i = 0;
@@ -182,7 +182,7 @@ public:
         {
             if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10104, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
                 menu.Send(pPlayer);
             }
@@ -194,7 +194,7 @@ public:
 
         uint8 i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
-        switch (pPrisoner->GetEntry())
+        switch (pPrisoner->getEntry())
         {
             case 20677:
                 i = 0;
@@ -214,7 +214,7 @@ public:
 
         pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
         pPrisoner->Despawn(5000, 6 * 60 * 1000);
-        pPrisoner->SetStandState(STANDSTATE_STAND);
+        pPrisoner->setStandState(STANDSTATE_STAND);
     }
 };
 
@@ -228,7 +228,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_SIT);
+        getCreature()->setStandState(STANDSTATE_SIT);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }
@@ -259,7 +259,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }

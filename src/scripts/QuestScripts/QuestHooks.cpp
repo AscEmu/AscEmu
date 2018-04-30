@@ -150,12 +150,12 @@ void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 
 void Hanazua_II(Player* /*pPlayer*/, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_KNEEL);
+    (static_cast<Creature*>(pObject))->setStandState(STANDSTATE_KNEEL);
 }
 
 void Wishock(Player* pPlayer, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_DEAD);
+    (static_cast<Creature*>(pObject))->setStandState(STANDSTATE_DEAD);
     pPlayer->Emote(EMOTE_STATE_LAUGH);
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arrgh...");
 }
@@ -256,7 +256,7 @@ void OnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 
 void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->GetEntry() == 6740)
+    if(pUnit->getEntry() == 6740)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8356);
         if(qle == NULL)
@@ -266,7 +266,7 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
         qle->SendUpdateAddKill(0);
         qle->UpdatePlayerFields();
     }
-    else if(pUnit->GetEntry() == 6929)
+    else if(pUnit->getEntry() == 6929)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8359);
         if(qle == NULL)
@@ -280,7 +280,7 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
 
 void InnkeeperDance(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->GetEntry() == 6735)
+    if(pUnit->getEntry() == 6735)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8357);
         if(qle == NULL)
@@ -290,7 +290,7 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
         qle->SendUpdateAddKill(0);
         qle->UpdatePlayerFields();
     }
-    else if(pUnit->GetEntry() == 6746)
+    else if(pUnit->getEntry() == 6746)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8360);
         if(qle == NULL)
@@ -304,7 +304,7 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
 
 void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->GetEntry() == 6826)
+    if(pUnit->getEntry() == 6826)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8355);
         if(qle == NULL)
@@ -314,7 +314,7 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
         qle->SendUpdateAddKill(0);
         qle->UpdatePlayerFields();
     }
-    else if(pUnit->GetEntry() == 11814)
+    else if(pUnit->getEntry() == 11814)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8358);
         if(qle == NULL)
@@ -328,7 +328,7 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
 
 void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->GetEntry() == 5111)
+    if(pUnit->getEntry() == 5111)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8353);
         if(qle == NULL)
@@ -338,7 +338,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
         qle->SendUpdateAddKill(0);
         qle->UpdatePlayerFields();
     }
-    else if(pUnit->GetEntry() == 6741)
+    else if(pUnit->getEntry() == 6741)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8354);
         if(qle == NULL)

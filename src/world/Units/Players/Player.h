@@ -340,7 +340,9 @@ class PlayerSpec
         }
 
         std::map<uint32, uint8> talents;
+#ifdef FT_GLYPHS
         uint16 glyphs[GLYPHS_COUNT];
+#endif
         ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
     private:
 
@@ -408,10 +410,88 @@ class TradeData
 };
 #endif
 
+struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
-
+    const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Data
+    uint64_t getDuelArbiter() const;
+    void setDuelArbiter(uint64_t guid);
+
+    uint32_t getPlayerFlags() const;
+    void setPlayerFlags(uint32_t flags);
+    void addPlayerFlags(uint32_t flags);
+    void removePlayerFlags(uint32_t flags);
+    bool hasPlayerFlags(uint32_t flags) const;
+
+    //bytes begin
+    uint32_t getPlayerBytes() const;
+    void setPlayerBytes(uint32_t bytes);
+
+    uint8_t getSkinColor() const;
+    void setSkinColor(uint8_t color);
+
+    uint8_t getFace() const;
+    void setFace(uint8_t face);
+
+    uint8_t getHairStyle() const;
+    void setHairStyle(uint8_t style);
+
+    uint8_t getHairColor() const;
+    void setHairColor(uint8_t color);
+    //bytes end
+
+    //bytes2 begin
+    uint32_t getPlayerBytes2() const;
+    void setPlayerBytes2(uint32_t bytes2);
+
+    uint8_t getFacialFeatures() const;
+    void setFacialFeatures(uint8_t feature);
+
+    //unk1
+
+    uint8_t getBankSlots() const;
+    void setBankSlots(uint8_t slots);
+
+    uint8_t getRestState() const;
+    void setRestState(uint8_t state);
+    //bytes2 end
+
+    //bytes3 begin
+    uint32_t getPlayerBytes3() const;
+    void setPlayerBytes3(uint32_t bytes3);
+
+    //\note already available in unit data
+    uint8_t getPlayerGender() const;
+    void setPlayerGender(uint8_t gender);
+
+    uint16_t getDrunkValue() const;
+    void setDrunkValue(uint16_t value);
+
+    uint8_t getPvpRank() const;
+    void setPvpRank(uint8_t rank);
+    //bytes3 end
+
+    uint32_t getDuelTeam() const;
+    void setDuelTeam(uint32_t team);
+
+#if VERSION_STRING > Classic
+    uint32_t getChosenTitle() const;
+    void setChosenTitle(uint32_t title);
+#endif
+
+    uint32_t getXp() const;
+    void setXp(uint32_t xp);
+
+    uint32_t getNextLevelXp();
+    void setNextLevelXp(uint32_t xp);
+
+    void setAttackPowerMultiplier(float val);
+    void setRangedAttackPowerMultiplier(float val);
+    void setExploredZone(uint32_t idx, uint32_t data);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -432,6 +512,9 @@ public:
     uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
     void updateAutoRepeatSpell();
+    bool isTransferPending() const;
+    void toggleAfk();
+    void toggleDnd();
     bool m_FirstCastAutoRepeat;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -676,7 +759,7 @@ public:
         // Taxi
         /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
-        bool GetTaxiState() { return m_onTaxi; }
+        bool isOnTaxi() const { return m_onTaxi; }
         const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
         void LoadTaxiMask(const char* data);
         void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
@@ -791,23 +874,19 @@ public:
         std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
-        /*! \deprecated This function returns a uint32 (the underlying type of the enum) instead of a PlayerTeam (the enum itself)
-         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam
-         *  \sa Player::GetTeamReal */
-        uint32 GetTeam() { return m_team; }
 
-        PlayerTeam GetTeamReal();
-
+        PlayerTeam GetTeam();
         uint32 GetTeamInitial();
         void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
 
         void ResetTeam();
-        bool IsTeamHorde() { return m_team == TEAM_HORDE; }
-        bool IsTeamAlliance() { return m_team == TEAM_ALLIANCE; }
+        bool IsTeamHorde() { return GetTeam() == TEAM_HORDE; }
+        bool IsTeamAlliance() { return GetTeam() == TEAM_ALLIANCE; }
 
         bool IsInFeralForm()
         {
-            int s = GetShapeShift();
+            //\todo shapeshiftform is never negative.
+            int s = getShapeShiftForm();
             if (s <= 0)
                 return false;
 
@@ -929,14 +1008,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint8 GetPVPRank()
-        {
-            return (uint8)((getUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
-        }
-        void SetPVPRank(int newrank)
-        {
-            setUInt32Value(PLAYER_BYTES_3, ((getUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
-        }
         uint32 GetMaxPersonalRating();
 
         bool HasTitle(RankTitles title)
@@ -951,7 +1022,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void SetInviter(uint32 pInviter) { m_GroupInviter = pInviter; }
         uint32 GetInviter() { return m_GroupInviter; }
-        bool InGroup() { return (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
+        bool InGroup() { return m_playerInfo && (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
 
         bool IsGroupLeader();
         int HasBeenInvited() { return m_GroupInviter != 0; }
@@ -1010,7 +1081,7 @@ public:
 
         static uint32 GetGuildIdFromDB(uint64 guid);
         static int8 GetRankFromDB(uint64 guid);
-        uint32 GetGuildRank() { return (uint32)GetRankFromDB(GetGUID()); }
+        uint32 GetGuildRank() { return (uint32)GetRankFromDB(getGuid()); }
 
         int GetGuildIdInvited() { return m_GuildIdInvited; }
 
@@ -1030,10 +1101,6 @@ public:
         uint8 GetDuelState() { return m_duelState; }
         // duel variables
         Player* DuelingWith;
-        void SetDuelArbiter(uint64 guid) { setUInt64Value(PLAYER_DUEL_ARBITER, guid); }
-        uint64 GetDuelArbiter() { return getUInt64Value(PLAYER_DUEL_ARBITER); }
-        void SetDuelTeam(uint32 team) { setUInt32Value(PLAYER_DUEL_TEAM, team); }
-        uint32 GetDuelTeam() { return getUInt32Value(PLAYER_DUEL_TEAM); }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
@@ -1129,7 +1196,7 @@ public:
 
         // Talents
         // These functions build a specific type of A9 packet
-        uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
@@ -1245,7 +1312,7 @@ public:
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
 
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
-        uint8 GetPlayerStatus() { return m_status; }
+    uint8 GetPlayerStatus() const;
 
         const float & GetBindPositionX() const { return m_bind_pos_x; }
         const float & GetBindPositionY() const { return m_bind_pos_y; }
@@ -1345,7 +1412,7 @@ public:
         void EventDeActivateGameObject(GameObject* obj);
         void UpdateNearbyGameObjects();
 
-        void CalcResistance(uint16 type);
+        void CalcResistance(uint8_t type);
         float res_M_crit_get() { return m_resist_critical[0]; }
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
         float res_R_crit_get() { return m_resist_critical[1]; }
@@ -1384,7 +1451,7 @@ public:
         uint32 m_retainedrage;
 
         uint32* GetPlayedtime() { return m_playedtime; };
-        void CalcStat(uint16 t);
+        void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
@@ -1407,7 +1474,6 @@ public:
 
         bool bReincarnation;
         bool ignoreShapeShiftChecks;
-        bool ignoreAuraStateCheck;
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;
@@ -1652,44 +1718,24 @@ public:
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // DEPRICATED FUNCTIONS USE
-        // SetGold and ModGold
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void GiveGold(int32 coins)
-        {
-            modUInt32Value(PLAYER_FIELD_COINAGE , coins);
-        }
-        void TakeGold(int32 coins)
-        {
-            modUInt32Value(PLAYER_FIELD_COINAGE, -coins);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        void SetChosenTitle(uint32 id)
-        {
-#if VERSION_STRING > Classic
-            setUInt32Value(PLAYER_CHOSEN_TITLE, id);
-#endif
-        }
 
         void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
-        void SetXp(uint32 xp) { setUInt32Value(PLAYER_XP, xp); }
-        uint32 GetXp() { return getUInt32Value(PLAYER_XP); }
-        uint32 GetXpToLevel() { return getUInt32Value(PLAYER_NEXT_LEVEL_XP); }
-        void SetNextLevelXp(uint32 xp) { setUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
-
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
+#else
+            m_spec.SetTP(amt);
+#endif
+
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
 #else
@@ -1700,8 +1746,12 @@ public:
 
         void AddTalentPointsToAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
+#else
+            m_spec.SetTP(m_spec.GetTP() + amt);
+#endif
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, getUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
 #else
@@ -1712,7 +1762,7 @@ public:
 
         void SetCurrentTalentPoints(uint32 points)
         {
-            m_specs[m_talentActiveSpec].SetTP(points);
+            getActiveSpec().SetTP(points);
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 #else
@@ -1728,7 +1778,7 @@ public:
 #else
             uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
 #endif
-            Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
+            Arcemu::Util::ArcemuAssert(points == getActiveSpec().GetTP());
             return points;
         }
 
@@ -2195,9 +2245,6 @@ public:
         // end social
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool m_castFilterEnabled;
-        uint32 m_castFilter[3];    // spell group relation of only spells that player can currently cast
-
         uint32 m_outStealthDamageBonusPct;
         uint32 m_outStealthDamageBonusPeriod;
         uint32 m_outStealthDamageBonusTimer;
@@ -2257,7 +2304,13 @@ public:
         uint32 CalcTalentPointsHaveSpent(uint32 spec);
 #endif
 
-        PlayerSpec m_specs[MAX_SPEC_COUNT];
+#ifdef FT_DUAL_SPEC
+    PlayerSpec m_specs[MAX_SPEC_COUNT];
+#else
+    PlayerSpec m_spec;
+#endif
+
+    PlayerSpec& getActiveSpec();
 
         uint8 m_roles;
 		uint32 GroupUpdateFlags;

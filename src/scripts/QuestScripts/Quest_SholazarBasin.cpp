@@ -75,7 +75,7 @@ public:
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.Send(plr);
         }
@@ -112,7 +112,7 @@ public:
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.Send(plr);
         }
@@ -148,7 +148,7 @@ public:
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.Send(plr);
         }

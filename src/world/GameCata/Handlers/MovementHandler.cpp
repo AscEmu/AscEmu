@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -19,10 +19,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     uint16_t opcode = recv_data.GetOpcode();
     Player* mover = _player;
 
-    if (m_MoverGuid != mover->GetGUID())
+    if (m_MoverGuid != mover->getGuid())
         return;
 
-    if (mover->GetCharmedByGUID() || !mover->IsInWorld() || mover->GetPlayerStatus() == TRANSFER_PENDING || mover->GetTaxiState())
+    if (mover->getCharmedByGuid() || !mover->IsInWorld() || mover->GetPlayerStatus() == TRANSFER_PENDING || mover->isOnTaxi())
     {
         return;
     }
@@ -31,7 +31,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Clear standing state to stand.				                        */
     /************************************************************************/
     if (opcode == MSG_MOVE_START_FORWARD)
-        mover->SetStandState(STANDSTATE_STAND);
+        mover->setStandState(STANDSTATE_STAND);
 
     //extract packet
     MovementInfo movementInfo;
@@ -144,8 +144,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Remove Emote State                                                   */
     /************************************************************************/
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(EMOTE_ONESHOT_NONE);
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
 
 //    /************************************************************************/
 //    /* Make sure the co-ordinates are valid.                                */
@@ -850,7 +850,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(guid[3]);
     recvData.ReadByteSeq(guid[0]);
 
-    if (guid == _player->GetGUID())
+    if (guid == _player->getGuid())
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
         {

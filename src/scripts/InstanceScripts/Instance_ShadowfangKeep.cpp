@@ -76,7 +76,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         if (Creature* ArugalSpawn = spawnCreature(CN_ARUGAL_BOSS, ArugalAtFenrusLoc.x, ArugalAtFenrusLoc.y, ArugalAtFenrusLoc.z, ArugalAtFenrusLoc.o))
                         {
-                            ArugalSpawn->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                            ArugalSpawn->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             ArugalSpawn->GetAIInterface()->SetAllowedToEnterCombat(false);
                             ArugalSpawn->GetAIInterface()->m_canMove = false;
                             if (ArugalSpawn->GetScript())
@@ -105,9 +105,9 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (pData == Finished)
                     {
                         GameObject* pGate = GetGameObjectByGuid(go_arugalsLair_GUID);
-                        if (pGate != nullptr && pGate->GetState() == GO_STATE_CLOSED)
+                        if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                         {
-                            pGate->SetState(GO_STATE_OPEN);
+                            pGate->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -142,17 +142,17 @@ class ShadowfangKeepInstance : public InstanceScript
                         // Make levers targetable
                         if (GameObject* pGO = GetGameObjectByGuid(go_leftCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
 
                         if (GameObject* pGO = GetGameObjectByGuid(go_middleCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
 
                         if (GameObject* pGO = GetGameObjectByGuid(go_rightCellLever_GUID))
                         {
-                            pGO->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                            pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                         }
                     }
                 }break;
@@ -163,8 +163,8 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         if (GameObject* pGO = GetGameObjectByGuid(go_courtyarDoor_GUID))
                         {
-                            if (pGO->GetState() != GO_STATE_OPEN)
-                                pGO->SetState(GO_STATE_OPEN);
+                            if (pGO->getState() != GO_STATE_OPEN)
+                                pGO->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -174,9 +174,9 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         SetLocaleInstanceData(0, INDEX_VOIDWALKER, InProgress);
                         GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
-                        if (pGate != nullptr && pGate->GetState() == GO_STATE_CLOSED)
+                        if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                         {
-                            pGate->SetState(GO_STATE_OPEN);
+                            pGate->setState(GO_STATE_OPEN);
                         }
                     }
                 }break;
@@ -195,66 +195,66 @@ class ShadowfangKeepInstance : public InstanceScript
         // Objects handling
         void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_LEFT_CELL:
                 {
-                    go_leftCell_GUID = pGameObject->GetLowGUID();
+                    go_leftCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_MIDDLE_CELL:
                 {
-                    go_middleCell_GUID = pGameObject->GetLowGUID();
+                    go_middleCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_RIGHT_CELL:
                 {
-                    go_rightCell_GUID = pGameObject->GetLowGUID();
+                    go_rightCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_ARUGALS_LAIR_GATE:
                 {
-                    go_arugalsLair_GUID = pGameObject->GetLowGUID();
-                    if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    go_arugalsLair_GUID = pGameObject->getGuidLow();
+                    if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 case GO_SORCERER_GATE:
                 {
-                    go_sorcererGate_GUID = pGameObject->GetLowGUID();
-                    if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    go_sorcererGate_GUID = pGameObject->getGuidLow();
+                    if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 case GO_LEFT_LEVER:
                 {
-                    go_leftCellLever_GUID = pGameObject->GetLowGUID();
+                    go_leftCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_RIGHT_LEVER:
                 {
-                    go_rightCellLever_GUID = pGameObject->GetLowGUID();
+                    go_rightCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_MIDDLE_LEVER:
                 {
-                    go_middleCellLever_GUID = pGameObject->GetLowGUID();
+                    go_middleCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_COURTYARD_DOOR:
                 {
-                    go_courtyarDoor_GUID = pGameObject->GetLowGUID();
-                    if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
+                    go_courtyarDoor_GUID = pGameObject->getGuidLow();
+                    if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                     {
-                        pGameObject->SetState(GO_STATE_OPEN);
+                        pGameObject->setState(GO_STATE_OPEN);
                     }
                 }break;
                 default:
@@ -264,30 +264,30 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
-            switch (pGameObject->GetEntry())
+            switch (pGameObject->getEntry())
             {
                 case GO_RIGHT_LEVER:
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_rightCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_MIDDLE_LEVER:
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_middleCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 case GO_LEFT_LEVER:
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_leftCell_GUID))
                     {
-                        pGO->SetState(pGO->GetState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
-                        pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
+                        pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
+                        pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                     }
                 }break;
                 default:
@@ -297,7 +297,7 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnCreatureDeath(Creature* pCreature, Unit* /*pKiller*/) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_NANDOS:
                 {
@@ -318,15 +318,15 @@ class ShadowfangKeepInstance : public InstanceScript
 
         void OnCreaturePushToWorld(Creature* pCreature) override
         {
-            switch (pCreature->GetEntry())
+            switch (pCreature->getEntry())
             {
                 case CN_ADAMANT:
                 {
-                    npc_adamant_GUID = GET_LOWGUID_PART(pCreature->GetGUID());
+                    npc_adamant_GUID = GET_LOWGUID_PART(pCreature->getGuid());
                 }break;
                 case CN_ASHCROMBE:
                 {
-                    npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->GetGUID());
+                    npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->getGuid());
                 }break;
                 // Make him hidden
                 case CN_ARUGAL:
@@ -341,7 +341,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                     {
                         pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
-                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->GetGUID()));
+                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
                     }
                 }break;
                 case CN_LUPINE_DELUSION:
@@ -349,7 +349,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     // Add to nandos summon lists only on his event is started
                     if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                     {
-                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->GetGUID()));
+                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
                     }
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
                 }break;
@@ -358,10 +358,10 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (GetInstanceData(0, INDEX_ARUGAL_INTRO) == Finished)
                     {
                         // Make him look like dead
-                        pCreature->SetStandState(STANDSTATE_DEAD);
+                        pCreature->setStandState(STANDSTATE_DEAD);
                         pCreature->setDeathState(CORPSE);
                         pCreature->GetAIInterface()->m_canMove = false;
-                        pCreature->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+                        pCreature->addDynamicFlags(U_DYN_FLAG_DEAD);
                         pCreature->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
                     }
                 }break;
@@ -437,10 +437,10 @@ class ArugalAI : public CreatureAIScript
                         {
                             // Make him look like dead
                             pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
-                            pVincent->SetStandState(STANDSTATE_DEAD);
+                            pVincent->setStandState(STANDSTATE_DEAD);
                             pVincent->setDeathState(CORPSE);
                             pVincent->GetAIInterface()->m_canMove = false;
-                            pVincent->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+                            pVincent->addDynamicFlags(U_DYN_FLAG_DEAD);
                         }
                     }break;
                     case 8:
@@ -539,7 +539,7 @@ class AdamantAI : public CreatureAIScript
                     {
                         case 0:
                         {
-                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->setEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();
@@ -597,7 +597,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             //TODO: correct text id
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
@@ -617,7 +617,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(5000);
-                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                    pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                     pPrisoner->eventStarted = true;
@@ -698,7 +698,7 @@ class AshcrombeAI : public CreatureAIScript
                         // Starting movement
                         case 0:
                         {
-                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->setEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();
@@ -767,7 +767,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
@@ -786,7 +786,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(4000);
-                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                    pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->Emote(EMOTE_ONESHOT_POINT);
                     pPrisoner->eventStarted = true;
@@ -1128,7 +1128,7 @@ class ArugalBossAI : public CreatureAIScript
                 {
                     if (GameObject* pGO = getNearestGameObject(GO_ARUGAL_FOCUS))
                     {
-                        pGO->SetState(GO_STATE_OPEN);
+                        pGO->setState(GO_STATE_OPEN);
                     }
 
                     // Spawn Arugal's Voidwalkers
@@ -1139,7 +1139,7 @@ class ArugalBossAI : public CreatureAIScript
                             voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
                         }
                     }
-                    getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                     getCreature()->GetAIInterface()->m_canMove = true;
 
@@ -1452,7 +1452,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (GameObject* pGameObject = target->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), GO_COURTYARD_DOOR))
     {
-        pGameObject->SetState(GO_STATE_OPEN);
+        pGameObject->setState(GO_STATE_OPEN);
         return true;
     }
 

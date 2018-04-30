@@ -34,11 +34,11 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == 1) // Script Effect that has been identified to handle the spread of diseases.
     {
-        if (!pSpell->u_caster || !pSpell->u_caster->GetTargetGUID() || !pSpell->u_caster->IsInWorld())
+        if (!pSpell->u_caster || !pSpell->u_caster->getTargetGuid() || !pSpell->u_caster->IsInWorld())
             return true;
 
         Unit* u_caster = pSpell->u_caster;
-        Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+        Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
         if (Main == NULL)
             return true;
         bool blood = Main->HasAura(BLOOD_PLAGUE);
@@ -50,7 +50,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
                 continue;
 
             Unit* Target = static_cast<Unit*>(itr);
-            if (Main->GetGUID() == Target->GetGUID() && !u_caster->HasAura(63334))
+            if (Main->getGuid() == Target->getGuid() && !u_caster->HasAura(63334))
                 continue;
 
             if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
@@ -74,7 +74,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* Target = pSpell->GetUnitTarget();
 
     // Get count of diseases on target which were casted by caster
-    uint32 count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->GetGUID());
+    uint32 count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->getGuid());
 
     // Not a logical error, Death Strike should heal only when diseases are presented on its target
     if (count)
@@ -83,7 +83,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
         // A deadly attack that deals $s2% weapon damage plus ${$m1*$m2/100}
         // and heals the Death Knight for $F% of $Ghis:her; maximum health for each of $Ghis:her; diseases on the target.
         // $F is dmg_multiplier.
-        float amt = static_cast<float>(pSpell->p_caster->GetMaxHealth()) * pSpell->GetSpellInfo()->getDmg_multiplier(0) / 100.0f;
+        float amt = static_cast<float>(pSpell->p_caster->getMaxHealth()) * pSpell->GetSpellInfo()->getDmg_multiplier(0) / 100.0f;
 
         // Calculate heal amount with diseases on target
         uint32 val = static_cast<uint32>(amt * count);
@@ -180,7 +180,9 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         Player* playerTarget = static_cast<Player*>(unitTarget);
 
 #if VERSION_STRING != Cata
-        if (playerTarget->obj_movement_info.IsOnTransport()) // Blizzard screwed this up, so we won't.
+        // Blizzard screwed this up, so we won't.
+        // ^^^^^^^^^^^^ glass houses
+        if (playerTarget->obj_movement_info.isOnTransport())
             return false;
 #else
         if (!playerTarget->obj_movement_info.getTransportGuid().IsEmpty())
@@ -206,7 +208,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         if (deltaX == 0.0f || deltaY == 0.0f)
             return false;
 
-        float d = sqrt(deltaX * deltaX + deltaY * deltaY) - s->u_caster->GetBoundingRadius() - unitTarget->GetBoundingRadius();
+        float d = sqrt(deltaX * deltaX + deltaY * deltaY) - s->u_caster->getBoundingRadius() - unitTarget->getBoundingRadius();
 
         float alpha = atanf(deltaY / deltaX);
 
@@ -350,7 +352,7 @@ bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
 
     Unit* target = pAura->GetTarget();
 
-    uint32 dmg = (uint32)target->GetMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
+    uint32 dmg = (uint32)target->getMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;

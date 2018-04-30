@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 enum EObjectFields
 {
     OBJECT_FIELD_GUID                                = 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
-    OBJECT_FIELD_DATA                                = 0x0002, // Size: 1, Type: INT, Flags: PUBLIC
+    OBJECT_FIELD_DATA                                = 0x0002, // Size: 2, Type: LONG, Flags: PUBLIC
     OBJECT_FIELD_TYPE                                = 0x0004, // Size: 1, Type: INT, Flags: PUBLIC
     OBJECT_FIELD_ENTRY                               = 0x0005, // Size: 1, Type: INT, Flags: PUBLIC
     OBJECT_FIELD_SCALE_X                             = 0x0006, // Size: 1, Type: FLOAT, Flags: PUBLIC
@@ -103,8 +103,8 @@ enum EUnitFields
     UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER        = OBJECT_END + 0x0075, // Size: 1, Type: FLOAT, Flags: PRIVATE, OWNER
     UNIT_FIELD_MINRANGEDDAMAGE                       = OBJECT_END + 0x0076, // Size: 1, Type: FLOAT, Flags: PRIVATE, OWNER
     UNIT_FIELD_MAXRANGEDDAMAGE                       = OBJECT_END + 0x0077, // Size: 1, Type: FLOAT, Flags: PRIVATE, OWNER
-    UNIT_FIELD_POWER_COST_MODIFIER                   = OBJECT_END + 0x0078, // Size: 2, Type: INT, Flags: PRIVATE, OWNER
-    UNIT_FIELD_POWER_COST_MULTIPLIER                 = OBJECT_END + 0x007F, // Size: 2, Type: FLOAT, Flags: PRIVATE, OWNER
+    UNIT_FIELD_POWER_COST_MODIFIER                   = OBJECT_END + 0x0078, // Size: 7, Type: INT, Flags: PRIVATE, OWNER
+    UNIT_FIELD_POWER_COST_MULTIPLIER                 = OBJECT_END + 0x007F, // Size: 7, Type: FLOAT, Flags: PRIVATE, OWNER
     UNIT_FIELD_MAXHEALTHMODIFIER                     = OBJECT_END + 0x0086, // Size: 1, Type: FLOAT, Flags: PRIVATE, OWNER
     UNIT_FIELD_HOVERHEIGHT                           = OBJECT_END + 0x0087, // Size: 1, Type: FLOAT, Flags: PUBLIC
     UNIT_FIELD_MAXITEMLEVEL                          = OBJECT_END + 0x0088, // Size: 1, Type: INT, Flags: PUBLIC

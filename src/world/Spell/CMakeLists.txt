@@ -1,8 +1,9 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Spell)
 
 set(SRC_SPELL_FILES
+   ${PATH_PREFIX}/Spell.cpp
    ${PATH_PREFIX}/Spell.h
    ${PATH_PREFIX}/Spell.Legacy.cpp
    ${PATH_PREFIX}/Spell.Legacy.h

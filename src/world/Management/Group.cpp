@@ -107,6 +107,11 @@ bool SubGroup::HasMember(uint32 guid)
     return false;
 }
 
+GroupMembersSet& SubGroup::getGroupMembers()
+{
+    return m_GroupMembers;
+}
+
 SubGroup* Group::FindFreeSubGroup()
 {
     for (uint32 i = 0; i < m_SubGroupCount; i++)
@@ -290,7 +295,7 @@ void Group::Update()
                             Player* plr = (*itr2)->m_loggedInPlayer;
                             data << (plr ? plr->GetName() : (*itr2)->name);
 							if(plr)
-								data << plr->GetGUID();
+								data << plr->getGuid();
 							else
                                 data << (*itr2)->guid << uint32(0);	// highguid
 
@@ -526,7 +531,7 @@ void Group::RemovePlayer(PlayerInfo* info)
             if (pPlayer->m_auras[i] && pPlayer->m_auras[i]->m_areaAura)
             {
                 Object* caster = pPlayer->m_auras[i]->GetCaster();
-                if ((caster != NULL) && (pPlayer->GetGUID() != caster->GetGUID()))
+                if ((caster != NULL) && (pPlayer->getGuid() != caster->getGuid()))
                     pPlayer->m_auras[i]->Remove();
             }
         }
@@ -954,12 +959,12 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_HP)
-        *data << uint32(pPlayer->GetHealth());
+        *data << uint32(pPlayer->getHealth());
 
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
-        *data << uint32(pPlayer->GetMaxHealth());
+        *data << uint32(pPlayer->getMaxHealth());
 
-    uint8 powerType = pPlayer->GetPowerType();
+    uint8 powerType = pPlayer->getPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
         *data << uint8(powerType);
 
@@ -1000,7 +1005,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)
-            *data << (uint64)pet->GetGUID();
+            *data << (uint64)pet->getGuid();
         else
             *data << (uint64)0;
     }
@@ -1016,7 +1021,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
     {
         if (pet)
-            *data << uint16(pet->GetDisplayId());
+            *data << uint16(pet->getDisplayId());
         else
             *data << uint16(0);
     }
@@ -1024,7 +1029,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
     {
         if (pet)
-            *data << uint32(pet->GetHealth());
+            *data << uint32(pet->getHealth());
         else
             *data << uint32(0);
     }
@@ -1032,7 +1037,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
     {
         if (pet)
-            *data << uint32(pet->GetMaxHealth());
+            *data << uint32(pet->getMaxHealth());
         else
             *data << uint32(0);
     }
@@ -1040,7 +1045,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
     {
         if (pet)
-            *data << uint8(pet->GetPowerType());
+            *data << uint8(pet->getPowerType());
         else
             *data << uint8(0);
     }
@@ -1048,7 +1053,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
     {
         if (pet)
-            *data << uint16(pet->GetPower(pet->GetPowerType()));
+            *data << uint16(pet->GetPower(pet->getPowerType()));
         else
             *data << uint16(0);
     }
@@ -1056,7 +1061,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
     {
         if (pet)
-            *data << uint16(pet->GetMaxPower(pet->GetPowerType()));
+            *data << uint16(pet->GetMaxPower(pet->getPowerType()));
         else
             *data << uint16(0);
     }
@@ -1064,8 +1069,10 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
     {
 #if VERSION_STRING != Cata
+#ifdef FT_VEHICLES
         if (Vehicle* veh = pPlayer->GetCurrentVehicle())
-            *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transporter_info.seat]);
+            *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transport_seat]);
+#endif
 #endif
     }
 
@@ -1147,7 +1154,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             plr = (*itr)->m_loggedInPlayer;
             if (!plr || plr == pPlayer) continue;
 
-            if (!plr->IsVisible(pPlayer->GetGUID()))
+            if (!plr->IsVisible(pPlayer->getGuid()))
             {
                 UpdateOutOfRangePlayer(plr, false, &data);
                 pPlayer->GetSession()->SendPacket(&data);
@@ -1200,6 +1207,11 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     }
 
     m_groupLock.Release();
+}
+
+bool Group::isRaid() const
+{
+    return getGroupType() == GROUP_TYPE_RAID;
 }
 
 Group* Group::Create()
@@ -1279,65 +1291,68 @@ void Group::SetRaidDifficulty(uint8 diff)
 
 void Group::SendLootUpdates(Object* o)
 {
-    // Build the actual update.
-    ByteBuffer buf(500);
-
-    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
-
-    Flags |= U_DYN_FLAG_LOOTABLE;
-    Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-
-    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
-
-    Lock();
-
-    switch (m_LootMethod)
+    if (o->IsUnit())
     {
-        case PARTY_LOOT_RR:
-        case PARTY_LOOT_FFA:
-        case PARTY_LOOT_GROUP:
-        case PARTY_LOOT_NBG:
+        // Build the actual update.
+        ByteBuffer buf(500);
+
+        uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();
+
+        Flags |= U_DYN_FLAG_LOOTABLE;
+        Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+
+        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
+
+        Lock();
+
+        switch (m_LootMethod)
         {
-
-            SubGroup* sGrp = NULL;
-            GroupMembersSet::iterator itr2;
-
-            for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
+            case PARTY_LOOT_RR:
+            case PARTY_LOOT_FFA:
+            case PARTY_LOOT_GROUP:
+            case PARTY_LOOT_NBG:
             {
-                sGrp = GetSubGroup(Index);
-                itr2 = sGrp->GetGroupMembersBegin();
 
-                for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+                SubGroup* sGrp = NULL;
+                GroupMembersSet::iterator itr2;
+
+                for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
                 {
-                    PlayerInfo* p = *itr2;
+                    sGrp = GetSubGroup(Index);
+                    itr2 = sGrp->GetGroupMembersBegin();
 
-                    if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->GetGUID()))       // Save updates for non-existent creatures
-                        p->m_loggedInPlayer->PushUpdateData(&buf, 1);
+                    for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+                    {
+                        PlayerInfo* p = *itr2;
+
+                        if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
+                            p->m_loggedInPlayer->PushUpdateData(&buf, 1);
+                    }
                 }
+
+                break;
             }
 
-            break;
-        }
-
-        case PARTY_LOOT_MASTER:
-        {
-            Player* pLooter = GetLooter() ? GetLooter()->m_loggedInPlayer : NULL;
-            if (pLooter == NULL)
-                pLooter = GetLeader()->m_loggedInPlayer;
-
-            if (pLooter->IsVisible(o->GetGUID()))
+            case PARTY_LOOT_MASTER:
             {
-                Unit* victim = static_cast< Unit* >(o);
+                Player* pLooter = GetLooter() ? GetLooter()->m_loggedInPlayer : NULL;
+                if (pLooter == NULL)
+                    pLooter = GetLeader()->m_loggedInPlayer;
 
-                victim->Tag(pLooter->GetGUID());
-                pLooter->PushUpdateData(&buf, 1);
+                if (pLooter->IsVisible(o->getGuid()))
+                {
+                    Unit* victim = static_cast<Unit*>(o);
+
+                    victim->Tag(pLooter->getGuid());
+                    pLooter->PushUpdateData(&buf, 1);
+                }
+
+                break;
             }
-
-            break;
         }
-    }
 
-    Unlock();
+        Unlock();
+    }
 }
 
 Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip)
@@ -1400,7 +1415,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
         {
             PlayerInfo* p = *itr2;
 
-            if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->GetGUID()))
+            if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))
                 p->m_loggedInPlayer->GetAchievementMgr().UpdateAchievementCriteria(type, miscvalue1, miscvalue2, time);
         }
     }
@@ -1451,7 +1466,7 @@ uint64 Group::GetLeaderGUID()
     if (m_Leader != nullptr)
     {
         if (m_Leader->m_loggedInPlayer)
-            return m_Leader->m_loggedInPlayer->GetGUID();
+            return m_Leader->m_loggedInPlayer->getGuid();
         return (uint64)m_Leader->guid;
     }
 }

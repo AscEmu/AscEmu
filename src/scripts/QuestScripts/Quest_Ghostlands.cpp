@@ -26,7 +26,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
@@ -40,7 +40,7 @@ public:
         plr->AddQuestKill(9164, 0, 0);
 
         Prisoner12->Despawn(5000, 6 * 60 * 1000);
-        Prisoner12->SetStandState(STANDSTATE_STAND);
+        Prisoner12->setStandState(STANDSTATE_STAND);
     }
 };
 
@@ -50,7 +50,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
@@ -64,8 +64,8 @@ public:
         plr->AddQuestKill(9164, 1, 0);
 
         Prisoner22->Despawn(5000, 6 * 60 * 1000);
-        Prisoner22->SetStandState(STANDSTATE_STAND);
-        Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
+        Prisoner22->setStandState(STANDSTATE_STAND);
+        Prisoner22->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 
@@ -75,7 +75,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
@@ -89,8 +89,8 @@ public:
         plr->AddQuestKill(9164, 2, 0);
 
         Prisoner32->Despawn(5000, 6 * 60 * 1000);
-        Prisoner32->SetStandState(STANDSTATE_STAND);
-        Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
+        Prisoner32->setStandState(STANDSTATE_STAND);
+        Prisoner32->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 
@@ -102,7 +102,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->GetAIInterface()->m_canMove = false;
     }
 };

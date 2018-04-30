@@ -56,15 +56,15 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     // take note: these are swapped around for performance bonus
     // warsong flag - horde base
     m_homeFlags[0] = SpawnGameObject(179831, 489, 915.367f, 1433.78f, 346.089f, 3.17301f, 0, 210, 2.5f);
-    m_homeFlags[0]->SetState(GO_STATE_CLOSED);
-    m_homeFlags[0]->SetType(GAMEOBJECT_TYPE_FLAGSTAND);
-    m_homeFlags[0]->SetAnimProgress(100);
+    m_homeFlags[0]->setState(GO_STATE_CLOSED);
+    m_homeFlags[0]->setGoType(GAMEOBJECT_TYPE_FLAGSTAND);
+    m_homeFlags[0]->setAnimationProgress(100);
 
     // silverwing flag - alliance base
     m_homeFlags[1] = SpawnGameObject(179830, 489, 1540.29f, 1481.34f, 352.64f, 3.17301f, 0, 1314, 2.5f);
-    m_homeFlags[1]->SetState(GO_STATE_CLOSED);
-    m_homeFlags[1]->SetType(GAMEOBJECT_TYPE_FLAGSTAND);
-    m_homeFlags[1]->SetAnimProgress(100);
+    m_homeFlags[1]->setState(GO_STATE_CLOSED);
+    m_homeFlags[1]->setGoType(GAMEOBJECT_TYPE_FLAGSTAND);
+    m_homeFlags[1]->setAnimationProgress(100);
 
     // dropped flags
     m_dropFlags[1] = m_mapMgr->CreateGameObject(179786);
@@ -77,8 +77,8 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
 
     for (uint8 i = 0; i < 2; ++i)
     {
-        m_dropFlags[i]->Activate();
-        m_dropFlags[i]->SetScale(2.5f);
+        m_dropFlags[i]->setDynamic(1);
+        m_dropFlags[i]->setScale(2.5f);
     }
 
 }
@@ -170,7 +170,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
             // apply the buff
             SpellInfo* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
-            SpellCastTargets targets(plr->GetGUID());
+            SpellCastTargets targets(plr->getGuid());
             s->prepare(&targets);
 
             // despawn the gameobject (not delete!)
@@ -179,7 +179,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         return;
     }
 
-    if (((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
+    if (((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->getGuidLow()))
     {
         if (m_flagHolders[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE] != 0 || m_dropFlags[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE]->IsInWorld())
         {
@@ -208,9 +208,9 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
 
         if (plr->IsTeamHorde())
-            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "%s captured the Alliance flag!", plr->GetName());
+            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "%s captured the Alliance flag!", plr->GetName());
         else
-            SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "%s captured the Horde flag!", plr->GetName());
+            SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "%s captured the Horde flag!", plr->GetName());
 
         SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
@@ -238,7 +238,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
             sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            this->EndBattleground(plr->GetTeamReal());
+            this->EndBattleground(plr->GetTeam());
         }
 
         // increment the score world state
@@ -278,14 +278,14 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
-    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeamReal(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     PlaySoundToAll(SOUND_FLAG_RETURNED);
 
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was dropped by %s!", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was dropped by %s!", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Horde flag was dropped by %s!", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was dropped by %s!", plr->GetName());
 }
 
 void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
@@ -294,7 +294,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()] != obj)
     {
         // are we returning it?
-        if ((obj->GetEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->GetEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
+        if ((obj->getEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->getEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
         {
             uint32 x = plr->GetTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));
@@ -311,9 +311,9 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
             PlaySoundToAll(SOUND_FLAG_RETURNED);
 
             if (plr->IsTeamHorde())
-                SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Horde flag was returned to its base by %s!", plr->GetName());
+                SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was returned to its base by %s!", plr->GetName());
             else
-                SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was returned to its base by %s!", plr->GetName());
+                SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was returned to its base by %s!", plr->GetName());
 
             SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
         }
@@ -334,7 +334,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()]->IsInWorld())
         m_dropFlags[plr->GetTeam()]->RemoveFromWorld(false);
 
-    m_flagHolders[plr->GetTeam()] = plr->GetLowGUID();
+    m_flagHolders[plr->GetTeam()] = plr->getGuidLow();
     plr->m_bgHasFlag = true;
 
     /* This is *really* strange. Even though the A9 create sent to the client is exactly the same as the first one, if
@@ -346,15 +346,15 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
 
     SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->GetTeam() * 2));
     Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
-    SpellCastTargets targets(plr->GetGUID());
+    SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
 
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
 void WarsongGulch::ReturnFlag(PlayerTeam team)
@@ -379,7 +379,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
     if (!m_started)
     {
         Anticheat_Log->writefromsession(plr->GetSession(), "%s tryed to hook the flag in warsong gluch before battleground (ID %u) started.", plr->GetName(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->GetGUID(), "%s will be removed from the game for cheating.", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->GetName());
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick player from server.
@@ -401,21 +401,21 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 
     SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->GetTeam() * 2));
     Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
-    SpellCastTargets targets(plr->GetGUID());
+    SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
 
     // set the flag holder
     plr->m_bgHasFlag = true;
-    m_flagHolders[plr->GetTeam()] = plr->GetLowGUID();
+    m_flagHolders[plr->GetTeam()] = plr->getGuidLow();
     if (m_homeFlags[plr->GetTeam()]->IsInWorld())
         m_homeFlags[plr->GetTeam()]->RemoveFromWorld(false);
 
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
 void WarsongGulch::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
@@ -472,7 +472,7 @@ void WarsongGulch::HookOnPlayerDeath(Player* plr)
 void WarsongGulch::HookOnMount(Player* plr)
 {
     // do we have the flag?
-    if (m_flagHolders[plr->GetTeam()] == plr->GetLowGUID())
+    if (m_flagHolders[plr->GetTeam()] == plr->getGuidLow())
         HookOnFlagDrop(plr);
 }
 
@@ -493,51 +493,45 @@ void WarsongGulch::SpawnBuff(uint32 x)
     {
         case 0:
             m_buffs[x] = SpawnGameObject(179871, 489, 1449.9296875f, 1470.70971679688f, 342.634552001953f, -1.64060950279236f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.73135370016098f);
-            m_buffs[x]->SetParentRotation(3, -0.681998312473297f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.73135370016098f, -0.681998312473297f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
         case 1:
             m_buffs[x] = SpawnGameObject(179899, 489, 1005.17071533203f, 1447.94567871094f, 335.903228759766f, 1.64060950279236f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.73135370016098f);
-            m_buffs[x]->SetParentRotation(3, 0.681998372077942f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.73135370016098f, 0.681998372077942f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
         case 2:
             m_buffs[x] = SpawnGameObject(179904, 489, 1317.50573730469f, 1550.85070800781f, 313.234375f, -0.26179963350296f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.130526319146156f);
-            m_buffs[x]->SetParentRotation(3, -0.991444826126099f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.130526319146156f, -0.991444826126099f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
         case 3:
             m_buffs[x] = SpawnGameObject(179906, 489, 1110.45129394531f, 1353.65563964844f, 316.518096923828f, -0.68067866563797f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.333806991577148f);
-            m_buffs[x]->SetParentRotation(3, -0.94264143705368f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.333806991577148f, -0.94264143705368f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
         case 4:
             m_buffs[x] = SpawnGameObject(179905, 489, 1320.09375f, 1378.78967285156f, 314.753234863281f, 1.18682384490967f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.559192895889282f);
-            m_buffs[x]->SetParentRotation(3, 0.829037606716156f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.559192895889282f, 0.829037606716156f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
         case 5:
             m_buffs[x] = SpawnGameObject(179907, 489, 1139.68774414063f, 1560.28771972656f, 306.843170166016f, -2.4434609413147f, 0, 114, 1);
-            m_buffs[x]->SetParentRotation(2, 0.939692616462708f);
-            m_buffs[x]->SetParentRotation(3, -0.342020124197006f);
-            m_buffs[x]->SetState(GO_STATE_CLOSED);
-            m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
-            m_buffs[x]->SetAnimProgress(100);
+            m_buffs[x]->SetRotationQuat(0.f, 0.f, 0.939692616462708f, -0.342020124197006f);
+            m_buffs[x]->setState(GO_STATE_CLOSED);
+            m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
+            m_buffs[x]->setAnimationProgress(100);
             break;
     }
 }
@@ -553,36 +547,30 @@ void WarsongGulch::OnCreate()
 
     // Alliance Gates
     GameObject* gate = SpawnGameObject(179921, 489, 1471.554688f, 1458.778076f, 362.633240f, 0, 33, 114, 2.33271f);
-    gate->SetAnimProgress(100);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     gate = SpawnGameObject(179919, 489, 1492.477783f, 1457.912354f, 342.968933f, 0, 33, 114, 2.68149f);
-    gate->SetAnimProgress(100);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     gate = SpawnGameObject(179918, 489, 1503.335327f, 1493.465820f, 352.188843f, 0, 33, 114, 2.26f);
-    gate->SetAnimProgress(100);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde Gates
     gate = SpawnGameObject(179916, 489, 949.1663208f, 1423.7717285f, 345.6241455f, -0.5756807f, 32, 114, 0.900901f);
-    gate->SetParentRotation(0, -0.0167336f);
-    gate->SetParentRotation(1, -0.004956f);
-    gate->SetParentRotation(2, -0.283972f);
-    gate->SetParentRotation(3, 0.9586736f);
-    gate->SetAnimProgress(100);
+    gate->SetRotationQuat(-0.0167336f, -0.004956f, -0.283972f, 0.9586736f);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     gate = SpawnGameObject(179917, 489, 953.0507202f, 1459.8424072f, 340.6525573f, -1.9966197f, 32, 114, 0.854700f);
-    gate->SetParentRotation(0, -0.1971825f);
-    gate->SetParentRotation(1, 0.1575096f);
-    gate->SetParentRotation(2, -0.8239487f);
-    gate->SetParentRotation(3, 0.5073640f);
-    gate->SetAnimProgress(100);
+    gate->SetRotationQuat(-0.1971825f, 0.1575096f, -0.8239487f, 0.5073640f);
+    gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
@@ -607,8 +595,8 @@ void WarsongGulch::OnStart()
     // open the gates
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
-        (*itr)->SetState(GO_STATE_OPEN);
+        (*itr)->setFlags(GO_FLAG_TRIGGERED);
+        (*itr)->setState(GO_STATE_OPEN);
     }
 
     DespawnGates(5000);

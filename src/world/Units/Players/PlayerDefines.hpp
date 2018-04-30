@@ -19,18 +19,18 @@ enum PlayerTeam : uint8_t
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// DBC_PLAYER_LEVEL_CAP
-///
-/// \param level cap
-///
-/// Vanilla = 60
-/// The Burning Crusade = 70
-/// Wrath of the Lich King = 80
-/// Cataclysm = 85
-/// Mists of Pandaria = 90
-/// Warlords of Draenor = 100
-/// Legion = 110
-///
+// DBC_PLAYER_LEVEL_CAP
+//
+// \param level cap
+//
+// Vanilla = 60
+// The Burning Crusade = 70
+// Wrath of the Lich King = 80
+// Cataclysm = 85
+// Mists of Pandaria = 90
+// Warlords of Draenor = 100
+// Legion = 110
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
@@ -44,18 +44,18 @@ enum PlayerTeam : uint8_t
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// DBC_PLAYER_SKILL_MAX
-///
-/// \param skill max
-///
-/// Vanilla = 300
-/// The Burning Crusade = 375
-/// Wrath of the Lich King = 450
-/// Cataclysm = 525
-/// Mists of Pandaria = 600
-/// Warlords of Draenor = 700
-/// Legion = 800
-///
+// DBC_PLAYER_SKILL_MAX
+//
+// \param skill max
+//
+// Vanilla = 300
+// The Burning Crusade = 375
+// Wrath of the Lich King = 450
+// Cataclysm = 525
+// Mists of Pandaria = 600
+// Warlords of Draenor = 700
+// Legion = 800
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
@@ -70,13 +70,13 @@ enum PlayerTeam : uint8_t
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Minimum level required arena
+// Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
 
-#define ACHIEVEMENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
-#define LOGIN_CIENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
+#define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
+#define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 
 enum Gender
 {
@@ -309,47 +309,50 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_NONE                = 0x00000000,
-    PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
-    PLAYER_FLAG_AFK                 = 0x00000002,
-    PLAYER_FLAG_DND                 = 0x00000004,
-    PLAYER_FLAG_GM                  = 0x00000008,
-    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00000010,
-    PLAYER_FLAG_RESTING             = 0x00000020,
-    PLAYER_FLAG_ADMIN               = 0x00000040,
-    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00000080,
-    PLAYER_FLAG_CONT_PVP            = 0x00000100,
-    PLAYER_FLAG_PVP_TOGGLE          = 0x00000200,
-    PLAYER_FLAG_NOHELM              = 0x00000400,
-    PLAYER_FLAG_NOCLOAK             = 0x00000800,
-    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x00001000,
-    PLAYER_FLAG_IS_DEAD             = 0x00002000,
-    PLAYER_FLAGS_RENAME_FIRST       = 0x00004000,
-    PLAYER_FLAG_DEVELOPER           = 0x00008000,
-    PLAYER_FLAG_UNK1                = 0x00010000,
-    PLAYER_FLAG_UNK2                = 0x00020000,
-    PLAYER_FLAG_PVP                 = 0x00040000,
-    PLAYER_FLAG_UNK3                = 0x00080000,
-    PLAYER_FLAG_UNK4                = 0x00100000,
-    PLAYER_FLAG_UNK5                = 0x00200000,
-    PLAYER_FLAG_UNK6                = 0x00400000,
-    PLAYER_FLAG_UNK7                = 0x00800000,
-    PLAYER_FLAG_IS_BANNED           = 0x01000000,
-    PLAYER_FLAG_UNK8                = 0x02000000,
-    PLAYER_FLAG_UNK9                = 0x04000000,
-    PLAYER_FLAGS_AUTO_DECLINE_GUILD = 0x08000000,
-    PLAYER_FLAGS_GUILD_LVL_ENABLED  = 0x10000000,
-    PLAYER_FLAG_UNK12               = 0x20000000,
-    PLAYER_FLAG_UNK13               = 0x40000000,
-    PLAYER_FLAG_UNK14               = 0x80000000
+    PLAYER_FLAG_NONE                    = 0x00000000,
+    PLAYER_FLAG_PARTY_LEADER            = 0x00000001, // (TODO: implement for all versions) Informs players outside of your group who is your group leader
+    PLAYER_FLAG_AFK                     = 0x00000002, // <AFK> or <Away> tag ingame
+    PLAYER_FLAG_DND                     = 0x00000004, // <DND> or <Busy> tag ingame
+    PLAYER_FLAG_GM                      = 0x00000008, // <GM> tag ingame
+    PLAYER_FLAG_DEATH_WORLD_ENABLE      = 0x00000010, // Adds death glow to the world
+    PLAYER_FLAG_RESTING                 = 0x00000020, // Applies rested state on your character portrait
+    PLAYER_FLAG_ADMIN                   = 0x00000040, // Unknown effect in 3.3.5a
+    PLAYER_FLAG_FREE_FOR_ALL_PVP        = 0x00000080, // Unknown in 3.3.5a, pre-wotlk FFA-pvp tag
+    PLAYER_FLAG_PVP_GUARD_ATTACKABLE    = 0x00000100, // Player will be attacked by neutral guards
+    PLAYER_FLAG_PVP_TOGGLE              = 0x00000200, // Toggles PvP combat on/off
+    PLAYER_FLAG_NOHELM                  = 0x00000400, // Hides helm
+    PLAYER_FLAG_NOCLOAK                 = 0x00000800, // Hides cloak
+    PLAYER_FLAG_PLAYED_3_HOURS          = 0x00001000, // Obsolete: "You have more than 3 hours of online time. You will receive 1/2 money and XP during this period."
+    PLAYER_FLAG_PLAYED_5_HOURS          = 0x00002000, // Obsolete: "You have more than 5 hours of online time. You will not be able to gain loot, XP, or complete quests."
+    PLAYER_FLAG_UNK1                    = 0x00004000,
+    // TBC flags begin (needs verification)
+    PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
+    PLAYER_FLAG_SANCTUARY               = 0x00010000, // (TODO: not implemented?) Makes player unattackable, added in sanctuary areas
+    PLAYER_FLAG_UNK2                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
+    // WoTLK flags begin
+    PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off
+    PLAYER_FLAG_UNK3                    = 0x00080000,
+    PLAYER_FLAG_UNK4                    = 0x00100000,
+    PLAYER_FLAG_UNK5                    = 0x00200000,
+    PLAYER_FLAG_UNK6                    = 0x00400000,
+    PLAYER_FLAG_PREVENT_SPELL_CAST      = 0x00800000, // Prevents spell casting but excludes auto attack, used by Bladestorm for example
+    PLAYER_FLAG_PREVENT_MELEE_SPELLS    = 0x01000000, // Prevents melee spell casting and includes auto attack, unused?
+    PLAYER_FLAG_NO_XP                   = 0x02000000, // (TODO: implement this and remove variable from player class) Disables XP gain and hides XP bar
+    // Cataclysm flags begin (needs verification)
+    PLAYER_FLAG_UNK7                    = 0x04000000,
+    PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
+    PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
+    PLAYER_FLAG_UNK8                    = 0x20000000,
+    PLAYER_FLAG_UNK9                    = 0x40000000,
+    PLAYER_FLAG_UNK10                   = 0x80000000
 };
 
 enum CustomizeFlags
 {
     CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
     CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    ///\todo Implement      * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   //\todo Implement      * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    //\todo Implement      * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
@@ -359,6 +362,17 @@ enum LoginFlags
     LOGIN_CUSTOMIZE_FACTION     = 2,
     LOGIN_CUSTOMIZE_RACE        = 4,
     LOGIN_CUSTOMIZE_LOOKS       = 8
+};
+
+enum CharacterScreenFlags
+{
+    CHARACTER_SCREEN_FLAG_NONE              = 0x00000000,
+    CHARACTER_SCREEN_FLAG_LOCKED_UPDATE     = 0x00000004, // Prevents login: "You cannot log in until the character update process you recently initiated is complete."
+    CHARACTER_SCREEN_FLAG_HIDE_HELM         = 0x00000400, // Hides character's helm
+    CHARACTER_SCREEN_FLAG_HIDE_CLOAK        = 0x00000800, // Hides character's cloak
+    CHARACTER_SCREEN_FLAG_DEAD              = 0x00002000, // Shows character is dead
+    CHARACTER_SCREEN_FLAG_FORCED_RENAME     = 0x00004000, // Prevents login: "Your name has been flagged for rename, please enter a new name:"
+    CHARACTER_SCREEN_FLAG_BANNED            = 0x01000000  // Prevents login: "Character locked. Contact Billing for more information."
 };
 
 enum FriendsResult
@@ -415,7 +429,7 @@ enum LootType
     LOOT_PICKPOCKETING          = 2,        // 2
     LOOT_DISENCHANTING          = 2,        // 4    // ignored
     LOOT_PROSPECTING            = 2,        // 7
-    LOOT_MILLING                = 2,        // 8    
+    LOOT_MILLING                = 2,        // 8
     LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
 };
 
@@ -694,12 +708,17 @@ enum PlayerCheats
     #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
 #endif
 
+#ifdef FT_DUAL_SPEC
 #define MAX_SPEC_COUNT 2
+#else
+#define MAX_SPEC_COUNT 1
+#endif
 
 #if VERSION_STRING == Cata
-    #define GLYPHS_COUNT 9
-#else
-    #define GLYPHS_COUNT 6
+#define GLYPHS_COUNT 9
+#elif VERSION_STRING == WotLK
+#define GLYPHS_COUNT 6
 #endif
+
 
 #define MAX_QUEST_SLOT 25
