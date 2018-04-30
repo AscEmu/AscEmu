@@ -358,7 +358,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
         if (itr)
         {
             // don't add objects that are not creatures and that are dead
-            if (!itr->IsCreature() || !static_cast<Creature*>(itr)->isAlive())
+            if (!itr->isCreature() || !static_cast<Creature*>(itr)->isAlive())
                 continue;
 
             Creature* cr = static_cast<Creature*>(itr);

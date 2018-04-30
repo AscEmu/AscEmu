@@ -88,7 +88,9 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recvData)
 void WorldSession::HandleRemoveVehiclePassenger(WorldPacket& recvData)
 {
     Vehicle* v = nullptr;
-    if (_player->IsVehicle())
+
+    //\todo player object check if the player is a vehicle - looks not correct
+    if (_player->isVehicle())
         v = _player->GetVehicleComponent();
     else
         v = _player->GetCurrentVehicle();

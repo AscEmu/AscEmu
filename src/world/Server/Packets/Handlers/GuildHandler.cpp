@@ -83,12 +83,12 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
 
     if (plyr->GetGuildId())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD_S, plyr->GetName());
+        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD_S, plyr->getName().c_str());
         return;
     }
     else if (plyr->GetGuildInvitersGuid())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->GetName());
+        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
         return;
     }
     else if (!_player->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
@@ -116,7 +116,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
     //41
 
     WorldPacket data(SMSG_GUILD_INVITE, 100);
-    data << _player->GetName();
+    data << _player->getName().c_str();
     data << pGuild->getGuildName();
     plyr->GetSession()->SendPacket(&data);
 
@@ -176,7 +176,7 @@ void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
         return;
 
     data.Initialize(SMSG_GUILD_DECLINE);
-    data << plyr->GetName();
+    data << plyr->getName().c_str();
     inviter->GetSession()->SendPacket(&data);
 }
 
@@ -714,9 +714,9 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
-            i->SoulBind();
-            i->SetEnchantmentId(0, c->GetID());
-            i->SetItemRandomSuffixFactor(57813883);
+            i->addFlags(ITEM_FLAG_SOULBOUND);
+            i->setEnchantmentId(0, c->GetID());
+            i->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
             {
                 c->Destroy();
@@ -726,7 +726,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->getPropertySeed(), i->getRandomPropertiesId(), i->getStackCount());
 
             _player->ModGold(-(int32)costs[arena_type]);
             _player->m_charters[arena_index] = c;
@@ -792,9 +792,9 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
-            i->SoulBind();
-            i->SetEnchantmentId(0, c->GetID());
-            i->SetItemRandomSuffixFactor(57813883);
+            i->addFlags(ITEM_FLAG_SOULBOUND);
+            i->setEnchantmentId(0, c->GetID());
+            i->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(i))
             {
                 c->Destroy();
@@ -804,7 +804,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             c->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->GetItemRandomSuffixFactor(), i->GetItemRandomPropertyId(), i->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->getPropertySeed(), i->getRandomPropertiesId(), i->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = c;
             _player->ModGold(-1000);
@@ -1559,7 +1559,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         if (pSourceItem != NULL)
         {
             // make sure its not a soulbound item
-            if (pSourceItem->IsSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
+            if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_CANT_DROP_SOULBOUND);
                 return;
@@ -1785,10 +1785,10 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
             data << uint8(j);                   // slot
             data << pTab->pSlots[j]->getEntry();
             data << uint32(0);                  // 3.3.0 (0x8000, 0x8020) from MaNGOS
-            data << (uint32)pTab->pSlots[j]->GetItemRandomPropertyId();
+            data << (uint32)pTab->pSlots[j]->getRandomPropertiesId();
 
-            if (pTab->pSlots[j]->GetItemRandomPropertyId())
-                data << (uint32)pTab->pSlots[j]->GetItemRandomSuffixFactor();
+            if (pTab->pSlots[j]->getRandomPropertiesId())
+                data << (uint32)pTab->pSlots[j]->getPropertySeed();
 
             data << uint32(pTab->pSlots[j]->getStackCount());
             data << uint32(0);                  // unknown value

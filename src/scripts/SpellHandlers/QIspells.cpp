@@ -71,7 +71,7 @@ bool ElementalPowerExtractor(uint32 /*i*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->p_caster;
     Unit* pUnit = pSpell->GetUnitTarget();
-    if (pUnit == nullptr || pUnit->IsCreature() == false)
+    if (pUnit == nullptr || pUnit->isCreature() == false)
         return true;
 
     Creature* pTarget = static_cast<Creature*>(pUnit);
@@ -242,7 +242,7 @@ bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply == false)
         return true;
 
-    if (pAura->GetCaster()->IsPlayer() == false)
+    if (pAura->GetCaster()->isPlayer() == false)
         return true;
 
     Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
@@ -325,10 +325,10 @@ bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
 bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Object* Caster = pAura->GetCaster();
-    if (Caster->IsPlayer() == false)
+    if (Caster->isPlayer() == false)
         return false;
 
-    if (pAura->GetTarget()->IsCreature() == false)
+    if (pAura->GetTarget()->isCreature() == false)
         return false;
 
     if (apply == false)
@@ -658,7 +658,7 @@ bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->IsCreature() == false)
+    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->isCreature() == false)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
@@ -706,10 +706,10 @@ bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
 bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Object* m_caster = pAura->GetCaster();
-    if (m_caster->IsPlayer() == false)
+    if (m_caster->isPlayer() == false)
         return true;
 
-    if (pAura->GetTarget()->IsCreature() == false)
+    if (pAura->GetTarget()->isCreature() == false)
         return true;
 
     if (apply)
@@ -868,7 +868,7 @@ bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MagnetoCollector(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 {
-    if (pAura->GetCaster()->IsPlayer() == false)
+    if (pAura->GetCaster()->isPlayer() == false)
         return true;
 
     Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
@@ -1379,7 +1379,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
             if (Rand(75.0f))    // 75% chance on success
             {
 
-                if (m_target->IsCreature())
+                if (m_target->isCreature())
                 {
                     Creature* tamed = static_cast<Creature*>(m_target);
                     tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
@@ -1607,7 +1607,7 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
     if (caster == NULL)
         return true;
 
-    if (!pSpell->GetUnitTarget()->IsCreature())
+    if (!pSpell->GetUnitTarget()->isCreature())
         return true;
 
     Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
@@ -1899,7 +1899,7 @@ bool PoweringOurDefenses(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->IsCreature())
+    if (!pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isCreature())
         return true;
 
     Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
@@ -2290,7 +2290,7 @@ bool FuryOfTheDreghoodElders(uint32 /*i*/, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
 
     Unit* pUnit = pSpell->GetUnitTarget();
-    if (pUnit == nullptr || !pUnit->IsCreature() || pUnit->getEntry() != 19354)
+    if (pUnit == nullptr || !pUnit->isCreature() || pUnit->getEntry() != 19354)
         return true;
 
     LocationVector targetPos = pUnit->GetPosition();
@@ -2423,7 +2423,7 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 
     for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
     {
-        if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->IsCreature())
+        if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isCreature())
             pTarget = static_cast<Creature*>(itr);
         else
             continue;
@@ -3022,7 +3022,7 @@ bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
 // quest 5163 - Are We There, Yeti?
 bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->IsCreature())
+    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->isCreature())
         return true;
 
     QuestLogEntry* qLogEntry = pSpell->p_caster->GetQuestLogForEntry(5163);

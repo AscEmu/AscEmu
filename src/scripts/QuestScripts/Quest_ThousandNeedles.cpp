@@ -65,7 +65,7 @@ public:
             return;
 
         std::string msg = "Hahah! ";
-        msg += mTarget->GetName();
+        msg += mTarget->getName().c_str();
         msg += ", you make quite a partner!";
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         creat->Emote(EMOTE_ONESHOT_LAUGH);

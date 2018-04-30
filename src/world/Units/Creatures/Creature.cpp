@@ -383,8 +383,8 @@ void Creature::generateLoot()
         // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
         gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
 
-        /// \ brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
-        /// case you're interested, the probability is around 2.98e-8.
+        //\brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
+        // case you're interested, the probability is around 2.98e-8.
         if (gold_fp < chunk_size)
             gold_fp = chunk_size;
 
@@ -443,6 +443,10 @@ void Creature::SaveToDB()
 
     ss << "DELETE FROM creature_spawns WHERE id = ";
     ss << spawnid;
+    ss << " AND min_build <= ";
+    ss << VERSION_STRING;
+    ss << " AND max_build >= ";
+    ss << VERSION_STRING;
     ss << ";";
 
     WorldDatabase.Execute(ss.str().c_str());
@@ -451,6 +455,8 @@ void Creature::SaveToDB()
 
     ss << "INSERT INTO creature_spawns VALUES("
         << spawnid << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
         << m_position.x << ","
@@ -486,7 +492,10 @@ void Creature::SaveToDB()
     else
         ss << 0 << ",";
 
-    ss << m_phase << ")";
+    ss << m_phase << ","
+        << "0,"             // event_entry
+        << "0,"             // waypoint_group
+        << ")";
 
     WorldDatabase.Execute(ss.str().c_str());
 }
@@ -502,7 +511,9 @@ void Creature::DeleteFromDB()
     if (!GetSQL_id())
         return;
 
-    WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u", GetSQL_id());
+    WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", GetSQL_id(), VERSION_STRING, VERSION_STRING);
+
+    //\todo: are waypoint version specific?
     WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE spawnid = %u", GetSQL_id());
 }
 
@@ -894,7 +905,7 @@ void Creature::CalcResistance(uint8_t type)
     else
         pos = (BaseResistance[type] * BaseResistanceModPct[type]) / 100;
 
-    if (IsPet() && isAlive() && IsInWorld())
+    if (isPet() && isAlive() && IsInWorld())
     {
         Player* owner = static_cast<Pet*>(this)->GetPetOwner();
         if (type == 0 && owner)
@@ -933,7 +944,7 @@ void Creature::CalcStat(uint8_t type)
     else
         pos = (BaseStats[type] * StatModPct[type]) / 100;
 
-    if (IsPet())
+    if (isPet())
     {
         Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
@@ -965,7 +976,7 @@ void Creature::CalcStat(uint8_t type)
         case STAT_STRENGTH:
         {
             //Attack Power
-            if (!IsPet())  //We calculate pet's later
+            if (!isPet())  //We calculate pet's later
             {
                 uint32 str = getStat(STAT_STRENGTH);
                 int32 AP = (str * 2 - 20);
@@ -1451,7 +1462,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     GetAIInterface()->setSplineWalk();
 
-    if (!creature_properties->isTrainingDummy && !IsVehicle())
+    if (!creature_properties->isTrainingDummy && !isVehicle())
     {
         GetAIInterface()->SetAllowedToEnterCombat(isattackable(spawn));
     }
@@ -1542,7 +1553,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     this->m_position.z = spawn->z;
     this->m_position.o = spawn->o;
 
-    if (IsVehicle())
+    if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
@@ -1559,7 +1570,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 {
     creature_properties = properties_;
 
-    if (creature_properties->isTrainingDummy == 0 && !IsVehicle())
+    if (creature_properties->isTrainingDummy == 0 && !isVehicle())
     {
         GetAIInterface()->SetAllowedToEnterCombat(true);
     }
@@ -1720,7 +1731,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     if (m_invisFlag > 0)
         m_invisible = true;
 
-    if (IsVehicle())
+    if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
@@ -2284,11 +2295,11 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
+    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (pVictim != this)
@@ -2455,11 +2466,11 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     GetAIInterface()->OnDeath(pAttacker);
 
     // Add Kills if Player is in Vehicle
-    if (pAttacker->IsVehicle())
+    if (pAttacker->isVehicle())
     {
         Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
 
-        if (vehicle_owner != nullptr && vehicle_owner->IsPlayer())
+        if (vehicle_owner != nullptr && vehicle_owner->isPlayer())
         {
             sQuestMgr.OnPlayerKill(static_cast<Player*>(vehicle_owner), this, true);
         }
@@ -2480,7 +2491,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         //remove owner warlock soul link from caster
         Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
 
-        if (owner != NULL && owner->IsPlayer())
+        if (owner != NULL && owner->isPlayer())
             static_cast<Player*>(owner)->EventDismissPet();
     }
 
@@ -2623,7 +2634,7 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     data << uint16(creature_properties->Family);
     data << uint32(0);
 
-    if (!IsVehicle())
+    if (!isVehicle())
         data << uint32(0);
     else
         data << uint32(0x8000101);
@@ -2657,7 +2668,7 @@ Object* Creature::GetPlayerOwner()
     return NULL;
 }
 
-bool Creature::IsVehicle()
+bool Creature::isVehicle()
 {
     if (creature_properties->vehicleid != 0)
         return true;

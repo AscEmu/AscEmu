@@ -27,7 +27,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
         }
 
         creature_target = static_cast<Creature*>(ai->GetUnit());
-        if (creature_target == nullptr || creature_target->IsPet())
+        if (creature_target == nullptr || creature_target->isPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
             return true;
@@ -118,7 +118,7 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
         }
 
         creature_target = static_cast<Creature*>(ai->GetUnit());
-        if (creature_target == nullptr || creature_target->IsPet())
+        if (creature_target == nullptr || creature_target->isPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
             return true;
@@ -453,7 +453,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
     {
         creature_target->m_spawn->movetype = 1;
         creature_target->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
-        WorldDatabase.Execute("UPDATE creature_spawns SET movetype = 1 WHERE id = %u", creature_target->GetSQL_id());
+        WorldDatabase.Execute("UPDATE creature_spawns SET movetype = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->GetSQL_id(), VERSION_STRING, VERSION_STRING);
     }
 
     m_session->GetPlayer()->waypointunit = creature_target->GetAIInterface();
@@ -596,7 +596,7 @@ bool ChatHandler::HandleWayPointMoveTypeCommand(const char* args, WorldSession* 
     if (creature_target == nullptr)
         return true;
 
-    WorldDatabase.Execute("UPDATE creature_spawns SET movetype = '%u' WHERE id = '%u'", option, creature_target->spawnid);
+    WorldDatabase.Execute("UPDATE creature_spawns SET movetype = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", option, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
     creature_target->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)option);
 

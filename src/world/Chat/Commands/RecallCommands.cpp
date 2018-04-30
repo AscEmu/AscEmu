@@ -27,7 +27,8 @@
 
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM recall ORDER BY name");
+    QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall "
+        "WHERE min_build <= %u AND max_build >= %u  ORDER BY name", getAEVersion(), getAEVersion());
 
     if (result == NULL)
         return false;
@@ -251,9 +252,9 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
 
         if (strnicmp((char*)location, locname, strlen(args)) == 0)
         {
-            sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", plr->GetName(), locname, locmap, x, y, z, o);
+            sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", plr->getName().c_str(), locname, locmap, x, y, z, o);
             if (plr->GetSession() && (plr->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
-                plr->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->GetName(), locname);
+                plr->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), locname);
 
             if (plr->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
                 sEventMgr.AddEvent(plr, &Player::EventSafeTeleport, locmap, uint32(0), LocationVector(x, y, z, o), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

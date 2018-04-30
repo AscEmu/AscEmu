@@ -24,7 +24,54 @@
 #include "Map/MapCell.h"
 #include "Corpse.h"
 #include "Objects/ObjectMgr.h"
+#include "Data/WoWCorpse.h"
 
+// MIT Start
+ //////////////////////////////////////////////////////////////////////////////////////////
+ // WoWData
+
+uint64_t Corpse::getOwnerGuid() const { return corpseData()->guid; }
+void Corpse::setOwnerGuid(uint64_t guid) { write(corpseData()->owner_guid, guid); }
+
+// party
+
+uint32_t Corpse::getDisplayId() const { return corpseData()->display_id; }
+void Corpse::setDisplayId(uint32_t id) { write(corpseData()->display_id, id); }
+
+uint32_t Corpse::getItem(uint8_t slot) const { return corpseData()->item[slot]; }
+void Corpse::setItem(uint8_t slot, uint32_t item) { write(corpseData()->item[slot], item); }
+
+//bytes 1 start
+//unk1
+
+uint8_t Corpse::getRace() const { return corpseData()->corpse_bytes_1.s.race; }
+void Corpse::setRace(uint8_t race) { write(corpseData()->corpse_bytes_1.s.race, race); }
+
+//unk2
+
+uint8_t Corpse::getSkinColor() const { return corpseData()->corpse_bytes_1.s.skin_color; }
+void Corpse::setSkinColor(uint8_t color) { write(corpseData()->corpse_bytes_1.s.skin_color, color); }
+//bytes 1 end
+
+//bytes 2 start
+uint8_t Corpse::getFace() const { return corpseData()->corpse_bytes_2.s.face; }
+void Corpse::setFace(uint8_t face) { write(corpseData()->corpse_bytes_2.s.face, face); }
+
+uint8_t Corpse::getHairStyle() const { return corpseData()->corpse_bytes_2.s.face; }
+void Corpse::setHairStyle(uint8_t style) { write(corpseData()->corpse_bytes_2.s.face, style); }
+
+uint8_t Corpse::getHairColor() const { return corpseData()->corpse_bytes_2.s.face; }
+void Corpse::setHairColor(uint8_t color) { write(corpseData()->corpse_bytes_2.s.face, color); }
+
+uint8_t Corpse::getFacialFeatures() const { return corpseData()->corpse_bytes_2.s.face; }
+void Corpse::setFacialFeatures(uint8_t feature) { write(corpseData()->corpse_bytes_2.s.face, feature); }
+//bytes 2 end
+
+uint32_t Corpse::getFlags() const { return corpseData()->corpse_flags; }
+void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags); }
+
+ // MIT End
+ // AGPL Start
 Corpse::Corpse(uint32 high, uint32 low)
 {
     m_objectType |= TYPE_CORPSE;
@@ -127,13 +174,13 @@ void Corpse::generateLoot()
 
 void Corpse::SpawnBones()
 {
-    setUInt32Value(CORPSE_FIELD_FLAGS, 5);
+    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
     SetOwner(0); // remove corpse owner association
     //remove item association
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
-        if (getUInt32Value(CORPSE_FIELD_ITEM + i))
-            setUInt32Value(CORPSE_FIELD_ITEM + i, 0);
+        if (getItem(i))
+            setItem(i, 0);
     }
     DeleteFromDB();
     objmgr.CorpseAddEventDespawn(this);
@@ -142,7 +189,7 @@ void Corpse::SpawnBones()
 
 void Corpse::Delink()
 {
-    setUInt32Value(CORPSE_FIELD_FLAGS, 5);
+    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
     SetOwner(0);
     SetCorpseState(CORPSE_STATE_BONES);
     DeleteFromDB();
@@ -150,7 +197,7 @@ void Corpse::Delink()
 
 void Corpse::SetOwner(uint64 guid)
 {
-    setUInt64Value(CORPSE_FIELD_OWNER, guid);
+    setOwnerGuid(guid);
     if (guid == 0)
     {
         //notify the MapCell that the Corpse has no more an owner so the MapCell can go idle (if there's nothing else)

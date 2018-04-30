@@ -71,7 +71,7 @@ uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)
 {
     write(unitData()->level, level);
-    if (IsPlayer())
+    if (isPlayer())
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
@@ -304,7 +304,7 @@ void Unit::setMoveWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
-    if (IsPlayer())
+    if (isPlayer())
     {
         WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
 #if VERSION_STRING != Cata
@@ -316,7 +316,7 @@ void Unit::setMoveWaterWalk()
         SendMessageToSet(&data, true);
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_WATER_WALK, 9);
 #if VERSION_STRING != Cata
@@ -332,7 +332,7 @@ void Unit::setMoveLandWalk()
 {
     RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
-    if (IsPlayer())
+    if (isPlayer())
     {
         WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
 #if VERSION_STRING != Cata
@@ -344,7 +344,7 @@ void Unit::setMoveLandWalk()
         SendMessageToSet(&data, true);
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_LAND_WALK, 9);
 #if VERSION_STRING != Cata
@@ -360,7 +360,7 @@ void Unit::setMoveFeatherFall()
 {
     AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
-    if (IsPlayer())
+    if (isPlayer())
     {
         WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
 #if VERSION_STRING != Cata
@@ -372,7 +372,7 @@ void Unit::setMoveFeatherFall()
         SendMessageToSet(&data, true);
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_FEATHER_FALL, 9);
 #if VERSION_STRING != Cata
@@ -388,7 +388,7 @@ void Unit::setMoveNormalFall()
 {
     RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
-    if (IsPlayer())
+    if (isPlayer())
     {
         WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
 #if VERSION_STRING != Cata
@@ -400,7 +400,7 @@ void Unit::setMoveNormalFall()
         SendMessageToSet(&data, true);
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_NORMAL_FALL, 9);
 #if VERSION_STRING != Cata
@@ -414,7 +414,7 @@ void Unit::setMoveNormalFall()
 
 void Unit::setMoveHover(bool set_hover)
 {
-    if (IsPlayer())
+    if (isPlayer())
     {
         if (set_hover)
         {
@@ -445,7 +445,7 @@ void Unit::setMoveHover(bool set_hover)
     }
 
     //\todo spline update
-    if (IsCreature())
+    if (isCreature())
     {
         if (set_hover)
         {
@@ -480,7 +480,7 @@ void Unit::setMoveHover(bool set_hover)
 
 void Unit::setMoveCanFly(bool set_fly)
 {
-    if (IsPlayer())
+    if (isPlayer())
     {
         if (set_fly)
         {
@@ -516,7 +516,7 @@ void Unit::setMoveCanFly(bool set_fly)
         }
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         if (set_fly)
         {
@@ -553,7 +553,7 @@ void Unit::setMoveCanFly(bool set_fly)
 
 void Unit::setMoveRoot(bool set_root)
 {
-    if (IsPlayer())
+    if (isPlayer())
     {
         if (set_root)
         {
@@ -583,7 +583,7 @@ void Unit::setMoveRoot(bool set_root)
         }
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         if (set_root)
         {
@@ -626,7 +626,7 @@ bool Unit::isRooted() const
 
 void Unit::setMoveSwim(bool set_swim)
 {
-    if (IsCreature())
+    if (isCreature())
     {
         if (set_swim)
         {
@@ -658,7 +658,7 @@ void Unit::setMoveSwim(bool set_swim)
 void Unit::setMoveDisableGravity(bool disable_gravity)
 {
 #if VERSION_STRING > TBC
-    if (IsPlayer())
+    if (isPlayer())
     {
         if (disable_gravity)
         {
@@ -688,7 +688,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         }
     }
 
-    if (IsCreature())
+    if (isCreature())
     {
         if (disable_gravity)
         {
@@ -722,7 +722,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 //             Unfortunately Movement and object update is a mess.
 void Unit::setMoveWalk(bool set_walk)
 {
-    if (IsCreature())
+    if (isCreature())
     {
         if (set_walk)
         {
@@ -897,7 +897,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
     Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
     {
-        if (IsPlayer())
+        if (isPlayer())
             player_mover = static_cast<Player*>(this);
     }
 
@@ -981,7 +981,7 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
     data << uint64_t(guid);
     data << uint32_t(spell_id);
 
-    if (IsPlayer())
+    if (isPlayer())
         static_cast<Player*>(this)->SendMessageToSet(&data, true);
     else
         SendMessageToSet(&data, false);
@@ -1030,7 +1030,7 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
     }
 
     // Check if we don't apply to pve
-    if (!PvE && !IsPlayer() && !IsPet())
+    if (!PvE && !isPlayer() && !isPet())
     {
         return;
     }
@@ -1047,7 +1047,7 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
 
     //100%, 50%, 25% bitwise
     localDuration >>= count;
-    if ((IsPlayer() || IsPet()) && localDuration > uint32_t(10000 >> count))
+    if ((isPlayer() || isPet()) && localDuration > uint32_t(10000 >> count))
     {
         localDuration = 10000 >> count;
         if (status == DIMINISHING_GROUP_NOT_DIMINISHED)
@@ -1078,7 +1078,7 @@ void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
     }
 
     // Check if we don't apply to pve
-    if (!pve && !IsPlayer() && !IsPet())
+    if (!pve && !isPlayer() && !isPet())
     {
         return;
     }
@@ -1145,7 +1145,7 @@ bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
     {
         if (m_auras[i] == nullptr)
             continue;
-        if (m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(type))
+        if (m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(type))
             return true;
     }
     return false;
@@ -1159,7 +1159,7 @@ bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) con
         {
             if (caster->m_auras[i] == nullptr)
                 continue;
-            if (!caster->m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+            if (!caster->m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                 continue;
             if (caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(spellInfo))
                 return true;
@@ -1173,18 +1173,18 @@ void Unit::addAuraStateAndAuras(AuraState state)
     if (!(getAuraState() & (1 << (state - 1))))
     {
         addAuraState(uint32_t(1 << (state - 1)));
-        if (IsPlayer())
+        if (isPlayer())
         {
             // Activate passive spells which require this aurastate
-            auto playerSpellMap = static_cast<Player*>(this)->mSpells;
+            const auto playerSpellMap = static_cast<Player*>(this)->mSpells;
             for (auto spellId : playerSpellMap)
             {
                 // Skip deleted spells, i.e. spells with lower rank than the current rank
                 auto deletedSpell = static_cast<Player*>(this)->mDeletedSpells.find(spellId);
                 if ((deletedSpell != static_cast<Player*>(this)->mDeletedSpells.end()))
                     continue;
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
-                if (spellInfo == nullptr || !spellInfo->IsPassive())
+                SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+                if (spellInfo == nullptr || !spellInfo->isPassive())
                     continue;
                 if (spellInfo->getCasterAuraState() == uint32_t(state))
                     CastSpell(this, spellId, true);
@@ -1208,7 +1208,7 @@ void Unit::removeAuraStateAndAuras(AuraState state)
                 continue;
             if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != uint32_t(state))
                 continue;
-            if (m_auras[i]->GetSpellInfo()->IsPassive() || state != AURASTATE_FLAG_ENRAGED)
+            if (m_auras[i]->GetSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
                 RemoveAura(m_auras[i]);
         }
     }
@@ -1234,7 +1234,7 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
         Aura* aura = m_auras[i];
-        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(aura_effect))
+        if (aura != nullptr && aura->GetSpellInfo()->hasEffectApplyAuraName(aura_effect))
             return aura;
     }
 

@@ -24,6 +24,18 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWContainer.h"
 
+// MIT start
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+
+uint32_t Container::getSlotCount() const { return containerData()->slot_count; }
+void Container::setSlotCount(uint32_t count) { write(containerData()->slot_count, count); }
+
+//\todo not used. is it really uint64_t (guid) or is it another value we want to send to the client?
+uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_slot[slot].guid; }
+void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }
+// MIT end
+
 Container::Container(uint32 high, uint32 low) : Item()
 {
     m_objectType |= (TYPE_ITEM | TYPE_CONTAINER);
@@ -72,13 +84,13 @@ void Container::LoadFromDB(Field* fields)
     setStackCount(1);
 
     setFlags(fields[8].GetUInt32());
-    SetItemRandomPropertyId(fields[9].GetUInt32());
+    setRandomPropertiesId(fields[9].GetUInt32());
 
-    SetDurabilityMax(m_itemProperties->MaxDurability);
-    SetDurability(fields[12].GetUInt32());
+    setMaxDurability(m_itemProperties->MaxDurability);
+    setDurability(fields[12].GetUInt32());
 
 
-    SetNumSlots(m_itemProperties->ContainerSlots);
+    setSlotCount(m_itemProperties->ContainerSlots);
 
     m_Slot = new Item*[m_itemProperties->ContainerSlots];
     memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
@@ -99,7 +111,7 @@ void Container::Create(uint32 itemid, Player* owner)
         setContainerGuid(owner->getGuid());
     }
     setStackCount(1);
-    SetNumSlots(m_itemProperties->ContainerSlots);
+    setSlotCount(m_itemProperties->ContainerSlots);
 
     m_Slot = new Item*[m_itemProperties->ContainerSlots];
     memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
@@ -109,7 +121,7 @@ void Container::Create(uint32 itemid, Player* owner)
 
 int8 Container::FindFreeSlot()
 {
-    int8 TotalSlots = static_cast<int8>(GetNumSlots());
+    int8 TotalSlots = static_cast<int8>(getSlotCount());
     for (int8 i = 0; i < TotalSlots; ++i)
     {
         if (!m_Slot[i])
@@ -123,7 +135,7 @@ int8 Container::FindFreeSlot()
 
 bool Container::HasItems()
 {
-    int8 TotalSlots = static_cast<int8>(GetNumSlots());
+    int8 TotalSlots = static_cast<int8>(getSlotCount());
     for (int8 i = 0; i < TotalSlots; i++)
     {
         if (m_Slot[i])
@@ -158,12 +170,12 @@ bool Container::AddItem(int16 slot, Item* item)
     if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
     {
         if (item->getItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
-            item->AccountBind();
+            item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
         else
-            item->SoulBind();
+            item->addFlags(ITEM_FLAG_SOULBOUND);
     }
 
-    SetSlot(slot, item->getGuid());
+    setSlot(slot, item->getGuid());
 
     //new version to fix bag issues
     if (m_owner->IsInWorld() && !item->IsInWorld())
@@ -223,22 +235,22 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
     if (m_Slot[DstSlot])
     {
-        SetSlot(DstSlot, m_Slot[DstSlot]->getGuid());
+        setSlot(DstSlot, m_Slot[DstSlot]->getGuid());
         m_Slot[DstSlot]->m_isDirty = true;
     }
     else
     {
-        SetSlot(DstSlot, 0);
+        setSlot(DstSlot, 0);
     }
 
     if (m_Slot[SrcSlot])
     {
-        SetSlot(SrcSlot, m_Slot[SrcSlot]->getGuid());
+        setSlot(SrcSlot, m_Slot[SrcSlot]->getGuid());
         m_Slot[SrcSlot]->m_isDirty = true;
     }
     else
     {
-        SetSlot(SrcSlot, 0);
+        setSlot(SrcSlot, 0);
     }
 }
 
@@ -256,7 +268,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
     if (pItem->getOwner() == m_owner)
     {
-        SetSlot(slot, 0);
+        setSlot(slot, 0);
         pItem->setContainer(nullptr);
 
         if (destroy)
@@ -286,7 +298,7 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
     if (pItem == NULL || pItem == this) return false;
     m_Slot[slot] = NULL;
 
-    SetSlot(slot, 0);
+    setSlot(slot, 0);
     pItem->setContainer(nullptr);
 
     if (pItem->IsInWorld())
@@ -312,7 +324,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             pItem->setContainer(this);
             pItem->setOwner(m_owner);
 
-            SetSlot(uint16(slot), pItem->getGuid());
+            setSlot(uint16(slot), pItem->getGuid());
 
             if (m_owner->IsInWorld() && !pItem->IsInWorld())
             {

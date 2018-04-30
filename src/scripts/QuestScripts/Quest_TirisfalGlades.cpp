@@ -47,7 +47,7 @@ public:
     {
         if (getCreature()->GetHealthPct() < 10)
         {
-            if (mAttacker->IsPlayer())
+            if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);

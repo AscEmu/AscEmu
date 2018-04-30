@@ -74,7 +74,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvData*/)
 
     for (const auto& itr : _player->getInRangeObjectsSet())
     {
-        if (!itr || !itr->IsCreature())
+        if (!itr || !itr->isCreature())
             continue;
 
         Creature* pCreature = static_cast<Creature*>(itr);

@@ -68,7 +68,7 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
         return;
     }
 
-    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->getGuid());
+    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->getName().c_str(), _player->getGuid());
     player->GetSession()->SendPacket(data);
     delete data;
 }

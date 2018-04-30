@@ -372,7 +372,7 @@ void MaexxnaAI::AIUpdate()
 //    if (Maexxna != NULL)
 //    {
 //        // Is target really added everytime and isn't this check redundant ?
-//        if (pTarget == NULL || !pTarget->IsPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
+//        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
 //            return;
 //
 //        uint32 Id = Util::getRandomUInt(1);
@@ -963,7 +963,7 @@ void AnubRekhanAI::Destroy()
 //        Creature* CreaturePtr = NULL;
 //        for (std::set< Object* >::iterator Iter = AnubRekhan->getCreature()->GetInRangeSetBegin(); Iter != AnubRekhan->getCreature()->GetInRangeSetEnd(); ++Iter)
 //        {
-//            if ((*Iter) == NULL || !(*Iter)->IsCreature())
+//            if ((*Iter) == NULL || !(*Iter)->isCreature())
 //                continue;
 //
 //            CreaturePtr = static_cast<Creature*>(*Iter);
@@ -1679,7 +1679,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
         {
             for (const auto& Iter : getCreature()->getInRangeObjectsSet())
             {
-                if (Iter == nullptr || !Iter->IsGameObject())
+                if (Iter == nullptr || !Iter->isGameObject())
                     continue;
 
                 GameObject* Fissure = static_cast<GameObject*>(Iter);

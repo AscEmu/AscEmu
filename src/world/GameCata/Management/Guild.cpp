@@ -24,7 +24,7 @@ void Guild::sendCommandResult(WorldSession* session, GuildCommandType type, Guil
     data << uint32_t(errCode);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_COMMAND_RESULT %s: Type: %u, code: %u, param: %s", session->GetPlayer()->GetName(), type, errCode, param.c_str());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_COMMAND_RESULT %s: Type: %u, code: %u, param: %s", session->GetPlayer()->getName().c_str(), type, errCode, param.c_str());
 }
 
 void Guild::sendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode)
@@ -33,7 +33,7 @@ void Guild::sendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode
     data << uint32_t(errCode);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s Code: %u", session->GetPlayer()->GetName(), errCode);
+    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s Code: %u", session->GetPlayer()->getName().c_str(), errCode);
 }
 
 
@@ -88,7 +88,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
     _todayExperience = 0;
     createLogHolders();
 
-    LogDebug("GUILD: creating guild %s for leader %s (%u)", name.c_str(), pLeader->GetName(), Arcemu::Util::GUID_LOPART(mLeaderGuid));
+    LogDebug("GUILD: creating guild %s for leader %s (%u)", name.c_str(), pLeader->getName().c_str(), Arcemu::Util::GUID_LOPART(mLeaderGuid));
 
     CharacterDatabase.Execute("DELETE FROM guild_member WHERE guildId = %u", mId);
 
@@ -284,7 +284,7 @@ void Guild::handleRoster(WorldSession* session)
 
     if (session)
     {
-        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_ROSTER %s", session->GetPlayer()->GetName());
+        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_ROSTER %s", session->GetPlayer()->getName().c_str());
         session->SendPacket(&data);
     }
     else
@@ -342,7 +342,7 @@ void Guild::handleQuery(WorldSession* session)
 
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_QUERY_RESPONSE %s", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_QUERY_RESPONSE %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::sendGuildRankInfo(WorldSession* session) const
@@ -385,7 +385,7 @@ void Guild::sendGuildRankInfo(WorldSession* session) const
     data.append(rankData);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANK %s", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANK %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
@@ -456,7 +456,7 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
         {
             setLeaderGuid(newGuildMaster);
             oldGuildMaster->changeRank(GR_INITIATE);
-            broadcastEvent(GE_LEADER_CHANGED, 0, session->GetPlayer()->GetName(), name.c_str());
+            broadcastEvent(GE_LEADER_CHANGED, 0, session->GetPlayer()->getName().c_str(), name.c_str());
         }
     }
 }
@@ -466,7 +466,7 @@ void Guild::handleSetBankTabInfo(WorldSession* session, uint8_t tabId, std::stri
     GuildBankTab* tab = getBankTab(tabId);
     if (tab == nullptr)
     {
-        LOG_ERROR("Player %s trying to change bank tab info from unexisting tab %d.", session->GetPlayer()->GetName(), tabId);
+        LOG_ERROR("Player %s trying to change bank tab info from unexisting tab %d.", session->GetPlayer()->getName().c_str(), tabId);
         return;
     }
 
@@ -615,7 +615,7 @@ void Guild::handleInviteMember(WorldSession* session, std::string const& name)
 
     sendCommandResult(session, GC_TYPE_INVITE, GC_ERROR_SUCCESS, name);
 
-    LogDebug("Player %s invited %s to join his Guild", player->GetName(), name.c_str());
+    LogDebug("Player %s invited %s to join his Guild", player->getName().c_str(), name.c_str());
 
     pInvitee->SetGuildIdInvited(mId);
     logEvent(GE_LOG_INVITE_PLAYER, player->getGuidLow(), pInvitee->getGuidLow());
@@ -656,7 +656,7 @@ void Guild::handleInviteMember(WorldSession* session, std::string const& name)
 
     data.writeBit(newGuildGuid[5]);
 
-    data.writeBits(player->GetNameString()->size(), 7);
+    data.writeBits(player->getName().size(), 7);
 
     data.writeBit(newGuildGuid[4]);
 
@@ -677,7 +677,7 @@ void Guild::handleInviteMember(WorldSession* session, std::string const& name)
     data.WriteByteSeq(newGuildGuid[7]);
     data.WriteByteSeq(newGuildGuid[2]);
 
-    data.WriteString(player->GetName());
+    data.WriteString(player->getName().c_str());
 
     data.WriteByteSeq(oldGuildGuid[7]);
     data.WriteByteSeq(oldGuildGuid[6]);
@@ -695,7 +695,7 @@ void Guild::handleInviteMember(WorldSession* session, std::string const& name)
 
     pInvitee->GetSession()->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_INVITE %s", pInvitee->GetNameString());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_INVITE %s", pInvitee->getName().c_str());
 }
 
 void Guild::handleAcceptMember(WorldSession* session)
@@ -733,7 +733,7 @@ void Guild::handleLeaveMember(WorldSession* session)
         deleteMember(player->getGuid(), false, false);
 
         logEvent(GE_LOG_LEAVE_GUILD, player->getGuidLow());
-        broadcastEvent(GE_LEFT, player->getGuid(), player->GetName());
+        broadcastEvent(GE_LEFT, player->getGuid(), player->getName().c_str());
 
         sendCommandResult(session, GC_TYPE_QUIT, GC_ERROR_SUCCESS, mName);
     }
@@ -766,7 +766,7 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
             {
                 deleteMember(guid, false, true);
                 logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(guid));
-                broadcastEvent(GE_REMOVED, 0, name.c_str(), player->GetName());
+                broadcastEvent(GE_REMOVED, 0, name.c_str(), player->getName().c_str());
                 sendCommandResult(session, GC_TYPE_REMOVE, GC_ERROR_SUCCESS, name);
             }
         }
@@ -821,7 +821,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         member->changeRank(static_cast<uint8_t>(newRankId));
 
         logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(member->getGUID()), static_cast<uint8_t>(newRankId));
-        broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, player->GetName(), name.c_str(), getRankName(static_cast<uint8_t>(newRankId)).c_str());
+        broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, player->getName().c_str(), name.c_str(), getRankName(static_cast<uint8_t>(newRankId)).c_str());
     }
 }
 
@@ -947,7 +947,7 @@ void Guild::handleMemberLogout(WorldSession* session)
         member->updateLogoutTime();
         member->resetFlags();
     }
-    broadcastEvent(GE_SIGNED_OFF, player->getGuid(), player->GetName());
+    broadcastEvent(GE_SIGNED_OFF, player->getGuid(), player->getName().c_str());
 
     saveGuildToDB();
 }
@@ -971,7 +971,7 @@ void Guild::handleGuildPartyRequest(WorldSession* session)
         return;
     }
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_PARTY_STATE_RESPONSE %s", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_PARTY_STATE_RESPONSE %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::sendEventLog(WorldSession* session) const
@@ -980,7 +980,7 @@ void Guild::sendEventLog(WorldSession* session) const
     mEventLog->writeLogHolderPacket(data);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT_LOG_QUERY_RESULT %s", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT_LOG_QUERY_RESULT %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::sendNewsUpdate(WorldSession* session)
@@ -1038,7 +1038,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
 
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
@@ -1053,7 +1053,7 @@ void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
         data << uint32_t(tabId);
         session->SendPacket(&data);
 
-        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_LOG_QUERY_RESULT %s TabId: %u", session->GetPlayer()->GetName(), tabId);
+        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_LOG_QUERY_RESULT %s TabId: %u", session->GetPlayer()->getName().c_str(), tabId);
     }
 }
 
@@ -1090,7 +1090,7 @@ void Guild::sendPermissions(WorldSession* session) const
 
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_PERMISSIONS_QUERY_RESULTS %s Rank: %u", session->GetPlayer()->GetName(), rankId);
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_PERMISSIONS_QUERY_RESULTS %s Rank: %u", session->GetPlayer()->getName().c_str(), rankId);
 }
 
 void Guild::sendMoneyInfo(WorldSession* session) const
@@ -1107,7 +1107,7 @@ void Guild::sendMoneyInfo(WorldSession* session) const
     data << int64_t(amount);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_MONEY_WITHDRAWN %s Money: %u", session->GetPlayer()->GetName(), amount);
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_MONEY_WITHDRAWN %s Money: %u", session->GetPlayer()->getName().c_str(), amount);
 }
 
 void Guild::sendLoginInfo(WorldSession* session)
@@ -1125,15 +1125,15 @@ void Guild::sendLoginInfo(WorldSession* session)
     data << mMotd;
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT %s MOTD", session->GetPlayer()->GetName());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT %s MOTD", session->GetPlayer()->getName().c_str());
 
     sendGuildRankInfo(session);
-    broadcastEvent(GE_SIGNED_ON, player->getGuid(), player->GetName());
+    broadcastEvent(GE_SIGNED_ON, player->getGuid(), player->getName().c_str());
 
-    data.Initialize(SMSG_GUILD_EVENT, 1 + 1 + player->GetNameString()->size() + 8);
+    data.Initialize(SMSG_GUILD_EVENT, 1 + 1 + player->getName().size() + 8);
     data << uint8_t(GE_SIGNED_ON);
     data << uint8_t(1);
-    data << player->GetName();
+    data << player->getName().c_str();
     data << uint64_t(player->getGuid());
     session->SendPacket(&data);
 
@@ -1522,7 +1522,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         player->SetRank(rankId);
         player->SetGuildLevel(getLevel());
         sendLoginInfo(player->GetSession());
-        name = player->GetName();
+        name = player->getName().c_str();
     }
     else
     {
@@ -2049,7 +2049,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     uint32_t enchants = 0;
                     for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
                     {
-                        if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(ench))))
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
                         {
                             tabData << uint32_t(enchantId);
                             tabData << uint32_t(ench);
@@ -2066,9 +2066,9 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     tabData << uint32_t(slotId);
                     tabData << uint32_t(0);
                     tabData << uint32_t(tabItem->getEntry());
-                    tabData << uint32_t(tabItem->GetItemRandomPropertyId());
+                    tabData << uint32_t(tabItem->getRandomPropertiesId());
                     tabData << uint32_t(abs(0));
-                    tabData << uint32_t(tabItem->GetItemRandomSuffixFactor());
+                    tabData << uint32_t(tabItem->getPropertySeed());
                 }
             }
         }
@@ -2264,7 +2264,7 @@ void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputat
     data << uint32_t(cap);
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_REPUTATION_WEEKLY_CAP %s: Left: %u", session->GetPlayer()->GetName(), cap);
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_REPUTATION_WEEKLY_CAP %s: Left: %u", session->GetPlayer()->getName().c_str(), cap);
 }
 
 void Guild::resetTimes(bool weekly)
@@ -2312,14 +2312,14 @@ void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sti
 
     if (itr == logs->end())
     {
-        LogDebug("HandleNewsSetSticky: %s requested unknown newsId %u - Sticky: %u", session->GetPlayer()->GetName(), newsId, sticky);
+        LogDebug("HandleNewsSetSticky: %s requested unknown newsId %u - Sticky: %u", session->GetPlayer()->getName().c_str(), newsId, sticky);
         return;
     }
 
     GuildNewsLogEntry* news = (GuildNewsLogEntry*)(*itr);
     news->setSticky(sticky);
 
-    LogDebug("HandleNewsSetSticky: %s chenged newsId %u sticky to %u", session->GetPlayer()->GetName(), newsId, sticky);
+    LogDebug("HandleNewsSetSticky: %s chenged newsId %u sticky to %u", session->GetPlayer()->getName().c_str(), newsId, sticky);
 
     WorldPacket data(SMSG_GUILD_NEWS_UPDATE, 7 + 32);
     data.writeBits(1, 21);
@@ -2440,7 +2440,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     Item* pSourceItem2 = nullptr;
     if (pSourceItem != nullptr)
     {
-        if (pSourceItem->IsSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
+        if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
         {
             player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
             return;
@@ -2562,7 +2562,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             {
                 for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
                 {
-                    if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(enchSlot))))
+                    if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
                     {
                         tabData << uint32_t(enchantId);
                         tabData << uint32_t(enchSlot);
@@ -2580,9 +2580,9 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             tabData << uint32_t(*itr);
             tabData << uint32_t(0);
             tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
-            tabData << uint32_t(tabItem ? tabItem->GetItemRandomPropertyId() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
             tabData << uint32_t(tabItem ? 0 : 0);
-            tabData << uint32_t(tabItem ? tabItem->GetItemRandomSuffixFactor() : 0);
+            tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
         }
 
         data.flushBits();
@@ -2623,7 +2623,7 @@ mTotalActivity(0), mWeekActivity(0), mTotalReputation(0), mWeekReputation(0)
 
 void Guild::GuildMember::setStats(Player* player)
 {
-    mName = player->GetName();
+    mName = player->getName().c_str();
     mLevel = static_cast<uint8_t>(player->getLevel());
     mClass = player->getClass();
     mZoneId = player->GetZoneId();

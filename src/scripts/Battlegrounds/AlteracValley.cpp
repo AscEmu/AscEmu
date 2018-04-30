@@ -1103,7 +1103,7 @@ void AlteracValley::AVNode::Assault(Player* plr)
     if (m_template->m_isGraveyard)
     {
         // send message
-        m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->GetName(), m_template->m_name,
+        m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
             plr->IsTeamHorde() ? "Horde" : "Alliance");
 
         plr->m_bgScore.MiscData[BG_SCORE_AV_GRAVEYARDS_ASSAULTED]++;
@@ -1729,7 +1729,7 @@ void AlteracValley::RemoveReinforcements(uint32 teamId, uint32 amt)
 
 void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
 {
-    if (pVictim->IsPlayer())
+    if (pVictim->isPlayer())
     {
         plr->m_bgScore.KillingBlows++;
         UpdatePvPData();
@@ -1738,7 +1738,7 @@ void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
 
 void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
 {
-    if (pVictim->IsPlayer())
+    if (pVictim->isPlayer())
         return;
 
     Player* plr2;

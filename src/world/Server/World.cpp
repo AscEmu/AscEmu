@@ -382,7 +382,7 @@ void World::disconnectSessionByAccountName(std::string accountName, WorldSession
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->GetName() : "noplayer");
+                session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
 
             session->Disconnect();
         }
@@ -411,7 +411,7 @@ void World::disconnectSessionByIp(std::string ipString, WorldSession* worldSessi
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                ip2.c_str(), session->GetPlayer() ? session->GetPlayer()->GetName() : "noplayer");
+                ip2.c_str(), session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
 
             session->Disconnect();
         }
@@ -435,11 +435,11 @@ void World::disconnectSessionByPlayerName(std::string playerName, WorldSession* 
         if (!session->GetPlayer())
             continue;
 
-        if (playerName.compare(session->GetPlayer()->GetName()) == 0)
+        if (playerName.compare(session->GetPlayer()->getName().c_str()) == 0)
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->GetName() : "noplayer");
+                session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
 
             session->Disconnect();
         }
@@ -1035,7 +1035,7 @@ void World::saveAllPlayersToDb()
         {
             auto startTime = Util::TimeNow();
             itr->second->SaveToDB(false);
-            LogDetail("Saved player `%s` (level %u) in %u ms.", itr->second->GetName(), itr->second->getLevel(), Util::GetTimeDifferenceToNow(startTime));
+            LogDetail("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), Util::GetTimeDifferenceToNow(startTime));
             ++count;
         }
     }

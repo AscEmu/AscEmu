@@ -99,7 +99,7 @@ bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);

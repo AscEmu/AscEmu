@@ -27,9 +27,21 @@ struct WoWContainer;
 class SERVER_DECL Container : public Item
 {
     // MIT Start
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
     const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
 public:
+
+    uint32_t getSlotCount() const;
+    void setSlotCount(uint32_t num);
+
+    //\todo not used. is it really uint64_t (guid) or is it another value we want to send to the client?
+    uint64_t getSlot(uint16_t slot) const;
+    void setSlot(uint16_t slot, uint64_t guid);
+
     // MIT End
+
         friend class WorldSession;
 
         Container(uint32 high, uint32 low);
@@ -50,10 +62,6 @@ public:
         bool SafeFullRemoveItemFromSlot(int16 slot);                        /// destroys item fully
 
         void SaveBagToDB(int8 slot, bool first, QueryBuffer* buf);
-        void SetNumSlots(uint32 num) { setUInt32Value(CONTAINER_FIELD_NUM_SLOTS, num); }
-        uint32 GetNumSlots() { return getUInt32Value(CONTAINER_FIELD_NUM_SLOTS); }
-        void SetSlot(uint16 slot, uint64 guid) { setUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2), guid); }
-        uint64 GetSlot(uint16 slot) { return getUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2)); }
 
 protected:
 

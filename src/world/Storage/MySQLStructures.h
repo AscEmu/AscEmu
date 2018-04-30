@@ -101,7 +101,9 @@ namespace MySQLStructure
     //creature_spawns
     struct CreatureSpawn
     {
-        uint32_t id;          // spawn ID
+        uint32_t id;
+        //min_build
+        //max_build
         uint32_t entry;
         float x;
         float y;
@@ -128,6 +130,8 @@ namespace MySQLStructure
         uint32_t Item3SlotDisplay;
         uint32_t CanFly;
         uint32_t phase;
+        //event_entry
+        //waypoint_group
 
         // sets one of the bytes of an uint32
         uint32_t setbyte(uint32_t buffer, uint8_t index, uint32_t byte)
@@ -141,9 +145,11 @@ namespace MySQLStructure
 
             return buffer;
         }
+
+        // additional table handling
+        std::string table;
     };
 
-    //creature_staticspawns
     //creature_timed_emotes
     //creature_waypoints
     //creature_waypoints_manual
@@ -156,8 +162,6 @@ namespace MySQLStructure
         float boundradius;
     };
 
-    //event_creature_spawns
-    //event_gameobject_spawns
     //event_properties
 
     //event_scripts
@@ -179,7 +183,9 @@ namespace MySQLStructure
     //gameobject_spawns
     struct GameobjectSpawn
     {
-        uint32_t id;        // spawn ID
+        uint32_t id;
+        //min_build
+        //max_build
         uint32_t entry;
         uint32_t map;
         float position_x;
@@ -200,9 +206,12 @@ namespace MySQLStructure
         //uint32_t stateNpcLink;
         uint32_t phase;
         uint32_t overrides;
+        //event_entry
+
+        // additional table handling
+        std::string table;
     };
 
-    //gameobject_staticspawns
     //gameobject_teleports
 
     //gossip_menu
@@ -521,15 +530,9 @@ namespace MySQLStructure
     //totemdisplayids
     struct TotemDisplayIds
     {
-        uint32_t displayId;
-        uint32_t draeneiId;
-        uint32_t trollId;
-        uint32_t orcId;
-#if VERSION_STRING == Cata
-        uint32_t taurenId;
-        uint32_t dwarfId;
-        uint32_t goblinId;
-#endif
+        uint8_t _race;
+        uint32_t display_id;
+        uint32_t race_specific_id;
     };
 
     //trainer_defs

@@ -102,12 +102,12 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     for (uint8_t i = 0; i < items_count; ++i)
     {
         pItem = _player->GetItemInterface()->GetItemByGUID(itemGUIDs[i]);
-        if (pItem == nullptr || pItem->IsSoulbound() || pItem->IsConjured())
+        if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
             SendMailError(MAIL_ERR_INTERNAL_ERROR);
             return;
         }
-        if (pItem->IsAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
+        if (pItem->isAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
         {
             WorldPacket data(SMSG_SEND_MAIL_RESULT, 16);
             data << uint32_t(0);
@@ -138,7 +138,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     }
 
     // Check if we're sending mail to ourselves
-    if (strcmp(player_info->name, _player->GetName()) == 0 && !GetPermissionCount())
+    if (strcmp(player_info->name, _player->getName().c_str()) == 0 && !GetPermissionCount())
     {
         SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
         return;
@@ -512,7 +512,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
     if (!pItem)
         return;
 
-    pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
+    pItem->addFlags(ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))
@@ -660,17 +660,17 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
             *data << uint32_t((pItem ? pItem->getEntry() : 0));
             for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
             {
-                *data << uint32_t((pItem ? pItem->GetEnchantmentId((EnchantmentSlot)j) : 0));
-                *data << uint32_t((pItem ? pItem->GetEnchantmentDuration((EnchantmentSlot)j) : 0));
-                *data << uint32_t((pItem ? pItem->GetEnchantmentCharges((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentId((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentDuration((EnchantmentSlot)j) : 0));
+                *data << uint32_t((pItem ? pItem->getEnchantmentCharges((EnchantmentSlot)j) : 0));
             }
 
-            *data << int32_t((pItem ? pItem->GetItemRandomPropertyId() : 0)); // can be negative
-            *data << uint32_t((pItem ? pItem->GetItemRandomSuffixFactor() : 0));
+            *data << int32_t((pItem ? pItem->getRandomPropertiesId() : 0)); // can be negative
+            *data << uint32_t((pItem ? pItem->getPropertySeed() : 0));
             *data << uint32_t((pItem ? pItem->getStackCount() : 0));
             *data << uint32_t((pItem ? pItem->GetChargesLeft() : 0));
-            *data << uint32_t((pItem ? pItem->GetDurabilityMax() : 0));
-            *data << uint32_t((pItem ? pItem->GetDurability() : 0));
+            *data << uint32_t((pItem ? pItem->getMaxDurability() : 0));
+            *data << uint32_t((pItem ? pItem->getDurability() : 0));
             *data << uint8_t(0);
         }
         ++realCount;

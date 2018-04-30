@@ -59,7 +59,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
                 }
 
                 SpellInfo* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
-                if (learnedSpellInfo && learnedSpellInfo->IsPrimaryProfession())
+                if (learnedSpellInfo && learnedSpellInfo->isPrimaryProfession())
                     primary_prof_first_rank = true;
             }
             if (!valid)
@@ -105,7 +105,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
             }
 
             SpellInfo* spell = sSpellCustomizations.GetSpellInfo(pSpell->spell);
-            if (spell && spell->IsPrimaryProfession())
+            if (spell && spell->isPrimaryProfession())
                 data << uint32_t(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
             else
                 data << uint32_t(1);
@@ -155,7 +155,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     if (pSpell == nullptr)
     {
-        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->GetName());
+        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->getName().c_str());
         this->Disconnect();
         return;
     }

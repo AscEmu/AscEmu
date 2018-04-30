@@ -5,17 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#define TEST_UNIT() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsCreature()) { return 0; }
-#define TEST_UNIT_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsCreature()) { lua_pushboolean(L,0); return 1; }
+#define TEST_UNIT() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { return 0; }
+#define TEST_UNIT_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { lua_pushboolean(L,0); return 1; }
 
-#define TEST_PLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsPlayer()) { return 0; }
-#define TEST_PLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsPlayer()) { lua_pushboolean(L,0); return 1; }
+#define TEST_PLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer()) { return 0; }
+#define TEST_PLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer()) { lua_pushboolean(L,0); return 1; }
 
-#define TEST_UNITPLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsUnit()) { return 0; }
-#define TEST_UNITPLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsUnit()) { lua_pushboolean(L,0); return 1; }
+#define TEST_UNITPLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer()) { return 0; }
+#define TEST_UNITPLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer()) { lua_pushboolean(L,0); return 1; }
 
-#define TEST_GO() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsGameObject()) { return 0; }
-#define TEST_GO_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsGameObject()) { lua_pushboolean(L,0); return 1; }
+#define TEST_GO() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject()) { return 0; }
+#define TEST_GO_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject()) { lua_pushboolean(L,0); return 1; }
 
 #define RET_NIL( ){ lua_pushnil(L); return 1; }
 #define RET_BOOL(exp) { (exp) ? lua_pushboolean(L,1) : lua_pushboolean(L,0); return 1; }

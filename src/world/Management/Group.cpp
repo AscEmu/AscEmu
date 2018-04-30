@@ -190,8 +190,8 @@ void Group::SetLeader(Player* pPlayer, bool silent)
 
         if (silent == false)
         {
-            WorldPacket data(SMSG_GROUP_SET_LEADER, pPlayer->GetNameString()->size() + 1);
-            data << pPlayer->GetName();
+            WorldPacket data(SMSG_GROUP_SET_LEADER, pPlayer->getName().size() + 1);
+            data << pPlayer->getName().c_str();
             SendPacketToAll(&data);
         }
     }
@@ -293,7 +293,7 @@ void Group::Update()
                                 continue;
 
                             Player* plr = (*itr2)->m_loggedInPlayer;
-                            data << (plr ? plr->GetName() : (*itr2)->name);
+                            data << (plr ? plr->getName().c_str() : (*itr2)->name);
 							if(plr)
 								data << plr->getGuid();
 							else
@@ -514,7 +514,7 @@ void Group::RemovePlayer(PlayerInfo* info)
             pPlayer->GetSession()->SendPacket(&data);
 
 #if VERSION_STRING == Cata
-            pPlayer->GetSession()->SendPartyCommandResult(pPlayer, 2, pPlayer->GetName(), ERR_PARTY_NO_ERROR);
+            pPlayer->GetSession()->SendPartyCommandResult(pPlayer, 2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR);
             pPlayer->GetSession()->SendEmptyGroupList(pPlayer);
 #else
             data.Initialize(SMSG_PARTY_COMMAND_RESULT);
@@ -1291,7 +1291,7 @@ void Group::SetRaidDifficulty(uint8 diff)
 
 void Group::SendLootUpdates(Object* o)
 {
-    if (o->IsUnit())
+    if (o->isCreatureOrPlayer())
     {
         // Build the actual update.
         ByteBuffer buf(500);
@@ -1445,7 +1445,7 @@ void Group::Teleport(WorldSession* m_session)
 				// skip offline players and not in world players
 				if(member == NULL || !member->IsInWorld())
 					continue;
-				sChatHandler.HandleSummonCommand(member->GetName(), m_session);
+				sChatHandler.HandleSummonCommand(member->getName().c_str(), m_session);
 				//member->SafeTeleport(map, instanceid, x, y, z, o);
 			}
 		}

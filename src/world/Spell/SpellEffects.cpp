@@ -564,7 +564,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         case 48001:
         case 48002:
         {
-            if (!u_caster || !u_caster->IsPet())
+            if (!u_caster || !u_caster->isPet())
                 return;
 
             //TO< Pet* >(u_caster)->Dismiss(true);
@@ -584,7 +584,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     //SPELL_HASH_DEMONIC_SACRIFICE
     if (GetSpellInfo()->getId() == 18788)
     {
-        if (!p_caster || !unitTarget || !unitTarget->IsPet())
+        if (!p_caster || !unitTarget || !unitTarget->isPet())
             return;
 
         //TO< Pet* >(unitTarget)->Dismiss(true);
@@ -599,7 +599,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     else
     {
         // moar cheaters
-        if (!p_caster || (u_caster && u_caster->IsPet()))
+        if (!p_caster || (u_caster && u_caster->isPet()))
             return;
 
         if (p_caster->GetSession()->GetPermissionCount() == 0)
@@ -631,14 +631,14 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     {
         if (GetSpellInfo()->getId() == 32445 || GetSpellInfo()->getId() == 28883)
         {
-            int32 reduce = (int32)(GetSpellInfo()->getDmg_multiplier(effectIndex) * 100.0f);
+            int32 reduce = (int32)(GetSpellInfo()->getEffectDamageMultiplier(effectIndex) * 100.0f);
             reduce -= 100;
 
             if (reduce && chaindamage)
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
                 }
                 chaindamage += ((GetSpellInfo()->getEffectBasePoints(effectIndex) + 51) * reduce / 100);
             }
@@ -650,13 +650,13 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
         }
         else
         {
-            int32 reduce = (int32)(GetSpellInfo()->getDmg_multiplier(effectIndex) * 100.0f);
+            int32 reduce = (int32)(GetSpellInfo()->getEffectDamageMultiplier(effectIndex) * 100.0f);
 
             if (reduce && chaindamage)
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
                 }
                 chaindamage = chaindamage * reduce / 100;
             }
@@ -911,7 +911,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     uint32 sph = p_caster->getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + 1);
                     int32 ap = p_caster->GetAP();
                     dmg += float2int32((0.15f * sph) + (0.15f * ap));
-                    if (unitTarget && unitTarget->IsCreature())
+                    if (unitTarget && unitTarget->isCreature())
                     {
                         uint32 type = static_cast<Creature*>(unitTarget)->GetCreatureProperties()->Type;
                         if (type == UNIT_TYPE_UNDEAD || type == UNIT_TYPE_DEMON)
@@ -1372,7 +1372,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case WARRIOR:
             case ROGUE:
             case HUNTER:
+#if VERSION_STRING > TBC
             case DEATHKNIGHT:
+#endif
                 static_damage = true; //No spells from these classes benefit from spell damage. Prevents Arc hunters, frost DKs, etc.
                 break;
             default:
@@ -1438,7 +1440,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     uint32 spellId = GetSpellInfo()->getId();
 
     // Portals
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_COORDINATES))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_COORDINATES))
     {
         TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(spellId);
         if (teleport_coord == nullptr)
@@ -1452,9 +1454,9 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Hearthstone and co.
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT))
     {
-        if (unitTarget->IsPlayer())
+        if (unitTarget->isPlayer())
         {
             Player* p = static_cast<Player*>(unitTarget);
 
@@ -1464,7 +1466,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Summon
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_TO_CASTER))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_CASTER))
     {
         if (u_caster == nullptr)
             return;
@@ -1474,7 +1476,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     }
 
     // Shadowstep for example
-    if (m_spellInfo->HasCustomFlagForEffect(effectIndex, TELEPORT_BEHIND_TARGET))
+    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_BEHIND_TARGET))
     {
         if (p_caster == nullptr)
             return;
@@ -1494,7 +1496,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
             }
         }
 
-        if (unitTarget->IsCreature())
+        if (unitTarget->isCreature())
         {
             if (unitTarget->getTargetGuid() != 0)
             {
@@ -1540,7 +1542,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
     if (unitTarget == nullptr)
         return;
     // can't apply stuns/fear/polymorph/root etc on boss
-    if (unitTarget->IsCreature())
+    if (unitTarget->isCreature())
     {
         if (u_caster != nullptr && (u_caster != unitTarget))
         {
@@ -1680,7 +1682,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 #ifdef GM_Z_DEBUG_DIRECTLY
     else
     {
-        if (unitTarget->IsPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->GetSession() && TO< Player* >(unitTarget)->GetSession()->CanUseCommand('z'))
+        if (unitTarget->isPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->GetSession() && TO< Player* >(unitTarget)->GetSession()->CanUseCommand('z'))
         {
             sChatHandler.BlueSystemMessage(TO< Player* >(unitTarget)->GetSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
                                            i);
@@ -1718,7 +1720,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         uint32 Duration = GetDuration();
 
         // Handle diminishing returns, if it should be resisted, it'll make duration 0 here.
-        if (!(GetSpellInfo()->IsPassive())) // Passive
+        if (!(GetSpellInfo()->isPassive())) // Passive
         {
             unitTarget->applyDiminishingReturnTimer(&Duration, GetSpellInfo());
         }
@@ -1819,7 +1821,7 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
 
     uint32 powerField = UNIT_FIELD_POWER1 + GetSpellInfo()->getEffectMiscValue(effectIndex);
     uint32_t curPower = unitTarget->getUInt32Value(static_cast<uint16_t>(powerField));
-    if (powerField == UNIT_FIELD_POWER1 && unitTarget->IsPlayer())
+    if (powerField == UNIT_FIELD_POWER1 && unitTarget->isPlayer())
     {
         Player* mPlayer = static_cast< Player* >(unitTarget);
         if (mPlayer->IsInFeralForm())
@@ -1967,7 +1969,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             int32 reduce = GetSpellInfo()->getEffectDieSides(effectIndex) + 1;
             if (u_caster != nullptr)
             {
-                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellGroupType());
+                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->getSpellFamilyFlags());
             }
             chaindamage -= (reduce * chaindamage) / 100;
             Heal((int32)chaindamage);
@@ -1981,7 +1983,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
         {
             case 31616:
             {
-                if (unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct() < 30)
+                if (unitTarget && unitTarget->isPlayer() && pSpellId && unitTarget->GetHealthPct() < 30)
                 {
                     //check for that 10 second cooldown
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(pSpellId);
@@ -2014,7 +2016,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
             case 34299: //Druid: Improved Leader of the PAck
             {
-                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
+                if (unitTarget == nullptr || !unitTarget->isPlayer() || !unitTarget->isAlive())
                     break;
 
                 Player* mPlayer = static_cast< Player* >(unitTarget);
@@ -2031,7 +2033,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             break;
             case 22845: // Druid: Frenzied Regeneration
             {
-                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
+                if (unitTarget == nullptr || !unitTarget->isPlayer() || !unitTarget->isAlive())
                     break;
 
                 Player* mPlayer = static_cast< Player* >(unitTarget);
@@ -2303,12 +2305,12 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->IsCreature() && unitTarget->IsPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-                    if (!unitTarget->IsPet())
+                    if (!unitTarget->isPet())
                     {
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
@@ -2332,7 +2334,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->GetOwner()));
+        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
         if (!playerTarget) return;
     }
 
@@ -2361,7 +2363,7 @@ void Spell::SpellEffectDodge(uint8_t /*effectIndex*/)
     //i think this actually enables the skill to be able to dodge melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
     //this is only basic value and will be overwritten elsewhere !!!
-    //  if (unitTarget->IsPlayer())
+    //  if (unitTarget->isPlayer())
     //      unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
 }
 
@@ -2375,7 +2377,7 @@ void Spell::SpellEffectBlock(uint8_t /*effectIndex*/)
 {
     //i think this actually enables the skill to be able to block melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
-    //  if (unitTarget->IsPlayer())
+    //  if (unitTarget->isPlayer())
     //      unitTarget->SetFloatValue(PLAYER_BLOCK_PERCENTAGE,damage);
 }
 
@@ -2601,7 +2603,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                     WorldPacket* data;
                     char msg[256];
-                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->GetName(), se->getName().c_str());
+                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
                     data = sChatHandler.FillMessageData(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, msg, p_caster->getGuid(), 0);
                     p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, data, 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
                     delete data;
@@ -2747,7 +2749,7 @@ void Spell::SpellEffectDefense(uint8_t /*effectIndex*/)
     //i think this actually enables the skill to be able to use defense
     //value is static and sets value directly which will be modified by other factors
     //this is only basic value and will be overwritten elsewhere !!!
-    //  if (unitTarget->IsPlayer())
+    //  if (unitTarget->isPlayer())
     //      unitTarget->SetFloatValue(UNIT_FIELD_RESISTANCES,damage);
 }
 
@@ -2959,7 +2961,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     //if( u_caster == NULL || !u_caster->IsInWorld() )
     //	return;
 
-    if ((!m_caster->IsGameObject() && !m_caster->IsUnit()) || !m_caster->IsInWorld())
+    if ((!m_caster->isGameObject() && !m_caster->isCreatureOrPlayer()) || !m_caster->IsInWorld())
         return;
 
     uint32 cr_entry = GetSpellInfo()->getEffectMiscValue(effectIndex);
@@ -3000,7 +3002,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             p->setSummonedByGuid(m_caster->getGuid());
             p->setCreatedByGuid(m_caster->getGuid());
 
-            if (m_caster->IsGameObject())
+            if (m_caster->isGameObject())
                 p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
             else
                 p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
@@ -3373,7 +3375,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                     Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (oit != nullptr)
                     {
-                        if (oit->GetDurability() != 0)
+                        if (oit->getDurability() != 0)
                         {
                             if (oit->getItemProperties()->Class == 2 && oit->getItemProperties()->SubClass == 15)   // daggers
                                 damage = 105; //causing 105% weapon damage with daggers
@@ -3420,7 +3422,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
     //\todo Following should be / is probably in SpellTarget code
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
-        if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
+        if (!itr || !itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())
             continue;
 
         Unit* t = static_cast<Unit*>(itr);
@@ -3476,7 +3478,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     {
                         v = lock->minlockskill[j];
                         itemTarget->locked = false;
-                        itemTarget->UnLock();
+                        itemTarget->addFlags(ITEM_FLAG_LOOTABLE);
                         DetermineSkillUp(SKILL_LOCKPICKING, v / 5);
                         break;
                     }
@@ -3678,7 +3680,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
 
     //Save durability of the old item
     Player* owner = i_caster->getOwner();
-    uint32 dur = i_caster->GetDurability();
+    uint32 dur = i_caster->getDurability();
 
     result = owner->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->getGuid());
     if (!result)
@@ -3692,7 +3694,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     Item* it = objmgr.CreateItem(itemid, owner);
     if (!it) return;
 
-    it->SetDurability(dur);
+    it->setDurability(dur);
     //additem
 
     //additem
@@ -3711,7 +3713,7 @@ void Spell::SpellEffectApplyGroupAA(uint8_t effectIndex)
 
 void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 {
-    if (playerTarget == nullptr && unitTarget && unitTarget->IsPet()) // something's wrong with this logic here.
+    if (playerTarget == nullptr && unitTarget && unitTarget->isPet()) // something's wrong with this logic here.
     {
         // bug in target map fill?
         //playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.m_unitTarget);
@@ -4266,7 +4268,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
     }
 
     if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->GetName());
+        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
     itemTarget->RemoveProfessionEnchant();
@@ -4322,7 +4324,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
 
 void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
 {
-    if (unitTarget == nullptr || !unitTarget->IsCreature())
+    if (unitTarget == nullptr || !unitTarget->isCreature())
         return;
     Creature* tame = static_cast<Creature*>(unitTarget);
 
@@ -4409,15 +4411,15 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
 
 void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
 {
-    /*if (unitTarget && m_caster->GetTypeId() == TYPEID_PLAYER)
+    /*if (unitTarget && m_caster->getObjectTypeId() == TYPEID_PLAYER)
     {
-    if (unitTarget->IsPet() && unitTarget->GetTypeId() == TYPEID_UNIT)
+    if (unitTarget->isPet() && unitTarget->getObjectTypeId() == TYPEID_UNIT)
     {
     TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->getEntry());
     }
     }*/
 
-    if (unitTarget && unitTarget->IsPet() && p_caster)
+    if (unitTarget && unitTarget->isPet() && p_caster)
     {
         Pet* pPet = static_cast< Pet* >(unitTarget);
         if (pPet->IsSummonedPet())
@@ -4532,7 +4534,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
     if (unitTarget == nullptr || !unitTarget->isAlive() || unitTarget->getPowerType() != POWER_TYPE_MANA)
         return;
 
-    if (unitTarget->IsPlayer())
+    if (unitTarget->isPlayer())
     {
         Player* mPlayer = static_cast< Player* >(unitTarget);
         if (mPlayer->IsInFeralForm())
@@ -4543,7 +4545,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
     }
     int32 mult = damage;
     damage = mult * unitTarget->GetMaxPower(POWER_TYPE_MANA) / 100;
-    if (m_caster->IsUnit())  //Spell ctor has ASSERT(m_caster != NULL) so there's no need to add NULL checks, even if static analysis reports them.
+    if (m_caster->isCreatureOrPlayer())  //Spell ctor has ASSERT(m_caster != NULL) so there's no need to add NULL checks, even if static analysis reports them.
     {
         Unit* caster = static_cast< Unit* >(m_caster);
         if ((uint32)damage > caster->GetMaxPower(POWER_TYPE_MANA) * (mult * 2) / 100)
@@ -4559,13 +4561,13 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 
 void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
 {
-    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsCreature())
+    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->isCreature())
         return;
 
     int32 amount = GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->getSpellGroupType());
-    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->getSpellGroupType());
+    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->getSpellFamilyFlags());
+    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->getSpellFamilyFlags());
 
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
@@ -4607,7 +4609,7 @@ void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)
 
 void Spell::SpellEffectPowerFunnel(uint8_t /*effectIndex*/) // Power Funnel
 {
-    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsPet())
+    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->isPet())
         return;
 
     //does not exist
@@ -4657,7 +4659,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (GetSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->IsPlayer())
+    if (GetSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->isPlayer())
         return;
 
     if (!playerTarget)
@@ -4699,7 +4701,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 && ((TargetSpell->GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
                 || (TargetSpell->GetSpellInfo()->getChannelInterruptFlags() & CHANNEL_INTERRUPT_ON_4)))
             {
-                if (unitTarget->IsPlayer())
+                if (unitTarget->isPlayer())
                 {
                     // Check for interruption reducing talents
                     int32 DurationModifier = static_cast< Player* >(unitTarget)->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
@@ -4747,7 +4749,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
 void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
 {
     //Show random loot based on roll,
-    if (!unitTarget || !p_caster || !unitTarget->IsCreature())
+    if (!unitTarget || !p_caster || !unitTarget->isCreature())
         return;
 
     Creature* target = static_cast< Creature* >(unitTarget);
@@ -4836,7 +4838,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
 
 void Spell::SpellEffectHealMechanical(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->IsCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
+    if (!unitTarget || !unitTarget->isCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
         return;
 
     Heal(damage);
@@ -4884,7 +4886,7 @@ void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks ma
 
     for (const auto& itr : u_caster->getInRangeObjectsSet())
     {
-        if (itr && itr->IsCreature())
+        if (itr && itr->isCreature())
             static_cast<Creature*>(itr)->GetAIInterface()->RemoveThreatByPtr(unitTarget);
     }
 }
@@ -5108,8 +5110,8 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
             int32 amt = 20;
-            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
-            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->getSpellGroupType());
+            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->getSpellFamilyFlags());
+            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->getSpellFamilyFlags());
             health = uint32((unitTarget->getMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -5140,7 +5142,7 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
 
 void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->IsCreature())
+    if (!unitTarget || !unitTarget->isCreature())
         return;
 
     Creature* cr = static_cast<Creature*>(unitTarget);
@@ -5382,8 +5384,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     Pet* pPet = p_caster->GetSummon();
     if (pPet)
     {
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
 
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
@@ -5401,8 +5403,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         if (pPet == nullptr)//no pets to Revive
             return;
 
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellFamilyFlags());
 
         pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
     }
@@ -5460,12 +5462,12 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->IsCreature() && unitTarget->IsPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-                    if (!unitTarget->IsPet())
+                    if (!unitTarget->isPet())
                     {
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
@@ -5488,7 +5490,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->GetOwner()));
+        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
         if (!playerTarget) return;
     }
 
@@ -5559,7 +5561,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     else if (corpse)
     {
         // find the corpses' owner
-        Player* owner = objmgr.GetPlayer(GET_LOWGUID_PART(corpse->GetOwner()));
+        Player* owner = objmgr.GetPlayer(GET_LOWGUID_PART(corpse->getOwnerGuid()));
         if (owner)
         {
             if (!owner->m_bg) return;
@@ -5572,7 +5574,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             corpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
 
         // remove skinnable flag
-        corpse->setUInt32Value(CORPSE_FIELD_FLAGS, 5);
+        corpse->setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
 
         // remove owner association
         corpse->SetOwner(0);
@@ -5924,7 +5926,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsPlayer())
+    if (!unitTarget || !unitTarget->isAlive() || !unitTarget->isPlayer())
         return;
 
     Player* p_target = static_cast< Player* >(unitTarget);
@@ -5960,7 +5962,7 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectReduceThreatPercent(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->IsCreature() || !u_caster || unitTarget->GetAIInterface()->getThreatByPtr(u_caster) == 0)
+    if (!unitTarget || !unitTarget->isCreature() || !u_caster || unitTarget->GetAIInterface()->getThreatByPtr(u_caster) == 0)
         return;
 
     unitTarget->GetAIInterface()->modThreatByPtr(u_caster, (int32)unitTarget->GetAIInterface()->getThreatByPtr(u_caster) * damage / 100);
@@ -6104,7 +6106,7 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
     if (!p_caster || !unitTarget)
         return;
 
-    if ((unitTarget->IsPlayer() && p_caster->GetGroup() != static_cast< Player* >(unitTarget)->GetGroup()) || (unitTarget->IsCreature() && !unitTarget->IsPet()))
+    if ((unitTarget->isPlayer() && p_caster->GetGroup() != static_cast< Player* >(unitTarget)->GetGroup()) || (unitTarget->isCreature() && !unitTarget->isPet()))
         return;
 
     p_caster->SetMisdirectionTarget(unitTarget->getGuid());
@@ -6248,7 +6250,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
     }
 
     if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->GetName());
+        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant
     itemTarget->RemoveEnchantment(6);
@@ -6313,7 +6315,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
 {
-    if (!unitTarget || !unitTarget->IsPet() ||
+    if (!unitTarget || !unitTarget->isPet() ||
         !static_cast< Pet* >(unitTarget)->GetPetOwner() || static_cast< Pet* >(unitTarget)->GetPetOwner()->getClass() != HUNTER)
         return;
 
@@ -6407,7 +6409,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
 {
-    if (!unitTarget || !unitTarget->IsPlayer())
+    if (!unitTarget || !unitTarget->isPlayer())
         return;
 
     int16 slot = int16(GetSpellInfo()->getEffectMiscValue(effectIndex));
@@ -6425,7 +6427,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
             pItem = p_caster->GetItemInterface()->GetInventoryItem(static_cast<uint16>(k));
             if (pItem != nullptr)
             {
-                if (pItem->IsContainer())
+                if (pItem->isContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
@@ -6433,8 +6435,8 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
-                            uint32 maxdur = pItem->GetDurabilityMax();
-                            uint32 olddur = pItem->GetDurability();
+                            uint32 maxdur = pItem->getMaxDurability();
+                            uint32 olddur = pItem->getDurability();
                             uint32 newdur = (olddur)-(damage);
 
                             if (static_cast<int32>(newdur) < 0)
@@ -6443,14 +6445,14 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                             if (newdur > maxdur)
                                 newdur = maxdur;
 
-                            pItem->SetDurability(newdur);
+                            pItem->setDurability(newdur);
                         }
                     }
                 }
                 else
                 {
-                    uint32 maxdur = pItem->GetDurabilityMax();
-                    uint32 olddur = pItem->GetDurability();
+                    uint32 maxdur = pItem->getMaxDurability();
+                    uint32 olddur = pItem->getDurability();
                     uint32 newdur = (olddur)-(damage);
 
                     if (static_cast<int32>(newdur) < 0)
@@ -6460,7 +6462,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                         newdur = maxdur;
 
                     // Apply / Disapply enchantements from this item
-                    pItem->SetDurability(newdur);
+                    pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
                         p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
@@ -6478,8 +6480,8 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
     pItem = p_caster->GetItemInterface()->GetInventoryItem(slot);
     if (pItem)
     {
-        uint32 maxdur = pItem->GetDurabilityMax();
-        uint32 olddur = pItem->GetDurability();
+        uint32 maxdur = pItem->getMaxDurability();
+        uint32 olddur = pItem->getDurability();
         uint32 newdur = (olddur)-(damage);
 
         if (static_cast<int32>(newdur) < 0)
@@ -6488,7 +6490,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
         if (newdur > maxdur)
             newdur = maxdur;
 
-        pItem->SetDurability(newdur);
+        pItem->setDurability(newdur);
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)
@@ -6500,7 +6502,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
 
 void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
 {
-    if (!unitTarget || !unitTarget->IsPlayer())
+    if (!unitTarget || !unitTarget->isPlayer())
         return;
 
     int16 slot = int16(GetSpellInfo()->getEffectMiscValue(effectIndex));
@@ -6518,7 +6520,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
             pItem = p_caster->GetItemInterface()->GetInventoryItem(static_cast<uint16>(k));
             if (pItem != nullptr)
             {
-                if (pItem->IsContainer())
+                if (pItem->isContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
@@ -6526,8 +6528,8 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
-                            uint32 maxdur = pItem->GetDurabilityMax();
-                            uint32 olddur = pItem->GetDurability();
+                            uint32 maxdur = pItem->getMaxDurability();
+                            uint32 olddur = pItem->getDurability();
                             uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
                             if (static_cast<int32>(newdur) < 0)
@@ -6536,14 +6538,14 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                             if (newdur > maxdur)
                                 newdur = maxdur;
 
-                            pItem->SetDurability(newdur);
+                            pItem->setDurability(newdur);
                         }
                     }
                 }
                 else
                 {
-                    uint32 maxdur = pItem->GetDurabilityMax();
-                    uint32 olddur = pItem->GetDurability();
+                    uint32 maxdur = pItem->getMaxDurability();
+                    uint32 olddur = pItem->getDurability();
                     uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
                     if (static_cast<int32>(newdur) < 0)
@@ -6553,7 +6555,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                         newdur = maxdur;
 
                     // Apply / Disapply enchantements from this item
-                    pItem->SetDurability(newdur);
+                    pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
                         p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
@@ -6574,8 +6576,8 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
     pItem = p_caster->GetItemInterface()->GetInventoryItem(slot);
     if (pItem)
     {
-        uint32 maxdur = pItem->GetDurabilityMax();
-        uint32 olddur = pItem->GetDurability();
+        uint32 maxdur = pItem->getMaxDurability();
+        uint32 olddur = pItem->getDurability();
         uint32 newdur = (olddur - (uint32)(maxdur * (damage / 100.0)));
 
         if (static_cast<int32>(newdur) < 0)
@@ -6584,7 +6586,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
         if (newdur > maxdur)
             newdur = maxdur;
 
-        pItem->SetDurability(newdur);
+        pItem->setDurability(newdur);
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)

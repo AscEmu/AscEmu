@@ -480,14 +480,7 @@ void ObjectMgr::LoadPlayersInfo()
                 delete result2;
             }
 
-#if VERSION_STRING != Cata
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI)
-#else
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI || pn->race == RACE_WORGEN)
-#endif
-                pn->team = 0;
-            else
-                pn->team = 1;
+            pn->team = getSideByRace(pn->race);
 
             if (GetPlayerInfoByName(pn->name) != nullptr)
             {
@@ -597,7 +590,7 @@ Corpse* ObjectMgr::LoadCorpse(uint32 guid)
     pCorpse->SetZoneId(fields[5].GetUInt32());
     pCorpse->SetMapId(fields[6].GetUInt32());
     pCorpse->LoadValues(fields[7].GetString());
-    if (pCorpse->GetDisplayId() == 0)
+    if (pCorpse->getDisplayId() == 0)
     {
         delete pCorpse;
         return nullptr;
@@ -623,7 +616,7 @@ Corpse* ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
     _corpseslock.Acquire();
     for (CorpseMap::const_iterator itr = m_corpses.begin(); itr != m_corpses.end(); ++itr)
     {
-        if (GET_LOWGUID_PART(itr->second->GetOwner()) == ownerguid)
+        if (GET_LOWGUID_PART(itr->second->getOwnerGuid()) == ownerguid)
         {
             rv = itr->second;
             break;
@@ -922,14 +915,14 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns");
+    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiCreatureSpawnId = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns");
+    result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiGameObjectSpawnId = result->Fetch()[0].GetUInt32();
@@ -1064,7 +1057,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
         Util::StringToLowerCase(strName);
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!stricmp(itr->second->GetNameString()->c_str(), strName.c_str()))
+            if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
             {
                 rv = itr->second;
                 break;
@@ -1075,7 +1068,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
     {
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!strcmp(itr->second->GetName(), name))
+            if (!strcmp(itr->second->getName().c_str(), name))
             {
                 rv = itr->second;
                 break;
@@ -1472,7 +1465,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
         if (owner != nullptr)
         {
             uint32* played = owner->GetPlayedtime();
-            pItem->SetCreationTime(played[1]);
+            pItem->setCreatePlayedTime(played[1]);
         }
 #endif
 
@@ -1525,7 +1518,7 @@ void ObjectMgr::LoadCorpses(MapMgr* mgr)
             pCorpse->SetMapId(fields[6].GetUInt32());
             pCorpse->SetInstanceID(fields[7].GetUInt32());
             pCorpse->LoadValues(fields[8].GetString());
-            if (pCorpse->GetDisplayId() == 0)
+            if (pCorpse->getDisplayId() == 0)
             {
                 delete pCorpse;
                 continue;
@@ -2283,6 +2276,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalManaGain += 54;
                         break;
+#if VERSION_STRING > TBC
                     case DEATHKNIGHT: // Based on 55-56 more testing will be done.
                         if (Level < 60)
                             TotalHealthGain += 92;
@@ -2291,6 +2285,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalHealthGain += 92;
                         break;
+#endif
                 }
 
                 // Apply HP/Mana
@@ -2575,9 +2570,11 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
         case PRIEST:
             result = new Priest(guid);
             break;
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
             result = new DeathKnight(guid);
             break;
+#endif
         case SHAMAN:
             result = new Shaman(guid);
             break;
@@ -2990,7 +2987,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
 {
     uint32 team = pPlayer->GetTeam();
 
-    if (!pVictim->IsCreature())
+    if (!pVictim->isCreature())
         return false;
 
     std::unordered_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(pVictim->GetMapId());

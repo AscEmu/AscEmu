@@ -317,7 +317,7 @@ class Volkhan : public CreatureAIScript
     {
         for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
-            if (itr && itr->IsCreature() && itr->getEntry() == CN_BRITTLE_GOLEM)
+            if (itr && itr->isCreature() && itr->getEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast<Creature*>(itr);
                 if (_isHeroic())

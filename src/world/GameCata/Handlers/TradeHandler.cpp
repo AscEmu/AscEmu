@@ -114,7 +114,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
             data.writeBit(giftCreatorGuid[7]);
             data.writeBit(giftCreatorGuid[1]);
-            bool notWrapped = data.writeBit(!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED));     //wrapped
+            bool notWrapped = data.writeBit(!item->hasFlags(ITEM_FLAG_WRAPPED));     //wrapped
             data.writeBit(giftCreatorGuid[3]);
 
             if (notWrapped)
@@ -146,26 +146,26 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
             ObjectGuid creatorGuid = item->getCreatorGuid();
             ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
-            if (!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED))
+            if (!item->hasFlags(ITEM_FLAG_WRAPPED))
             {
                 data.WriteByteSeq(creatorGuid[1]);
 
-                data << uint32_t(item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+                data << uint32_t(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
                 for (uint32_t enchant_slot = 2; enchant_slot < 5; ++enchant_slot)
                 {
-                    data << uint32_t(item->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(enchant_slot))));
+                    data << uint32_t(item->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchant_slot))));
                 }
 
-                data << uint32_t(item->getUInt32Value(ITEM_FIELD_MAXDURABILITY));
+                data << uint32_t(item->getMaxDurability());
 
                 data.WriteByteSeq(creatorGuid[6]);
                 data.WriteByteSeq(creatorGuid[2]);
                 data.WriteByteSeq(creatorGuid[7]);
                 data.WriteByteSeq(creatorGuid[4]);
 
-                data << uint32_t(item->GetEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
-                data << uint32_t(item->getUInt32Value(ITEM_FIELD_DURABILITY));
-                data << uint32_t(item->GetItemRandomPropertyId());
+                data << uint32_t(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
+                data << uint32_t(item->getDurability());
+                data << uint32_t(item->getRandomPropertiesId());
 
                 data.WriteByteSeq(creatorGuid[3]);
 
@@ -174,7 +174,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
                 data.WriteByteSeq(creatorGuid[0]);
 
                 data << uint32_t(item->getSpellCharges(0));
-                data << uint32_t(item->GetItemRandomSuffixFactor());
+                data << uint32_t(item->getPropertySeed());
 
                 data.WriteByteSeq(creatorGuid[5]);
             }
@@ -459,7 +459,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
     {
         if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast< Container* >(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->isContainer() && static_cast< Container* >(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;
@@ -468,7 +468,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
 
         if (Item* item = target_trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast<Container*>(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->isContainer() && static_cast<Container*>(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;
@@ -489,12 +489,12 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
         {
             if (trade_items[i])
             {
-                trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->getGuid());
+                trade_items[i]->setCreatorGuid(_player->getGuid());
                 _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->getGuid(), true);
             }
             if (target_trade_items[i])
             {
-                target_trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->getGuid());
+                target_trade_items[i]->setCreatorGuid(trade_target->getGuid());
                 trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->getGuid(), true);
             }
         }
@@ -591,7 +591,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
     }
 
     Item* item = _player->GetItemInterface()->GetInventoryItem(sourceBag, sourceSlot);
-    if (item == nullptr || (tradeSlot != TRADE_SLOT_NONTRADED && (item->IsAccountbound() || item->IsSoulbound())))
+    if (item == nullptr || (tradeSlot != TRADE_SLOT_NONTRADED && (item->isAccountbound() || item->isSoulbound())))
     {
         sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
         return;

@@ -52,13 +52,8 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-#if VERSION_STRING != Cata
-static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2018-01-01_01_gameobject_spawns";
-#else
-static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2018-01-01_01_gameobject_spawns";
-#endif
+static const char* REQUIRED_CHAR_DB_VERSION = "20180427-00_character_db_version";
+static const char* REQUIRED_WORLD_DB_VERSION = "20180427-00_world_db_version";
 
 void Master::_OnSignal(int s)
 {
@@ -348,7 +343,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
 bool Master::_CheckDBVersion()
 {
-    QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version;");
+    QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
     if (wqr == NULL)
     {
         LogError("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");

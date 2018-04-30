@@ -99,6 +99,24 @@ void Player::setExploredZone(uint32_t idx, uint32_t data)
     write(playerData()->explored_zones[idx], data);
 }
 
+uint32_t Player::getMaxLevel() const
+{
+#if VERSION_STRING > Classic
+    return playerData()->field_max_level;
+#else
+    return max_level;
+#endif
+}
+
+void Player::setMaxLevel(uint32_t level)
+{
+#if VERSION_STRING > Classic
+    write(playerData()->field_max_level, level);
+#else
+    max_level = level;
+#endif 
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
@@ -255,6 +273,36 @@ void Player::sendAuctionCommandResult(Auction* /*auction*/, uint32_t /*action*/,
 {
 }
 #endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Basic
+
+std::string Player::getName() const { return m_name; }
+void Player::setName(std::string name) { m_name = name; }
+
+void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
+{
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
+    {
+        switch (gender)
+        {
+            case GENDER_MALE:
+                setDisplayId(raceEntry->model_male);
+                setNativeDisplayId(raceEntry->model_male);
+                break;
+            case GENDER_FEMALE:
+                setDisplayId(raceEntry->model_female);
+                setNativeDisplayId(raceEntry->model_female);
+                break;
+            default:
+                LOG_ERROR("Gender %u is not valid for Player charecters!", gender);
+        }
+    }
+    else
+    {
+        LOG_ERROR("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells

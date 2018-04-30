@@ -41,26 +41,27 @@ class GameEvent;
 struct QuestRelation;
 struct QuestProperties;
 
-#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
+#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
-///////////////////
-/// Creature object
 
+//MIT start
 class SERVER_DECL Creature : public Unit
 {
-    public:
+public:
+
+    GameEvent * mEvent = nullptr;
+
+ //MIT end
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
 
         Creature(uint64 guid);
         virtual ~Creature();
 
-    GameEvent* mEvent = nullptr;
-
-        /// For derived subclasses of Creature
-        bool IsVehicle();
+        // For derived subclasses of Creature
+        bool isVehicle();
 
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
@@ -73,16 +74,17 @@ class SERVER_DECL Creature : public Unit
         void RemoveFromWorld(bool addrespawnevent, bool free_guid);
         void RemoveFromWorld(bool free_guid);
 
-        void PrepareForRemove();    /// remove auras, guardians, scripts
+        // remove auras, guardians, scripts
+        void PrepareForRemove();
 
-        /// Creation
+        // Creation
         void Create(uint32 mapid, float x, float y, float z, float ang);
         void CreateWayPoint(uint32 WayPointID, uint32 mapid, float x, float y, float z, float ang);
 
-        /// Updates
+        // Updates
         void Update(unsigned long time_passed);
 
-        /// Creature inventory
+        // Creature inventory
         uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
         uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
@@ -92,17 +94,17 @@ class SERVER_DECL Creature : public Unit
             DeleteMe();
         }
 
-        bool IsPvPFlagged();
-        void SetPvPFlag();
-        void RemovePvPFlag();
+        bool IsPvPFlagged() override;
+        void SetPvPFlag() override;
+        void RemovePvPFlag() override;
 
-        bool IsFFAPvPFlagged();
-        void SetFFAPvPFlag();
-        void RemoveFFAPvPFlag();
+        bool IsFFAPvPFlagged() override;
+        void SetFFAPvPFlag() override;
+        void RemoveFFAPvPFlag() override;
 
-        bool IsSanctuaryFlagged();
-        void SetSanctuaryFlag();
-        void RemoveSanctuaryFlag();
+        bool IsSanctuaryFlagged() override;
+        void SetSanctuaryFlag() override;
+        void RemoveSanctuaryFlag() override;
 
         int32 GetSlotByItemId(uint32 itemid);
 
@@ -133,7 +135,7 @@ class SERVER_DECL Creature : public Unit
         void ModAvItemAmount(uint32 itemid, uint32 value);
         void UpdateItemAmount(uint32 itemid);
 
-        /// Quests
+        // Quests
         void _LoadQuests();
         bool HasQuests();
         bool HasQuest(uint32 id, uint32 type);
@@ -203,10 +205,10 @@ class SERVER_DECL Creature : public Unit
         void RegenerateMana();
         int BaseAttackType;
 
-        /// Invisibility & Stealth Detection - Partha
+        // Invisibility & Stealth Detection - Partha
         bool CanSee(Unit* obj);
 
-        /// Looting
+        // Looting
         void generateLoot();
         bool HasLootForPlayer(Player* plr);
 
@@ -236,14 +238,14 @@ class SERVER_DECL Creature : public Unit
 
     protected:
 
-        virtual void SafeDelete();      /// use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
+        virtual void SafeDelete();      // use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
 
     public:
 
         // In Range
-        void addToInRangeObjects(Object* pObj);
-        void onRemoveInRangeObject(Object* pObj);
-        void clearInRangeSets();
+        void addToInRangeObjects(Object* pObj) override;
+        void onRemoveInRangeObject(Object* pObj) override;
+        void clearInRangeSets() override;
 
         // Demon
         void EnslaveExpire();
@@ -258,13 +260,13 @@ class SERVER_DECL Creature : public Unit
         void SetEnslaveSpell(uint32 spellId);
         bool RemoveEnslave();
 
-        Object* GetPlayerOwner();
+        Object* GetPlayerOwner() override;
 
-        Group* GetGroup();
+        Group* GetGroup() override;
 
-        int32 GetDamageDoneMod(uint16_t school);
+        int32 GetDamageDoneMod(uint16_t school) override;
 
-        float GetDamageDonePctMod(uint16_t school);
+        float GetDamageDonePctMod(uint16_t school) override;
 
         bool IsPickPocketed();
 
@@ -286,8 +288,8 @@ class SERVER_DECL Creature : public Unit
         bool IsExotic();
 
 
-        bool isCritter();
-        bool isTrainingDummy();
+        bool isCritter() override;
+        bool isTrainingDummy() override;
 
         void FormationLinkUp(uint32 SqlId);
         void ChannelLinkUpGO(uint32 SqlId);
@@ -299,7 +301,7 @@ class SERVER_DECL Creature : public Unit
 
         MySQLStructure::CreatureSpawn* m_spawn;
 
-        void OnPushToWorld();
+        void OnPushToWorld() override;
         virtual void Despawn(uint32 delay, uint32 respawntime);
         void TriggerScriptEvent(int);
 
@@ -347,13 +349,13 @@ class SERVER_DECL Creature : public Unit
         bool m_limbostate;
         Trainer* mTrainer;
 
-        /// Vendor data
+        // Vendor data
         std::vector<CreatureItem>* m_SellItems;
 
-        /// Taxi data
+        // Taxi data
         uint32 mTaxiNode;
 
-        /// Quest data
+        // Quest data
         std::list<QuestRelation*>* m_quests;
 
         uint32 m_enslaveCount;

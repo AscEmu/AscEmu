@@ -111,7 +111,7 @@ public:
         if (!pInstance)
             return;
 
-        if (!pObject->IsCreature())
+        if (!pObject->isCreature())
             return;
 
         Creature* sinclari = static_cast<Creature*>(pObject);

@@ -121,7 +121,7 @@ public:
 
     void OnDied(Unit* pKiller) override
     {
-        if (pKiller->IsPlayer())
+        if (pKiller->isPlayer())
         {
             Player* player = static_cast<Player*>(pKiller);
 

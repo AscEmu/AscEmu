@@ -13,10 +13,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/TeleportCoords.h"
 #include "MySQLStructures.h"
 
+extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
+extern SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
+extern SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
-extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
@@ -47,7 +49,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::MapInfo> WorldMapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Battlemasters> BattleMastersContainer;
-    typedef std::unordered_map<uint32_t, MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
+    typedef std::vector<MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
@@ -150,7 +152,7 @@ public:
     MySQLStructure::Battlemasters const* getBattleMaster(uint32_t entry);
     BattleMastersContainer const* getBattleMastersStore() { return &_battleMastersStore; }
 
-    MySQLStructure::TotemDisplayIds const* getTotemDisplayId(uint32_t entry);
+    MySQLStructure::TotemDisplayIds const* getTotemDisplayId(uint8_t race, uint32_t entry);
     TotemDisplayIdContainer const* getTotemDisplayIdsStore() { return &_totemDisplayIdsStore; }
 
     SpellClickSpell const* getSpellClickSpell(uint32_t entry);

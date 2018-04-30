@@ -38,24 +38,24 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!_player->isAlive() && _player->getShapeShiftForm() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
+    if (!_player->isAlive() && _player->getShapeShiftForm() != FORM_SPIRITOFREDEMPTION && !(spellInfo->getAttributes() & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
-    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
+    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->getName().c_str(), recvPacket.size());
 
     // Check does player have the spell
     if (!GetPlayer()->HasSpell(spellId))
     {
         sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
         return;
     }
 
     // Check is player trying to cast a passive spell
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
         return;
     }
 
@@ -81,7 +81,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         if (targets.m_unitTarget && targets.m_unitTarget != _player->getGuid())
         {
             // send the error message
-            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
+            _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
             return;
         }
     }
@@ -113,7 +113,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (!_player->isInRange(unitTarget, MAX_INTERACTION_RANGE))
         return;
 
-    if (unitTarget->IsVehicle())
+    if (unitTarget->isVehicle())
     {
         if (unitTarget->GetVehicleComponent() != nullptr)
             unitTarget->GetVehicleComponent()->AddPassenger(_player);
@@ -143,7 +143,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
             if (sp == nullptr)
             {
-                if (unitTarget->IsCreature())
+                if (unitTarget->isCreature())
                 {
                     Creature* c = static_cast<Creature*>(unitTarget);
 
@@ -168,7 +168,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
     if (sp == nullptr)
     {
-        if (unitTarget->IsCreature())
+        if (unitTarget->isCreature())
         {
             Creature* c = static_cast< Creature* >(unitTarget);
 
@@ -229,7 +229,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         return;
     }
@@ -302,7 +302,7 @@ void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
 
     if (slot >= UNIT_SUMMON_SLOTS)
     {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->getGuidLow(), _player->GetName(), slot);
+        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->getGuidLow(), _player->getName().c_str(), slot);
         return;
     }
 

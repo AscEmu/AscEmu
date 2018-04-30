@@ -187,7 +187,7 @@ int LuaGameObject::GetCreatureNearestCoords(lua_State* L, GameObject* ptr)
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
     Creature* crc = ptr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(x, y, z, entryid);
-    if (crc && crc->IsUnit())
+    if (crc && crc->isCreatureOrPlayer())
     {
         PUSH_UNIT(L, crc);
     }
@@ -466,7 +466,7 @@ int LuaGameObject::GetInRangePlayers(lua_State* L, GameObject* ptr)
     lua_newtable(L);
     for (const auto& itr : ptr->getInRangePlayersSet())
     {
-        if (itr && itr->IsUnit())
+        if (itr && itr->isCreatureOrPlayer())
         {
             count++ ,
             lua_pushinteger(L, count);
@@ -484,7 +484,7 @@ int LuaGameObject::GetInRangeGameObjects(lua_State* L, GameObject* ptr)
     lua_newtable(L);
     for (const auto& itr : ptr->getInRangeObjectsSet())
     {
-        if (itr && itr->IsGameObject())
+        if (itr && itr->isGameObject())
         {
             count++ ,
             lua_pushinteger(L, count);
@@ -502,7 +502,7 @@ int LuaGameObject::GetInRangeUnits(lua_State* L, GameObject* ptr)
     lua_newtable(L);
     for (const auto& itr : ptr->getInRangeObjectsSet())
     {
-        if (itr && itr->IsUnit())
+        if (itr && itr->isCreatureOrPlayer())
         {
             count++ ,
             lua_pushinteger(L, count);
@@ -1144,9 +1144,9 @@ int LuaGameObject::GetWoWObject(lua_State* L, GameObject* ptr)
     TEST_GO();
     uint64 guid = CHECK_GUID(L, 1);
     Object* obj = ptr->GetMapMgr()->_GetObject(guid);
-    if (obj != NULL && obj->IsUnit())
+    if (obj != NULL && obj->isCreatureOrPlayer())
     PUSH_UNIT(L, obj);
-    else if (obj != NULL && obj->IsGameObject())
+    else if (obj != NULL && obj->isGameObject())
     PUSH_GO(L, obj);
     else
         lua_pushnil(L);
@@ -1229,7 +1229,7 @@ int LuaGameObject::GetClosestUnit(lua_State* L, GameObject* ptr)
     Unit* ret = nullptr;
     for (const auto& itr : ptr->getInRangeObjectsSet())
     {
-        if (!itr || !itr->IsUnit())
+        if (!itr || !itr->isCreatureOrPlayer())
             continue;
 
         current_dist = ptr->GetDistance2dSq(itr);

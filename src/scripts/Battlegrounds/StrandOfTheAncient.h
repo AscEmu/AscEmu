@@ -189,32 +189,32 @@ class StrandOfTheAncient : public CBattleground
         StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~StrandOfTheAncient();
 
-        uint32 GetNameID() { return 34; }   ///\todo in worldstring_tables ?
+        uint32 GetNameID() override { return 34; }   //\todo in worldstring_tables ?
 
         uint32 GetRoundTime() { return RoundTime; };
-        LocationVector GetStartingCoords(uint32 team);
+        LocationVector GetStartingCoords(uint32 team) override;
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnAreaTrigger(Player* plr, uint32 id);
-        void HookFlagStand(Player* plr, GameObject* obj);
-        void HookOnFlagDrop(Player* plr);
-        void HookFlagDrop(Player* plr, GameObject* obj);
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnHK(Player* plr);
-        void HookOnShadowSight();
-        void HookGenerateLoot(Player* plr, Object* pOCorpse);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnUnitDied(Unit* victim);
-        bool HookSlowLockOpen(GameObject* go, Player* player, Spell* spell );
-        bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell );
-        void HookOnPlayerDeath(Player* plr);
-        void HookOnMount(Player* plr);
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
+        void HookOnAreaTrigger(Player* plr, uint32 id) override;
+        void HookFlagStand(Player* plr, GameObject* obj) override;
+        void HookOnFlagDrop(Player* plr) override;
+        void HookFlagDrop(Player* plr, GameObject* obj) override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnHK(Player* plr) override;
+        void HookOnShadowSight() override;
+        void HookGenerateLoot(Player* plr, Object* pOCorpse) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnUnitDied(Unit* victim) override;
+        bool HookSlowLockOpen(GameObject* go, Player* player, Spell* spell ) override;
+        bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell ) override;
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookOnMount(Player* plr) override;
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
         void OnPlatformTeleport(Player* plr);
-        void OnCreate();
-        void OnStart();
-        void SetIsWeekend(bool isweekend);
+        void OnCreate() override;
+        void OnStart() override;
+        void SetIsWeekend(bool isweekend) override;
         void SetRoundTime(uint32 secs) { RoundTime = secs; };
         void SetTime(uint32 secs);
         void TimeTick();

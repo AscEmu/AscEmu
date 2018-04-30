@@ -176,14 +176,14 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
         ItemProperties const* itemProto = quest_giver->getItemProperties();
 
-        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
+        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->isSoulbound())     // SoulBind item will be used after SoulBind()
         {
             if (sScriptMgr.CallScriptedItem(quest_giver, GetPlayer()))
                 return;
         }
 
         if (itemProto->Bonding == ITEM_BIND_ON_USE)
-            quest_giver->SoulBind();
+            quest_giver->addFlags(ITEM_FLAG_SOULBOUND);
 
         bValid = true;
         status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, 1, false);
@@ -551,7 +551,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     // remove icon
-    /*if (qst_giver->GetTypeId() == TYPEID_UNIT)
+    /*if (qst_giver->getObjectTypeId() == TYPEID_UNIT)
     {
     qst_giver->BuildFieldUpdatePacket(GetPlayer(), UNIT_DYNAMIC_FLAGS, qst_giver->GetUInt32Value(UNIT_DYNAMIC_FLAGS));
     }*/
@@ -564,7 +564,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
-    //if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
+    //if (qst_giver->getObjectTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
     if (qst->next_quest_id)
     {

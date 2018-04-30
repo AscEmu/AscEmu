@@ -72,7 +72,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (tmpItem->IsSoulbound() && tmpItem->getOwnerGuid() != _player->getGuid() && !tmpItem->IsAccountbound())
+    if (tmpItem->isSoulbound() && tmpItem->getOwnerGuid() != _player->getGuid() && !tmpItem->isAccountbound())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
         return;
@@ -151,8 +151,8 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     if (itemProto->Bonding == ITEM_BIND_ON_USE || itemProto->Bonding == ITEM_BIND_ON_PICKUP || itemProto->Bonding == ITEM_BIND_QUEST)
     {
-        if (!tmpItem->IsSoulbound())
-            tmpItem->SoulBind();
+        if (!tmpItem->isSoulbound())
+            tmpItem->addFlags(ITEM_FLAG_SOULBOUND);
     }
 
     // Combat check
@@ -314,7 +314,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     recvPacket >> unitGuid;
 
     Unit* unitTarget = _player->GetMapMgr()->GetUnit(unitGuid);
-    if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->IsCreature())
+    if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->isCreature())
     {
         return;
     }
@@ -326,7 +326,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     }
 
     // TODO: investigate vehicles more, is this necessary? vehicle enter is handled in ::HandleEnterVehicle() anyway... -Appled
-    if (creatureTarget->IsVehicle())
+    if (creatureTarget->isVehicle())
     {
         if (creatureTarget->GetVehicleComponent() != nullptr)
             creatureTarget->GetVehicleComponent()->AddPassenger(_player);
@@ -427,7 +427,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check is player trying to cast a passive spell
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), spellPacket.spell_id);
         LogDetail("WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), spellPacket.spell_id);
@@ -528,7 +528,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     }
 
     // You can't cancel a passive aura
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         return;
     }
@@ -633,7 +633,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->IsPassive())
+    if (spellInfo->isPassive())
     {
         return;
     }
@@ -661,7 +661,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
             }
         }
 
-        if (!found && petUnit->IsCreature())
+        if (!found && petUnit->isCreature())
         {
             Creature* petCreature = static_cast<Creature*>(petUnit);
             if (petCreature->GetCreatureProperties()->spelldataid != 0)

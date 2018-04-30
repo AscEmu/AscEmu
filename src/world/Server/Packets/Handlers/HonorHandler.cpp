@@ -152,7 +152,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             pVictim->updateInRangeOppositeFactionSet();
             for (const auto& itr : pVictim->getInRangeOppositeFactionSet())
             {
-                if (!itr || !itr->IsPlayer())
+                if (!itr || !itr->isPlayer())
                     continue;
 
                 bool added = false;
@@ -216,7 +216,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         Item* PvPTokenItem = objmgr.CreateItem(PvPTokenID, pAffectedPlayer);
                         if (PvPTokenItem)
                         {
-                            PvPTokenItem->SoulBind();
+                            PvPTokenItem->addFlags(ITEM_FLAG_SOULBOUND);
                             if (!pAffectedPlayer->GetItemInterface()->AddItemToFreeSlot(PvPTokenItem))
                                 PvPTokenItem->DeleteMe();
                         }

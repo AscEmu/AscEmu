@@ -43,7 +43,7 @@ public:
 
         RegisterAIUpdateEvent(200);
 
-        if (getCreature()->IsSummon())
+        if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
 
@@ -73,7 +73,7 @@ public:
 
     void OnLoad()
     {
-        if (getCreature()->IsPet())
+        if (getCreature()->isPet())
         {
             Pet* s = static_cast<Pet*>(getCreature());
             Player* owner = s->GetPetOwner();
@@ -107,7 +107,7 @@ public:
 
     void OnLoad()
     {
-        if (getCreature()->IsSummon())
+        if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
             Unit* owner = s->GetOwner();
@@ -186,12 +186,12 @@ public:
         getCreature()->setDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
         getCreature()->setBaseAttackTime(MELEE, 2000);
 
-        if (getCreature()->IsSummon())
+        if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
             Unit* owner = s->GetOwner();
 
-            if (owner->IsPlayer())
+            if (owner->isPlayer())
             {
                 Player* pOwner = static_cast<Player*>(owner);
                 Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);

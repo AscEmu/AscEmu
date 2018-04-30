@@ -278,7 +278,7 @@ void WorldSession::LogoutPlayer(bool Save)
             Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
             if (obj != NULL)
             {
-                switch (obj->GetTypeId())
+                switch (obj->getObjectTypeId())
                 {
                     case TYPEID_UNIT:
                         static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
@@ -357,7 +357,7 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             Guild* pGuild = _player->m_playerInfo->guild;
             if (pGuild != NULL)
-                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->GetName());
+                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->getName().c_str());
         }
 #endif
 
@@ -578,7 +578,7 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
             (unsigned int)session->GetAccountId(),
             session->GetAccountName().c_str(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
-            session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
+            session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");
 
         lenght = strlen(out);
         vsnprintf(&out[lenght], 32768 - lenght, format, ap);
@@ -1038,7 +1038,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                     auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!check)
                     {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->GetNameString());
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->getName().c_str());
                         result = 0;
                     }
                     else
@@ -1195,7 +1195,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
-    if (Caster->IsPlayer())
+    if (Caster->isPlayer())
     {
         Player* pcaster = static_cast <Player*>(Caster);
 

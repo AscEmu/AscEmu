@@ -125,6 +125,42 @@ void Item::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void Item::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool Item::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
+#if VERSION_STRING >= WotLK
+uint32_t Item::getEnchantmentId(uint8_t index) const { return itemData()->enchantment[index].id; }
+void Item::setEnchantmentId(uint8_t index, uint32_t id) { write(itemData()->enchantment[index].id, id); }
+
+uint32_t Item::getEnchantmentDuration(uint8_t index) const { return itemData()->enchantment[index].duration; }
+void Item::setEnchantmentDuration(uint8_t index, uint32_t duration) { write(itemData()->enchantment[index].duration, duration); }
+
+uint32_t Item::getEnchantmentCharges(uint8_t index) const { return itemData()->enchantment[index].charges; }
+void Item::setEnchantmentCharges(uint8_t index, uint32_t charges) { write(itemData()->enchantment[index].charges, charges); }
+#endif
+
+uint32_t Item::getPropertySeed() const { return itemData()->property_seed; }
+void Item::setPropertySeed(uint32_t seed)
+{
+    write(itemData()->property_seed, seed);
+    random_suffix = seed;
+}
+
+uint32_t Item::getRandomPropertiesId() const { return itemData()->random_properties_id; }
+void Item:: setRandomPropertiesId(uint32_t id)
+{
+    write(itemData()->random_properties_id, id);
+    random_prop = id;
+}
+
+uint32_t Item::getDurability() const { return itemData()->durability; }
+void Item::setDurability(uint32_t durability) { write(itemData()->durability, durability); }
+
+uint32_t Item::getMaxDurability() const { return itemData()->max_durability; }
+void Item::setMaxDurability(uint32_t maxDurability) { write(itemData()->max_durability, maxDurability); }
+
+#if VERSION_STRING >= WotLK
+uint32_t Item::getCreatePlayedTime() const { return itemData()->create_played_time; }
+void Item::setCreatePlayedTime(uint32_t time) { write(itemData()->create_played_time, time); }
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 
@@ -135,20 +171,7 @@ void Item::setOwner(Player* owner)
     m_owner = owner;
 }
 
-void Item::setContainer(Container* container)
-{
-    setContainerGuid(container ? container->getGuid() : 0UL);
-}
+void Item::setContainer(Container* container) { setContainerGuid(container ? container->getGuid() : 0UL); }
 
 ItemProperties const* Item::getItemProperties() const { return m_itemProperties; }
 void Item::setItemProperties(ItemProperties const* itemProperties) { m_itemProperties = itemProperties; }
-
-void Item::setDurability(uint32_t durability)
-{
-    write(itemData()->durability, durability);
-}
-
-void Item::setMaxDurability(uint32_t maxDurability)
-{
-    write(itemData()->max_durability, maxDurability);
-}

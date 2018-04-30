@@ -49,7 +49,7 @@ class DeathKnight : public Player
 {
     Rune m_runes[MAX_RUNES];
 
-    /// Holds last slot used
+    // Holds last slot used
     uint8 m_last_used_rune_slot;
 
     protected:
@@ -68,7 +68,7 @@ class DeathKnight : public Player
             }
         }
 
-        bool IsDeathKnight() { return true; }
+        bool IsDeathKnight() override { return true; }
 
         //*************************************************************************************
         // RUNES
@@ -92,7 +92,7 @@ class Druid : public Player
 
         Druid(uint32 guid) : Player(guid) {}
 
-        bool IsDruid() { return true; }
+        bool IsDruid() override { return true; }
 };
 
 class Rogue : public Player
@@ -101,7 +101,7 @@ class Rogue : public Player
 
         Rogue(uint32 guid) : Player(guid) {}
 
-        bool IsRogue() { return true; }
+        bool IsRogue() override { return true; }
 };
 
 class Priest : public Player
@@ -110,7 +110,7 @@ class Priest : public Player
 
         Priest(uint32 guid) : Player(guid) {}
 
-        bool IsPriest() { return true; }
+        bool IsPriest() override { return true; }
 };
 
 class Paladin : public Player
@@ -119,7 +119,7 @@ class Paladin : public Player
 
         Paladin(uint32 guid) : Player(guid) {}
 
-        bool IsPaladin() { return true; }
+        bool IsPaladin() override { return true; }
 };
 
 class Warrior : public Player
@@ -128,7 +128,7 @@ class Warrior : public Player
 
         Warrior(uint32 guid) : Player(guid) {}
 
-        bool IsWarrior() { return true; }
+        bool IsWarrior() override { return true; }
 };
 
 class Warlock : public Player
@@ -137,7 +137,7 @@ class Warlock : public Player
 
         Warlock(uint32 guid) : Player(guid) {}
 
-        bool IsWarlock() { return true; }
+        bool IsWarlock() override { return true; }
 };
 
 class Mage : public Player
@@ -146,7 +146,7 @@ class Mage : public Player
 
         Mage(uint32 guid) : Player(guid) {}
 
-        bool IsMage() { return true; }
+        bool IsMage() override { return true; }
 };
 
 class Hunter : public Player
@@ -155,7 +155,7 @@ class Hunter : public Player
 
         Hunter(uint32 guid) : Player(guid) {}
 
-        bool IsHunter() { return true; }
+        bool IsHunter() override { return true; }
 };
 
 class Shaman : public Player
@@ -164,7 +164,7 @@ class Shaman : public Player
 
         Shaman(uint32 guid) : Player(guid) {}
 
-        bool IsShaman() { return true; }
+        bool IsShaman() override { return true; }
 };
 
 #endif  // PLAYER_CLASSES_HPP

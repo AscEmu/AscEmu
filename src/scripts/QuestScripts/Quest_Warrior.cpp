@@ -73,7 +73,7 @@ public:
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.37f)
         {
-            if (mAttacker->IsPlayer())
+            if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);

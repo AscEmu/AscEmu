@@ -650,9 +650,11 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
                 case ::PRIEST:
                     itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_PRIEST));
                     break;
+#if VERSION_STRING > TBC
                 case ::DEATHKNIGHT:
                     itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_DEATHKNIGHT));
                     break;
+#endif
                 default:
                     break;
             }

@@ -170,7 +170,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
 void WorldSession::HandleRemoveVehiclePassenger(WorldPacket& recv_data)
 {
     Vehicle* v = NULL;
-    if (_player->IsVehicle())
+    if (_player->isVehicle())
         v = _player->GetVehicleComponent();
     else
         v = _player->GetCurrentVehicle();

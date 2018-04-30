@@ -32,7 +32,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
     uint8 am = 0;
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
-        if (!itr || !itr->IsUnit())
+        if (!itr || !itr->isCreatureOrPlayer())
             continue;
 
         Unit* Target = static_cast<Unit*>(itr);
@@ -82,7 +82,7 @@ bool Furor(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
     Player* p_target = static_cast<Player*>(u_target);
 
@@ -153,7 +153,7 @@ bool LeaderOfThePack(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);

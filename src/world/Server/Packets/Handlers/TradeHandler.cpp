@@ -237,9 +237,9 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
         return;
     if (TradeSlot < 6)
     {
-        if (pItem->IsAccountbound())
+        if (pItem->isAccountbound())
             return;                     //dual accounting is not allowed so noone can trade Accountbound items. Btw the client doesn't send any client-side notification
-        if (pItem->IsSoulbound())
+        if (pItem->isSoulbound())
         {
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
             Disconnect();
@@ -257,7 +257,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
     plr->mTradeStatus = TradeStatus;
     _player->mTradeStatus = TradeStatus;
 
-    if (pItem->IsContainer())
+    if (pItem->isContainer())
     {
         if (static_cast< Container* >(pItem)->HasItems())
         {
@@ -396,7 +396,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = _player->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->isContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -408,7 +408,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = pTarget->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->isContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -448,7 +448,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                     {
                         if (GetPermissionCount() > 0)
                         {
-                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->getItemProperties()->Name.c_str(), pTarget->GetName());
+                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->getItemProperties()->Name.c_str(), pTarget->getName().c_str());
                         }
                         // See CID53355 Unused value (overwritten before it can be used
                         //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);

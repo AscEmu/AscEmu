@@ -44,7 +44,7 @@ public:
             if (!Caster)
                 return;
 
-            if (Caster->IsPlayer())
+            if (Caster->isPlayer())
             {
 
                 QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(10747);
@@ -69,7 +69,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(10503, 0, 0);
         }
@@ -246,7 +246,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         Player* pPlayer = static_cast<Player*>(mKiller);

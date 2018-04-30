@@ -218,7 +218,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     if (pSpell == NULL)
     {
         // Disconnecting the player
-        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->GetName());
+        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->getName().c_str());
         this->Disconnect();
         return;
     }

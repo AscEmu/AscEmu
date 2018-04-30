@@ -32,7 +32,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(10482, 0, 0);
         }
@@ -47,7 +47,7 @@ public:
     Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         static_cast<Player*>(mKiller)->AddQuestKill(10255, 0, 0);
@@ -276,7 +276,7 @@ public:
             return;
 
         char msg[100];
-        sprintf(msg, "Psst, %s, get over here.", pPlayer->GetName());
+        sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);    // Changed Player to Creature. I wonder if it was blizzlike
     }
 };
@@ -292,7 +292,7 @@ public:
             return;
 
         char msg[100];
-        sprintf(msg, "Psst, %s, get over here.", pPlayer->GetName());
+        sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);
     }
 };

@@ -877,11 +877,11 @@ CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChanc
     {
         uint32_t spellDuration = duration * 1000;
         if (spellDuration == 0)
-            spellDuration = spellInfo->getSpellDuration(nullptr);
+            spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
 
         uint32_t spellCooldown = cooldown * 1000;
         if (spellCooldown == 0)
-            spellCooldown = spellInfo->getSpellDuration(nullptr);
+            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
         CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
 
@@ -1172,7 +1172,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         for (const auto& inRangeObject : getCreature()->getInRangeObjectsSet())
         {
             if (((isTargetRandFriend && isFriendly(getCreature(), inRangeObject))
-                || (!isTargetRandFriend && isHostile(getCreature(), inRangeObject) && inRangeObject != getCreature())) && inRangeObject->IsUnit())
+                || (!isTargetRandFriend && isHostile(getCreature(), inRangeObject) && inRangeObject != getCreature())) && inRangeObject->isCreatureOrPlayer())
             {
                 Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
 
@@ -1496,7 +1496,7 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
 
 bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange)
 {
-    if (!pObject->IsUnit())
+    if (!pObject->isCreatureOrPlayer())
         return false;
 
     if (pObject->GetInstanceID() != getCreature()->GetInstanceID())
@@ -1506,13 +1506,13 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
     //Skip dead (if required), feign death or invisible targets
     if (pFilter & TargetFilter_Corpse)
     {
-        if (UnitTarget->isAlive() || !UnitTarget->IsCreature() || static_cast<Creature*>(UnitTarget)->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
+        if (UnitTarget->isAlive() || !UnitTarget->isCreature() || static_cast<Creature*>(UnitTarget)->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             return false;
     }
     else if (!UnitTarget->isAlive())
         return false;
 
-    if (UnitTarget->IsPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
+    if (UnitTarget->isPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
         return false;
 
     if (UnitTarget->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))

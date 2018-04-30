@@ -126,7 +126,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
         data.writeBit(inviter_guid[4]);
 
-        data.writeBits(strlen(GetPlayer()->GetName()), 7);
+        data.writeBits(strlen(GetPlayer()->getName().c_str()), 7);
 
         data.writeBits(0, 24);
         data.writeBit(0);
@@ -150,7 +150,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
         data.WriteByteSeq(inviter_guid[5]);
         data.WriteByteSeq(inviter_guid[7]);
 
-        data.WriteString(GetPlayer()->GetName());
+        data.WriteString(GetPlayer()->getName().c_str());
 
         data << int32_t(0);
 
@@ -198,7 +198,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
     data.writeBit(inviter_guid[4]);
 
-    data.writeBits(strlen(GetPlayer()->GetName()), 7);
+    data.writeBits(strlen(GetPlayer()->getName().c_str()), 7);
     data.writeBits(0, 24);
     data.writeBit(0);
 
@@ -221,7 +221,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
     data.WriteByteSeq(inviter_guid[5]);
     data.WriteByteSeq(inviter_guid[7]);
 
-    data.WriteString(GetPlayer()->GetName());
+    data.WriteString(GetPlayer()->getName().c_str());
 
     data << int32_t(0);
 
@@ -285,8 +285,8 @@ void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recvData)
         group_inviter->SetInviter(0);
         _player->SetInviter(0);
 
-        WorldPacket data(SMSG_GROUP_DECLINE, strlen(GetPlayer()->GetName()));
-        data << GetPlayer()->GetName();
+        WorldPacket data(SMSG_GROUP_DECLINE, strlen(GetPlayer()->getName().c_str()));
+        data << GetPlayer()->getName().c_str();
         group_inviter->GetSession()->SendPacket(&data);
     }
 }
@@ -511,7 +511,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recvData)
 
     if (player == nullptr)
     {
-        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_CANNOT_FIND);
+        SendPartyCommandResult(_player, 0, _player->getName().c_str(), ERR_PARTY_CANNOT_FIND);
         return;
     }
 
@@ -523,7 +523,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recvData)
 
     if (player->GetGroup() != _player->GetGroup())
     {
-        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
+        SendPartyCommandResult(_player, 0, _player->getName().c_str(), ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
         return;
     }
 
@@ -552,7 +552,7 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recvData)
     }
 
     std::string membername = "unknown";
-    membername = player ? player->GetName() : info->name;
+    membername = player ? player->getName().c_str() : info->name;
 
     if (!_player->InGroup() || (info != nullptr && info->m_Group != _player->GetGroup()))
     {

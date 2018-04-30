@@ -28,7 +28,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(11230, 0, 0);
         }
@@ -42,7 +42,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(11397, 0, 0);
         }
@@ -56,7 +56,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(11283, 0, 0);
         }
@@ -99,8 +99,8 @@ public:
                 else
                 {
                     plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
-                        item->GetItemRandomPropertyId(), item->getStackCount());
+                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
+                        item->getRandomPropertiesId(), item->getStackCount());
 
                 }
 

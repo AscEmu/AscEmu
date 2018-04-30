@@ -35,11 +35,72 @@ enum CORPSE_STATE
 #define CORPSE_MINIMUM_RECLAIM_RADIUS 39
 #define CORPSE_MINIMUM_RECLAIM_RADIUS_SQ CORPSE_MINIMUM_RECLAIM_RADIUS * CORPSE_MINIMUM_RECLAIM_RADIUS
 
+// MIT Start
+
+enum CorpseFlags
+{
+    CORPSE_FLAG_NONE = 0,
+    CORPSE_FLAG_BONE = 1,
+    CORPSE_FLAG_UNK = 2,
+    CORPSE_FLAG_UNK1 = 4,
+    CORPSE_FLAG_HIDDEN_HELM = 8,
+    CORPSE_FLAG_HIDDEN_CLOAK = 16,
+    CORPSE_FLAG_LOOT = 32
+};
+
 struct WoWCorpse;
 class SERVER_DECL Corpse : public Object
 {
-        const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
-    public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WoWData
+    const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
+
+public:
+
+    uint64_t getOwnerGuid() const;
+    void setOwnerGuid(uint64_t guid);
+
+    //party
+
+    uint32_t getDisplayId() const;
+    void setDisplayId(uint32_t id);
+
+    uint32_t getItem(uint8_t slot) const;
+    void setItem(uint8_t slot, uint32_t item);
+
+    //bytes 1 start
+    //unk1
+
+    uint8_t getRace() const;
+    void setRace(uint8_t race);
+
+    //unk2
+
+    uint8_t getSkinColor() const;
+    void setSkinColor(uint8_t color);
+    //bytes 1 end
+
+    //bytes 2 start
+    uint8_t getFace() const;
+    void setFace(uint8_t face);
+
+    uint8_t getHairStyle() const;
+    void setHairStyle(uint8_t style);
+
+    uint8_t getHairColor() const;
+    void setHairColor(uint8_t color);
+
+    uint8_t getFacialFeatures() const;
+    void setFacialFeatures(uint8_t feature);
+    //bytes 2 end
+
+    //guild - removed in cata
+
+    uint32_t getFlags() const;
+    void setFlags(uint32_t flags);
+
+// MIT End
+// AGPL Start
         Corpse(uint32 high, uint32 low);
         ~Corpse();
 
@@ -65,10 +126,7 @@ class SERVER_DECL Corpse : public Object
 
         //Easy functions
         void SetOwner(uint64 guid);
-        uint64 GetOwner() { return getUInt64Value(CORPSE_FIELD_OWNER); }
 
-        void SetDisplayId(uint32 id) { setUInt32Value(CORPSE_FIELD_DISPLAY_ID, id); }
-        uint32 GetDisplayId() { return getUInt32Value(CORPSE_FIELD_DISPLAY_ID); }
 
     private:
 

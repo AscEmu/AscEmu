@@ -199,15 +199,15 @@ class IsleOfConquest : public CBattleground
         void HookOnAreaTrigger(Player* plr, uint32 id);
         void HookOnPlayerDeath(Player* plr);
         void HookOnPlayerResurrect(Player* player);
-        void HookOnPlayerKill(Player* /*plr*/, Player* /*pVictim*/) {}
-        void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) {}
-        void HookOnFlagDrop(Player* /*plr*/) {}
-        void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) {}
+        void HookOnPlayerKill(Player* /*plr*/, Player* /*pVictim*/) override {}
+        void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) override {}
+        void HookOnFlagDrop(Player* /*plr*/) override {}
+        void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) override {}
         bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell);
-        void HookOnMount(Player* /*plr*/) {}
-        void HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/) {}
+        void HookOnMount(Player* /*plr*/)  override {}
+        void HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/) override {}
         void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
+        void OnRemovePlayer(Player* plr) override;
         void HookOnShadowSight();
         void SetIsWeekend(bool isweekend);
         void HookOnUnitKill(Player* plr, Unit* pVictim);

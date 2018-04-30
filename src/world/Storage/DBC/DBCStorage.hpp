@@ -15,9 +15,8 @@ namespace DBC
     template <class T>
     class DBCStorage
     {
-        private:
+        typedef std::list<char*> StringPoolList;
 
-            typedef std::list<char*> StringPoolList;
         public:
 
             DBCStorage(char const* f) : m_format(f), m_row_count(0), m_field_count(0), m_data_table(NULL)
@@ -47,7 +46,7 @@ namespace DBC
                 return entry;
             }
 
-            const uint32 GetNumRows()
+            uint32 GetNumRows() const
             {
                 return m_row_count;
             }
@@ -57,7 +56,7 @@ namespace DBC
                 return m_format;
             }
 
-            const uint32 GetFieldCount()
+            uint32 GetFieldCount() const
             {
                 return m_field_count;
             }

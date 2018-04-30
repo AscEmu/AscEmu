@@ -126,9 +126,9 @@ class SERVER_DECL Database
         // Initialized on load: Database::Database() : CThread()
         //bool ThreadRunning;
 
-        inline const std::string & GetHostName() { return mHostname; }
-        inline const std::string & GetDatabaseName() { return mDatabaseName; }
-        inline const uint32 GetQueueSize() { return queries_queue.get_size(); }
+        const std::string & GetHostName() { return mHostname; }
+        const std::string & GetDatabaseName() { return mDatabaseName; }
+        uint32 GetQueueSize() { return queries_queue.get_size(); }
 
         virtual std::string EscapeString(std::string Escape) = 0;
         virtual void EscapeLongString(const char* str, uint32 len, std::stringstream & out) = 0;

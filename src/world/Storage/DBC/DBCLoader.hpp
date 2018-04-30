@@ -38,13 +38,13 @@ namespace DBC
 
         public:
 
-            DBC::DBCRecord GetRecord(size_t record_id);
-            const uint32 GetNumRows();
-            const uint32 GetRowSize();
-            const uint32 GetNumColumns();
-            const uint32 GetOffset(size_t id);
+            DBC::DBCRecord GetRecord(size_t record_id) const;
+            uint32 GetNumRows() const;
+            uint32 GetRowSize() const;
+            uint32 GetNumColumns() const;
+            uint32 GetOffset(size_t id) const;
 
-            const bool IsLoaded();
+            bool IsLoaded();
 
             char* AutoProduceData(const char* dbc_format, uint32& record_count, char**& index_table, uint32 sql_record_count, uint32 sql_highest_index, char *& sql_data_table);
             char* AutoProduceStrings(const char* dbc_format, char* data_table);

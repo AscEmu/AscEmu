@@ -58,9 +58,9 @@ void MapCell::Init(uint32 x, uint32 y, MapMgr* mapmgr)
 
 void MapCell::AddObject(Object* obj)
 {
-    if (obj->IsPlayer())
+    if (obj->isPlayer())
         ++_playerCount;
-    else if (obj->IsCorpse())
+    else if (obj->isCorpse())
     {
         _corpses.push_back(obj);
         if (_unloadpending)
@@ -72,9 +72,9 @@ void MapCell::AddObject(Object* obj)
 
 void MapCell::RemoveObject(Object* obj)
 {
-    if (obj->IsPlayer())
+    if (obj->isPlayer())
         --_playerCount;
-    else if (obj->IsCorpse())
+    else if (obj->isCorpse())
         _corpses.remove(obj);
 
     if (objects_iterator != _objects.end() && (*objects_iterator) == obj)
@@ -161,10 +161,10 @@ void MapCell::RemoveObjects()
     /* delete objects in pending respawn state */
     for (itr = _respawnObjects.begin(); itr != _respawnObjects.end(); ++itr)
     {
-        switch ((*itr)->GetTypeId())
+        switch ((*itr)->getObjectTypeId())
         {
             case TYPEID_UNIT:
-                if (!(*itr)->IsPet())
+                if (!(*itr)->isPet())
                 {
                     _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
                     reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;
@@ -188,7 +188,7 @@ void MapCell::RemoveObjects()
         ++objects_iterator;
 
         //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
-        if (!bServerShutdown && obj->IsGameObject() && static_cast< GameObject* >(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+        if (!bServerShutdown && obj->isGameObject() && static_cast< GameObject* >(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
             continue;
 
         if (obj->IsActive())

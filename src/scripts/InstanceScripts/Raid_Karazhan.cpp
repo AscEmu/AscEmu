@@ -1059,7 +1059,7 @@ class ShadeofAranAI : public CreatureAIScript
     {
         //Atiesh check
         bool HasAtiesh = false;
-        if (mTarget->IsPlayer())
+        if (mTarget->isPlayer())
         {
             for (const auto& itr : getCreature()->getInRangePlayersSet())
             {
@@ -2655,7 +2655,7 @@ class NightbaneAI : public CreatureAIScript
         //fireball barrage check
         for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
-            if (itr && itr->IsPlayer())
+            if (itr && itr->isPlayer())
             {
                 target = static_cast<Unit*>(itr);
 
@@ -2698,7 +2698,7 @@ class NightbaneAI : public CreatureAIScript
         {
             for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
-                if (itr && itr->IsPlayer())
+                if (itr && itr->isPlayer())
                 {
                     Unit* target = static_cast<Unit*>(itr);
 
