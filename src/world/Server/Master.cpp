@@ -53,7 +53,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180427-00_character_db_version";
-static const char* REQUIRED_WORLD_DB_VERSION = "20180501-01_creature_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20180501-02_gameobject_spawns";
 
 void Master::_OnSignal(int s)
 {
