@@ -1481,7 +1481,7 @@ void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 
     uint64_t guid;
     uint32_t error = 0;     // 0 = success, 1 = error
-    // std::string name;
+    std::string name;
 
     CHECK_PACKET_SIZE(recv_data, 8 + 6); 
 
