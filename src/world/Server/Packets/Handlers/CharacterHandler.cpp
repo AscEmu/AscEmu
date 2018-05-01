@@ -439,11 +439,11 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {
-    const char* p;
+    wchar_t const* p;
     size_t i;
 
-    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static wchar_t const* bannedCharacters = L"\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static wchar_t const* allowedCharacters = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     if (worldConfig.server.enableLimitedNames)
     {
@@ -1473,21 +1473,42 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 }
 #endif
 
+//MIT start
 void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 {
-    uint32_t error = 0;     // 0 = success, 1 = error
+    //\todo check utf8 and cyrillic chars
+    // check declined names
 
     uint64_t guid;
     std::string name;
 
+    CHECK_PACKET_SIZE(recv_data, 8 + 6); 
+
     recv_data >> guid;
     recv_data >> name;
 
-    //\todo check utf8 and cyrillic chars
-    // check declined names
+    std::string declinedname[6];
+
+    for(int i = 0; i < 6; ++i) 
+    { 
+        recv_data >> declinedname[i]; 
+
+    if(declinedname[i].empty()) 
+        CharacterDatabase.EscapeString(declinedname[i]); 
+    }
+
+    for(int i = 1; i < 6; ++i)
+    {
+        if( declinedname[i].size() < declinedname[0].size() )
+            error = 1;
+    }
+
+    CharacterDatabase.Query("REPLACE INTO character_declinedname (guid, genitive, dative, accusative, instrumental, prepositional) VALUES ('%u','%s','%s','%s','%s','%s')", Arcemu::Util::GUID_LOPART(guid), declinedname[1].c_str(),declinedname[2].c_str(),declinedname[3].c_str(),declinedname[4].c_str(),declinedname[5].c_str());
 
     WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4 + 8);
-    data << uint32_t(error);
+    data << uint32_t(1);
     data << uint64_t(guid);
     SendPacket(&data);
+    return;
 }
+//MIT end
