@@ -13,6 +13,8 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING != Cata
 void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 {
+    //\todo check utf8 and cyrillic chars
+
     CmsgNameQuery query;
     if (!query.deserialise(recvData))
     {

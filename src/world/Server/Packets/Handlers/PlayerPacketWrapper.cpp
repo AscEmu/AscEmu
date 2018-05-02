@@ -564,6 +564,8 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 // TODO: Move to own file
 void Player::SendInitialLogonPackets()
 {
+    //\todo check utf8 and cyrillic chars
+
     // SMSG_SET_REST_START
     m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff); // Seem to be unused by client
 
@@ -602,6 +604,8 @@ void Player::SendInitialLogonPackets()
 #ifndef AE_TBC
 void Player::SendInitialLogonPackets()
 {
+    //\todo check utf8 and cyrillic chars
+
     // Initial Packets... they seem to be re-sent on port.
     //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
 

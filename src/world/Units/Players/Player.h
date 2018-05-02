@@ -1384,7 +1384,8 @@ public:
         void Reset_Spells();
         void Reset_Talents();
         void Reset_AllTalents();
-        // Battlegrounds xD
+
+        // Battlegrounds
         CBattleground* m_bg;
         CBattleground* m_pendingBattleground;
         uint32 m_bgEntryPointMap;

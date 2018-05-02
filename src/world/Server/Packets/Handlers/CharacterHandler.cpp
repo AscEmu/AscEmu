@@ -1054,6 +1054,8 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
 #if VERSION_STRING != Cata
 void WorldSession::FullLogin(Player* plr)
 {
+    //\todo check utf8 and cyrillic chars
+
     LOG_DEBUG("Fully loading player %u", plr->getGuidLow());
 
     SetPlayer(plr);

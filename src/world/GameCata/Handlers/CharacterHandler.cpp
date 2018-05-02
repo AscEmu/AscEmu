@@ -126,6 +126,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
 void WorldSession::FullLogin(Player* plr)
 {
+    //\todo check utf8 and cyrillic chars
+
     LogDebug("WorldSession : Fully loading player %u", plr->getGuidLow());
 
     SetPlayer(plr);
