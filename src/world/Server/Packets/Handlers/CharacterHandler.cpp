@@ -1475,43 +1475,49 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 }
 #endif
 
-//MIT start
+// MIT start
+void WorldSession::HandleChangePlayerNameOpcode(WorldPacket& recv_data)
+{
+    //\todo check utf8 and cyrillic chars
+    // check declined names
+
+    uint64_t guid;
+    std::string newname;
+
+    recv_data >> guid;
+    recv_data >> newname;
+}
+
+void WorldSession::HandleChangePlayerNameOpcodeCallBack(WorldPacket& recv_data)
+{
+    //\todo check utf8 and cyrillic chars
+    // check declined names
+
+    uint64_t guid;
+
+    recv_data >> guid;
+
+	std::string newname;
+
+    WorldPacket data(SMSG_CHAR_RENAME, 1+8+(newname.size()+1));
+    data << uint8_t(E_RESPONSE_SUCCESS);
+    data << uint64_t(guid);
+    data << newname;
+    SendPacket(&data);
+}
+
 void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 {
     //\todo check utf8 and cyrillic chars
     // check declined names
 
     uint64_t guid;
-    uint32_t error = 0;     // 0 = success, 1 = error
-    std::string name;
-
-    CHECK_PACKET_SIZE(recv_data, 8 + 6); 
 
     recv_data >> guid;
-    recv_data >> name;
 
-//    std::string declinedname[6];
-//
-//    for(int i = 0; i < 6; ++i) 
-//    { 
-//        recv_data >> declinedname[i]; 
-//
-//    if(declinedname[i].empty()) 
-//        CharacterDatabase.EscapeString(declinedname[i]); 
-//    }
-//
-//    for(int i = 1; i < 6; ++i)
-//    {
-//        if( declinedname[i].size() < declinedname[0].size() )
-//            error = 1;
-//    }
-//
-//    CharacterDatabase.Query("REPLACE INTO character_declinedname (guid, genitive, dative, accusative, instrumental, prepositional) VALUES ('%u','%s','%s','%s','%s','%s')", Arcemu::Util::GUID_LOPART(guid), declinedname[1].c_str(),declinedname[2].c_str(),declinedname[3].c_str(),declinedname[4].c_str(),declinedname[5].c_str());
-
-    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4 + 8);
-    data << uint32_t(error);
-    data << uint64_t(guid);
-    SendPacket(&data);
-    return;
+	WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4+8);
+	data << uint32_t(0);
+	data << uint64_t(guid);
+	SendPacket(&data);
 }
 //MIT end
