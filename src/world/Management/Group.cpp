@@ -378,7 +378,7 @@ void Group::Disband()
     }
 
     m_groupLock.Release();
-    CharacterDatabase.Execute("DELETE FROM groups WHERE group_id = %u", m_Id);
+    CharacterDatabase.Execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
     sInstanceMgr.OnGroupDestruction(this);
     delete this;	// destroy ourselves, the destructor removes from eventmgr and objectmgr.
 }
@@ -836,7 +836,7 @@ void Group::SaveToDB()
     //uint32 fillers = 8 - m_SubGroupCount;
 
 
-    ss << "DELETE FROM groups WHERE group_id = ";
+    ss << "DELETE FROM `groups` WHERE `group_id` = ";
     ss << m_Id;
     ss << ";";
 

@@ -515,7 +515,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         //                                                                      0          1           2             3                 4               5                  6
         QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //                                                         7      8         9         10       11     12     13       14            15              16           17
-                                                                "name, subname, info_str, type_flags, type, family, rank, encounter, base_attack_mod, range_attack_mod, leader, "
+                                                                "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
         //                                                          18        19        20        21         22      23     24      25          26           27
                                                                 "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
         //                                                          28          29         30            31                 32                33            34        35
@@ -3879,7 +3879,7 @@ void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
     //                                                  0      1     2       3
-    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u)", VERSION_STRING);
+    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u", VERSION_STRING);
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_data` is empty!");
