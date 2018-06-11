@@ -1481,11 +1481,17 @@ void WorldSession::HandleChangePlayerNameOpcode(WorldPacket& recv_data)
     //\todo check utf8 and cyrillic chars
     // check declined names
 
+    CHECK_PACKET_SIZE(recv_data,8+1);
+
     uint64_t guid;
     std::string newname;
 
     recv_data >> guid;
     recv_data >> newname;
+
+    WorldPacket data(SMSG_CHAR_RENAME, 1);
+    data << uint8_t(E_CHAR_CREATE_ERROR);
+    SendPacket(&data);
 }
 
 void WorldSession::HandleChangePlayerNameOpcodeCallBack(WorldPacket& recv_data)
