@@ -806,7 +806,12 @@ public:
         virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
+#ifdef AE_TBC
+        void buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target);
+#else
         void buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
+#endif
+	
         void buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         // WoWGuid class
