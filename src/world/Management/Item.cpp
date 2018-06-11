@@ -95,10 +95,12 @@ void Item::modStackCount(int32_t mod)
     setStackCount(newStackCount);
 }
 
+#ifdef AE_TBC
 void Item::setTextId(const uint32 textId)
 {
 	write(itemData()->item_text_id, textId);
 }
+#endif
 
 uint32_t Item::getDuration() const { return itemData()->duration; }
 void Item::setDuration(uint32_t seconds) { write(itemData()->duration, seconds); }
