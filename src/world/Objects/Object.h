@@ -806,7 +806,7 @@ public:
         virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
-#ifdef AE_TBC
+#if VERSION_STRING < WotLK
         void buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target);
 #else
         void buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
