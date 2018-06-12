@@ -1356,19 +1356,20 @@ void WorldSession::FullLogin(Player* plr)
 }
 #endif
 
+// MIT start
 #if VERSION_STRING > TBC
 /// \todo port player to a main city of his new faction
 void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 {
-    uint64 guid;
+    uint64_t guid;
     std::string newname;
-    uint8 gender;
-    uint8 skin;
-    uint8 face;
-    uint8 hairStyle;
-    uint8 hairColor;
-    uint8 facialHair;
-    uint8 race;
+    uint8_t gender;
+    uint8_t skin;
+    uint8_t face;
+    uint8_t hairStyle;
+    uint8_t hairColor;
+    uint8_t facialHair;
+    uint8_t race;
 
     recv_data >> guid;
     recv_data >> newname;
@@ -1380,30 +1381,30 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     recv_data >> face;
     recv_data >> race;
 
-    uint8 _class = 0;
-    PlayerInfo* info = objmgr.GetPlayerInfo(static_cast<uint32>(guid));
+    uint8_t _class = 0;
+    PlayerInfo* info = objmgr.GetPlayerInfo(static_cast<uint32_t>(guid));
 
     if (info)
         _class = info->cl;
     else
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
+        data << uint8_t(E_CHAR_CREATE_ERROR);
         SendPacket(&data);
         return;
     }
 
-    uint32 used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
-    uint32 newflags = 0;
+    uint32_t used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
+    uint32_t newflags = 0;
 
     QueryResult* query = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", guid);
     if (query)
     {
-        uint16 lflag = query->Fetch()[0].GetUInt16();
+        uint16_t lflag = query->Fetch()[0].GetUInt16();
         if (!(lflag & used_loginFlag))
         {
             WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-            data << uint8(E_CHAR_CREATE_ERROR);
+            data << uint8_t(E_CHAR_CREATE_ERROR);
             SendPacket(&data);
             return;
         }
@@ -1413,7 +1414,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     if (!sMySQLStore.getPlayerCreateInfo(race, info->cl))
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
+        data << uint8_t(E_CHAR_CREATE_ERROR);
         SendPacket(&data);
         return;
     }
@@ -1422,7 +1423,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     if (res != E_CHAR_NAME_SUCCESS)
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(res);
+        data << uint8_t(res);
         SendPacket(&data);
         return;
     }
@@ -1435,7 +1436,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
             if (result->Fetch()[0].GetUInt32() > 0)
             {
                 WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-                data << uint8(E_CHAR_NAME_RESERVED);
+                data << uint8_t(E_CHAR_NAME_RESERVED);
                 SendPacket(&data);
                 return;
             }
@@ -1447,7 +1448,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     if (newinfo != NULL && newinfo->guid != guid)
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
+        data << uint8_t(E_CHAR_CREATE_NAME_IN_USE);
         SendPacket(&data);
         return;
     }
@@ -1457,25 +1458,24 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 
     Util::CapitalizeString(newname);
     objmgr.RenamePlayerInfo(info, info->name, newname.c_str());
-    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32)race, (uint32)guid);
+    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32_t)race, (uint32_t)guid);
 
-    //CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32)LOGIN_NO_FLAG, (uint32)guid);
+    //CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32_t)LOGIN_NO_FLAG, (uint32_t)guid);
     WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1 + 8 + (newname.size() + 1) + 1 + 1 + 1 + 1 + 1 + 1 + 1);
-    data << uint8(0);
-    data << uint64(guid);
+    data << uint8_t(0);
+    data << uint64_t(guid);
     data << newname;
-    data << uint8(gender);
-    data << uint8(skin);
-    data << uint8(face);
-    data << uint8(hairStyle);
-    data << uint8(hairColor);
-    data << uint8(facialHair);
-    data << uint8(race);
+    data << uint8_t(gender);
+    data << uint8_t(skin);
+    data << uint8_t(face);
+    data << uint8_t(hairStyle);
+    data << uint8_t(hairColor);
+    data << uint8_t(facialHair);
+    data << uint8_t(race);
     SendPacket(&data);
 }
 #endif
 
-// MIT start
 void WorldSession::HandleChangePlayerNameOpcode(WorldPacket& recv_data)
 {
     //\todo check utf8 and cyrillic chars
@@ -1498,6 +1498,8 @@ void WorldSession::HandleChangePlayerNameOpcodeCallBack(WorldPacket& recv_data)
 {
     //\todo check utf8 and cyrillic chars
     // check declined names
+
+    CHECK_PACKET_SIZE(recv_data,8+1);
 
     uint64_t guid;
 
