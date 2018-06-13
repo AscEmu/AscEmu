@@ -107,7 +107,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         void BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
         void BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language);
         void BuildQuestComplete(Player*, QuestProperties const* qst);
-        void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language);
+        void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language, uint32_t status);
         bool OnActivateQuestGiver(Object* qst_giver, Player* plr);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 

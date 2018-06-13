@@ -655,12 +655,11 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 }
 #endif
 
-void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language)
+void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language, uint32_t status)
 {
     if (!plr || !plr->GetSession())
         return;
 
-    uint32_t status;
     std::list<QuestRelation*>::iterator it;
     std::list<QuestRelation*>::iterator st;
     std::list<QuestRelation*>::iterator ed;
