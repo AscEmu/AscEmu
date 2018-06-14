@@ -655,7 +655,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 }
 #endif
 
-void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language, uint32_t status)
+void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language)
 {
     if (!plr || !plr->GetSession())
         return;
@@ -709,7 +709,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 
     for (it = st; it != ed; ++it)
     {
-        status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+        uint32_t status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
         if (status >= QMGR_QUEST_CHAT)
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
