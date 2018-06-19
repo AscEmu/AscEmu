@@ -299,7 +299,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = NULL;
-                    LOG_ERROR("Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
+                    LogDebugFlag(LF_DB_TABLES, "Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
                 }
                 else
                 {

@@ -1431,7 +1431,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
                 }
                 else
                 {
-                    LOG_ERROR("Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
+                    LogDebugFlag(LF_DB_TABLES, "Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
                 }
             }
 

@@ -2117,7 +2117,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOG_ERROR("Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
                 }
                 else
                 {
@@ -2145,7 +2145,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOG_ERROR("Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
                 }
                 else
                 {
@@ -2170,7 +2170,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add starter to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2195,7 +2195,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2226,7 +2226,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add association to item %d for non-existent quest %d.", item, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {
