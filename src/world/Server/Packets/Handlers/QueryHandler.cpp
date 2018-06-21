@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgQueryTimeResponse.h"
 #include "Log.hpp"
 #include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
 
