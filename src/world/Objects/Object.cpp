@@ -47,8 +47,9 @@
 #include "Data/WoWObject.h"
 #include "Data/WoWPlayer.h"
 #include "Data/WoWGameObject.h"
+#include "Server/Packets/SmsgDestoyObject.h"
 
- // MIT Start
+// MIT Start
 
 bool Object::write(const uint8_t& member, uint8_t val)
 {
@@ -3897,10 +3898,7 @@ void Object::SendAIReaction(uint32 reaction)
 
 void Object::SendDestroyObject()
 {
-    WorldPacket data(SMSG_DESTROY_OBJECT, 9);
-    data << uint64(getGuid());
-    data << uint8(0);
-    SendMessageToSet(&data, false);
+    SendMessageToSet(AscEmu::Packets::SmsgDestroyObject(getGuid()).serialise().get(), false);
 }
 
 bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath)

@@ -28,6 +28,7 @@
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgInstanceDifficulty.h"
 #include "Server/Packets/SmsgInitialSpells.h"
+#include "Server/Packets/SmsgDestoyObject.h"
 
 using namespace AscEmu::Packets;
 
@@ -769,11 +770,7 @@ void Player::SendPartyKillLog(uint64 GUID)
 
 void Player::SendDestroyObject(uint64 GUID)
 {
-    WorldPacket data(SMSG_DESTROY_OBJECT, 9);
-    data << GUID;
-    data << uint8(0);   //TODO: unk bool
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgDestroyObject(GUID).serialise().get());
 }
 
 

@@ -37,6 +37,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgDestoyObject.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
