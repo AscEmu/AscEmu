@@ -59,9 +59,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
     {
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
         if (ci == nullptr)
-        {
             return;
-        }
 
         MySQLStructure::LocalesCreature const* lcn = (language > 0) ? sMySQLStore.getLocalizedCreature(entry, language) : nullptr;
         if (lcn == nullptr)

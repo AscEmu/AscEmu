@@ -41,7 +41,7 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING >= WotLK
             packet << guid << uint8_t(0) << player_name << uint8_t(0) << race << gender << class_ << uint8_t(0);
 #else
-            packet << guid.getGuidLow() << uint32_t(0) << player_name << uint8_t(0) << race << gender << class_ <<
+            packet << guid.getGuidLow() << uint32_t(0) << player_name << uint8_t(0) << uint32_t(race) << uint32_t(gender) << uint32_t(class_) <<
                     uint8_t(0);
 #endif
             return true;
