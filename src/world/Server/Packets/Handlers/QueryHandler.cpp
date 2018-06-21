@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Log.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/CmsgCreatureQuery.h"
+#include "Server/Packets/SmsgCreatureQueryResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -50,6 +52,27 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
 
     LOG_DEBUG("Received CMSG_GAMEOBJECT_QUERY for entry: %u", query.entry);
     SendPacket(SmsgGameobjectQueryResponse(*gameobject_info, name).serialise().get());
+}
+
+void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
+{
+    CmsgCreatureQuery query;
+    if (!query.deserialise(recvData))
+    {
+        Disconnect();
+        return;
+    }
+
+    const auto creature_info = sMySQLStore.getCreatureProperties(query.entry);
+    if (!creature_info)
+        return;
+
+    const auto loc = (language > 0) ? sMySQLStore.getLocalizedCreature(query.entry, language) : nullptr;
+    const auto name = loc ? loc->name : creature_info->Name.c_str();
+    const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
+
+    LOG_DEBUG("Received SMSG_CREATURE_QUERY_RESPONSE for entry: %u", query.entry);
+    SendPacket(SmsgCreatureQueryResponse(*creature_info, query.entry, name, subName).serialise().get());
 }
 
 void WorldSession::handleQueryTimeOpcode(WorldPacket&)

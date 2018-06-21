@@ -7,6 +7,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAddIgnore.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgContactList.h
+   ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
@@ -37,6 +38,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupInvite.h

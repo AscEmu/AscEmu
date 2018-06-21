@@ -45,9 +45,7 @@ namespace AscEmu { namespace Packets
 
 #if VERSION_STRING == WotLK
             for (uint8_t i = 0; i < 6; ++i)
-            {
                 packet << uint32_t(info.QuestItems[i]);
-            }
 #endif
             return true;
         }

@@ -348,12 +348,14 @@ class SERVER_DECL WorldSession
         void HandleNameQueryOpcode(WorldPacket& recvPacket);
         void HandleQueryTimeOpcode(WorldPacket& recvPacket);
         void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
+        void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
 #else
         void handleNameQueryOpcode(WorldPacket& recvPacket);
         void handleGameObjectQueryOpcode(WorldPacket& recvPacket);
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
+        void handleCreatureQueryOpcode(WorldPacket& recvPacket);
 #endif
-        void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
+        
         void HandleItemNameQueryOpcode(WorldPacket& recv_data);
         void HandlePageTextQueryOpcode(WorldPacket& recv_data);
         void HandleAchievmentQueryOpcode(WorldPacket& recv_data);
