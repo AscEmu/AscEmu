@@ -34,10 +34,13 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/SmsgLootRemoved.h"
+#include "Server/Packets/CmsgAutostoreLootItem.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
 
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -65,138 +68,133 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 #if VERSION_STRING != Cata
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint32 itemid = 0;
-    uint32 amt = 1;
-    uint8 lootSlot = 0;
-    uint8 error = 0;
-    SlotResult slotresult;
-
-    Item* add;
-    Loot* pLoot = NULL;
+    CmsgAutostoreLootItem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     _player->interruptSpell();
 
-    GameObject* pGO = NULL;
-    Creature* pCreature = NULL;
-    Item *lootSrcItem = NULL;
+    GameObject* pGO = nullptr;
+    Creature* pCreature = nullptr;
+    Item* lootSrcItem = nullptr;
 
-    uint32 guidtype = GET_TYPE_FROM_GUID(_player->GetLootGUID());
+    Loot* pLoot = nullptr;
+    const uint32 guidtype = GET_TYPE_FROM_GUID(_player->GetLootGUID());
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
         pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
-        if (!pCreature)return;
+        if (pCreature == nullptr)
+            return;
+
         pLoot = &pCreature->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
         pGO = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
-        if (!pGO)
+        if (pGO == nullptr)
             return;
 
         if (!pGO->IsLootable())
             return;
 
-        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+        auto pLGO = static_cast<GameObject_Lootable*>(pGO);
         pLoot = &pLGO->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
-        Item* pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
-        if (!pItem)
+        auto pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
+        if (pItem == nullptr)
             return;
+
         lootSrcItem = pItem;
         pLoot = pItem->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
-        Player* pl = _player->GetMapMgr()->GetPlayer((uint32)GetPlayer()->GetLootGUID());
-        if (!pl) return;
+        auto pl = _player->GetMapMgr()->GetPlayer(static_cast<uint32>(GetPlayer()->GetLootGUID()));
+        if (pl == nullptr)
+            return;
         pLoot = &pl->loot;
     }
 
-    if (!pLoot) return;
+    if (pLoot == nullptr)
+        return;
 
-    recv_data >> lootSlot;
-    if (lootSlot >= pLoot->items.size())
+    if (recv_packet.slot >= pLoot->items.size())
     {
-        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)",
-                  GetPlayer()->getName().c_str(), lootSlot, pLoot->items.size());
+        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), recv_packet.slot, pLoot->items.size());
         return;
     }
 
-    if (pLoot->items[lootSlot].looted)
+    if (pLoot->items[recv_packet.slot].looted)
     {
         LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
-    amt = pLoot->items.at(lootSlot).iItemsCount;
-    if (pLoot->items.at(lootSlot).roll != NULL)
+    const uint32_t amt = pLoot->items.at(recv_packet.slot).iItemsCount;
+    if (pLoot->items.at(recv_packet.slot).roll != nullptr)
         return;
 
-    if (!pLoot->items.at(lootSlot).ffa_loot)
+    if (!pLoot->items.at(recv_packet.slot).ffa_loot)
     {
-        if (!amt) //Test for party loot
+        if (amt == 0) //Test for party loot
         {
-            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ALREADY_LOOTED);
+            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
     else
     {
         //make sure this player can still loot it in case of ffa_loot
-        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->getGuidLow());
+        const auto itr = pLoot->items.at(recv_packet.slot).has_looted.find(_player->getGuidLow());
 
-        if (pLoot->items.at(lootSlot).has_looted.end() != itr)
+        if (pLoot->items.at(recv_packet.slot).has_looted.end() != itr)
         {
-            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ALREADY_LOOTED);
+            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
 
-    itemid = pLoot->items.at(lootSlot).item.itemproto->ItemId;
-    ItemProperties const* it = pLoot->items.at(lootSlot).item.itemproto;
+    const uint32_t itemid = pLoot->items.at(recv_packet.slot).item.itemproto->ItemId;
+    const auto itemProperties = pLoot->items.at(recv_packet.slot).item.itemproto;
 
-    if ((error = _player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
+    if (const uint8_t error = _player->GetItemInterface()->CanReceiveItem(itemProperties, 1))
     {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
         return;
     }
 
     if (pGO)
-    {
-        CALL_GO_SCRIPT_EVENT(pGO, OnLootTaken)(_player, it);
-    }
+        CALL_GO_SCRIPT_EVENT(pGO, OnLootTaken)(_player, itemProperties);
     else if (pCreature)
-        CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(_player, it);
+        CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(_player, itemProperties);
 
-    add = GetPlayer()->GetItemInterface()->FindItemLessMax(itemid, amt, false);
+    auto add = GetPlayer()->GetItemInterface()->FindItemLessMax(itemid, amt, false);
     sHookInterface.OnLoot(_player, pCreature, 0, itemid);
-    if (!add)
+    if (add == nullptr)
     {
-        slotresult = GetPlayer()->GetItemInterface()->FindFreeInventorySlot(it);
+        const auto slotresult = GetPlayer()->GetItemInterface()->FindFreeInventorySlot(itemProperties);
         if (!slotresult.Result)
         {
-            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
             return;
         }
 
         LOG_DEBUG("AutoLootItem MISC");
-        Item* item = objmgr.CreateItem(itemid, GetPlayer());
-        if (item == NULL)
+        auto item = objmgr.CreateItem(itemid, GetPlayer());
+        if (item == nullptr)
             return;
 
         item->setStackCount(amt);
-        if (pLoot->items.at(lootSlot).iRandomProperty != NULL)
+        if (pLoot->items.at(recv_packet.slot).iRandomProperty != nullptr)
         {
-            item->setRandomPropertiesId(pLoot->items.at(lootSlot).iRandomProperty->ID);
+            item->setRandomPropertiesId(pLoot->items.at(recv_packet.slot).iRandomProperty->ID);
             item->ApplyRandomProperties(false);
         }
-        else if (pLoot->items.at(lootSlot).iRandomSuffix != NULL)
+        else if (pLoot->items.at(recv_packet.slot).iRandomSuffix != nullptr)
         {
-            item->SetRandomSuffix(pLoot->items.at(lootSlot).iRandomSuffix->id);
+            item->SetRandomSuffix(pLoot->items.at(recv_packet.slot).iRandomSuffix->id);
             item->ApplyRandomProperties(false);
         }
 
@@ -234,7 +232,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             false,
             true,
             false,
-            (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()),
+            static_cast<uint8>(_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid())),
             0xFFFFFFFF,
             amt,
             add->getEntry(),
@@ -248,41 +246,32 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     //in case of ffa_loot update only the player who receives it.
-    if (!pLoot->items.at(lootSlot).ffa_loot)
+    if (!pLoot->items.at(recv_packet.slot).ffa_loot)
     {
-        pLoot->items.at(lootSlot).iItemsCount = 0;
+        pLoot->items.at(recv_packet.slot).iItemsCount = 0;
 
-        // this gets sent to all looters
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_LOOT_REMOVED);
-        data << lootSlot;
-        Player* plr;
-        for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        for (auto looterSet = pLoot->looters.begin(); looterSet != pLoot->looters.end(); ++looterSet)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
-                plr->GetSession()->SendPacket(&data);
+            if (const auto plr = _player->GetMapMgr()->GetPlayer(*looterSet))
+                plr->GetSession()->SendPacket(SmsgLootRemoved(recv_packet.slot).serialise().get());
         }
     }
     else
     {
-        pLoot->items.at(lootSlot).has_looted.insert(_player->getGuidLow());
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_LOOT_REMOVED);
-        data << lootSlot;
-        _player->GetSession()->SendPacket(&data);
+        pLoot->items.at(recv_packet.slot).has_looted.insert(_player->getGuidLow());
+        _player->GetSession()->SendPacket(SmsgLootRemoved(recv_packet.slot).serialise().get());
     }
 
-    if (lootSrcItem != NULL)
-    {
-        pLoot->items[lootSlot].looted = true;
-    }
+    if (lootSrcItem != nullptr)
+        pLoot->items[recv_packet.slot].looted = true;
 
     /* any left yet? (for fishing bobbers) */
     if (pGO && pGO->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
-            count += (*itr).iItemsCount;
+        for (auto lootItem = pLoot->items.begin(); lootItem != pLoot->items.end(); ++lootItem)
+            count += (*lootItem).iItemsCount;
+
         if (!count)
             pGO->ExpireAndDelete();
     }
@@ -2099,15 +2088,10 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     {
         pLoot->items.at(slotid).iItemsCount = 0;
 
-        // this gets sent to all looters
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_LOOT_REMOVED);
-        data << slotid;
-        Player* plr;
         for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
-                plr->GetSession()->SendPacket(&data);
+            if (const auto plr = _player->GetMapMgr()->GetPlayer(*itr))
+                plr->GetSession()->SendPacket(SmsgLootRemoved(slotid).serialise().get());
         }
     }
     else

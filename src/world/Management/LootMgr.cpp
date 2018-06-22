@@ -27,6 +27,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldConfig.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/SmsgLootRemoved.h"
 
 initialiseSingleton(LootMgr);
 
@@ -836,14 +837,11 @@ void LootRoll::Finalize()
 #endif
     }
     pLoot->items.at(_slotid).iItemsCount = 0;
-    // this gets sent to all looters
-    data.Initialize(SMSG_LOOT_REMOVED);
-    data << uint8(_slotid);
-    Player* plr;
+
     for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
     {
-        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
-            plr->GetSession()->SendPacket(&data);
+        if (const auto plr = _player->GetMapMgr()->GetPlayer(*itr))
+            plr->GetSession()->SendPacket(AscEmu::Packets::SmsgLootRemoved(_slotid).serialise().get());
     }
     delete this;
 }
