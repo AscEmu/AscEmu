@@ -312,7 +312,9 @@ class SERVER_DECL WorldSession
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         void HandleUpdateAccountData(WorldPacket& recvPacket);
         void HandleRequestAccountData(WorldPacket& recvPacket);
-        void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
+
+        void handleSetActionButtonOpcode(WorldPacket& recvPacket);
+
         void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
         void handleTogglePVPOpcode(WorldPacket& recvPacket);

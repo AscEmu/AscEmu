@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetSheathed.h"
 #include "Server/Packets/CmsgPlayedTime.h"
 #include "Server/Packets/SmsgPlayedTime.h"
+#include "Server/Packets/CmsgSetActionButton.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -318,4 +319,45 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgPlayedTime(_player->m_playedtime[1], _player->m_playedtime[0], recv_packet.displayInUi).serialise().get());
 
     LOG_DEBUG("Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedtime[1], _player->m_playedtime[0]);
+}
+
+void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetActionButton recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("BUTTON: %u ACTION: %u TYPE: %u MISC: %u", recv_packet.button, recv_packet.action, recv_packet.type, recv_packet.misc);
+
+    if (recv_packet.action == 0)
+    {
+        LOG_DEBUG("MISC: Remove action from button %u", recv_packet.button);
+        GetPlayer()->setAction(recv_packet.button, 0, 0, 0);
+    }
+    else
+    {
+#if VERSION_STRING > TBC
+        if (recv_packet.button >= PLAYER_ACTION_BUTTON_COUNT)
+            return;
+#else
+        if (recv_packet.button >= 120)
+            return;
+#endif
+
+        if (recv_packet.type == 64 || recv_packet.type == 65)
+        {
+            LOG_DEBUG("MISC: Added Macro %u into button %u", recv_packet.action, recv_packet.button);
+            GetPlayer()->setAction(recv_packet.button, recv_packet.action, recv_packet.type, recv_packet.misc);
+        }
+        else if (recv_packet.type == 128)
+        {
+            LOG_DEBUG("MISC: Added Item %u into button %u", recv_packet.action, recv_packet.button);
+            GetPlayer()->setAction(recv_packet.button, recv_packet.action, recv_packet.type, recv_packet.misc);
+        }
+        else if (recv_packet.type == 0)
+        {
+            LOG_DEBUG("MISC: Added Spell %u into button %u", recv_packet.action, recv_packet.button);
+            GetPlayer()->setAction(recv_packet.button, recv_packet.action, recv_packet.type, recv_packet.misc);
+        }
+    }
 }
