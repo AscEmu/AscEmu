@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Spell/SpellAuras.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgTextEmote.h"
+#include "Server/Packets/CmsgTextEmote.h"
 
 extern std::string LogFileName;
 extern bool bLogChat;
@@ -579,78 +581,51 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
-{
-    if (_player->isAlive() == false)
-    {
-        return;
-    }
-
-    uint32_t emote;
-    recv_data >> emote;
-
-    _player->Emote((EmoteType)emote);
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
-
-    uint64_t guid = _player->getGuid();
-    sQuestMgr.OnPlayerEmote(_player, emote, guid);
-}
-
 void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 {
     if (_player->isAlive() == false)
-    {
         return;
-    }
 
-    uint64_t guid;
-    uint32_t textEmote;
-    uint32_t emoteNum;
-
-    recv_data >> textEmote;
-    recv_data >> emoteNum;
-    recv_data >> guid;
+    AscEmu::Packets::CmsgTextEmote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (isSessionMuted() || isFloodProtectionTriggered())
     {
         return;
     }
 
-    const char* name = " ";
-    uint32_t namelen = 1;
+    const char* unitName = " ";
+    uint32_t nameLength = 1;
 
-    Unit* unit = _player->GetMapMgr()->GetUnit(guid);
+    Unit* unit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
     if (unit)
     {
         if (unit->isPlayer())
         {
-            name = static_cast<Player*>(unit)->getName().c_str();
-            namelen = (uint32_t)strlen(name) + 1;
+            unitName = static_cast<Player*>(unit)->getName().c_str();
+            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else if (unit->isPet())
         {
-            name = static_cast<Pet*>(unit)->GetName().c_str();
-            namelen = (uint32_t)strlen(name) + 1;
+            unitName = static_cast<Pet*>(unit)->GetName().c_str();
+            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else
         {
             Creature* p = static_cast<Creature*>(unit);
-            name = p->GetCreatureProperties()->Name.c_str();
-            namelen = (uint32_t)strlen(name) + 1;
+            unitName = p->GetCreatureProperties()->Name.c_str();
+            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
     }
 
-    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(textEmote);
+    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
     if (emoteTextEntry == nullptr)
-    {
         return;
-    }
 
-    sHookInterface.OnEmote(_player, (EmoteType)emoteTextEntry->textid, unit);
+    sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), unit);
     if (unit)
-    {
-        CALL_SCRIPT_EVENT(unit, OnEmote)(_player, (EmoteType)emoteTextEntry->textid);
-    }
+        CALL_SCRIPT_EVENT(unit, OnEmote)(_player, static_cast<EmoteType>(emoteTextEntry->textid));
 
     switch (emoteTextEntry->textid)
     {
@@ -666,29 +641,15 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
             break;
         default:
         {
-            _player->Emote((EmoteType)emoteTextEntry->textid);
+            _player->Emote(static_cast<EmoteType>(emoteTextEntry->textid));
         } break;
     }
 
-    WorldPacket data(SMSG_TEXT_EMOTE, 28 + namelen);
-    data << uint64_t(GetPlayer()->getGuid());
-    data << uint32_t(textEmote);
-    data << uint32_t(emoteNum);
-    data << uint32_t(namelen);
-    if (namelen > 1)
-    {
-        data.append(name, namelen);
-    }
-    else
-    {
-        data << uint8_t(0x00);
-    }
+    GetPlayer()->SendMessageToSet(AscEmu::Packets::SmsgTextEmote(nameLength, unitName, recv_packet.text_emote, GetPlayer()->getGuid(), recv_packet.unk).serialise().get(), true);
 
-    GetPlayer()->SendMessageToSet(&data, true);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.text_emote, 0, 0);
 
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, textEmote, 0, 0);
-
-    sQuestMgr.OnPlayerEmote(_player, textEmote, guid);
+    sQuestMgr.OnPlayerEmote(_player, recv_packet.text_emote, recv_packet.guid);
 }
 
 void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)

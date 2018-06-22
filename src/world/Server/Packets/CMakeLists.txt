@@ -11,6 +11,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
+   ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
    ${PATH_PREFIX}/CmsgGossipHello.h
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
@@ -42,6 +43,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
+   ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
@@ -55,6 +57,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
+   ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h
 )

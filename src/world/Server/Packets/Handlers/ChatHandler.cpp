@@ -35,6 +35,9 @@
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgChatPlayerNotFound.h"
 #include "Server/Packets/CmsgTextEmote.h"
+#include "Server/Packets/SmsgTextEmote.h"
+#include "Server/Packets/SmsgEmote.h"
+#include "Server/Packets/CmsgEmote.h"
 
 using namespace AscEmu::Packets;
 
@@ -358,569 +361,21 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
         break;
     }
 }
-
-// MIT End
-
-//void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    WorldPacket* data = nullptr;
-//
-//    uint32 type;
-//    int32 lang;
-//
-//    const char* pMisc = NULL;
-//    const char* pMsg = NULL;
-//
-//    recv_data >> type;
-//    recv_data >> lang;
-//
-//    if (lang >= NUM_LANGUAGES)
-//        return;
-//
-//    if (GetPlayer()->IsBanned())
-//    {
-//        GetPlayer()->BroadcastMessage("You cannot do that when banned.");
-//        return;
-//    }
-//
-//    // Flood protection
-//    if (lang != -1 && !GetPermissionCount() && worldConfig.chat.linesBeforeProtection != 0)
-//    {
-//        /* flood detection, wheeee! */
-//        if (UNIXTIME >= floodTime)
-//        {
-//            floodLines = 0;
-//            floodTime = UNIXTIME + worldConfig.chat.secondsBeforeProtectionReset;
-//        }
-//
-//        if ((++floodLines) > worldConfig.chat.linesBeforeProtection)
-//        {
-//            if (worldConfig.chat.enableSendFloodProtectionMessage)
-//            {
-//                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - UNIXTIME);
-//            }
-//
-//            return;
-//        }
-//    }
-//
-//    switch (type)
-//    {
-//        case CHAT_MSG_EMOTE:
-//        case CHAT_MSG_SAY:
-//        case CHAT_MSG_YELL:
-//        case CHAT_MSG_WHISPER:
-//        case CHAT_MSG_CHANNEL:
-//        {
-//            if (m_muted && m_muted >= (uint32)UNIXTIME)
-//            {
-//                SystemMessage("Your voice is currently muted by a moderator.");
-//                return;
-//            }
-//        }
-//        break;
-//    }
-//
-//    std::string msg, to = "", channel = "", tmp;
-//    msg.reserve(256);
-//
-//    // Process packet
-//    switch (type)
-//    {
-//        case CHAT_MSG_SAY:
-//        case CHAT_MSG_EMOTE:
-//        case CHAT_MSG_PARTY:
-//        case CHAT_MSG_PARTY_LEADER:
-//        case CHAT_MSG_RAID:
-//        case CHAT_MSG_RAID_LEADER:
-//        case CHAT_MSG_RAID_WARNING:
-//        case CHAT_MSG_GUILD:
-//        case CHAT_MSG_OFFICER:
-//        case CHAT_MSG_YELL:
-//            recv_data >> msg;
-//            pMsg = msg.c_str();
-//            //g_chatFilter->ParseEscapeCodes((char*)pMsg,true);
-//            pMisc = 0;
-//            break;
-//        case CHAT_MSG_WHISPER:
-//            recv_data >> to >> msg;
-//            pMsg = msg.c_str();
-//            pMisc = to.c_str();
-//            break;
-//        case CHAT_MSG_CHANNEL:
-//            recv_data >> channel;
-//            recv_data >> msg;
-//            pMsg = msg.c_str();
-//            pMisc = channel.c_str();
-//            break;
-//        case CHAT_MSG_AFK:
-//        case CHAT_MSG_DND:
-//            break;
-//        case CHAT_MSG_BATTLEGROUND:
-//        case CHAT_MSG_BATTLEGROUND_LEADER:
-//            recv_data >> msg;
-//            pMsg = msg.c_str();
-//            break;
-//        default:
-//            LOG_ERROR("CHAT: unknown msg type %u, lang: %u", type, lang);
-//    }
-//
-//
-//    if (int(msg.find("|T")) > -1)
-//    {
-//        GetPlayer()->BroadcastMessage("Don't even THINK about doing that again");
-//        return;
-//    }
-//
-//    // HookInterface OnChat event
-//    if (pMsg && !sHookInterface.OnChat(_player, type, lang, pMsg, pMisc))
-//        return;
-//
-//    Channel* chn = NULL;
-//    // Main chat message processing
-//    switch (type)
-//    {
-//        case CHAT_MSG_EMOTE:
-//        {
-//            if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
-//                lang = 0;
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg))
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (GetPlayer()->m_modlanguage >= 0)
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            else if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('0') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            else
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('c') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//
-//            GetPlayer()->SendMessageToSet(data, true, !worldConfig.player.isInterfactionChatEnabled);
-//
-//            LogDetail("[emote] %s: %s", _player->GetName(), msg.c_str());
-//            delete data;
-//
-//        }
-//        break;
-//        case CHAT_MSG_SAY:
-//        {
-//            if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
-//                lang = 0;
-//
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//                break;
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg))
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (GetPlayer()->m_modlanguage >= 0)
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//                GetPlayer()->SendMessageToSet(data, true);
-//            }
-//            else
-//            {
-//                if (lang > 0 && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
-//                    return;
-//
-//                if (lang == 0 && !CanUseCommand('c') && !worldConfig.player.isInterfactionChatEnabled)
-//                    return;
-//
-//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//
-//                GetPlayer()->SendMessageToSet(data, true);
-//            }
-//            delete data;
-//
-//        }
-//        break;
-//        case CHAT_MSG_PARTY:
-//        case CHAT_MSG_PARTY_LEADER:
-//        case CHAT_MSG_RAID:
-//        case CHAT_MSG_RAID_LEADER:
-//        case CHAT_MSG_RAID_WARNING:
-//        {
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//                break;
-//
-//            if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
-//                lang = 0;
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            Group* pGroup = _player->GetGroup();
-//            if (pGroup == NULL) break;
-//
-//            if (GetPlayer()->m_modlanguage >= 0)
-//                data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            else if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
-//                data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            else
-//                data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
-//            {
-//                // only send to that subgroup
-//                SubGroup* sgr = _player->GetGroup() ?
-//                    _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
-//
-//                if (sgr)
-//                {
-//                    _player->GetGroup()->Lock();
-//                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
-//                    {
-//                        if ((*itr)->m_loggedInPlayer)
-//                        {
-//                            (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
-//                        }
-//                    }
-//                    _player->GetGroup()->Unlock();
-//                }
-//            }
-//            else
-//            {
-//                SubGroup* sgr;
-//                for (uint32 i = 0; i < _player->GetGroup()->GetSubGroupCount(); ++i)
-//                {
-//                    sgr = _player->GetGroup()->GetSubGroup(i);
-//                    _player->GetGroup()->Lock();
-//                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
-//                    {
-//                        if ((*itr)->m_loggedInPlayer)
-//                        {
-//                            (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
-//                        }
-//                    }
-//                    _player->GetGroup()->Unlock();
-//
-//                }
-//            }
-//            LogDetail("[party] %s: %s", _player->GetName(), msg.c_str());
-//            delete data;
-//        }
-//        break;
-//        case CHAT_MSG_GUILD:
-//        {
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//            {
-//                break;
-//            }
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (_player->m_playerInfo->guild)
-//                _player->m_playerInfo->guild->GuildChat(msg.c_str(), this, lang);
-//
-//        }
-//        break;
-//        case CHAT_MSG_OFFICER:
-//        {
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//            {
-//                break;
-//            }
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (_player->m_playerInfo->guild)
-//            {
-//                _player->m_playerInfo->guild->OfficerChat(msg.c_str(), this, lang);
-//            }
-//        }
-//        break;
-//        case CHAT_MSG_YELL:
-//        {
-//            if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
-//            {
-//                lang = 0;
-//            }
-//
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//            {
-//                break;
-//            }
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//            if (lang > 0 && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
-//                return;
-//
-//            if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            }
-//            else if (GetPlayer()->m_modlanguage >= 0)
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            }
-//            else
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//            }
-//
-//            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, data, 2, 1, lang, this);
-//            delete data;
-//        }
-//        break;
-//        case CHAT_MSG_WHISPER:
-//        {
-//            if (lang != -1)
-//            {
-//                lang = LANG_UNIVERSAL; //All whispers are universal
-//            }
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            PlayerCache* playercache = objmgr.GetPlayerCache(to.c_str(), false);
-//            if (playercache == nullptr)
-//            {
-//                data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-//                *data << to;
-//                SendPacket(data);
-//                delete data;
-//                break;
-//            }
-//
-//            if (_player->GetTeamInitial() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !worldConfig.player.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->isGMFlagSet())
-//            {
-//                WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-//                response << to;
-//                SendPacket(&response);
-//                playercache->DecRef();
-//                break;
-//            }
-//
-//            // Check that the player isn't a gm with his status on
-//            ///\todo Game Master's on retail are able to have block whispers after they close the ticket with the current packet.
-//            // When a Game Master is visible to your player it says "This player is unavailable for whisper" I need to figure out how this done.
-//            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0)
-//            {
-//                // Build automated reply
-//                std::string Reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playercache->getGuid(), 4);
-//                SendPacket(data);
-//                delete data;
-//                playercache->DecRef();
-//                break;
-//            }
-//
-//            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0)
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playercache->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//                SendPacket(data);
-//                delete data;
-//                playercache->DecRef();
-//                break;
-//            }
-//            else
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//                playercache->SendPacket(data);
-//            }
-//
-//
-//            //Sent the to Users id as the channel, this should be fine as it's not used for whisper
-//            if (lang != -1) //DO NOT SEND if its an addon message!
-//            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, msg.c_str(), playercache->getGuid(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-//                SendPacket(data);
-//                delete data;
-//            }
-//
-//            if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
-//            {
-//                // Has AFK flag, autorespond.
-//                std::string reason;
-//                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
-//
-//                data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playercache->getGuid(), _player->isGMFlagSet() ? 4 : 0);
-//                SendPacket(data);
-//                delete data;
-//            }
-//            else if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_DND))
-//            {
-//                // Has DND flag, autorespond.
-//                std::string reason;
-//                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
-//                data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playercache->getGuid(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-//                SendPacket(data);
-//                delete data;
-//            }
-//
-//            playercache->DecRef();
-//
-//        }
-//        break;
-//        case CHAT_MSG_CHANNEL:
-//        {
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//            {
-//                break;
-//            }
-//
-//            chn = channelmgr.GetChannel(channel.c_str(), GetPlayer());
-//            if (chn)
-//            {
-//                //g_chatFilter->ParseEscapeCodes((char*)pMsg, (chn->m_flags & CHANNEL_PACKET_ALLOWLINKS)>0);
-//                chn->Say(GetPlayer(), msg.c_str(), NULL, false);
-//            }
-//        }
-//        break;
-//        case CHAT_MSG_AFK:
-//        {
-//            std::string reason = "";
-//            recv_data >> reason;
-//
-//            GetPlayer()->SetAFKReason(reason);
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            /* WorldPacket *data, WorldSession* session, uint32 type, uint32 language, const char *channelName, const char *message*/
-//            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_AFK))
-//            {
-//                GetPlayer()->removePlayerFlags(PLAYER_FLAG_AFK);
-//                if (worldConfig.getKickAFKPlayerTime())
-//                {
-//                    sEventMgr.RemoveEvents(GetPlayer(), EVENT_PLAYER_SOFT_DISCONNECT);
-//                }
-//            }
-//            else
-//            {
-//                GetPlayer()->addPlayerFlags(PLAYER_FLAG_AFK);
-//
-//                if (GetPlayer()->m_bg)
-//                {
-//                    GetPlayer()->m_bg->RemovePlayer(GetPlayer(), false);
-//                }
-//
-//                if (worldConfig.getKickAFKPlayerTime())
-//                {
-//                    sEventMgr.AddEvent(GetPlayer(), &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT, worldConfig.getKickAFKPlayerTime(), 1, 0);
-//                }
-//            }
-//        }
-//        break;
-//        case CHAT_MSG_DND:
-//        {
-//            std::string reason;
-//            recv_data >> reason;
-//            GetPlayer()->SetAFKReason(reason);
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_DND))
-//            {
-//                GetPlayer()->removePlayerFlags(PLAYER_FLAG_DND);
-//            }
-//            else
-//            {
-//                GetPlayer()->addPlayerFlags(PLAYER_FLAG_DND);
-//            }
-//        }
-//        break;
-//
-//        case CHAT_MSG_BATTLEGROUND:
-//        case CHAT_MSG_BATTLEGROUND_LEADER:
-//        {
-//            if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-//            {
-//                break;
-//            }
-//
-//            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
-//            {
-//                SystemMessage("Your chat message was blocked by a server-side filter.");
-//                return;
-//            }
-//
-//            if (_player->m_bg != NULL)
-//            {
-//                data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->getGuid());
-//                _player->m_bg->DistributePacketToTeam(data, _player->GetTeam());
-//                delete data;
-//            }
-//        }
-//        break;
-//    }
-//}
 #endif
 
 #if VERSION_STRING != Cata
-void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    if (!_player->isAlive())
-    {
-        return;
-    }
-
-    uint32 emote;
-    recv_data >> emote;
-    _player->Emote((EmoteType)emote);
-#if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
-#endif
-    uint64 guid = _player->getGuid();
-    sQuestMgr.OnPlayerEmote(_player, emote, guid);
-}
-#endif
-
-#if VERSION_STRING != Cata
-void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
+void WorldSession::handleTextEmoteOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
     if (!_player->isAlive())
-        return;
+     return;
 
     CmsgTextEmote recv_packet;
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    if (m_muted && m_muted >= (uint32)UNIXTIME)
+    if (m_muted && m_muted >= static_cast<uint32_t>(UNIXTIME))
     {
         SystemMessage("Your voice is currently muted by a moderator.");
         return;
@@ -928,74 +383,56 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 
     if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
     {
-        /* flood detection, wheeee! */
         if (UNIXTIME >= floodTime)
         {
             floodLines = 0;
             floodTime = UNIXTIME + worldConfig.chat.secondsBeforeProtectionReset;
         }
 
-        if ((++floodLines) > worldConfig.chat.linesBeforeProtection)
-        {
+        if (++floodLines > worldConfig.chat.linesBeforeProtection)
             return;
-        }
     }
 
-    uint32 namelen = 1;
-    std::string name;
+    uint32_t nameLength = 1;
+    std::string unitName;
 
-    Unit* pUnit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
+    auto pUnit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
     if (pUnit)
     {
         if (pUnit->isPlayer())
-            name = static_cast<Player*>(pUnit)->getName().c_str();
+            unitName = static_cast<Player*>(pUnit)->getName();
         else if (pUnit->isPet())
-            name = static_cast<Pet*>(pUnit)->GetName();
+            unitName = static_cast<Pet*>(pUnit)->GetName();
         else
-            name = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Name;
+            unitName = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Name;
 
-        namelen = static_cast<uint32_t>(name.length() + 1);
+        nameLength = static_cast<uint32_t>(unitName.length() + 1);
     }
 
-    auto emote_text_entry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
-    if (emote_text_entry)
+    auto emoteTextEntry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
+    if (emoteTextEntry)
     {
-        WorldPacket data(SMSG_EMOTE, 28 + namelen);
-
-        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
+        sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), pUnit);
         if (pUnit)
-        {
-            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
-        }
+            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, static_cast<EmoteType>(emoteTextEntry->textid));
 
-        switch (emote_text_entry->textid)
+        switch (emoteTextEntry->textid)
         {
             case EMOTE_STATE_SLEEP:
             case EMOTE_STATE_SIT:
             case EMOTE_STATE_KNEEL:
             case EMOTE_STATE_DANCE:
             {
-                _player->setEmoteState(emote_text_entry->textid);
+                _player->setEmoteState(emoteTextEntry->textid);
             } break;
             default:
                 break;
         }
 
-        data << uint32(emote_text_entry->textid);
-        data << uint64(GetPlayer()->getGuid());
-        GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
+        GetPlayer()->SendMessageToSet(SmsgEmote(emoteTextEntry->textid, GetPlayer()->getGuid()).serialise().get(), true);
 
-        data.Initialize(SMSG_TEXT_EMOTE);
-        data << uint64(GetPlayer()->getGuid());
-        data << uint32(recv_packet.text_emote);
-        data << recv_packet.unk;
-        data << uint32(namelen);
-        if (namelen > 1)
-            data.append(name.c_str(), namelen);
-        else
-            data << uint8(0x00);
+        GetPlayer()->SendMessageToSet(SmsgTextEmote(nameLength, unitName, recv_packet.text_emote, GetPlayer()->getGuid(), recv_packet.unk).serialise().get(), true);
 
-        GetPlayer()->SendMessageToSet(&data, true);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.text_emote, 0, 0);
 #endif
@@ -1003,6 +440,27 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     }
 }
 #endif
+
+void WorldSession::handleEmoteOpcode(WorldPacket& recv_data)
+{
+    CmsgEmote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    if (!_player->isAlive())
+        return;
+
+    _player->Emote(static_cast<EmoteType>(recv_packet.emote));
+
+#if VERSION_STRING > TBC
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.emote, 0, 0);
+#endif
+
+    uint64_t guid = _player->getGuid();
+    sQuestMgr.OnPlayerEmote(_player, recv_packet.emote, guid);
+}
+
+// MIT End
 
 #if VERSION_STRING != Cata
 ///\todo remove these unk unk unk nighrmare!

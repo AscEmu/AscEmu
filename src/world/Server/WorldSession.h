@@ -565,13 +565,15 @@ class SERVER_DECL WorldSession
 #if VERSION_STRING == Cata
         // Cata still uses the old one
         void HandleMessagechatOpcode(WorldPacket& recvData);
+        void HandleTextEmoteOpcode(WorldPacket& recvPacket);
 #else
         void handleMessageChatOpcode(WorldPacket& recvData);
+        void handleTextEmoteOpcode(WorldPacket& recvPacket);
 #endif
+
+        void handleEmoteOpcode(WorldPacket& recvPacket);
         //MIT End
 
-        void HandleEmoteOpcode(WorldPacket& recvPacket);
-        void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         void HandleReportSpamOpcode(WorldPacket& recvPacket);
         void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
         void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
