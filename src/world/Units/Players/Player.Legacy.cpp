@@ -6140,8 +6140,13 @@ void Player::SendInitialActions()
 
 void Player::setAction(uint8 button, uint16 action, uint8 type, uint8 misc)
 {
+#if VERSION_STRING > TBC
     if (button >= PLAYER_ACTION_BUTTON_COUNT)
         return;
+#else
+    if (button >= 120)
+        return;
+#endif
 
     getActiveSpec().mActions[button].Action = action;
     getActiveSpec().mActions[button].Misc = misc;
