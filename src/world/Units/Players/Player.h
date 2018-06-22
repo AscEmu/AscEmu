@@ -2150,7 +2150,12 @@ public:
         // Rested State Stuff
         uint32 m_timeLogoff;
         // Played time
+        // 0 = played on level
+        // 1 = played total
+        // 2 = played session
         uint32 m_playedtime[3];
+
+
         uint8 m_isResting;
         uint8 m_restState;
         uint32 m_restAmount;

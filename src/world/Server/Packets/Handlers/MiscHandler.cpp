@@ -21,6 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
 #include "Server/Packets/CmsgSetSheathed.h"
+#include "Server/Packets/CmsgPlayedTime.h"
+#include "Server/Packets/SmsgPlayedTime.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -36,10 +38,10 @@ void WorldSession::handleStandStateChangeOpcode(WorldPacket& recvPacket)
     _player->setStandState(recv_packet.state);
 }
 
-void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
+void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 {
     CmsgWho recv_packet;
-    if (!recv_packet.deserialise(recv_data))
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
     bool cname = false;
@@ -295,4 +297,25 @@ void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)
         return;
 
     GetPlayer()->setSheathType(static_cast<uint8_t>(recv_packet.type));
+}
+
+void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
+{
+    CmsgPlayedTime recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_PLAYED_TIME: displayinui: %u", recv_packet.displayInUi);
+
+    const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedtime[2];
+    if (playedTime > 0)
+    {
+        _player->m_playedtime[0] += playedTime;
+        _player->m_playedtime[1] += playedTime;
+        _player->m_playedtime[2] += playedTime;
+    }
+
+    SendPacket(SmsgPlayedTime(_player->m_playedtime[1], _player->m_playedtime[0], recv_packet.displayInUi).serialise().get());
+
+    LOG_DEBUG("Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedtime[1], _player->m_playedtime[0]);
 }

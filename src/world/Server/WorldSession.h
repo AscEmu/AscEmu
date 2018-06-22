@@ -323,7 +323,7 @@ class SERVER_DECL WorldSession
 #endif
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
-        void HandlePlayedTimeOpcode(WorldPacket& recv_data);
+        void handlePlayedTimeOpcode(WorldPacket& recvPacket);
         void handleSetSheathedOpcode(WorldPacket& recvPacket);
         void HandleCompleteCinematic(WorldPacket& recv_data);
         void HandleNextCinematic(WorldPacket& recv_data);
