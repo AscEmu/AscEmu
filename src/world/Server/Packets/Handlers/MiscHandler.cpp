@@ -375,8 +375,7 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
     }
 }
 
-//\todo: rename to fit naming conventions!
-void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)
+void WorldSession::handleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)
 {
     CmsgSetWatchedFaction recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -385,7 +384,7 @@ void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)
     GetPlayer()->setWatchedFaction(recv_packet.factionId);
 }
 
-void WorldSession::HandleRandomRollOpcode(WorldPacket& recvPacket)
+void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
 {
     MsgRandomRoll recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -410,7 +409,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recvPacket)
         SendPacket(MsgRandomRoll(minValue, maxValue, randomRoll, GetPlayer()->getGuid()).serialise().get());
 }
 
-void WorldSession::HandleRealmSplitOpcode(WorldPacket& recvPacket)
+void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
 {
     CmsgRealmSplit recv_paket;
     if (!recv_paket.deserialise(recvPacket))
@@ -423,7 +422,7 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgRealmSplit(recv_paket.unknown, 0, dateFormat).serialise().get());
 }
 
-void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
+void WorldSession::handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
 {
     CmsgSetTaxiBenchmarkMode recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -432,15 +431,16 @@ void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
     LOG_DEBUG("Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", recv_packet.mode);
 }
 
-void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
+void WorldSession::handleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
     SendPacket(SmsgWorldStateUiTimerUpdate(static_cast<uint32_t>(UNIXTIME)).serialise().get());
 #endif
 }
 
-void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recvPacket)
+void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgGameobjReportUse recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;
@@ -452,13 +452,12 @@ void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recvPacket)
         return;
 
     sQuestMgr.OnGameObjectActivate(GetPlayer(), gameobject);
-#if VERSION_STRING > TBC
     GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobject->getEntry(), 0, 0);
 
 #endif
 }
 
-void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvPacket)
+void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
 {
     MsgSetDungeonDifficulty recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -474,8 +473,9 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvPacket)
         group->SetDungeonDifficulty(recv_packet.difficulty);
 }
 
-void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recvPacket)
+void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     MsgSetRaidDifficulty recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;
@@ -488,9 +488,10 @@ void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recvPacket)
     const auto group = GetPlayer()->GetGroup();
     if (group && GetPlayer()->IsGroupLeader())
         group->SetRaidDifficulty(recv_packet.difficulty);
+#endif
 }
 
-void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recvPacket)
+void WorldSession::handleSetAutoLootPassOpcode(WorldPacket& recvPacket)
 {
     CmsgOptOutOfLoot recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -501,7 +502,7 @@ void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recvPacket)
     GetPlayer()->m_passOnLoot = recv_packet.turnedOn > 0 ? true : false;
 }
 
-void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
+void WorldSession::handleSetActionBarTogglesOpcode(WorldPacket& recvPacket)
 {
     CmsgSetActionbarToggles recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -512,8 +513,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
     GetPlayer()->setByteValue(PLAYER_FIELD_BYTES, 2, recv_packet.actionbarId);
 }
 
-#if VERSION_STRING != Cata
-void WorldSession::HandleLootRollOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
 {
     CmsgLootRoll recv_packet;
     if (!recv_packet.deserialise(recvPacket))
@@ -562,9 +562,8 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recvPacket)
 
     lootRoll->PlayerRolled(GetPlayer(), recv_packet.choice);
 }
-#endif
 
-void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
+void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
 {
     CmsgOpenItem recv_packet;
     if (!recv_packet.deserialise(recvPacket))

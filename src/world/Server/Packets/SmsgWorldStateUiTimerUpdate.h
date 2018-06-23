@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class SmsgWorldStateUiTimerUpdate : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t unixtime;
 
@@ -36,5 +37,6 @@ namespace AscEmu { namespace Packets
         {
             return false;
         }
+#endif
     };
 }}

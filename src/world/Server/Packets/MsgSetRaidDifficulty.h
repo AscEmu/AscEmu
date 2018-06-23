@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class MsgSetRaidDifficulty : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint8_t difficulty;
         uint32_t unknown;
@@ -41,5 +42,6 @@ namespace AscEmu { namespace Packets
             packet >> difficulty;
             return true;
         }
+#endif
     };
 }}

@@ -269,7 +269,7 @@ class SERVER_DECL WorldSession
         uint8 DeleteCharacter(uint32 guid);
         void HandleCharCreateOpcode(WorldPacket& recvPacket);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
-        void HandleRealmSplitOpcode(WorldPacket& recvPacket);
+        void handleRealmSplitOpcode(WorldPacket& recvPacket);
         void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
         void HandleTimeSyncResp(WorldPacket& recv_data);
         void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
@@ -283,7 +283,7 @@ class SERVER_DECL WorldSession
         void HandleLootOpcode(WorldPacket& recvPacket);
         void HandleLootReleaseOpcode(WorldPacket& recvPacket);
         void HandleLootMasterGiveOpcode(WorldPacket& recv_data);
-        void HandleLootRollOpcode(WorldPacket& recv_data);
+        void handleLootRollOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         Loot* getLootFromHighGuidType(uint32_t highGuid);
         void HandleSuggestionOpcode(WorldPacket& recv_data);
@@ -316,7 +316,7 @@ class SERVER_DECL WorldSession
         void handleSetActionButtonOpcode(WorldPacket& recvPacket);
 
         void HandleSetAtWarOpcode(WorldPacket& recvPacket);
-        void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
+        void handleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
         void handleTogglePVPOpcode(WorldPacket& recvPacket);
         void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         void HandleGameObjectUse(WorldPacket& recvPacket);
@@ -330,7 +330,7 @@ class SERVER_DECL WorldSession
         void HandleCompleteCinematic(WorldPacket& recv_data);
         void HandleNextCinematic(WorldPacket& recv_data);
         void HandleInspectOpcode(WorldPacket& recv_data);
-        void HandleGameobjReportUseOpCode(WorldPacket& recv_data); // CMSG_GAMEOBJ_REPORT_USE
+        void handleGameobjReportUseOpCode(WorldPacket& recvPacket);
 
         /// Gm Ticket System in GMTicket.cpp:
         void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
@@ -555,7 +555,7 @@ class SERVER_DECL WorldSession
         void HandleEnterVehicle(WorldPacket& recv_data);
         void HandleVehicleDismiss(WorldPacket& recv_data);
 #endif
-        void HandleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
+        void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
         // Chat opcodes (Chat.cpp)
@@ -819,8 +819,8 @@ class SERVER_DECL WorldSession
 
         void HandleSelfResurrectOpcode(WorldPacket& recv_data);
         void HandleUnlearnSkillOpcode(WorldPacket& recv_data);
-        void HandleRandomRollOpcode(WorldPacket& recv_data);
-        void HandleOpenItemOpcode(WorldPacket& recv_data);
+        void handleRandomRollOpcode(WorldPacket& recv_data);
+        void handleOpenItemOpcode(WorldPacket& recvPacket);
 
         void HandleToggleHelmOpcode(WorldPacket& recv_data);
         void HandleToggleCloakOpcode(WorldPacket& recv_data);
@@ -829,8 +829,8 @@ class SERVER_DECL WorldSession
 
         // Instances
         void HandleResetInstanceOpcode(WorldPacket& recv_data);
-        void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
-        void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
+        void handleDungeonDifficultyOpcode(WorldPacket& recvPacket);
+        void handleRaidDifficultyOpcode(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
@@ -871,12 +871,12 @@ class SERVER_DECL WorldSession
         //void HandleEnableMicrophoneOpcode(WorldPacket& recv_data);
         //void HandleVoiceChatQueryOpcode(WorldPacket& recv_data);
         //void HandleChannelVoiceQueryOpcode(WorldPacket& recv_data);
-        void HandleSetAutoLootPassOpcode(WorldPacket& recv_data);
+        void handleSetAutoLootPassOpcode(WorldPacket& recvPacket);
 
 
         // Misc
-        void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
-        void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
+        void handleWorldStateUITimerUpdate(WorldPacket& recvPacket);
+        void handleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         void HandleMirrorImageOpcode(WorldPacket& recv_data);
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);

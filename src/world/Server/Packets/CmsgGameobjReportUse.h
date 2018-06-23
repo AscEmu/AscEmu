@@ -13,6 +13,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgGameobjReportUse : public ManagedPacket
     {
+#if VERSION_STRING >= WotLK
     public:
         WoWGuid guid;
 
@@ -39,5 +40,6 @@ namespace AscEmu { namespace Packets
             guid = WoWGuid(unpackedGuid);
             return true;
         }
+#endif
     };
 }}
