@@ -69,6 +69,7 @@
 #include "Data/WoWGameObject.h"
 #include "Data/WoWDynamicObject.h"
 #include "Data/WoWCorpse.h"
+#include <limits>
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
@@ -1021,7 +1022,8 @@ bool Player::Create(WorldPacket& data)
     for (uint16 x = 0; x < 7; x++)
         setFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
-    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, uint32_t(-1));
+    //\todo not sure if this is what we want.
+    setWatchedFaction(std::numeric_limits<uint32_t>::max());
 
     m_StableSlotCount = 0;
     Item* item;
@@ -2746,7 +2748,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     SaveSkills(bNewCharacter, buf);
 
-    ss << getInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ","
+    ss << getWatchedFaction() << ","
 #if VERSION_STRING > Classic
         << getChosenTitle() << ","
 #else
@@ -3342,7 +3344,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     // set the rest of the stuff
-    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
+    setWatchedFaction(get_next_field.GetUInt32());
 #if VERSION_STRING > Classic
     setChosenTitle(get_next_field.GetUInt32());
 #else
@@ -4084,7 +4086,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     // set the rest of the stuff
-    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
+    setWatchedFaction(get_next_field.GetUInt32());
 #if VERSION_STRING > Classic
     setChosenTitle(get_next_field.GetUInt32());
 #endif

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPlayedTime.h"
 #include "Server/Packets/SmsgPlayedTime.h"
 #include "Server/Packets/CmsgSetActionButton.h"
+#include "Server/Packets/CmsgSetWatchedFaction.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -361,3 +362,13 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
         }
     }
 }
+
+void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetWatchedFaction recv_packet;
+    if (recv_packet.deserialise(recvPacket))
+        return;
+
+    GetPlayer()->setWatchedFaction(recv_packet.factionId);
+}
+

@@ -1079,15 +1079,6 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 factionid;
-    recvPacket >> factionid;
-    GetPlayer()->setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
-}
-
 void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN

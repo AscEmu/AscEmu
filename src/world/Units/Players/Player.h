@@ -490,6 +490,9 @@ public:
     void setRangedAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
 
+    uint32_t getWatchedFaction() const;
+    void setWatchedFaction(uint32_t factionId);
+
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
 
