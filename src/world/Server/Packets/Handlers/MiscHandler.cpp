@@ -31,6 +31,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetTaxiBenchmarkMode.h"
 #include "Server/Packets/SmsgWorldStateUiTimerUpdate.h"
 #include "Server/Packets/CmsgGameobjReportUse.h"
+#include "Server/Packets/MsgSetDungeonDifficulty.h"
+#include "Server/Packets/MsgSetRaidDifficulty.h"
+#include "Server/Packets/CmsgOptOutOfLoot.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -450,4 +453,47 @@ void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recvPacket)
     GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobject->getEntry(), 0, 0);
 
 #endif
+}
+
+void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvPacket)
+{
+    MsgSetDungeonDifficulty recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", recv_packet.difficulty);
+
+    GetPlayer()->SetDungeonDifficulty(recv_packet.difficulty);
+    sInstanceMgr.ResetSavedInstances(GetPlayer());
+
+    const auto group = GetPlayer()->GetGroup();
+    if (group && GetPlayer()->IsGroupLeader())
+        group->SetDungeonDifficulty(recv_packet.difficulty);
+}
+
+void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recvPacket)
+{
+    MsgSetRaidDifficulty recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", recv_packet.difficulty);
+
+    GetPlayer()->SetRaidDifficulty(recv_packet.difficulty);
+    sInstanceMgr.ResetSavedInstances(GetPlayer());
+
+    const auto group = GetPlayer()->GetGroup();
+    if (group && GetPlayer()->IsGroupLeader())
+        group->SetRaidDifficulty(recv_packet.difficulty);
+}
+
+void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recvPacket)
+{
+    CmsgOptOutOfLoot recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_OPT_OUT_OF_LOOT: %u (tirnedOn)", recv_packet.turnedOn);
+
+    GetPlayer()->m_passOnLoot = recv_packet.turnedOn > 0 ? true : false;
 }

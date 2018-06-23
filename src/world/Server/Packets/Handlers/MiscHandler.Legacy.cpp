@@ -2181,42 +2181,6 @@ void WorldSession::HandleToggleHelmOpcode(WorldPacket& /*recv_data*/)
         _player->addPlayerFlags(PLAYER_FLAG_NOHELM);
 }
 
-void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvData)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8_t data;
-    recvData >> data;
-
-    // Set dungeon difficulty for us
-    _player->iInstanceType = data;
-    sInstanceMgr.ResetSavedInstances(_player);
-
-    Group* group = _player->GetGroup();
-
-    // If we have a group and we are the leader then set it for the entire group as well
-    if (group && _player->IsGroupLeader())
-        group->SetDungeonDifficulty(data);
-}
-
-void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recvData)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8_t data;
-    recvData >> data;
-
-    // set the raid difficulty for us
-    _player->SetRaidDifficulty(data);
-    sInstanceMgr.ResetSavedInstances(_player);
-
-    Group* group = _player->GetGroup();
-
-    // if we have a group and we are the leader then set it for the entire group as well
-    if (group && _player->IsGroupLeader())
-        group->SetRaidDifficulty(data);
-}
-
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -2252,19 +2216,6 @@ void WorldSession::HandleDismountOpcode(WorldPacket& /*recv_data*/)
         return;
 
     _player->Dismount();
-}
-
-void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 on;
-    recv_data >> on;
-
-    if (_player->IsInWorld())
-        _player->BroadcastMessage(_player->GetSession()->LocalizedWorldSrv(67), on ? _player->GetSession()->LocalizedWorldSrv(68) : _player->GetSession()->LocalizedWorldSrv(69));
-
-    _player->m_passOnLoot = (on != 0) ? true : false;
 }
 
 #if VERSION_STRING > TBC

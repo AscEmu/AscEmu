@@ -29,6 +29,8 @@
 #include "Server/Packets/SmsgInstanceDifficulty.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Server/Packets/SmsgDestoyObject.h"
+#include "Server/Packets/MsgSetRaidDifficulty.h"
+#include "Server/Packets/MsgSetDungeonDifficulty.h"
 
 using namespace AscEmu::Packets;
 
@@ -229,23 +231,13 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
 
 void Player::SendDungeonDifficulty()
 {
-    WorldPacket data(MSG_SET_DUNGEON_DIFFICULTY, 12);
-    data << uint32(GetDungeonDifficulty());
-    data << uint32(1);
-    data << uint32(InGroup());
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
 }
 
 void Player::SendRaidDifficulty()
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(MSG_SET_RAID_DIFFICULTY, 12);
-    data << uint32(m_RaidDifficulty);
-    data << uint32(1);
-    data << uint32(InGroup());
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(MsgSetRaidDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
 #endif
 }
 

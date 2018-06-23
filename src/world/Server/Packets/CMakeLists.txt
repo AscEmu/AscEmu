@@ -23,6 +23,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgNpcTextQuery.h
+   ${PATH_PREFIX}/CmsgOptOutOfLoot.h
    ${PATH_PREFIX}/CmsgPlayedTime.h
    ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgRealmSplit.h
@@ -41,6 +42,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MovementPacket.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/MsgRandomRoll.h
+   ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
+   ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
