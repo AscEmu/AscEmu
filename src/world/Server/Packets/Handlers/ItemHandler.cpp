@@ -32,7 +32,6 @@
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING != Cata
 bool VerifyBagSlots(int8_t containerSlot, int8_t slot)
 {
     if (containerSlot < -1)
@@ -2529,5 +2528,4 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
 }
-#endif
 #endif

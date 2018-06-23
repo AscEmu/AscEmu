@@ -26,7 +26,6 @@
 #include "Log.hpp"
 #include "Units/Players/Player.h"
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleAttackSwingOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 8);
@@ -75,4 +74,3 @@ void WorldSession::HandleAttackStopOpcode(WorldPacket& /*recv_data*/)
         }
     }
 }
-#endif

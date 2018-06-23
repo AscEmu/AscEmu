@@ -60,6 +60,7 @@ void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
     if (channel)
         SendPacket(SmgsChannelMemberCount(name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
 }
+#endif
 //MIT end
 
 
@@ -327,5 +328,3 @@ void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
     if (chn)
         chn->List(_player);
 }
-
-#endif

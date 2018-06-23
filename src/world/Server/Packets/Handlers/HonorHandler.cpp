@@ -32,7 +32,7 @@
 #include "Objects/ObjectMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-#if VERSION_STRING != Cata
+
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 4);
@@ -254,4 +254,3 @@ void HonorHandler::RecalculateHonorFields(Player* pPlayer)
     if (pPlayer != nullptr)
         pPlayer->UpdatePvPCurrencies();
 }
-#endif
