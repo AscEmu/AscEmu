@@ -33,7 +33,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/SpellHandler.cpp
     ${PATH_PREFIX}/TaxiHandler.cpp
     ${PATH_PREFIX}/TradeHandler.cpp
-    ${PATH_PREFIX}/VehicleHandler.cpp
 )
 
 source_group(GameCata\\Handlers FILES ${SRC_GAMECATA_HANDLER_FILES})

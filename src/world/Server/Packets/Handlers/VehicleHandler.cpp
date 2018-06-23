@@ -23,7 +23,6 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
 
-#if VERSION_STRING != Cata
 #if VERSION_STRING > TBC
 void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
 {
@@ -219,5 +218,4 @@ void WorldSession::HandleEnterVehicle(WorldPacket& recv_data)
 
     v->GetVehicleComponent()->AddPassenger(_player);
 }
-#endif
 #endif
