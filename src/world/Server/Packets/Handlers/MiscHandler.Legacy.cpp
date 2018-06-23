@@ -1826,44 +1826,6 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 min;
-    uint32 max;
-
-    recv_data >> min;
-    recv_data >> max;
-
-    LOG_DETAIL("WORLD: Received MSG_RANDOM_ROLL: %u-%u", min, max);
-
-    WorldPacket data(20);
-    data.SetOpcode(MSG_RANDOM_ROLL);
-    data << min;
-    data << max;
-
-    uint32 roll;
-
-    if (max > RAND_MAX)
-        max = RAND_MAX;
-
-    if (min > max)
-        min = max;
-
-    // generate number
-    roll = Util::getRandomUInt(max - min) + min;
-
-    // append to packet, and guid
-    data << roll;
-    data << _player->getGuid();
-
-    // send to set
-    if (_player->InGroup())
-        _player->GetGroup()->SendPacketToAll(&data);
-    else
-        SendPacket(&data);
-}
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
@@ -2331,63 +2293,6 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
     _player->smsg_TalentsInfo(false);
 }
 #endif
-
-void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CMSG_GAMEOBJ_REPORT_USE
-{
-    CHECK_INWORLD_RETURN;
-    uint64 guid;
-    recv_data >> guid;
-    GameObject* gameobj = _player->GetMapMgr()->GetGameObject((uint32)guid);
-    if (gameobj == NULL)
-        return;
-    sQuestMgr.OnGameObjectActivate(_player, gameobj);
-#if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->getEntry(), 0, 0);
-#endif
-}
-
-void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& /*recv_data*/)
-{
-#if VERSION_STRING > TBC
-    CHECK_INWORLD_RETURN
-
-    WorldPacket data(SMSG_WORLD_STATE_UI_TIMER_UPDATE, 4);
-    data << (uint32)UNIXTIME;
-    SendPacket(&data);
-#endif
-}
-
-void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    uint8 mode;
-    recv_data >> mode;
-
-    LOG_DEBUG("Client used \"/timetest %d\" command", mode);
-}
-
-void WorldSession::HandleRealmSplitOpcode(WorldPacket& recv_data)
-{
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    LOG_DEBUG("WORLD: Received CMSG_REALM_SPLIT");
-
-    uint32 unk;
-    std::string split_date = "01/01/01";
-    recv_data >> unk;
-
-    WorldPacket data(SMSG_REALM_SPLIT, 4 + 4 + split_date.size() + 1);
-    data << unk;
-    data << uint32(0);   // realm split state
-    // split states:
-    // 0x0 realm normal
-    // 0x1 realm split
-    // 0x2 realm split pending
-    data << split_date;
-    SendPacket(&data);
-}
 
 void WorldSession::HandleTimeSyncResp(WorldPacket& /*recv_data*/)
 {

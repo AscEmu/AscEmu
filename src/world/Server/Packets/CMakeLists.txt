@@ -13,6 +13,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgDelIgnore.h
    ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
+   ${PATH_PREFIX}/CmsgGameobjReportUse.h
    ${PATH_PREFIX}/CmsgGossipHello.h
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
@@ -24,11 +25,13 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgNpcTextQuery.h
    ${PATH_PREFIX}/CmsgPlayedTime.h
    ${PATH_PREFIX}/CmsgQueryTime.h
+   ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgSetActionButton.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h
+   ${PATH_PREFIX}/CmsgSetTaxiBenchmarkMode.h
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
    ${PATH_PREFIX}/CmsgTextEmote.h
@@ -37,6 +40,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
+   ${PATH_PREFIX}/MsgRandomRoll.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
@@ -57,11 +61,13 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
+   ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h
+   ${PATH_PREFIX}/SmsgWorldStateUiTimerUpdate.h
 )
 
 source_group(Server\\Packets FILES ${SRC_PACKET_FILES})

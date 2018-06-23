@@ -25,6 +25,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPlayedTime.h"
 #include "Server/Packets/CmsgSetActionButton.h"
 #include "Server/Packets/CmsgSetWatchedFaction.h"
+#include "Server/Packets/MsgRandomRoll.h"
+#include "Server/Packets/CmsgRealmSplit.h"
+#include "Server/Packets/SmsgRealmSplit.h"
+#include "Server/Packets/CmsgSetTaxiBenchmarkMode.h"
+#include "Server/Packets/SmsgWorldStateUiTimerUpdate.h"
+#include "Server/Packets/CmsgGameobjReportUse.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -363,12 +369,85 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
     }
 }
 
+//\todo: rename to fit naming conventions!
 void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)
 {
     CmsgSetWatchedFaction recv_packet;
-    if (recv_packet.deserialise(recvPacket))
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
     GetPlayer()->setWatchedFaction(recv_packet.factionId);
 }
 
+void WorldSession::HandleRandomRollOpcode(WorldPacket& recvPacket)
+{
+    MsgRandomRoll recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("RandomRoll: Received MSG_RANDOM_ROLL: %u (min), %u (max)", recv_packet.min, recv_packet.max);
+
+    uint32_t maxValue = recv_packet.max;
+    uint32_t minValue = recv_packet.min;
+
+    if (maxValue > RAND_MAX)
+        maxValue = RAND_MAX;
+
+    if (minValue > maxValue)
+        minValue = maxValue;
+
+    uint32_t randomRoll = Util::getRandomUInt(maxValue - minValue) + minValue;
+
+    if (GetPlayer()->InGroup())
+        GetPlayer()->GetGroup()->SendPacketToAll(MsgRandomRoll(minValue, maxValue, randomRoll, GetPlayer()->getGuid()).serialise().get());
+    else
+        SendPacket(MsgRandomRoll(minValue, maxValue, randomRoll, GetPlayer()->getGuid()).serialise().get());
+}
+
+void WorldSession::HandleRealmSplitOpcode(WorldPacket& recvPacket)
+{
+    CmsgRealmSplit recv_paket;
+    if (!recv_paket.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_REALM_SPLIT: %u (unk)", recv_paket.unknown);
+
+    const std::string dateFormat = "01/01/01";
+
+    SendPacket(SmsgRealmSplit(recv_paket.unknown, 0, dateFormat).serialise().get());
+}
+
+void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetTaxiBenchmarkMode recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", recv_packet.mode);
+}
+
+void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
+{
+#if VERSION_STRING > TBC
+    SendPacket(SmsgWorldStateUiTimerUpdate(static_cast<uint32_t>(UNIXTIME)).serialise().get());
+#endif
+}
+
+void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recvPacket)
+{
+    CmsgGameobjReportUse recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", recv_packet.guid.getGuidLow());
+
+    const auto gameobject = GetPlayer()->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLow());
+    if (gameobject == nullptr)
+        return;
+
+    sQuestMgr.OnGameObjectActivate(GetPlayer(), gameobject);
+#if VERSION_STRING > TBC
+    GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobject->getEntry(), 0, 0);
+
+#endif
+}
