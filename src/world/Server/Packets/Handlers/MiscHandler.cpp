@@ -34,6 +34,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
 #include "Server/Packets/MsgSetRaidDifficulty.h"
 #include "Server/Packets/CmsgOptOutOfLoot.h"
+#include "Server/Packets/CmsgSetActionbarToggles.h"
+#include "Server/Packets/CmsgLootRoll.h"
+#include "Server/Packets/CmsgOpenItem.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -493,7 +496,152 @@ void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_OPT_OUT_OF_LOOT: %u (tirnedOn)", recv_packet.turnedOn);
+    LOG_DEBUG("Received CMSG_OPT_OUT_OF_LOOT: %u (turnedOn)", recv_packet.turnedOn);
 
     GetPlayer()->m_passOnLoot = recv_packet.turnedOn > 0 ? true : false;
+}
+
+void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
+{
+    CmsgSetActionbarToggles recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", recv_packet.actionbarId);
+
+    GetPlayer()->setByteValue(PLAYER_FIELD_BYTES, 2, recv_packet.actionbarId);
+}
+
+#if VERSION_STRING != Cata
+void WorldSession::HandleLootRollOpcode(WorldPacket& recvPacket)
+{
+    CmsgLootRoll recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_LOOT_ROLL: %u (objectGuid) %u (slot) %d (choice)", recv_packet.objectGuid.getGuidLow(), recv_packet.slot, recv_packet.choice);
+
+    LootRoll* lootRoll = nullptr;
+
+    const uint32_t guidType = GET_TYPE_FROM_GUID(recv_packet.objectGuid.GetOldGuid());
+    switch (guidType)
+    {
+        case HIGHGUID_TYPE_GAMEOBJECT:
+        {
+            auto gameObject = GetPlayer()->GetMapMgr()->GetGameObject(recv_packet.objectGuid.getGuidLow());
+            if (gameObject == nullptr)
+                return;
+
+            if (!gameObject->IsLootable())
+                return;
+
+            auto gameObjectLootable = static_cast<GameObject_Lootable*>(gameObject);
+            if (recv_packet.slot >= gameObjectLootable->loot.items.size() || gameObjectLootable->loot.items.empty())
+                return;
+
+            if (gameObject->getGoType() == GAMEOBJECT_TYPE_CHEST)
+                lootRoll = gameObjectLootable->loot.items[recv_packet.slot].roll;
+        } break;
+        case HIGHGUID_TYPE_UNIT:
+        {
+            auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.objectGuid.getGuidLow());
+            if (creature == nullptr)
+                return;
+
+            if (recv_packet.slot >= creature->loot.items.size() || creature->loot.items.empty())
+                return;
+
+            lootRoll = creature->loot.items[recv_packet.slot].roll;
+        } break;
+        default:
+            return;
+    }
+
+    if (lootRoll == nullptr)
+        return;
+
+    lootRoll->PlayerRolled(GetPlayer(), recv_packet.choice);
+}
+#endif
+
+void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
+{
+    CmsgOpenItem recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", recv_packet.containerSlot, recv_packet.slot);
+
+    auto item = GetPlayer()->GetItemInterface()->GetInventoryItem(recv_packet.containerSlot, recv_packet.slot);
+    if (item == nullptr)
+        return;
+
+    if (item->getGiftCreatorGuid() && item->wrapped_item_id)
+    {
+        const auto wrappedItem = sMySQLStore.getItemProperties(item->wrapped_item_id);
+        if (wrappedItem == nullptr)
+            return;
+
+        item->setGiftCreatorGuid(0);
+        item->setEntry(item->wrapped_item_id);
+        item->wrapped_item_id = 0;
+        item->setItemProperties(wrappedItem);
+
+        if (wrappedItem->Bonding == ITEM_BIND_ON_PICKUP)
+            item->addFlags(ITEM_FLAG_SOULBOUND);
+        else
+            item->setFlags(ITEM_FLAGS_NONE);
+
+        if (wrappedItem->MaxDurability)
+        {
+            item->setDurability(wrappedItem->MaxDurability);
+            item->setMaxDurability(wrappedItem->MaxDurability);
+        }
+
+        item->m_isDirty = true;
+        item->SaveToDB(recv_packet.containerSlot, recv_packet.slot, false, nullptr);
+        return;
+    }
+
+    uint32_t removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    const auto lockEntry = sLockStore.LookupEntry(item->getItemProperties()->LockId);
+    if (lockEntry)
+    {
+        for (uint8_t lockCase = 0; lockCase < LOCK_NUM_CASES; ++lockCase)
+        {
+            if (lockEntry->locktype[lockCase] == 1 && lockEntry->lockmisc[lockCase] > 0)
+            {
+                const int16_t slot2 = GetPlayer()->GetItemInterface()->GetInventorySlotById(lockEntry->lockmisc[lockCase]);
+                if (slot2 != ITEM_NO_SLOT_AVAILABLE && slot2 >= INVENTORY_SLOT_ITEM_START && slot2 < INVENTORY_SLOT_ITEM_END)
+                {
+                    removeLockItems[lockCase] = lockEntry->lockmisc[lockCase];
+                }
+                else
+                {
+                    GetPlayer()->GetItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                    return;
+                }
+            }
+            else if (lockEntry->locktype[lockCase] == 2 && item->locked)
+            {
+                GetPlayer()->GetItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                return;
+            }
+        }
+
+        for (uint8_t lockCase = 0; lockCase < LOCK_NUM_CASES; ++lockCase)
+        {
+            if (removeLockItems[lockCase])
+                GetPlayer()->GetItemInterface()->RemoveItemAmt(removeLockItems[lockCase], 1);
+        }
+    }
+
+
+    GetPlayer()->SetLootGUID(item->getGuid());
+    if (item->loot == nullptr)
+    {
+        item->loot = new Loot; //eeeeeek
+        lootmgr.FillItemLoot(item->loot, item->getEntry());
+    }
+    GetPlayer()->SendLoot(item->getGuid(), LOOT_DISENCHANTING, GetPlayer()->GetMapId());
 }
