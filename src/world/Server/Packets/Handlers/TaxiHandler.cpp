@@ -24,7 +24,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -395,4 +394,3 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     // start the first trip :)
     _player->TaxiStart(taxipath, modelid, 0);
 }
-#endif

@@ -23,7 +23,6 @@
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
@@ -188,4 +187,3 @@ void WorldSession::HandleReadyCheckOpcode(WorldPacket& recv_data)
             pGroup->GetAssistantLeader()->m_loggedInPlayer->GetSession()->SendPacket(&data);
     }
 }
-#endif
