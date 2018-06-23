@@ -15,13 +15,13 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint32_t entry;
-        uint32_t guid;
+        WoWGuid guid;
 
         CmsgCreatureQuery() : CmsgCreatureQuery(0, 0)
         {
         }
 
-        CmsgCreatureQuery(uint32_t entry, uint32_t guid) :
+        CmsgCreatureQuery(uint32_t entry, uint64_t guid) :
             ManagedPacket(CMSG_CREATURE_QUERY, 12),
             entry(entry),
             guid(guid)
@@ -37,7 +37,9 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> entry >> guid;
+            uint64_t unpacked_guid;
+            packet >> entry >> unpacked_guid;
+            guid.Init(unpacked_guid);
             return true;
         }
     };

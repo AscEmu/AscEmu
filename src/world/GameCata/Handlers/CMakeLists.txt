@@ -25,7 +25,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/MovementHandler.cpp
     ${PATH_PREFIX}/NPCHandler.cpp
     ${PATH_PREFIX}/PetHandler.cpp
-    ${PATH_PREFIX}/QueryHandler.cpp
     ${PATH_PREFIX}/QuestHandler.cpp
     ${PATH_PREFIX}/RaidHandler.cpp
     ${PATH_PREFIX}/ReportHandler.cpp

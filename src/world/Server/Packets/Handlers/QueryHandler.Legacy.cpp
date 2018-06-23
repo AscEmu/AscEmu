@@ -25,12 +25,10 @@
 #include "Map/WorldCreatorDefines.hpp"
 
 
-#if VERSION_STRING == WotLK
-
+#if VERSION_STRING != WotLK
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_CORPSE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
 void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
@@ -81,6 +79,64 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
             data << uint32(0);
             SendPacket(&data);
         }
+    }
+}
+#else
+//MIT
+void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recvData*/)
+{
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
+    if (pCorpse == nullptr)
+    {
+        WorldPacket data(MSG_CORPSE_QUERY, 1);
+        data << uint8_t(0);                         // no coprse for player
+        SendPacket(&data);
+    }
+    else
+    {
+        WorldPacket data(MSG_CORPSE_QUERY, 25);
+        data << uint8_t(1);                         // corpse found
+
+        uint32_t corpsemap;
+        uint32_t repopmap;
+        float x, y, z;
+
+        MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(pCorpse->GetMapId());
+        if (pMapinfo)
+        {
+            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+            {
+                repopmap = pCorpse->GetMapId();     // mapid (that tombstones shown on)
+                x = pCorpse->GetPositionX();
+                y = pCorpse->GetPositionY();
+                z = pCorpse->GetPositionZ();
+                corpsemap = pCorpse->GetMapId();    // instance mapid (needs to be same as mapid to be able to recover corpse)
+            }
+            else
+            {
+                repopmap = pMapinfo->repopmapid;    // mapid (that tombstones shown on)
+                x = pMapinfo->repopx;
+                y = pMapinfo->repopy;
+                z = pMapinfo->repopz;
+                corpsemap = pCorpse->GetMapId();    // instance mapid (needs to be same as mapid to be able to recover corpse)
+            }
+        }
+        else
+        {
+            repopmap = pCorpse->GetMapId();         // mapid (that tombstones shown on)
+            x = pCorpse->GetPositionX();
+            y = pCorpse->GetPositionY();
+            z = pCorpse->GetPositionZ();
+            corpsemap = pCorpse->GetMapId();        // instance mapid (needs to be same as mapid to be able to recover corpse)
+        }
+
+        data << uint32_t(repopmap);
+        data << float(x);
+        data << float(y);
+        data << float(z);
+        data << uint32_t(corpsemap);
+        data << uint32_t(0);                        // unk
+        SendPacket(&data);
     }
 }
 #endif
@@ -164,7 +220,6 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
     SendPacket(&reply);
 }
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN;
@@ -192,10 +247,9 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recv_data*/)
         }
     }
 
-    *(uint32*)(data.contents()) = count;
+    data.put<uint32_t>(0, count);
     SendPacket(&data);
 }
-#endif
 
 void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
 {
@@ -211,4 +265,3 @@ void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
     pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
 #endif
 }
-#endif

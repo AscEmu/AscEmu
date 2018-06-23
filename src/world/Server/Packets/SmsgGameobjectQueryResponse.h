@@ -43,7 +43,7 @@ namespace AscEmu { namespace Packets
                    << info.raw.parameter_20 << info.raw.parameter_21 << info.raw.parameter_22 << info.raw.parameter_23;
             packet << float_t(info.size);
 
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
             for (uint8_t i = 0; i < 6; ++i)
                 packet << uint32_t(info.QuestItems[i]);
 #endif

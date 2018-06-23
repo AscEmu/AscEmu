@@ -345,18 +345,11 @@ class SERVER_DECL WorldSession
 
         void HandleGMSurveySubmitOpcode(WorldPacket& recv_data);
 
-        /// Opcodes implemented in QueryHandler.cpp:
-#if VERSION_STRING == Cata
-        void HandleNameQueryOpcode(WorldPacket& recvPacket);
-        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
-        void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
-        void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
-#else
-        void handleNameQueryOpcode(WorldPacket& recvPacket);
+        // Opcodes implemented in QueryHandler.cpp:
         void handleGameObjectQueryOpcode(WorldPacket& recvPacket);
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
         void handleCreatureQueryOpcode(WorldPacket& recvPacket);
-#endif
+        void handleNameQueryOpcode(WorldPacket& recvPacket);
         
         void HandleItemNameQueryOpcode(WorldPacket& recv_data);
         void HandlePageTextQueryOpcode(WorldPacket& recv_data);

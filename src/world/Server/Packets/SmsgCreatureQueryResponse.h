@@ -25,7 +25,7 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgCreatureQueryResponse(CreatureProperties info, uint32_t entry, const char* name, const char* subName) :
-            ManagedPacket(SMSG_CREATURE_QUERY_RESPONSE, 150),
+            ManagedPacket(SMSG_CREATURE_QUERY_RESPONSE, 250),
             info(info),
             entry(entry),
             name(name),
@@ -48,16 +48,33 @@ namespace AscEmu { namespace Packets
             }
             else
             {
-                packet << entry << name << uint8_t(0) << uint8_t(0) << uint8_t(0) << subName;
-                packet << info.info_str << info.typeFlags << info.Type << info.Family << info.Rank << info.killcredit[0] 
+                packet << entry << name;
+
+#if VERSION_STRING <= WotLK
+                for (uint8_t i = 0; i < 3; ++i)
+                    packet << uint8_t(0);
+#else
+                for (uint8_t i = 0; i < 7; ++i)
+                    packet << uint8_t(0);
+#endif
+                packet << subName;
+                packet << info.info_str << info.typeFlags;
+#if VERSION_STRING > WotLK
+                packet << uint32_t(0);
+#endif
+                packet << info.Type << info.Family << info.Rank << info.killcredit[0]
                     << info.killcredit[1] << info.Male_DisplayID << info.Female_DisplayID << info.Male_DisplayID2
                     << info.Female_DisplayID2 << info.baseAttackMod << info.rangeAttackMod << info.Leader;
 
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
                 for (uint8_t i = 0; i < 6; ++i)
                     packet << uint32_t(info.QuestItems[i]);
 
                 packet << info.waypointid;
+#endif
+
+#if VERSION_STRING > WotLK
+                packet << uint32_t(0);
 #endif
             }
 
