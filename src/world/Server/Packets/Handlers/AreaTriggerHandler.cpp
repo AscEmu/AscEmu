@@ -4,3 +4,17 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Server/Packets/CmsgAreatrigger.h"
+
+using namespace AscEmu::Packets;
+
+void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
+{
+    CmsgAreatrigger recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_AREATRIGGER: %u (triggerId)", recv_packet.triggerId);
+
+    _HandleAreaTriggerOpcode(recv_packet.triggerId);
+}

@@ -308,7 +308,7 @@ class SERVER_DECL WorldSession
         void HandleSetFriendNote(WorldPacket& recvPacket);
 
         void HandleBugOpcode(WorldPacket& recv_data);
-        void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
+        void handleAreaTriggerOpcode(WorldPacket& recvPacket);
         void HandleUpdateAccountData(WorldPacket& recvPacket);
         void HandleRequestAccountData(WorldPacket& recvPacket);
 

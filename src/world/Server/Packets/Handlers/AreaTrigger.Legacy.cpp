@@ -27,16 +27,9 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Storage/WorldStrings.h"
+#include "Server/Packets/SmsgAreaTriggerMessage.h"
 
-void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 id;
-    recv_data >> id;
-    _HandleAreaTriggerOpcode(id);
-}
+using namespace AscEmu::Packets;
 
 enum AreaTriggerFailures
 {
@@ -169,19 +162,18 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                 break;
             if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
             {
+                auto isDefaultMessage = false;
+
                 uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId));
                 if (reason != AREA_TRIGGER_FAILURE_OK)
                 {
                     const char* pReason = GetPlayer()->GetSession()->LocalizedWorldSrv(AreaTriggerFailureMessages[reason]);
                     char msg[200];
-                    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 50);
-                    data << uint32(0);
 
                     switch (reason)
                     {
                         case AREA_TRIGGER_FAILURE_LEVEL:
                             snprintf(msg, 200, pReason, pAreaTrigger->requiredLevel);
-                            data << msg;
                             break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
                         {
@@ -191,8 +183,6 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
                         }
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QA:
@@ -203,8 +193,6 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
                         }
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QH:
@@ -215,8 +203,6 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
                         }
                         break;
                         case AREA_TRIGGER_FAILURE_NO_KEY:
@@ -227,24 +213,24 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
                         }
                         break;
                         case AREA_TRIGGER_FAILURE_LEVEL_HEROIC:
                         {
                             MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             snprintf(msg, 200, pReason, pMi->minlevel_heroic);
-                            data << msg;
                         }
                         break;
                         default:
-                            data << pReason;
+                            isDefaultMessage = true;
                             break;
                     }
 
-                    data << uint8(0);
-                    SendPacket(&data);
+                    if (!isDefaultMessage)
+                        SendPacket(SmsgAreaTriggerMessage(0, msg, 0).serialise().get());
+                    else
+                        SendPacket(SmsgAreaTriggerMessage(0, pReason, 0).serialise().get());
+
                     return;
                 }
             }
