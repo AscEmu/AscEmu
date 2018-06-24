@@ -14,6 +14,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAuctionRemoveItem.h
    ${PATH_PREFIX}/CmsgAuctionSellItem.h
    ${PATH_PREFIX}/CmsgAutostoreLootItem.h
+   ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
@@ -56,12 +57,15 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
+   ${PATH_PREFIX}/MsgInspectArenaTeams.h
+   ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/MsgRandomRoll.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
+   ${PATH_PREFIX}/SmsgArenaError.h
    ${PATH_PREFIX}/SmsgAuctionCommandResult.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h

@@ -230,7 +230,6 @@ class SERVER_DECL WorldSession
 #if VERSION_STRING > TBC
         void SendRefundInfo(uint64_t guid);
 #endif
-        void SendNotInArenaTeamPacket(uint8 type);
 
         void SetInstance(uint32 Instance) { instanceId = Instance; }
         uint32 GetLatency() const { return _latency; }
@@ -783,13 +782,12 @@ class SERVER_DECL WorldSession
         void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
         void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
         void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data);
-        void HandleArenaJoinOpcode(WorldPacket& recv_data);
+        void handleArenaJoinOpcode(WorldPacket& recvPacket);
         void HandleBattleMasterJoinOpcode(WorldPacket& recv_data);
-        void HandleInspectHonorStatsOpcode(WorldPacket& recv_data);
-        void HandlePVPLogDataOpcode(WorldPacket& recv_data);
+        void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
+        void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
         void HandleBattlefieldListOpcode(WorldPacket& recv_data);
-        ///\todo unknown packet
-        void HandleBgInviteResponse(WorldPacket& recv_data);
+
 #if VERSION_STRING == Cata
         void HandleRequestRatedBgInfoOpcode(WorldPacket& recv_data);
         void HandleRequestRatedBgStatsOpcode(WorldPacket& /*recv_data*/);
@@ -851,7 +849,7 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamPromoteOpcode(WorldPacket& recv_data);
         void HandleArenaTeamQueryOpcode(WorldPacket& recv_data);
         void HandleArenaTeamRosterOpcode(WorldPacket& recv_data);
-        void HandleInspectArenaStatsOpcode(WorldPacket& recv_data);
+        void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
         void HandleTeleportCheatOpcode(WorldPacket& recv_data);
         void HandleTeleportToUnitOpcode(WorldPacket& recv_data);

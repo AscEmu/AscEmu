@@ -13,6 +13,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgInspectAchievements : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
 
@@ -36,5 +37,6 @@ namespace AscEmu { namespace Packets
             guid.Init(packet.unpackGUID());
             return true;
         }
+#endif
     };
 }}

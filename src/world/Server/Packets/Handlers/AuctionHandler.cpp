@@ -85,6 +85,7 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
 
 void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgAuctionListIPendingSales recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;
@@ -92,6 +93,7 @@ void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
     LOG_DEBUG("Received CMSG_AUCTION_LIST_PRENDING_SALES %u (lowguid)", recv_packet.guid.getGuidLow());
 
     //\todo SMSG_AUCTION_LIST_PENDING_SALES needs to be researched!
+#endif
 }
 
 void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)

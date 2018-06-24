@@ -11,19 +11,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgAuctionListIPendingSales : public ManagedPacket
+    class CmsgBattlemasterJoinArena : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
+        uint8_t category;
+        uint8_t asGroup;
+        uint8_t ratedMatch;
 
-        CmsgAuctionListIPendingSales() : CmsgAuctionListIPendingSales(0)
+        CmsgBattlemasterJoinArena() : CmsgBattlemasterJoinArena(0, 0, 0, 0)
         {
         }
 
-        CmsgAuctionListIPendingSales(uint64_t guid) :
-            ManagedPacket(CMSG_AUCTION_LIST_PENDING_SALES, 0),
-            guid(guid)
+        CmsgBattlemasterJoinArena(uint64_t guid, uint8_t category, uint8_t asGroup, uint8_t ratedMatch) :
+            ManagedPacket(CMSG_BATTLEMASTER_JOIN_ARENA, 0),
+            guid(guid),
+            category(category),
+            asGroup(asGroup),
+            ratedMatch(ratedMatch)
         {
         }
 
@@ -36,10 +41,9 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
-            packet >> unpacked_guid;
+            packet >> unpacked_guid >> category >> asGroup >> ratedMatch;
             guid.Init(unpacked_guid);
             return true;
         }
-#endif
     };
 }}

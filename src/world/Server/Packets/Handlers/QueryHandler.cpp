@@ -90,6 +90,7 @@ void WorldSession::handleQueryTimeOpcode(WorldPacket&)
 
 void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgInspectAchievements recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;
@@ -98,7 +99,6 @@ void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
-#if VERSION_STRING > TBC
     player->GetAchievementMgr().SendAllAchievementData(GetPlayer());
 #endif
 }
