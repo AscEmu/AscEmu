@@ -6,7 +6,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/AreaTriggerHandler.cpp
    ${PATH_PREFIX}/AreaTrigger.Legacy.cpp
    ${PATH_PREFIX}/AuctionHandler.cpp
-   ${PATH_PREFIX}/AuctionHandler.Legacy.cpp
    ${PATH_PREFIX}/BattlegroundHandler.cpp
    ${PATH_PREFIX}/BattlegroundHandler.Legacy.cpp
    ${PATH_PREFIX}/CalendarHandler.cpp

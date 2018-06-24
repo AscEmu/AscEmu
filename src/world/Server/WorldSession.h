@@ -446,9 +446,9 @@ class SERVER_DECL WorldSession
         void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
         void handleAuctionListItems(WorldPacket& recvPacket);
         void handleAuctionListBidderItems(WorldPacket& recvPacket);
-        void HandleAuctionSellItem(WorldPacket& recv_data);
+        void handleAuctionSellItem(WorldPacket& recvPacket);
         void handleAuctionListOwnerItems(WorldPacket& recvPacket);
-        void HandleAuctionPlaceBid(WorldPacket& recv_data);
+        void handleAuctionPlaceBid(WorldPacket& recvPacket);
         void handleCancelAuction(WorldPacket& recvPacket);
         void handleAuctionListPendingSales(WorldPacket& recvPacket);
 

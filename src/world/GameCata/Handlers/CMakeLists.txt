@@ -4,7 +4,6 @@ set(PATH_PREFIX GameCata/Handlers)
 
 set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/AddonHandler.cpp
-    ${PATH_PREFIX}/AuctionHandler.cpp
     ${PATH_PREFIX}/BattlegroundHandler.cpp
     ${PATH_PREFIX}/ChannelHandler.cpp
     ${PATH_PREFIX}/CharacterHandler.cpp

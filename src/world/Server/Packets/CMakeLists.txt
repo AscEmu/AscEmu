@@ -10,7 +10,9 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h
    ${PATH_PREFIX}/CmsgAuctionListItems.h
    ${PATH_PREFIX}/CmsgAuctionListOwnerItems.h
+   ${PATH_PREFIX}/CmsgAuctionPlaceBid.h
    ${PATH_PREFIX}/CmsgAuctionRemoveItem.h
+   ${PATH_PREFIX}/CmsgAuctionSellItem.h
    ${PATH_PREFIX}/CmsgAutostoreLootItem.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgContactList.h
