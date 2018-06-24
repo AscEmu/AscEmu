@@ -324,6 +324,7 @@ void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
     auctionLock.ReleaseWriteLock();
 }
 
+//\todo remove unused function member.
 void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
 {
     uint32 count = 0;
@@ -427,6 +428,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //}
 }
 
+//\todo: eeeeeeek packet read outside of the packet class o.O
 void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 {
     uint32 start_index, current_index = 0;

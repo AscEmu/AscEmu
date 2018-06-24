@@ -27,32 +27,11 @@
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
 #include "Util.hpp"
+#include "Server/Packets/SmsgAuctionCommandResult.h"
 
 #if VERSION_STRING != Cata
 
-void WorldSession::HandleAuctionListBidderItems(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-        uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature || !pCreature->auctionHouse)
-        return;
-
-    pCreature->auctionHouse->SendBidListPacket(_player, &recv_data);
-}
-
-void WorldSession::SendAuctionPlaceBidResultPacket(uint32 itemId, uint32 error)
-{
-    WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 16);
-    data << itemId;
-    data << uint32(AUCTION_BID);
-    data << error;
-    data << uint32(0);
-    SendPacket(&data);
-}
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
 {
@@ -74,25 +53,25 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     Auction* auct = ah->GetAuction(auction_id);
     if (auct == 0 || !auct->Owner || !_player)
     {
-        SendAuctionPlaceBidResultPacket(0, AUCTION_ERROR_INTERNAL);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
         return;
     }
 
     if (auct->Owner == _player->getGuid())
     {
-        SendAuctionPlaceBidResultPacket(0, AUCTION_ERROR_BID_OWN_AUCTION);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0).serialise().get());
         return;
     }
     if (auct->HighestBid > price && price != auct->BuyoutPrice)
     {
         //HACK: Don't know the correct error code...
-        SendAuctionPlaceBidResultPacket(0, AUCTION_ERROR_INTERNAL);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
         return;
     }
 
     if (!_player->HasGold(price))
     {
-        SendAuctionPlaceBidResultPacket(0, AUCTION_ERROR_MONEY);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_MONEY, 0).serialise().get());
         return;
     }
 
@@ -117,7 +96,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
         // we used buyout on the item.
         ah->QueueDeletion(auct, AUCTION_REMOVE_WON);
 
-        SendAuctionPlaceBidResultPacket(auct->Id, AUCTION_ERROR_NONE);
+        SendPacket(SmsgAuctionCommandResult(auct->Id, AUCTION_BID, AUCTION_ERROR_NONE, 0).serialise().get());
         ah->SendAuctionBuyOutNotificationPacket(auct);
     }
     else
@@ -127,37 +106,8 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
         auct->HighestBid = price;
         auct->UpdateInDB();
 
-        SendAuctionPlaceBidResultPacket(auct->Id, AUCTION_ERROR_NONE);
+        SendPacket(SmsgAuctionCommandResult(auct->Id, AUCTION_BID, AUCTION_ERROR_NONE, 0).serialise().get());
     }
-}
-
-void WorldSession::HandleCancelAuction(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-        uint64 guid;
-    recv_data >> guid;
-
-    uint32 auction_id;
-    recv_data >> auction_id;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature || !pCreature->auctionHouse)
-        return;
-
-    // Find Item
-    Auction* auct = pCreature->auctionHouse->GetAuction(auction_id);
-    if (auct == 0) return;
-
-    pCreature->auctionHouse->QueueDeletion(auct, AUCTION_REMOVE_CANCELLED);
-
-    // Send response packet.
-    WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-    data << auction_id << uint32(AUCTION_CANCEL) << uint32(0);
-    SendPacket(&data);
-
-    // Re-send the owner list.
-    pCreature->auctionHouse->SendOwnerListPacket(_player, 0);
 }
 
 void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
@@ -188,11 +138,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     Item* pItem = _player->GetItemInterface()->GetItemByGUID(item);
     if (!pItem || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
     {
-        WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-        data << uint32(0);
-        data << uint32(AUCTION_CREATE);
-        data << uint32(AUCTION_ERROR_ITEM);
-        SendPacket(&data);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_CREATE, AUCTION_ERROR_ITEM).serialise().get());
         return;
     };
 
@@ -203,22 +149,14 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     if (!_player->HasGold(item_deposit))   // player cannot afford deposit
     {
-        WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-        data << uint32(0);
-        data << uint32(AUCTION_CREATE);
-        data << uint32(AUCTION_ERROR_MONEY);
-        SendPacket(&data);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_CREATE, AUCTION_ERROR_MONEY).serialise().get());
         return;
     }
 
     pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(item, false);
     if (!pItem)
     {
-        WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-        data << uint32(0);
-        data << uint32(AUCTION_CREATE);
-        data << uint32(AUCTION_ERROR_ITEM);
-        SendPacket(&data);
+        SendPacket(SmsgAuctionCommandResult(0, AUCTION_CREATE, AUCTION_ERROR_ITEM).serialise().get());
         return;
     };
 
@@ -253,68 +191,6 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     auct->SaveToDB(ah->GetID());
 
     // Send result packet
-    WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-    data << auct->Id;
-    data << uint32(AUCTION_CREATE);
-    data << uint32(AUCTION_ERROR_NONE);
-    SendPacket(&data);
-}
-
-void WorldSession::HandleAuctionListOwnerItems(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-        uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature || !pCreature->auctionHouse)
-        return;
-
-    pCreature->auctionHouse->SendOwnerListPacket(_player, &recv_data);
-}
-
-void WorldSession::HandleAuctionListItems(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN;
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature || !pCreature->auctionHouse)
-        return;
-
-    pCreature->auctionHouse->SendAuctionList(_player, &recv_data);
-}
-
-void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
-{
-#if VERSION_STRING > TBC
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature || !pCreature->auctionHouse)
-        return;
-
-    LOG_DEBUG("WORLD: Received CMSG_AUCTION_LIST_PENDING_SALES");
-
-    uint32 count = 0;
-
-    WorldPacket data(SMSG_AUCTION_LIST_PENDING_SALES, 4);
-    data << uint32(count);                                  // count
-    /*for (uint32 i = 0; i < count; ++i)
-    {
-    data << "";                                         // string
-    data << "";                                         // string
-    data << uint32(0);
-    data << uint32(0);
-    data << float(0);
-    }*/
-    SendPacket(&data);
-#endif
+    SendPacket(SmsgAuctionCommandResult(auct->Id, AUCTION_CREATE, AUCTION_ERROR_NONE).serialise().get());
 }
 #endif

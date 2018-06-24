@@ -6,6 +6,11 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAddFriend.h
    ${PATH_PREFIX}/CmsgAddIgnore.h
    ${PATH_PREFIX}/CmsgAreatrigger.h
+   ${PATH_PREFIX}/CmsgAuctionListIBidderItemse.h
+   ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h
+   ${PATH_PREFIX}/CmsgAuctionListItems.h
+   ${PATH_PREFIX}/CmsgAuctionListOwnerItems.h
+   ${PATH_PREFIX}/CmsgAuctionRemoveItem.h
    ${PATH_PREFIX}/CmsgAutostoreLootItem.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgContactList.h
@@ -55,6 +60,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
+   ${PATH_PREFIX}/SmsgAuctionCommandResult.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgCharEnum.h

@@ -227,7 +227,6 @@ class SERVER_DECL WorldSession
         void SendBuyFailed(uint64 guid, uint32 itemid, uint8 error);
         void SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error);
         void SendNotification(const char* message, ...);
-        void SendAuctionPlaceBidResultPacket(uint32 itemId, uint32 error);
 #if VERSION_STRING > TBC
         void SendRefundInfo(uint64_t guid);
 #endif
@@ -445,13 +444,13 @@ class SERVER_DECL WorldSession
 
         // Auction House opcodes
         void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
-        void HandleAuctionListItems(WorldPacket& recv_data);
-        void HandleAuctionListBidderItems(WorldPacket& recv_data);
+        void handleAuctionListItems(WorldPacket& recvPacket);
+        void handleAuctionListBidderItems(WorldPacket& recvPacket);
         void HandleAuctionSellItem(WorldPacket& recv_data);
-        void HandleAuctionListOwnerItems(WorldPacket& recv_data);
+        void handleAuctionListOwnerItems(WorldPacket& recvPacket);
         void HandleAuctionPlaceBid(WorldPacket& recv_data);
-        void HandleCancelAuction(WorldPacket& recv_data);
-        void HandleAuctionListPendingSales(WorldPacket& recv_data);
+        void handleCancelAuction(WorldPacket& recvPacket);
+        void handleAuctionListPendingSales(WorldPacket& recvPacket);
 
         // Mail opcodes
         void HandleGetMail(WorldPacket& recv_data);
