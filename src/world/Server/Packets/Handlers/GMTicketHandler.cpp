@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 
+#if VERSION_STRING != Cata
 enum GMTicketResults
 {
     GMTNoTicketFound = 1,
@@ -241,3 +242,4 @@ void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
 
     LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->getName().c_str(), next_survey_id);
 }
+#endif

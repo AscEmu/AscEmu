@@ -29,8 +29,6 @@
 #include "Util.hpp"
 #include "Server/Packets/SmsgAuctionCommandResult.h"
 
-#if VERSION_STRING != Cata
-
 using namespace AscEmu::Packets;
 
 void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
@@ -110,6 +108,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     }
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
