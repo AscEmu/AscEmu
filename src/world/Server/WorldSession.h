@@ -350,10 +350,11 @@ class SERVER_DECL WorldSession
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
         void handleCreatureQueryOpcode(WorldPacket& recvPacket);
         void handleNameQueryOpcode(WorldPacket& recvPacket);
-        
-        void HandleItemNameQueryOpcode(WorldPacket& recv_data);
-        void HandlePageTextQueryOpcode(WorldPacket& recv_data);
-        void HandleAchievmentQueryOpcode(WorldPacket& recv_data);
+        void handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
+        void handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/);
+        void handleItemNameQueryOpcode(WorldPacket& recvPacket);
+        void handlePageTextQueryOpcode(WorldPacket& recvPacket);
+        void handleAchievmentQueryOpcode(WorldPacket& recvPacket);
 
         /// Opcodes implemented in MovementHandler.cpp
         void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
@@ -575,7 +576,7 @@ class SERVER_DECL WorldSession
 
         /// Corpse opcodes (Corpse.cpp)
         void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
-        void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
+        
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
         /// Channel Opcodes (ChannelHandler.cpp)
@@ -871,7 +872,6 @@ class SERVER_DECL WorldSession
         void handleWorldStateUITimerUpdate(WorldPacket& recvPacket);
         void handleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         void HandleMirrorImageOpcode(WorldPacket& recv_data);
-        void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);
         void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
 #if VERSION_STRING == Cata
