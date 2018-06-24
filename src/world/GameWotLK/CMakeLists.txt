@@ -1,7 +1,6 @@
 # Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 include(GameWotLK/Data/CMakeLists.txt)
-include(GameWotLK/Handlers/CMakeLists.txt)
 include(GameWotLK/Network/CMakeLists.txt)
 include(GameWotLK/Storage/CMakeLists.txt)
 
