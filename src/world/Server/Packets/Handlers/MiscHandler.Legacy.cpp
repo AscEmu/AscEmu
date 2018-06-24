@@ -1974,33 +1974,6 @@ void WorldSession::HandleNextCinematic(WorldPacket& /*recv_data*/)
     _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01), float(_player->GetPositionZ() + 0.01), _player->GetOrientation());
 }
 
-void WorldSession::HandleResetInstanceOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-        sInstanceMgr.ResetSavedInstances(_player);
-}
-
-void WorldSession::HandleToggleCloakOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    if (_player->hasPlayerFlags(PLAYER_FLAG_NOCLOAK))
-        _player->removePlayerFlags(PLAYER_FLAG_NOCLOAK);
-    else
-        _player->addPlayerFlags(PLAYER_FLAG_NOCLOAK);
-}
-
-void WorldSession::HandleToggleHelmOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    if (_player->hasPlayerFlags(PLAYER_FLAG_NOHELM))
-        _player->removePlayerFlags(PLAYER_FLAG_NOHELM);
-    else
-        _player->addPlayerFlags(PLAYER_FLAG_NOHELM);
-}
-
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -2025,17 +1998,6 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
     _player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);
 
     _player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
-}
-
-void WorldSession::HandleDismountOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("WORLD: Received CMSG_DISMOUNT");
-
-    if (_player->isOnTaxi())
-        return;
-
-    _player->Dismount();
 }
 
 #if VERSION_STRING > TBC
@@ -2064,8 +2026,3 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
     _player->smsg_TalentsInfo(false);
 }
 #endif
-
-void WorldSession::HandleTimeSyncResp(WorldPacket& /*recv_data*/)
-{
-    LogDebugFlag(LF_OPCODE, "HandleTimeSyncResp : Not handled");
-}

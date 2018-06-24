@@ -635,7 +635,6 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-
     GetPlayer()->SetLootGUID(item->getGuid());
     if (item->loot == nullptr)
     {
@@ -643,4 +642,33 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         lootmgr.FillItemLoot(item->loot, item->getEntry());
     }
     GetPlayer()->SendLoot(item->getGuid(), LOOT_DISENCHANTING, GetPlayer()->GetMapId());
+}
+
+void WorldSession::handleDismountOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->isOnTaxi())
+        return;
+
+    GetPlayer()->Dismount();
+}
+
+void WorldSession::handleToggleHelmOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_NOHELM))
+        GetPlayer()->removePlayerFlags(PLAYER_FLAG_NOHELM);
+    else
+        GetPlayer()->addPlayerFlags(PLAYER_FLAG_NOHELM);
+}
+
+void WorldSession::handleToggleCloakOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->hasPlayerFlags(PLAYER_FLAG_NOCLOAK))
+        GetPlayer()->removePlayerFlags(PLAYER_FLAG_NOCLOAK);
+    else
+        GetPlayer()->addPlayerFlags(PLAYER_FLAG_NOCLOAK);
+}
+
+void WorldSession::handleResetInstanceOpcode(WorldPacket& /*recvPacket*/)
+{
+    sInstanceMgr.ResetSavedInstances(GetPlayer());
 }

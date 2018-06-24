@@ -271,7 +271,6 @@ class SERVER_DECL WorldSession
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleRealmSplitOpcode(WorldPacket& recvPacket);
         void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
-        void HandleTimeSyncResp(WorldPacket& recv_data);
         void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
 
         /// Authentification and misc opcodes (MiscHandler.cpp):
@@ -297,7 +296,7 @@ class SERVER_DECL WorldSession
         //void HandleSetTargetOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
-        void HandleDismountOpcode(WorldPacket& recvPacket);
+        void handleDismountOpcode(WorldPacket& /*recvPacket*/);
 
         void handleFriendListOpcode(WorldPacket& recvPacket);
         void handleAddFriendOpcode(WorldPacket& recvPacket);
@@ -816,13 +815,13 @@ class SERVER_DECL WorldSession
         void handleRandomRollOpcode(WorldPacket& recv_data);
         void handleOpenItemOpcode(WorldPacket& recvPacket);
 
-        void HandleToggleHelmOpcode(WorldPacket& recv_data);
-        void HandleToggleCloakOpcode(WorldPacket& recv_data);
+        void handleToggleHelmOpcode(WorldPacket& /*recvPacket*/);
+        void handleToggleCloakOpcode(WorldPacket& /*recvPacket*/);
         void HandleSetVisibleRankOpcode(WorldPacket& recv_data);
         void HandlePetSetActionOpcode(WorldPacket& recv_data);
 
         // Instances
-        void HandleResetInstanceOpcode(WorldPacket& recv_data);
+        void handleResetInstanceOpcode(WorldPacket& /*recvPacket*/);
         void handleDungeonDifficultyOpcode(WorldPacket& recvPacket);
         void handleRaidDifficultyOpcode(WorldPacket& recvPacket);
 
