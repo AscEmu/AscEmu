@@ -275,8 +275,8 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
 
     // Combat / Duel
-    WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
-    WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
+    WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::handleAttackSwingOpcode;
+    WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::handleAttackStopOpcode;
     //WorldPacketHandlers[CMSG_DUEL_ACCEPTED].handler = &WorldSession::HandleDuelAccepted;
     //WorldPacketHandlers[CMSG_DUEL_CANCELLED].handler = &WorldSession::HandleDuelCancelled;
 

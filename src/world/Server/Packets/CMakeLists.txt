@@ -8,6 +8,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQuery.h
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQueue.h
    ${PATH_PREFIX}/CmsgAreatrigger.h
+   ${PATH_PREFIX}/CmsgAttackSwing.h
    ${PATH_PREFIX}/CmsgAuctionListIBidderItemse.h
    ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h
    ${PATH_PREFIX}/CmsgAuctionListItems.h
@@ -81,6 +82,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
+   ${PATH_PREFIX}/SmsgDuelComplete.h
+   ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupInvite.h

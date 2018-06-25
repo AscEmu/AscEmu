@@ -1105,6 +1105,7 @@ public:
         void DuelBoundaryTest();
         void EndDuel(uint8 WinCondition);
         void DuelCountdown();
+        void cancelDuel();
         void SetDuelStatus(uint8 status) { m_duelStatus = status; }
         uint8 GetDuelStatus() { return m_duelStatus; }
         void SetDuelState(uint8 state) { m_duelState = state; }

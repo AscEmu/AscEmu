@@ -15,9 +15,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/ChatHandler.cpp
    ${PATH_PREFIX}/ChatHandler.Legacy.cpp
    ${PATH_PREFIX}/CombatHandler.cpp
-   ${PATH_PREFIX}/CombatHandler.Legacy.cpp
    ${PATH_PREFIX}/DuelHandler.cpp
-   ${PATH_PREFIX}/DuelHandler.Legacy.cpp
    ${PATH_PREFIX}/GMTicketHandler.cpp
    
    ${PATH_PREFIX}/GroupHandler.cpp

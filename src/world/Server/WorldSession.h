@@ -495,9 +495,9 @@ class SERVER_DECL WorldSession
         void HandleEquipmentSetDelete(WorldPacket& data);
 #endif
 
-        /// Combat opcodes (CombatHandler.cpp)
-        void HandleAttackSwingOpcode(WorldPacket& recvPacket);
-        void HandleAttackStopOpcode(WorldPacket& recvPacket);
+        // Combat opcodes (CombatHandler.cpp)
+        void handleAttackSwingOpcode(WorldPacket& recvPacket);
+        void handleAttackStopOpcode(WorldPacket& /*recvPacket*/);
 
         /// Spell opcodes (SpellHandler.cpp)
         void HandleUseItemOpcode(WorldPacket& recvPacket);
@@ -605,15 +605,8 @@ class SERVER_DECL WorldSession
         void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
-#if VERSION_STRING == Cata
-    public:
-        void SendDuelCountdown(uint32_t time = 3000);
-        void SendDuelComplete(uint8_t type);
-
-    protected:
-#endif
-        void HandleDuelAccepted(WorldPacket& recv_data);
-        void HandleDuelCancelled(WorldPacket& recv_data);
+        void handleDuelAccepted(WorldPacket& /*recvPacket*/);
+        void handleDuelCancelled(WorldPacket& /*recvPacket*/);
 
         // Trade
 #if VERSION_STRING == Cata
