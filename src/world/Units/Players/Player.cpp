@@ -99,6 +99,9 @@ void Player::setExploredZone(uint32_t idx, uint32_t data)
     write(playerData()->explored_zones[idx], data);
 }
 
+uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
+void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
+
 uint32_t Player::getMaxLevel() const
 {
 #if VERSION_STRING > Classic

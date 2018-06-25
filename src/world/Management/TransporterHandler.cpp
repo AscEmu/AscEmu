@@ -607,6 +607,10 @@ void Transporter::Update()
     if (m_WayPoints.size() <= 1)
         return;
 
+    // hack Zyres _> todo
+    if (m_period <= 0)
+        m_period = 1;
+
     m_timer = Util::getMSTime() % m_period;
 
     while (((m_timer - mCurrentWaypoint->first) % m_pathTime) > ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))

@@ -47,6 +47,7 @@
 #include "Data/WoWUnit.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#include "Server/Packets/SmsgEmote.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -10154,23 +10155,15 @@ void Unit::DeMorph()
 #if VERSION_STRING < Cata
 void Unit::Emote(EmoteType emote)
 {
-#if VERSION_STRING < Cata
     if (emote == 0)
         return;
-#endif
 
-    WorldPacket data(SMSG_EMOTE, 12);
-    data << uint32(emote);
-    data << this->getGuid();
-    SendMessageToSet(&data, true);
+    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, this->getGuid()).serialise().get(), true);
 }
 #else
 void Unit::Emote(EmoteType emote)
 {
-    WorldPacket data(SMSG_EMOTE, 12);
-    data << uint32_t(emote);
-    data << uint64_t(getGuid());
-    SendMessageToSet(&data, true);
+    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, getGuid()).serialise().get(), true);
 }
 #endif
 

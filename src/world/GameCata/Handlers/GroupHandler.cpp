@@ -429,30 +429,6 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recvData)
         target_group->SetLooter(_player, static_cast<uint8_t>(lootMethod), static_cast<uint16_t>(lootThreshold));
 }
 
-void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recvData)
-{
-    bool convert_to_raid = false;
-    recvData >> convert_to_raid;
-
-    Group* group = _player->GetGroup();
-    if (group == nullptr)
-        return;
-
-    if (group->GetLeader() != _player->getPlayerInfo())
-    {
-        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
-        return;
-    }
-
-    //\todo convert back to party
-    /*if (convert_to_raid)*/
-    group->ExpandToRaid();
-    /*else
-    group->ReduceToParty();*/
-
-    SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
-}
-
 void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvData*/)
 {
     Group* group = _player->GetGroup();

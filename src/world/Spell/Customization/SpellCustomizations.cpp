@@ -395,7 +395,7 @@ void SpellCustomizations::LoadSpellCustomOverride()
 {
     uint32 override_count = 0;
     //                                                        0       1           2                          3                              4                    5
-    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank, assign_on_target_flag, assign_from_caster_on_self_flag, assign_self_cast_only, assign_c_is_flag, "
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, `rank`, assign_on_target_flag, assign_from_caster_on_self_flag, assign_self_cast_only, assign_c_is_flag, "
     //                                                   6            7            8               9             10              11             12           13
                                                   " coef_flags, coef_Dspell, coef_Otspell, proc_on_namehash, proc_flags, proc_target_selfs, proc_chance, proc_charges, "
     //                                                   14                     15                           16                          17         

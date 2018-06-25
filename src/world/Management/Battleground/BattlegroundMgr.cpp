@@ -28,6 +28,9 @@
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgArenaError.h"
+
+using namespace AscEmu::Packets;
 
 initialiseSingleton(CBattlegroundManager);
 
@@ -1335,7 +1338,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
 
             if (pGroup->GetLeader()->m_loggedInPlayer && pGroup->GetLeader()->m_loggedInPlayer->m_arenaTeams[type] == NULL)
             {
-                m_session->SendNotInArenaTeamPacket(uint8(maxplayers));
+                m_session->SendPacket(SmsgArenaError(0, uint8_t(maxplayers)).serialise().get());
                 return;
             }
 

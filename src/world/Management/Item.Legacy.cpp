@@ -145,7 +145,9 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     else
         setPropertySeed(0);
 
-    //SetTextId(fields[11].GetUInt32());
+#ifdef AE_TBC
+    setTextId(fields[11].GetUInt32());
+#endif
 
     setMaxDurability(m_itemProperties->MaxDurability);
     setDurability(fields[12].GetUInt32());

@@ -515,7 +515,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         //                                                                      0          1           2             3                 4               5                  6
         QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //                                                         7      8         9         10       11     12     13       14            15              16           17
-                                                                "name, subname, info_str, type_flags, type, family, rank, encounter, base_attack_mod, range_attack_mod, leader, "
+                                                                "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
         //                                                          18        19        20        21         22      23     24      25          26           27
                                                                 "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
         //                                                          28          29         30            31                 32                33            34        35
@@ -575,7 +575,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
+                    LogDebugFlag(LF_DB_TABLES, "Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
                     creatureProperties.Male_DisplayID = 0;
                 }
             }
@@ -585,7 +585,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
+                    LogDebugFlag(LF_DB_TABLES, "Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
                     creatureProperties.Female_DisplayID = 0;
                 }
             }
@@ -595,7 +595,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID2);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
+                    LogDebugFlag(LF_DB_TABLES, "Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
                     creatureProperties.Male_DisplayID2 = 0;
                 }
             }
@@ -605,7 +605,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID2);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
+                    LogDebugFlag(LF_DB_TABLES, "Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
                     creatureProperties.Female_DisplayID2 = 0;
                 }
             }
@@ -698,7 +698,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                     if (sp == nullptr)
                     {
                         uint8_t spell_number = i;
-                        LOG_ERROR("spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
+                        LogDebugFlag(LF_DB_TABLES, "spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
                         continue;
                     }
                     else
@@ -1207,7 +1207,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                LOG_ERROR("Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                LogDebugFlag(LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1215,7 +1215,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                LOG_ERROR("Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                LogDebugFlag(LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -1251,7 +1251,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                LOG_ERROR("Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                LogDebugFlag(LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1259,7 +1259,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                LOG_ERROR("Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                LogDebugFlag(LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -2211,7 +2211,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
         CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            LOG_ERROR("Invalid creature_entry %u in table creature_initial_equip!", entry);
+            LogDebugFlag(LF_DB_TABLES, "Invalid creature_entry %u in table creature_initial_equip!", entry);
             continue;
         }
 
@@ -2618,7 +2618,7 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
         auto creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            LOG_ERROR("Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
+            LogDebugFlag(LF_DB_TABLES, "Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
             continue;
         }
 
@@ -3879,7 +3879,7 @@ void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
     //                                                  0      1     2       3
-    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u)", VERSION_STRING);
+    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u", VERSION_STRING);
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_data` is empty!");

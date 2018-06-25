@@ -929,7 +929,7 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(group_id) FROM groups");
+    result = CharacterDatabase.Query("SELECT MAX(group_id) FROM `groups`");
     if (result)
     {
         m_hiGroupId = result->Fetch()[0].GetUInt32();
@@ -1431,7 +1431,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
                 }
                 else
                 {
-                    LOG_ERROR("Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
+                    LogDebugFlag(LF_DB_TABLES, "Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
                 }
             }
 
@@ -3054,7 +3054,7 @@ void ObjectMgr::ReloadDisabledSpells()
 
 void ObjectMgr::LoadGroups()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM groups");
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM `groups`");
     if (result)
     {
         if (result->GetFieldCount() != 52)
@@ -3578,7 +3578,7 @@ void ObjectMgr::LoadEventScripts()
     LogNotice("ObjectMgr : Loading Event Scripts...");
 
     bool success = false;
-    const char* eventScriptsQuery = "SELECT event_id, function, script_type, data_1, data_2, data_3, data_4, data_5, x, y, z, o, delay, next_event FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
+    const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
     auto result = WorldDatabase.Query(&success, eventScriptsQuery);
 
     if (!success)
