@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgBattlefieldList.h"
 #include "Server/Packets/CmsgBattlemasterHello.h"
 #include "Server/Packets/MsgBattlegroundPlayerPosition.h"
+#include "Server/Packets/CmsgAreaSpiritHealerQueue.h"
+#include "Server/Packets/CmsgAreaSpiritHealerQuery.h"
+#include "Server/Packets/SmsgAreaSpiritHealerTime.h"
 
 using namespace AscEmu::Packets;
 
@@ -188,7 +191,7 @@ void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto cBattleground = _player->m_bg;
+    const auto cBattleground = GetPlayer()->m_bg;
     if (cBattleground == nullptr)
         return;
 
@@ -203,4 +206,112 @@ void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPa
         ++flagHolders;
 
     SendPacket(MsgBattlegroundPlayerPosition(0, flagHolders, alliancePlayer, hordePlayer).serialise().get());
+}
+
+void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
+{
+    const auto cBattleground = GetPlayer()->m_bg;
+    if (cBattleground == nullptr)
+        return;
+
+    CmsgAreaSpiritHealerQueue recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLow)", recv_packet.guid.getGuidLow());
+
+    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    if (spiritHealer == nullptr)
+        return;
+
+    cBattleground->QueuePlayerForResurrect(GetPlayer(), spiritHealer);
+    GetPlayer()->CastSpell(GetPlayer(), 2584, true);
+}
+
+void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
+{
+    const auto cBattleground = GetPlayer()->m_bg;
+    if (cBattleground == nullptr)
+        return;
+
+    CmsgAreaSpiritHealerQuery recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLow)", recv_packet.guid.getGuidLow());
+
+    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    if (spiritHealer == nullptr)
+        return;
+
+    uint32_t restTime = cBattleground->GetLastResurrect() + 30;
+    if (static_cast<uint32_t>(UNIXTIME) > restTime)
+        restTime = 1000;
+    else
+        restTime = (restTime - static_cast<uint32_t>(UNIXTIME)) * 1000;
+
+    SendPacket(SmsgAreaSpiritHealerTime(recv_packet.guid.GetOldGuid(), restTime).serialise().get());
+}
+
+void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
+{
+    const auto pendingBattleground = GetPlayer()->m_pendingBattleground;
+    const auto cBattleground = GetPlayer()->m_bg;
+
+    if (cBattleground)
+        BattlegroundManager.SendBattlefieldStatus(GetPlayer(), BGSTATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), GetPlayer()->GetMapId(), cBattleground->Rated());
+    else if (pendingBattleground)
+        BattlegroundManager.SendBattlefieldStatus(GetPlayer(), BGSTATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
+    else
+        BattlegroundManager.SendBattlefieldStatus(GetPlayer(), BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+}
+
+void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
+{
+    if (GetPlayer()->HasAura(BG_DESERTER))
+    {
+        WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
+        data << uint32_t(0xFFFFFFFE);
+        GetPlayer()->GetSession()->SendPacket(&data);
+        return;
+    }
+
+    if (GetPlayer()->GetGroup() && GetPlayer()->GetGroup()->m_isqueued)
+    {
+        SystemMessage("You are already in a group and queued for a battleground or inside a battleground. Leave this first.");
+        return;
+    }
+
+    if (GetPlayer()->m_bgIsQueued)
+        BattlegroundManager.RemovePlayerFromQueues(GetPlayer());
+
+    if (GetPlayer()->IsInWorld())
+        BattlegroundManager.HandleBattlegroundJoin(this, recvPacket);
+}
+
+void WorldSession::SendBattlegroundList(Creature* pCreature, uint32_t mapId)
+{
+    if (pCreature == nullptr)
+        return;
+
+    uint32_t battlegroundType = BATTLEGROUND_WARSONG_GULCH;
+    if (mapId == 0)
+    {
+        if (pCreature->GetCreatureProperties()->SubName != "Arena")
+        {
+            battlegroundType = BATTLEGROUND_ARENA_2V2;
+        }
+        else
+        {
+            const auto battlemaster = sMySQLStore.getBattleMaster(pCreature->GetCreatureProperties()->Id);
+            if (battlemaster)
+                battlegroundType = battlemaster->battlegroundId;
+        }
+    }
+    else
+    {
+        battlegroundType = mapId;
+    }
+
+    BattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
 }

@@ -776,14 +776,14 @@ class SERVER_DECL WorldSession
 
         // Battleground
         void handleBattlefieldPortOpcode(WorldPacket& recvPacket);
-        void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
+        void handleBattlefieldStatusOpcode(WorldPacket& recvPacket);
         void handleBattleMasterHelloOpcode(WorldPacket& recvPacket);
         void handleLeaveBattlefieldOpcode(WorldPacket& recvPacket);
-        void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
-        void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
+        void handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket);
+        void handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket);
         void handleBattlegroundPlayerPositionsOpcode(WorldPacket& recvPacket);
         void handleArenaJoinOpcode(WorldPacket& recvPacket);
-        void HandleBattleMasterJoinOpcode(WorldPacket& recv_data);
+        void handleBattleMasterJoinOpcode(WorldPacket& recvPacket);
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
         void handleBattlefieldListOpcode(WorldPacket& recvPacket);
@@ -926,7 +926,7 @@ class SERVER_DECL WorldSession
         void SendCharterRequest(Creature* pCreature);
         void SendTaxiList(Creature* pCreature);
         void SendInnkeeperBind(Creature* pCreature);
-        void SendBattlegroundList(Creature* pCreature, uint32 mapid);
+        void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendBankerList(Creature* pCreature);
         void SendTabardHelp(Creature* pCreature);
         void SendAuctionList(Creature* pCreature);
