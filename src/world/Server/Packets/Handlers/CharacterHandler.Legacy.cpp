@@ -1473,21 +1473,38 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 }
 #endif
 
+// MIT start
 void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 {
-    uint32_t error = 0;     // 0 = success, 1 = error
+    //\todo check utf8 and cyrillic chars
 
     uint64_t guid;
-    std::string name;
+    uint32_t error = 0;
 
     recv_data >> guid;
-    recv_data >> name;
 
-    //\todo check utf8 and cyrillic chars
-    // check declined names
+    std::string declinedname[MAX_DECLINED_NAME_CASES];
 
-    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4 + 8);
-    data << uint32_t(error);
+    for(int i = 0; i < MAX_DECLINED_NAME_CASES; ++i)
+    {
+        recv_data >> declinedname[i];
+
+        if(declinedname[i].empty())
+            error = 1;
+
+        CharacterDatabase.EscapeString(declinedname[i]);
+    }
+    for(int i = 1; i < MAX_DECLINED_NAME_CASES; ++i)
+    {
+        if( declinedname[i].size() < declinedname[0].size() )
+            error = 1;
+    } 
+    if(!error) 
+        CharacterDatabase.Query("REPLACE INTO declinedname_character (`guid`, `genitive`, `dative`, `accusative`, `instrumental`, `prepositional`) VALUES ('%u','%s','%s','%s','%s','%s')", Arcemu::Util::GUID_LOPART(guid), declinedname[1].c_str(),declinedname[2].c_str(),declinedname[3].c_str(),declinedname[4].c_str(),declinedname[5].c_str()); 
+
+    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4+8);
+    data << uint32_t(0);
     data << uint64_t(guid);
     SendPacket(&data);
 }
+// MIT end
