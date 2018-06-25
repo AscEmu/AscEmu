@@ -7,6 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Server/Packets/MsgInspectHonorStats.h"
 #include "Server/Packets/CmsgBattlemasterJoinArena.h"
+#include "Server/Packets/CmsgBattlefieldPort.h"
+#include "Server/Packets/CmsgBattlefieldList.h"
+#include "Server/Packets/CmsgBattlemasterHello.h"
+#include "Server/Packets/MsgBattlegroundPlayerPosition.h"
 
 using namespace AscEmu::Packets;
 
@@ -124,4 +128,79 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
 
     if (battlegroundType != 0)
         BattlegroundManager.HandleArenaJoin(this, battlegroundType, recv_packet.asGroup, recv_packet.ratedMatch);
+}
+
+void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
+{
+    CmsgBattlefieldPort recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (recv_packet.action != 0)
+    {
+        if (GetPlayer()->m_pendingBattleground)
+            GetPlayer()->m_pendingBattleground->PortPlayer(GetPlayer());
+    }
+    else
+    {
+        BattlegroundManager.RemovePlayerFromQueues(GetPlayer());
+    }
+}
+
+void WorldSession::handleLeaveBattlefieldOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->m_bg && GetPlayer()->IsInWorld())
+        GetPlayer()->m_bg->RemovePlayer(GetPlayer(), false);
+}
+
+void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
+{
+    CmsgBattlefieldList recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_BATTLEFIELD_LIST: %u (bgType), %u (fromType)", recv_packet.bgType, recv_packet.fromType);
+
+    BattlegroundManager.HandleBattlegroundListPacket(this, recv_packet.bgType, recv_packet.fromType);
+}
+
+void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+
+    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+}
+
+void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
+{
+    CmsgBattlemasterHello recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_BATTLEMASTER_HELLO: %u (guidLow)", recv_packet.guid.getGuidLow());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    if (creature == nullptr || !creature->isBattleMaster())
+        return;
+
+    SendBattlegroundList(creature, 0);
+}
+
+void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPacket*/)
+{
+    const auto cBattleground = _player->m_bg;
+    if (cBattleground == nullptr)
+        return;
+
+    uint32_t flagHolders = 0;
+
+    const auto alliancePlayer = objmgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
+    if (alliancePlayer)
+        ++flagHolders;
+
+    const auto hordePlayer = objmgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_HORDE)));
+    if (hordePlayer)
+        ++flagHolders;
+
+    SendPacket(MsgBattlegroundPlayerPosition(0, flagHolders, alliancePlayer, hordePlayer).serialise().get());
 }

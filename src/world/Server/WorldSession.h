@@ -775,18 +775,18 @@ class SERVER_DECL WorldSession
         void HandleDismissCritter(WorldPacket& recv_data);
 
         // Battleground
-        void HandleBattlefieldPortOpcode(WorldPacket& recv_data);
+        void handleBattlefieldPortOpcode(WorldPacket& recvPacket);
         void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
-        void HandleBattleMasterHelloOpcode(WorldPacket& recv_data);
-        void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
+        void handleBattleMasterHelloOpcode(WorldPacket& recvPacket);
+        void handleLeaveBattlefieldOpcode(WorldPacket& recvPacket);
         void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
         void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
-        void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data);
+        void handleBattlegroundPlayerPositionsOpcode(WorldPacket& recvPacket);
         void handleArenaJoinOpcode(WorldPacket& recvPacket);
         void HandleBattleMasterJoinOpcode(WorldPacket& recv_data);
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
-        void HandleBattlefieldListOpcode(WorldPacket& recv_data);
+        void handleBattlefieldListOpcode(WorldPacket& recvPacket);
 
 #if VERSION_STRING == Cata
         void HandleRequestRatedBgInfoOpcode(WorldPacket& recv_data);
@@ -835,7 +835,7 @@ class SERVER_DECL WorldSession
         void HandleCharCustomizeLooksOpcode(WorldPacket& recv_data);
         void HandleCharFactionOrRaceChange(WorldPacket& recv_data);
 #endif
-        void HandleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
+        void handleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
 
         void HandlePartyMemberStatsOpcode(WorldPacket& recv_data);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
