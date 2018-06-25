@@ -21,6 +21,11 @@
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
 
+enum NameCases
+{
+    MAX_DECLINED_NAME_CASES = 6 // 1-6 -> 0-5
+};
+
 enum DeathState
 {
     ALIVE = 0,  // Unit is alive and well
