@@ -361,34 +361,28 @@ class SERVER_DECL WorldSession
         void handleSetActiveMoverOpcode(WorldPacket& recv_data);
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
-        /// Opcodes implemented in GroupHandler.cpp:
+        // Opcodes implemented in GroupHandler.cpp:
 #if VERSION_STRING == Cata
     public:
-        void SendPartyCommandResult(Player* pPlayer, uint32_t p1, std::string name, uint32_t err);
         void SendEmptyGroupList(Player* player);
 
     private:
         void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
         void HandleGroupSetRolesOpcode(WorldPacket& recvPacket);
         void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recvPacket);
-#else
-        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+
 #endif
 
-#if VERSION_STRING == Cata
-        void HandleGroupInviteOpcode(WorldPacket& recvPacket);
-#else
         void handleGroupInviteOpcode(WorldPacket& recvPacket);
-#endif
-        void HandleGroupCancelOpcode(WorldPacket& recvPacket);
+        //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
-        void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
-        void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
-        void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
-        void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
-        void HandleLootMethodOpcode(WorldPacket& recvPacket);
-        void HandleMinimapPingOpcode(WorldPacket& recvPacket);
+        void handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupUninviteOpcode(WorldPacket& recvPacket);
+        void handleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
+        void handleGroupSetLeaderOpcode(WorldPacket& recvPacket);
+        void handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/);
+        void handleLootMethodOpcode(WorldPacket& recvPacket);
+        void handleMinimapPingOpcode(WorldPacket& recvPacket);
         void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
 
 
@@ -830,7 +824,7 @@ class SERVER_DECL WorldSession
 #endif
         void handleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
 
-        void HandlePartyMemberStatsOpcode(WorldPacket& recv_data);
+        void HandlePartyMemberStatsOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data);

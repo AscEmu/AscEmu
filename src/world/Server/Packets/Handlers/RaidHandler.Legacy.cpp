@@ -22,6 +22,9 @@
 #include "StdAfx.h"
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgPartyCommandResult.h"
+
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& /*recv_data*/)
 {
@@ -33,12 +36,13 @@ void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& /*recv_data*/)
 
     if (pGroup->GetLeader() != _player->m_playerInfo)      //access denied
     {
-        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
         return;
     }
 
     pGroup->ExpandToRaid();
-    SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
+
+    SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_NO_ERROR).serialise().get());
 }
 
 void WorldSession::HandleGroupChangeSubGroup(WorldPacket& recv_data)
@@ -69,7 +73,7 @@ void WorldSession::HandleGroupAssistantLeader(WorldPacket& recv_data)
 
     if (_player->GetGroup()->GetLeader() != _player->m_playerInfo)      //access denied
     {
-        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
         return;
     }
 
@@ -102,7 +106,7 @@ void WorldSession::HandleGroupPromote(WorldPacket& recv_data)
 
     if (_player->GetGroup()->GetLeader() != _player->m_playerInfo)      //access denied
     {
-        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
         return;
     }
 
