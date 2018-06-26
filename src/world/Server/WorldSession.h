@@ -312,7 +312,7 @@ class SERVER_DECL WorldSession
 
         void handleSetActionButtonOpcode(WorldPacket& recvPacket);
 
-        void HandleSetAtWarOpcode(WorldPacket& recvPacket);
+        void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
         void handleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
         void handleTogglePVPOpcode(WorldPacket& recvPacket);
         void HandleAmmoSetOpcode(WorldPacket& recvPacket);
@@ -856,7 +856,7 @@ class SERVER_DECL WorldSession
         void handleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         void HandleMirrorImageOpcode(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);
-        void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
+        void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void HandleLogDisconnectOpcode(WorldPacket& recv_data);
 #endif

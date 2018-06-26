@@ -145,9 +145,9 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::handleTogglePVPOpcode;
 
     // Faction / Reputation
-    WorldPacketHandlers[CMSG_SET_FACTION_ATWAR].handler = &WorldSession::HandleSetAtWarOpcode;
+    WorldPacketHandlers[CMSG_SET_FACTION_ATWAR].handler = &WorldSession::handleSetFactionAtWarOpcode;
     WorldPacketHandlers[CMSG_SET_WATCHED_FACTION].handler = &WorldSession::handleSetWatchedFactionIndexOpcode;
-    WorldPacketHandlers[CMSG_SET_FACTION_INACTIVE].handler = &WorldSession::HandleSetFactionInactiveOpcode;
+    WorldPacketHandlers[CMSG_SET_FACTION_INACTIVE].handler = &WorldSession::handleSetFactionInactiveOpcode;
 
     // Player Interaction
     WorldPacketHandlers[CMSG_GAMEOBJ_USE].handler = &WorldSession::HandleGameObjectUse;

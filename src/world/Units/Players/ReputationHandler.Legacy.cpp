@@ -327,17 +327,6 @@ void Player::SetAtWar(uint32 Faction, bool Set)
     }
 }
 
-void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
-{
-    uint32 id;
-    uint8 state;
-
-    recv_data >> id;
-    recv_data >> state;
-
-    _player->SetAtWar(id, (state == 1));
-}
-
 void Player::UpdateInrangeSetsBasedOnReputation()
 {
     // This function assumes that the opp faction set for player = the opp faction set for the unit.
@@ -443,19 +432,6 @@ void Player::SetFactionInactive(uint32 faction, bool /*set*/)
     FactionReputation* rep = reputationByListId[faction];
     if (rep == NULL)
         return;
-}
-
-void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 id;
-    uint8 inactive;
-
-    recv_data >> id;
-    recv_data >> inactive;
-
-    _player->SetFactionInactive(id, (inactive == 1));
 }
 
 bool Player::AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base)    // if (base) standing = baseRepValue
