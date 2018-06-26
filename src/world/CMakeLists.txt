@@ -140,6 +140,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/src/collision/Models
    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
    ${CMAKE_SOURCE_DIR}/dep/lualib/src
+   ${CMAKE_SOURCE_DIR}/dep/utf8cpp
    ${CMAKE_SOURCE_DIR}/src/shared
    ${CMAKE_SOURCE_DIR}/src
    ${CMAKE_CURRENT_SOURCE_DIR}
@@ -157,8 +158,8 @@ if(WIN32 AND NOT USE_PCH)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
-add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast lualib)
+add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast lualib utf8cpp)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
-target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${utf8cpp_LIBRARIES} ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

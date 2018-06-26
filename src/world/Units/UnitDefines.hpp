@@ -21,7 +21,7 @@
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
 
-enum NameCases
+enum DeclinedNameCases
 {
     MAX_DECLINED_NAME_CASES = 6 // 1-6 -> 0-5
 };
