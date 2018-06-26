@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/Packets/CmsgAttackSwing.h"
+#include "Server/WorldSession.h"
+#include "Units/Players/Player.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
 
 using namespace AscEmu::Packets;
 

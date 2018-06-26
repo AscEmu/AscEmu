@@ -31,7 +31,7 @@
 #include "Objects/DynamicObject.h"
 #include "AuthCodes.h"
 #include "VMapFactory.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Storage/WorldStrings.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.h"

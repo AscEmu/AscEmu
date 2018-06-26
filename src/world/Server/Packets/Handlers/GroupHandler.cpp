@@ -13,6 +13,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgMinimapPing.h"
 #include "Server/Packets/CmsgGroupSetLeader.h"
 #include "Server/Packets/CmsgLootMethod.h"
+#include "Server/Packets/MsgRaidTargetUpdate.h"
+#include "Server/Packets/CmsgRequestPartyMemberStats.h"
+#include "Server/Packets/SmsgPartyMemberStatsFull.h"
+#include "Server/WorldSession.h"
+#include "Objects/ObjectMgr.h"
+#include "Map/MapMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -291,6 +297,45 @@ void WorldSession::handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/)
     GetPlayer()->SetInviter(0);
 }
 
+void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->GetGroup())
+        return;
+
+    const auto player = objmgr.GetPlayer(GetPlayer()->GetInviter());
+    if (player == nullptr)
+        return;
+
+    GetPlayer()->SetInviter(0);
+    player->SetInviter(0);
+
+    auto group = player->GetGroup();
+    if (group == nullptr)
+    {
+        group = new Group(true);
+        group->AddMember(player->getPlayerInfo());
+        group->AddMember(GetPlayer()->getPlayerInfo());
+        group->m_difficulty = player->iInstanceType;
+        GetPlayer()->iInstanceType = player->iInstanceType;
+        GetPlayer()->SendDungeonDifficulty();
+
+        const auto instance = sInstanceMgr.GetInstanceByIds(player->GetMapId(), player->GetInstanceID());
+        if (instance && instance->m_creatorGuid == player->getGuidLow())
+        {
+            group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
+            instance->m_creatorGroup = group->GetID();
+            instance->m_creatorGuid = 0;
+            instance->SaveToDB();
+        }
+    }
+    else
+    {
+        group->AddMember(GetPlayer()->getPlayerInfo());
+        GetPlayer()->iInstanceType = group->m_difficulty;
+        GetPlayer()->SendDungeonDifficulty();
+    }
+}
+
 void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
 {
     CmsgGroupUninvite recv_packet;
@@ -449,4 +494,73 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     else
         group->SetLooter(lootMasterPlayer, static_cast<uint8_t>(recv_packet.method), static_cast<uint16_t>(recv_packet.threshold));
 
+}
+
+void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
+{
+    MsgRaidTargetUpdate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received MSG_RAID_TARGET_UPDATE: %u (icon)", recv_packet.icon);
+
+    const auto group = GetPlayer()->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (recv_packet.icon == 0xFF)
+    {
+        SendPacket(MsgRaidTargetUpdate(1, 0, 0, 0, group).serialise().get());
+    }
+    else if (GetPlayer()->IsGroupLeader())
+    {
+        if (recv_packet.icon >= iconCount)
+            return;
+
+        for (uint8_t i = 0; i < iconCount; ++i)
+        {
+            if (group->m_targetIcons[i] == recv_packet.guid)
+            {
+                group->m_targetIcons[i] = 0;
+                group->SendPacketToAll(MsgRaidTargetUpdate(0, 0, i, 0, nullptr).serialise().get());
+            }
+        }
+
+        group->SendPacketToAll(MsgRaidTargetUpdate(0, GetPlayer()->getGuid(), recv_packet.icon, recv_packet.guid, nullptr).serialise().get());
+        group->m_targetIcons[recv_packet.icon] = recv_packet.guid;
+    }
+}
+
+//\brief: Not used on Cata
+void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
+{
+    CmsgRequestPartyMemberStats recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", recv_packet.guid.getGuidLow());
+
+    if (GetPlayer()->GetMapMgr() == nullptr)
+    {
+        LOG_DEBUG("Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
+        return;
+    }
+
+    const auto requestedPlayer = GetPlayer()->GetMapMgr()->GetPlayer(recv_packet.guid.getGuidLow());
+    if (GetPlayer()->GetGroup() == nullptr || requestedPlayer == nullptr)
+    {
+        SendPacket(SmsgPartyMemberStatsFull(recv_packet.guid, nullptr).serialise().get());
+        return;
+    }
+
+    //\todo send SmsgPartyMemberStatsFull after several checks.
+
+    if (!GetPlayer()->GetGroup()->HasMember(requestedPlayer))
+        return;
+
+    if (GetPlayer()->IsVisible(requestedPlayer->getGuid()))
+        return;
+
+    //send packet here
+    //SendPacket(SmsgPartyMemberStatsFull(requestedPlayer->getGuid(), requestedPlayer).serialise().get());
 }

@@ -15,6 +15,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Data/WoWPlayer.h"
 #include "Management/Battleground/Battleground.h"
+#include "Objects/GameObject.h"
+#include "Units/Creatures/Pet.h"
+#include "Spell/SpellAuras.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data

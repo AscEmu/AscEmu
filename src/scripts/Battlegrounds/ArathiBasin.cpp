@@ -21,7 +21,7 @@
 #include "StdAfx.h"
 
 #include "ArathiBasin.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"

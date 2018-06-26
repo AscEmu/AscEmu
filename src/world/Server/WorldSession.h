@@ -375,7 +375,7 @@ class SERVER_DECL WorldSession
 
         void handleGroupInviteOpcode(WorldPacket& recvPacket);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
-        void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
+        void handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/);
         void handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/);
         void handleGroupUninviteOpcode(WorldPacket& recvPacket);
         void handleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
@@ -383,7 +383,7 @@ class SERVER_DECL WorldSession
         void handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/);
         void handleLootMethodOpcode(WorldPacket& recvPacket);
         void handleMinimapPingOpcode(WorldPacket& recvPacket);
-        void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
+        void handleSetPlayerIconOpcode(WorldPacket& recvPacket);
 
 
         // Raid
@@ -801,7 +801,7 @@ class SERVER_DECL WorldSession
 
         void handleToggleHelmOpcode(WorldPacket& /*recvPacket*/);
         void handleToggleCloakOpcode(WorldPacket& /*recvPacket*/);
-        void HandleSetVisibleRankOpcode(WorldPacket& recv_data);
+        void handleSetTitle(WorldPacket& recvPacket);
         void HandlePetSetActionOpcode(WorldPacket& recv_data);
 
         // Instances
@@ -824,7 +824,7 @@ class SERVER_DECL WorldSession
 #endif
         void handleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
 
-        void HandlePartyMemberStatsOpcode(WorldPacket& recvPacket);
+        void handlePartyMemberStatsOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data);

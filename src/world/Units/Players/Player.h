@@ -21,7 +21,7 @@
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Server/Packets/Handlers/PlayerCache.h"
+#include "Units/Players/PlayerCache.h"
 #include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"

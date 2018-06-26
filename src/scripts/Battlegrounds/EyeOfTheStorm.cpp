@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "EyeOfTheStorm.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"

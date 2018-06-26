@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "WarsongGulch.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"

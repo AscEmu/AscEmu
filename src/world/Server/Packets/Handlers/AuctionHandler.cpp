@@ -12,6 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAuctionListIPendingSales.h"
 #include "Server/Packets/CmsgAuctionPlaceBid.h"
 #include "Server/Packets/CmsgAuctionSellItem.h"
+#include "Server/WorldSession.h"
+#include "Units/Players/Player.h"
+#include "Map/MapMgr.h"
+#include "Units/Creatures/Creature.h"
+#include "Management/AuctionMgr.h"
+#include "Management/ItemInterface.h"
 
 using namespace AscEmu::Packets;
 

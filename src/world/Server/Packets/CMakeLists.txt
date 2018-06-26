@@ -58,6 +58,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h
    ${PATH_PREFIX}/CmsgSetTaxiBenchmarkMode.h
+   ${PATH_PREFIX}/CmsgSetTitle.h
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
    ${PATH_PREFIX}/CmsgTextEmote.h
@@ -71,6 +72,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
+   ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
@@ -104,6 +106,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
+   ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h

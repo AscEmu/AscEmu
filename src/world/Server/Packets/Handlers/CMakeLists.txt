@@ -19,12 +19,8 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/GMTicketHandler.cpp
    
    ${PATH_PREFIX}/GroupHandler.cpp
-   ${PATH_PREFIX}/GroupHandler.Legacy.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
    ${PATH_PREFIX}/GuildHandler.Legacy.cpp
-   ${PATH_PREFIX}/HonorHandler.cpp
-   ${PATH_PREFIX}/HonorHandler.Legacy.cpp
-   ${PATH_PREFIX}/HonorHandler.h
    ${PATH_PREFIX}/LfgHandler.cpp
    ${PATH_PREFIX}/LfgHandler.Legacy.cpp
    ${PATH_PREFIX}/ItemHandler.cpp
@@ -37,15 +33,12 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/NPCHandler.cpp
    ${PATH_PREFIX}/NPCHandler.Legacy.cpp
    
-   ${PATH_PREFIX}/NPCHandler.h
    ${PATH_PREFIX}/MovementHandler.cpp
    ${PATH_PREFIX}/MovementHandler.Legacy.cpp
    ${PATH_PREFIX}/PetHandler.cpp
    ${PATH_PREFIX}/PetHandler.Legacy.cpp
    
-   ${PATH_PREFIX}/PlayerCache.cpp
-   ${PATH_PREFIX}/PlayerCache.h
-   ${PATH_PREFIX}/PlayerPacketWrapper.cpp
+   
    ${PATH_PREFIX}/QueryHandler.cpp
    
    ${PATH_PREFIX}/QuestHandler.cpp

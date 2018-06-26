@@ -25,7 +25,7 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Objects/DynamicObject.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/TaxiMgr.h"

@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "Config/Config.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
@@ -32,19 +32,6 @@
 #include "Objects/ObjectMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-
-void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recvData)
-{
-    CHECK_PACKET_SIZE(recvData, 4);
-    uint32_t ChosenRank;
-    recvData >> ChosenRank;
-#if VERSION_STRING > Classic
-    if (ChosenRank == 0xFFFFFFFF)
-        _player->setChosenTitle(0);
-    else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
-        _player->setChosenTitle(ChosenRank);
-#endif
-}
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {

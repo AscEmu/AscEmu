@@ -14,6 +14,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreaSpiritHealerQueue.h"
 #include "Server/Packets/CmsgAreaSpiritHealerQuery.h"
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
+#include "Server/WorldSession.h"
+#include "Units/Players/Player.h"
+#include "Management/Battleground/Battleground.h"
+#include "Map/MapMgr.h"
+#include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
 

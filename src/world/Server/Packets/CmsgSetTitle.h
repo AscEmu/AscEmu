@@ -11,22 +11,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgLootMethod : public ManagedPacket
+    class CmsgSetTitle : public ManagedPacket
     {
     public:
-        uint32_t method;
-        WoWGuid guid;
-        uint32_t threshold;
+        uint32_t titleId;
 
-        CmsgLootMethod() : CmsgLootMethod(0, 0, 0)
+        CmsgSetTitle() : CmsgSetTitle(0)
         {
         }
 
-        CmsgLootMethod(uint32_t method, uint64_t guid, uint32_t threshold) :
-            ManagedPacket(CMSG_LOOT_METHOD, 16),
-            method(method),
-            guid(guid),
-            threshold(threshold)
+        CmsgSetTitle(uint32_t titleId) :
+            ManagedPacket(CMSG_SET_TITLE, 4),
+            titleId(titleId)
         {
         }
 
@@ -38,9 +34,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> method >> unpackedGuid >> threshold;
-            guid.Init(unpackedGuid);
+            packet >> titleId;
             return true;
         }
     };

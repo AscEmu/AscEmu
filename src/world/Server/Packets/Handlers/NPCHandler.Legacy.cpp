@@ -37,26 +37,6 @@
 
 using namespace AscEmu::Packets;
 
-trainertype trainer_types[TRAINER_TYPE_MAX] =
-{
-    { "Warrior"         , 0 },
-    { "Paladin"         , 0 },
-    { "Rogue"           , 0 },
-    { "Warlock"         , 0 },
-    { "Mage"            , 0 },
-    { "Shaman"          , 0 },
-    { "Priest"          , 0 },
-    { "Hunter"          , 0 },
-    { "Druid"           , 0 },
-    { "Leatherwork"     , 2 },
-    { "Skinning"        , 2 },
-    { "Fishing"         , 2 },
-    { "First Aid"       , 2 },
-    { "Physician"       , 2 },
-    { "Engineer"        , 2 },
-    { "Weapon Master"   , 0 },
-};
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_TABARDVENDOR_ACTIVATE:
