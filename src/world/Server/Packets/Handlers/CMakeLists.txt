@@ -53,7 +53,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/TradeHandler.cpp
    ${PATH_PREFIX}/TradeHandler.Legacy.cpp
    ${PATH_PREFIX}/VehicleHandler.cpp
-   ${PATH_PREFIX}/VehicleHandler.Legacy.cpp
    #${PATH_PREFIX}/VoiceChatHandler.Legacy.cpp //Not used!
 )
 

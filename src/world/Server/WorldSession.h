@@ -531,14 +531,17 @@ class SERVER_DECL WorldSession
         void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
 #endif
 
-        /// Vehicles
+        // Vehicles
 #if VERSION_STRING > TBC
-        void HandleDismissVehicle(WorldPacket& recv_data);
-        void HandleChangeVehicleSeat(WorldPacket& recv_data);
-        void HandleRemoveVehiclePassenger(WorldPacket& recv_data);
-        void HandleLeaveVehicle(WorldPacket& recv_data);
-        void HandleEnterVehicle(WorldPacket& recv_data);
-        void HandleVehicleDismiss(WorldPacket& recv_data);
+        void handleDismissVehicle(WorldPacket& recvPacket);
+        void handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/);
+        void handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/);
+        void handleRequestVehicleSwitchSeat(WorldPacket& recvPacket);
+        void handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket);
+        void handleRemoveVehiclePassenger(WorldPacket& recvPacket);
+        void handleLeaveVehicle(WorldPacket& /*recvPacket*/);
+        void handleEnterVehicle(WorldPacket& recvPacket);
+        void handleVehicleDismiss(WorldPacket& /*recvPacket*/);
 #endif
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);

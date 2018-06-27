@@ -22,10 +22,12 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBattlemasterHello.h
    ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
    ${PATH_PREFIX}/CmsgCastSpell.h
+   ${PATH_PREFIX}/CmsgChangeSeatsOnControlledVehicle.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
+   ${PATH_PREFIX}/CmsgEjectPassenger.h
    ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
    ${PATH_PREFIX}/CmsgGameobjReportUse.h
@@ -50,9 +52,11 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgOptOutOfLoot.h
    ${PATH_PREFIX}/CmsgPageTextQuery.h
    ${PATH_PREFIX}/CmsgPlayedTime.h
+   ${PATH_PREFIX}/CmsgPlayerVehicleEnter.h
    ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
+   ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h
    ${PATH_PREFIX}/CmsgSetActionbarToggles.h
    ${PATH_PREFIX}/CmsgSetActionButton.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
