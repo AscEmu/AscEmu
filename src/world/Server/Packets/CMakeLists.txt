@@ -31,6 +31,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGameobjReportUse.h
    ${PATH_PREFIX}/CmsgGossipHello.h
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
+   ${PATH_PREFIX}/CmsgGroupAssistantLeader.h
+   ${PATH_PREFIX}/CmsgGroupChangeSubGroup.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgGroupSetLeader.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
@@ -74,6 +76,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
+   ${PATH_PREFIX}/MsgPartyAssign.h
+   ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h

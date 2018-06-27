@@ -19,6 +19,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgGroupChangeSubGroup.h"
+#include "Server/Packets/CmsgGroupAssistantLeader.h"
+#include "Server/Packets/MsgPartyAssign.h"
+#include "Server/Packets/MsgRaidReadyCheck.h"
 
 using namespace AscEmu::Packets;
 
@@ -553,14 +557,133 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    //\todo send SmsgPartyMemberStatsFull after several checks.
-
     if (!GetPlayer()->GetGroup()->HasMember(requestedPlayer))
         return;
 
     if (GetPlayer()->IsVisible(requestedPlayer->getGuid()))
         return;
 
-    //send packet here
-    //SendPacket(SmsgPartyMemberStatsFull(requestedPlayer->getGuid(), requestedPlayer).serialise().get());
+    SendPacket(SmsgPartyMemberStatsFull(requestedPlayer->getGuid(), requestedPlayer).serialise().get());
+}
+
+void WorldSession::handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/)
+{
+    auto const group = GetPlayer()->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != GetPlayer()->m_playerInfo)
+    {
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
+        return;
+    }
+
+    group->ExpandToRaid();
+    SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_NO_ERROR).serialise().get());
+}
+
+void WorldSession::handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/)
+{
+    sInstanceMgr.BuildRaidSavedInstancesForPlayer(GetPlayer());
+}
+
+void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
+{
+    CmsgGroupChangeSubGroup recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto playerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
+        return;
+
+    if (playerInfo->m_Group != GetPlayer()->GetGroup())
+        return;
+
+    GetPlayer()->GetGroup()->MovePlayer(playerInfo, recv_packet.subGroup);
+}
+
+void WorldSession::handleGroupAssistantLeader(WorldPacket& recvPacket)
+{
+    const auto group = GetPlayer()->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != GetPlayer()->getPlayerInfo())
+    {
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
+        return;
+    }
+
+    CmsgGroupAssistantLeader recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (recv_packet.isActivated)
+    {
+        const auto playerInfo = objmgr.GetPlayerInfo(recv_packet.guid.getGuidLow());
+        if (playerInfo == nullptr)
+        {
+            group->SetAssistantLeader(nullptr);
+        }
+        else
+        {
+            if (group->HasMember(playerInfo))
+                group->SetAssistantLeader(playerInfo);
+        }
+    }
+}
+
+void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
+{
+    const auto group = GetPlayer()->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != GetPlayer()->getPlayerInfo())
+    {
+        SendPacket(SmsgPartyCommandResult(0, "", ERR_PARTY_YOU_ARE_NOT_LEADER).serialise().get());
+        return;
+    }
+
+    MsgPartyAssign recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    PlayerInfo* playerInfo = nullptr;
+
+    if (recv_packet.isActivated)
+        playerInfo = objmgr.GetPlayerInfo(recv_packet.guid.getGuidLow());
+
+    if (recv_packet.promoteType == 1)
+        group->SetMainAssist(playerInfo);
+    else if (recv_packet.promoteType == 0)
+        group->SetMainTank(playerInfo);
+}
+
+void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
+{
+    const auto group = GetPlayer()->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (recvPacket.isEmpty())
+    {
+        if (group->GetLeader() == GetPlayer()->getPlayerInfo() || group->GetAssistantLeader() == GetPlayer()->getPlayerInfo())
+            group->SendPacketToAll(MsgRaidReadyCheck(GetPlayer()->getGuid(), 0, true).serialise().get());
+        else
+            SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+    }
+    else
+    {
+        MsgRaidReadyCheck recv_packet;
+        if (!recv_packet.deserialise(recvPacket))
+            return;
+
+        if (group->GetLeader() && group->GetLeader()->m_loggedInPlayer)
+            group->GetLeader()->m_loggedInPlayer->SendPacket(MsgRaidReadyCheck(GetPlayer()->getGuid(), recv_packet.isReady, false).serialise().get());
+
+        if (group->GetAssistantLeader() && group->GetAssistantLeader()->m_loggedInPlayer)
+            group->GetAssistantLeader()->m_loggedInPlayer->SendPacket(MsgRaidReadyCheck(GetPlayer()->getGuid(), recv_packet.isReady, false).serialise().get());
+    }
 }

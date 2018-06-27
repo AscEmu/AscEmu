@@ -387,12 +387,12 @@ class SERVER_DECL WorldSession
 
 
         // Raid
-        void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
-        void HandleGroupChangeSubGroup(WorldPacket& recvPacket);
-        void HandleGroupAssistantLeader(WorldPacket& recvPacket);
-        void HandleRequestRaidInfoOpcode(WorldPacket& recvPacket);
-        void HandleReadyCheckOpcode(WorldPacket& recv_data);
-        void HandleGroupPromote(WorldPacket& recv_data);
+        void handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupChangeSubGroup(WorldPacket& recvPacket);
+        void handleGroupAssistantLeader(WorldPacket& recvPacket);
+        void handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/);
+        void handleReadyCheckOpcode(WorldPacket& recvPacket);
+        void handleGroupPromote(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void HandleGroupRoleCheckBeginOpcode(WorldPacket& recv_data);
 #endif
