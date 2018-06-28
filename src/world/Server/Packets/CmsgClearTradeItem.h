@@ -11,19 +11,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgEjectPassenger : public ManagedPacket
+    class CmsgClearTradeItem : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
-        uint64_t guid;
+        uint8_t tradeSlot;
 
-        CmsgEjectPassenger() : CmsgEjectPassenger(0)
+        CmsgClearTradeItem() : CmsgClearTradeItem(0)
         {
         }
 
-        CmsgEjectPassenger(uint64_t guid) :
-            ManagedPacket(CMSG_EJECT_PASSENGER, 0),
-            guid(guid)
+        CmsgClearTradeItem(uint8_t tradeSlot) :
+            ManagedPacket(CMSG_CLEAR_TRADE_ITEM, 0),
+            tradeSlot(tradeSlot)
         {
         }
 
@@ -35,9 +34,8 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid;
+            packet >> tradeSlot;
             return true;
         }
-#endif
     };
 }}

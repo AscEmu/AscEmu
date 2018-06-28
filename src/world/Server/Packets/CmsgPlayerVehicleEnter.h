@@ -13,6 +13,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgPlayerVehicleEnter : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint64_t guid;
 
@@ -37,5 +38,6 @@ namespace AscEmu { namespace Packets
             packet >> guid;
             return true;
         }
+#endif
     };
 }}

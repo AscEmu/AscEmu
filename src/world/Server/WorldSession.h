@@ -615,16 +615,16 @@ class SERVER_DECL WorldSession
     protected:
 #endif
 
-        void HandleInitiateTradeOpcode(WorldPacket& recv_data);
-        void HandleBeginTradeOpcode(WorldPacket& recv_data);
-        void HandleBusyTrade(WorldPacket& recv_data);
-        void HandleIgnoreTrade(WorldPacket& recv_data);
-        void HandleAcceptTrade(WorldPacket& recv_data);
-        void HandleUnacceptTrade(WorldPacket& recv_data);
-        void HandleCancelTrade(WorldPacket& recv_data);
-        void HandleSetTradeItem(WorldPacket& recv_data);
-        void HandleClearTradeItem(WorldPacket& recv_data);
-        void HandleSetTradeGold(WorldPacket& recv_data);
+        void handleInitiateTradeOpcode(WorldPacket& recvPacket);
+        void handleBeginTradeOpcode(WorldPacket& /*recvPacket*/);
+        void handleBusyTrade(WorldPacket& /*recvPacket*/);
+        void handleIgnoreTrade(WorldPacket& /*recvPacket*/);
+        void handleAcceptTrade(WorldPacket& /*recvPacket*/);
+        void handleUnacceptTrade(WorldPacket& /*recvPacket*/);
+        void handleCancelTrade(WorldPacket& recvPacket);
+        void handleSetTradeItem(WorldPacket& recvPacket);
+        void handleClearTradeItem(WorldPacket& recvPacket);
+        void handleSetTradeGold(WorldPacket& recvPacket);
 
         // Guild
 #if VERSION_STRING != Cata

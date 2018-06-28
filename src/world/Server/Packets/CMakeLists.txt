@@ -23,6 +23,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgChangeSeatsOnControlledVehicle.h
+   ${PATH_PREFIX}/CmsgClearTradeItem.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
@@ -37,6 +38,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGroupChangeSubGroup.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgGroupSetLeader.h
+   ${PATH_PREFIX}/CmsgInitiateTrade.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
    ${PATH_PREFIX}/CmsgItemQuerySingle.h
@@ -67,6 +69,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetSheathed.h
    ${PATH_PREFIX}/CmsgSetTaxiBenchmarkMode.h
    ${PATH_PREFIX}/CmsgSetTitle.h
+   ${PATH_PREFIX}/CmsgSetTradeGold.h
+   ${PATH_PREFIX}/CmsgSetTradeItem.h
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
    ${PATH_PREFIX}/CmsgTextEmote.h
@@ -124,6 +128,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgTextEmote.h
+   ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h
    ${PATH_PREFIX}/SmsgWorldStateUiTimerUpdate.h

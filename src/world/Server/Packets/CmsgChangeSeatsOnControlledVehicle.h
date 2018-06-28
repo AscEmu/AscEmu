@@ -8,11 +8,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
+#if VERSION_STRING == WotLK
+#include <GameWotLK/Data/MovementInfoWotLK.h>
+#endif
 
 namespace AscEmu { namespace Packets
 {
     class CmsgChangeSeatsOnControlledVehicle : public ManagedPacket
     {
+#if VERSION_STRING == WotLK
     public:
         WoWGuid sourceGuid;
         WoWGuid destinationGuid;
@@ -40,7 +44,6 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
             packet >> sourceGuid;
             packet >> movementInfo.flags >> movementInfo.flags2 >> movementInfo.time >> movementInfo.position >> movementInfo.position.o;
 
@@ -66,8 +69,9 @@ namespace AscEmu { namespace Packets
 
             packet >> destinationGuid;
             packet >> seat;
-#endif
+
             return true;
         }
+#endif
     };
 }}

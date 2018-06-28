@@ -8,6 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgChangeSeatsOnControlledVehicle.h"
 #include "Server/Packets/CmsgPlayerVehicleEnter.h"
 #include "Server/Packets/CmsgEjectPassenger.h"
+#include "Server/WorldSession.h"
+#include "Units/Players/Player.h"
+#include "Map/MapMgr.h"
+#include "Units/Creatures/Vehicle.h"
 
 using namespace AscEmu::Packets;
 
@@ -78,6 +82,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
     if (GetPlayer()->GetCurrentVehicle() == nullptr)
         return;
 
+#if VERSION_STRING == WotLK
     CmsgChangeSeatsOnControlledVehicle recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;
@@ -111,6 +116,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
         GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
         destinationUnit->GetVehicleComponent()->AddPassengerToSeat(GetPlayer(), recv_packet.seat);
     }
+#endif
 }
 
 void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)

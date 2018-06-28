@@ -13,6 +13,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgRequestVehicleSwitchSeat : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         uint8_t seat;
@@ -41,5 +42,6 @@ namespace AscEmu { namespace Packets
             guid.Init(unpacked_guid);
             return true;
         }
+#endif
     };
 }}

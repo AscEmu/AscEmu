@@ -15598,7 +15598,7 @@ void Player::SendDismountResult(uint32 result)
 Player* Player::GetTradeTarget()
 {
     if (!IsInWorld())
-        return 0;
+        return nullptr;
     return m_mapMgr->GetPlayer((uint32)mTradeTarget);
 }
 #endif

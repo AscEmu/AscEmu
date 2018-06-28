@@ -22,7 +22,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/ReportHandler.cpp
     ${PATH_PREFIX}/SkillHandler.cpp
     ${PATH_PREFIX}/SpellHandler.cpp
-    ${PATH_PREFIX}/TradeHandler.cpp
 )
 
 source_group(GameCata\\Handlers FILES ${SRC_GAMECATA_HANDLER_FILES})
