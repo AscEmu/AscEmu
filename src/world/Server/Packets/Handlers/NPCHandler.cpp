@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgBankerActivate.h"
 #include "Server/Packets/SmsgShowBank.h"
 #include "Server/Packets/MsgAuctionHello.h"
+#include "Server/Packets/SmsgSpiritHealerConfirm.h"
 
 using namespace AscEmu::Packets;
 
@@ -81,4 +82,10 @@ void WorldSession::sendAuctionList(Creature* creature)
         return;
 
     SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->GetID(), auctionHouse->enabled ? 1 : 0).serialise().get());
+}
+
+//helper
+void WorldSession::sendSpiritHealerRequest(Creature* creature)
+{
+    SendPacket(SmsgSpiritHealerConfirm(creature->getGuid()).serialise().get());
 }

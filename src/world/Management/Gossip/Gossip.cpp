@@ -312,7 +312,7 @@ Gossip::Script* Gossip::Script::GetInterface(GameObject* go)
 // SPIRIT HEALER
 void Arcemu::Gossip::SpiritHealer::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendSpiritHealerRequest(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendSpiritHealerRequest(static_cast<Creature*>(pObject));
 }
 
 // VENDORS

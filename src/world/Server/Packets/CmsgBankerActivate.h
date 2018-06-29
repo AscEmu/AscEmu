@@ -21,7 +21,7 @@ namespace AscEmu { namespace Packets
         }
 
         CmsgBankerActivate(uint64_t guid) :
-            ManagedPacket(MSG_BANKER_ACTIVATE, 8),
+            ManagedPacket(CMSG_BANKER_ACTIVATE, 8),
             guid(guid)
         {
         }

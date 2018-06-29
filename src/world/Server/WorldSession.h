@@ -915,6 +915,7 @@ class SERVER_DECL WorldSession
         void sendTabardHelp(Creature* creature);
         void sendBankerList(Creature* creature);
         void sendAuctionList(Creature* creature);
+        void sendSpiritHealerRequest(Creature* creature);
 
         void SendInventoryList(Creature* pCreature);
         void SendTrainerList(Creature* pCreature);
@@ -922,7 +923,6 @@ class SERVER_DECL WorldSession
         void SendTaxiList(Creature* pCreature);
         void SendInnkeeperBind(Creature* pCreature);
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
-        void SendSpiritHealerRequest(Creature* pCreature);
         void SendAccountDataTimes(uint32 mask);
         void SendStabledPetList(uint64 npcguid);
         void FullLogin(Player* plr);

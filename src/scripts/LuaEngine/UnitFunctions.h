@@ -4467,7 +4467,7 @@ class LuaUnit
         else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
         else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
         else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
-        else if (actionid == 8) plr->GetSession()->SendSpiritHealerRequest(crc);
+        else if (actionid == 8) plr->GetSession()->sendSpiritHealerRequest(crc);
         else if (actionid == 9) plr->SendTalentResetConfirm();
         else if (actionid == 10) plr->SendPetUntrainConfirm();
         return 0;
