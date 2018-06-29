@@ -422,9 +422,9 @@ class SERVER_DECL WorldSession
         void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
-        /// NPC opcodes (NPCHandler.cpp)
-        void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);
-        void HandleBankerActivateOpcode(WorldPacket& recvPacket);
+        // NPC opcodes (NPCHandler.cpp)
+        void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);
+        void handleBankerActivateOpcode(WorldPacket& recvPacket);
         void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
         void HandleTrainerListOpcode(WorldPacket& recvPacket);
         void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
@@ -436,7 +436,7 @@ class SERVER_DECL WorldSession
         void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
-        void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
+        void handleAuctionHelloOpcode(WorldPacket& recvPacket);
         void handleAuctionListItems(WorldPacket& recvPacket);
         void handleAuctionListBidderItems(WorldPacket& recvPacket);
         void handleAuctionSellItem(WorldPacket& recvPacket);
@@ -911,15 +911,17 @@ class SERVER_DECL WorldSession
 
     public:
 
+        //npc heler functions
+        void sendTabardHelp(Creature* creature);
+        void sendBankerList(Creature* creature);
+        void sendAuctionList(Creature* creature);
+
         void SendInventoryList(Creature* pCreature);
         void SendTrainerList(Creature* pCreature);
         void SendCharterRequest(Creature* pCreature);
         void SendTaxiList(Creature* pCreature);
         void SendInnkeeperBind(Creature* pCreature);
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
-        void SendBankerList(Creature* pCreature);
-        void SendTabardHelp(Creature* pCreature);
-        void SendAuctionList(Creature* pCreature);
         void SendSpiritHealerRequest(Creature* pCreature);
         void SendAccountDataTimes(uint32 mask);
         void SendStabledPetList(uint64 npcguid);

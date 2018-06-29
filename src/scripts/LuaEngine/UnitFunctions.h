@@ -4463,10 +4463,10 @@ class LuaUnit
         if (actionid == 1) plr->GetSession()->SendInventoryList(crc);
         else if (actionid == 2) plr->GetSession()->SendTrainerList(crc);
         else if (actionid == 3) plr->GetSession()->SendInnkeeperBind(crc);
-        else if (actionid == 4) plr->GetSession()->SendBankerList(crc);
+        else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
         else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
-        else if (actionid == 6) plr->GetSession()->SendAuctionList(crc);
-        else if (actionid == 7) plr->GetSession()->SendTabardHelp(crc);
+        else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
+        else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
         else if (actionid == 8) plr->GetSession()->SendSpiritHealerRequest(crc);
         else if (actionid == 9) plr->SendTalentResetConfirm();
         else if (actionid == 10) plr->SendPetUntrainConfirm();
@@ -4509,7 +4509,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendBankerList(crc);
+            plr->GetSession()->sendBankerList(crc);
         return 0;
     }
 
@@ -4519,7 +4519,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendAuctionList(crc);
+            plr->GetSession()->sendAuctionList(crc);
         return 0;
     }
 

@@ -17,6 +17,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAuctionRemoveItem.h
    ${PATH_PREFIX}/CmsgAuctionSellItem.h
    ${PATH_PREFIX}/CmsgAutostoreLootItem.h
+   ${PATH_PREFIX}/CmsgBankerActivate.h
    ${PATH_PREFIX}/CmsgBattlefieldList.h
    ${PATH_PREFIX}/CmsgBattlefieldPort.h
    ${PATH_PREFIX}/CmsgBattlemasterHello.h
@@ -78,6 +79,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgWho.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h
+   ${PATH_PREFIX}/MsgAuctionHello.h
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
    ${PATH_PREFIX}/MsgInspectArenaTeams.h
@@ -90,6 +92,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgRandomRoll.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
+   ${PATH_PREFIX}/MsgTabardvendorActivate.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgAreaSpiritHealerTime.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
@@ -127,6 +130,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
+   ${PATH_PREFIX}/SmsgShowBank.h
    ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h

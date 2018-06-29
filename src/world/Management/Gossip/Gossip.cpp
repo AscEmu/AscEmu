@@ -423,7 +423,7 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendAuctionList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendAuctionList(static_cast<Creature*>(pObject));
 }
 
 // INN KEEPERS
@@ -477,7 +477,7 @@ void Arcemu::Gossip::BattleMaster::OnSelectOption(Object* pObject, Player* Plr, 
 //BANKER
 void Arcemu::Gossip::Banker::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendBankerList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendBankerList(static_cast<Creature*>(pObject));
 }
 
 void Arcemu::Gossip::Banker::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -531,7 +531,7 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTabardHelp(static_cast<Creature*>(pObject));
+            Plr->GetSession()->sendTabardHelp(static_cast<Creature*>(pObject));
             break;
         case 2:
             if (static_cast<Creature*>(pObject)->isCharterGiver())

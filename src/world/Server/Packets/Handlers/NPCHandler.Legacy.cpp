@@ -34,58 +34,9 @@
 #include "Server/Packets/CmsgGossipHello.h"
 #include "Server/Packets/CmsgNpcTextQuery.h"
 #include "Server/Packets/CmsgGossipSelectOption.h"
+#include "Server/Packets/MsgTabardvendorActivate.h"
 
 using namespace AscEmu::Packets;
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles MSG_TABARDVENDOR_ACTIVATE:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendTabardHelp(pCreature);
-}
-
-void WorldSession::SendTabardHelp(Creature* pCreature)
-{
-    WorldPacket data(8);
-    data.Initialize(MSG_TABARDVENDOR_ACTIVATE);
-    data << pCreature->getGuid();
-    SendPacket(&data);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_BANKER_ACTIVATE:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendBankerList(pCreature);
-}
-
-void WorldSession::SendBankerList(Creature* pCreature)
-{
-
-    WorldPacket data(8);
-    data.Initialize(SMSG_SHOW_BANK);
-    data << pCreature->getGuid();
-    SendPacket(&data);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_TRAINER_LIST
@@ -342,37 +293,6 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles MSG_AUCTION_HELLO:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!auctioneer)
-        return;
-
-    SendAuctionList(auctioneer);
-}
-
-void WorldSession::SendAuctionList(Creature* auctioneer)
-{
-    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->getEntry());
-    if (!AH)
-    {
-        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->getEntry());
-        return;
-    }
-
-    WorldPacket data(MSG_AUCTION_HELLO, 12);
-    data << uint64(auctioneer->getGuid());
-    data << uint32(AH->GetID());
-    data << uint8(AH->enabled ? 1 : 0);         // Alleycat - Need to correct this properly.
-    SendPacket(&data);
-}
 
 void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
 {
