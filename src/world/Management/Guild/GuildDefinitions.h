@@ -8,15 +8,51 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 
 #include <string>
+#include <cstdint>
 
-#define ITEM_ENTRY_GUILD_CHARTER    5863
+namespace CharterEntry
+{
+    enum
+    {
+        Guild = 5863,
+        TwoOnTwo = 23560,
+        ThreeOnThree = 23561,
+        FiveOnFive = 23562
+    };
+}
 
-#define ARENA_TEAM_CHARTER_2v2      23560
-#define ARENA_TEAM_CHARTER_2v2_COST 800000
-#define ARENA_TEAM_CHARTER_3v3      23561
-#define ARENA_TEAM_CHARTER_3v3_COST 1200000
-#define ARENA_TEAM_CHARTER_5v5      23562
-#define ARENA_TEAM_CHARTER_5v5_COST 2000000
+namespace CharterCost
+{
+    enum
+    {
+        Guild = 1000,
+        TwoOnTwo = 800000,
+        ThreeOnThree = 1200000,
+        FiveOnFive = 2000000
+    };
+}
+
+namespace CharterRequiredSigns
+{
+    enum
+    {
+        Guild = 9,
+        TwoOnTwo = 1,
+        ThreeOnThree = 2,
+        FiveOnFive = 4
+    };
+}
+
+#define CHARTER_DISPLAY_ID 16161
+
+namespace CharterType
+{
+    enum
+    {
+        Guild = 0,
+        Arena = 1
+    };
+}
 
 #define MAX_GUILD_MEMBERS           500
 

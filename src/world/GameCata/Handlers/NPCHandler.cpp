@@ -126,65 +126,6 @@ void WorldSession::SendTrainerList(Creature* pCreature)
     }
 }
 
-void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
-{
-    uint64_t guid;
-    uint32_t teachingSpellId;
-    uint32_t trainerId;
-
-    recvPacket >> guid;
-    recvPacket >> trainerId;
-    recvPacket >> teachingSpellId;
-
-    Creature* creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (creature == nullptr)
-        return;
-
-    Trainer* trainer = creature->GetTrainer();
-    if (trainer == nullptr)
-        return;
-
-    TrainerSpell* pSpell = nullptr;
-    for (std::vector<TrainerSpell>::iterator itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
-    {
-        if (itr->spell == teachingSpellId)
-        {
-            pSpell = &(*itr);
-        }
-    }
-
-    if (pSpell == nullptr)
-    {
-        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->getName().c_str());
-        this->Disconnect();
-        return;
-    }
-
-    if (TrainerGetSpellStatus(pSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
-        return;
-
-    _player->ModGold(-(int32_t)pSpell->spellCost);
-
-    if (pSpell->IsCastable())
-    {
-        _player->CastSpell(_player, pSpell->spell, true);
-    }
-    else
-    {
-        _player->playSpellVisual(creature->getGuid(), 179);
-        _player->playSpellVisual(_player->getGuid(), 362);
-
-        _player->addSpell(pSpell->spell);
-    }
-
-    _player->_UpdateSkillFields();
-
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-    data << uint64_t(guid);
-    data << uint32_t(teachingSpellId);
-    SendPacket(&data);
-}
-
 TrainerSpellState WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 {
     if (pSpell == nullptr)

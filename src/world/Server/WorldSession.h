@@ -427,8 +427,8 @@ class SERVER_DECL WorldSession
         void handleBankerActivateOpcode(WorldPacket& recvPacket);
         void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
         void HandleTrainerListOpcode(WorldPacket& recvPacket);
-        void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
-        void HandleCharterShowListOpcode(WorldPacket& recvPacket);
+        void handleTrainerBuySpellOpcode(WorldPacket& recvPacket);
+        void handleCharterShowListOpcode(WorldPacket& recvPacket);
         void HandleGossipHelloOpcode(WorldPacket& recvPacket);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
@@ -916,10 +916,10 @@ class SERVER_DECL WorldSession
         void sendBankerList(Creature* creature);
         void sendAuctionList(Creature* creature);
         void sendSpiritHealerRequest(Creature* creature);
+        void sendCharterRequest(Creature* creature);
 
         void SendInventoryList(Creature* pCreature);
         void SendTrainerList(Creature* pCreature);
-        void SendCharterRequest(Creature* pCreature);
         void SendTaxiList(Creature* pCreature);
         void SendInnkeeperBind(Creature* pCreature);
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);

@@ -393,7 +393,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             return;
         }
 
-        if (it->getItemProperties()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
+        if (it->getItemProperties()->ItemId == CharterEntry::Guild)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
             if (gc)
@@ -402,7 +402,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_2v2)
+        if (it->getItemProperties()->ItemId == CharterEntry::TwoOnTwo)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
             if (gc)
@@ -411,7 +411,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_ARENA_2V2] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_5v5)
+        if (it->getItemProperties()->ItemId == CharterEntry::FiveOnFive)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
             if (gc)
@@ -420,7 +420,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_ARENA_5V5] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_3v3)
+        if (it->getItemProperties()->ItemId == CharterEntry::ThreeOnThree)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
             if (gc)

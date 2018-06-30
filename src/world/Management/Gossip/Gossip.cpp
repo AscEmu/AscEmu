@@ -501,7 +501,7 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendCharterRequest(static_cast<Creature*>(pObject));
 }
 
 //TABARD DESIGNER
@@ -535,7 +535,7 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
             break;
         case 2:
             if (static_cast<Creature*>(pObject)->isCharterGiver())
-                Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
+                Plr->GetSession()->sendCharterRequest(static_cast<Creature*>(pObject));
             break;
         case 3:
             Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));

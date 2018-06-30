@@ -35,6 +35,8 @@
 #include "Server/Packets/CmsgNpcTextQuery.h"
 #include "Server/Packets/CmsgGossipSelectOption.h"
 #include "Server/Packets/MsgTabardvendorActivate.h"
+#include "Server/Packets/CmsgTrainerBuySpell.h"
+#include "Server/Packets/SmsgTrainerBuySucceeded.h"
 
 using namespace AscEmu::Packets;
 
@@ -115,85 +117,6 @@ void WorldSession::SendTrainerList(Creature* pCreature)
     }
 }
 
-void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 Guid;
-    uint32 TeachingSpellID;
-
-    recvPacket >> Guid >> TeachingSpellID;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(Guid));
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Checks
-    if (pCreature == NULL) return;
-
-    Trainer* pTrainer = pCreature->GetTrainer();
-    if (pTrainer == 0)
-        return;
-
-    // Check if the trainer offers that spell
-    TrainerSpell* pSpell = NULL;
-    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
-    {
-        if ((itr->pCastSpell && itr->pCastSpell->getId() == TeachingSpellID) ||
-            (itr->pLearnSpell && itr->pLearnSpell->getId() == TeachingSpellID))
-        {
-            pSpell = &(*itr);
-        }
-    }
-
-    // If the trainer doesn't offer it, this is probably some packet mangling
-    if (pSpell == NULL)
-    {
-        // Disconnecting the player
-        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->getName().c_str());
-        this->Disconnect();
-        return;
-    }
-
-    // We can't learn it
-    if (TrainerGetSpellStatus(pSpell) > 0)
-        return;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Teaching
-    _player->ModGold(-(int32)pSpell->Cost);
-
-    if (pSpell->pCastSpell)
-    {
-        _player->CastSpell(_player, pSpell->pCastSpell->getId(), true);
-    }
-    else
-    {
-        //Showing the learning spellvisuals
-        _player->playSpellVisual(pCreature->getGuid(), 1459);
-        _player->playSpellVisual(_player->getGuid(), 362);
-
-        // add the spell itself
-        _player->addSpell(pSpell->pLearnSpell->getId());
-    }
-
-    if (pSpell->DeleteSpell)
-    {
-        // Remove old spell.
-        if (pSpell->pLearnSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->getId());
-        else if (pSpell->pCastSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->getId());
-        else
-            _player->removeSpell(pSpell->DeleteSpell, true, false, 0);
-    }
-
-    _player->_UpdateSkillFields();
-
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-
-    data << uint64(Guid) << uint32(TeachingSpellID);        // GUID of the trainer, ID of the spell we bought
-    this->SendPacket(&data);
-}
-
 uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 {
     if (!pSpell->pCastSpell && !pSpell->pLearnSpell)
@@ -218,80 +141,6 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
     return TRAINER_STATUS_LEARNABLE;
 }
 #endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_PETITION_SHOWLIST:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleCharterShowListOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendCharterRequest(pCreature);
-}
-
-void WorldSession::SendCharterRequest(Creature* pCreature)
-{
-    if (!pCreature)
-        return;
-
-    if (!pCreature->isTabardDesigner())
-    {
-        WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
-
-        data << pCreature->getGuid();
-        data << uint8(0x03);        //number of charter types in packet
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //2v2 arena charters
-        data << uint32(0x01);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_2v2); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_2v2_COST); //charter cost
-        data << uint32(0x01);       //unknown, (charter type? seems to be 0x0 for guilds and 0x1 for arena charters)
-        data << uint32(0x01);       // Signatures required (besides petition owner)
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //3v3 arena charters
-        data << uint32(0x02);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_3v3); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_3v3_COST); //charter cost
-        data << uint32(0x01);
-        data << uint32(0x02);       // Signatures required (besides petition owner)
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //5v5 arena charters
-        data << uint32(0x03);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_5v5); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_5v5_COST); //charter cost
-        data << uint32(0x01);
-        data << uint32(0x04);       // Signatures required (besides petition owner)
-
-        SendPacket(&data);
-    }
-    else
-    {
-        WorldPacket data(33);
-        data.Initialize(SMSG_PETITION_SHOWLIST);
-        data << pCreature->getGuid();
-        data << uint8(1);               // num charters in packet (although appears to only turn off the cost display, maybe due to packet not being parsed /shrug)
-        data << uint32(1);              // charter 1 in packet
-        data << uint32(0x16E7);         // ItemId of the guild charter
-        data << uint32(0x3F21);         // item displayid
-
-        data << uint32(1000);           // charter price
-        data << uint32(0);              // unknown, maybe charter type
-        data << uint32(9);              // amount of unique players needed to sign the charter
-        SendPacket(&data);
-    }
-}
 
 
 void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
