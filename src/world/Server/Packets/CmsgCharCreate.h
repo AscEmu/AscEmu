@@ -54,6 +54,8 @@ namespace AscEmu { namespace Packets
         {
             packet >> name >> _race >> _class >> gender >> skin >> face >> hairStyle >> hairColor >> facialHair >> outfitId;
 
+            //reset pos so it can be read by Player::Create(WorldPacket& data)
+            packet.rpos(0);
             return true;
         }
     };
