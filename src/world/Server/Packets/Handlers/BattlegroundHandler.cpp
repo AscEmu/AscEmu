@@ -186,9 +186,9 @@ void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_BATTLEMASTER_HELLO: %u (guidLow)", recv_packet.guid.getGuidLow());
+    LOG_DEBUG("Received CMSG_BATTLEMASTER_HELLO: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBattleMaster())
         return;
 
@@ -224,9 +224,9 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLow)", recv_packet.guid.getGuidLow());
+    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
 
-    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
         return;
 
@@ -244,9 +244,9 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLow)", recv_packet.guid.getGuidLow());
+    LOG_DEBUG("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
 
-    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto spiritHealer = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
         return;
 

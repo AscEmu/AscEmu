@@ -425,15 +425,15 @@ class SERVER_DECL WorldSession
         // NPC opcodes (NPCHandler.cpp)
         void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);
         void handleBankerActivateOpcode(WorldPacket& recvPacket);
-        void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
-        void HandleTrainerListOpcode(WorldPacket& recvPacket);
+        void handleBuyBankSlotOpcode(WorldPacket& recvPacket);
+        void handleTrainerListOpcode(WorldPacket& recvPacket);
         void handleTrainerBuySpellOpcode(WorldPacket& recvPacket);
         void handleCharterShowListOpcode(WorldPacket& recvPacket);
-        void HandleGossipHelloOpcode(WorldPacket& recvPacket);
-        void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
-        void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
-        void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
-        void HandleBinderActivateOpcode(WorldPacket& recvPacket);
+        void handleGossipHelloOpcode(WorldPacket& recvPacket);
+        void handleGossipSelectOptionOpcode(WorldPacket& recvPacket);
+        void handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/);
+        void handleNpcTextQueryOpcode(WorldPacket& recvPacket);
+        void handleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
         void handleAuctionHelloOpcode(WorldPacket& recvPacket);
@@ -754,7 +754,7 @@ class SERVER_DECL WorldSession
         void HandleBuyStableSlot(WorldPacket& recv_data);
         void HandleStablePet(WorldPacket& recv_data);
         void HandleUnstablePet(WorldPacket& recv_data);
-        void HandleStabledPetList(WorldPacket& recv_data);
+        void handleStabledPetList(WorldPacket& recvPacket);
         void HandleStableSwapPet(WorldPacket& recv_data);
         void HandlePetRename(WorldPacket& recv_data);
         void HandlePetAbandon(WorldPacket& recv_data);
@@ -813,9 +813,9 @@ class SERVER_DECL WorldSession
         void handleRaidDifficultyOpcode(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
-        uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
+        uint8_t trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #else
-        TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
+        TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #endif
         void SendMailError(uint32 error);
 
@@ -917,14 +917,14 @@ class SERVER_DECL WorldSession
         void sendAuctionList(Creature* creature);
         void sendSpiritHealerRequest(Creature* creature);
         void sendCharterRequest(Creature* creature);
+        void sendInnkeeperBind(Creature* creature);
+        void sendTrainerList(Creature* creature);
+        void sendStabledPetList(uint64 npcguid);
 
         void SendInventoryList(Creature* pCreature);
-        void SendTrainerList(Creature* pCreature);
         void SendTaxiList(Creature* pCreature);
-        void SendInnkeeperBind(Creature* pCreature);
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendAccountDataTimes(uint32 mask);
-        void SendStabledPetList(uint64 npcguid);
         void FullLogin(Player* plr);
         void SendMOTD();
 

@@ -13,7 +13,7 @@ namespace AscEmu { namespace Packets
     class CmsgGossipSelectOption : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
         uint32_t gossip_id;
         uint32_t option;
         std::string input;
@@ -46,7 +46,9 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> gossip_id >> option;
+            uint64_t unpackedGuid;
+            packet >> unpackedGuid >> gossip_id >> option;
+            guid.Init(unpackedGuid);
 
             if (packet.rpos() != packet.wpos())
                 packet >> input;

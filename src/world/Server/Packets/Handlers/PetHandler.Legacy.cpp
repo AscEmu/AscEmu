@@ -367,22 +367,6 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleStabledPetList(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 npcguid = 0;
-    recv_data >> npcguid;
-
-    if (_player->getClass() != HUNTER)
-    {
-        Arcemu::Gossip::Menu::SendSimpleMenu(npcguid, 13584, _player);
-        return;
-    }
-
-    SendStabledPetList(npcguid);
-}
-
 void WorldSession::HandleBuyStableSlot(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN

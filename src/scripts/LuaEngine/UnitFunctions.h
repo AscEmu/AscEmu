@@ -4461,8 +4461,8 @@ class LuaUnit
         if (!crc && actionid < 9)
             return 0;
         if (actionid == 1) plr->GetSession()->SendInventoryList(crc);
-        else if (actionid == 2) plr->GetSession()->SendTrainerList(crc);
-        else if (actionid == 3) plr->GetSession()->SendInnkeeperBind(crc);
+        else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
+        else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
         else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
         else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
         else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
@@ -4489,7 +4489,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendTrainerList(crc);
+            plr->GetSession()->sendTrainerList(crc);
         return 0;
     }
 
@@ -4499,7 +4499,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendInnkeeperBind(crc);
+            plr->GetSession()->sendInnkeeperBind(crc);
         return 0;
     }
 

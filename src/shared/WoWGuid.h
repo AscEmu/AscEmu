@@ -155,6 +155,11 @@ class SERVER_DECL WoWGuid
         }
 
     uint32_t getGuidLow() const { return static_cast<uint32_t>(oldguid); }
+    uint32_t getGuidLowPart() const
+    {
+        const uint32_t lowGuid = *(reinterpret_cast<const uint32_t*>(&oldguid));
+        return lowGuid & 0x00FFFFFF;
+    }
     uint32_t getGuidHigh() const { return static_cast<uint32_t>(oldguid >> 32); }
         uint64 GetOldGuid() const { return oldguid; }
         const uint8* GetNewGuid() const { return guidfields; }

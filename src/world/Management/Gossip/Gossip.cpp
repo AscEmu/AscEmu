@@ -384,7 +384,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else
         Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
@@ -450,7 +450,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendInnkeeperBind(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendInnkeeperBind(static_cast<Creature*>(pObject));
     else
         Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
@@ -559,7 +559,7 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendStabledPetList(pObject->getGuid());
+    Plr->GetSession()->sendStabledPetList(pObject->getGuid());
 }
 
 
@@ -583,7 +583,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else if (2 == Id)
         Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_PETUNTRAIN, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
     else
@@ -683,7 +683,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+            Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
             break;
         case 2:
             Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_TALENTRESET, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);

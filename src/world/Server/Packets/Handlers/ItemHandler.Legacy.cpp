@@ -1959,57 +1959,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
     LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", itemguid);
 }
 
-void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 8);
-
-    uint64 guid;
-    recvPacket >> guid;
-    Creature* Banker = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-
-    if (Banker == nullptr || !Banker->isBanker())
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(2); // E_ERR_BANKSLOT_NOTBANKER
-        SendPacket(&data);
-        return;
-    }
-
-    int32 price;
-
-    LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
-
-    uint8_t slots = GetPlayer()->getBankSlots();
-
-    LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
-    auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
-    if (bank_bag_slot_prices == nullptr)
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(0); // E_ERR_BANKSLOT_FAILED_TOO_MANY
-        SendPacket(&data);
-        return;
-    }
-
-    price = bank_bag_slot_prices->Price;
-    if (_player->HasGold(price))
-    {
-        _player->setBankSlots(slots + 1);
-        _player->ModGold(-price);
-#if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
-#endif
-    }
-    else
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(1); // E_ERR_BANKSLOT_INSUFFICIENT_FUNDS
-        SendPacket(&data);
-    }
-}
-
 void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN

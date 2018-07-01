@@ -7,34 +7,29 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
+#include "WorldPacket.h"
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgGossipHello : public ManagedPacket
+    class CmsgBuyBankSlot : public ManagedPacket
     {
     public:
         WoWGuid guid;
 
-        CmsgGossipHello() : CmsgGossipHello(0)
+        CmsgBuyBankSlot() : CmsgBuyBankSlot(0)
         {
         }
 
-        CmsgGossipHello(uint64_t guid) :
-            ManagedPacket(CMSG_GOSSIP_HELLO, 8),
+        CmsgBuyBankSlot(uint64_t guid) :
+            ManagedPacket(CMSG_BUY_BANK_SLOT, 8),
             guid(guid)
         {
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return m_minimum_size;
-        }
-
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid;
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override

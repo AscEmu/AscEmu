@@ -10,39 +10,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgGossipHello : public ManagedPacket
+    class SmsgBuyBankSlotResult : public ManagedPacket
     {
     public:
-        WoWGuid guid;
+        uint32_t error;
 
-        CmsgGossipHello() : CmsgGossipHello(0)
+        SmsgBuyBankSlotResult() : SmsgBuyBankSlotResult(0)
         {
         }
 
-        CmsgGossipHello(uint64_t guid) :
-            ManagedPacket(CMSG_GOSSIP_HELLO, 8),
-            guid(guid)
+        SmsgBuyBankSlotResult(uint32_t error) :
+            ManagedPacket(SMSG_BUY_BANK_SLOT_RESULT, 4),
+            error(error)
         {
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return m_minimum_size;
-        }
-
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid;
+            packet << error;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-            guid.Init(unpackedGuid);
-            return true;
+            return false;
         }
     };
 }}
