@@ -610,35 +610,35 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    auto loginErrorCode = VerifyName(recv_packet.name.c_str(), recv_packet.name.length());
+    auto loginErrorCode = VerifyName(recv_packet.charCreateContent.name.c_str(), recv_packet.charCreateContent.name.length());
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    loginErrorCode = sMySQLStore.isCharacterNameAllowed(recv_packet.name) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
+    loginErrorCode = sMySQLStore.isCharacterNameAllowed(recv_packet.charCreateContent.name) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    loginErrorCode = objmgr.GetPlayerInfoByName(recv_packet.name.c_str()) == nullptr ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_NAME_IN_USE;
+    loginErrorCode = objmgr.GetPlayerInfoByName(recv_packet.charCreateContent.name.c_str()) == nullptr ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_NAME_IN_USE;
     if (loginErrorCode != E_CHAR_CREATE_SUCCESS)
     {
         SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    loginErrorCode = sHookInterface.OnNewCharacter(recv_packet._race, recv_packet._class, this, recv_packet.name.c_str()) ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_ERROR;
+    loginErrorCode = sHookInterface.OnNewCharacter(recv_packet.charCreateContent._race, recv_packet.charCreateContent._class, this, recv_packet.charCreateContent.name.c_str()) ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_ERROR;
     if (loginErrorCode != E_CHAR_CREATE_SUCCESS)
     {
         SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    const auto bannedNamesQuery = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", CharacterDatabase.EscapeString(recv_packet.name).c_str());
+    const auto bannedNamesQuery = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", CharacterDatabase.EscapeString(recv_packet.charCreateContent.name).c_str());
     if (bannedNamesQuery)
     {
         if (bannedNamesQuery->Fetch()[0].GetUInt32() > 0)
@@ -651,7 +651,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 
 #if VERSION_STRING > TBC
-    if (worldConfig.player.deathKnightLimit && has_dk && recv_packet._class == DEATHKNIGHT)
+    if (worldConfig.player.deathKnightLimit && has_dk && recv_packet.charCreateContent._class == DEATHKNIGHT)
     {
         SendPacket(SmsgCharCreate(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT).serialise().get());
         return;
@@ -670,11 +670,10 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         delete charactersQuery;
     }
 
-    const auto newPlayer = objmgr.CreatePlayer(recv_packet._class);
+    const auto newPlayer = objmgr.CreatePlayer(recv_packet.charCreateContent._class);
     newPlayer->SetSession(this);
 
-    //\brief: Zyres: we unpack the packet twice o.O this is stupid!
-    if (!newPlayer->Create(recvPacket))
+    if (!newPlayer->Create(recv_packet.charCreateContent))
     {
         newPlayer->ok_to_remove = true;
         delete newPlayer;
@@ -698,7 +697,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 
 #if VERSION_STRING > TBC
-    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && recv_packet._class == DEATHKNIGHT)
+    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && recv_packet.charCreateContent._class == DEATHKNIGHT)
     {
         newPlayer->ok_to_remove = true;
         delete newPlayer;

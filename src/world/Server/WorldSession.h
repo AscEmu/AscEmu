@@ -119,6 +119,20 @@ struct AccountDataEntry
     bool bIsDirty;
 };
 
+struct CharCreate
+{
+    std::string name;
+    uint8_t _race;
+    uint8_t _class;
+    uint8_t gender;
+    uint8_t skin;
+    uint8_t face;
+    uint8_t hairStyle;
+    uint8_t hairColor;
+    uint8_t facialHair;
+    uint8_t outfitId;
+};
+
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 extern LoginErrorCode VerifyName(const char* name, size_t nlen);
 

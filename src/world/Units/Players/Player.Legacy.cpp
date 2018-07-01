@@ -800,52 +800,29 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
 // Create data from client to create a new character
 // \param p_newChar
 //////////////////////////////////////////////////////////////////////////////////////////
-bool Player::Create(WorldPacket& data)
+bool Player::Create(CharCreate& charCreateContent)
 {
-    uint8 race;
-    uint8 class_;
-    uint8 gender;
-    uint8 skin;
-    uint8 face;
-    uint8 hairStyle;
-    uint8 hairColor;
-    uint8 facialHair;
-    uint8 outfitId;
-
-    // unpack data into member variables
-    data >> m_name;
-
-    // correct capitalization
+    m_name = charCreateContent.name;
     Util::CapitalizeString(m_name);
 
-    data >> race;
-    data >> class_;
-    data >> gender;
-    data >> skin;
-    data >> face;
-    data >> hairStyle;
-    data >> hairColor;
-    data >> facialHair;
-    data >> outfitId;
-
-    info = sMySQLStore.getPlayerCreateInfo(race, class_);
+    info = sMySQLStore.getPlayerCreateInfo(charCreateContent._race, charCreateContent._class);
     if (info == nullptr)
     {
         // info not found... disconnect
         //sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
         m_session->Disconnect();
 #if VERSION_STRING > TBC
-        if (class_ == DEATHKNIGHT)
+        if (charCreateContent._class == DEATHKNIGHT)
             LOG_ERROR("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
         else
 #endif
-            LOG_ERROR("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), race, class_);
+            LOG_ERROR("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), charCreateContent._race, charCreateContent._class);
         return false;
     }
 
     // check that the account creates only new ones with available races, if we're making some
 #if VERSION_STRING > Classic
-    if (race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
+    if (charCreateContent._race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
 #else
     if (race >= RACE_TROLL)
 #endif
@@ -856,7 +833,7 @@ bool Player::Create(WorldPacket& data)
 
 #if VERSION_STRING > TBC
     // check that the account can create deathknights, if we're making one
-    if (class_ == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
+    if (charCreateContent._class == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
     {
         LOG_ERROR("Account %s tried to create a DeathKnight, but Account flag is %u!", m_session->GetAccountName().c_str(), m_session->_accountFlags);
         m_session->Disconnect();
@@ -877,12 +854,12 @@ bool Player::Create(WorldPacket& data)
     m_restState = 0;
 
     // set race dbc
-    myRace = sChrRacesStore.LookupEntry(race);
-    myClass = sChrClassesStore.LookupEntry(class_);
+    myRace = sChrRacesStore.LookupEntry(charCreateContent._race);
+    myClass = sChrClassesStore.LookupEntry(charCreateContent._class);
     if (!myRace || !myClass)
     {
         // information not found
-        sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u, dbc info not found", race, class_);
+        sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u, dbc info not found", charCreateContent._race, charCreateContent._class);
         m_session->Disconnect();
         return false;
     }
@@ -923,20 +900,20 @@ bool Player::Create(WorldPacket& data)
     //THIS IS NEEDED
     setBaseHealth(info->health);
     setBaseMana(info->mana);
-    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
         SetFaction(raceEntry->faction_id);
     else
         SetFaction(0);
 
 #if VERSION_STRING > TBC
-    if (class_ == DEATHKNIGHT)
+    if (charCreateContent._class == DEATHKNIGHT)
         SetTalentPointsForAllSpec(worldConfig.player.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
     else
 #endif
         SetTalentPointsForAllSpec(0);
 
 #if VERSION_STRING > TBC
-    if (class_ != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
+    if (charCreateContent._class != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
 #endif
     {
         setLevel(worldConfig.player.playerStartingLevel);
@@ -957,9 +934,9 @@ bool Player::Create(WorldPacket& data)
 
     SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
-    setRace(race);
-    setClass(class_);
-    setGender(gender);
+    setRace(charCreateContent._race);
+    setClass(charCreateContent._class);
+    setGender(charCreateContent.gender);
     setPowerType(powertype);
 
 #if VERSION_STRING != Cata
@@ -970,7 +947,7 @@ bool Player::Create(WorldPacket& data)
     addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
 
-    if (class_ == WARRIOR)
+    if (charCreateContent._class == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
 #if VERSION_STRING != Cata
@@ -985,7 +962,7 @@ bool Player::Create(WorldPacket& data)
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
 
-    setInitialDisplayIds(gender, race);
+    setInitialDisplayIds(charCreateContent.gender, charCreateContent._race);
 
     EventModelChange();
     //setMinDamage(info->mindmg);
@@ -993,19 +970,19 @@ bool Player::Create(WorldPacket& data)
     setAttackPower(info->attackpower);
 
     // PLAYER_BYTES
-    setSkinColor(skin);
-    setFace(face);
-    setHairStyle(hairStyle);
-    setHairColor(hairColor);
+    setSkinColor(charCreateContent.skin);
+    setFace(charCreateContent.face);
+    setHairStyle(charCreateContent.hairStyle);
+    setHairColor(charCreateContent.hairColor);
 
     // PLAYER_BYTES_2
-    setFacialFeatures(facialHair);
+    setFacialFeatures(charCreateContent.facialHair);
     //SetByte(PLAYER_BYTES_2, 1, 0);  // unknown
     //SetByte(PLAYER_BYTES_2, 2, 0);  // bank_slots
     setRestState(RESTSTATE_NORMAL);
 
     // PLAYER_BYTES_3
-    setPlayerGender(gender);
+    setPlayerGender(charCreateContent.gender);
     //setByteValue(PLAYER_BYTES_3, 1, 0);  // drunkvalue?
     //setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
     setPvpRank(getPvpRank());   //useless
@@ -1063,7 +1040,7 @@ bool Player::Create(WorldPacket& data)
     }
 
     // add dbc items
-    if (const auto charStartOutfitEntry = getStartOutfitByRaceClass(race, class_, gender))
+    if (const auto charStartOutfitEntry = getStartOutfitByRaceClass(charCreateContent._race, charCreateContent._class, charCreateContent.gender))
     {
         for (uint8_t j = 0; j < OUTFIT_ITEMS; ++j)
         {

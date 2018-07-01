@@ -39,7 +39,7 @@
 #include "GameCata/Management/Guild.h"
 #endif
 
-
+struct CharCreate;
 class QuestLogEntry;
 struct BGScore;
 class AchievementMgr;
@@ -759,7 +759,7 @@ public:
         void AddToWorld();
         void AddToWorld(MapMgr* pMapMgr);
         void RemoveFromWorld();
-        bool Create(WorldPacket & data);
+        bool Create(CharCreate& charCreateContent);
 
         void Update(unsigned long time_passed);
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
