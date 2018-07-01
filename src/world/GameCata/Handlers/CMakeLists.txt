@@ -6,7 +6,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/AddonHandler.cpp
     ${PATH_PREFIX}/BattlegroundHandler.cpp
     ${PATH_PREFIX}/CharacterHandler.cpp
-    ${PATH_PREFIX}/ChatHandler.cpp
     ${PATH_PREFIX}/GMTicketHandler.cpp
     ${PATH_PREFIX}/GroupHandler.cpp
     ${PATH_PREFIX}/GuildHandler.cpp

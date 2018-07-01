@@ -547,26 +547,16 @@ class SERVER_DECL WorldSession
         void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
         // Chat opcodes (Chat.cpp)
-
-        //MIT
         bool isSessionMuted();
         bool isFloodProtectionTriggered();
 
-#if VERSION_STRING == Cata
-        // Cata still uses the old one
-        void HandleMessagechatOpcode(WorldPacket& recvData);
-        void HandleTextEmoteOpcode(WorldPacket& recvPacket);
-#else
-        void handleMessageChatOpcode(WorldPacket& recvData);
+        void handleMessageChatOpcode(WorldPacket& recvPacket);
         void handleTextEmoteOpcode(WorldPacket& recvPacket);
-#endif
-
         void handleEmoteOpcode(WorldPacket& recvPacket);
-        //MIT End
 
-        void HandleReportSpamOpcode(WorldPacket& recvPacket);
-        void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
-        void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
+        void handleReportSpamOpcode(WorldPacket& recvPacket);
+        void handleChatIgnoredOpcode(WorldPacket& recvPacket);
+        void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         /// Corpse opcodes (Corpse.cpp)
         void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);

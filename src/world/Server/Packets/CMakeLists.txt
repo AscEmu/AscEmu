@@ -41,7 +41,9 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgChannelUnban.h
    ${PATH_PREFIX}/CmsgChannelUnmoderator.h
    ${PATH_PREFIX}/CmsgChannelUnmute.h
+   ${PATH_PREFIX}/CmsgChatIgnored.h
    ${PATH_PREFIX}/CmsgClearTradeItem.h
+   ${PATH_PREFIX}/CmsgComplaint.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
@@ -92,6 +94,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetActionbarToggles.h
    ${PATH_PREFIX}/CmsgSetActionButton.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
+   ${PATH_PREFIX}/CmsgSetChannelWatch.h
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetFactionAtWar.h
    ${PATH_PREFIX}/CmsgSetFactionInactive.h
@@ -140,6 +143,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgComplainResult.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
    ${PATH_PREFIX}/SmsgDuelComplete.h
