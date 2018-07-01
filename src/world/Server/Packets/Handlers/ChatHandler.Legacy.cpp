@@ -535,7 +535,46 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
     player->GetSession()->SendPacket(data);
     delete data;
 }
+#else
+//MIT
+void WorldSession::HandleChatIgnoredOpcode(WorldPacket& recvPacket)
+{
+    uint8_t unk;
+    recvPacket >> unk;
 
+    ObjectGuid playerGuid;
+
+    playerGuid[5] = recvPacket.readBit();
+    playerGuid[2] = recvPacket.readBit();
+    playerGuid[6] = recvPacket.readBit();
+    playerGuid[4] = recvPacket.readBit();
+    playerGuid[7] = recvPacket.readBit();
+    playerGuid[0] = recvPacket.readBit();
+    playerGuid[1] = recvPacket.readBit();
+    playerGuid[3] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(playerGuid[0]);
+    recvPacket.ReadByteSeq(playerGuid[6]);
+    recvPacket.ReadByteSeq(playerGuid[5]);
+    recvPacket.ReadByteSeq(playerGuid[1]);
+    recvPacket.ReadByteSeq(playerGuid[4]);
+    recvPacket.ReadByteSeq(playerGuid[3]);
+    recvPacket.ReadByteSeq(playerGuid[7]);
+    recvPacket.ReadByteSeq(playerGuid[2]);
+
+    Player* player = objmgr.GetPlayer((uint32)playerGuid);
+    if (player == nullptr || player->GetSession() == nullptr)
+    {
+        return;
+    }
+
+    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->getName().c_str(), _player->getGuid());
+    player->GetSession()->SendPacket(data);
+    delete data;
+}
+#endif
+
+#if VERSION_STRING != Cata
 void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
 {
     std::string channelName;

@@ -26,6 +26,21 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBuyBankSlot.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgChangeSeatsOnControlledVehicle.h
+   ${PATH_PREFIX}/CmsgChannelAnnouncements.h
+   ${PATH_PREFIX}/CmsgChannelDisplayList.h
+   ${PATH_PREFIX}/CmsgChannelBan.h
+   ${PATH_PREFIX}/CmsgChannelInvite.h
+   ${PATH_PREFIX}/CmsgChannelKick.h
+   ${PATH_PREFIX}/CmsgChannelList.h
+   ${PATH_PREFIX}/CmsgChannelModerate.h
+   ${PATH_PREFIX}/CmsgChannelModerator.h
+   ${PATH_PREFIX}/CmsgChannelMute.h
+   ${PATH_PREFIX}/CmsgChannelOwner.h
+   ${PATH_PREFIX}/CmsgChannelPassword.h
+   ${PATH_PREFIX}/CmsgChannelSetOwner.h
+   ${PATH_PREFIX}/CmsgChannelUnban.h
+   ${PATH_PREFIX}/CmsgChannelUnmoderator.h
+   ${PATH_PREFIX}/CmsgChannelUnmute.h
    ${PATH_PREFIX}/CmsgClearTradeItem.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
@@ -36,6 +51,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
    ${PATH_PREFIX}/CmsgGameobjReportUse.h
+   ${PATH_PREFIX}/CmsgGetChannelMemberCount.h
    ${PATH_PREFIX}/CmsgGossipHello.h
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
    ${PATH_PREFIX}/CmsgGroupAssistantLeader.h
@@ -47,6 +63,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgItemNameQuery.h
    ${PATH_PREFIX}/CmsgItemQuerySingle.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
+   ${PATH_PREFIX}/CmsgLeaveChannel.h
    ${PATH_PREFIX}/CmsgListInventory.h
    ${PATH_PREFIX}/CmsgLootMasterGive.h
    ${PATH_PREFIX}/CmsgLootMethod.h

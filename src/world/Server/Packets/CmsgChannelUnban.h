@@ -11,19 +11,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgDismissCritter : public ManagedPacket
+    class CmsgChannelUnban : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
-        WoWGuid guid;
+        std::string name;
+        std::string unbanName;
 
-        CmsgDismissCritter() : CmsgDismissCritter(0)
+        CmsgChannelUnban() : CmsgChannelUnban("", "")
         {
         }
 
-        CmsgDismissCritter(uint64_t guid) :
-            ManagedPacket(CMSG_DISMISS_CRITTER, 8),
-            guid(guid)
+        CmsgChannelUnban(std::string name, std::string unbanName) :
+            ManagedPacket(CMSG_CHANNEL_UNBAN, 0),
+            name(name),
+            unbanName(unbanName)
         {
         }
 
@@ -35,11 +36,8 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid;
-            guid.Init(unpacked_guid);
+            packet >> name >> unbanName;
             return true;
         }
-#endif
     };
 }}

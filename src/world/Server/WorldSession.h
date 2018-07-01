@@ -573,33 +573,25 @@ class SERVER_DECL WorldSession
         
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
-        /// Channel Opcodes (ChannelHandler.cpp)
-#if VERSION_STRING == Cata
-        void HandleChannelJoin(WorldPacket& recvPacket);
-#else
+        // Channel Opcodes (ChannelHandler.cpp)
         void handleChannelJoin(WorldPacket& recvPacket);
-#endif
-        void HandleChannelLeave(WorldPacket& recvPacket);
-        void HandleChannelList(WorldPacket& recvPacket);
-        void HandleChannelPassword(WorldPacket& recvPacket);
-        void HandleChannelSetOwner(WorldPacket& recvPacket);
-        void HandleChannelOwner(WorldPacket& recvPacket);
-        void HandleChannelModerator(WorldPacket& recvPacket);
-        void HandleChannelUnmoderator(WorldPacket& recvPacket);
-        void HandleChannelMute(WorldPacket& recvPacket);
-        void HandleChannelUnmute(WorldPacket& recvPacket);
-        void HandleChannelInvite(WorldPacket& recvPacket);
-        void HandleChannelKick(WorldPacket& recvPacket);
-        void HandleChannelBan(WorldPacket& recvPacket);
-        void HandleChannelUnban(WorldPacket& recvPacket);
-        void HandleChannelAnnounce(WorldPacket& recvPacket);
-        void HandleChannelModerate(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
-        void HandleChannelNumMembersQuery(WorldPacket& recvPacket);
-#else
+        void handleChannelLeave(WorldPacket& recvPacket);
+        void handleChannelList(WorldPacket& recvPacket);
+        void handleChannelPassword(WorldPacket& recvPacket);
+        void handleChannelSetOwner(WorldPacket& recvPacket);
+        void handleChannelOwner(WorldPacket& recvPacket);
+        void handleChannelModerator(WorldPacket& recvPacket);
+        void handleChannelUnmoderator(WorldPacket& recvPacket);
+        void handleChannelMute(WorldPacket& recvPacket);
+        void handleChannelUnmute(WorldPacket& recvPacket);
+        void handleChannelInvite(WorldPacket& recvPacket);
+        void handleChannelKick(WorldPacket& recvPacket);
+        void handleChannelBan(WorldPacket& recvPacket);
+        void handleChannelUnban(WorldPacket& recvPacket);
+        void handleChannelAnnounce(WorldPacket& recvPacket);
+        void handleChannelModerate(WorldPacket& recvPacket);
         void handleGetChannelMemberCount(WorldPacket& recvPacket);
-#endif
-        void HandleChannelRosterQuery(WorldPacket& recvPacket);
+        void handleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
         void handleDuelAccepted(WorldPacket& /*recvPacket*/);

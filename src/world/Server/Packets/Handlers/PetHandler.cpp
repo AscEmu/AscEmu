@@ -466,6 +466,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 }
 
 #if VERSION_STRING != Cata
+#if VERSION_STRING > TBC
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
     CmsgPetLearnTalent recv_packet;
@@ -511,7 +512,6 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (recv_packet.talentCol > 0 && talent->RankID[recv_packet.talentCol - 1] != 0)
         pet->RemoveSpell(talent->RankID[recv_packet.talentCol - 1]);
 
-#if VERSION_STRING > TBC
     const auto spellInfo = sSpellCustomizations.GetSpellInfo(talent->RankID[recv_packet.talentCol]);
     if (spellInfo != nullptr)
     {
@@ -520,10 +520,10 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
         auto id = spellInfo->getId();
         OutPacket(SMSG_PET_LEARNED_SPELL, 4, &id);
     }
-#endif
 
     pet->SendTalentsToOwner();
 }
+#endif
 #else
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
