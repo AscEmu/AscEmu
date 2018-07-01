@@ -748,21 +748,24 @@ class SERVER_DECL WorldSession
 #endif
 
         // Pet
-        void HandlePetAction(WorldPacket& recv_data);
-        void HandlePetInfo(WorldPacket& recv_data);
-        void HandlePetNameQuery(WorldPacket& recv_data);
-        void HandleBuyStableSlot(WorldPacket& recv_data);
-        void HandleStablePet(WorldPacket& recv_data);
-        void HandleUnstablePet(WorldPacket& recv_data);
         void handleStabledPetList(WorldPacket& recvPacket);
-        void HandleStableSwapPet(WorldPacket& recv_data);
-        void HandlePetRename(WorldPacket& recv_data);
-        void HandlePetAbandon(WorldPacket& recv_data);
-        void HandlePetUnlearn(WorldPacket& recv_data);
-        void HandlePetSpellAutocast(WorldPacket& recv_data);
-        void HandlePetCancelAura(WorldPacket& recv_data);
-        void HandlePetLearnTalent(WorldPacket& recv_data);
-        void HandleDismissCritter(WorldPacket& recv_data);
+
+        void handlePetAction(WorldPacket& recvPacket);
+        void handlePetNameQuery(WorldPacket& recvPacket);
+        void handleBuyStableSlot(WorldPacket& /*recvPacket*/);
+        void handleStablePet(WorldPacket& /*recvPacket*/);
+        void handleUnstablePet(WorldPacket& recvPacket);
+        void handleStableSwapPet(WorldPacket& recvPacket);
+        void handlePetRename(WorldPacket& recvPacket);
+        void handlePetAbandon(WorldPacket& /*recvPacket*/);
+        void handlePetUnlearn(WorldPacket& recvPacket);
+        void handlePetSpellAutocast(WorldPacket& recvPacket);
+        void handlePetCancelAura(WorldPacket& recvPacket);
+        void handlePetLearnTalent(WorldPacket& recvPacket);
+        void handlePetSetActionOpcode(WorldPacket& recvPacket);
+
+        //????
+        void handleDismissCritter(WorldPacket& recvPacket);
 
         // Battleground
         void handleBattlefieldPortOpcode(WorldPacket& recvPacket);
@@ -805,7 +808,6 @@ class SERVER_DECL WorldSession
         void handleToggleHelmOpcode(WorldPacket& /*recvPacket*/);
         void handleToggleCloakOpcode(WorldPacket& /*recvPacket*/);
         void handleSetTitle(WorldPacket& recvPacket);
-        void HandlePetSetActionOpcode(WorldPacket& recv_data);
 
         // Instances
         void handleResetInstanceOpcode(WorldPacket& /*recvPacket*/);

@@ -22,15 +22,16 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBattlefieldPort.h
    ${PATH_PREFIX}/CmsgBattlemasterHello.h
    ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
-   ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgBinderActivate.h
    ${PATH_PREFIX}/CmsgBuyBankSlot.h
+   ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgChangeSeatsOnControlledVehicle.h
    ${PATH_PREFIX}/CmsgClearTradeItem.h
    ${PATH_PREFIX}/CmsgContactList.h
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
+   ${PATH_PREFIX}/CmsgDismissCritter.h
    ${PATH_PREFIX}/CmsgEjectPassenger.h
    ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
@@ -56,7 +57,15 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgOpenItem.h
    ${PATH_PREFIX}/CmsgOptOutOfLoot.h
    ${PATH_PREFIX}/CmsgPageTextQuery.h
+   ${PATH_PREFIX}/CmsgPetAction.h
+   ${PATH_PREFIX}/CmsgPetCancelAura.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
+   ${PATH_PREFIX}/CmsgPetLearnTalent.h
+   ${PATH_PREFIX}/CmsgPetNameQuery.h
+   ${PATH_PREFIX}/CmsgPetRename.h
+   ${PATH_PREFIX}/CmsgPetSetAction.h
+   ${PATH_PREFIX}/CmsgPetSpellAutocast.h
+   ${PATH_PREFIX}/CmsgPetUnlearn.h
    ${PATH_PREFIX}/CmsgPlayedTime.h
    ${PATH_PREFIX}/CmsgPlayerVehicleEnter.h
    ${PATH_PREFIX}/CmsgQueryTime.h
@@ -76,11 +85,13 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetTradeGold.h
    ${PATH_PREFIX}/CmsgSetTradeItem.h
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
+   ${PATH_PREFIX}/CmsgStableSwapPet.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
    ${PATH_PREFIX}/CmsgTextEmote.h
    ${PATH_PREFIX}/CmsgTrainerBuySpell.h
    ${PATH_PREFIX}/CmsgTrainerList.h
    ${PATH_PREFIX}/CmsgTutorialFlag.h
+   ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgWho.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h
@@ -107,6 +118,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgBinderConfirm.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgBuyBankSlotResult.h
+   ${PATH_PREFIX}/SmsgBuyFailed.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
@@ -132,7 +144,9 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
+   ${PATH_PREFIX}/SmsgPetActionSound.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
+   ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
@@ -141,6 +155,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgShowBank.h
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
+   ${PATH_PREFIX}/SmsgStableResult.h
    ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTrainerBuySucceeded.h

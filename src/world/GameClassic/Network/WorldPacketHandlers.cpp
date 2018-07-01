@@ -384,20 +384,20 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_TUTORIAL_RESET].handler = &WorldSession::handleTutorialReset;
 
     // Pets
-    WorldPacketHandlers[CMSG_PET_ACTION].handler = &WorldSession::HandlePetAction;
-    WorldPacketHandlers[CMSG_REQUEST_PET_INFO].handler = &WorldSession::HandlePetInfo;
-    WorldPacketHandlers[CMSG_PET_NAME_QUERY].handler = &WorldSession::HandlePetNameQuery;
-    WorldPacketHandlers[CMSG_BUY_STABLE_SLOT].handler = &WorldSession::HandleBuyStableSlot;
-    WorldPacketHandlers[CMSG_STABLE_PET].handler = &WorldSession::HandleStablePet;
-    WorldPacketHandlers[CMSG_UNSTABLE_PET].handler = &WorldSession::HandleUnstablePet;
-    WorldPacketHandlers[CMSG_STABLE_SWAP_PET].handler = &WorldSession::HandleStableSwapPet;
+    WorldPacketHandlers[CMSG_PET_ACTION].handler = &WorldSession::handlePetAction;
+    //WorldPacketHandlers[CMSG_REQUEST_PET_INFO].handler = &WorldSession::handlePetInfo;
+    WorldPacketHandlers[CMSG_PET_NAME_QUERY].handler = &WorldSession::handlePetNameQuery;
+    WorldPacketHandlers[CMSG_BUY_STABLE_SLOT].handler = &WorldSession::handleBuyStableSlot;
+    WorldPacketHandlers[CMSG_STABLE_PET].handler = &WorldSession::handleStablePet;
+    WorldPacketHandlers[CMSG_UNSTABLE_PET].handler = &WorldSession::handleUnstablePet;
+    WorldPacketHandlers[CMSG_STABLE_SWAP_PET].handler = &WorldSession::handleStableSwapPet;
     WorldPacketHandlers[MSG_LIST_STABLED_PETS].handler = &WorldSession::handleStabledPetList;
-    WorldPacketHandlers[CMSG_PET_SET_ACTION].handler = &WorldSession::HandlePetSetActionOpcode;
-    WorldPacketHandlers[CMSG_PET_RENAME].handler = &WorldSession::HandlePetRename;
-    WorldPacketHandlers[CMSG_PET_ABANDON].handler = &WorldSession::HandlePetAbandon;
-    WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::HandlePetUnlearn;
-    WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::HandlePetSpellAutocast;
-    WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::HandlePetCancelAura;
+    WorldPacketHandlers[CMSG_PET_SET_ACTION].handler = &WorldSession::handlePetSetActionOpcode;
+    WorldPacketHandlers[CMSG_PET_RENAME].handler = &WorldSession::handlePetRename;
+    WorldPacketHandlers[CMSG_PET_ABANDON].handler = &WorldSession::handlePetAbandon;
+    WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::handlePetUnlearn;
+    WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::handlePetSpellAutocast;
+    WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::handlePetCancelAura;
     //WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::HandlePetLearnTalent;
     //WorldPacketHandlers[CMSG_DISMISS_CRITTER].handler = &WorldSession::HandleDismissCritter;
 

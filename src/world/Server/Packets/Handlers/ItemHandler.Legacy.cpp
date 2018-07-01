@@ -1012,11 +1012,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff));
         if (!_player->HasGold(cost))
         {
-            WorldPacket data(SMSG_BUY_FAILED, 12);
-            data << uint64(guid);
-            data << uint32(itemid);
-            data << uint8(2); //not enough money
-            SendPacket(&data);
+            SendBuyFailed(guid, itemid, 2);
             return;
         }
         // Check for item uniqueness
