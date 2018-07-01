@@ -11,10 +11,10 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::HandleCharEnumOpcode;
     WorldPacketHandlers[CMSG_CHAR_ENUM].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_CHAR_CREATE].handler = &WorldSession::HandleCharCreateOpcode;
+    WorldPacketHandlers[CMSG_CHAR_CREATE].handler = &WorldSession::handleCharCreateOpcode;
     WorldPacketHandlers[CMSG_CHAR_CREATE].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_CHAR_DELETE].handler = &WorldSession::HandleCharDeleteOpcode;
+    WorldPacketHandlers[CMSG_CHAR_DELETE].handler = &WorldSession::handleCharDeleteOpcode;
     WorldPacketHandlers[CMSG_CHAR_DELETE].status = STATUS_AUTHED;
 
     WorldPacketHandlers[CMSG_CHAR_RENAME].handler = &WorldSession::HandleCharRenameOpcode;

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
 #include "Units/Players/Player.h"
+#include "Server/Packets/CmsgCharDelete.h"
 
 using namespace AscEmu::Packets;
 
@@ -27,4 +28,15 @@ void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
         return;
 
     GetPlayer()->SetFactionInactive(recv_packet.id, recv_packet.state == 1);
+}
+
+void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
+{
+    CmsgCharDelete recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    uint8_t characterFailReason = DeleteCharacter(recv_packet.guid.getGuidLow());
+
+    OutPacket(SMSG_CHAR_DELETE, 1, &characterFailReason);
 }

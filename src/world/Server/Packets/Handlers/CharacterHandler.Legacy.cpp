@@ -34,9 +34,13 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Data/WoWPlayer.h"
 #include "Server/Packets/SmsgCharEnum.h"
+#include "Server/Packets/SmsgCharCreate.h"
+#include "Server/Packets/CmsgCharCreate.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 //MIT start
 #if VERSION_STRING <= WotLK
@@ -600,194 +604,152 @@ void WorldSession::LoadAccountDataProc(QueryResult* result)
     }
 }
 
-void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
+void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 {
-    CHECK_PACKET_SIZE(recv_data, 10);
-    std::string name;
-    uint8 race;
-    uint8 class_;
+    CmsgCharCreate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    recv_data >> name;
-    recv_data >> race;
-    recv_data >> class_;
-    recv_data.rpos(0);
-
-    LoginErrorCode res = VerifyName(name.c_str(), name.length());
-    if (res != E_CHAR_NAME_SUCCESS)
+    auto loginErrorCode = VerifyName(recv_packet.name.c_str(), recv_packet.name.length());
+    if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, &res);
+        SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    res = sMySQLStore.isCharacterNameAllowed(name) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
-    if (res != E_CHAR_NAME_SUCCESS)
+    loginErrorCode = sMySQLStore.isCharacterNameAllowed(recv_packet.name) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
+    if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, &res);
+        SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    res = objmgr.GetPlayerInfoByName(name.c_str()) == NULL ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_NAME_IN_USE;
-    if (res != E_CHAR_CREATE_SUCCESS)
+    loginErrorCode = objmgr.GetPlayerInfoByName(recv_packet.name.c_str()) == nullptr ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_NAME_IN_USE;
+    if (loginErrorCode != E_CHAR_CREATE_SUCCESS)
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, &res);
+        SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    res = sHookInterface.OnNewCharacter(race, class_, this, name.c_str()) ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_ERROR;
-    if (res != E_CHAR_CREATE_SUCCESS)
+    loginErrorCode = sHookInterface.OnNewCharacter(recv_packet._race, recv_packet._class, this, recv_packet.name.c_str()) ? E_CHAR_CREATE_SUCCESS : E_CHAR_CREATE_ERROR;
+    if (loginErrorCode != E_CHAR_CREATE_SUCCESS)
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, &res);
+        SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
         return;
     }
 
-    QueryResult* result = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", CharacterDatabase.EscapeString(name).c_str());
-    if (result)
+    const auto bannedNamesQuery = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", CharacterDatabase.EscapeString(recv_packet.name).c_str());
+    if (bannedNamesQuery)
     {
-        if (result->Fetch()[0].GetUInt32() > 0)
+        if (bannedNamesQuery->Fetch()[0].GetUInt32() > 0)
         {
-            // That name is banned!
-            LoginErrorCode login_error = E_CHAR_NAME_PROFANE;
-
-            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
-            delete result;
+            SendPacket(SmsgCharCreate(E_CHAR_NAME_PROFANE).serialise().get());
+            delete bannedNamesQuery;
             return;
         }
-        delete result;
+        delete bannedNamesQuery;
     }
 
 #if VERSION_STRING > TBC
-    // Check if player got Death Knight already on this realm.
-    if (worldConfig.player.deathKnightLimit && has_dk && (class_ == DEATHKNIGHT))
+    if (worldConfig.player.deathKnightLimit && has_dk && recv_packet._class == DEATHKNIGHT)
     {
-        LoginErrorCode login_error = E_CHAR_CREATE_UNIQUE_CLASS_LIMIT;
-        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
+        SendPacket(SmsgCharCreate(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT).serialise().get());
         return;
     }
 #endif
 
-    // loading characters
-
-    // Check the number of characters, so we can't make over 10.
-    // They're able to manage to create >10 sometimes, not exactly sure how ..
-
-    result = CharacterDatabase.Query("SELECT COUNT(*) FROM characters WHERE acct = %u", GetAccountId());
-    if (result)
+    const auto charactersQuery = CharacterDatabase.Query("SELECT COUNT(*) FROM characters WHERE acct = %u", GetAccountId());
+    if (charactersQuery)
     {
-        if (result->Fetch()[0].GetUInt32() >= 10)
+        if (charactersQuery->Fetch()[0].GetUInt32() >= 10)
         {
-            // We can't make any more characters.
-            LoginErrorCode login_error = E_CHAR_CREATE_SERVER_LIMIT;
-            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
-            delete result;
+            SendPacket(SmsgCharCreate(E_CHAR_CREATE_SERVER_LIMIT).serialise().get());
+            delete charactersQuery;
             return;
         }
-        delete result;
+        delete charactersQuery;
     }
 
-    Player* pNewChar = objmgr.CreatePlayer(class_);
-    pNewChar->SetSession(this);
-    if (!pNewChar->Create(recv_data))
-    {
-        // failed.
-        pNewChar->ok_to_remove = true;
-        delete pNewChar;
+    const auto newPlayer = objmgr.CreatePlayer(recv_packet._class);
+    newPlayer->SetSession(this);
 
-        LoginErrorCode login_error = E_CHAR_CREATE_FAILED;
-        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
+    //\brief: Zyres: we unpack the packet twice o.O this is stupid!
+    if (!newPlayer->Create(recvPacket))
+    {
+        newPlayer->ok_to_remove = true;
+        delete newPlayer;
+
+        SendPacket(SmsgCharCreate(E_CHAR_CREATE_FAILED).serialise().get());
         return;
     }
 
-    //Same Faction limitation only applies to PVP and RPPVP realms :)
-    uint32 realmType = sLogonCommHandler.getRealmType();
-    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)  // ceberwow fixed bug
+    //Same Faction limitation only applies to PVP and RPPVP realms
+    const auto realmType = sLogonCommHandler.getRealmType();
+    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)
     {
-        if ((pNewChar->IsTeamAlliance() && (_side == 1)) || (pNewChar->IsTeamHorde() && (_side == 0)))
+        if ((newPlayer->IsTeamAlliance() && _side == 1) || (newPlayer->IsTeamHorde() && _side == 0))
         {
-            pNewChar->ok_to_remove = true;
-            delete pNewChar;
+            newPlayer->ok_to_remove = true;
+            delete newPlayer;
 
-            LoginErrorCode login_error = E_CHAR_CREATE_PVP_TEAMS_VIOLATION;
-            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
+            SendPacket(SmsgCharCreate(E_CHAR_CREATE_PVP_TEAMS_VIOLATION).serialise().get());
             return;
         }
     }
 
 #if VERSION_STRING > TBC
-    //Check if player has a level 55 or higher character on this realm and allow him to create DK.
-    //This check can be turned off in world.conf
-    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && (class_ == DEATHKNIGHT))
+    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && recv_packet._class == DEATHKNIGHT)
     {
-        pNewChar->ok_to_remove = true;
-        delete pNewChar;
+        newPlayer->ok_to_remove = true;
+        delete newPlayer;
 
-        LoginErrorCode login_error = E_CHAR_CREATE_LEVEL_REQUIREMENT;
-        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
+        SendPacket(SmsgCharCreate(E_CHAR_CREATE_LEVEL_REQUIREMENT).serialise().get());
         return;
     }
 #endif
 
-    pNewChar->UnSetBanned();
-    pNewChar->addSpell(22027);      // Remove Insignia
+    newPlayer->UnSetBanned();
+    newPlayer->addSpell(22027); // Remove Insignia
 
-    if (pNewChar->getClass() == WARLOCK)
+    if (newPlayer->getClass() == WARLOCK)
     {
-        pNewChar->AddSummonSpell(416, 3110);        // imp fireball
-        pNewChar->AddSummonSpell(417, 19505);
-        pNewChar->AddSummonSpell(1860, 3716);
-        pNewChar->AddSummonSpell(1863, 7814);
+        newPlayer->AddSummonSpell(416, 3110);   // imp fireball
+        newPlayer->AddSummonSpell(417, 19505);
+        newPlayer->AddSummonSpell(1860, 3716);
+        newPlayer->AddSummonSpell(1863, 7814);
     }
 
-    pNewChar->SaveToDB(true);
+    newPlayer->SaveToDB(true);
 
-    PlayerInfo* pn = new PlayerInfo ;
-    pn->guid = pNewChar->getGuidLow();
-    pn->name = strdup(pNewChar->getName().c_str());
-    pn->cl = pNewChar->getClass();
-    pn->race = pNewChar->getRace();
-    pn->gender = pNewChar->getGender();
-    pn->acct = GetAccountId();
-    pn->m_Group = 0;
-    pn->subGroup = 0;
-    pn->m_loggedInPlayer = NULL;
-    pn->team = pNewChar->GetTeam();
+    const auto playerInfo = new PlayerInfo;
+    playerInfo->guid = newPlayer->getGuidLow();
+    playerInfo->name = strdup(newPlayer->getName().c_str());
+    playerInfo->cl = newPlayer->getClass();
+    playerInfo->race = newPlayer->getRace();
+    playerInfo->gender = newPlayer->getGender();
+    playerInfo->acct = GetAccountId();
+    playerInfo->m_Group = 0;
+    playerInfo->subGroup = 0;
+    playerInfo->m_loggedInPlayer = nullptr;
+    playerInfo->team = newPlayer->GetTeam();
 #if VERSION_STRING != Cata
-    pn->guild = NULL;
-    pn->guildRank = NULL;
-    pn->guildMember = NULL;
+    playerInfo->guild = nullptr;
+    playerInfo->guildRank = nullptr;
+    playerInfo->guildMember = nullptr;
 #else
-    pn->m_guild = 0;
-    pn->guildRank = GUILD_RANK_NONE;
+    playerInfo->m_guild = 0;
+    playerInfo->guildRank = GUILD_RANK_NONE;
 #endif
-    pn->lastOnline = UNIXTIME;
-    objmgr.AddPlayerInfo(pn);
+    playerInfo->lastOnline = UNIXTIME;
 
-    pNewChar->ok_to_remove = true;
-    delete  pNewChar;
+    objmgr.AddPlayerInfo(playerInfo);
 
-    LoginErrorCode login_error = E_CHAR_CREATE_SUCCESS;
-    OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
+    newPlayer->ok_to_remove = true;
+    delete newPlayer;
+
+    SendPacket(SmsgCharCreate(E_CHAR_CREATE_SUCCESS).serialise().get());
 
     sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
-}
-
-void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)
-{
-    CHECK_PACKET_SIZE(recv_data, 8);
-    uint8 fail = E_CHAR_DELETE_SUCCESS;
-
-    uint64 guid;
-    recv_data >> guid;
-
-    if (objmgr.GetPlayer((uint32)guid) != NULL)
-    {
-        // "Char deletion failed"
-        fail = E_CHAR_DELETE_FAILED;
-    }
-    else
-    {
-        fail = DeleteCharacter((uint32)guid);
-    }
-    OutPacket(SMSG_CHAR_DELETE, 1, &fail);
 }
 
 uint8 WorldSession::DeleteCharacter(uint32 guid)
@@ -795,7 +757,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
     PlayerInfo* inf = objmgr.GetPlayerInfo(guid);
     if (inf != NULL && inf->m_loggedInPlayer == NULL)
     {
-        QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", (uint32)guid, _accountId);
+        QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid, _accountId);
         if (!result)
             return E_CHAR_DELETE_FAILED;
 

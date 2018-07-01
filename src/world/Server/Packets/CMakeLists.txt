@@ -41,6 +41,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgChannelUnban.h
    ${PATH_PREFIX}/CmsgChannelUnmoderator.h
    ${PATH_PREFIX}/CmsgChannelUnmute.h
+   ${PATH_PREFIX}/CmsgCharCreate.h
+   ${PATH_PREFIX}/CmsgCharDelete.h
    ${PATH_PREFIX}/CmsgChatIgnored.h
    ${PATH_PREFIX}/CmsgClearTradeItem.h
    ${PATH_PREFIX}/CmsgComplaint.h
@@ -140,6 +142,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgBuyBankSlotResult.h
    ${PATH_PREFIX}/SmsgBuyFailed.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
+   ${PATH_PREFIX}/SmsgCharCreate.h
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
