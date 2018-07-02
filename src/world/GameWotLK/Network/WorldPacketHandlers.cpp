@@ -23,10 +23,10 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::HandleCharCustomizeLooksOpcode;
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].handler = &WorldSession::HandleCharFactionOrRaceChange;
+    WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].handler = &WorldSession::handleCharFactionOrRaceChange;
     WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].handler = &WorldSession::HandleCharFactionOrRaceChange;
+    WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].handler = &WorldSession::handleCharFactionOrRaceChange;
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].status = STATUS_AUTHED;
 
     // declined names (Cyrillic client)

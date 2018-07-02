@@ -821,7 +821,7 @@ class SERVER_DECL WorldSession
         void HandleCharRenameOpcode(WorldPacket& recv_data);
 #if VERSION_STRING > TBC
         void HandleCharCustomizeLooksOpcode(WorldPacket& recv_data);
-        void HandleCharFactionOrRaceChange(WorldPacket& recv_data);
+        void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
 #endif
         void handleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
 

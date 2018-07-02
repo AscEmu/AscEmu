@@ -36,6 +36,8 @@
 #include "Server/Packets/SmsgCharEnum.h"
 #include "Server/Packets/SmsgCharCreate.h"
 #include "Server/Packets/CmsgCharCreate.h"
+#include "Server/Packets/SmsgCharFactionChange.h"
+#include "Server/Packets/CmsgCharFactionChange.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -1316,121 +1318,83 @@ void WorldSession::FullLogin(Player* plr)
 #endif
 
 #if VERSION_STRING > TBC
-/// \todo port player to a main city of his new faction
-void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
+// \todo port player to a main city of his new faction
+void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
 {
-    uint64 guid;
-    std::string newname;
-    uint8 gender;
-    uint8 skin;
-    uint8 face;
-    uint8 hairStyle;
-    uint8 hairColor;
-    uint8 facialHair;
-    uint8 race;
+    CmsgCharFactionChange recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    recv_data >> guid;
-    recv_data >> newname;
-    recv_data >> gender;
-    recv_data >> skin;
-    recv_data >> hairColor;
-    recv_data >> hairStyle;
-    recv_data >> facialHair;
-    recv_data >> face;
-    recv_data >> race;
-
-    uint8 _class = 0;
-    PlayerInfo* info = objmgr.GetPlayerInfo(static_cast<uint32>(guid));
-
-    if (info)
-        _class = info->cl;
-    else
+    PlayerInfo* info = objmgr.GetPlayerInfo(recv_packet.guid.getGuidLow());
+    if (info == nullptr)
     {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
         return;
     }
 
-    uint32 used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
-    uint32 newflags = 0;
+    uint32_t used_loginFlag = ((recvPacket.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
+    uint32_t newflags = 0;
 
-    QueryResult* query = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", guid);
+    QueryResult* query = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", recv_packet.guid.getGuidLow());
     if (query)
     {
         uint16 lflag = query->Fetch()[0].GetUInt16();
         if (!(lflag & used_loginFlag))
         {
-            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-            data << uint8(E_CHAR_CREATE_ERROR);
-            SendPacket(&data);
+            SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
+            delete query;
             return;
         }
         newflags = lflag - used_loginFlag;
+        delete query;
     }
-    delete query;
-    if (!sMySQLStore.getPlayerCreateInfo(race, info->cl))
+
+    if (!sMySQLStore.getPlayerCreateInfo(recv_packet.charCreate._race, info->cl))
     {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
         return;
     }
 
-    LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
+    LoginErrorCode res = VerifyName(recv_packet.charCreate.name.c_str(), recv_packet.charCreate.name.length());
     if (res != E_CHAR_NAME_SUCCESS)
     {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(res);
-        SendPacket(&data);
+        SendPacket(SmsgCharFactionChange(res).serialise().get());
         return;
     }
 
     if (!HasGMPermissions())
     {
-        QueryResult * result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'", CharacterDatabase.EscapeString(newname).c_str());
+        QueryResult* result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'",
+            CharacterDatabase.EscapeString(recv_packet.charCreate.name).c_str());
         if (result)
         {
             if (result->Fetch()[0].GetUInt32() > 0)
             {
-                WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-                data << uint8(E_CHAR_NAME_RESERVED);
-                SendPacket(&data);
+                SendPacket(SmsgCharFactionChange(E_CHAR_NAME_RESERVED).serialise().get());
+                delete result;
                 return;
             }
             delete result;
         }
     }
 
-    PlayerInfo* newinfo = objmgr.GetPlayerInfoByName(newname.c_str());
-    if (newinfo != NULL && newinfo->guid != guid)
+    PlayerInfo* newinfo = objmgr.GetPlayerInfoByName(recv_packet.charCreate.name.c_str());
+    if (newinfo != nullptr && newinfo->guid != recv_packet.guid.getGuidLow())
     {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
-        SendPacket(&data);
+        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
         return;
     }
 
-    Player::CharChange_Looks(guid, gender, skin, face, hairStyle, hairColor, facialHair);
-    //Player::CharChange_Language(guid, race);
+    Player::CharChange_Looks(recv_packet.guid, recv_packet.charCreate.gender, recv_packet.charCreate.skin,
+        recv_packet.charCreate.face, recv_packet.charCreate.hairStyle, recv_packet.charCreate.hairColor, recv_packet.charCreate.facialHair);
 
+    std::string newname = recv_packet.charCreate.name;
     Util::CapitalizeString(newname);
     objmgr.RenamePlayerInfo(info, info->name, newname.c_str());
-    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32)race, (uint32)guid);
+    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'",
+        newname.c_str(), newflags, static_cast<uint32_t>(recv_packet.charCreate._race), recv_packet.guid.getGuidLow());
 
-    //CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32)LOGIN_NO_FLAG, (uint32)guid);
-    WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1 + 8 + (newname.size() + 1) + 1 + 1 + 1 + 1 + 1 + 1 + 1);
-    data << uint8(0);
-    data << uint64(guid);
-    data << newname;
-    data << uint8(gender);
-    data << uint8(skin);
-    data << uint8(face);
-    data << uint8(hairStyle);
-    data << uint8(hairColor);
-    data << uint8(facialHair);
-    data << uint8(race);
-    SendPacket(&data);
+    SendPacket(SmsgCharFactionChange(0, recv_packet.guid, recv_packet.charCreate).serialise().get());
 }
 #endif
 

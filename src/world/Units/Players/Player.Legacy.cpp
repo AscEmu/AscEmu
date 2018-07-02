@@ -824,7 +824,7 @@ bool Player::Create(CharCreate& charCreateContent)
 #if VERSION_STRING > Classic
     if (charCreateContent._race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
 #else
-    if (race >= RACE_TROLL)
+    if (charCreateContent._race >= RACE_TROLL)
 #endif
     {
         m_session->Disconnect();

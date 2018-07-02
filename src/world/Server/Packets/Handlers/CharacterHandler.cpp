@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetFactionInactive.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/CmsgCharDelete.h"
+#include "Server/Packets/SmsgCharDelete.h"
 
 using namespace AscEmu::Packets;
 
@@ -36,7 +37,6 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    uint8_t characterFailReason = DeleteCharacter(recv_packet.guid.getGuidLow());
-
-    OutPacket(SMSG_CHAR_DELETE, 1, &characterFailReason);
+    const uint8_t deleteResult = DeleteCharacter(recv_packet.guid.getGuidLow());
+    SendPacket(SmsgCharDelete(deleteResult).serialise().get());
 }
