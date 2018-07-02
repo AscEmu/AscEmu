@@ -280,7 +280,7 @@ class SERVER_DECL WorldSession
         void handleCharDeleteOpcode(WorldPacket& recvPacket);
         uint8 DeleteCharacter(uint32 guid);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
-        void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
+        void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleRealmSplitOpcode(WorldPacket& recvPacket);
         void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
         void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
@@ -818,7 +818,7 @@ class SERVER_DECL WorldSession
         void SendMailError(uint32 error);
 
         // At Login
-        void HandleCharRenameOpcode(WorldPacket& recv_data);
+        void handleCharRenameOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void HandleCharCustomizeLooksOpcode(WorldPacket& recv_data);
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
@@ -950,7 +950,7 @@ class SERVER_DECL WorldSession
         WorldSocket* _socket;
 
         // Used to know race on login
-        void LoadPlayerFromDBProc(QueryResultVector & results);
+        void loadPlayerFromDBProc(QueryResultVector& results);
 
         // Preallocated buffers for movement handlers
         MovementInfo movement_info;
