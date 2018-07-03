@@ -2668,7 +2668,7 @@ Object* Creature::GetPlayerOwner()
     return NULL;
 }
 
-bool Creature::isVehicle()
+bool Creature::isVehicle() const
 {
     if (creature_properties->vehicleid != 0)
         return true;

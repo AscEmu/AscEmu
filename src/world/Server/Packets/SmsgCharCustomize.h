@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class SmsgCharCustomize : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint8_t result;
         uint64_t guid;
@@ -54,5 +55,6 @@ namespace AscEmu { namespace Packets
         {
             return false;
         }
+#endif
     };
 }}

@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgCharCustomize : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         CharCreate createStruct;
@@ -40,5 +41,6 @@ namespace AscEmu { namespace Packets
 
             return true;
         }
+#endif
     };
 }}

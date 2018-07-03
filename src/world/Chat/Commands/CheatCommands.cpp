@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.cheat list
 bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_session)
 {
-    auto player_target = GetSelectedPlayer(m_session, true, true);
+    const auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
 
@@ -22,32 +22,30 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
         player_target->m_isGmInvisible || player_target->bInvincible
         )
     {
-        auto player_name = player_target->getName().c_str();
-        SystemMessage(m_session, "Player %s has the following cheats activated:", player_name);
-
+        SystemMessage(m_session, "Player %s has the following cheats activated:", player_target->getName().c_str());
 
         if (player_target->CooldownCheat)
-            SystemMessage(m_session, "-- Cooldown is active.", player_name);
+            SystemMessage(m_session, "-- Cooldown is active.");
         if (player_target->CastTimeCheat)
-            SystemMessage(m_session, "-- CastTime is active.", player_name);
+            SystemMessage(m_session, "-- CastTime is active.");
         if (player_target->GodModeCheat)
-            SystemMessage(m_session, "-- GodMode is active.", player_name);
+            SystemMessage(m_session, "-- GodMode is active.");
         if (player_target->PowerCheat)
-            SystemMessage(m_session, "-- PowerCheat is active.", player_name);
+            SystemMessage(m_session, "-- PowerCheat is active.");
         if (player_target->FlyCheat)
-            SystemMessage(m_session, "-- FlyCheat is active.", player_name);
+            SystemMessage(m_session, "-- FlyCheat is active.");
         if (player_target->AuraStackCheat)
-            SystemMessage(m_session, "-- AuraStack is active.", player_name);
+            SystemMessage(m_session, "-- AuraStack is active.");
         if (player_target->ItemStackCheat)
-            SystemMessage(m_session, "-- ItemStack is active.", player_name);
+            SystemMessage(m_session, "-- ItemStack is active.");
         if (player_target->TriggerpassCheat)
-            SystemMessage(m_session, "-- TriggerPass is active.", player_name);
+            SystemMessage(m_session, "-- TriggerPass is active.");
         if (player_target->TaxiCheat)
-            SystemMessage(m_session, "-- TaxiCheat is active.", player_name);
+            SystemMessage(m_session, "-- TaxiCheat is active.");
         if (player_target->m_isGmInvisible)
-            SystemMessage(m_session, "-- Invisibility is active.", player_name);
+            SystemMessage(m_session, "-- Invisibility is active.");
         if (player_target->bInvincible)
-            SystemMessage(m_session, "-- Invincibility is active.", player_name);
+            SystemMessage(m_session, "-- Invincibility is active.");
     }
     else
     {
