@@ -42,6 +42,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgChannelUnmoderator.h
    ${PATH_PREFIX}/CmsgChannelUnmute.h
    ${PATH_PREFIX}/CmsgCharCreate.h
+   ${PATH_PREFIX}/CmsgCharCustomize.h
    ${PATH_PREFIX}/CmsgCharDelete.h
    ${PATH_PREFIX}/CmsgCharFactionChange.h
    ${PATH_PREFIX}/CmsgCharRename.h
@@ -147,6 +148,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgCharacterLoginFailed.h
    ${PATH_PREFIX}/SmsgCharCreate.h
+   ${PATH_PREFIX}/SmsgCharCustomize.h
    ${PATH_PREFIX}/SmsgCharDelete.h
    ${PATH_PREFIX}/SmsgCharFactionChange.h
    ${PATH_PREFIX}/SmsgCharRename.h

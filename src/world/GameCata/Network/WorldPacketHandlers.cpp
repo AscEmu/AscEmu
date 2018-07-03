@@ -20,7 +20,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CHAR_RENAME].handler = &WorldSession::handleCharRenameOpcode;
     WorldPacketHandlers[CMSG_CHAR_RENAME].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::HandleCharCustomizeLooksOpcode;
+    WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::handleCharCustomizeLooksOpcode;
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].status = STATUS_AUTHED;
 
     //WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].handler = &WorldSession::HandleCharFactionOrRaceChange;

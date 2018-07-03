@@ -10,17 +10,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgCharCreate : public ManagedPacket
+    class CmsgCharCustomize : public ManagedPacket
     {
     public:
+        WoWGuid guid;
         CharCreate createStruct;
 
-        CmsgCharCreate() : CmsgCharCreate(CharCreate())
+        CmsgCharCustomize() : CmsgCharCustomize(0, CharCreate())
         {
         }
 
-        CmsgCharCreate(CharCreate createStruct) :
-            ManagedPacket(CMSG_CHAR_CREATE, 10),
+        CmsgCharCustomize(uint64_t guid, CharCreate createStruct) :
+            ManagedPacket(CMSG_CHAR_CUSTOMIZE, 10),
+            guid(guid),
             createStruct(createStruct)
         {
         }
@@ -33,9 +35,8 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> createStruct.name >> createStruct._race >> createStruct._class >>
-                createStruct.gender >> createStruct.skin >> createStruct.face >> createStruct.hairStyle >>
-                createStruct.hairColor >> createStruct.facialHair >> createStruct.outfitId;
+            packet >> guid >> createStruct.name >> createStruct.gender >> createStruct.skin >> createStruct.hairColor >> 
+                createStruct.hairStyle >> createStruct.facialHair >> createStruct.face;
 
             return true;
         }

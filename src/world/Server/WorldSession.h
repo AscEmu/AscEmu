@@ -278,7 +278,7 @@ class SERVER_DECL WorldSession
         // Login screen opcodes (CharacterHandler.cpp):
         void HandleCharEnumOpcode(WorldPacket& recvPacket);
         void handleCharDeleteOpcode(WorldPacket& recvPacket);
-        uint8 DeleteCharacter(uint32 guid);
+        uint8_t deleteCharacter(WoWGuid guid);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleRealmSplitOpcode(WorldPacket& recvPacket);
@@ -820,7 +820,7 @@ class SERVER_DECL WorldSession
         // At Login
         void handleCharRenameOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
-        void HandleCharCustomizeLooksOpcode(WorldPacket& recv_data);
+        void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
 #endif
         void handleReadyForAccountDataTimes(WorldPacket& /*recvData*/);
