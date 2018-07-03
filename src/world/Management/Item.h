@@ -354,7 +354,7 @@ public:
                 return itr->second.ApplyTime;
         }
 
-        /// Adds an enchantment to the item.
+        // Adds an enchantment to the item.
         int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
         uint32 GetSocketsCount();
 

@@ -2205,7 +2205,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             {
                 if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                 {
-                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
+                    int32_t Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
                     TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
                 }
             }

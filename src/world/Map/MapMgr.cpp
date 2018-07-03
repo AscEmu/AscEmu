@@ -532,12 +532,12 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     {
         for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
-            if (*itr != nullptr)
+            if (*itr != nullptr && plObj)
                 plObj->PushOutOfRange((*itr)->GetNewGUID());
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
-        if (plObj->GetSession())
+        if (plObj && plObj->GetSession())
         {
             plObj->GetSession()->SetInstance(0);
 
