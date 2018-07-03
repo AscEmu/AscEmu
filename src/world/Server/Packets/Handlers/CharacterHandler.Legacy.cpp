@@ -30,8 +30,11 @@
 #include "Server/Packets/CmsgPlayerLogin.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/Packets/CmsgCharCustomize.h"
+#include "Map/MapMgr.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
+#else
+#include "Spell/Definitions/PowerType.h"
 #endif
 
 using namespace AscEmu::Packets;
