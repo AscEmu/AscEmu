@@ -162,6 +162,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
+   ${PATH_PREFIX}/SmsgFriendStatus.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h

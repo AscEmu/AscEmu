@@ -136,6 +136,9 @@ class PlayerCache : public Arcemu::Shared::CRefCounter
         PlayerCacheMap::iterator End64(uint32 field) { return m_map64fields[field].end(); }
         PlayerCacheMap::iterator Find64(uint32 field, uint64 value) { return m_map64fields[field].find(value); }
 
+        //MIT
+        PlayerCacheMap getCachedMapNyField(uint32_t field) { return m_map64fields[field]; }
+        //MIT END
 
         void SendPacket(WorldPacket* p);
 
