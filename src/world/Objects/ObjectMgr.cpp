@@ -433,9 +433,9 @@ void ObjectMgr::LoadPlayersInfo()
             pn->subGroup = 0;
             pn->m_loggedInPlayer = nullptr;
 #if VERSION_STRING != Cata
-            pn->guild = NULL;
-            pn->guildRank = NULL;
-            pn->guildMember = NULL;
+            pn->guild = nullptr;
+            pn->guildRank = nullptr;
+            pn->guildMember = nullptr;
 #else
             pn->m_guild = 0;
             pn->guildRank = GUILD_RANK_NONE;

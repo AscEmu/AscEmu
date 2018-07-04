@@ -25,6 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCharCustomize.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Spell/Definitions/PowerType.h"
+#include "Server/Packets/SmsgLearnedDanceMoves.h"
+#include "Server/Packets/SmsgFeatureSystemStatus.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -547,3 +550,185 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgCharCustomize(E_RESPONSE_SUCCESS, recv_packet.guid, recv_packet.createStruct).serialise().get());
 }
 #endif
+
+void WorldSession::initGMMyMaster()
+{
+#ifndef GM_TICKET_MY_MASTER_COMPATIBLE
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
+    if (ticket)
+    {
+        //Send status change to gm_sync_channel
+        const auto channel = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+        if (channel)
+        {
+            std::stringstream ss;
+            ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_ONLINESTATE;
+            ss << ":" << ticket->guid;
+            ss << ":1";
+            channel->Say(_player, ss.str().c_str(), nullptr, true);
+        }
+    }
+#endif
+}
+
+void WorldSession::sendServerStats()
+{
+    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
+    {
+#ifdef WIN32
+        GetPlayer()->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+#else
+        GetPlayer()->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+#endif
+
+        GetPlayer()->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        GetPlayer()->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+            MSG_COLOR_SEXGREEN, sWorld.getSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
+
+        GetPlayer()->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
+    }
+}
+
+void WorldSession::fullLogin(Player* player)
+{
+    LogDebug("WorldSession : Fully loading player %u", player->getGuidLow());
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // basic setup
+    SetPlayer(player);
+    m_MoverGuid = player->getGuid();
+    m_MoverWoWGuid.Init(player->getGuid());
+
+#if VERSION_STRING != Cata
+    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
+    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // maybe you logged out inside a bg
+    player->logIntoBattleground();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // start on GM Island or normal position for first login. Check out the config.
+    player->setLoginPosition();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING > TBC
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // send feature packet... mostly unknown content.
+    SendPacket(SmsgFeatureSystemStatus(2, 0).serialise().get());
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // dance moves - unknown 2x uint32_t(0)
+    SendPacket(SmsgLearnedDanceMoves(0, 0).serialise().get());
+    //////////////////////////////////////////////////////////////////////////////////////////
+#endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // hotfix data for cata
+#if VERSION_STRING == Cata
+    //\todo send Hotfixdata
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // update/set attack speed - mostly 0 on login
+    player->UpdateAttackSpeed();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // set playerinfo - should be already set, just in case.
+    player->setPlayerInfoIfNeeded();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // guild/group update - send guildmotd set guidlrank and pointers.
+    player->setGuildAndGroupInfo();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // account data times - since we just logged in, it is 0
+    SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // if we are on a transport we need a lot more checks, otherwise the mapmgr complains
+    const bool canEnterWorld = player->logOntoTransport();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // set db, time and count - our db now knows that we are online.
+    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", player->getGuidLow());
+    LOG_DEBUG("Player %s logged in.", player->getName().c_str());
+    sWorld.incrementPlayerCount(player->GetTeam());
+
+    player->m_playedtime[2] = uint32_t(UNIXTIME);
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // send cinematic on first login if we still allow it in the config
+    player->sendCinematicOnFirstLogin();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // send social packets and lists
+    player->Social_TellFriendsOnline();
+    player->Social_SendFriendList(7);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // dungeon and raid setup
+#if VERSION_STRING > TBC
+    player->SendDungeonDifficulty();
+    player->SendRaidDifficulty();
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Send Equipment set list - not sure what the intend was here.
+#if VERSION_STRING != Cata
+    player->SendEquipmentSetList();
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // GMMyMaster is a custom addon, we send special chat messages to trigger it.
+    // send serverstats (uptime, playerpeak,..)
+    // server Message of the day from config (Welcome to the world of warcraft)
+
+    initGMMyMaster();
+
+    sendServerStats();
+
+    SendMOTD();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // the restxp is calculated with our offline time
+    if (player->m_isResting)
+        player->ApplyPlayerRestState(true);
+
+    if (player->m_timeLogoff > 0 && player->getLevel() < player->getMaxLevel())
+    {
+        const uint32_t currenttime = uint32_t(UNIXTIME);
+        const uint32_t timediff = currenttime - player->m_timeLogoff;
+
+        if (timediff > 0)
+            player->AddCalculatedRestXP(timediff);
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // add us to the world if we are not already added
+    if (canEnterWorld && !player->GetMapMgr())
+        player->AddToWorld();
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+    sHookInterface.OnFullLogin(player);
+
+    objmgr.AddPlayer(player);
+}

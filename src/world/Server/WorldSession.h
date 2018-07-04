@@ -923,7 +923,10 @@ class SERVER_DECL WorldSession
         void SendTaxiList(Creature* pCreature);
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendAccountDataTimes(uint32 mask);
-        void FullLogin(Player* plr);
+        void initGMMyMaster();
+        void sendServerStats();
+
+    void fullLogin(Player* player);
         void SendMOTD();
 
         void SendLfgUpdatePlayer(const LfgUpdateData& updateData);

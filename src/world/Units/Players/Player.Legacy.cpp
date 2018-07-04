@@ -70,6 +70,7 @@
 #include "Data/WoWDynamicObject.h"
 #include "Data/WoWCorpse.h"
 #include <limits>
+#include "Server/Packets/SmsgNewWorld.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
@@ -3828,7 +3829,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_achievementMgr.CheckAllAchievementCriteria();
 #endif
 
-    m_session->FullLogin(this);
+    m_session->fullLogin(this);
     m_session->m_loggingInPlayer = nullptr;
 
     if (!isAlive())
@@ -4610,7 +4611,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_achievementMgr.CheckAllAchievementCriteria();
 #endif
 
-    m_session->FullLogin(this);
+    m_session->fullLogin(this);
     m_session->m_loggingInPlayer = nullptr;
 
     if (!isAlive())
@@ -8263,25 +8264,9 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
             m_instanceId = instance_id;
 
         if (IsInWorld())
-        {
             RemoveFromWorld();
-        }
 
-        data.Initialize(SMSG_NEW_WORLD);
-
-#if VERSION_STRING != Cata
-        data << uint32(mapid);
-        data << v;
-        data << float(v.o);
-#else
-        data << float(v.x);
-        data << float(v.o);
-        data << float(v.z);
-        data << uint32(mapid);
-        data << float(v.y);
-#endif
-
-        m_session->SendPacket(&data);
+        m_session->SendPacket(AscEmu::Packets::SmsgNewWorld(mapid, v).serialise().get());
 
         SetMapId(mapid);
 
@@ -9888,11 +9873,7 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     data << mgr->GetMapId();
     GetSession()->SendPacket(&data);
 
-    data.Initialize(SMSG_NEW_WORLD);
-    data << mgr->GetMapId();
-    data << vec;
-    data << vec.o;
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(AscEmu::Packets::SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
 
     SetPlayerStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = vec;

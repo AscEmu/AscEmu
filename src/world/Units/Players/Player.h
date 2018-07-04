@@ -578,6 +578,13 @@ public:
     bool isGMFlagSet();
 
     void sendMovie(uint32_t movieId);
+
+    void logIntoBattleground();
+    bool logOntoTransport();
+    void setLoginPosition();
+    void setPlayerInfoIfNeeded();
+    void setGuildAndGroupInfo();
+    void sendCinematicOnFirstLogin();
     //MIT End
     //AGPL Start
 

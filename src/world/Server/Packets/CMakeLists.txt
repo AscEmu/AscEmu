@@ -161,6 +161,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgEmote.h
+   ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
@@ -169,11 +170,13 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
+   ${PATH_PREFIX}/SmsgLearnedDanceMoves.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
    ${PATH_PREFIX}/SmsgLootRemoved.h
    ${PATH_PREFIX}/SmsgMessageChat.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
+   ${PATH_PREFIX}/SmsgNewWorld.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
