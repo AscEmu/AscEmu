@@ -9281,7 +9281,7 @@ void Aura::SpellAuraCallStabledPet(bool apply)
     {
         Player* pcaster = GetPlayerCaster();
         if (pcaster != nullptr && pcaster->getClass() == HUNTER && pcaster->GetSession() != nullptr)
-            pcaster->GetSession()->SendStabledPetList(0);
+            pcaster->GetSession()->sendStabledPetList(0);
     }
 }
 

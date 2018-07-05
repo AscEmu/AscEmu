@@ -21,7 +21,7 @@
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Server/Packets/Handlers/PlayerCache.h"
+#include "Units/Players/PlayerCache.h"
 #include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"
@@ -39,7 +39,7 @@
 #include "GameCata/Management/Guild.h"
 #endif
 
-
+struct CharCreate;
 class QuestLogEntry;
 struct BGScore;
 class AchievementMgr;
@@ -578,6 +578,13 @@ public:
     bool isGMFlagSet();
 
     void sendMovie(uint32_t movieId);
+
+    void logIntoBattleground();
+    bool logOntoTransport();
+    void setLoginPosition();
+    void setPlayerInfoIfNeeded();
+    void setGuildAndGroupInfo();
+    void sendCinematicOnFirstLogin();
     //MIT End
     //AGPL Start
 
@@ -759,7 +766,7 @@ public:
         void AddToWorld();
         void AddToWorld(MapMgr* pMapMgr);
         void RemoveFromWorld();
-        bool Create(WorldPacket & data);
+        bool Create(CharCreate& charCreateContent);
 
         void Update(unsigned long time_passed);
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
@@ -1105,6 +1112,7 @@ public:
         void DuelBoundaryTest();
         void EndDuel(uint8 WinCondition);
         void DuelCountdown();
+        void cancelDuel();
         void SetDuelStatus(uint8 status) { m_duelStatus = status; }
         uint8 GetDuelStatus() { return m_duelStatus; }
         void SetDuelState(uint8 state) { m_duelState = state; }

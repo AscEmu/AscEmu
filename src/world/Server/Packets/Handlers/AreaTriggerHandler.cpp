@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/Packets/CmsgAreatrigger.h"
+#include "Server/WorldSession.h"
 
 using namespace AscEmu::Packets;
 

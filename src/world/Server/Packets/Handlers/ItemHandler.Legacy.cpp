@@ -393,7 +393,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             return;
         }
 
-        if (it->getItemProperties()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
+        if (it->getItemProperties()->ItemId == CharterEntry::Guild)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
             if (gc)
@@ -402,7 +402,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_2v2)
+        if (it->getItemProperties()->ItemId == CharterEntry::TwoOnTwo)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
             if (gc)
@@ -411,7 +411,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_ARENA_2V2] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_5v5)
+        if (it->getItemProperties()->ItemId == CharterEntry::FiveOnFive)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
             if (gc)
@@ -420,7 +420,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_ARENA_5V5] = nullptr;
         }
 
-        if (it->getItemProperties()->ItemId == ARENA_TEAM_CHARTER_3v3)
+        if (it->getItemProperties()->ItemId == CharterEntry::ThreeOnThree)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
             if (gc)
@@ -1012,11 +1012,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff));
         if (!_player->HasGold(cost))
         {
-            WorldPacket data(SMSG_BUY_FAILED, 12);
-            data << uint64(guid);
-            data << uint32(itemid);
-            data << uint8(2); //not enough money
-            SendPacket(&data);
+            SendBuyFailed(guid, itemid, 2);
             return;
         }
         // Check for item uniqueness
@@ -1959,57 +1955,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
     LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", itemguid);
 }
 
-void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 8);
-
-    uint64 guid;
-    recvPacket >> guid;
-    Creature* Banker = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-
-    if (Banker == nullptr || !Banker->isBanker())
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(2); // E_ERR_BANKSLOT_NOTBANKER
-        SendPacket(&data);
-        return;
-    }
-
-    int32 price;
-
-    LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
-
-    uint8_t slots = GetPlayer()->getBankSlots();
-
-    LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
-    auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
-    if (bank_bag_slot_prices == nullptr)
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(0); // E_ERR_BANKSLOT_FAILED_TOO_MANY
-        SendPacket(&data);
-        return;
-    }
-
-    price = bank_bag_slot_prices->Price;
-    if (_player->HasGold(price))
-    {
-        _player->setBankSlots(slots + 1);
-        _player->ModGold(-price);
-#if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
-#endif
-    }
-    else
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(1); // E_ERR_BANKSLOT_INSUFFICIENT_FUNDS
-        SendPacket(&data);
-    }
-}
-
 void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -2260,7 +2205,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             {
                 if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                 {
-                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
+                    int32_t Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
                     TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
                 }
             }

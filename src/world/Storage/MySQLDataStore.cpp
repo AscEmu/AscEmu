@@ -2878,11 +2878,11 @@ bool MySQLDataStore::isCharacterNameAllowed(std::string charName)
         size_t pos = charName.find(iterator->name);
         if (pos != std::string::npos)
         {
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 void MySQLDataStore::loadWordFilterChat()

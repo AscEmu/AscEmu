@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "AlteracValley.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"

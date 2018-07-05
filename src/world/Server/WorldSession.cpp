@@ -33,10 +33,13 @@
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Auth/MD5.h"
+#include "Packets/SmsgBuyFailed.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -446,12 +449,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
 void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)
 {
-    WorldPacket data(13);
-    data.SetOpcode(SMSG_BUY_FAILED);
-    data << guid;
-    data << itemid;
-    data << error;
-    SendPacket(&data);
+    SendPacket(SmsgBuyFailed(guid, itemid, error).serialise().get());
 }
 
 void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
@@ -1281,36 +1279,6 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
-{
-#if VERSION_STRING > TBC
-    uint64 GUID;
-
-    recv_data >> GUID;
-
-    if (_player->getCritterGuid() == 0)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
-        return;
-    }
-
-    if (_player->getCritterGuid() != GUID)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
-        return;
-    }
-
-    Unit* companion = _player->GetMapMgr()->GetUnit(GUID);
-
-    if (companion != NULL)
-    {
-        companion->Delete();
-    }
-
-    _player->setCritterGuid(0);
-#endif
-}
-
 #if VERSION_STRING > TBC
 void WorldSession::SendClientCacheVersion(uint32 version)
 {
@@ -1376,4 +1344,51 @@ void WorldSession::Disconnect()
     {
         _socket->Disconnect();
     }
+}
+
+//\todo replace leftovers from legacy CharacterHandler.cpp file
+LoginErrorCode VerifyName(const char* name, size_t nlen)
+{
+    const char* p;
+    size_t i;
+
+    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (worldConfig.server.enableLimitedNames)
+    {
+        if (nlen == 0)
+            return E_CHAR_NAME_NO_NAME;
+        else if (nlen < 2)
+            return E_CHAR_NAME_TOO_SHORT;
+        else if (nlen > 12)
+            return E_CHAR_NAME_TOO_LONG;
+
+        for (i = 0; i < nlen; ++i)
+        {
+            p = allowedCharacters;
+            for (; *p != 0; ++p)
+            {
+                if (name[i] == *p)
+                    goto cont;
+            }
+            return E_CHAR_NAME_INVALID_CHARACTER;
+        cont:
+            continue;
+        }
+    }
+    else
+    {
+        for (i = 0; i < nlen; ++i)
+        {
+            p = bannedCharacters;
+            while (*p != 0 && name[i] != *p && name[i] != 0)
+                ++p;
+
+            if (*p != 0)
+                return E_CHAR_NAME_INVALID_CHARACTER;
+        }
+    }
+
+    return E_CHAR_NAME_SUCCESS;
 }

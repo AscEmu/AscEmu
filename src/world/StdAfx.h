@@ -144,7 +144,7 @@
 #include "GameCata/Management/GuildMgr.h"
 #endif
 
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Management/ItemPrototype.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
@@ -158,7 +158,6 @@
 #include "Map/Map.h"
 #include "Map/MapCell.h"
 #include "Map/TerrainMgr.h"
-#include "Server/Packets/Handlers/NPCHandler.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/WorldSocket.h"
 #include "Server/WorldSession.h"

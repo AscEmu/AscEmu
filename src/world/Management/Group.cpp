@@ -26,6 +26,9 @@
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgPartyCommandResult.h"
+
+using namespace AscEmu::Packets;
 
 Group::Group(bool Assign)
 {
@@ -514,7 +517,7 @@ void Group::RemovePlayer(PlayerInfo* info)
             pPlayer->GetSession()->SendPacket(&data);
 
 #if VERSION_STRING == Cata
-            pPlayer->GetSession()->SendPartyCommandResult(pPlayer, 2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR);
+            pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR).serialise().get());
             pPlayer->GetSession()->SendEmptyGroupList(pPlayer);
 #else
             data.Initialize(SMSG_PARTY_COMMAND_RESULT);

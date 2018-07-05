@@ -675,8 +675,8 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        static uint32 item_ids[] = { ARENA_TEAM_CHARTER_2v2, ARENA_TEAM_CHARTER_3v3, ARENA_TEAM_CHARTER_5v5 };
-        static uint32 costs[] = { ARENA_TEAM_CHARTER_2v2_COST, ARENA_TEAM_CHARTER_3v3_COST, ARENA_TEAM_CHARTER_5v5_COST };
+        static uint32 item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
+        static uint32 costs[] = { CharterCost::TwoOnTwo, CharterCost::ThreeOnThree, CharterCost::FiveOnFive };
 
         if (!_player->HasGold(costs[arena_type]))
             return;            // error message needed here
@@ -755,7 +755,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        ItemProperties const* ip = sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER);
+        ItemProperties const* ip = sMySQLStore.getItemProperties(CharterEntry::Guild);
         if (ip == nullptr)
             return;
 
@@ -766,7 +766,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER), 1);
+        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(CharterEntry::Guild), 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
@@ -776,7 +776,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             _player->PlaySoundToPlayer(creature_guid, 6594);
 
             // Create the item and charter
-            Item* i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
+            Item* i = objmgr.CreateItem(CharterEntry::Guild, _player);
             c = objmgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (i == NULL || c == NULL)
                 return;
@@ -1028,7 +1028,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         _player->m_charters[CHARTER_TYPE_GUILD] = 0;
         gc->Destroy();
 
-        _player->GetItemInterface()->RemoveItemAmt(ITEM_ENTRY_GUILD_CHARTER, 1);
+        _player->GetItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
         sHookInterface.OnGuildCreate(_player, pGuild);
     }
     else

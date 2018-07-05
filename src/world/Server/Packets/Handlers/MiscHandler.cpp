@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActionbarToggles.h"
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
+#include "Server/Packets/CmsgSetTitle.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -671,4 +672,22 @@ void WorldSession::handleToggleCloakOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleResetInstanceOpcode(WorldPacket& /*recvPacket*/)
 {
     sInstanceMgr.ResetSavedInstances(GetPlayer());
+}
+
+void WorldSession::handleSetTitle(WorldPacket& recvPacket)
+{
+    CmsgSetTitle recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+#if VERSION_STRING > Classic
+    if (recv_packet.titleId == 0xFFFFFFFF)
+    {
+        GetPlayer()->setChosenTitle(0);
+        return;
+    }
+
+    if (GetPlayer()->HasTitle(static_cast<RankTitles>(recv_packet.titleId)))
+        GetPlayer()->setChosenTitle(recv_packet.titleId);
+#endif
 }
