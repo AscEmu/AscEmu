@@ -3126,6 +3126,31 @@ void Player::RemovePendingPlayer()
     delete this;
 }
 
+namespace PlayerQuery
+{
+    enum
+    {
+        LoginFlags = 0,
+        Tutorials = 1,
+        Cooldowns = 2,
+        Questlog = 3,
+        Items = 4,
+        Pets = 5,
+        SummonSpells = 6,
+        Mailbox = 7,
+        Friends = 8,
+        FriendsFor = 9,
+        Ignoring = 10,
+        EquipmentSets = 11,
+        Reputation = 12,
+        Spells = 13,
+        DeletedSpells = 14,
+        Skills = 15,
+        Achievements = 16,
+        AchievementProgress = 17
+    };
+}
+
 bool Player::LoadFromDB(uint32 guid)
 {
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP0<Player>(this, &Player::LoadFromDBProc));
@@ -3174,7 +3199,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    QueryResult* result = results[0].result;
+    QueryResult* result = results[PlayerQuery::LoginFlags].result;
     if (!result)
     {
         LOG_ERROR("Player login query failed! guid = %u", getGuidLow());
@@ -3294,7 +3319,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // new format
     const ItemProf* prof1;
 
-    LoadSkills(results[15].result);
+    LoadSkills(results[PlayerQuery::Skills].result);
 
     if (m_skills.empty())
     {
@@ -3529,11 +3554,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transport_data.relativePosition.z = get_next_field.GetFloat();
     obj_movement_info.transport_data.relativePosition.o = get_next_field.GetFloat();
 
-    LoadSpells(results[13].result);
+    LoadSpells(results[PlayerQuery::Spells].result);
 
-    LoadDeletedSpells(results[14].result);
+    LoadDeletedSpells(results[PlayerQuery::DeletedSpells].result);
 
-    LoadReputations(results[12].result);
+    LoadReputations(results[PlayerQuery::Reputation].result);
 
     // Load saved actionbars
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
@@ -3752,8 +3777,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
         case WARLOCK:
         case HUNTER:
-            _LoadPet(results[5].result);
-            _LoadPetSpells(results[6].result);
+            _LoadPet(results[PlayerQuery::Pets].result);
+            _LoadPetSpells(results[PlayerQuery::SummonSpells].result);
             break;
     }
 
@@ -3772,18 +3797,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #undef get_next_field
 
     // load properties
-    _LoadTutorials(results[1].result);
-    _LoadPlayerCooldowns(results[2].result);
-    _LoadQuestLogEntry(results[3].result);
-    m_ItemInterface->mLoadItemsFromDatabase(results[4].result);
-    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[11].result);
+    _LoadTutorials(results[PlayerQuery::Tutorials].result);
+    _LoadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
+    _LoadQuestLogEntry(results[PlayerQuery::Questlog].result);
+    m_ItemInterface->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
+    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
 
-    m_mailBox.Load(results[7].result);
+    m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
     // SOCIAL
-    if (results[8].result != nullptr)            // this query is "who are our friends?"
+    if (results[PlayerQuery::Friends].result != nullptr)            // this query is "who are our friends?"
     {
-        result = results[8].result;
+        result = results[PlayerQuery::Friends].result;
         do
         {
             fields = result->Fetch();
@@ -3797,9 +3822,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         while (result->NextRow());
     }
 
-    if (results[9].result != nullptr)            // this query is "who has us in their friends?"
+    if (results[PlayerQuery::FriendsFor].result != nullptr)            // this query is "who has us in their friends?"
     {
-        result = results[9].result;
+        result = results[PlayerQuery::FriendsFor].result;
         do
         {
             m_cache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, result->Fetch()[0].GetUInt32());
@@ -3807,9 +3832,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         while (result->NextRow());
     }
 
-    if (results[10].result != nullptr)        // this query is "who are we ignoring"
+    if (results[PlayerQuery::Ignoring].result != nullptr)        // this query is "who are we ignoring"
     {
-        result = results[10].result;
+        result = results[PlayerQuery::Ignoring].result;
         do
         {
             uint32 guid = result->Fetch()[0].GetUInt32();
@@ -3901,7 +3926,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    QueryResult* result = results[0].result;
+    QueryResult* result = results[PlayerQuery::LoginFlags].result;
     if (!result)
     {
         LOG_ERROR("Player login query failed! guid = %u", getGuidLow());
@@ -3996,7 +4021,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 #if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
-    m_achievementMgr.LoadFromDB(results[16].result, results[17].result);
+    m_achievementMgr.LoadFromDB(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
 #endif
 
     CalculateBaseStats();
@@ -4036,7 +4061,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // new format
     const ItemProf* prof1;
 
-    LoadSkills(results[15].result);
+    LoadSkills(results[PlayerQuery::Skills].result);
 
     if (m_skills.empty())
     {
@@ -4298,11 +4323,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 #endif
 
-    LoadSpells(results[13].result);
+    LoadSpells(results[PlayerQuery::Spells].result);
 
-    LoadDeletedSpells(results[14].result);
+    LoadDeletedSpells(results[PlayerQuery::DeletedSpells].result);
 
-    LoadReputations(results[12].result);
+    LoadReputations(results[PlayerQuery::Reputation].result);
 
     // Load saved actionbars
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
@@ -4534,8 +4559,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
         case WARLOCK:
         case HUNTER:
-            _LoadPet(results[5].result);
-            _LoadPetSpells(results[6].result);
+            _LoadPet(results[PlayerQuery::Pets].result);
+            _LoadPetSpells(results[PlayerQuery::SummonSpells].result);
             break;
     }
 
@@ -4554,18 +4579,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #undef get_next_field
 
     // load properties
-    _LoadTutorials(results[1].result);
-    _LoadPlayerCooldowns(results[2].result);
-    _LoadQuestLogEntry(results[3].result);
-    m_ItemInterface->mLoadItemsFromDatabase(results[4].result);
-    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[11].result);
+    _LoadTutorials(results[PlayerQuery::Tutorials].result);
+    _LoadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
+    _LoadQuestLogEntry(results[PlayerQuery::Questlog].result);
+    m_ItemInterface->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
+    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
 
-    m_mailBox.Load(results[7].result);
+    m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
     // SOCIAL
-    if (results[8].result != nullptr)            // this query is "who are our friends?"
+    if (results[PlayerQuery::Friends].result != nullptr)            // this query is "who are our friends?"
     {
-        result = results[8].result;
+        result = results[PlayerQuery::Friends].result;
         do
         {
             fields = result->Fetch();
@@ -4579,9 +4604,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         while (result->NextRow());
     }
 
-    if (results[9].result != nullptr)            // this query is "who has us in their friends?"
+    if (results[PlayerQuery::FriendsFor].result != nullptr)            // this query is "who has us in their friends?"
     {
-        result = results[9].result;
+        result = results[PlayerQuery::FriendsFor].result;
         do
         {
             m_cache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, result->Fetch()[0].GetUInt32());
@@ -4589,9 +4614,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         while (result->NextRow());
     }
 
-    if (results[10].result != nullptr)        // this query is "who are we ignoring"
+    if (results[PlayerQuery::Ignoring].result != nullptr)        // this query is "who are we ignoring"
     {
-        result = results[10].result;
+        result = results[PlayerQuery::Ignoring].result;
         do
         {
             uint32 guid = result->Fetch()[0].GetUInt32();
