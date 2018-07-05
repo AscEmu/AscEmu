@@ -276,7 +276,7 @@ class SERVER_DECL WorldSession
     protected:
 
         // Login screen opcodes (CharacterHandler.cpp):
-        void HandleCharEnumOpcode(WorldPacket& recvPacket);
+        void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
         void handleCharDeleteOpcode(WorldPacket& recvPacket);
         uint8_t deleteCharacter(WoWGuid guid);
         void handleCharCreateOpcode(WorldPacket& recvPacket);

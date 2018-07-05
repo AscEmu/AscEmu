@@ -11,8 +11,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/CalendarHandler.cpp
    ${PATH_PREFIX}/ChannelHandler.cpp
    ${PATH_PREFIX}/CharacterHandler.cpp 
-   ${PATH_PREFIX}/CharacterHandler.Legacy.cpp 
-   
    ${PATH_PREFIX}/ChatHandler.cpp
    ${PATH_PREFIX}/CombatHandler.cpp
    ${PATH_PREFIX}/DuelHandler.cpp

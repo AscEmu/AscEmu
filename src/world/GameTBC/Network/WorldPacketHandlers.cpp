@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 void WorldSession::loadSpecificHandlers()
 {
     // Login
-    WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::HandleCharEnumOpcode;
+    WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
     WorldPacketHandlers[CMSG_CHAR_ENUM].status = STATUS_AUTHED;
 
     WorldPacketHandlers[CMSG_CHAR_CREATE].handler = &WorldSession::handleCharCreateOpcode;
