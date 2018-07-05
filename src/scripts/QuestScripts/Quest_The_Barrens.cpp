@@ -112,7 +112,7 @@ public:
     void OnDied(Unit* mKiller) override
     {
         kolkarskilled++;
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
 

@@ -171,7 +171,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     {
         if (itr->second->GetSession()->GetPermissionCount())
         {
-            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", itr->second->GetName(), itr->second->GetSession()->GetPermissions(),
+            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions(),
                 itr->second->GetSession()->GetLatency());
         }
     }
@@ -205,12 +205,12 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     }
 
     std::stringstream worldAnnounce;
-    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << player->GetName() << " was removed from the server. Reason: " << kickReason;
+    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << player->getName().c_str() << " was removed from the server. Reason: " << kickReason;
     sWorld.sendMessageToAll(worldAnnounce.str());
 
     player->BroadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", kickReason.c_str());
     player->Kick(5000);
-    baseConsole->Write("Kicked player %s.\r\n", player->GetName());
+    baseConsole->Write("Kicked player %s.\r\n", player->getName().c_str());
 
     return true;
 }
@@ -243,7 +243,7 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     objmgr._playerslock.AcquireReadLock();
     for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
-        baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->GetName(), itr->second->GetSession()->GetPlayer()->getLevel(),
+        baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->GetSession()->GetPlayer()->getLevel(),
             itr->second->GetSession()->GetLatency());
     }
     objmgr._playerslock.ReleaseReadLock();
@@ -264,7 +264,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
         return true;
     }
 
-    baseConsole->Write("Player: %s\r\n", player->GetName());
+    baseConsole->Write("Player: %s\r\n", player->getName().c_str());
     baseConsole->Write("Race: %s\r\n", player->myRace->name[0]);
     baseConsole->Write("Class: %s\r\n", player->myClass->name[0]);
     baseConsole->Write("IP: %s\r\n", player->GetSession()->GetSocket() ? player->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
@@ -361,7 +361,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     whisperOut << MSG_COLOR_LIGHTBLUE << "Console whisper: |r" << consoleInput;
 
     player->BroadcastMessage(whisperOut.str().c_str());
-    baseConsole->Write("Message '%s' sent to player %s.\r\n", consoleInput.c_str(), player->GetName());
+    baseConsole->Write("Message '%s' sent to player %s.\r\n", consoleInput.c_str(), player->getName().c_str());
 
     return true;
 }
@@ -392,11 +392,11 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
     if (player->IsDead())
     {
         player->RemoteRevive();
-        baseConsole->Write("Revived player %s.\r\n", player->GetName());
+        baseConsole->Write("Revived player %s.\r\n", player->getName().c_str());
     }
     else
     {
-        baseConsole->Write("Player %s is not dead.\r\n", player->GetName());
+        baseConsole->Write("Player %s is not dead.\r\n", player->getName().c_str());
     }
 
     return true;

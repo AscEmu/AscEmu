@@ -235,7 +235,7 @@ class Priestess_DelrissaAI : public CreatureAIScript
 
     void OnTargetDied(Unit* pTarget) override
     {
-        if (!pTarget || !pTarget->IsPlayer())
+        if (!pTarget || !pTarget->isPlayer())
             return;
 
         ++mKilledPlayers;

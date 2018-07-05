@@ -14,7 +14,7 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
 
     switch (errorCode)
     {
-        case AUCTION_ERR_NONE:
+        case AUCTION_ERROR_NONE:
         {
             if (action == AUCTION_BID)
             {
@@ -22,12 +22,12 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
             }
             break;
         }
-        case AUCTION_ERR_INVENTORY:
+        case AUCTION_ERROR_INVENTORY:
         {
             data << uint32_t(bidError);
             break;
         }
-        case AUCTION_ERR_HIGHER_BID:
+        case AUCTION_ERROR_HIGHER_BID:
         {
             data << uint64_t(auction->HighestBidder);
             data << uint64_t(auction->HighestBid);

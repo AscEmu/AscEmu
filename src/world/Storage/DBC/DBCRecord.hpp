@@ -19,9 +19,9 @@ namespace DBC
 
             DBCRecord(unsigned char* offset);
 
-            const float GetFloat(size_t field, uint32 field_count, const uint32 field_offset);
-            const uint32 GetUInt32(size_t field, uint32 field_count, const uint32 field_offset);
-            const uint8 GetUInt8(size_t field, uint32 field_count, const uint32 field_offset);
-            const char* GetString(size_t field, uint32 field_count, const uint32 field_offset, uint32 string_size, unsigned char* string_table);
+            float GetFloat(size_t field, uint32 field_count, uint32 field_offset) const;
+            uint32 GetUInt32(size_t field, uint32 field_count, uint32 field_offset) const;
+            uint8 GetUInt8(size_t field, uint32 field_count, uint32 field_offset) const;
+            char* GetString(size_t field, uint32 field_count, uint32 field_offset, uint32 string_size, unsigned char* string_table) const;
     };
 }

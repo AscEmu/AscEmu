@@ -21,7 +21,7 @@
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Server/Packets/Handlers/PlayerCache.h"
+#include "Units/Players/PlayerCache.h"
 #include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"
@@ -39,7 +39,7 @@
 #include "GameCata/Management/Guild.h"
 #endif
 
-
+struct CharCreate;
 class QuestLogEntry;
 struct BGScore;
 class AchievementMgr;
@@ -107,7 +107,6 @@ struct PlayerCreateInfo
 {
     uint8 index;
     uint8 race;
-    uint32 factiontemplate;
     uint8 class_;
     uint32 mapId;
     uint32 zoneId;
@@ -115,7 +114,6 @@ struct PlayerCreateInfo
     float positionY;
     float positionZ;
     float orientation;
-    uint16 displayId;
     uint8 strength;
     uint8 ability;
     uint8 stamina;
@@ -129,7 +127,6 @@ struct PlayerCreateInfo
     uint32 attackpower;
     float mindmg;
     float maxdmg;
-    uint32 introid;
     uint32 taximask[12];
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;
@@ -493,6 +490,12 @@ public:
     void setRangedAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
 
+    uint32_t getWatchedFaction() const;
+    void setWatchedFaction(uint32_t factionId);
+
+    uint32_t getMaxLevel() const;
+    void setMaxLevel(uint32_t level);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
@@ -504,6 +507,23 @@ public:
 
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Basic
+
+private:
+
+    //used for classic
+    uint32_t max_level;
+
+    std::string m_name;
+
+public:
+
+    std::string getName() const;
+    void setName(std::string name);
+
+    void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -558,6 +578,13 @@ public:
     bool isGMFlagSet();
 
     void sendMovie(uint32_t movieId);
+
+    void logIntoBattleground();
+    bool logOntoTransport();
+    void setLoginPosition();
+    void setPlayerInfoIfNeeded();
+    void setGuildAndGroupInfo();
+    void sendCinematicOnFirstLogin();
     //MIT End
     //AGPL Start
 
@@ -739,14 +766,12 @@ public:
         void AddToWorld();
         void AddToWorld(MapMgr* pMapMgr);
         void RemoveFromWorld();
-        bool Create(WorldPacket & data);
+        bool Create(CharCreate& charCreateContent);
 
         void Update(unsigned long time_passed);
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
         void BuildPetSpellList(WorldPacket & data);
         void SetAFKReason(std::string reason) { m_cache->SetStringValue(CACHE_AFK_DND_REASON, reason); };
-        const char* GetName() { return m_name.c_str(); }
-        std::string* GetNameString() { return &m_name; }
 
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
@@ -791,9 +816,9 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         bool HasQuests()
         {
-            for (uint8 i = 0; i < 25; ++i)
+            for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
             {
-                if (m_questlog[i] != 0)
+                if (m_questlog[i] != nullptr)
                     return true;
             }
             return false;
@@ -913,14 +938,6 @@ public:
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
-        uint32 GetMaxLevel()
-        {
-#if VERSION_STRING == Classic
-            return 60;      // world levelcap!
-#else
-            return getUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-#endif
-        }
 
         const uint64 & GetSelection() const { return m_curSelection; }
         const uint64 & GetTarget() const { return m_curTarget; }
@@ -1095,6 +1112,7 @@ public:
         void DuelBoundaryTest();
         void EndDuel(uint8 WinCondition);
         void DuelCountdown();
+        void cancelDuel();
         void SetDuelStatus(uint8 status) { m_duelStatus = status; }
         uint8 GetDuelStatus() { return m_duelStatus; }
         void SetDuelState(uint8 state) { m_duelState = state; }
@@ -1507,12 +1525,11 @@ public:
             }
         }
 
-        bool IsVehicle()
+        bool isVehicle() const override
         {
             if (mountvehicleid != 0)
                 return true;
-            else
-                return false;
+            return false;
         }
 
 
@@ -1685,17 +1702,17 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         uint32 m_pvpTimer;
 
-        bool IsPvPFlagged();
-        void SetPvPFlag();
-        void RemovePvPFlag();
+        bool IsPvPFlagged() override;
+        void SetPvPFlag() override;
+        void RemovePvPFlag() override;
 
-        bool IsFFAPvPFlagged();
-        void SetFFAPvPFlag();
-        void RemoveFFAPvPFlag();
+        bool IsFFAPvPFlagged() override;
+        void SetFFAPvPFlag() override;
+        void RemoveFFAPvPFlag() override;
 
-        bool IsSanctuaryFlagged();
-        void SetSanctuaryFlag();
-        void RemoveSanctuaryFlag();
+        bool IsSanctuaryFlagged() override;
+        void SetSanctuaryFlag() override;
+        void RemoveSanctuaryFlag() override;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player gold
@@ -1982,7 +1999,6 @@ public:
         bool resend_speed;
         uint32 login_flags;
         uint8 iInstanceType;
-        void SetName(std::string & name) { m_name = name; }
 
         FactionReputation* reputationByListId[128];
 
@@ -2118,7 +2134,7 @@ public:
         PlayerCreateInfo const* info;
         uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
         bool m_attacking;
-        std::string m_name;             // max 21 character name
+        
         uint32 m_Tutorials[8];
 
         // Character Ban
@@ -2145,7 +2161,12 @@ public:
         // Rested State Stuff
         uint32 m_timeLogoff;
         // Played time
+        // 0 = played on level
+        // 1 = played total
+        // 2 = played session
         uint32 m_playedtime[3];
+
+
         uint8 m_isResting;
         uint8 m_restState;
         uint32 m_restAmount;

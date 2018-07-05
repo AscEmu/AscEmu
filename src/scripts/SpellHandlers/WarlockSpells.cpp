@@ -564,7 +564,7 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if (m_target->IsPet())
+    if (m_target->isPet())
     {
         Player* PetOwner = static_cast<Pet*>(m_target)->GetPetOwner();
         if (PetOwner != nullptr)
@@ -594,7 +594,7 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
@@ -628,7 +628,7 @@ bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);

@@ -78,8 +78,8 @@ bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_sess
     }
 
     std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
-    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " " << args;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " " << args;
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
@@ -160,9 +160,9 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     GreenSystemMessage(m_session, "The following GMs are on this server:");
 
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                    SystemMessage(m_session, " - %s", itr->second->GetName());
+                    SystemMessage(m_session, " - %s", itr->second->getName().c_str());
                 else
-                    SystemMessage(m_session, " - %s [%s]", itr->second->GetName(), itr->second->GetSession()->GetPermissions());
+                    SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions());
 
                 print_headline = false;
             }
@@ -174,9 +174,9 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                         GreenSystemMessage(m_session, "The following GMs are active on this server:");
 
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                        SystemMessage(m_session, " - %s", itr->second->GetName());
+                        SystemMessage(m_session, " - %s", itr->second->getName().c_str());
                     else
-                        SystemMessage(m_session, " - %s [%s]", itr->second->GetName(), itr->second->GetSession()->GetPermissions());
+                        SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions());
 
                     print_headline = false;
                 }

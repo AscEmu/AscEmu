@@ -45,9 +45,9 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
 
     if (selected_player != m_session->GetPlayer())
     {
-        sGMLog.writefromsession(m_session, "used created pet with entry %u for player %s", entry, selected_player->GetName());
-        BlueSystemMessage(m_session, "Pet with entry %u created for player %s.", entry, selected_player->GetName());
-        BlueSystemMessage(selected_player->GetSession(), "%s created a pet with entry %u for you.", m_session->GetPlayer()->GetName(), entry);
+        sGMLog.writefromsession(m_session, "used created pet with entry %u for player %s", entry, selected_player->getName().c_str());
+        BlueSystemMessage(m_session, "Pet with entry %u created for player %s.", entry, selected_player->getName().c_str());
+        BlueSystemMessage(selected_player->GetSession(), "%s created a pet with entry %u for you.", m_session->GetPlayer()->getName().c_str(), entry);
 
     }
     else
@@ -82,7 +82,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
         if (selected_creature == nullptr)
             return false;
 
-        if (!selected_creature->IsPet())
+        if (!selected_creature->isPet())
             return false;
 
         selected_pet = static_cast< Pet* >(selected_creature);
@@ -93,9 +93,9 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
 
     if (selected_player != m_session->GetPlayer())
     {
-        GreenSystemMessage(m_session, "Dismissed %s's pet.", selected_player->GetName());
-        SystemMessage(selected_player->GetSession(), "%s dismissed your pet.", m_session->GetPlayer()->GetName());
-        sGMLog.writefromsession(m_session, "used dismiss pet command on player %s", selected_player->GetName());
+        GreenSystemMessage(m_session, "Dismissed %s's pet.", selected_player->getName().c_str());
+        SystemMessage(selected_player->GetSession(), "%s dismissed your pet.", m_session->GetPlayer()->getName().c_str());
+        sGMLog.writefromsession(m_session, "used dismiss pet command on player %s", selected_player->getName().c_str());
     }
     else
     {
@@ -127,9 +127,9 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
 
     if (selected_player != m_session->GetPlayer())
     {
-        GreenSystemMessage(m_session, "Renamed %s's pet to %s.", selected_player->GetName(), args);
-        SystemMessage(selected_player->GetSession(), "%s renamed your pet to %s.", m_session->GetPlayer()->GetName(), args);
-        sGMLog.writefromsession(m_session, "renamed %s's pet to %s", selected_player->GetName(), args);
+        GreenSystemMessage(m_session, "Renamed %s's pet to %s.", selected_player->getName().c_str(), args);
+        SystemMessage(selected_player->GetSession(), "%s renamed your pet to %s.", m_session->GetPlayer()->getName().c_str(), args);
+        sGMLog.writefromsession(m_session, "renamed %s's pet to %s", selected_player->getName().c_str(), args);
     }
     else
     {
@@ -150,7 +150,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
 
     if (selected_player->GetSummon() == nullptr)
     {
-        RedSystemMessage(m_session, "%s has no pet.", selected_player->GetName());
+        RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
     }
 
@@ -171,7 +171,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         (*itr)->AddSpell(spell_entry, true);
     }
 
-    GreenSystemMessage(m_session, "Added spell %u to %s's pet.", SpellId, selected_player->GetName());
+    GreenSystemMessage(m_session, "Added spell %u to %s's pet.", SpellId, selected_player->getName().c_str());
 
     return true;
 }
@@ -185,7 +185,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
 
     if (selected_player->GetSummon() == nullptr)
     {
-        RedSystemMessage(m_session, "%s has no pet.", selected_player->GetName());
+        RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
     }
 
@@ -206,7 +206,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         (*itr)->RemoveSpell(SpellId);
     }
 
-    GreenSystemMessage(m_session, "Removed spell %u from %s's pet.", SpellId, selected_player->GetName());
+    GreenSystemMessage(m_session, "Removed spell %u from %s's pet.", SpellId, selected_player->getName().c_str());
 
     return true;
 }
@@ -239,7 +239,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
         if (selected_creature == nullptr)
             return false;
 
-        if (!selected_creature->IsPet())
+        if (!selected_creature->isPet())
             return false;
 
         selected_pet = static_cast< Pet* >(selected_creature);
@@ -261,9 +261,9 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
 
     if (selected_player != m_session->GetPlayer())
     {
-        GreenSystemMessage(m_session, "Set %s's pet to level %lu.", selected_player->GetName(), newLevel);
-        SystemMessage(selected_player->GetSession(), "%s set your pet to level %lu.", m_session->GetPlayer()->GetName(), newLevel);
-        sGMLog.writefromsession(m_session, "leveled %s's pet to %lu", selected_player->GetName(), newLevel);
+        GreenSystemMessage(m_session, "Set %s's pet to level %lu.", selected_player->getName().c_str(), newLevel);
+        SystemMessage(selected_player->GetSession(), "%s set your pet to level %lu.", m_session->GetPlayer()->getName().c_str(), newLevel);
+        sGMLog.writefromsession(m_session, "leveled %s's pet to %lu", selected_player->getName().c_str(), newLevel);
     }
     else
     {

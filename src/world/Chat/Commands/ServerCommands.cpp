@@ -62,8 +62,8 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
 bool ChatHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session)
 {
     std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
-    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " is rehashing config file.";
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " is rehashing config file.";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
@@ -102,7 +102,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
     if (player_target->m_nextSave < 180000)
     {
         player_target->SaveToDB(false);
-        GreenSystemMessage(m_session, "Player %s saved to DB", player_target->GetName());
+        GreenSystemMessage(m_session, "Player %s saved to DB", player_target->getName().c_str());
     }
     else
     {
@@ -131,8 +131,8 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     objmgr._playerslock.ReleaseReadLock();
 
     std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName() << "|h[";
-    teamAnnounce << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " saved all online players (" << online_count;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[";
+    teamAnnounce << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " saved all online players (" << online_count;
     teamAnnounce << ") in " << Util::GetTimeDifferenceToNow(start_time) << " msec.";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
@@ -172,8 +172,8 @@ bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_
         shutdowntime = 30;
 
     std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
-    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " initiated server shutdown timer " << shutdowntime << " sec";
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " initiated server shutdown timer " << shutdowntime << " sec";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
@@ -204,8 +204,8 @@ bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldS
     else
     {
         std::stringstream teamAnnounce;
-        teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
-        teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " canceled server shutdown!";
+        teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
+        teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " canceled server shutdown!";
 
         sWorld.sendMessageToOnlineGms(teamAnnounce.str());
         sGMLog.writefromsession(m_session, "canceled server shutdown");
@@ -237,7 +237,7 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
         shutdowntime = 30;
 
     std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName() << "|h[" << m_session->GetPlayer()->GetName();
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[" << m_session->GetPlayer()->getName().c_str();
     teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());

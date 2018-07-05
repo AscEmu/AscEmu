@@ -174,10 +174,10 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 
     uint32 attackerscount = static_cast<uint32>(selected_unit->GetAIInterface()->getAITargetsCount());
 
-    if (selected_unit->IsCreature())
+    if (selected_unit->isCreature())
         BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
     else
-        BlueSystemMessage(m_session, "Showing player moveinfo for %s", static_cast<Player*>(selected_unit)->GetName());
+        BlueSystemMessage(m_session, "Showing player moveinfo for %s", static_cast<Player*>(selected_unit)->getName().c_str());
 
     SystemMessage(m_session, "=== Facing ===");
     SystemMessage(m_session, "Target is in front: %u", creature_in_front);
@@ -378,7 +378,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     points *= 10;
 
-    GreenSystemMessage(m_session, "Building packet with Rank %u, Points %u, for Player %s.", rank, points, player_target->GetName());
+    GreenSystemMessage(m_session, "Building packet with Rank %u, Points %u, for Player %s.", rank, points, player_target->getName().c_str());
 
     WorldPacket data(SMSG_PVP_CREDIT, 12);
     data << points;
@@ -483,7 +483,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     selected_player->sendMovie(movie);
 
     if (selected_player != m_session->GetPlayer())
-        GreenSystemMessage(selected_player->GetSession(), "Movie started for player %s", selected_player->GetName());
+        GreenSystemMessage(selected_player->GetSession(), "Movie started for player %s", selected_player->getName().c_str());
 
     return true;
 }

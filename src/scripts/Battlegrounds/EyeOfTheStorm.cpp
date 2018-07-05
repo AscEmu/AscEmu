@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "EyeOfTheStorm.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
@@ -344,8 +344,8 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
 #ifdef ANTI_CHEAT
     if (!m_started)
     {
-        Anticheat_Log->writefromsession(plr->GetSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->GetName(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->GetName());
+        Anticheat_Log->writefromsession(plr->GetSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
+        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick    player from server.

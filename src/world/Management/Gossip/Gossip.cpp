@@ -312,7 +312,7 @@ Gossip::Script* Gossip::Script::GetInterface(GameObject* go)
 // SPIRIT HEALER
 void Arcemu::Gossip::SpiritHealer::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendSpiritHealerRequest(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendSpiritHealerRequest(static_cast<Creature*>(pObject));
 }
 
 // VENDORS
@@ -384,7 +384,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else
         Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
@@ -423,7 +423,7 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendAuctionList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendAuctionList(static_cast<Creature*>(pObject));
 }
 
 // INN KEEPERS
@@ -450,7 +450,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendInnkeeperBind(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendInnkeeperBind(static_cast<Creature*>(pObject));
     else
         Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
@@ -477,7 +477,7 @@ void Arcemu::Gossip::BattleMaster::OnSelectOption(Object* pObject, Player* Plr, 
 //BANKER
 void Arcemu::Gossip::Banker::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendBankerList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendBankerList(static_cast<Creature*>(pObject));
 }
 
 void Arcemu::Gossip::Banker::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -501,7 +501,7 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendCharterRequest(static_cast<Creature*>(pObject));
 }
 
 //TABARD DESIGNER
@@ -531,11 +531,11 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTabardHelp(static_cast<Creature*>(pObject));
+            Plr->GetSession()->sendTabardHelp(static_cast<Creature*>(pObject));
             break;
         case 2:
             if (static_cast<Creature*>(pObject)->isCharterGiver())
-                Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
+                Plr->GetSession()->sendCharterRequest(static_cast<Creature*>(pObject));
             break;
         case 3:
             Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
@@ -559,7 +559,7 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendStabledPetList(pObject->getGuid());
+    Plr->GetSession()->sendStabledPetList(pObject->getGuid());
 }
 
 
@@ -583,7 +583,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else if (2 == Id)
         Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_PETUNTRAIN, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
     else
@@ -650,9 +650,11 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
                 case ::PRIEST:
                     itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_PRIEST));
                     break;
+#if VERSION_STRING > TBC
                 case ::DEATHKNIGHT:
                     itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_DEATHKNIGHT));
                     break;
+#endif
                 default:
                     break;
             }
@@ -681,7 +683,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
+            Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
             break;
         case 2:
             Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_TALENTRESET, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);

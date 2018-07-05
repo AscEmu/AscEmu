@@ -373,7 +373,7 @@ enum GameObjectTypes
     GAMEOBJECT_TYPE_TRAPDOOR                = 35
 };
 
-#define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->IsGameObject() && static_cast< GameObject* >(obj)->GetScript() != NULL) static_cast< GameObject* >(obj)->GetScript()->func
+#define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->isGameObject() && static_cast< GameObject* >(obj)->GetScript() != NULL) static_cast< GameObject* >(obj)->GetScript()->func
 
 struct WoWGameObject;
 class SERVER_DECL GameObject : public Object

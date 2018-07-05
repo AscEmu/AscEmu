@@ -300,7 +300,7 @@ PUSH METHODS
 void LuaEngine::PushUnit(Object* unit, lua_State* L)
 {
     Unit* pUnit = nullptr;
-    if (unit != nullptr && unit->IsUnit())
+    if (unit != nullptr && unit->isCreatureOrPlayer())
     {
         pUnit = static_cast<Unit*>(unit);
     }
@@ -316,7 +316,7 @@ void LuaEngine::PushUnit(Object* unit, lua_State* L)
 void LuaEngine::PushGo(Object* go, lua_State* L)
 {
     GameObject* pGo = nullptr;
-    if (go != nullptr && go->IsGameObject())
+    if (go != nullptr && go->isGameObject())
     {
         pGo = static_cast< GameObject* >(go);
     }
@@ -332,7 +332,7 @@ void LuaEngine::PushGo(Object* go, lua_State* L)
 void LuaEngine::PushItem(Object* item, lua_State* L)
 {
     Item* pItem = nullptr;
-    if (item != nullptr && (item->IsItem() || item->IsContainer()))
+    if (item != nullptr && (item->isItem() || item->isContainer()))
     {
         pItem = static_cast< Item* >(item);
     }
@@ -1205,15 +1205,15 @@ void LuaHookOnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pQue
         {
             LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
-        else if (pQuestGiver->IsUnit())
+        else if (pQuestGiver->isCreatureOrPlayer())
         {
             LuaGlobal::instance()->luaEngine()->PushUnit(pQuestGiver);
         }
-        else if (pQuestGiver->IsGameObject())
+        else if (pQuestGiver->isGameObject())
         {
             LuaGlobal::instance()->luaEngine()->PushGo(pQuestGiver);
         }
-        else if (pQuestGiver->IsItem())
+        else if (pQuestGiver->isItem())
         {
             LuaGlobal::instance()->luaEngine()->PushItem(pQuestGiver);
         }
@@ -1351,15 +1351,15 @@ void LuaHookOnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pQ
         {
             LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
-        else if (pQuestGiver->IsUnit())
+        else if (pQuestGiver->isCreatureOrPlayer())
         {
             LuaGlobal::instance()->luaEngine()->PushUnit(pQuestGiver);
         }
-        else if (pQuestGiver->IsGameObject())
+        else if (pQuestGiver->isGameObject())
         {
             LuaGlobal::instance()->luaEngine()->PushGo(pQuestGiver);
         }
-        else if (pQuestGiver->IsItem())
+        else if (pQuestGiver->isItem())
         {
             LuaGlobal::instance()->luaEngine()->PushItem(pQuestGiver);
         }
@@ -2123,7 +2123,7 @@ class LuaGossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             GET_LOCK
-            if (pObject->IsCreature())
+            if (pObject->isCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
                 {
@@ -2137,7 +2137,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PushUnit(plr);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->IsItem())
+            else if (pObject->isItem())
             {
                 if (m_item_gossip_binding == nullptr)
                 {
@@ -2151,7 +2151,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PushUnit(plr);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->IsGameObject())
+            else if (pObject->isGameObject())
             {
                 if (m_go_gossip_binding == nullptr)
                 {
@@ -2171,7 +2171,7 @@ class LuaGossip : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t /*gossipId*/) override
         {
             GET_LOCK
-            if (pObject->IsCreature())
+            if (pObject->isCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
                 {
@@ -2188,7 +2188,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
             }
-            else if (pObject->IsItem())
+            else if (pObject->isItem())
             {
                 if (m_item_gossip_binding == nullptr)
                 {
@@ -2204,7 +2204,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
             }
-            else if (pObject->IsGameObject())
+            else if (pObject->isGameObject())
             {
                 if (m_go_gossip_binding == nullptr)
                 {
@@ -2226,7 +2226,7 @@ class LuaGossip : public Arcemu::Gossip::Script
         void OnEnd(Object* pObject, Player* Plr) override
         {
             GET_LOCK
-            if (pObject->IsCreature())
+            if (pObject->isCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
                 {
@@ -2239,7 +2239,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->IsItem())
+            else if (pObject->isItem())
             {
                 if (m_item_gossip_binding == nullptr)
                 {
@@ -2252,7 +2252,7 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->IsGameObject())
+            else if (pObject->isGameObject())
             {
                 if (m_go_gossip_binding == nullptr)
                 {

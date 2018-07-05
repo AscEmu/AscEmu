@@ -33,10 +33,13 @@
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Auth/MD5.h"
+#include "Packets/SmsgBuyFailed.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -278,7 +281,7 @@ void WorldSession::LogoutPlayer(bool Save)
             Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
             if (obj != NULL)
             {
-                switch (obj->GetTypeId())
+                switch (obj->getObjectTypeId())
                 {
                     case TYPEID_UNIT:
                         static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
@@ -357,7 +360,7 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             Guild* pGuild = _player->m_playerInfo->guild;
             if (pGuild != NULL)
-                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->GetName());
+                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->getName().c_str());
         }
 #endif
 
@@ -446,12 +449,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
 void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)
 {
-    WorldPacket data(13);
-    data.SetOpcode(SMSG_BUY_FAILED);
-    data << guid;
-    data << itemid;
-    data << error;
-    SendPacket(&data);
+    SendPacket(SmsgBuyFailed(guid, itemid, error).serialise().get());
 }
 
 void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
@@ -578,7 +576,7 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
             (unsigned int)session->GetAccountId(),
             session->GetAccountName().c_str(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
-            session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
+            session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");
 
         lenght = strlen(out);
         vsnprintf(&out[lenght], 32768 - lenght, format, ap);
@@ -1038,7 +1036,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                     auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!check)
                     {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->GetNameString());
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->getName().c_str());
                         result = 0;
                     }
                     else
@@ -1195,7 +1193,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     data << uint32(Caster->getDisplayId());
     data << uint8(Caster->getRace());
 
-    if (Caster->IsPlayer())
+    if (Caster->isPlayer())
     {
         Player* pcaster = static_cast <Player*>(Caster);
 
@@ -1281,36 +1279,6 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
-{
-#if VERSION_STRING > TBC
-    uint64 GUID;
-
-    recv_data >> GUID;
-
-    if (_player->getCritterGuid() == 0)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
-        return;
-    }
-
-    if (_player->getCritterGuid() != GUID)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
-        return;
-    }
-
-    Unit* companion = _player->GetMapMgr()->GetUnit(GUID);
-
-    if (companion != NULL)
-    {
-        companion->Delete();
-    }
-
-    _player->setCritterGuid(0);
-#endif
-}
-
 #if VERSION_STRING > TBC
 void WorldSession::SendClientCacheVersion(uint32 version)
 {
@@ -1376,4 +1344,51 @@ void WorldSession::Disconnect()
     {
         _socket->Disconnect();
     }
+}
+
+//\todo replace leftovers from legacy CharacterHandler.cpp file
+LoginErrorCode VerifyName(const char* name, size_t nlen)
+{
+    const char* p;
+    size_t i;
+
+    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (worldConfig.server.enableLimitedNames)
+    {
+        if (nlen == 0)
+            return E_CHAR_NAME_NO_NAME;
+        else if (nlen < 2)
+            return E_CHAR_NAME_TOO_SHORT;
+        else if (nlen > 12)
+            return E_CHAR_NAME_TOO_LONG;
+
+        for (i = 0; i < nlen; ++i)
+        {
+            p = allowedCharacters;
+            for (; *p != 0; ++p)
+            {
+                if (name[i] == *p)
+                    goto cont;
+            }
+            return E_CHAR_NAME_INVALID_CHARACTER;
+        cont:
+            continue;
+        }
+    }
+    else
+    {
+        for (i = 0; i < nlen; ++i)
+        {
+            p = bannedCharacters;
+            while (*p != 0 && name[i] != *p && name[i] != 0)
+                ++p;
+
+            if (*p != 0)
+                return E_CHAR_NAME_INVALID_CHARACTER;
+        }
+    }
+
+    return E_CHAR_NAME_SUCCESS;
 }

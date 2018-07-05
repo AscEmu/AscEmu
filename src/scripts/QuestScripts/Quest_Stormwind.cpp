@@ -36,7 +36,7 @@ public:
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
         {
-            if (mAttacker->IsPlayer())
+            if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
@@ -87,7 +87,7 @@ public:
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";
-            say += (static_cast<Player*>(mTarget))->GetName();
+            say += (static_cast<Player*>(mTarget))->getName().c_str();
             say += "!";
             Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }

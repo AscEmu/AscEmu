@@ -715,7 +715,6 @@ public:
     bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
     bool SetAurDuration(uint32 spellId, uint32 duration);
     void DropAurasOnDeath();
-    bool IsControlledByPlayer();
 
     // ProcTrigger
     std::list<SpellProc*> m_procSpells;

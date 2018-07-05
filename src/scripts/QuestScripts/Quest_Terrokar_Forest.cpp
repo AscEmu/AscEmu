@@ -29,7 +29,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(11096, 0, 0);
         }
@@ -50,7 +50,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player * plr = static_cast<Player*>(mKiller);
             if (plr->HasQuest(10896))
@@ -107,7 +107,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         Player* plr = static_cast<Player*>(mKiller);

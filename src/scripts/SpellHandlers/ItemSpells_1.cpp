@@ -143,7 +143,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
 
     for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
     {
-        if (itr && itr->IsUnit())
+        if (itr && itr->isCreatureOrPlayer())
             target = static_cast<Unit*>(itr);
         else
             continue;
@@ -195,7 +195,7 @@ bool BanishExile(uint8_t /*effectIndex*/, Spell* pSpell)
 bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->IsCreature())
+    if (!pSpell->p_caster || !target || !target->isCreature())
         return true;
 
     // check to see that we have the correct creature
@@ -214,7 +214,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 
     // send chat message
     char msg[100];
-    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->p_caster->GetName());
+    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->p_caster->getName().c_str());
     target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 
     c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
@@ -275,7 +275,7 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
 
-    if (target == NULL || !target->IsPlayer())
+    if (target == NULL || !target->isPlayer())
         return true;
 
     uint32 outfitspells[] =
@@ -321,7 +321,7 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->IsCreature() || target->getEntry() != 17157)
+    if (!pSpell->p_caster || !target || !target->isCreature() || target->getEntry() != 17157)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -376,7 +376,7 @@ bool WarpRiftGenerator(uint8_t /*effectIndex*/, Spell* pSpell)
 bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
-    if (!target->IsPlayer())
+    if (!target->isPlayer())
         return true;
     if (apply)
     {
@@ -542,7 +542,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
 
     for (const auto& itr : s->p_caster->getInRangeObjectsSet())
     {
-        if (itr && itr->IsCreature())
+        if (itr && itr->isCreature())
         {
             creature = static_cast<Creature*>(itr);
             cloudtype = creature->getEntry();
@@ -715,7 +715,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if ((o->GetPhase() & s->p_caster->GetPhase()) == 0)
                         continue;
 
-                    if (!o->IsCreature())
+                    if (!o->isCreature())
                         continue;
 
                     Unit* u = static_cast<Unit*>(o);
@@ -814,7 +814,7 @@ bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
     Unit* m_target = a->GetTarget();
     Player* p_target = NULL;
 
-    if (m_target->IsPlayer())
+    if (m_target->isPlayer())
         p_target = static_cast<Player*>(m_target);
     else
         return true;
@@ -862,7 +862,7 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
     if (a->GetTarget() == NULL)
         return true;
 
-    if (!a->GetTarget()->IsPlayer())
+    if (!a->GetTarget()->isPlayer())
         return true;
 
     if (apply)

@@ -54,7 +54,7 @@ public:
     Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
 

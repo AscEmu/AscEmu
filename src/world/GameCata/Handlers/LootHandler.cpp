@@ -104,13 +104,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (lootSlot >= pLoot->items.size())
     {
-        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), lootSlot, pLoot->items.size());
+        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), lootSlot, pLoot->items.size());
         return;
     }
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -164,7 +164,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         item->setStackCount(lootItemAmount);
         if (pLoot->items.at(lootSlot).iRandomProperty != nullptr)
         {
-            item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
+            item->setRandomPropertiesId(pLoot->items.at(lootSlot).iRandomProperty->ID);
             item->ApplyRandomProperties(false);
         }
         else if (pLoot->items.at(lootSlot).iRandomSuffix != nullptr)
@@ -176,7 +176,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (GetPlayer()->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
         {
             sQuestMgr.OnPlayerItemPickup(GetPlayer(), item);
-            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+            _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
         }
         else
@@ -188,7 +188,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
-        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->getEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->getStackCount());
+        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount());
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
     }
 
@@ -641,7 +641,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (slotid >= pLoot->items.size())
     {
-        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), slotid, pLoot->items.size());
+        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), slotid, pLoot->items.size());
         return;
     }
 
@@ -693,7 +693,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != nullptr)
     {
-        item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
+        item->setRandomPropertiesId(pLoot->items.at(slotid).iRandomProperty->ID);
         item->ApplyRandomProperties(false);
     }
     else if (pLoot->items.at(slotid).iRandomSuffix != nullptr)
@@ -704,7 +704,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);
     }
@@ -730,50 +730,4 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     {
         pLoot->items.at(slotid).has_looted.insert(player->getGuidLow());
     }
-}
-
-void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
-{
-    uint64_t creatureguid;
-    uint32_t slotid;
-    uint8_t choice;
-
-    recv_data >> creatureguid;
-    recv_data >> slotid;
-    recv_data >> choice;
-
-    LootRoll* li = nullptr;
-
-    uint32_t guidtype = GET_TYPE_FROM_GUID(creatureguid);
-    if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-    {
-        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32_t)creatureguid);
-        if (pGO == nullptr || pGO->IsLootable())
-            return;
-
-        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-        if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
-            return;
-
-        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
-            li = pLGO->loot.items[slotid].roll;
-    }
-    else if (guidtype == HIGHGUID_TYPE_UNIT)
-    {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-        if (pCreature == nullptr)
-            return;
-
-        if (slotid >= pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
-            return;
-
-        li = pCreature->loot.items[slotid].roll;
-    }
-    else
-        return;
-
-    if (li == nullptr)
-        return;
-
-    li->PlayerRolled(_player, choice);
 }

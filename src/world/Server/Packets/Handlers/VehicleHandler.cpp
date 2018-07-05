@@ -1,223 +1,173 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
-#include "Map/MapMgr.h"
+#include "Server/Packets/CmsgRequestVehicleSwitchSeat.h"
+#include "Server/Packets/CmsgChangeSeatsOnControlledVehicle.h"
+#include "Server/Packets/CmsgPlayerVehicleEnter.h"
+#include "Server/Packets/CmsgEjectPassenger.h"
 #include "Server/WorldSession.h"
-#include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
+#include "Map/MapMgr.h"
+#include "Units/Creatures/Vehicle.h"
 
-#if VERSION_STRING != Cata
+using namespace AscEmu::Packets;
+
 #if VERSION_STRING > TBC
-void WorldSession::HandleDismissVehicle(WorldPacket& /*recv_data*/)
+void WorldSession::handleDismissVehicle(WorldPacket& /*recvPacket*/)
 {
-    uint64 current_vehicle_guid = _player->getCharmGuid();
-
-    // wait what no vehicle
-    if (current_vehicle_guid == 0)
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
         return;
 
-    Unit* v = _player->GetMapMgr()->GetUnit(current_vehicle_guid);
-    if (v == NULL)
+    const auto unit = GetPlayer()->GetMapMgr()->GetUnit(GetPlayer()->getCharmGuid());
+    if (unit == nullptr)
         return;
 
-    if (v->GetVehicleComponent() == NULL)
+    if (unit->GetVehicleComponent() == nullptr)
         return;
 
-    v->GetVehicleComponent()->EjectPassenger(_player);
+    unit->GetVehicleComponent()->EjectPassenger(GetPlayer());
 }
 
-
-void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
+void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/)
 {
-    if (_player->GetCurrentVehicle() == NULL)
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
         return;
 
-    switch (recv_data.GetOpcode())
+    GetPlayer()->GetCurrentVehicle()->MovePassengerToPrevSeat(GetPlayer());
+}
+
+void WorldSession::handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+        return;
+
+    GetPlayer()->GetCurrentVehicle()->MovePassengerToNextSeat(GetPlayer());
+}
+
+void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
+{
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+        return;
+
+    CmsgRequestVehicleSwitchSeat recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (recv_packet.guid.GetOldGuid() == GetPlayer()->GetCurrentVehicle()->GetOwner()->getGuid())
     {
-        case CMSG_REQUEST_VEHICLE_PREV_SEAT:
-            _player->GetCurrentVehicle()->MovePassengerToPrevSeat(_player);
-            break;
+        GetPlayer()->GetCurrentVehicle()->MovePassengerToSeat(GetPlayer(), recv_packet.seat);
+    }
+    else
+    {
+        const auto unit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid.GetOldGuid());
+        if (unit == nullptr)
+            return;
 
-        case CMSG_REQUEST_VEHICLE_NEXT_SEAT:
-            _player->GetCurrentVehicle()->MovePassengerToNextSeat(_player);
-            break;
+        if (unit->GetVehicleComponent() == nullptr)
+            return;
 
-            // Used when switching from a normal seat to a controlling seat, or to an accessory
-        case CMSG_REQUEST_VEHICLE_SWITCH_SEAT:
-        {
-            WoWGuid vehicle;
-            uint8 seat = 0;
+        if (GetPlayer()->GetVehicleBase()->getGuid() != unit->GetVehicleBase()->getGuid())
+            return;
 
-            recv_data >> vehicle;
-            recv_data >> seat;
-
-            if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
-            {
-                _player->GetCurrentVehicle()->MovePassengerToSeat(_player, seat);
-            }
-            else
-            {
-                Unit* u = _player->GetMapMgr()->GetUnit(vehicle.GetOldGuid());
-                if (u == NULL)
-                    return;
-
-                if (u->GetVehicleComponent() == NULL)
-                    return;
-
-                // Has to be same vehicle, or an accessory of the vehicle
-                if (_player->GetVehicleBase()->getGuid() != u->GetVehicleBase()->getGuid())
-                    return;
-
-                _player->GetCurrentVehicle()->EjectPassenger(_player);
-                u->GetVehicleComponent()->AddPassengerToSeat(_player, seat);
-            }
-
-            break;
-        }
-
-        // Used when switching from controlling seat to accessory, or from accessory to accessory
-        case CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE:
-        {
-#if VERSION_STRING != Cata
-            WoWGuid src_guid;
-            WoWGuid dst_guid;
-            uint8 seat = 0;
-            MovementInfo mov;
-
-            recv_data >> src_guid;
-            
-            recv_data >> mov.flags >> mov.flags2 >> mov.time
-                >> mov.position >> mov.position.o;
-
-            if (mov.isOnTransport())
-            {
-                recv_data >> mov.transport_data.transportGuid >> mov.transport_data.relativePosition
-                    >> mov.transport_data.relativePosition.o >> mov.transport_time >> mov.transport_seat;
-
-                if (mov.isInterpolated())
-                    recv_data >> mov.transport_time2;
-            }
-
-            if (mov.isSwimmingOrFlying())
-                recv_data >> mov.pitch;
-
-            recv_data >> mov.fall_time;
-
-            if (mov.isFallingOrRedirected())
-                recv_data >> mov.redirect_velocity >> mov.redirect_sin >> mov.redirect_cos >> mov.redirect_2d_speed;
-
-            if (mov.isSplineMover())
-                recv_data >> mov.spline_elevation;
-
-            recv_data >> dst_guid;
-            recv_data >> seat;
-
-            Unit* src_vehicle = _player->GetMapMgr()->GetUnit(src_guid.GetOldGuid());
-            if (src_vehicle == NULL)
-                return;
-
-            if (src_vehicle->GetVehicleComponent() == NULL)
-                return;
-
-            if (src_vehicle->getGuid() != _player->GetCurrentVehicle()->GetOwner()->getGuid())
-                return;
-
-            Unit* dst_vehicle = _player->GetMapMgr()->GetUnit(dst_guid.GetOldGuid());
-            if (dst_vehicle == NULL)
-                return;
-
-            if (dst_vehicle->GetVehicleComponent() == NULL)
-                return;
-
-            if (src_vehicle->getGuid() == dst_vehicle->getGuid())
-            {
-                src_vehicle->GetVehicleComponent()->MovePassengerToSeat(_player, seat);
-            }
-            else
-            {
-                // Has to be the same vehicle or an accessory of the vehicle
-                if (src_vehicle->GetVehicleBase()->getGuid() != dst_vehicle->GetVehicleBase()->getGuid())
-                    return;
-
-                _player->GetCurrentVehicle()->EjectPassenger(_player);
-                dst_vehicle->GetVehicleComponent()->AddPassengerToSeat(_player, seat);
-            }
-
-            break;
-#endif
-        }
+        GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
+        unit->GetVehicleComponent()->AddPassengerToSeat(GetPlayer(), recv_packet.seat);
     }
 }
 
-
-void WorldSession::HandleRemoveVehiclePassenger(WorldPacket& recv_data)
+void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
 {
-    Vehicle* v = NULL;
-    if (_player->IsVehicle())
-        v = _player->GetVehicleComponent();
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+        return;
+
+#if VERSION_STRING == WotLK
+    CmsgChangeSeatsOnControlledVehicle recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto sourceUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.sourceGuid.GetOldGuid());
+    if (sourceUnit == nullptr)
+        return;
+
+    if (sourceUnit->GetVehicleComponent() == nullptr)
+        return;
+
+    if (sourceUnit->getGuid() != GetPlayer()->GetCurrentVehicle()->GetOwner()->getGuid())
+        return;
+
+    const auto destinationUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.destinationGuid.GetOldGuid());
+    if (destinationUnit == nullptr)
+        return;
+
+    if (destinationUnit->GetVehicleComponent() == nullptr)
+        return;
+
+    if (sourceUnit->getGuid() == destinationUnit->getGuid())
+    {
+        sourceUnit->GetVehicleComponent()->MovePassengerToSeat(GetPlayer(), recv_packet.seat);
+    }
     else
-        v = _player->GetCurrentVehicle();
+    {
+        if (sourceUnit->GetVehicleBase()->getGuid() != destinationUnit->GetVehicleBase()->getGuid())
+            return;
 
-    if (v == NULL)
-        return;
-
-    uint64 guid = 0;
-    recv_data >> guid;
-
-    if (guid == 0)
-        return;
-
-    Unit* passenger = _player->GetMapMgr()->GetUnit(guid);
-    if (passenger == NULL)
-        return;
-
-    v->EjectPassenger(passenger);
-}
-
-
-void WorldSession::HandleLeaveVehicle(WorldPacket& /*recv_data*/)
-{
-    if (_player->GetCurrentVehicle() == NULL)
-        return;
-
-    _player->GetCurrentVehicle()->EjectPassenger(_player);
-}
-
-
-void WorldSession::HandleEnterVehicle(WorldPacket& recv_data)
-{
-    uint64 guid;
-
-    recv_data >> guid;
-
-    Unit* v = _player->GetMapMgr()->GetUnit(guid);
-    if (v == NULL)
-        return;
-
-    if (!_player->isInRange(v, MAX_INTERACTION_RANGE))
-        return;
-
-    if (v->GetVehicleComponent() == NULL)
-        return;
-
-    v->GetVehicleComponent()->AddPassenger(_player);
-}
+        GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
+        destinationUnit->GetVehicleComponent()->AddPassengerToSeat(GetPlayer(), recv_packet.seat);
+    }
 #endif
+}
+
+void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
+{
+    Vehicle* vehicle = nullptr;
+    if (GetPlayer()->isVehicle())
+        vehicle = GetPlayer()->GetVehicleComponent();
+    else
+        vehicle = GetPlayer()->GetCurrentVehicle();
+
+    if (vehicle == nullptr)
+        return;
+
+    CmsgEjectPassenger recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (recv_packet.guid == 0)
+        return;
+
+    const auto passengerUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid);
+    if (passengerUnit == nullptr)
+        return;
+
+    vehicle->EjectPassenger(passengerUnit);
+}
+
+void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
+{
+    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+        return;
+
+    GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
+}
+
+void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
+{
+    CmsgPlayerVehicleEnter recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto unit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid);
+    if (unit == nullptr)
+        return;
+
+    if (!GetPlayer()->isInRange(unit, MAX_INTERACTION_RANGE))
+        return;
+
+    if (unit->GetVehicleComponent() == nullptr)
+        return;
+
+    unit->GetVehicleComponent()->AddPassenger(GetPlayer());
+}
 #endif

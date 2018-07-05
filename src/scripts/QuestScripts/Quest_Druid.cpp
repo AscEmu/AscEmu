@@ -34,7 +34,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         Player* plr = static_cast<Player*>(mKiller);

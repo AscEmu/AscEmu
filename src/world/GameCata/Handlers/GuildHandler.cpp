@@ -27,7 +27,7 @@ void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvData)
 
     uint32_t guildId = uint32_t(guildGuid);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY %s: GuildId: %u Target: %u", _player->GetName(), guildId, Arcemu::Util::GUID_LOPART(playerGuid));
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY %s: GuildId: %u Target: %u", _player->getName().c_str(), guildId, Arcemu::Util::GUID_LOPART(playerGuid));
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
@@ -45,7 +45,7 @@ void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recvData)
     uint32_t nameLength = recvData.readBits(7);
     invitedName = recvData.ReadString(nameLength);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INVITE %s: Invited: %s", _player->GetName(), invitedName.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INVITE %s: Invited: %s", _player->getName().c_str(), invitedName.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -134,7 +134,7 @@ void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(targetGuid[1]);
     recvData.ReadByteSeq(targetGuid[7]);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_PROMOTE %s: Target: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid));
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_PROMOTE %s: Target: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid));
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -199,7 +199,7 @@ void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(setterGuid[7]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
-        _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -229,7 +229,7 @@ void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(targetGuid[4]);
     recvData.ReadByteSeq(targetGuid[3]);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEMOTE %s: Target: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid));
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEMOTE %s: Target: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid));
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -272,7 +272,7 @@ void WorldSession::HandleGuildMotdOpcode(WorldPacket& recvData)
     uint32_t motdLength = recvData.readBits(11);
     motd = recvData.ReadString(motdLength);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_MOTD %s: MOTD: %s", _player->GetName(), motd.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_MOTD %s: MOTD: %s", _player->getName().c_str(), motd.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -315,7 +315,7 @@ void WorldSession::HandleGuildSetNoteOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(playerGuid[2]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_NOTE %s: Target: %u, Note: %s, Public: %u",
-        _player->GetName(), Arcemu::Util::GUID_LOPART(playerGuid), note.c_str(), ispublic);
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(playerGuid), note.c_str(), ispublic);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -345,7 +345,7 @@ void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(guildGuid[6]);
     recvData.ReadByteSeq(guildGuid[2]);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(guildGuid));
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(guildGuid));
 
     if (Guild* guild = sGuildMgr.getGuildById(Arcemu::Util::GUID_LOPART(guildGuid)))
     {
@@ -366,7 +366,7 @@ void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recvData)
     uint32_t length = recvData.readBits(7);
     rankName = recvData.ReadString(length);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ADD_RANK %s: Rank: %s", _player->GetName(), rankName.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ADD_RANK %s: Rank: %s", _player->getName().c_str(), rankName.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -379,7 +379,7 @@ void WorldSession::HandleGuildDelRankOpcode(WorldPacket& recvData)
     uint32_t rankId;
     recvData >> rankId;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEL_RANK %s: Rank: %u", _player->GetName(), rankId);
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEL_RANK %s: Rank: %u", _player->getName().c_str(), rankId);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -394,7 +394,7 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPacket& recvData)
     uint32_t length = static_cast<uint32_t>(recvData.readBits(12));
     info = recvData.ReadString(length);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INFO_TEXT %s: %s", _player->GetName(), info.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INFO_TEXT %s: %s", _player->getName().c_str(), info.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -410,7 +410,7 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recvData)
     recvData >> vendorGuid;
     emblemInfo.readEmblemInfoFromPacket(recvData);
 
-    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u", _player->GetName(),
+    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u", _player->getName().c_str(),
         Arcemu::Util::GUID_LOPART(vendorGuid), emblemInfo.getStyle(), emblemInfo.getColor(), emblemInfo.getBorderStyle(), emblemInfo.getBorderColor(), emblemInfo.getBackgroundColor());
 
     if (GetPlayer()->GetGuild()->getLeaderGUID() != _player->getGuid())
@@ -476,7 +476,7 @@ void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guildGuid);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_QUERY_GUILD_XP %s: guildId: %u", _player->GetName(), guildId);
+    LogDebugFlag(LF_OPCODE, "CMSG_QUERY_GUILD_XP %s: guildId: %u", _player->getName().c_str(), guildId);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
@@ -523,7 +523,7 @@ void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recvData)
     uint32_t nameLength = recvData.readBits(7);
     std::string rankName = recvData.ReadString(nameLength);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_RANK_PERMISSIONS %s: rank: %s (%u)", _player->GetName(), rankName.c_str(), newRankId);
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_RANK_PERMISSIONS %s: rank: %s (%u)", _player->getName().c_str(), rankName.c_str(), newRankId);
 
     guild->handleSetRankInfo(this, static_cast<uint8_t>(newRankId), rankName, newRights, moneyPerDay, rightsAndSlots);
 }
@@ -711,7 +711,7 @@ void WorldSession::HandleGuildBankerActivate(WorldPacket& recvData)
     recvData >> sendAllSlots;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANKER_ACTIVATE %s: gameobject: %u allSlots: %u",
-        _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), sendAllSlots);
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), sendAllSlots);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -735,7 +735,7 @@ void WorldSession::HandleGuildBankQueryTab(WorldPacket& recvData)
     recvData >> sendAllSlots;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_QUERY_TAB %s: gameobject: %u, tabId: %u, allSlots: %u",
-        _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, sendAllSlots);
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, sendAllSlots);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -752,7 +752,7 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recvData)
     recvData >> money;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_DEPOSIT_MONEY %s: gameobject: %u, money: " I64FMTD,
-        _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), money);
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), money);
 
     if (money && GetPlayer()->HasGold(static_cast<uint32_t>(money)))
     {
@@ -772,7 +772,7 @@ void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recvData)
     recvData >> money;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_WITHDRAW_MONEY %s: gameobject: %u, money: " I64FMTD,
-        _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), money);
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), money);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -863,7 +863,7 @@ void WorldSession::HandleGuildBankBuyTab(WorldPacket& recvData)
     recvData >> bankGuid;
     recvData >> tabId;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_BUY_TAB %s: gameobject: %u, TabId: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId);
+    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_BUY_TAB %s: gameobject: %u, TabId: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), tabId);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -884,7 +884,7 @@ void WorldSession::HandleGuildBankUpdateTab(WorldPacket& recvData)
     recvData >> icon;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_UPDATE_TAB %s: gameobject: %u, tabId: %u, name: %s, icon: %s",
-        _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, name.c_str(), icon.c_str());
+        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, name.c_str(), icon.c_str());
 
     if (name.empty() == false && icon.empty() == false)
     {
@@ -900,7 +900,7 @@ void WorldSession::HandleGuildBankLogQuery(WorldPacket& recvData)
     uint32_t tabId;
     recvData >> tabId;
 
-    LogDebugFlag(LF_OPCODE, "MSG_GUILD_BANK_LOG_QUERY %s: tabId: %u", _player->GetName(), tabId);
+    LogDebugFlag(LF_OPCODE, "MSG_GUILD_BANK_LOG_QUERY %s: tabId: %u", _player->getName().c_str(), tabId);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -913,7 +913,7 @@ void WorldSession::HandleQueryGuildBankTabText(WorldPacket &recvData)
     uint8_t tabId;
     recvData >> tabId;
 
-    LogDebugFlag(LF_OPCODE, "MSG_QUERY_GUILD_BANK_TEXT %s: tabId: %u", _player->GetName(), tabId);
+    LogDebugFlag(LF_OPCODE, "MSG_QUERY_GUILD_BANK_TEXT %s: tabId: %u", _player->getName().c_str(), tabId);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -931,7 +931,7 @@ void WorldSession::HandleSetGuildBankTabText(WorldPacket& recvData)
     uint32_t textLen = recvData.readBits(14);
     text = recvData.ReadString(textLen);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_SET_GUILD_BANK_TEXT %s: tabId: %u, text: %s", _player->GetName(), tabId, text.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_SET_GUILD_BANK_TEXT %s: tabId: %u, text: %s", _player->getName().c_str(), tabId, text.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -1029,8 +1029,8 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             return;
         }
 
-        static uint32_t item_ids[] = { ARENA_TEAM_CHARTER_2v2, ARENA_TEAM_CHARTER_3v3, ARENA_TEAM_CHARTER_5v5 };
-        static uint32_t costs[] = { ARENA_TEAM_CHARTER_2v2_COST, ARENA_TEAM_CHARTER_3v3_COST, ARENA_TEAM_CHARTER_5v5_COST };
+        static uint32_t item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
+        static uint32_t costs[] = { CharterCost::TwoOnTwo, CharterCost::ThreeOnThree, CharterCost::FiveOnFive };
 
         if (!_player->HasGold(costs[arena_type]))
         {
@@ -1070,10 +1070,10 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->PetitionSignerCount = petitionSignerCount;
             memcpy(charter->Data, charterData, sizeof(charterData));
 
-            item->setUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
-            item->SoulBind();
-            item->SetEnchantmentId(0, charter->GetID());
-            item->SetItemRandomSuffixFactor(57813883);
+            item->setStackCount(1);
+            item->addFlags(ITEM_FLAG_SOULBOUND);
+            item->setEnchantmentId(0, charter->GetID());
+            item->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->Destroy();
@@ -1083,7 +1083,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 
             charter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->ModGold(-(int32_t)costs[arena_type]);
             _player->m_charters[arenaIndex] = charter;
@@ -1112,7 +1112,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             return;
         }
 
-        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER);
+        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(CharterEntry::Guild);
         ARCEMU_ASSERT(itemProperties != nullptr);
         SlotResult slotResult = _player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
         if (slotResult.Result == 0)
@@ -1121,7 +1121,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER), 1);
+        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(CharterEntry::Guild), 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
@@ -1133,7 +1133,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             data << creatureGuid;
             SendPacket(&data);
 
-            Item* item = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
+            Item* item = objmgr.CreateItem(CharterEntry::Guild, _player);
             charter = objmgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || charter == nullptr)
             {
@@ -1151,9 +1151,9 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             memcpy(charter->Data, charterData, sizeof(charterData));
 
             item->setStackCount(1);
-            item->SoulBind();
-            item->SetEnchantmentId(0, charter->GetID());
-            item->SetItemRandomSuffixFactor(57813883);
+            item->addFlags(ITEM_FLAG_SOULBOUND);
+            item->setEnchantmentId(0, charter->GetID());
+            item->setPropertySeed(57813883);
             if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->Destroy();
@@ -1164,7 +1164,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->SaveToDB();
 
             _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(),
-                1, item->getEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->getStackCount());
+                1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = charter;
             _player->ModGold(-1000);
@@ -1410,7 +1410,7 @@ void WorldSession::HandleCharterTurnInCharterOpcode(WorldPacket& recv_data)
         _player->m_charters[CHARTER_TYPE_GUILD] = 0;
         playerCharter->Destroy();
 
-        _player->GetItemInterface()->RemoveItemAmt(ITEM_ENTRY_GUILD_CHARTER, 1);
+        _player->GetItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
         sHookInterface.OnGuildCreate(_player, guild);
     }
     else

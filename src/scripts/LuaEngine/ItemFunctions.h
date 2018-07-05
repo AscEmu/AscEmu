@@ -309,7 +309,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        ptr->SetDurabilityToMax();
+        ptr->setDurabilityToMax();
         return 1;
     }
 
@@ -317,7 +317,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        lua_pushnumber(L, ptr->GetDurabilityMax());
+        lua_pushnumber(L, ptr->getMaxDurability());
         return 1;
     }
 
@@ -325,7 +325,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        lua_pushnumber(L, ptr->GetDurability());
+        lua_pushnumber(L, ptr->getDurability());
         return 1;
     }
 
@@ -377,28 +377,28 @@ namespace luaItem
 
     int IsSoulbound(lua_State* L, Item* ptr)
     {
-        ptr->IsSoulbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isSoulbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 
     int IsAccountbound(lua_State* L, Item* ptr)
     {
-        ptr->IsAccountbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isAccountbound() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 
     int IsContainer(lua_State* L, Item* ptr)
     {
-        ptr->IsContainer() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
+        ptr->isContainer() ? lua_pushboolean(L, 1) : lua_pushboolean(L, 0);
         return 1;
     }
 
     int GetContainerItemCount(lua_State* L, Item* ptr)
     {
         uint32 itemid = CHECK_ULONG(L, 1);
-        if (!ptr->IsContainer() || !itemid) return 0;
+        if (!ptr->isContainer() || !itemid) return 0;
         Container* pCont = static_cast< Container* >(ptr);
-        int16 TotalSlots = static_cast<int16>(pCont->GetNumSlots());
+        int16 TotalSlots = static_cast<int16>(pCont->getSlotCount());
         int cnt = 0;
         for (int16 i = 0; i < TotalSlots; i++)
         {
@@ -431,7 +431,7 @@ namespace luaItem
 
     int Remove(lua_State* /*L*/, Item* ptr)
     {
-        if (ptr == NULL || !ptr->IsInWorld() || !ptr->IsItem())
+        if (ptr == NULL || !ptr->IsInWorld() || !ptr->isItem())
         {
             return 0;
         }

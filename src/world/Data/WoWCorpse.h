@@ -15,6 +15,30 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWObject.h"
 #pragma pack(push, 1)
 
+union
+{
+    struct
+    {
+        uint8_t unk1;
+        uint8_t race;
+        uint8_t unk2;
+        uint8_t skin_color;
+    } s;
+    uint32_t raw;
+} typedef corpse_bytes_1_union;
+
+union
+{
+    struct
+    {
+        uint8_t face;
+        uint8_t hair_style;
+        uint8_t hair_color;
+        uint8_t facial_hair;
+    } s;
+    uint32_t raw;
+} typedef corpse_bytes_2_union;
+
 #if VERSION_STRING == Classic
 
 #define WOWCORPSE_ITEM_COUNT 19
@@ -29,8 +53,8 @@ struct WoWCorpse : WoWObject
     float_t z;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
-    uint32_t corpse_bytes_1;
-    uint32_t corpse_bytes_2;
+    corpse_bytes_1_union corpse_bytes_1;
+    corpse_bytes_2_union corpse_bytes_2;
     uint32_t guild;
     uint32_t corpse_flags;
     uint32_t dynamic_flags;
@@ -52,8 +76,8 @@ struct WoWCorpse : WoWObject
     float_t z;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
-    uint32_t corpse_bytes_1;
-    uint32_t corpse_bytes_2;
+    corpse_bytes_1_union corpse_bytes_1;
+    corpse_bytes_2_union corpse_bytes_2;
     uint32_t guild;
     uint32_t corpse_flags;
     uint32_t dynamic_flags;
@@ -71,8 +95,8 @@ struct WoWCorpse : WoWObject
     uint64_t party_guid;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
-    uint32_t corpse_bytes_1;
-    uint32_t corpse_bytes_2;
+    corpse_bytes_1_union corpse_bytes_1;
+    corpse_bytes_2_union corpse_bytes_2;
     uint32_t guild;
     uint32_t corpse_flags;
     uint32_t dynamic_flags;
@@ -90,8 +114,8 @@ struct WoWCorpse : WoWObject
     uint64_t party_guid;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
-    uint32_t corpse_bytes_1;
-    uint32_t corpse_bytes_2;
+    corpse_bytes_1_union corpse_bytes_1;
+    corpse_bytes_2_union corpse_bytes_2;
     uint32_t corpse_flags;
     uint32_t dynamic_flags;
 };

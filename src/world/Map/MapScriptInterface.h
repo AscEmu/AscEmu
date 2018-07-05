@@ -59,7 +59,7 @@ class SERVER_DECL MapScriptInterface
             for (; iter != pCell->End(); ++iter)
             {
                 CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
-                if (CurrentDist < ClosestDist && (*iter)->GetTypeId() == TypeId)
+                if (CurrentDist < ClosestDist && (*iter)->getObjectTypeId() == TypeId)
                 {
                     if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
                     {

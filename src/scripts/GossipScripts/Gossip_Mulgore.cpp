@@ -33,7 +33,7 @@ class SkornWhitecloud_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            if(!pObject->IsCreature())
+            if(!pObject->isCreature())
                 return;
             Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 523, plr);
         }

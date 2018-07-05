@@ -87,7 +87,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
 
     if (auto summoned_object = _player->m_SummonedObject)
     {
-         if (summoned_object->IsGameObject())
+         if (summoned_object->isGameObject())
          {
              const auto go = static_cast<GameObject*>(summoned_object);
              if (go->isFishingNode())
@@ -202,7 +202,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         const auto move_time = packet.info.time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
         for (const auto& obj : mover->getInRangePlayersSet())
         {
-            ARCEMU_ASSERT(obj->IsPlayer());
+            ARCEMU_ASSERT(obj->isPlayer());
             packet.info.time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
             obj->asPlayer()->SendPacket(packet.serialise().get());
         }

@@ -29,7 +29,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(10836, 0, 0);
         }
@@ -44,7 +44,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(10703, 0, 0);
             static_cast<Player*>(mKiller)->AddQuestKill(10702, 0, 0);
@@ -368,8 +368,8 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     else
     {
         Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->GetItemRandomSuffixFactor(),
-            item->GetItemRandomPropertyId(), item->getStackCount());
+            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
+            item->getRandomPropertiesId(), item->getStackCount());
     }
 };
 

@@ -34,7 +34,7 @@ class WoodlandWalkerGossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
+        Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
         if (pCreature == nullptr)
             return;
 

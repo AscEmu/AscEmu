@@ -34,7 +34,7 @@ public:
 
     void Init(Object* /*obj*/)
     {
-        if (!mTarget->IsPlayer())
+        if (!mTarget->isPlayer())
             return;
 
         /* The Twin Blades of Azzinoth.

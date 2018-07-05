@@ -226,7 +226,7 @@ class LakkaAI : public CreatureAIScript
                     SetWaypointToMove(2);
                     for (const auto& itr : getCreature()->getInRangeObjectsSet())
                     {
-                        if (itr && itr->IsPlayer())
+                        if (itr && itr->isPlayer())
                         {
                             Player* pPlayer = static_cast<Player*>(itr);
                             if (pPlayer != nullptr)

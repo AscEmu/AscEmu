@@ -79,7 +79,7 @@ bool TormentOfTheWeak(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if (m_target->IsPlayer())
+    if (m_target->isPlayer())
     {
         static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float)a->GetModAmount(effectIndex)) / 100);
     }
@@ -121,7 +121,7 @@ bool MagicAbsorbtion(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if (m_target->IsPlayer())
+    if (m_target->isPlayer())
     {
         Player* p_target = static_cast<Player*>(m_target);
 

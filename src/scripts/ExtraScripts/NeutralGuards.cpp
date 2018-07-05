@@ -32,7 +32,7 @@ class ShatteredSunSpawner : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            if (mTarget != NULL && mTarget->IsPlayer())
+            if (mTarget != NULL && mTarget->isPlayer())
             {
                 for (uint8 i = 0; i < 3; ++i)
                 {

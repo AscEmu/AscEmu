@@ -80,6 +80,7 @@ Spell* SpellFactoryMgr::NewSpell(Object* Caster, SpellInfo* info, bool triggered
 
 Aura* SpellFactoryMgr::NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
 {
+    //\brief... nullptr when downgrading ae from wotlk to tbc (active auras from newer client versions should be removed before entering tbc)
     if (proto->AuraFactoryFunc == NULL)
         return new Aura(proto, duration, caster, target, temporary, i_caster);
     else
@@ -348,14 +349,14 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
     return true;
 }
 
-bool SpellInfo::CheckLocation(uint32_t /*map_id*/, uint32_t zone_id, uint32_t area_id, Player* player)
+bool SpellInfo::checkLocation(uint32_t /*map_id*/, uint32_t zone_id, uint32_t area_id, Player* player) const
 {
 #if VERSION_STRING > TBC
     // normal case
-    if (RequiresAreaId > 0)
+    if (AreaGroupId > 0)
     {
         bool found = false;
-        auto area_group = sAreaGroupStore.LookupEntry(RequiresAreaId);
+        auto area_group = sAreaGroupStore.LookupEntry(AreaGroupId);
         while (area_group)
         {
             for (uint8 i = 0; i < 6; ++i)

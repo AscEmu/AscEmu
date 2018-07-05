@@ -157,7 +157,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
     Unit* u_target = a->GetTarget();
     Player* p_target = NULL;
 
-    if (u_target->IsPlayer())
+    if (u_target->isPlayer())
         p_target = static_cast<Player*>(u_target);
 
     if (p_target != NULL)
@@ -189,7 +189,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if (!u_target->IsPlayer())
+    if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
@@ -220,7 +220,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (!apply)
         return true;
 
-    if (m_target->IsPlayer())
+    if (m_target->isPlayer())
         p_target = static_cast<Player*>(m_target);
 
     if (p_target != NULL && p_target->getClass() == ROGUE)
@@ -243,7 +243,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
 bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
 {
     Unit* m_target = a->GetTarget();
-    if (!m_target->IsPlayer())
+    if (!m_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(m_target);
@@ -267,7 +267,7 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
             if (dist <= r)
             {
                 //Avoid targeting anything that is not unit and not alive
-                if (!itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
+                if (!itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())
                     continue;
 
                 uint64 spellTarget = itr->getGuid();

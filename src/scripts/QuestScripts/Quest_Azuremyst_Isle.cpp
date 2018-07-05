@@ -31,7 +31,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             static_cast<Player*>(mKiller)->AddQuestKill(9573, 1, 0);
         }

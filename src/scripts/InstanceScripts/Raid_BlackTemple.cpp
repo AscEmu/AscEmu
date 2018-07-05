@@ -1836,7 +1836,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                         {
                             for (const auto& itr : getCreature()->getInRangeObjectsSet())
                             {
-                                if (itr && itr->IsCreature())
+                                if (itr && itr->isCreature())
                                 {
                                     Creature* creature = static_cast<Creature*>(itr);
                                     if (creature->GetCreatureProperties()->Id == CN_ENSLAVED_SOUL && !creature->isAlive())
@@ -4054,14 +4054,14 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnHit(Unit* mVictim, float fAmount) override
         {
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT1!");
-            if (mVictim->IsCreature() && (mVictim->getEntry() == CN_MAIEV || mVictim->getEntry() == CN_AKAMA))
+            if (mVictim->isCreature() && (mVictim->getEntry() == CN_MAIEV || mVictim->getEntry() == CN_AKAMA))
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT2!");
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                if (pTarget == NULL || !pTarget->IsPlayer())
+                if (pTarget == NULL || !pTarget->isPlayer())
                 {
                     pTarget = getCreature()->GetAIInterface()->GetSecondHated();
-                    if (pTarget == NULL || !pTarget->IsPlayer())
+                    if (pTarget == NULL || !pTarget->isPlayer())
                     {
                         pTarget = getBestPlayerTarget(TargetFilter_Closest);
                         if (pTarget == NULL)
@@ -4077,14 +4077,14 @@ class IllidanStormrageAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
-            if (mAttacker->IsCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
+            if (mAttacker->isCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
             {
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                if (pTarget == NULL || !pTarget->IsPlayer())
+                if (pTarget == NULL || !pTarget->isPlayer())
                 {
                     pTarget = getCreature()->GetAIInterface()->GetSecondHated();
                 }
-                if (pTarget != NULL && pTarget->IsPlayer())
+                if (pTarget != NULL && pTarget->isPlayer())
                 {
                     getCreature()->GetAIInterface()->setNextTarget(pTarget);
                     getCreature()->GetAIInterface()->modThreatByPtr(pTarget, fAmount * 3);
@@ -4935,7 +4935,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 if (mYellTimer <= 0 && getCreature()->GetAIInterface()->getNextTarget() != NULL)
                 {
                     Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                    if (pTarget->IsCreature() && pTarget->getEntry() == CN_MAIEV)
+                    if (pTarget->isCreature() && pTarget->getEntry() == CN_MAIEV)
                     {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11470, "Feel the hatred of ten thousand years!");
                         mYellTimer = 25000;
@@ -4953,7 +4953,7 @@ class IllidanStormrageAI : public CreatureAIScript
             {
                 _clearHateList();
                 Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-                if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->getEntry() != CN_FACE_TRIGGER))
+                if (pTarget != NULL && (!pTarget->isCreature() || pTarget->getEntry() != CN_FACE_TRIGGER))
                 {
                     Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                     if (pTrigger != NULL)

@@ -28,6 +28,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/MovementPacket.h"
+#include "Server/Packets/SmsgNewWorld.h"
 
 #if VERSION_STRING == Classic
 #include "GameClassic/Data/MovementInfoClassic.h"
@@ -106,19 +107,12 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recv_data*/)
         float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
         float c_tposz = pTrans->GetPositionZ() + _player->GetTransPositionZ();
 
+        const LocationVector positionOnTransport = LocationVector(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
 
         _player->SetMapId(pTrans->GetMapId());
         _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
 
-        WorldPacket dataw(SMSG_NEW_WORLD, 20);
-
-        dataw << pTrans->GetMapId();
-        dataw << c_tposx;
-        dataw << c_tposy;
-        dataw << c_tposz;
-        dataw << _player->GetOrientation();
-
-        SendPacket(&dataw);
+        SendPacket(AscEmu::Packets::SmsgNewWorld(pTrans->GetMapId(), positionOnTransport).serialise().get());
     }
     else
     {
@@ -333,7 +327,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     Object* t_go = _player->m_SummonedObject;
     if (t_go != nullptr)
     {
-        if (t_go->IsGameObject())
+        if (t_go->isGameObject())
         {
             GameObject* go = static_cast<GameObject*>(t_go);
             if (go->getGoType() == GAMEOBJECT_TYPE_FISHINGNODE)
@@ -356,7 +350,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     ASSERT(mover != nullptr)
 
     Player* plrMover = nullptr;
-    if (mover->IsPlayer())
+    if (mover->isPlayer())
         plrMover = dynamic_cast<Player*>(mover);
 
     /************************************************************************/

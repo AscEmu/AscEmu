@@ -442,7 +442,7 @@ class LeotherasAI : public CreatureAIScript
             //count greyheart spellbinders
             for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
-                if (itr && itr->IsCreature())
+                if (itr && itr->isCreature())
                 {
                     Creature* creature = static_cast<Creature*>(itr);
 
@@ -878,7 +878,7 @@ class KarathressAI : public CreatureAIScript
                 std::vector<Unit*> TargetTable;
                 for (const auto& itr : getCreature()->getInRangeObjectsSet())
                 {
-                    if (itr && isHostile(getCreature(), itr) && itr->IsUnit())
+                    if (itr && isHostile(getCreature(), itr) && itr->isCreatureOrPlayer())
                     {
                         Unit* RandomTarget = static_cast<Unit*>(itr);
 
@@ -1150,7 +1150,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 
             for (const auto& itr : getCreature()->getInRangeOppositeFactionSet())
             {
-                if (!itr || !itr->IsUnit())
+                if (!itr || !itr->isCreatureOrPlayer())
                     continue;
 
                 pUnit = static_cast<Unit*>(itr);
@@ -1306,7 +1306,7 @@ class VashjAI : public CreatureAIScript
             //despawn enchanted elemental, tainted elemental, coilfang elite, coilfang strider
             for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
-                if (itr && itr->IsCreature())
+                if (itr && itr->isCreature())
                 {
                     Creature* creature = static_cast<Creature*>(itr);
                     if ((creature->GetCreatureProperties()->Id == CN_ENCHANTED_ELEMENTAL ||
@@ -1460,7 +1460,7 @@ class VashjAI : public CreatureAIScript
                     float nearestdist = 0;
                     for (const auto& itr : summoned->getInRangeObjectsSet())
                     {
-                        if (itr && itr->IsUnit() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
+                        if (itr && itr->isCreatureOrPlayer() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
                         {
                             nearestdist = summoned->GetDistance2dSq(itr);
                             nearest = static_cast<Unit*>(itr);
@@ -1483,7 +1483,7 @@ class VashjAI : public CreatureAIScript
                     float nearestdist = 0;
                     for (const auto& itr : summoned->getInRangeObjectsSet())
                     {
-                        if (itr && itr->IsUnit() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
+                        if (itr && itr->isCreatureOrPlayer() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
                         {
                             nearestdist = summoned->GetDistance2dSq(itr);
                             nearest = static_cast<Unit*>(itr);
@@ -1507,7 +1507,7 @@ class VashjAI : public CreatureAIScript
                 //despawn enchanted elementals
                 for (const auto& itr : getCreature()->getInRangeObjectsSet())
                 {
-                    if (itr && itr->IsCreature())
+                    if (itr && itr->isCreature())
                     {
                         Creature* creature = static_cast<Creature*>(itr);
                         if (creature->GetCreatureProperties()->Id == CN_ENCHANTED_ELEMENTAL && creature->isAlive())

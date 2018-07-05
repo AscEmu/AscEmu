@@ -18,28 +18,28 @@ namespace DBC
         delete[] m_fields_offset;
     }
 
-    DBC::DBCRecord DBCLoader::GetRecord(size_t record_id)
+    DBC::DBCRecord DBCLoader::GetRecord(size_t record_id) const
     {
         assert(m_data);
         return DBC::DBCRecord(m_data + record_id * m_record_size);
     }
 
-    const uint32 DBC::DBCLoader::GetNumRows()
+    uint32 DBC::DBCLoader::GetNumRows() const
     {
         return m_record_count;
     }
 
-    const uint32 DBC::DBCLoader::GetRowSize()
+    uint32 DBC::DBCLoader::GetRowSize() const
     {
         return m_record_size;
     }
 
-    const uint32 DBC::DBCLoader::GetNumColumns()
+    uint32 DBC::DBCLoader::GetNumColumns() const
     {
         return m_field_count;
     }
 
-    const uint32 DBC::DBCLoader::GetOffset(size_t id)
+    uint32 DBC::DBCLoader::GetOffset(size_t id) const
     {
         if (m_fields_offset != NULL && id < m_field_count)
         {

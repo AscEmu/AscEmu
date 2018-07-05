@@ -58,10 +58,7 @@ void CreateDummySpell(uint32 id)
     sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     sp->setEffectImplicitTargetA(EFF_TARGET_DUEL, 0);
     sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
-    sp->setDmg_multiplier(1.0f, 0);
-#if VERSION_STRING != Cata
-    sp->setStanceBarOrder(-1);
-#endif
+    sp->setEffectDamageMultiplier(1.0f, 0);
     sWorld.dummySpellList.push_back(sp);
 }
 
@@ -679,6 +676,10 @@ void ApplyNormalFixes()
         //SCHOOL_SHADOW = 32,
         //SCHOOL_ARCANE = 64
 
+#if VERSION_STRING == Classic
+        // Classic doesn't have schools bitwise in DBC
+        sp->custom_SchoolMask = 1 << sp->getSchool();
+#else
         // Save School as custom_SchoolMask, and set School as an index
         sp->custom_SchoolMask = sp->getSchool();
         for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
@@ -689,7 +690,7 @@ void ApplyNormalFixes()
                 break;
             }
         }
-
+#endif
         ARCEMU_ASSERT(sp->getSchool() < SCHOOL_COUNT);
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
@@ -792,8 +793,6 @@ void ApplyNormalFixes()
 			}
         }
 
-        sp->Dspell_coef_override = -1;
-        sp->OTspell_coef_override = -1;
         sp->casttime_coef = 0;
         sp->fixed_dddhcoef = -1;
         sp->fixed_hotdotcoef = -1;
@@ -930,7 +929,7 @@ void ApplyNormalFixes()
             case 69403:
             {
                 sp->setSchool(SCHOOL_HOLY); //the procspells of the original seal of command have physical school instead of holy
-                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC); //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
+                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
             } break;
 
             // SPELL_HASH_JUDGEMENT_OF_COMMAND
@@ -947,7 +946,7 @@ void ApplyNormalFixes()
             case 68019:
             case 71551:
             {
-                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
+                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
             } break;
 
 
@@ -1192,7 +1191,7 @@ void ApplyNormalFixes()
             case 71122:
             {
                 sp->setSchool(SCHOOL_HOLY); //Consecration is a holy redirected spell.
-                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC); //Speaks for itself.
+                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //Speaks for itself.
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1493,26 +1492,6 @@ void ApplyNormalFixes()
     }
     // END OF LOOP
 
-    //                                                  0    1            2                       3
-    QueryResult* resultx = WorldDatabase.Query("SELECT id, name, Dspell_coef_override, OTspell_coef_override FROM spell_coef_override");
-    if (resultx != nullptr)
-    {
-        do
-        {
-            Field* f = resultx->Fetch();
-            sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
-            if (sp != nullptr)
-            {
-                sp->Dspell_coef_override = f[2].GetFloat();
-                sp->OTspell_coef_override = f[3].GetFloat();
-            }
-            else
-                LOG_ERROR("Has nonexistent spell %u.", f[0].GetUInt32());
-        }
-        while (resultx->NextRow());
-        delete resultx;
-    }
-
     //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
@@ -1587,7 +1566,7 @@ void ApplyNormalFixes()
     // Wands
     sp = Spell::checkAndReturnSpellEntry(SPELL_RANGED_WAND);
     if (sp != nullptr)
-        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_RANGED);
+        sp->setDmgClass(SPELL_DMG_TYPE_RANGED);
 
 
     //////////////////////////////////////////////////////
@@ -1807,14 +1786,14 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setSchool(SCHOOL_HOLY);
-        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
+        sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
     }
     sp = Spell::checkAndReturnSpellEntry(31893);
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_PHYSICAL_ATTACK);
         sp->setSchool(SCHOOL_HOLY);
-        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
+        sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
     }
 
     //Paladin - Divine Storm
@@ -1835,18 +1814,18 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setSpellFamilyName(0);
-        sp->setSpellGroupType(0, 0);
-        sp->setSpellGroupType(0, 1);
-        sp->setSpellGroupType(0, 2);
+        sp->setSpellFamilyFlags(0, 0);
+        sp->setSpellFamilyFlags(0, 1);
+        sp->setSpellFamilyFlags(0, 2);
     }
 
     sp = Spell::checkAndReturnSpellEntry(54180);
     if (sp != nullptr)
     {
         sp->setSpellFamilyName(0);
-        sp->setSpellGroupType(0, 0);
-        sp->setSpellGroupType(0, 1);
-        sp->setSpellGroupType(0, 2);
+        sp->setSpellFamilyFlags(0, 0);
+        sp->setSpellFamilyFlags(0, 1);
+        sp->setSpellFamilyFlags(0, 2);
     }
 
     //Paladin - Avenging Wrath marker - Is forced debuff
@@ -2204,7 +2183,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(2094);
     if (sp != nullptr)
     {
-        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_RANGED);
+        sp->setDmgClass(SPELL_DMG_TYPE_RANGED);
         sp->custom_is_ranged_spell = true;
     }
 

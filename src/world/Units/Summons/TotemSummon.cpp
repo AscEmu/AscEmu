@@ -38,40 +38,11 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
     uint32 displayID = 0;
 
-    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(creature_properties->Male_DisplayID);
+    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(pOwner->getRace(), creature_properties->Male_DisplayID);
     if (totemdisplay != nullptr)
-    {
-        switch (pOwner->getRace())
-        {
-            case RACE_DRAENEI:
-                displayID = totemdisplay->draeneiId;
-                break;
-            case RACE_TROLL:
-                displayID = totemdisplay->trollId;
-                break;
-            case RACE_ORC:
-                displayID = totemdisplay->orcId;
-                break;
-#if VERSION_STRING == Cata
-            case RACE_TAUREN:
-                displayID = totemdisplay->taurenId;
-                break;
-            case RACE_DWARF:
-                displayID = totemdisplay->dwarfId;
-                break;
-            case RACE_GOBLIN:
-                displayID = totemdisplay->goblinId;
-                break;
-#endif
-            default:
-                displayID = totemdisplay->displayId;
-                break;
-        }
-    }
+        displayID = totemdisplay->race_specific_id;
     else
-    {
         displayID = creature_properties->Male_DisplayID;
-    }
 
     // Set up the creature.
     SetMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
@@ -140,11 +111,11 @@ void TotemSummon::SetupSpells()
     // Set up AI, depending on our spells.
     bool castingtotem = true;
 
-    if (TotemSpell->HasEffect(SPELL_EFFECT_SUMMON) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
-        TotemSpell->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
-        (TotemSpell->HasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
+    if (TotemSpell->hasEffect(SPELL_EFFECT_SUMMON) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
+        TotemSpell->hasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
+        (TotemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
         castingtotem = false;
 
     if (!castingtotem)
@@ -156,7 +127,7 @@ void TotemSummon::SetupSpells()
         Spell* pSpell = sSpellFactoryMgr.NewSpell(this, TotemSpell, true, 0);
         SpellCastTargets targets;
 
-        if (!TotemSpell->HasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
+        if (!TotemSpell->hasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
         {
             targets.setDestination(GetPosition());
             targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;

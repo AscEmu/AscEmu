@@ -23,7 +23,7 @@
 #include "Creature.h"
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -435,9 +435,9 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
         if (created_by_spell != NULL)
         {
-            if (created_by_spell->HasEffect(SPELL_EFFECT_SUMMON_PET) ||
-                created_by_spell->HasEffect(SPELL_EFFECT_TAME_CREATURE) ||
-                created_by_spell->HasEffect(SPELL_EFFECT_TAMECREATURE))
+            if (created_by_spell->hasEffect(SPELL_EFFECT_SUMMON_PET) ||
+                created_by_spell->hasEffect(SPELL_EFFECT_TAME_CREATURE) ||
+                created_by_spell->hasEffect(SPELL_EFFECT_TAMECREATURE))
                 SetNameForEntry(entry);
 
             setCreatedBySpellId(created_by_spell->getId());
@@ -511,7 +511,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     m_ExpireTime = expiretime;
     bExpires = m_ExpireTime > 0 ? true : false;
 
-    if (!bExpires && owner->IsPlayer())
+    if (!bExpires && owner->isPlayer())
     {
         // Create PlayerPet struct (Rest done by UpdatePetInfo)
         PlayerPet* pp = new PlayerPet;
@@ -779,7 +779,7 @@ void Pet::InitializeSpells()
         SpellInfo* info = itr->first;
 
         // Check that the spell isn't passive
-        if (info->IsPassive())
+        if (info->isPassive())
         {
             // Cast on self..
             Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
@@ -1388,7 +1388,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     if (sp == NULL)
         return;
 
-    if (sp->IsPassive())        // Cast on self if we're a passive spell
+    if (sp->isPassive())        // Cast on self if we're a passive spell
     {
         if (IsInWorld())
         {
@@ -2110,18 +2110,18 @@ Group* Pet::GetGroup()
 {
     if (m_Owner)
         return m_Owner->GetGroup();
-    return NULL;
+    return nullptr;
 }
 
 void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 spellId, bool no_remove_auras)
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
+    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (pVictim != this)
@@ -2148,7 +2148,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     }
 
     // Duel
-    if (pVictim->IsPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
+    if (pVictim->isPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
     {
         if (pVictim->getHealth() <= damage)
         {
@@ -2176,11 +2176,11 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         {
             m_Owner->m_bg->HookOnUnitKill(m_Owner, pVictim);
 
-            if (pVictim->IsPlayer())
+            if (pVictim->isPlayer())
                 m_Owner->m_bg->HookOnPlayerKill(m_Owner, static_cast< Player* >(pVictim));
         }
 
-        if (pVictim->IsPlayer())
+        if (pVictim->isPlayer())
         {
 
             Player* playerVictim = static_cast<Player*>(pVictim);
@@ -2212,7 +2212,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         }
         else
         {
-            if (pVictim->IsCreature())
+            if (pVictim->isCreature())
             {
                 m_Owner->Reputation_OnKilledUnit(pVictim, false);
 #if VERSION_STRING > TBC
@@ -2254,7 +2254,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //Experience
-        if (pVictim->getCreatedByGuid() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
+        if (pVictim->getCreatedByGuid() == 0 && !pVictim->isPet() && pVictim->IsTagged())
         {
             auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
 
@@ -2262,10 +2262,10 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
             {
                 Player* player_tagger = nullptr;
 
-                if (unit_tagger->IsPlayer())
+                if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
-                if ((unit_tagger->IsPet() || unit_tagger->IsSummon()) && unit_tagger->GetPlayerOwner())
+                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->GetPlayerOwner())
                     player_tagger = static_cast<Player*>(unit_tagger->GetPlayerOwner());
 
                 if (player_tagger != nullptr)
@@ -2275,7 +2275,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                     {
                         player_tagger->GiveGroupXP(pVictim, player_tagger);
                     }
-                    else if (IsUnit())
+                    else if (isCreatureOrPlayer())
                     {
                         uint32 xp = CalculateXpToGive(pVictim, unit_tagger);
 
@@ -2301,7 +2301,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                         }
                         //////////////////////////////////////////////////////////////////////////////////////////
 
-                        if (pVictim->IsCreature())
+                        if (pVictim->isCreature())
                         {
                             sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
 

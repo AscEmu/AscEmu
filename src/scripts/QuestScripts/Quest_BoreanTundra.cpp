@@ -134,14 +134,14 @@ class SeaforiumDepthCharge : public CreatureAIScript
 
     void OnLoad()
     {
-        if (!getCreature()->IsSummon())
+        if (!getCreature()->isSummon())
             return;
 
         Unit* summoner = static_cast<Summon*>(getCreature())->GetOwner();
 
         if (summoner != NULL)
         {
-            if (summoner->IsPlayer())
+            if (summoner->isPlayer())
             {
                 Player* p = static_cast<Player*>(summoner);
                 if (p->HasQuest(11608))

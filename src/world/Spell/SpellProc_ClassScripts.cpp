@@ -46,7 +46,7 @@ public:
     bool CanProc(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
     {
         // Allow only proc for player unit
-        if (!mTarget->IsPlayer())
+        if (!mTarget->isPlayer())
             return false;
         return true;
     }
@@ -283,7 +283,7 @@ public:
 
     bool CanProc(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
     {
-        if (mTarget->IsPlayer())
+        if (mTarget->isPlayer())
             return true;
         return false;
     }
@@ -349,7 +349,7 @@ public:
     // Allow proc on ability cast (like eviscerate, envenom, fan of knives, rupture)
     bool CanProcOnTriggered(Unit* /*victim*/, SpellInfo* castingSpell)
     {
-        if (castingSpell != nullptr && (castingSpell->getSpellGroupType(0) & 0x120000 || castingSpell->getSpellGroupType(1) & 0x240008))
+        if (castingSpell != nullptr && (castingSpell->getSpellFamilyFlags(0) & 0x120000 || castingSpell->getSpellFamilyFlags(1) & 0x240008))
             return true;
 
         return false;
@@ -430,8 +430,8 @@ public:
             // Duration of 5 combo maximum
             int32 dur = 21 * MSTIME_SECOND;
 
-            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->getSpellGroupType());
-            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->getSpellGroupType());
+            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());
+            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());
 
             // Set new aura's duration, reset event timer and set client visual aura
             aura->SetDuration(dur);
@@ -622,7 +622,7 @@ public:
         if (castingSpell == nullptr)
             return true;
 
-        if (!castingSpell->HasEffect(SPELL_EFFECT_HEAL))
+        if (!castingSpell->hasEffect(SPELL_EFFECT_HEAL))
             return true;
 
         dmgOverwrite[0] = dmg * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
@@ -835,7 +835,7 @@ public:
     bool DoEffect(Unit* /*victim*/, SpellInfo* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(castingSpell->getSpellGroupType(0) & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
+        if (!(castingSpell->getSpellFamilyFlags(0) & mProcClassMask[0] && mTarget->isPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
             return true;
 
         return false;
@@ -946,7 +946,7 @@ public:
         mProcFlags = PROC_ON_MELEE_ATTACK;
 
         /* The formula for SoC proc rate is: [ 7 / (60 / Weapon Speed) - from wowwiki */
-        if (!mTarget->IsPlayer())
+        if (!mTarget->isPlayer())
             return;
 
         uint32 weapspeed = 1;
@@ -1120,15 +1120,9 @@ public:
     {
         mProcFlags = PROC_ON_CAST_SPELL;
 
-#if VERSION_STRING != Cata
         mProcClassMask[0] = mOrigSpell->getEffectSpellClassMask(0, 0);
         mProcClassMask[1] = mOrigSpell->getEffectSpellClassMask(0, 1);
         mProcClassMask[2] = mOrigSpell->getEffectSpellClassMask(0, 2);
-#else
-        mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0];
-        mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[1];
-        mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[2];
-#endif
 
         dk = static_cast<DeathKnight*>(mTarget);
     }

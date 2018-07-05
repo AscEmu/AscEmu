@@ -195,7 +195,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     std::list<QuestRelation*>::const_iterator q_end;
     bool bValid = false;
 
-    if (quest_giver->IsGameObject())
+    if (quest_giver->isGameObject())
     {
         bValid = false;
 
@@ -213,7 +213,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
             q_end = go_quest_giver->QuestsEnd();
         }
     }
-    else if (quest_giver->IsCreature())
+    else if (quest_giver->isCreature())
     {
         bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
@@ -222,13 +222,13 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
             q_end = static_cast< Creature* >(quest_giver)->QuestsEnd();
         }
     }
-    else if (quest_giver->IsItem())
+    else if (quest_giver->isItem())
     {
         if (static_cast< Item* >(quest_giver)->getItemProperties()->QuestId)
             bValid = true;
     }
     //This will be handled at quest share so nothing important as status
-    else if (quest_giver->IsPlayer())
+    else if (quest_giver->isPlayer())
     {
         status = QMGR_QUEST_AVAILABLE;
     }
@@ -236,11 +236,11 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     if (!bValid)
     {
         //annoying message that is not needed since all objects don't exactly have quests
-        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
+        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
         return status;
     }
 
-    if (quest_giver->IsItem())
+    if (quest_giver->isItem())
     {
         QuestProperties const* pQuest = sMySQLStore.getQuestProperties(static_cast< Item* >(quest_giver)->getItemProperties()->QuestId);
         if (pQuest)
@@ -275,7 +275,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     std::list<QuestRelation*>::const_iterator q_end;
     bool bValid = false;
 
-    if (quest_giver->IsGameObject())
+    if (quest_giver->isGameObject())
     {
         bValid = false;
 
@@ -294,7 +294,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
         }
     }
-    else if (quest_giver->IsCreature())
+    else if (quest_giver->isCreature())
     {
         bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
@@ -306,7 +306,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
+        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
         return 0;
     }
 
@@ -391,7 +391,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 
     *data << uint32(0);
     uint32 xp = 0;
-    if (plr->getLevel() < plr->GetMaxLevel())
+    if (plr->getLevel() < plr->getMaxLevel())
     {
         xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     }
@@ -433,7 +433,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
     *data << qst_giver->getGuid();			// npc guid
-    *data << uint64(qst_giver->IsPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
+    *data << uint64(qst_giver->isPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
     *data << qst->id;						// quest id
 
     if (lq != nullptr)
@@ -604,7 +604,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     uint32 rewardtalents = qst->rewardtalents;
     uint32 playerlevel = plr->getLevel();
 
-    if (playerlevel >= plr->GetMaxLevel())
+    if (playerlevel >= plr->getMaxLevel())
     {
         xp = 0;
     }
@@ -672,7 +672,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     *data << uint32(1);//Emote
 
     bool bValid = false;
-    if (qst_giver->IsGameObject())
+    if (qst_giver->isGameObject())
     {
         GameObject* go = static_cast<GameObject*>(qst_giver);
         GameObject_QuestGiver* go_quest_giver = nullptr;
@@ -688,7 +688,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
             ed = go_quest_giver->QuestsEnd();
         }
     }
-    else if (qst_giver->IsCreature())
+    else if (qst_giver->isCreature())
     {
         bValid = static_cast< Creature* >(qst_giver)->HasQuests();
         if (bValid)
@@ -1092,10 +1092,10 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
                 break;
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
-            if (qst_giver->IsCreature())
+            if (qst_giver->isCreature())
                 if (static_cast< Creature* >(qst_giver)->m_factionEntry != NULL)
                     fact = static_cast< Creature* >(qst_giver)->m_factionEntry->ID;
-            if (qst_giver->IsGameObject())
+            if (qst_giver->isGameObject())
                 fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }
         else
@@ -1154,7 +1154,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     qle->Finish();
 
 
-    if (qst_giver->IsCreature())
+    if (qst_giver->isCreature())
     {
         if (!static_cast< Creature* >(qst_giver)->HasQuest(qst->id, 2))
         {
@@ -1449,9 +1449,9 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
             uint64 itemGuid = 0;
 
-            if (qst_giver->IsCreature())
+            if (qst_giver->isCreature())
                 mailType = MAIL_TYPE_CREATURE;
-            else if (qst_giver->IsGameObject())
+            else if (qst_giver->isGameObject())
                 mailType = MAIL_TYPE_GAMEOBJECT;
 
             if (qst->MailSendItem != 0)
@@ -1773,7 +1773,7 @@ void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 {
-    if (qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
+    if (qst_giver->getObjectTypeId() == TYPEID_GAMEOBJECT)
     {
         GameObject* gameobject = static_cast<GameObject*>(qst_giver);
         if (gameobject->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
@@ -1800,7 +1800,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         bool bValid = false;
 
-        if (qst_giver->IsGameObject())
+        if (qst_giver->isGameObject())
         {
             bValid = false;
 
@@ -1818,7 +1818,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
                 q_end = go_quest_giver->QuestsEnd();
             }
         }
-        else if (qst_giver->IsCreature())
+        else if (qst_giver->isCreature())
         {
             bValid = static_cast< Creature* >(qst_giver)->HasQuests();
             if (bValid)
@@ -1830,7 +1830,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->GetTypeId());
+            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->getObjectTypeId());
             return false;
         }
 
@@ -2097,56 +2097,63 @@ void QuestMgr::LoadExtraQuestStuff()
 
     // load creature starters
     uint32 creature, quest;
-
-    QueryResult* pResult = WorldDatabase.Query("SELECT * FROM creature_quest_starter");
+    QueryResult* pResult = nullptr;
     uint32 pos = 0;
-    uint32 total;
-    if (pResult)
-    {
-        total = pResult->GetRowCount();
-        do
-        {
-            Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+    uint32 total = 0;
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
+    for (auto tableiterator = CreatureQuestStarterTables.begin(); tableiterator != CreatureQuestStarterTables.end(); ++tableiterator)
+    {
+        std::string table_name = *tableiterator;
+        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        if (pResult)
+        {
+            total = pResult->GetRowCount();
+            do
             {
-                LOG_ERROR("Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
-            }
-            else
-            {
-                _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
-            }
+                Field* data = pResult->Fetch();
+                creature = data[0].GetUInt32();
+                quest = data[1].GetUInt32();
+
+                auto qst = sMySQLStore.getQuestProperties(quest);
+                if (qst == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                }
+                else
+                {
+                    _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
+                }
+            } while (pResult->NextRow());
+            delete pResult;
         }
-        while (pResult->NextRow());
-        delete pResult;
     }
 
-    pResult = WorldDatabase.Query("SELECT * FROM creature_quest_finisher");
-    pos = 0;
-    if (pResult)
+    for (auto tableiterator = CreatureQuestFinisherTables.begin(); tableiterator != CreatureQuestFinisherTables.end(); ++tableiterator)
     {
-        total = pResult->GetRowCount();
-        do
+        std::string table_name = *tableiterator;
+        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        pos = 0;
+        if (pResult)
         {
-            Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            total = pResult->GetRowCount();
+            do
+            {
+                Field* data = pResult->Fetch();
+                creature = data[0].GetUInt32();
+                quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                LOG_ERROR("Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
-            }
-            else
-            {
-                _AddQuest<Creature>(creature, qst, 2);  // 1 = starter
-            }
+                auto qst = sMySQLStore.getQuestProperties(quest);
+                if (qst == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                }
+                else
+                {
+                    _AddQuest<Creature>(creature, qst, 2);  // 2 = finisher
+                }
+            } while (pResult->NextRow());
+            delete pResult;
         }
-        while (pResult->NextRow());
-        delete pResult;
     }
 
     pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_starter");
@@ -2163,7 +2170,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add starter to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2188,7 +2195,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2219,7 +2226,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add association to item %d for non-existent quest %d.", item, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {

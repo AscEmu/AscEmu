@@ -106,7 +106,7 @@ public:
         }
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.3f)
         {
-            if (mAttacker->IsPlayer())
+            if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
@@ -148,7 +148,7 @@ public:
             return;
 
         std::string say = "Puny ";
-        say += mTarget->GetName();
+        say += mTarget->getName().c_str();
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
         Overlord->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         Overlord->SetFaction(72);
@@ -173,7 +173,7 @@ public:
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.37f)
         {
-            if (mAttacker->IsPlayer())
+            if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);

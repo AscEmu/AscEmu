@@ -45,6 +45,14 @@ struct WoWItem : WoWObject
 #define WOWITEM_SPELL_CHARGES_COUNT 5
 #define WOWITEM_ENCHANTMENT_COUNT 33
 
+//\todo verify this
+struct WoWItem_Enchantment
+{
+    uint32_t id;
+    uint32_t duration;
+    uint32_t charges;
+};
+
 struct WoWItem : WoWObject
 {
     guid_union owner_guid;
@@ -71,8 +79,9 @@ struct WoWItem : WoWObject
 
 struct WoWItem_Enchantment
 {
-    guid_union unk1;
-    uint32_t unk2;
+    uint32_t id;
+    uint32_t duration;
+    uint32_t charges;
 };
 
 struct WoWItem : WoWObject
@@ -102,9 +111,9 @@ struct WoWItem : WoWObject
 
 struct WoWItem_Enchantment
 {
-    uint32_t unk1;
-    uint32_t unk2;
-    uint32_t unk3;
+    uint32_t id;
+    uint32_t duration;
+    uint32_t charges;
 };
 
 struct WoWItem : WoWObject

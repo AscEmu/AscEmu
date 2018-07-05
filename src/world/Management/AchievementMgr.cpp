@@ -372,7 +372,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
         WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, 200);
-        data << GetPlayer()->GetName();
+        data << GetPlayer()->getName().c_str();
         data << uint64(GetPlayer()->getGuid());
         data << uint32(achievement->ID);
         data << uint32(0);
@@ -1135,9 +1135,9 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     uint32 crType = UNIT_TYPE_NONE;
                     bool crTotem = false;
                     bool yieldXP = CalculateXpToGive(pUnit, GetPlayer()) > 0;
-                    if (pUnit->IsCreature())
+                    if (pUnit->isCreature())
                     {
-                        crTotem = pUnit->IsTotem();
+                        crTotem = pUnit->isTotem();
                         crType = static_cast<Creature*>(pUnit)->GetCreatureProperties()->Type;
                         if ((achievementCriteria->ID == 4944)                                  // Total NPC kills              refAch==1197
                             || ((achievementCriteria->ID == 4946) && (yieldXP))                // Kill an NPC that yields XP   refAch==1198
@@ -1330,11 +1330,11 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     else if (achievementCriteria->number_of_mounts.unknown == 778 && sp && (sp->getEffect(0) == SPELL_EFFECT_SUMMON))
                     {
                         // Companion pet? Make sure it's a companion pet, not some other summon-type spell
-                        if (strncmp(sp->getDescription().c_str(), "Right Cl", 8) == 0)
-                        {
-                            // "Right Click to summon and dismiss " ...
+                        // temporary solution since spell description is no longer loaded -Appled
+                        const auto creatureEntry = sp->getEffectMiscValue(0);
+                        auto creatureProperties = sMySQLStore.getCreatureProperties(creatureEntry);
+                        if (creatureProperties != nullptr && creatureProperties->Type == UNIT_TYPE_NONCOMBAT_PET)
                             ++nm;
-                        }
                     }
                     ++sl;
                 }

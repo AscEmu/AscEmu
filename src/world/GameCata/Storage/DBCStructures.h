@@ -214,7 +214,7 @@ namespace DBC
             char const barber_shop_style_entry_format[] = "nixxxiii";
             char const banned_addons_entry_format[] = "nxxxxxxxxxx";
             //char const battlemaster_list_format[]="niiiiiiiiixsiiiiiiii"; new
-            //char const char_start_outfit_format[]="diiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; new
+            char const char_start_outfit_format[]="dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"; 
             char const char_titles_format[] = "nxsxix";
             char const chat_channels_format[] = "iixsx";
             char const chr_classes_format[] = "nixsxxxixiiiii";
@@ -300,7 +300,7 @@ namespace DBC
             char const spell_cooldowns_format[] = "diii";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiifixiissxxiixxixiiiiiiixiiiiiiiix";
             char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
             //char const skill_race_class_info_format[] = "diiiiixxx"; new
             char const spell_radius_format[] = "nfff";
@@ -860,20 +860,19 @@ namespace DBC
 
         #define OUTFIT_ITEMS 24
 
-        //\todo danko
-        //struct CharStartOutfitEntry
-        //{
-        //    //uint32_t Id;                                // 0
-        //    uint32_t RaceClassGender;                     // 1
-        //    int32_t ItemId[OUTFIT_ITEMS];                 // 2-25
-        //    //int32_t ItemDisplayId[OUTFIT_ITEMS];        // 26-29
-        //    //int32_t ItemInventorySlot[OUTFIT_ITEMS];    // 50-73
-        //    //uint32_t Unknown1;                          // 74
-        //    //uint32_t Unknown2;                          // 75
-        //    //uint32_t Unknown3;                          // 76
-        //    //uint32_t Unknown4;                          // 77
-        //    //uint32_t Unknown5;                          // 78
-        //};
+        struct CharStartOutfitEntry
+        {
+            //uint32_t Id;                                    // 0
+            uint8_t Race;                                     // 1
+            uint8_t Class;                                    // 2
+            uint8_t Gender;                                   // 3
+            //uint8_t Unused;                                 // 4
+            int32_t ItemId[OUTFIT_ITEMS];                     // 5-28
+            //int32_t ItemDisplayId[OUTFIT_ITEMS];            // 29-52
+            //int32_t ItemInventorySlot[OUTFIT_ITEMS];        // 53-76
+            uint32_t PetDisplayId;                            // 77
+            uint32_t PetFamilyEntry;                          // 78
+        };
 
         struct CharTitlesEntry
         {
@@ -905,7 +904,7 @@ namespace DBC
             //char* name_capitalized            // 6
             uint32_t spellfamily;               // 7
             //uint32_t unk4;                    // 8
-            uint32_t cinematic_sequence;        // 9 CinematicSequences.dbc
+            uint32_t cinematic_id;              // 9 CinematicSequences.dbc
             uint32_t expansion;                 // 10
             uint32_t apPerStr;                  // 11
             uint32_t apPerAgi;                  // 12
@@ -1432,7 +1431,7 @@ namespace DBC
         struct SpellAuraOptionsEntry
         {
             //uint32_t Id;                      // 0
-            uint32_t StackAmount;               // 1
+            uint32_t MaxStackAmount;            // 1
             uint32_t procChance;                // 2
             uint32_t procCharges;               // 3
             uint32_t procFlags;                 // 4
@@ -1448,8 +1447,8 @@ namespace DBC
             uint32_t TargetAuraStateNot;        // 4
             uint32_t casterAuraSpell;           // 5
             uint32_t targetAuraSpell;           // 6
-            uint32_t excludeCasterAuraSpell;    // 7
-            uint32_t excludeTargetAuraSpell;    // 8
+            uint32_t CasterAuraSpellNot;        // 7
+            uint32_t TargetAuraSpellNot;        // 8
         };
 
         // SpellCastingRequirements.dbc
@@ -1479,8 +1478,8 @@ namespace DBC
             //uint32_t Id;                      // 0
             uint32_t Category;                  // 1
             uint32_t DmgClass;                  // 2
-            uint32_t Dispel;                    // 3
-            uint32_t Mechanic;                  // 4
+            uint32_t DispelType;                // 3
+            uint32_t MechanicsType;             // 4
             uint32_t PreventionType;            // 5
             uint32_t StartRecoveryCategory;     // 6
         };
@@ -1523,11 +1522,11 @@ namespace DBC
         // SpellClassOptions.dbc
         struct SpellClassOptionsEntry
         {
-            //uint32_t Id;                      // 0
-            //uint32_t modalNextSpell;          // 1
-            uint32_t SpellFamilyFlags[3];       // 2-4
-            uint32_t SpellFamilyName;           // 5
-            //char* Description;                // 6
+            //uint32_t Id;                                  // 0
+            //uint32_t modalNextSpell;                      // 1
+            uint32_t SpellFamilyFlags[MAX_SPELL_EFFECTS];   // 2 - 4
+            uint32_t SpellFamilyName;                       // 5
+            //char* Description;                            // 6
             
             // helpers
             bool IsFitToFamilyMask(uint64 /*familyFlags*/, uint32_t /*familyFlags2*/ = 0) const
@@ -1767,11 +1766,11 @@ namespace DBC
         struct SpellShapeshiftEntry
         {
             //uint32_t Id;                      // 0
-            uint32_t StancesNot;                // 1
-            // uint32_t unk_320_2;              // 2
-            uint32_t Stances;                   // 3
-            // uint32_t unk_320_3;              // 4
-            // uint32_t StanceBarOrder;         // 5
+            uint32_t ShapeshiftsExcluded;       // 1
+            //uint32_t ShapeshiftsExcluded1;    // 2 unused, all zeros
+            uint32_t Shapeshifts;               // 3
+            //uint32_t Shapeshifts1;            // 4 unused, all zeros
+            //uint32_t StanceBarOrder;          // 5
         };
 
         // SpellTargetRestrictions.dbc
@@ -1812,13 +1811,14 @@ namespace DBC
             int32_t powerType;                                    // 14
             uint32_t rangeIndex;                                  // 15
             float speed;                                          // 16
-            uint32_t SpellVisual[2];                              // 17-18
+            uint32_t SpellVisual;                                 // 17
+            //uint32_t SpellVisual1;                              // 18
             uint32_t spellIconID;                                 // 19
             uint32_t activeIconID;                                // 20
-            char* Name;                                           // 21
-            char* Rank;                                           // 22
-            char* Description;                                    // 23
-            char* BuffDescription;                                // 24
+            const char* Name;                                     // 21
+            const char* Rank;                                     // 22
+            //char* Description;                                  // 23 not used
+            //char* BuffDescription;                              // 24 not used
             uint32_t School;                                      // 25
             uint32_t RuneCostID;                                  // 26
             //uint32_t spellMissileID;                            // 27

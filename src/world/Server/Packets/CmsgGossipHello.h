@@ -13,14 +13,14 @@ namespace AscEmu { namespace Packets
     class CmsgGossipHello : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
 
         CmsgGossipHello() : CmsgGossipHello(0)
         {
         }
 
         CmsgGossipHello(uint64_t guid) :
-            ManagedPacket(CMSG_GOSSIP_HELLO, 0),
+            ManagedPacket(CMSG_GOSSIP_HELLO, 8),
             guid(guid)
         {
         }
@@ -39,7 +39,9 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid;
+            uint64_t unpackedGuid;
+            packet >> unpackedGuid;
+            guid.Init(unpackedGuid);
             return true;
         }
     };

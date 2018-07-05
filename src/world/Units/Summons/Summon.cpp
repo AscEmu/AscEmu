@@ -109,7 +109,7 @@ Object* Summon::GetPlayerOwner()
     if (owner == NULL)
         return NULL;
 
-    if (owner->IsPlayer())
+    if (owner->isPlayer())
         return owner;
     else
         return NULL;
@@ -117,7 +117,7 @@ Object* Summon::GetPlayerOwner()
 
 void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
-    if (owner->IsTotem())
+    if (owner->isTotem())
         owner->Die(pAttacker, damage, spellid);
 
     Creature::Die(pAttacker, damage, spellid);

@@ -35,7 +35,7 @@ void Hanazua(Player* pPlayer, Object* pObject)
 {
     std::string say;
     say = "Go swiftly, ";
-    say += pPlayer->GetName();
+    say += pPlayer->getName().c_str();
     say += ", my fate is in your hands.";
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
@@ -81,7 +81,7 @@ void Rest_n_Relaxation(Player* /*pPlayer*/, Object* pObject)
 void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 {
     char msg[256];
-    snprintf((char*)msg, 256, "You are dismissed %s . ", pPlayer->GetName());
+    snprintf((char*)msg, 256, "You are dismissed %s . ", pPlayer->getName().c_str());
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_BOW);
 }
@@ -98,7 +98,7 @@ void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
 
 void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->isCreature())
         return;
 
     switch (pQuest->id)
@@ -163,7 +163,7 @@ void Wishock(Player* pPlayer, Object* pObject)
 void CapturedMountaineer(Player* pPlayer, Object* pObject)
 {
     std::string say = "I raise my brew and hope to be rid of the likes of you!  Cheers, you no good scoundrel, ";
-    say += pPlayer->GetName();
+    say += pPlayer->getName().c_str();
     say += "!";
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
@@ -189,7 +189,7 @@ void MaybellComplete(Player* /*pPlayer*/, Object* pObject)
 
 void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->isCreature())
         return;
 
     switch (pQuest->id)

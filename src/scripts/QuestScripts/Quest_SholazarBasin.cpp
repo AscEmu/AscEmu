@@ -46,7 +46,7 @@ public:
             Unit* Caster = a->GetUnitCaster();
             if (Caster == nullptr)
                 return;
-            if (Caster->IsPlayer())
+            if (Caster->isPlayer())
             {
 
                 QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12532);

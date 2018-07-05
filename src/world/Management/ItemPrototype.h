@@ -287,7 +287,6 @@ enum INV_ERR
     INV_ERR_ITEM_MAX_LIMIT_CATEGORY_EQUIPPED_EXCEEDED
 };
 
-/// for SMSG_BUY_FAILED - seems to be unused, i can't find it in any sniff as of 3.3.5a
 enum CanAffordItem
 {
     CAN_AFFORD_ITEM_ERROR_NOT_FOUND                 = 0,

@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint32_t text_emote;
-        uint32_t unk;
+        uint32_t unk; //cata: numEmote
         uint64_t guid;
 
         CmsgTextEmote() : CmsgTextEmote(0, 0, 0)

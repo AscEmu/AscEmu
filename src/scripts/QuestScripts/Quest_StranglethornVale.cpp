@@ -58,7 +58,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
             Creature* beka1 =mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
@@ -94,7 +94,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        if (mKiller->IsPlayer())
+        if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
             Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
@@ -159,7 +159,7 @@ public:
             return;
 
         std::string msg1 = "Ah. Good ";
-        msg1 += mTarget->GetName();
+        msg1 += mTarget->getName().c_str();
         msg1 += ". Now let us see what tale these heads tell...";
         Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->CastSpell(Kin_weelay, sSpellCustomizations.GetSpellInfo(3644), false);
@@ -169,7 +169,7 @@ public:
             skull2->Despawn(5000, 0);
 
         std::string msg = "There, ";
-        msg += mTarget->GetName();
+        msg += mTarget->getName().c_str();
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
         Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
@@ -190,7 +190,7 @@ public:
         if (Crank)
         {
             std::string say = "Hm... if you're looking to adle wits. ";
-            say += mTarget->GetName();
+            say += mTarget->getName().c_str();
             say += ", then the secret behind Zanzil's zombies might just fo the trick!";
             Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
@@ -211,7 +211,7 @@ public:
         if (MacKinley)
         {
             std::string say = "Bah! ";
-            say += mTarget->GetName();
+            say += mTarget->getName().c_str();
             say += ", this foot won't budge!";
             MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }

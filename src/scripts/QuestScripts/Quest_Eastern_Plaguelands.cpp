@@ -29,7 +29,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         Creature* creat = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(11064, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
@@ -64,7 +64,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        if (!mKiller->IsPlayer())
+        if (!mKiller->isPlayer())
             return;
 
         GameObject* go = mKiller->GetMapMgr()->CreateAndSpawnGameObject(177241, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 1);
