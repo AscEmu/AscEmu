@@ -30,7 +30,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].status = STATUS_AUTHED;
 
     // declined names (Cyrillic client)
-    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::HandleDeclinedPlayerNameOpcode;
+    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::handleDeclinedPlayerNameOpcode;
     WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].status = STATUS_AUTHED;
 
     WorldPacketHandlers[CMSG_PLAYER_LOGIN].handler = &WorldSession::handlePlayerLoginOpcode;

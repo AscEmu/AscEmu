@@ -104,6 +104,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetFactionAtWar.h
    ${PATH_PREFIX}/CmsgSetFactionInactive.h
+   ${PATH_PREFIX}/CmsgSetPlayerDeclinedNames.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h
    ${PATH_PREFIX}/CmsgSetTaxiBenchmarkMode.h
@@ -189,6 +190,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgSetPlayerDeclinedNamesResult.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgShowBank.h
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h

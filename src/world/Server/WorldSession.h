@@ -283,7 +283,7 @@ class SERVER_DECL WorldSession
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleRealmSplitOpcode(WorldPacket& recvPacket);
         void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
-        void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
+        void handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
 
         /// Authentification and misc opcodes (MiscHandler.cpp):
         void HandlePingOpcode(WorldPacket& recvPacket);

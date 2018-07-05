@@ -28,6 +28,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgLearnedDanceMoves.h"
 #include "Server/Packets/SmsgFeatureSystemStatus.h"
+#include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
+#include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -731,4 +733,16 @@ void WorldSession::fullLogin(Player* player)
     sHookInterface.OnFullLogin(player);
 
     objmgr.AddPlayer(player);
+}
+
+void WorldSession::handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetPlayerDeclinedNames recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    //\todo check utf8 and cyrillic chars
+    const uint32_t error = 0;     // 0 = success, 1 = error
+
+    SendPacket(SmsgSetPlayerDeclinedNamesResult(error, recv_packet.guid).serialise().get());
 }
