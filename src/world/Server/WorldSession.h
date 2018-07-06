@@ -265,7 +265,6 @@ class SERVER_DECL WorldSession
         bool bDeleted;
         uint32 GetInstance() { return instanceId; }
         Mutex deleteMutex;
-        void _HandleAreaTriggerOpcode(uint32 id);//real handle
         int32 m_moveDelayTime;
         int32 m_clientTimeDelay;
 
