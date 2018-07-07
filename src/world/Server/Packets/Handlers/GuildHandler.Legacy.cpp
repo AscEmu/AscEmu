@@ -54,6 +54,10 @@
 #include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
+#include "Server/Packets/CmsgGuildBankQueryTab.h"
+#include "Server/Packets/MsgGuildBankLogQuery.h"
+#include "Server/Packets/MsgQueryGuildBankText.h"
+#include "Server/Packets/CmsgSetGuildBankText.h"
 
 using namespace AscEmu::Packets;
 
@@ -1528,149 +1532,20 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    uint8 tabid;
-    Guild* pGuild = _player->m_playerInfo->guild;
-
-    recv_data >> guid;
-    recv_data >> tabid;
-
-    //LogWarning("HandleGuildBankViewTab : Tab %u", (uint32)tabid);
+    CmsgGuildBankQueryTab recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     // maybe last uint8 is "show additional info" such as tab names? *shrug*
+    Guild* pGuild = _player->m_playerInfo->guild;
     if (pGuild == NULL)
         return;
 
-    GuildBankTab* pTab = pGuild->GetBankTab(tabid);
+    GuildBankTab* pTab = pGuild->GetBankTab(recv_packet.tabId);
     if (pTab == NULL)
         return;
 
     pGuild->SendGuildBank(this, pTab);
-}
-
-void Guild::SendGuildBankInfo(WorldSession* pClient)
-{
-    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
-    if (pMember == NULL)
-        return;
-
-    WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
-    data << uint64(m_bankBalance);
-    data << uint8(0);
-    data << uint32(0);
-    data << uint8(1);
-    data << GetBankTabCount();
-
-    for (uint8 i = 0; i < GetBankTabCount(); ++i)
-    {
-        GuildBankTab* pTab = GetBankTab(i);
-        if (pTab == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, i))
-        {
-            data << uint16(0);        // shouldn't happen
-            continue;
-        }
-
-        if (pTab->szTabName)
-            data << pTab->szTabName;
-        else
-            data << uint8(0);
-
-        if (pTab->szTabIcon)
-            data << pTab->szTabIcon;
-        else
-            data << uint8(0);
-    }
-
-    data << uint8(0);
-    pClient->SendPacket(&data);
-}
-
-void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 updated_slot1 /* = -1 */, int8 updated_slot2 /* = -1 */)
-{
-    size_t pos;
-    uint32 count = 0;
-
-    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
-    if (pMember == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, pTab->iTabId))
-        return;
-
-    //LogDebugFlag(LF_OPCODE, "sending tab %u to client.", pTab->iTabId);
-    WorldPacket data(SMSG_GUILD_BANK_LIST, 1300);
-    data << uint64(m_bankBalance);  // amount you have deposited
-    data << uint8(pTab->iTabId);
-    data << uint32(pMember->CalculateAllowedItemWithdraws(pTab->iTabId));        // remaining stacks for this day
-    data << uint8(0);               // Packet type: 0-tab content, 1-tab info,
-
-    // no need to send tab names here..
-
-    pos = data.wpos();
-    data << uint8(0);               // number of items, will be filled later
-
-    for (int8 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
-    {
-        if (pTab->pSlots[j] != NULL)
-        {
-            if (updated_slot1 >= 0 && j == updated_slot1)
-                updated_slot1 = -1;
-
-            if (updated_slot2 >= 0 && j == updated_slot2)
-                updated_slot2 = -1;
-
-            ++count;
-
-            data << uint8(j);                   // slot
-            data << pTab->pSlots[j]->getEntry();
-            data << uint32(0);                  // 3.3.0 (0x8000, 0x8020) from MaNGOS
-            data << (uint32)pTab->pSlots[j]->getRandomPropertiesId();
-
-            if (pTab->pSlots[j]->getRandomPropertiesId())
-                data << (uint32)pTab->pSlots[j]->getPropertySeed();
-
-            data << uint32(pTab->pSlots[j]->getStackCount());
-            data << uint32(0);                  // unknown value
-            data << uint8(0);                   // unknown 2.4.2
-            uint32 Enchant0 = 0;
-            EnchantmentInstance* ei = pTab->pSlots[j]->GetEnchantment(PERM_ENCHANTMENT_SLOT);
-            if (ei != NULL)
-                Enchant0 = ei->Enchantment->Id;
-            if (Enchant0)
-            {
-                data << uint8(1);               // number of enchants
-                data << uint8(0);               // enchantment slot
-                data << uint32(Enchant0);       // enchantment id
-            }
-            else
-                data << uint8(0);               // no enchantment
-        }
-    }
-
-    // send the forced update slots
-    if (updated_slot1 >= 0)
-    {
-        // this should only be hit if the items null though..
-        if (pTab->pSlots[updated_slot1] == NULL)
-        {
-            ++count;
-            data << uint8(updated_slot1);
-            data << uint32(0);
-        }
-    }
-
-    if (updated_slot2 >= 0)
-    {
-        // this should only be hit if the items null though..
-        if (pTab->pSlots[updated_slot2] == NULL)
-        {
-            ++count;
-            data << uint8(updated_slot2);
-            data << uint32(0);
-        }
-    }
-
-    *(uint8*)&data.contents()[pos] = (uint8)count;      // push number of items
-    pClient->SendPacket(&data);
 }
 
 void WorldSession::HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/)
@@ -1699,72 +1574,55 @@ void WorldSession::HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildBankViewLog(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    // slot 6 = I'm requesting money log
-    uint8 slotid;
-    recv_data >> slotid;
+    MsgGuildBankLogQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (_player->GetGuild() == NULL)
         return;
 
-    _player->GetGuild()->SendGuildBankLog(this, slotid);
+    _player->GetGuild()->SendGuildBankLog(this, recv_packet.slotId);
 }
 
 void WorldSession::HandleGuildBankQueryText(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    if (_player->GetGuild() == NULL)
+    MsgQueryGuildBankText recv_packet;
+    if (!recv_packet.deserialise(recv_data))
         return;
 
-    uint8 tabid;
-    recv_data >> tabid;
-
-    GuildBankTab* tab = _player->GetGuild()->GetBankTab(tabid);
-    if (tab == NULL)
+    if (_player->GetGuild() == nullptr)
         return;
 
-    uint32 len = tab->szTabInfo != NULL ? (uint32)strlen(tab->szTabInfo) : 1;
+    GuildBankTab* tab = _player->GetGuild()->GetBankTab(recv_packet.tabId);
+    if (tab == nullptr)
+        return;
 
-    WorldPacket data(MSG_QUERY_GUILD_BANK_TEXT, 1 + len);
-    data << tabid;
-
-    if (tab->szTabInfo != NULL)
-        data << tab->szTabInfo;
-    else
-        data << uint8(0);
-
-    SendPacket(&data);
+    SendPacket(MsgQueryGuildBankText(recv_packet.tabId, tab->szTabInfo).serialise().get());
 }
 
 void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
     GuildMember* pMember = _player->m_playerInfo->guildMember;
     if (_player->GetGuild() == NULL || pMember == NULL)
         return;
 
-    uint8 tabid;
-    std::string text;
+    CmsgSetGuildBankText recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    recv_data >> tabid;
-    recv_data >> text;
-
-    GuildBankTab* tab = _player->GetGuild()->GetBankTab(tabid);
+    GuildBankTab* tab = _player->GetGuild()->GetBankTab(recv_packet.tabId);
     if (tab != NULL &&
-        pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_CHANGE_TABTXT, tabid))
+        pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_CHANGE_TABTXT, recv_packet.tabId))
     {
-        tab->szTabInfo = strdup(text.c_str());
+        tab->szTabInfo = strdup(recv_packet.text.c_str());
         WorldPacket data(SMSG_GUILD_EVENT, 4);
         data << uint8(GE_BANK_TEXT_CHANGED);
         data << uint8(1);
-        data << uint16(0x30 + tabid);
+        data << uint16(0x30 + recv_packet.tabId);
         SendPacket(&data);
 
         CharacterDatabase.Execute("UPDATE guild_banktabs SET tabInfo = \'%s\' WHERE guildId = %u AND tabId = %u",
-                                  CharacterDatabase.EscapeString(text).c_str(), _player->m_playerInfo->guild->getGuildId(), (uint32)tabid);
+                                  CharacterDatabase.EscapeString(recv_packet.text).c_str(), _player->m_playerInfo->guild->getGuildId(), static_cast<uint32>(recv_packet.tabId));
     }
 }
 #endif

@@ -669,7 +669,7 @@ class SERVER_DECL WorldSession
         void HandleGuildBankDepositItem(WorldPacket& recv_data);
         void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
         void HandleGuildBankModifyTab(WorldPacket& recv_data);
-        void HandleGuildGetFullPermissions(WorldPacket& recv_data);
+        void HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/);
 #else
     public:
 

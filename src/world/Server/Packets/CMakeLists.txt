@@ -71,6 +71,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildBankBuyTab.h
    ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
    ${PATH_PREFIX}/CmsgGuildBankerActivate.h
+   ${PATH_PREFIX}/CmsgGuildBankQueryTab.h
    ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
    ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
    ${PATH_PREFIX}/CmsgGuildDemote.h
@@ -127,6 +128,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetFactionAtWar.h
    ${PATH_PREFIX}/CmsgSetFactionInactive.h
+   ${PATH_PREFIX}/CmsgSetGuildBankText.h
    ${PATH_PREFIX}/CmsgSetPlayerDeclinedNames.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h
@@ -149,6 +151,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgAuctionHello.h
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
+   ${PATH_PREFIX}/MsgGuildBankLogQuery.h
    ${PATH_PREFIX}/MsgInspectArenaTeams.h
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgListStabledPets.h
@@ -157,6 +160,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgPartyAssign.h
    ${PATH_PREFIX}/MsgPetitionDecline.h
    ${PATH_PREFIX}/MsgPetitionRename.h
+   ${PATH_PREFIX}/MsgQueryGuildBankText.h
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
