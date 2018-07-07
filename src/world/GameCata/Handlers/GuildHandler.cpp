@@ -17,27 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // Guild
 
-void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvData)
-{
-    uint64_t guildGuid;
-    uint64_t playerGuid;
-
-    recvData >> guildGuid;
-    recvData >> playerGuid;
-
-    uint32_t guildId = uint32_t(guildGuid);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY %s: GuildId: %u Target: %u", _player->getName().c_str(), guildId, Arcemu::Util::GUID_LOPART(playerGuid));
-
-    if (Guild* guild = sGuildMgr.getGuildById(guildId))
-    {
-        if (guild->isMember(playerGuid))
-        {
-            guild->handleQuery(this);
-        }
-    }
-}
-
 void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recvData)
 {
     std::string invitedName;

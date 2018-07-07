@@ -622,11 +622,7 @@ class SERVER_DECL WorldSession
         void handleSetTradeGold(WorldPacket& recvPacket);
 
         // Guild
-#if VERSION_STRING != Cata
         void handleGuildQuery(WorldPacket& recvPacket);
-#else
-        void HandleGuildQueryOpcode(WorldPacket& recv_data);
-#endif
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
