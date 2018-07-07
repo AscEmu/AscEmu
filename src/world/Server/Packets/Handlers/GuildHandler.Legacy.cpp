@@ -41,6 +41,9 @@
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
 #include "Server/Packets/CmsgPetitionBuy.h"
+#include "Server/Packets/CmsgPetitionShowSignatures.h"
+#include "Server/Packets/CmsgPetitionQuery.h"
+#include "Server/Packets/CmsgOfferPetition.h"
 
 using namespace AscEmu::Packets;
 
@@ -712,29 +715,27 @@ void SendShowSignatures(Charter* c, uint64 i, Player* p)
 
 void WorldSession::HandleCharterShowSignatures(WorldPacket& recv_data)
 {
-    uint64 item_guid;
-    recv_data >> item_guid;
+    CmsgPetitionShowSignatures recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    Charter* pCharter = objmgr.GetCharterByItemGuid(item_guid);
+    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (pCharter != nullptr)
-        SendShowSignatures(pCharter, item_guid, _player);
+        SendShowSignatures(pCharter, recv_packet.itemGuid, _player);
 }
 
 void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgPetitionQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint32 charter_id;
-    uint64 item_guid;
-    recv_data >> charter_id;
-    recv_data >> item_guid;
-
-    Charter* c = objmgr.GetCharterByItemGuid(item_guid);
+    Charter* c = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (c == nullptr)
         return;
 
     WorldPacket data(SMSG_PETITION_QUERY_RESPONSE, 100);
-    data << charter_id;
+    data << recv_packet.charterId;
     data << (uint64)c->LeaderGuid;
     data << c->GuildName << uint8(0);
     if (c->CharterType == CHARTER_TYPE_GUILD)
@@ -780,18 +781,12 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
 
 void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgOfferPetition recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint32 shit;
-    uint64 item_guid;
-    uint64 target_guid;
-
-    recv_data >> shit;
-    recv_data >> item_guid;
-    recv_data >> target_guid;
-
-    Player* pTarget = _player->GetMapMgr()->GetPlayer((uint32)target_guid);
-    Charter* pCharter = objmgr.GetCharterByItemGuid(item_guid);
+    Player* pTarget = _player->GetMapMgr()->GetPlayer(recv_packet.playerGuid.getGuidLow());
+    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (pCharter != nullptr)
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
@@ -810,7 +805,7 @@ void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
         return;
     }
 
-    SendShowSignatures(pCharter, item_guid, pTarget);
+    SendShowSignatures(pCharter, recv_packet.itemGuid, pTarget);
 }
 
 void WorldSession::HandleCharterSign(WorldPacket& recv_data)

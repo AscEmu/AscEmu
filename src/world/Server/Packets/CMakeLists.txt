@@ -91,13 +91,16 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgNpcTextQuery.h
+   ${PATH_PREFIX}/CmsgOfferPetition.h
    ${PATH_PREFIX}/CmsgOpenItem.h
    ${PATH_PREFIX}/CmsgOptOutOfLoot.h
    ${PATH_PREFIX}/CmsgPageTextQuery.h
    ${PATH_PREFIX}/CmsgPetAction.h
    ${PATH_PREFIX}/CmsgPetCancelAura.h
    ${PATH_PREFIX}/CmsgPetitionBuy.h
+   ${PATH_PREFIX}/CmsgPetitionQuery.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
+   ${PATH_PREFIX}/CmsgPetitionShowSignatures.h
    ${PATH_PREFIX}/CmsgPetLearnTalent.h
    ${PATH_PREFIX}/CmsgPetNameQuery.h
    ${PATH_PREFIX}/CmsgPetRename.h
