@@ -40,6 +40,7 @@
 #include "Server/Packets/CmsgGuildSetPublicNote.h"
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
+#include "Server/Packets/CmsgPetitionBuy.h"
 
 using namespace AscEmu::Packets;
 
@@ -516,54 +517,11 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
 // Charter part
 void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgPetitionBuy recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-        /*
-        {CLIENT} Packet: (0x01BD) CMSG_PETITION_BUY PacketSize = 85
-        |------------------------------------------------|----------------|
-        |00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-        |------------------------------------------------|----------------|
-        |50 91 00 00 6E 13 01 F0 00 00 00 00 00 00 00 00 |P...n...........|
-        |00 00 00 00 53 74 6F 72 6D 62 72 69 6E 67 65 72 |....Stormbringer|
-        |73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |s...............|
-        |00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
-        |00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 |................|
-        |00 00 00 00 00                                  |.....           |
-        -------------------------------------------------------------------
-        */
-
-    uint8 error;
-
-    // Arena team charters are full of crap
-    uint64 creature_guid;
-    uint32 crap;
-    uint64 crap2;
-    std::string name, UnkString;
-    //uint32 crap3, crap4, crap5, crap6, crap7, crap8, crap9;
-    uint32 Data[7];
-    uint16 crap10;
-    uint32 crap11;
-    uint32 crap12, PetitionSignerCount;
-    std::string crap13;
-    uint32 arena_index;
-
-
-    recv_data >> creature_guid;
-    recv_data >> crap >> crap2;
-    recv_data >> name;
-    recv_data >> UnkString;
-    recv_data >> Data[0] >> Data[1] >> Data[2] >> Data[3] >> Data[4] >> Data[5] >> Data[6];
-    recv_data >> crap10;
-    recv_data >> crap11;
-    recv_data >> crap12;
-    recv_data >> PetitionSignerCount;
-    for (uint8 s = 0; s < 10; ++s)
-    {
-        recv_data >> crap13;
-    }
-    recv_data >> arena_index;
-
-    Creature* crt = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creature_guid));
+    Creature* crt = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLow());
     if (!crt)
     {
         Disconnect();
@@ -572,7 +530,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
     if (!crt->isTabardDesigner())
     {
-        uint32 arena_type = arena_index - 1;
+        uint32 arena_type = recv_packet.arenaIndex - 1;
         if (arena_type > 2)
             return;
 
@@ -582,20 +540,20 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        ArenaTeam* t = objmgr.GetArenaTeamByName(name, arena_type);
+        ArenaTeam* t = objmgr.GetArenaTeamByName(recv_packet.name, arena_type);
         if (t != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(72));
             return;
         }
 
-        if (objmgr.GetCharterByName(name, (CharterTypes)arena_index))
+        if (objmgr.GetCharterByName(recv_packet.name, (CharterTypes)recv_packet.arenaIndex))
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(72));
             return;
         }
 
-        if (_player->m_charters[arena_index])
+        if (_player->m_charters[recv_packet.arenaIndex])
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(73));
             return;
@@ -623,7 +581,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(ip, 1);
+        uint8 error = _player->GetItemInterface()->CanReceiveItem(ip, 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
@@ -632,14 +590,14 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         {
             // Create the item and charter
             Item* i = objmgr.CreateItem(item_ids[arena_type], _player);
-            Charter* c = objmgr.CreateCharter(_player->getGuidLow(), (CharterTypes)arena_index);
+            Charter* c = objmgr.CreateCharter(_player->getGuidLow(), (CharterTypes)recv_packet.arenaIndex);
             if (i == NULL || c == NULL)
                 return;
 
-            c->GuildName = name;
+            c->GuildName = recv_packet.name;
             c->ItemGuid = i->getGuid();
 
-            c->PetitionSignerCount = PetitionSignerCount;
+            c->PetitionSignerCount = recv_packet.signerCount;
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);
@@ -657,7 +615,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(), _player->GetItemInterface()->LastSearchItemSlot(), 1, i->getEntry(), i->getPropertySeed(), i->getRandomPropertiesId(), i->getStackCount());
 
             _player->ModGold(-(int32)costs[arena_type]);
-            _player->m_charters[arena_index] = c;
+            _player->m_charters[recv_packet.arenaIndex] = c;
             _player->SaveToDB(false);
         }
     }
@@ -669,8 +627,8 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        Guild* g = objmgr.GetGuildByGuildName(name);
-        Charter* c = objmgr.GetCharterByName(name, CHARTER_TYPE_GUILD);
+        Guild* g = objmgr.GetGuildByGuildName(recv_packet.name);
+        Charter* c = objmgr.GetCharterByName(recv_packet.name, CHARTER_TYPE_GUILD);
         if (g != nullptr || c != nullptr)
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(74));
@@ -694,14 +652,14 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(CharterEntry::Guild), 1);
+        uint8 error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(CharterEntry::Guild), 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
         }
         else
         {
-            _player->PlaySoundToPlayer(creature_guid, 6594);
+            _player->PlaySoundToPlayer(recv_packet.creatureGuid, 6594);
 
             // Create the item and charter
             Item* i = objmgr.CreateItem(CharterEntry::Guild, _player);
@@ -709,10 +667,10 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             if (i == NULL || c == NULL)
                 return;
 
-            c->GuildName = name;
+            c->GuildName = recv_packet.name;
             c->ItemGuid = i->getGuid();
 
-            c->PetitionSignerCount = PetitionSignerCount;
+            c->PetitionSignerCount = recv_packet.signerCount;
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);

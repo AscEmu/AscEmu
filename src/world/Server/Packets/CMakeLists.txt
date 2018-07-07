@@ -96,6 +96,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgPageTextQuery.h
    ${PATH_PREFIX}/CmsgPetAction.h
    ${PATH_PREFIX}/CmsgPetCancelAura.h
+   ${PATH_PREFIX}/CmsgPetitionBuy.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
    ${PATH_PREFIX}/CmsgPetLearnTalent.h
    ${PATH_PREFIX}/CmsgPetNameQuery.h
