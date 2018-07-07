@@ -101,6 +101,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgPetitionQuery.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
    ${PATH_PREFIX}/CmsgPetitionShowSignatures.h
+   ${PATH_PREFIX}/CmsgPetitionSign.h
    ${PATH_PREFIX}/CmsgPetLearnTalent.h
    ${PATH_PREFIX}/CmsgPetNameQuery.h
    ${PATH_PREFIX}/CmsgPetRename.h
@@ -148,6 +149,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/MsgPartyAssign.h
+   ${PATH_PREFIX}/MsgPetitionDecline.h
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
@@ -200,6 +202,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
+   ${PATH_PREFIX}/SmsgPetitionSignResult.h
    ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h

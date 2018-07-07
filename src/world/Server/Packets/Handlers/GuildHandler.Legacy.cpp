@@ -44,6 +44,9 @@
 #include "Server/Packets/CmsgPetitionShowSignatures.h"
 #include "Server/Packets/CmsgPetitionQuery.h"
 #include "Server/Packets/CmsgOfferPetition.h"
+#include "Server/Packets/CmsgPetitionSign.h"
+#include "Server/Packets/SmsgPetitionSignResult.h"
+#include "Server/Packets/MsgPetitionDecline.h"
 
 using namespace AscEmu::Packets;
 
@@ -808,14 +811,22 @@ void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
     SendShowSignatures(pCharter, recv_packet.itemGuid, pTarget);
 }
 
+namespace PetitionSignResult
+{
+    enum
+    {
+        OK = 0,
+        AlreadySigned = 1
+    };
+}
+
 void WorldSession::HandleCharterSign(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgPetitionSign recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 item_guid;
-    recv_data >> item_guid;
-
-    Charter* c = objmgr.GetCharterByItemGuid(item_guid);
+    Charter* c = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (c == nullptr)
         return;
 
@@ -824,6 +835,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
         if (c->Signatures[i] == _player->getGuid())
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
+            SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
             return;
         }
     }
@@ -840,33 +852,23 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
     if (l == nullptr)
         return;
 
-    WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
-    data << item_guid << _player->getGuid() << uint32(0);
-    l->GetSession()->SendPacket(&data);
-
-    data.clear();
-    data << item_guid << (uint64)c->GetLeader() << uint32(0);
-    SendPacket(&data);
+    l->SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
+    SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, uint64_t(c->GetLeader()), PetitionSignResult::OK).serialise().get());
 }
 
 void WorldSession::HandleCharterDecline(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    MsgPetitionDecline recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 item_guid;
-    recv_data >> item_guid;
-
-    Charter* c = objmgr.GetCharterByItemGuid(item_guid);
+    Charter* c = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (c == nullptr)
         return;
 
     Player* owner = objmgr.GetPlayer(c->GetLeader());
     if (owner)
-    {
-        WorldPacket data(MSG_PETITION_DECLINE, 8);
-        data << _player->getGuid();
-        owner->GetSession()->SendPacket(&data);
-    }
+        owner->GetSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
 }
 
 void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
