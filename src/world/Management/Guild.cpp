@@ -41,11 +41,7 @@ Guild::Guild()
     m_guildName = NULL;
     m_guildInfo = NULL;
     m_motd = NULL;
-    m_backgroundColor = 0;
-    m_emblemColor = 0;
-    m_emblemStyle = 0;
-    m_borderColor = 0;
-    m_borderStyle = 0;
+    emblemInfo = { 0, 0, 0, 0, 0 };
     m_creationTimeStamp = 0;
     m_bankBalance = 0;
     creationDay = creationMonth = creationYear = 0;
@@ -453,11 +449,11 @@ bool Guild::LoadFromDB(Field* f)
     m_guildId = f[0].GetUInt32();
     m_guildName = strdup(f[1].GetString());
     m_guildLeader = f[2].GetUInt32();
-    m_emblemStyle = f[3].GetUInt32();
-    m_emblemColor = f[4].GetUInt32();
-    m_borderStyle = f[5].GetUInt32();
-    m_borderColor = f[6].GetUInt32();
-    m_backgroundColor = f[7].GetUInt32();
+    emblemInfo.style = f[3].GetUInt32();
+    emblemInfo.color = f[4].GetUInt32();
+    emblemInfo.borderStyle = f[5].GetUInt32();
+    emblemInfo.borderColor = f[6].GetUInt32();
+    emblemInfo.backgroundColor = f[7].GetUInt32();
     m_guildInfo = strlen(f[8].GetString()) ? strdup(f[8].GetString()) : NULL;
     m_motd = strlen(f[9].GetString()) ? strdup(f[9].GetString()) : NULL;
     m_creationTimeStamp = f[10].GetUInt32();
@@ -1284,11 +1280,11 @@ void Guild::SendGuildQuery(WorldSession* pClient)
             data << uint8(0);
     }
 
-    data << m_emblemStyle;
-    data << m_emblemColor;
-    data << m_borderStyle;
-    data << m_borderColor;
-    data << m_backgroundColor;
+    data << emblemInfo.style;
+    data << emblemInfo.color;
+    data << emblemInfo.borderStyle;
+    data << emblemInfo.borderColor;
+    data << emblemInfo.backgroundColor;
 
     if (pClient != NULL)
     {
@@ -1319,8 +1315,8 @@ void Guild::SendTurnInPetitionResult(WorldSession* pClient, uint32 result)
 void Guild::CreateInDB()
 {
     CharacterDatabase.Execute("INSERT INTO guilds VALUES(%u, \'%s\', %u, %u, %u, %u, %u, %u, '', '', %u, 0)",
-                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, m_emblemStyle, m_emblemColor, m_borderColor, m_borderStyle,
-                              m_backgroundColor, m_creationTimeStamp);
+                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, emblemInfo.style, emblemInfo.color,
+                                emblemInfo.borderColor, emblemInfo.borderStyle, emblemInfo.backgroundColor, m_creationTimeStamp);
 }
 
 Guild* Guild::Create()
@@ -1660,11 +1656,11 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
 
 void Guild::SetTabardInfo(uint32 EmblemStyle, uint32 EmblemColor, uint32 BorderStyle, uint32 BorderColor, uint32 BackgroundColor)
 {
-    m_emblemStyle = EmblemStyle;
-    m_emblemColor = EmblemColor;
-    m_borderStyle = BorderStyle;
-    m_borderColor = BorderColor;
-    m_backgroundColor = BackgroundColor;
+    emblemInfo.style = EmblemStyle;
+    emblemInfo.color = EmblemColor;
+    emblemInfo.borderStyle = BorderStyle;
+    emblemInfo.borderColor = BorderColor;
+    emblemInfo.backgroundColor = BackgroundColor;
 
     // update in db
     CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",

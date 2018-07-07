@@ -27,11 +27,20 @@
 #include "Guild/GuildDefinitions.h"
 #include "Management/Item.h"
 
-// MIT END
-//AGPL START
 
 #if VERSION_STRING != Cata
 
+struct SERVER_DECL GuildEmblemInfo
+{
+    uint32_t style;
+    uint32_t color;
+    uint32_t borderStyle;
+    uint32_t borderColor;
+    uint32_t backgroundColor;
+};
+
+// MIT END
+//AGPL START
 class PlayerInfo;
 
 
@@ -271,11 +280,11 @@ class SERVER_DECL Guild
 
         // Internal variables
         uint32 m_guildId;
-        uint32 m_emblemStyle;
-        uint32 m_emblemColor;
-        uint32 m_borderStyle;
-        uint32 m_borderColor;
-        uint32 m_backgroundColor;
+
+    //MIT
+    GuildEmblemInfo emblemInfo;
+        
+
         uint32 m_guildLeader;
         uint32 m_creationTimeStamp;
         uint64 m_bankBalance; //use a 64 bit int so we can store more gold in the gbank
