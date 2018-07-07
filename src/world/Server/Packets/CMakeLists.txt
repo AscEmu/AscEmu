@@ -69,7 +69,10 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
    ${PATH_PREFIX}/CmsgGuildAddRank.h
    ${PATH_PREFIX}/CmsgGuildBankBuyTab.h
+   ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
+   ${PATH_PREFIX}/CmsgGuildBankerActivate.h
    ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
+   ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
    ${PATH_PREFIX}/CmsgGuildDemote.h
    ${PATH_PREFIX}/CmsgGuildInfoText.h
    ${PATH_PREFIX}/CmsgGuildInvite.h

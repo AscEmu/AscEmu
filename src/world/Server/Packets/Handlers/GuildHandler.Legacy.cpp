@@ -51,6 +51,9 @@
 #include "Server/Packets/MsgPetitionRename.h"
 #include "Server/Packets/CmsgGuildBankBuyTab.h"
 #include "Server/Packets/CmsgGuildBankUpdateTab.h"
+#include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
+#include "Server/Packets/CmsgGuildBankDepositMoney.h"
+#include "Server/Packets/CmsgGuildBankerActivate.h"
 
 using namespace AscEmu::Packets;
 
@@ -1147,34 +1150,26 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    uint32 money;
-
-    recv_data >> guid;
-    recv_data >> money;
+    CmsgGuildBankWithdrawMoney recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (_player->m_playerInfo->guild == NULL)
         return;
 
-    _player->m_playerInfo->guild->WithdrawMoney(this, money);
+    _player->m_playerInfo->guild->WithdrawMoney(this, recv_packet.money);
 }
 
 void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    uint32 money;
-
-    recv_data >> guid;
-    recv_data >> money;
+    CmsgGuildBankDepositMoney recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (_player->m_playerInfo->guild == NULL)
         return;
 
-    _player->m_playerInfo->guild->DepositMoney(this, money);
+    _player->m_playerInfo->guild->DepositMoney(this, recv_packet.money);
 }
 
 void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
@@ -1514,9 +1509,9 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
+    CmsgGuildBankerActivate recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->IsInWorld() || _player->m_playerInfo->guild == NULL)
     {
@@ -1524,9 +1519,7 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
         return;
     }
 
-    recv_data >> guid;
-
-    GameObject* pObj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+    GameObject* pObj = _player->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLow());
     if (pObj == NULL)
         return;
 
