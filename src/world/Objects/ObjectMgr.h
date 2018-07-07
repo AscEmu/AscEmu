@@ -314,11 +314,6 @@ class Charter
         /************************************************************************/
         /* Developer Fields                                                     */
         /************************************************************************/
-        std::string UnkString;
-        uint32 Data[7];
-        uint16 Unk1;
-        uint32 Unk2;
-        uint32 Unk3;
         uint32 PetitionSignerCount;
 
         Charter(Field* fields);
@@ -329,9 +324,6 @@ class Charter
             Slots = GetNumberOfSlotsByType();
             Signatures = new uint32[Slots];
             memset(Signatures, 0, sizeof(uint32)*Slots);
-            Unk1 = 0;
-            Unk2 = 0;
-            Unk3 = 0;
             PetitionSignerCount = 0;
         }
 

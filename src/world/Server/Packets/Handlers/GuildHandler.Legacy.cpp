@@ -639,12 +639,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             c->GuildName = name;
             c->ItemGuid = i->getGuid();
 
-            c->UnkString = UnkString;
-            c->Unk1 = crap10;
-            c->Unk2 = crap11;
-            c->Unk3 = crap12;
             c->PetitionSignerCount = PetitionSignerCount;
-            memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);
@@ -717,12 +712,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             c->GuildName = name;
             c->ItemGuid = i->getGuid();
 
-            c->UnkString = UnkString;
-            c->Unk1 = crap10;
-            c->Unk2 = crap11;
-            c->Unk3 = crap12;
             c->PetitionSignerCount = PetitionSignerCount;
-            memcpy(c->Data, Data, sizeof(Data));
 
             i->setStackCount(1);
             i->addFlags(ITEM_FLAG_SOULBOUND);
