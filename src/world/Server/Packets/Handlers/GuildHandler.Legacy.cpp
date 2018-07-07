@@ -29,50 +29,34 @@
 #include "Config/Config.h"
 #include "Map/MapMgr.h"
 #include "Management/Guild/GuildDefinitions.h"
+#include "Server/Packets/CmsgGuildInvite.h"
+#include "Server/Packets/CmsgGuildInfoText.h"
+#include "Server/Packets/CmsgGuildPromote.h"
+#include "Server/Packets/CmsgGuildDemote.h"
+#include "Server/Packets/CmsgGuildRemove.h"
+#include "Server/Packets/CmsgGuildLeader.h"
+#include "Server/Packets/CmsgGuildMotd.h"
+#include "Server/Packets/CmsgGuildAddRank.h"
+#include "Server/Packets/CmsgGuildSetPublicNote.h"
+#include "Server/Packets/CmsgGuildSetOfficerNote.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
-void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
 
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    uint32 guildId;
-    recv_data >> guildId;
-
-    // we can skip some searches here if this is our guild
-    if (_player && _player->GetGuildId() == guildId && _player->m_playerInfo->guild)
-    {
-        _player->m_playerInfo->guild->SendGuildQuery(this);
-        return;
-    }
-
-    Guild* pGuild = objmgr.GetGuild(guildId);
-    if (!pGuild)
-        return;
-
-    pGuild->SendGuildQuery(this);
-}
-
-void WorldSession::HandleCreateGuild(WorldPacket& /*recv_data*/)
-{
-}
 
 void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgGuildInvite recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    std::string inviteeName;
-    recv_data >> inviteeName;
-
-    Player* plyr = objmgr.GetPlayer(inviteeName.c_str(), false);
+    Player* plyr = objmgr.GetPlayer(recv_packet.name.c_str(), false);
     Guild* pGuild = _player->m_playerInfo->guild;
 
     if (!plyr)
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_FOUND_S, inviteeName.c_str());
+        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_FOUND_S, recv_packet.name.c_str());
         return;
     }
     else if (!pGuild)
@@ -112,8 +96,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
         return;
     }
 
-    Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_SUCCESS, inviteeName.c_str());
-    //41
+    Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_SUCCESS, recv_packet.name.c_str());
 
     WorldPacket data(SMSG_GUILD_INVITE, 100);
     data << _player->getName().c_str();
@@ -128,7 +111,6 @@ void WorldSession::HandleGuildAccept(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
 
     Player* plyr = GetPlayer();
-
     if (!plyr)
         return;
 
@@ -136,15 +118,12 @@ void WorldSession::HandleGuildAccept(WorldPacket& /*recv_data*/)
     plyr->UnSetGuildInvitersGuid();
 
     if (!inviter)
-    {
         return;
-    }
 
     Guild* pGuild = inviter->m_playerInfo->guild;
     if (!pGuild)
-    {
         return;
-    }
+
     pGuild->getLock().Acquire();
     uint32 memberCount = static_cast<uint32>(pGuild->GetNumMembers());
     pGuild->getLock().Release();
@@ -155,6 +134,7 @@ void WorldSession::HandleGuildAccept(WorldPacket& /*recv_data*/)
         SystemMessage("That guild is full.");
         return;
     }
+
     pGuild->AddGuildMember(plyr->m_playerInfo, NULL);
 }
 
@@ -162,10 +142,7 @@ void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    WorldPacket data;
-
     Player* plyr = GetPlayer();
-
     if (!plyr)
         return;
 
@@ -175,6 +152,7 @@ void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
     if (!inviter)
         return;
 
+    WorldPacket data;
     data.Initialize(SMSG_GUILD_DECLINE);
     data << plyr->getName().c_str();
     inviter->GetSession()->SendPacket(&data);
@@ -182,11 +160,9 @@ void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleSetGuildInformation(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1);
-    std::string NewGuildInfo;
-    recv_data >> NewGuildInfo;
+    CmsgGuildInfoText recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     Guild* pGuild = _player->m_playerInfo->guild;
     if (!pGuild)
@@ -195,7 +171,7 @@ void WorldSession::HandleSetGuildInformation(WorldPacket& recv_data)
         return;
     }
 
-    pGuild->SetGuildInformation(NewGuildInfo.c_str(), this);
+    pGuild->SetGuildInformation(recv_packet.text.c_str(), this);
 }
 
 void WorldSession::HandleGuildInfo(WorldPacket& /*recv_data*/)
@@ -218,12 +194,9 @@ void WorldSession::HandleGuildRoster(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    std::string name;
-    recv_data >> name;
+    CmsgGuildPromote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->m_playerInfo->guild)
     {
@@ -231,7 +204,7 @@ void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
         return;
     }
 
-    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(name.c_str());
+    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
     if (dstplr == NULL)
         return;
 
@@ -240,12 +213,9 @@ void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    std::string name;
-    recv_data >> name;
+    CmsgGuildDemote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->m_playerInfo->guild)
     {
@@ -253,7 +223,7 @@ void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
         return;
     }
 
-    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(name.c_str());
+    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
     if (dstplr == NULL)
         return;
 
@@ -275,12 +245,9 @@ void WorldSession::HandleGuildLeave(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    std::string name;
-    recv_data >> name;
+    CmsgGuildRemove recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->m_playerInfo->guild)
     {
@@ -288,7 +255,7 @@ void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
         return;
     }
 
-    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(name.c_str());
+    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
     if (dstplr == NULL)
         return;
 
@@ -316,12 +283,9 @@ void WorldSession::HandleGuildDisband(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1);
-
-    std::string name;
-    recv_data >> name;
+    CmsgGuildLeader recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->m_playerInfo->guild)
     {
@@ -329,10 +293,10 @@ void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
         return;
     }
 
-    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(name.c_str());
+    PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
     if (dstplr == NULL)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_FOUND_S, name.c_str());
+        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_FOUND_S, recv_packet.name.c_str());
         return;
     }
 
@@ -341,11 +305,9 @@ void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildMotd(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    std::string motd;
-    if (recv_data.size())
-        recv_data >> motd;
+    CmsgGuildMotd recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->m_playerInfo->guild)
     {
@@ -353,7 +315,7 @@ void WorldSession::HandleGuildMotd(WorldPacket& recv_data)
         return;
     }
 
-    _player->m_playerInfo->guild->SetMOTD(motd.c_str(), this);
+    _player->m_playerInfo->guild->SetMOTD(recv_packet.message.c_str(), this);
 }
 
 void WorldSession::HandleGuildRank(WorldPacket& recv_data)
@@ -376,14 +338,14 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
 
     uint32 rankId;
     std::string newName;
-    GuildRank* pRank;
 
     recv_data >> rankId;
-    pRank = _player->GetGuild()->GetGuildRank(rankId);
+
+    GuildRank* pRank = _player->GetGuild()->GetGuildRank(rankId);
     if (pRank == NULL)
         return;
 
-    recv_data >> pRank->iRights;
+    recv_data >> pRank->iRights;    // no
     recv_data >> newName;
 
     if (newName.length() < 2)
@@ -432,11 +394,11 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgGuildAddRank recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    std::string rankName;
     Guild* pGuild = _player->GetGuild();
-
     if (pGuild == NULL)
     {
         Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
@@ -449,11 +411,10 @@ void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
         return;
     }
 
-    recv_data >> rankName;
-    if (rankName.size() < 2)
+    if (recv_packet.name.size() < 2)
         return;
 
-    pGuild->CreateGuildRank(rankName.c_str(), GR_RIGHT_DEFAULT, false);
+    pGuild->CreateGuildRank(recv_packet.name.c_str(), GR_RIGHT_DEFAULT, false);
 
     // there is probably a command result for this. need to find it.
     pGuild->SendGuildQuery(NULL);
@@ -486,42 +447,34 @@ void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildSetPublicNote(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgGuildSetPublicNote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    std::string target;
-    std::string newnote;
-
-    recv_data >> target;
-    recv_data >> newnote;
-
-    PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
+    PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
     if (pTarget == NULL)
         return;
 
     if (!pTarget->guild)
         return;
 
-    pTarget->guild->SetPublicNote(pTarget, newnote.c_str(), this);
+    pTarget->guild->SetPublicNote(pTarget, recv_packet.note.c_str(), this);
 }
 
 void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgGuildSetOfficerNote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    std::string target;
-    std::string newnote;
-
-    recv_data >> target;
-    recv_data >> newnote;
-
-    PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
+    PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
     if (pTarget == NULL)
         return;
 
     if (!pTarget->guild)
         return;
 
-    pTarget->guild->SetOfficerNote(pTarget, newnote.c_str(), this);
+    pTarget->guild->SetOfficerNote(pTarget, recv_packet.note.c_str(), this);
 }
 
 void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
@@ -537,7 +490,6 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
     uint32 borderColor;
     uint32 backgroundColor;
 
-    WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
     recv_data >> guid;
 
     CHECK_PACKET_SIZE(recv_data, 28);
@@ -549,6 +501,7 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
     recv_data >> borderColor;
     recv_data >> backgroundColor;
 
+    WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
     if (pGuild == NULL)
     {
         data << uint32(GEM_ERROR_NOGUILD);
@@ -670,7 +623,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
         if (_player->getLevel() < PLAYER_ARENA_MIN_LEVEL)
         {
-            ///\todo Replace by LocalizedWorldSrv(..)
+            //\todo Replace by LocalizedWorldSrv(..)
             SendNotification("You must be at least level %u to buy Arena charter", PLAYER_ARENA_MIN_LEVEL);
             return;
         }
@@ -857,13 +810,9 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     data << (uint64)c->LeaderGuid;
     data << c->GuildName << uint8(0);
     if (c->CharterType == CHARTER_TYPE_GUILD)
-    {
         data << uint32(9) << uint32(9);
-    }
     else
-    {
         data << uint32(c->Slots) << uint32(c->Slots);
-    }
 
     data << uint32(0);                                      // 4
     data << uint32(0);                                      // 5
@@ -971,6 +920,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
     WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
     data << item_guid << _player->getGuid() << uint32(0);
     l->GetSession()->SendPacket(&data);
+
     data.clear();
     data << item_guid << (uint64)c->GetLeader() << uint32(0);
     SendPacket(&data);
@@ -1012,6 +962,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
         if (gc == nullptr)
             return;
+
         if (gc->SignatureCount < 9 && worldConfig.server.requireAllSignatures)
         {
             Guild::SendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
@@ -1033,8 +984,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
     }
     else
     {
-        ///\todo Arena charter -Replace with correct messages */
-        ArenaTeam* team;
+        //\todo Arena charter -Replace with correct messages
         uint16_t type;
         uint32 i;
         uint32 icon;
@@ -1070,7 +1020,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 
         if (_player->m_arenaTeams[pCharter->CharterType - 1] != NULL)
         {
-            sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
+            sChatHandler.SystemMessage(this, LocalizedWorldSrv(SS_ALREADY_ARENA_TEAM));
             return;
         }
 
@@ -1080,7 +1030,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
             return;
         }
 
-        team = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
+        ArenaTeam* team = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
         team->m_name = pCharter->GuildName;
         team->m_emblemColour = iconcolor;
         team->m_emblemStyle = icon;
@@ -1094,15 +1044,11 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         objmgr.UpdateArenaTeamRankings();
         team->AddMember(_player->m_playerInfo);
 
-
-        /* Add the members */
         for (i = 0; i < pCharter->SignatureCount; ++i)
         {
             PlayerInfo* info = objmgr.GetPlayerInfo(pCharter->Signatures[i]);
             if (info)
-            {
                 team->AddMember(info);
-            }
         }
 
         _player->GetItemInterface()->SafeFullRemoveItemByGuid(mooguid);
@@ -1138,6 +1084,7 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     c = pCharter;
     c->GuildName = name;
     c->SaveToDB();
+
     WorldPacket data(MSG_PETITION_RENAME, 100);
     data << guid << name;
     SendPacket(&data);
@@ -1190,14 +1137,12 @@ void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-        // calculate using the last withdrawl blablabla
-        if (_player->m_playerInfo->guildMember == nullptr)
-            return;
+    if (_player->m_playerInfo->guildMember == nullptr)
+        return;
 
     uint64 money = _player->m_playerInfo->guild->GetBankBalance();
     uint32 avail = _player->m_playerInfo->guildMember->CalculateAvailableAmount();
 
-    /* pls gm mi hero poor give 1 gold coin pl0x */
     WorldPacket data(MSG_GUILD_BANK_MONEY_WITHDRAWN, 4);
     data << uint32(money > avail ? avail : money);
     SendPacket(&data);
@@ -1207,7 +1152,6 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    GuildBankTab* pTab;
     uint64 guid;
     uint8 slot;
     std::string tabname;
@@ -1222,7 +1166,7 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
     if (_player->m_playerInfo->guild == NULL)
         return;
 
-    pTab = _player->m_playerInfo->guild->GetBankTab(slot);
+    GuildBankTab* pTab = _player->m_playerInfo->guild->GetBankTab(slot);
     if (pTab == NULL)
         return;
 
@@ -1284,7 +1228,6 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
         }
     }
 
-    // update the client
     _player->m_playerInfo->guild->SendGuildBankInfo(this);
 }
 
@@ -1341,42 +1284,33 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
 
     if (source_isfrombank)
     {
-        GuildBankTab* pSourceTab;
-        GuildBankTab* pDestTab;
-        Item* pSourceItem;
-        Item* pDestItem;
         uint8 dest_bank;
         uint8 dest_bankslot;
         uint8 source_bank;
         uint8 source_bankslot;
 
-        /* read packet */
         recv_data >> dest_bank;
         recv_data >> dest_bankslot;
         recv_data >> wtf;
         recv_data >> source_bank;
         recv_data >> source_bankslot;
 
-        /* sanity checks to avoid overflows */
-        if (source_bankslot >= MAX_GUILD_BANK_SLOTS || dest_bankslot >= MAX_GUILD_BANK_SLOTS || source_bank >= MAX_GUILD_BANK_TABS || dest_bank >= MAX_GUILD_BANK_TABS)
-        {
+        if (source_bankslot >= MAX_GUILD_BANK_SLOTS || dest_bankslot >= MAX_GUILD_BANK_SLOTS
+            || source_bank >= MAX_GUILD_BANK_TABS || dest_bank >= MAX_GUILD_BANK_TABS)
             return;
-        }
 
-        /* make sure we have permissions */
         if (!pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS, dest_bank) ||
             !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS, source_bank))
             return;
 
         /* locate the tabs */
-        pSourceTab = pGuild->GetBankTab(source_bank);
-        pDestTab = pGuild->GetBankTab(dest_bank);
+        GuildBankTab* pSourceTab = pGuild->GetBankTab(source_bank);
+        GuildBankTab* pDestTab = pGuild->GetBankTab(dest_bank);
         if (pSourceTab == NULL || pDestTab == NULL)
             return;
 
-        pSourceItem = pSourceTab->pSlots[source_bankslot];
-        pDestItem = pDestTab->pSlots[dest_bankslot];
-
+        Item* pSourceItem = pSourceTab->pSlots[source_bankslot];
+        Item* pDestItem = pDestTab->pSlots[dest_bankslot];
         if (pSourceItem == NULL && pDestItem == NULL)
             return;
 
@@ -1497,10 +1431,10 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         if (dest_bankslot >= MAX_GUILD_BANK_SLOTS)
             return;
 
-        /// check if we're pulling an item from the bank, make sure we're not cheating.
+        // check if we're pulling an item from the bank, make sure we're not cheating.
         pDestItem = pTab->pSlots[dest_bankslot];
 
-        /// grab the source/destination item
+        // grab the source/destination item
         if (source_bagslot == 1 && source_slot == 0)
         {
             // find a free bag slot
@@ -1552,7 +1486,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
 
         pSourceItem = _player->GetItemInterface()->GetInventoryItem(source_bagslot, source_slot);
 
-        /// make sure that both aren't null - wtf ?
+        // make sure that both aren't null - wtf ?
         if (pSourceItem == NULL && pDestItem == NULL)
             return;
 
@@ -1588,10 +1522,10 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         }
 
         // perform the swap.
-        /// pSourceItem = Source item from players backpack coming into guild bank
+        // pSourceItem = Source item from players backpack coming into guild bank
         if (pSourceItem == NULL)
         {
-            /// splitting
+            // splitting
             if (pDestItem != NULL && deposit_stack > 0 && pDestItem->getStackCount() > deposit_stack)
             {
                 pSourceItem2 = pDestItem;
@@ -1608,43 +1542,43 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             }
             else
             {
-                /// that slot in the bank is now empty.
+                // that slot in the bank is now empty.
                 pTab->pSlots[dest_bankslot] = NULL;
                 CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", pGuild->getGuildId(), (uint32)pTab->iTabId, (uint32)dest_bankslot);
             }
         }
         else
         {
-            /// there is a new item in that slot.
+            // there is a new item in that slot.
             pTab->pSlots[dest_bankslot] = pSourceItem;
 
             CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", pGuild->getGuildId(), pTab->iTabId, dest_bankslot);
             CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)", pGuild->getGuildId(), (uint32)pTab->iTabId, (uint32)dest_bankslot, pSourceItem->getGuidLow());
 
-            /// remove the item's association with the player
+            // remove the item's association with the player
             pSourceItem->setOwner(nullptr);
             pSourceItem->SaveToDB(0, 0, true, NULL);
 
-            /// log it
+            // log it
             pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->getGuidLow(), pSourceItem->getEntry(),
                                        (uint8)pSourceItem->getStackCount(), pTab);
         }
 
-        /// pDestItem = Item from bank coming into players backpack
+        // pDestItem = Item from bank coming into players backpack
         if (pDestItem == NULL)
         {
             // the item has already been removed from the players backpack at this stage, there isn't really much to do at this point.
         }
         else
         {
-            /// the guild was robbed by some n00b! :O
+            // the guild was robbed by some n00b! :O
             pDestItem->setOwner(_player);
             pDestItem->SaveToDB(source_bagslot, source_slot, true, NULL);
 
-            /// add it to him in game
+            // add it to him in game
             if (!_player->GetItemInterface()->SafeAddItem(pDestItem, source_bagslot, source_slot))
             {
-                /// this *really* shouldn't happen.
+                // this *really* shouldn't happen.
                 if (!_player->GetItemInterface()->AddItemToFreeSlot(pDestItem))
                 {
                     //pDestItem->DeleteFromDB();
@@ -1653,13 +1587,13 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             }
             else
             {
-                /// log it
+                // log it
                 pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->getGuidLow(), pDestItem->getEntry(),
                                            (uint8)pDestItem->getStackCount(), pTab);
             }
         }
 
-        /// update the clients view of the bank tab
+        // update the clients view of the bank tab
         pGuild->SendGuildBank(this, pTab, dest_bankslot);
     }
 }
@@ -1668,7 +1602,6 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    GameObject* pObj;
     uint64 guid;
 
     if (!_player->IsInWorld() || _player->m_playerInfo->guild == NULL)
@@ -1678,7 +1611,8 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
     }
 
     recv_data >> guid;
-    pObj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+
+    GameObject* pObj = _player->GetMapMgr()->GetGameObject((uint32)guid);
     if (pObj == NULL)
         return;
 
@@ -1691,7 +1625,6 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
 
     uint64 guid;
     uint8 tabid;
-    GuildBankTab* pTab;
     Guild* pGuild = _player->m_playerInfo->guild;
 
     recv_data >> guid;
@@ -1703,7 +1636,7 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
     if (pGuild == NULL)
         return;
 
-    pTab = pGuild->GetBankTab(tabid);
+    GuildBankTab* pTab = pGuild->GetBankTab(tabid);
     if (pTab == NULL)
         return;
 
@@ -1713,7 +1646,6 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
 void Guild::SendGuildBankInfo(WorldSession* pClient)
 {
     GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
-
     if (pMember == NULL)
         return;
 
@@ -1752,14 +1684,13 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
 {
     size_t pos;
     uint32 count = 0;
-    WorldPacket data(SMSG_GUILD_BANK_LIST, 1300);
-    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
 
+    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
     if (pMember == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, pTab->iTabId))
         return;
 
     //LogDebugFlag(LF_OPCODE, "sending tab %u to client.", pTab->iTabId);
-
+    WorldPacket data(SMSG_GUILD_BANK_LIST, 1300);
     data << uint64(m_bankBalance);  // amount you have deposited
     data << uint8(pTab->iTabId);
     data << uint32(pMember->CalculateAllowedItemWithdraws(pTab->iTabId));        // remaining stacks for this day
@@ -1872,6 +1803,7 @@ void WorldSession::HandleGuildBankViewLog(WorldPacket& recv_data)
 
     _player->GetGuild()->SendGuildBankLog(this, slotid);
 }
+
 void WorldSession::HandleGuildBankQueryText(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1904,7 +1836,6 @@ void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     GuildMember* pMember = _player->m_playerInfo->guildMember;
-
     if (_player->GetGuild() == NULL || pMember == NULL)
         return;
 

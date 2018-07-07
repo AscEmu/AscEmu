@@ -65,6 +65,19 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGroupChangeSubGroup.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgGroupSetLeader.h
+   ${PATH_PREFIX}/CmsgGroupUninvite.h
+   ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
+   ${PATH_PREFIX}/CmsgGuildAddRank.h
+   ${PATH_PREFIX}/CmsgGuildDemote.h
+   ${PATH_PREFIX}/CmsgGuildInfoText.h
+   ${PATH_PREFIX}/CmsgGuildInvite.h
+   ${PATH_PREFIX}/CmsgGuildLeader.h
+   ${PATH_PREFIX}/CmsgGuildMotd.h
+   ${PATH_PREFIX}/CmsgGuildPromote.h
+   ${PATH_PREFIX}/CmsgGuildQuery.h
+   ${PATH_PREFIX}/CmsgGuildRemove.h
+   ${PATH_PREFIX}/CmsgGuildSetOfficerNote.h
+   ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
@@ -167,8 +180,6 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
-   ${PATH_PREFIX}/CmsgGroupUninvite.h
-   ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
