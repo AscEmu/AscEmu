@@ -27,9 +27,6 @@
 #include "Guild/GuildDefinitions.h"
 #include "Management/Item.h"
 
-
-#if VERSION_STRING != Cata
-
 struct SERVER_DECL GuildEmblemInfo
 {
     uint32_t style;
@@ -38,6 +35,8 @@ struct SERVER_DECL GuildEmblemInfo
     uint32_t borderColor;
     uint32_t backgroundColor;
 };
+
+#if VERSION_STRING != Cata
 
 // MIT END
 //AGPL START

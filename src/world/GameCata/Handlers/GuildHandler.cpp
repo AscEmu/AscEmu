@@ -1063,12 +1063,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->GuildName = name;
             charter->ItemGuid = item->getGuid();
 
-            charter->UnkString = unkString;
-            charter->Unk1 = unk3;
-            charter->Unk2 = unk4;
-            charter->Unk3 = unk5;
             charter->PetitionSignerCount = petitionSignerCount;
-            memcpy(charter->Data, charterData, sizeof(charterData));
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
@@ -1143,12 +1138,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             charter->GuildName = name;
             charter->ItemGuid = item->getGuid();
 
-            charter->UnkString = unkString;
-            charter->Unk1 = unk3;
-            charter->Unk2 = unk4;
-            charter->Unk3 = unk5;
             charter->PetitionSignerCount = petitionSignerCount;
-            memcpy(charter->Data, charterData, sizeof(charterData));
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
