@@ -114,7 +114,11 @@ typedef std::map<PlayerInfo*, GuildMember*> GuildMemberMap;
 
 class SERVER_DECL Guild
 {
+    // MIT START
     public:
+
+        void setEmblemInfo(GuildEmblemInfo emblem_info);
+    // MIT END
 
         Guild();
         ~Guild();
@@ -265,9 +269,6 @@ class SERVER_DECL Guild
         // Sends the guild bank to this client.
         void SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 updated_slot1 = -1, int8 updated_slot2 = -1);
         void SendGuildBankInfo(WorldSession* pClient);
-
-        // Changes the tabard info.
-        void SetTabardInfo(uint32 EmblemStyle, uint32 EmblemColor, uint32 BorderStyle, uint32 BorderColor, uint32 BackgroundColor);
 
         // Sends the guild information packet to the specified client.
         void SendGuildInfo(WorldSession* pClient);

@@ -33,6 +33,16 @@
 
 #if VERSION_STRING != Cata
 
+// MIT START
+void Guild::setEmblemInfo(GuildEmblemInfo emblem_info)
+{
+    emblemInfo = emblem_info;
+
+    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
+        emblemInfo.style, emblemInfo.color, emblemInfo.borderStyle, emblemInfo.borderColor, emblemInfo.backgroundColor, m_guildId);
+}
+// MIT END
+
 Guild::Guild()
 {
     m_commandLogging = true;
@@ -1652,19 +1662,6 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
 
     CharacterDatabase.Execute("INSERT INTO guild_banklogs VALUES(%u, %u, 6, %u, %u, %u, 0, %u)",
                               ev->iLogId, m_guildId, (uint32)iAction, uGuid, uAmount, timest);
-}
-
-void Guild::SetTabardInfo(uint32 EmblemStyle, uint32 EmblemColor, uint32 BorderStyle, uint32 BorderColor, uint32 BackgroundColor)
-{
-    emblemInfo.style = EmblemStyle;
-    emblemInfo.color = EmblemColor;
-    emblemInfo.borderStyle = BorderStyle;
-    emblemInfo.borderColor = BorderColor;
-    emblemInfo.backgroundColor = BackgroundColor;
-
-    // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
-                              EmblemStyle, EmblemColor, BorderStyle, BorderColor, BackgroundColor, m_guildId);
 }
 
 void Guild::SendGuildInfo(WorldSession* pClient)

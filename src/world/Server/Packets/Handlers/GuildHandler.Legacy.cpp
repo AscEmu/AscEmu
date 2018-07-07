@@ -39,6 +39,7 @@
 #include "Server/Packets/CmsgGuildAddRank.h"
 #include "Server/Packets/CmsgGuildSetPublicNote.h"
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
+#include "Server/Packets/MsgSaveGuildEmblem.h"
 
 using namespace AscEmu::Packets;
 
@@ -479,58 +480,37 @@ void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
 
 void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    MsgSaveGuildEmblem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 guid;
+    CHECK_GUID_EXISTS(recv_packet.guid);
+
     Guild* pGuild = _player->GetGuild();
-    int32 cost = EMBLEM_PRICE;
-    uint32 emblemStyle;
-    uint32 emblemColor;
-    uint32 borderStyle;
-    uint32 borderColor;
-    uint32 backgroundColor;
-
-    recv_data >> guid;
-
-    CHECK_PACKET_SIZE(recv_data, 28);
-    CHECK_GUID_EXISTS(guid);
-
-    recv_data >> emblemStyle;
-    recv_data >> emblemColor;
-    recv_data >> borderStyle;
-    recv_data >> borderColor;
-    recv_data >> backgroundColor;
-
-    WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
-    if (pGuild == NULL)
+    if (pGuild == nullptr)
     {
-        data << uint32(GEM_ERROR_NOGUILD);
-        SendPacket(&data);
+        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOGUILD).serialise().get());
         return;
     }
 
     if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
-        data << uint32(GEM_ERROR_NOTGUILDMASTER);
-        SendPacket(&data);
+        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTGUILDMASTER).serialise().get());
         return;
     }
 
-    if (!_player->HasGold((uint32)cost))
+    if (!_player->HasGold(EMBLEM_PRICE))
     {
-        data << uint32(GEM_ERROR_NOTENOUGHMONEY);
-        SendPacket(&data);
+        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTENOUGHMONEY).serialise().get());
         return;
     }
 
-    data << uint32(GEM_ERROR_SUCCESS);
-    SendPacket(&data);
+    SendPacket(MsgSaveGuildEmblem(GEM_ERROR_SUCCESS).serialise().get());
 
-    // set in memory and database
-    pGuild->SetTabardInfo(emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor);
+    pGuild->setEmblemInfo(recv_packet.emblemInfo);
 
     // update all clients (probably is an event for this, again.)
-    pGuild->SendGuildQuery(NULL);
+    pGuild->SendGuildQuery(nullptr);
 }
 
 // Charter part

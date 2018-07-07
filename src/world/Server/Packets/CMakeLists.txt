@@ -147,6 +147,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
+   ${PATH_PREFIX}/MsgSaveGuildEmblem.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/MsgTabardvendorActivate.h
