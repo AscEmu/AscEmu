@@ -68,6 +68,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGroupUninvite.h
    ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
    ${PATH_PREFIX}/CmsgGuildAddRank.h
+   ${PATH_PREFIX}/CmsgGuildBankBuyTab.h
+   ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
    ${PATH_PREFIX}/CmsgGuildDemote.h
    ${PATH_PREFIX}/CmsgGuildInfoText.h
    ${PATH_PREFIX}/CmsgGuildInvite.h
@@ -135,6 +137,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTextEmote.h
    ${PATH_PREFIX}/CmsgTrainerBuySpell.h
    ${PATH_PREFIX}/CmsgTrainerList.h
+   ${PATH_PREFIX}/CmsgTurnInPetition.h
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgWho.h
@@ -150,6 +153,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/MsgPartyAssign.h
    ${PATH_PREFIX}/MsgPetitionDecline.h
+   ${PATH_PREFIX}/MsgPetitionRename.h
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h

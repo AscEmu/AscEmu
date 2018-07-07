@@ -657,7 +657,7 @@ class SERVER_DECL WorldSession
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
         void HandleSetGuildInformation(WorldPacket& recv_data);
-        void HandleGuildLog(WorldPacket& recv_data);
+        void HandleGuildLog(WorldPacket& /*recv_data*/);
         void HandleGuildBankViewTab(WorldPacket& recv_data);
         void HandleGuildBankViewLog(WorldPacket& recv_data);
         void HandleGuildBankQueryText(WorldPacket& recv_data);

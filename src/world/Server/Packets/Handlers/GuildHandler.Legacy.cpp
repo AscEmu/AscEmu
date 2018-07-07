@@ -47,6 +47,10 @@
 #include "Server/Packets/CmsgPetitionSign.h"
 #include "Server/Packets/SmsgPetitionSignResult.h"
 #include "Server/Packets/MsgPetitionDecline.h"
+#include "Server/Packets/CmsgTurnInPetition.h"
+#include "Server/Packets/MsgPetitionRename.h"
+#include "Server/Packets/CmsgGuildBankBuyTab.h"
+#include "Server/Packets/CmsgGuildBankUpdateTab.h"
 
 using namespace AscEmu::Packets;
 
@@ -873,12 +877,11 @@ void WorldSession::HandleCharterDecline(WorldPacket& recv_data)
 
 void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgTurnInPetition recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 mooguid;
-    recv_data >> mooguid;
-
-    Charter* pCharter = objmgr.GetCharterByItemGuid(mooguid);
+    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (pCharter == nullptr)
         return;
 
@@ -976,7 +979,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
                 team->AddMember(info);
         }
 
-        _player->GetItemInterface()->SafeFullRemoveItemByGuid(mooguid);
+        _player->GetItemInterface()->SafeFullRemoveItemByGuid(recv_packet.itemGuid);
         _player->m_charters[pCharter->CharterType] = NULL;
         pCharter->Destroy();
     }
@@ -986,20 +989,16 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 
 void WorldSession::HandleCharterRename(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    MsgPetitionRename recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 guid;
-    std::string name;
-
-    recv_data >> guid;
-    recv_data >> name;
-
-    Charter* pCharter = objmgr.GetCharterByItemGuid(guid);
+    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
     if (pCharter == nullptr)
         return;
 
-    Guild* g = objmgr.GetGuildByGuildName(name);
-    Charter* c = objmgr.GetCharterByName(name, (CharterTypes)pCharter->CharterType);
+    Guild* g = objmgr.GetGuildByGuildName(recv_packet.name);
+    Charter* c = objmgr.GetCharterByName(recv_packet.name, (CharterTypes)pCharter->CharterType);
     if (c || g)
     {
         SendNotification("That name is in use by another guild.");
@@ -1007,12 +1006,10 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     }
 
     c = pCharter;
-    c->GuildName = name;
+    c->GuildName = recv_packet.name;
     c->SaveToDB();
 
-    WorldPacket data(MSG_PETITION_RENAME, 100);
-    data << guid << name;
-    SendPacket(&data);
+    SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
 }
 
 void WorldSession::HandleGuildLog(WorldPacket& /*recv_data*/)
@@ -1027,10 +1024,10 @@ void WorldSession::HandleGuildLog(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
+    //\todo not used.
+    CmsgGuildBankBuyTab recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (!_player->IsInWorld())
         return;
@@ -1075,23 +1072,14 @@ void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    uint8 slot;
-    std::string tabname;
-    std::string tabicon;
-    char* ptmp;
-
-    recv_data >> guid;
-    recv_data >> slot;
-    recv_data >> tabname;
-    recv_data >> tabicon;
+    CmsgGuildBankUpdateTab recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (_player->m_playerInfo->guild == NULL)
         return;
 
-    GuildBankTab* pTab = _player->m_playerInfo->guild->GetBankTab(slot);
+    GuildBankTab* pTab = _player->m_playerInfo->guild->GetBankTab(recv_packet.slot);
     if (pTab == NULL)
         return;
 
@@ -1101,17 +1089,18 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
         return;
     }
 
-    if (tabname.size())
+    char* ptmp;
+    if (!recv_packet.tabName.empty())
     {
-        if (!(pTab->szTabName && strcmp(pTab->szTabName, tabname.c_str()) == 0))
+        if (!(pTab->szTabName && strcmp(pTab->szTabName, recv_packet.tabName.c_str()) == 0))
         {
             ptmp = pTab->szTabName;
-            pTab->szTabName = strdup(tabname.c_str());
+            pTab->szTabName = strdup(recv_packet.tabName.c_str());
             if (ptmp)
                 free(ptmp);
 
             CharacterDatabase.Execute("UPDATE guild_banktabs SET tabName = \'%s\' WHERE guildId = %u AND tabId = %u",
-                                      CharacterDatabase.EscapeString(tabname).c_str(), _player->m_playerInfo->guild->getGuildId(), (uint32)slot);
+                                      CharacterDatabase.EscapeString(recv_packet.tabName).c_str(), _player->m_playerInfo->guild->getGuildId(), static_cast<uint32>(recv_packet.slot));
         }
     }
     else
@@ -1123,21 +1112,21 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
             if (ptmp)
                 free(ptmp);
 
-            CharacterDatabase.Execute("UPDATE guild_banktabs SET tabName = '' WHERE guildId = %u AND tabId = %u", _player->m_playerInfo->guild->getGuildId(), (uint32)slot);
+            CharacterDatabase.Execute("UPDATE guild_banktabs SET tabName = '' WHERE guildId = %u AND tabId = %u", _player->m_playerInfo->guild->getGuildId(), static_cast<uint32>(recv_packet.slot));
         }
     }
 
-    if (tabicon.size())
+    if (!recv_packet.tabIcon.empty())
     {
-        if (!(pTab->szTabIcon && strcmp(pTab->szTabIcon, tabicon.c_str()) == 0))
+        if (!(pTab->szTabIcon && strcmp(pTab->szTabIcon, recv_packet.tabIcon.c_str()) == 0))
         {
             ptmp = pTab->szTabIcon;
-            pTab->szTabIcon = strdup(tabicon.c_str());
+            pTab->szTabIcon = strdup(recv_packet.tabIcon.c_str());
             if (ptmp)
                 free(ptmp);
 
             CharacterDatabase.Execute("UPDATE guild_banktabs SET tabIcon = \'%s\' WHERE guildId = %u AND tabId = %u",
-                                      CharacterDatabase.EscapeString(tabicon).c_str(), _player->m_playerInfo->guild->getGuildId(), (uint32)slot);
+                                      CharacterDatabase.EscapeString(recv_packet.tabIcon).c_str(), _player->m_playerInfo->guild->getGuildId(), static_cast<uint32>(recv_packet.slot));
         }
     }
     else
@@ -1149,7 +1138,7 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
             if (ptmp)
                 free(ptmp);
 
-            CharacterDatabase.Execute("UPDATE guild_banktabs SET tabIcon = '' WHERE guildId = %u AND tabId = %u", _player->m_playerInfo->guild->getGuildId(), (uint32)slot);
+            CharacterDatabase.Execute("UPDATE guild_banktabs SET tabIcon = '' WHERE guildId = %u AND tabId = %u", _player->m_playerInfo->guild->getGuildId(), static_cast<uint32>(recv_packet.slot));
         }
     }
 
