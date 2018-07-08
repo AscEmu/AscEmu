@@ -135,13 +135,13 @@
 #include "Objects/CObjectFactory.h"
 #include "Management/CRitual.h"
 #include "Management/Group.h"
+#include "Management/GuildMgr.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
 #else
 #include "GameCata/Management/GuildFinderMgr.h"
 #include "GameCata/Management/Guild.h"
-#include "GameCata/Management/GuildMgr.h"
 #endif
 
 #include "Management/HonorHandler.h"

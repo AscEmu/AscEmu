@@ -72,10 +72,7 @@
 #include <limits>
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgFriendStatus.h"
-
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 

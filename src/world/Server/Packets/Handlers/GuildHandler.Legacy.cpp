@@ -59,6 +59,7 @@
 #include "Server/Packets/MsgQueryGuildBankText.h"
 #include "Server/Packets/CmsgSetGuildBankText.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -584,7 +585,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        Guild* g = objmgr.GetGuildByGuildName(recv_packet.name);
+        Guild* g = sGuildMgr.getGuildByName(recv_packet.name);
         Charter* c = objmgr.GetCharterByName(recv_packet.name, CHARTER_TYPE_GUILD);
         if (g != nullptr || c != nullptr)
         {
@@ -944,7 +945,7 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     if (pCharter == nullptr)
         return;
 
-    Guild* g = objmgr.GetGuildByGuildName(recv_packet.name);
+    Guild* g = sGuildMgr.getGuildByName(recv_packet.name);
     Charter* c = objmgr.GetCharterByName(recv_packet.name, (CharterTypes)pCharter->CharterType);
     if (c || g)
     {

@@ -36,9 +36,8 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Spell/SpellEffects.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#else
+#include "Management/GuildMgr.h"
+#if VERSION_STRING != Cata
 #include "Management/Guild.h"
 #endif
 
@@ -68,12 +67,6 @@ ObjectMgr::~ObjectMgr()
 {
     LogNotice("ObjectMgr : Deleting Corpses...");
     CorpseCollectorUnload();
-
-    LogNotice("ObjectMgr : Deleting Guilds...");
-    for (GuildMap::iterator i = mGuild.begin(); i != mGuild.end(); ++i)
-    {
-        delete i->second;
-    }
 
     LogNotice("ObjectMgr : Deleting Vendors...");
     for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
@@ -508,9 +501,6 @@ void ObjectMgr::LoadPlayersInfo()
         delete result;
     }
     LogDetail("ObjectMgr : %u players loaded.", m_playersinfo.size());
-#if VERSION_STRING != Cata
-    LoadGuilds();
-#endif
 }
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
@@ -549,31 +539,6 @@ void ObjectMgr::LoadCompletedAchievements()
     }
     while (result->NextRow());
     delete result;
-}
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// DK:LoadGuilds()
-#if VERSION_STRING != Cata
-void ObjectMgr::LoadGuilds()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM guilds");
-    if (result)
-    {
-        do
-        {
-            Guild* pGuild = Guild::Create();
-            if (!pGuild->LoadFromDB(result->Fetch()))
-            {
-                delete pGuild;
-            }
-            else
-                mGuild.insert(std::make_pair(pGuild->getGuildId(), pGuild));
-        }
-        while (result->NextRow());
-        delete result;
-    }
-    LogDetail("ObjectMgr : %u guilds loaded.", mGuild.size());
 }
 #endif
 
@@ -1092,75 +1057,6 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
 
     return rv;
 }
-
-#if VERSION_STRING != Cata
-void ObjectMgr::AddGuild(Guild* pGuild)
-{
-    ARCEMU_ASSERT(pGuild != NULL);
-    mGuild[pGuild->getGuildId()] = pGuild;
-}
-
-uint32 ObjectMgr::GetTotalGuildCount()
-{
-    return (uint32)mGuild.size();
-}
-
-bool ObjectMgr::RemoveGuild(uint32 guildId)
-{
-    GuildMap::iterator i = mGuild.find(guildId);
-    if (i == mGuild.end())
-    {
-        return false;
-    }
-
-    mGuild.erase(i);
-    return true;
-}
-#endif
-
-Guild* ObjectMgr::GetGuild(uint32 guildId)
-{
-#if VERSION_STRING != Cata
-    GuildMap::const_iterator itr = mGuild.find(guildId);
-    if (itr == mGuild.end())
-        return NULL;
-    return itr->second;
-#else
-    return sGuildMgr.getGuildById(guildId);
-#endif
-}
-
-Guild* ObjectMgr::GetGuildByLeaderGuid(uint64 leaderGuid)
-{
-#if VERSION_STRING != Cata
-    GuildMap::const_iterator itr;
-    for (itr = mGuild.begin(); itr != mGuild.end(); ++itr)
-    {
-        if (itr->second->GetGuildLeader() == leaderGuid)
-            return itr->second;
-    }
-    return NULL;
-#else
-    return sGuildMgr.getGuildByLeader(leaderGuid);
-#endif
-}
-
-
-Guild* ObjectMgr::GetGuildByGuildName(std::string guildName)
-{
-#if VERSION_STRING != Cata
-    GuildMap::const_iterator itr;
-    for (itr = mGuild.begin(); itr != mGuild.end(); ++itr)
-    {
-        if (itr->second->getGuildName() == guildName)
-            return itr->second;
-    }
-    return NULL;
-#else
-    return sGuildMgr.getGuildByName(guildName);
-#endif
-}
-
 
 void ObjectMgr::AddGMTicket(GM_Ticket* ticket, bool startup)
 {

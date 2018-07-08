@@ -8,9 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 
+#include "Management/GuildMgr.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/Guild.h"
-#include "GameCata/Management/GuildMgr.h"
 #else
 #include "Management/Guild.h"
 #endif
@@ -51,7 +51,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     }
 
     Guild* pGuild = NULL;
-    pGuild = objmgr.GetGuildByGuildName(std::string(args));
+    pGuild = sGuildMgr.getGuildByName(std::string(args));
 
     if (pGuild)
     {
@@ -200,13 +200,16 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-#if VERSION_STRING != Cata
-    Guild* guild = objmgr.GetGuildByGuildName(std::string(args));
+    Guild* guild = sGuildMgr.getGuildByName(std::string(args));
     if (guild != nullptr)
     {
+#if VERSION_STRING != Cata
         guild->getLock().Acquire();
-        uint32 memberCount = static_cast<uint32>(guild->GetNumMembers());
+#endif
+        uint32 memberCount = guild->getMembersCount();
+#if VERSION_STRING != Cata
         guild->getLock().Release();
+#endif
 
         if (memberCount >= MAX_GUILD_MEMBERS)
         {
@@ -214,28 +217,11 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
             return true;
         }
 
+#if VERSION_STRING != Cata
         guild->AddGuildMember(selected_player->getPlayerInfo(), m_session, -2);
-        GreenSystemMessage(m_session, "You have joined the guild '%s'", guild->getGuildName());
-        sGMLog.writefromsession(m_session, "Force joined guild '%s'", guild->getGuildName());
-        return true;
-    }
-    else
-    {
-        RedSystemMessage(m_session, "Guild %s is not a valid guildname!", args);
-    }
 #else
-    Guild* guild = sGuildMgr.getGuildByName(std::string(args));
-    if (guild != nullptr)
-    {
-        uint32 memberCount = guild->getMembersCount();
-
-        if (memberCount >= worldConfig.guild.maxMembers)
-        {
-            m_session->SystemMessage("That guild is full.");
-            return true;
-        }
-
         guild->addMember(selected_player->getGuid(), 4);
+#endif
         GreenSystemMessage(m_session, "You have joined the guild '%s'", guild->getName().c_str());
         sGMLog.writefromsession(m_session, "Force joined guild '%s'", guild->getName().c_str());
         return true;
@@ -244,7 +230,6 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     {
         RedSystemMessage(m_session, "Guild %s is not a valid guildname!", args);
     }
-#endif
 
     return false;
 }
@@ -316,11 +301,7 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-#if VERSION_STRING != Cata
-    Guild* guild = objmgr.GetGuildByGuildName(std::string(args));
-#else
     Guild* guild = sGuildMgr.getGuildByName(std::string(args));
-#endif
     if (guild != nullptr)
     {
         RedSystemMessage(m_session, "Guild name %s is already taken.", args);
@@ -328,15 +309,9 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
     }
     else
     {
-#if VERSION_STRING != Cata
-        GreenSystemMessage(m_session, "Changed guild name of %s to %s. This will take effect next restart.", selected_player->GetGuild()->getGuildName(), args);
-        CharacterDatabase.Execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.EscapeString(std::string(args)).c_str(), selected_player->GetGuild()->getGuildId());
-        sGMLog.writefromsession(m_session, "Changed guild name of '%s' to '%s'", selected_player->GetGuild()->getGuildName(), args);
-#else
         GreenSystemMessage(m_session, "Changed guild name of %s to %s. This will take effect next restart.", selected_player->GetGuild()->getName().c_str(), args);
         CharacterDatabase.Execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.EscapeString(std::string(args)).c_str(), selected_player->GetGuild()->getId());
         sGMLog.writefromsession(m_session, "Changed guild name of '%s' to '%s'", selected_player->GetGuild()->getName().c_str(), args);
-#endif
     }
 
     return true;

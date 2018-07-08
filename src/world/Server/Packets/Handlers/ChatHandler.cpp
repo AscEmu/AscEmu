@@ -26,10 +26,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgComplainResult.h"
 #include "Server/Packets/CmsgChatIgnored.h"
 #include "Server/Packets/CmsgSetChannelWatch.h"
+#include "Management/GuildMgr.h"
 
 #if VERSION_STRING == Cata
 #include "Spell/SpellAuras.h"
-#include "GameCata/Management/GuildMgr.h"
 #endif
 
 using namespace AscEmu::Packets;

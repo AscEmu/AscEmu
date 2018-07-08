@@ -704,7 +704,7 @@ namespace luaGlobalFunctions
     int GetGuildByName(lua_State* L)
     {
         const char* name = luaL_checkstring(L, 1);
-        Guild* guild = objmgr.GetGuildByGuildName(name);
+        Guild* guild = sGuildMgr.getGuildByName(name);
         lua_pushnumber(L, guild ? guild->getGuildId() : -1);
         return 1;
     }
@@ -712,7 +712,7 @@ namespace luaGlobalFunctions
     int GetGuildByLeaderGuid(lua_State* L)
     {
         uint64 guid = CHECK_GUID(L, 1);
-        Guild* guild = objmgr.GetGuildByLeaderGuid(guid);
+        Guild* guild = sGuildMgr.getGuildByLeader(guid);
         lua_pushnumber(L, guild ? guild->getGuildId() : -1);
         return 1;
     }

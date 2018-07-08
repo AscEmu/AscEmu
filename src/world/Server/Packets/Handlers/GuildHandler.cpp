@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
+#include "Management/GuildMgr.h"
+#include "Objects/ObjectMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -16,16 +18,13 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-#if VERSION_STRING != Cata
-    const auto guild = objmgr.GetGuild(recv_packet.guildId);
-    if (guild == nullptr)
-        return;
-
-    guild->SendGuildQuery(this);
-#else
     const auto guild = sGuildMgr.getGuildById(uint32_t(recv_packet.guildId));
     if (guild == nullptr)
         return;
+
+#if VERSION_STRING != Cata
+    guild->SendGuildQuery(this);
+#else
 
     if (guild->isMember(recv_packet.playerGuid))
         guild->handleQuery(this);

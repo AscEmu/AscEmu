@@ -44,6 +44,7 @@
 #include <Spell/Definitions/PowerType.h>
 #include <Map/MapScriptInterface.h>
 #include <Units/Creatures/Pet.h>
+#include "Management/GuildMgr.h"
 
 class LuaUnit
 {
@@ -4334,7 +4335,7 @@ class LuaUnit
     static int GetGuildName(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            Guild* pGuild = objmgr.GetGuild(static_cast<Player*>(ptr)->GetGuildId());
+            Guild* pGuild = sGuildMgr.getGuildById(static_cast<Player*>(ptr)->GetGuildId());
         if (pGuild != NULL)
             lua_pushstring(L, pGuild->getGuildName());
         else
@@ -5010,7 +5011,7 @@ class LuaUnit
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 2, -1) > 0)
         {
-            guild = objmgr.GetGuild(static_cast<uint32>(luaL_optinteger(L, 2, 0)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 2, 0)));
         }
         else
         {
@@ -5124,7 +5125,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
-            guild = objmgr.GetGuild(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
         else
             guild = plr->GetGuild();
         if (guild != nullptr)
@@ -5158,7 +5159,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         uint32 g_id = CHECK_ULONG(L, 1);
         int32 rank = static_cast<int32>(luaL_optinteger(L, 2, -1));
-        Guild* target = objmgr.GetGuild(g_id);
+        Guild* target = sGuildMgr.getGuildById(g_id);
         if (target)
             target->AddGuildMember(plr->getPlayerInfo(), NULL, rank);
 #else
@@ -5218,7 +5219,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
-            guild = objmgr.GetGuild(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
         else
             guild = plr->GetGuild();
         if (guild != nullptr)

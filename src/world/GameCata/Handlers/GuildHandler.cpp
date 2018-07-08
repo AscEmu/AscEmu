@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Server/WorldSession.h"
 #include "GameCata/Management/GuildFinderMgr.h"
-#include "GameCata/Management/GuildMgr.h"
+#include "Management/GuildMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/Player.h"
 #include "Map/MapMgr.h"

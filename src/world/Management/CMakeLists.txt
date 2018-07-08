@@ -34,6 +34,9 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/Group.h
    ${PATH_PREFIX}/Guild.cpp
    ${PATH_PREFIX}/Guild.h
+   ${PATH_PREFIX}/GuildMgr.Cata.cpp
+   ${PATH_PREFIX}/GuildMgr.cpp
+   ${PATH_PREFIX}/GuildMgr.h
    ${PATH_PREFIX}/HonorHandler.cpp
    ${PATH_PREFIX}/HonorHandler.h
    ${PATH_PREFIX}/Item.cpp

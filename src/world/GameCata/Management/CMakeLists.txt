@@ -21,8 +21,6 @@ set(SRC_GAMECATA_MANAGEMENT_FILES
     ${PATH_PREFIX}/GuildLog.h
     ${PATH_PREFIX}/GuildLogHolder.cpp
     ${PATH_PREFIX}/GuildLogHolder.h
-    ${PATH_PREFIX}/GuildMgr.cpp
-    ${PATH_PREFIX}/GuildMgr.h
     ${PATH_PREFIX}/GuildNewsLog.cpp
     ${PATH_PREFIX}/GuildNewsLog.h
     ${PATH_PREFIX}/GuildRankInfo.cpp

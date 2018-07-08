@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 
 #include "Guild.h"
-#include "GuildMgr.h"
+#include "Management/GuildMgr.h"
 #include "GuildFinderMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"

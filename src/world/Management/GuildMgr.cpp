@@ -6,21 +6,47 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 
 #include "GuildMgr.h"
+
+#if VERSION_STRING != Cata
 #include "Guild.h"
+#else
+#include "GameCata/Management/Guild.h"
+#endif
+
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 
 initialiseSingleton(GuildMgr);
 
-GuildMgr::GuildMgr()
-{ }
+GuildMgr::GuildMgr() {}
 
 GuildMgr::~GuildMgr()
 {
-    for (GuildContainer::iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-    {
+    for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         delete itr->second;
+}
+
+void GuildMgr::update(uint32_t /*diff*/)
+{
+    if (!firstSave)
+    {
+        lastSave = static_cast<uint32_t>(time(nullptr));
+        firstSave = true;
     }
+
+    if (time(nullptr) >= lastSave)
+    {
+        lastSave = static_cast<uint32_t>(time(nullptr)) + worldConfig.guild.saveInterval;
+        sGuildMgr.saveGuilds();
+    }
+}
+
+void GuildMgr::saveGuilds()
+{
+#if VERSION_STRING == Cata
+    for (GuildContainer::iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
+        itr->second->saveGuildToDB();
+#endif
 }
 
 void GuildMgr::addGuild(Guild* guild)
@@ -33,27 +59,21 @@ void GuildMgr::removeGuild(uint32_t guildId)
     GuildStore.erase(guildId);
 }
 
-void GuildMgr::saveGuilds()
-{
-    for (GuildContainer::iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-    {
-        itr->second->saveGuildToDB();
-    }
-}
-
-uint32_t GuildMgr::getNextGuildId()
-{
-    return objmgr.GenerateGuildId();
-}
-
-// Guild collection
 Guild* GuildMgr::getGuildById(uint32_t guildId) const
 {
     GuildContainer::const_iterator itr = GuildStore.find(guildId);
     if (itr != GuildStore.end())
-    {
         return itr->second;
-    }
+
+    return nullptr;
+}
+
+//\brief used only by LuAEngine!
+Guild* GuildMgr::getGuildByLeader(uint64_t guid) const
+{
+    for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
+        if (uint64_t(itr->second->getLeaderGUID()) == guid)
+            return itr->second;
 
     return nullptr;
 }
@@ -62,55 +82,39 @@ Guild* GuildMgr::getGuildByName(const std::string& guildName) const
 {
     std::string search = guildName;
     Util::StringToUpperCase(search);
-    // std::transform(search.begin(), search.end(), search.begin(), ::toupper);
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
     {
         std::string gname = itr->second->getName();
         Util::StringToUpperCase(gname);
-        // std::transform(gname.begin(), gname.end(), gname.begin(), ::toupper);
         if (search == gname)
-        {
             return itr->second;
-        }
     }
     return nullptr;
-}
-
-std::string GuildMgr::getGuildNameById(uint32_t guildId) const
-{
-    if (Guild* guild = getGuildById(guildId))
-    {
-        return guild->getName();
-    }
-
-    return "";
-}
-
-Guild* GuildMgr::getGuildByLeader(uint64_t guid) const
-{
-    for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-    {
-        if (itr->second->getLeaderGUID() == guid)
-        {
-            return itr->second;
-        }
-    }
-
-    return nullptr;
-}
-
-uint32_t GuildMgr::getXPForGuildLevel(uint8_t level) const
-{
-    if (level < GuildXPperLevel.size())
-    {
-        return static_cast<uint32_t>(GuildXPperLevel[level]);
-    }
-
-    return 0;
 }
 
 void GuildMgr::loadGuildDataFromDB()
 {
+#if VERSION_STRING != Cata
+    LogDebug("Loading guilds definitions...");
+    const auto startTime = Util::TimeNow();
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM guilds");
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            Guild* guild = Guild::Create();
+            if (!guild->LoadFromDB(fields))
+                delete guild;
+            else
+                addGuild(guild);
+
+        } while (result->NextRow());
+    }
+
+    LogDetail("GuildMgr : %u guilds loaded in %u ms", GuildStore.size(), Util::GetTimeDifferenceToNow(startTime));
+#else
     // 1. Load all guilds
     LogDebug("Loading guilds definitions...");
     {
@@ -118,7 +122,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         //                                                         0          1            2             3              4              5              6
         QueryResult* result = CharacterDatabase.Query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
-        //           7               8          9          10            11            12              13                 4                   15
+            //           7               8          9          10            11            12              13                 4                   15
             "g.backgroundColor, g.guildInfo, g.motd, g.createdate, g.bankBalance, g.guildLevel, g.guildExperience, g.todayExperience, COUNT(gbt.guildId) "
             "FROM guild g LEFT JOIN guild_bank_tab gbt ON g.guildId = gbt.guildId GROUP BY g.guildId ORDER BY g.guildId ASC");
 
@@ -143,7 +147,7 @@ void GuildMgr::loadGuildDataFromDB()
                 addGuild(guild);
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -178,7 +182,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild ranks in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -214,7 +218,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow() && result2->NextRow());
+            } while (result->NextRow() && result2->NextRow());
 
             LogDebug("Loaded %u guild members int %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -249,7 +253,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u bank tab rights in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -284,7 +288,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -320,7 +324,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild bank event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -355,7 +359,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild new logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -391,7 +395,7 @@ void GuildMgr::loadGuildDataFromDB()
                 }
 
                 ++count;
-            } while(result->NextRow());
+            } while (result->NextRow());
 
             LogDebug("Loaded %u guild bank tabs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
@@ -432,124 +436,5 @@ void GuildMgr::loadGuildDataFromDB()
     {
         //TODO
     }
-}
-
-void GuildMgr::loadGuildXpForLevelFromDB()
-{
-    auto startTime = Util::TimeNow();
-
-    GuildXPperLevel.resize(worldConfig.guild.maxLevel);
-    for (uint8_t level = 0; level < worldConfig.guild.maxLevel; ++level)
-    {
-        GuildXPperLevel[level] = 0;
-    }
-
-    //                                                 0         1
-    QueryResult* result = WorldDatabase.Query("SELECT lvl, xp_for_next_level FROM guild_xp_for_level");
-    if (result == nullptr)
-    {
-        LogDebug("Loaded 0 xp for guild level definitions. DB table `guild_xp_for_level` is empty.");
-        return;
-    }
-
-    uint32_t count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32_t level = fields[0].GetUInt8();
-        uint32_t requiredXP = static_cast<uint32_t>(fields[1].GetUInt64());
-
-        if (level >= worldConfig.guild.maxLevel)
-        {
-            LogDebug("Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
-            continue;
-        }
-
-        GuildXPperLevel[level] = requiredXP;
-        ++count;
-
-    } while (result->NextRow());
-
-    // fill level gaps
-    for (uint8_t level = 1; level < worldConfig.guild.maxLevel; ++level)
-    {
-        if (!GuildXPperLevel[level])
-        {
-            LogError("Level %i does not have XP for guild level data. Using data of level [%i] + 1660000.", level + 1, level);
-            GuildXPperLevel[level] = GuildXPperLevel[level - 1] + 1660000;
-        }
-    }
-
-    LogDebug("Loaded %u xp for guild level definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
-}
-
-void GuildMgr::loadGuildRewardsFromDB()
-{
-    auto startTime = Util::TimeNow();
-
-    //                                                  0       1         2        3         4
-    QueryResult* result = WorldDatabase.Query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
-    if (result == nullptr)
-    {
-        LogDebug("Loaded 0 guild reward definitions. DB table `guild_rewards` is empty.");
-        return;
-    }
-
-    uint32_t count = 0;
-
-    do
-    {
-        GuildReward reward;
-        Field* fields = result->Fetch();
-        reward.entry = fields[0].GetUInt32();
-        reward.standing = fields[1].GetUInt8();
-        reward.racemask = fields[2].GetInt32();
-        reward.price = fields[3].GetUInt64();
-        reward.achievementId = fields[4].GetUInt32();
-
-        if (!sItemStore.LookupEntry(reward.entry))
-        {
-            LogError("Guild rewards constains not existing item entry %u", reward.entry);
-            continue;
-        }
-
-        if (reward.standing >= 8)
-        {
-            LogError("Guild rewards contains wrong reputation standing %u, max is %u", uint32_t(reward.standing), 8 - 1);
-            continue;
-        }
-
-        GuildRewards.push_back(reward);
-        ++count;
-    } while(result->NextRow());
-
-    LogDebug("Loaded %u guild reward definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
-}
-
-void GuildMgr::resetTimes(bool week)
-{
-    for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-    {
-        if (Guild* guild = itr->second)
-        {
-            guild->resetTimes(week);
-        }
-    }
-}
-
-void GuildMgr::update(uint32_t /*diff*/)
-{
-    if (!firstSave)
-    {
-        lastSave = static_cast<uint32_t>(time(nullptr));
-        firstSave = true;
-    }
-
-    if (time(nullptr) >= lastSave)
-    {
-        lastSave = static_cast<uint32_t>(time(nullptr)) + worldConfig.guild.saveInterval;
-        sGuildMgr.saveGuilds();
-    }
+#endif
 }

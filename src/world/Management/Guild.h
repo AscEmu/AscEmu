@@ -117,6 +117,20 @@ class SERVER_DECL Guild
     public:
 
         void setEmblemInfo(GuildEmblemInfo emblem_info);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // new functions to serialize Guild classes
+
+        // on cata this is uint64_t!
+        uint32_t getLeaderGUID() const { return m_guildLeader; }
+
+        uint32 getId() const { return m_guildId; }
+
+        //switch to std::string instead of char*!
+        std::string getName() const { return m_guildName; }
+
+        uint32_t getMembersCount() const { return uint32_t(m_members.size()); }
+        //////////////////////////////////////////////////////////////////////////////////////////
     // MIT END
 
         Guild();

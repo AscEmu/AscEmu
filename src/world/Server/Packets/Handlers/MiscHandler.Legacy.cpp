@@ -39,9 +39,7 @@
 #include "Server/Packets/CmsgLootMasterGive.h"
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 

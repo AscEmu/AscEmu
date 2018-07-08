@@ -38,9 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Server/Packets/CmsgSetTitle.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 

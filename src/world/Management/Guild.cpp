@@ -32,6 +32,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Server/Packets/MsgGuildBankLogQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
+#include "GuildMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -293,7 +294,7 @@ void Guild::CreateFromCharter(Charter* pCharter, WorldSession* pTurnIn)
     m_lock.Acquire();
 
     m_guildId = objmgr.GenerateGuildId();
-    objmgr.AddGuild(this);
+    sGuildMgr.addGuild(this);
     m_guildName = strdup(pCharter->GuildName.c_str());
     m_guildLeader = pCharter->LeaderGuid;
     m_creationTimeStamp = (uint32)UNIXTIME;
@@ -999,7 +1000,8 @@ void Guild::disband()
         delete itr->second;
     }
     m_members.clear();
-    objmgr.RemoveGuild(m_guildId);
+
+    sGuildMgr.removeGuild(m_guildId);
     CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_guildId);
     CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildid = %u", m_guildId);
     CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_guildId);
