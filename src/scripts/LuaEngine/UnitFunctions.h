@@ -5067,54 +5067,10 @@ class LuaUnit
     static int SendGuildInvite(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        Player* sender = static_cast<Player*>(ptr);
-        Player* plyr = CHECK_PLAYER(L, 1);
-        std::string inviteeName = plyr->getName().c_str();
-
-        Guild* pGuild = sender->GetGuild();
-        if (!plyr)
-        {
-            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, inviteeName, GC_ERROR_PLAYER_NOT_FOUND_S);
-            return 0;
-        }
-
-        if (!pGuild)
-        {
-            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PLAYER_NOT_IN_GUILD);
-            return 0;
-        }
-
-        if (plyr->GetGuildId())
-        {
-            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_IN_GUILD);
-            return 0;
-        }
-
-#if VERSION_STRING != Cata
-        if (plyr->GetGuildInvitersGuid())
-#else
-        if (plyr->GetGuildIdInvited())
-#endif
-        {
-            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD);
-            return 0;
-        }
-
-        if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
-        {
-            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED);
-            return 0;
-        }
-
-        sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, inviteeName, GC_ERROR_SUCCESS);
-
-        WorldPacket data(SMSG_GUILD_INVITE, 100);
-        data << sender->getName().c_str();
-        data << pGuild->getGuildName();
-        plyr->GetSession()->SendPacket(&data);
-#if VERSION_STRING != Cata
-        plyr->SetGuildInvitersGuid(sender->getGuidLow());
-#endif
+        const auto sender = static_cast<Player*>(ptr);
+        const auto invitedPlayer = CHECK_PLAYER(L, 1);
+        if (invitedPlayer != nullptr)
+            sender->GetSession()->sendGuildInvitePacket(invitedPlayer->getName());
 
         return 0;
     }

@@ -145,7 +145,7 @@ class SERVER_DECL WorldSession
 
         //\brief: Used for LuAEngine
         void sendGuildCommandResult(uint32_t guildCommand, std::string text, uint32_t error);
-
+        void sendGuildInvitePacket(std::string invitedName);
         //MIT END
 
         WorldSession(uint32 id, std::string Name, WorldSocket* sock);

@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/Packets/CmsgGuildQuery.h"
+#include "Server/Packets/SmsgGuildCommandResult.h"
+#include "Server/Packets/CmsgGuildInvite.h"
 
 using namespace AscEmu::Packets;
 
@@ -28,4 +30,13 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
     if (guild->isMember(recv_packet.playerGuid))
         guild->handleQuery(this);
 #endif
+}
+
+void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
+{
+    CmsgGuildInvite recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    sendGuildInvitePacket(recv_packet.name);
 }

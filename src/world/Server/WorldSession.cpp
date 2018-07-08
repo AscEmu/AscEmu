@@ -49,6 +49,73 @@ void WorldSession::sendGuildCommandResult(uint32_t guildCommand, std::string tex
     SendPacket(SmsgGuildCommandResult(guildCommand, text, error).serialise().get());
 }
 
+void WorldSession::sendGuildInvitePacket(std::string invitedName)
+{
+    const auto invitedPlayer = objmgr.GetPlayer(invitedName.c_str(), false);
+    const auto guild = GetPlayer()->m_playerInfo->guild;
+
+    if (invitedPlayer == nullptr)
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        return;
+    }
+
+    if (guild == nullptr)
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+        return;
+    }
+
+    if (invitedPlayer->GetGuildId())
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_IN_GUILD_S).serialise().get());
+        return;
+    }
+
+#if VERSION_STRING != Cata
+    if (invitedPlayer->GetGuildInvitersGuid())
+#else
+    if (invitedPlayer->GetGuildIdInvited())
+#endif
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
+        return;
+    }
+
+    if (!GetPlayer()->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
+        return;
+    }
+
+    if (invitedPlayer->GetTeam() != GetPlayer()->GetTeam() && GetPlayer()->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
+        return;
+    }
+
+    guild->getLock().Acquire();
+    const auto memberCount = static_cast<uint32_t>(guild->GetNumMembers());
+    guild->getLock().Release();
+
+    if (memberCount >= MAX_GUILD_MEMBERS)
+    {
+        SystemMessage("Your guild is full.");
+        return;
+    }
+
+    SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
+
+    WorldPacket data(SMSG_GUILD_INVITE, 100);
+    data << GetPlayer()->getName().c_str();
+    data << guild->getGuildName();
+    invitedPlayer->GetSession()->SendPacket(&data);
+
+#if VERSION_STRING != Cata
+    invitedPlayer->SetGuildInvitersGuid(GetPlayer()->getGuidLow());
+#endif
+}
+
 // MIT END
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
