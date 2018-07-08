@@ -17,21 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // Guild
 
-void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recvData)
-{
-    std::string invitedName;
-
-    uint32_t nameLength = recvData.readBits(7);
-    invitedName = recvData.ReadString(nameLength);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INVITE %s: Invited: %s", _player->getName().c_str(), invitedName.c_str());
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleInviteMember(this, invitedName);
-    }
-}
-
 void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvData)
 {
     ObjectGuid playerGuid;

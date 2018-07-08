@@ -373,7 +373,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::handleGuildQuery;
     WorldPacketHandlers[CMSG_GUILD_QUERY].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::HandleInviteToGuildOpcode;
+    WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::handleInviteToGuild;
     WorldPacketHandlers[CMSG_GUILD_ACCEPT].handler = &WorldSession::HandleGuildAcceptOpcode;
     WorldPacketHandlers[CMSG_GUILD_DECLINE].handler = &WorldSession::HandleGuildDeclineOpcode;
     WorldPacketHandlers[CMSG_GUILD_ROSTER].handler = &WorldSession::HandleGuildRosterOpcode;

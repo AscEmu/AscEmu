@@ -32,10 +32,10 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
+void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
 {
     CmsgGuildInvite recv_packet;
-    if (!recv_packet.deserialise(recv_data))
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
     sendGuildInvitePacket(recv_packet.name);

@@ -35,6 +35,7 @@
 #include "Auth/MD5.h"
 #include "Packets/SmsgBuyFailed.h"
 #include "Packets/SmsgGuildCommandResult.h"
+#include "Packets/SmsgGuildInvite.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
@@ -52,7 +53,7 @@ void WorldSession::sendGuildCommandResult(uint32_t guildCommand, std::string tex
 void WorldSession::sendGuildInvitePacket(std::string invitedName)
 {
     const auto invitedPlayer = objmgr.GetPlayer(invitedName.c_str(), false);
-    const auto guild = GetPlayer()->m_playerInfo->guild;
+    const auto guild = GetPlayer()->GetGuild();
 
     if (invitedPlayer == nullptr)
     {
@@ -82,7 +83,11 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
         return;
     }
 
+#if VERSION_STRING != Cata
     if (!GetPlayer()->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
+#else
+    if (!GetPlayer()->GetGuild()->_hasRankRight(GetPlayer()->getGuid(), GR_RIGHT_INVITE))
+#endif
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
@@ -94,6 +99,7 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
         return;
     }
 
+#if VERSION_STRING != Cata
     guild->getLock().Acquire();
     const auto memberCount = static_cast<uint32_t>(guild->GetNumMembers());
     guild->getLock().Release();
@@ -103,16 +109,20 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
         SystemMessage("Your guild is full.");
         return;
     }
+#endif
 
     SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
 
-    WorldPacket data(SMSG_GUILD_INVITE, 100);
-    data << GetPlayer()->getName().c_str();
-    data << guild->getGuildName();
-    invitedPlayer->GetSession()->SendPacket(&data);
-
 #if VERSION_STRING != Cata
     invitedPlayer->SetGuildInvitersGuid(GetPlayer()->getGuidLow());
+
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getGuildName()).serialise().get());
+#else
+    invitedPlayer->SetGuildIdInvited(guild->getGuildId());
+    guild->logEvent(GE_LOG_INVITE_PLAYER, GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
+
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getGuildName(), guild->getLevel(),
+        guild->getEmblemInfo(), guild->getGuildId(), guild->getGUID()).serialise().get());
 #endif
 }
 

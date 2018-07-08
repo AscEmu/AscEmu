@@ -629,10 +629,10 @@ class SERVER_DECL WorldSession
 
         // Guild
         void handleGuildQuery(WorldPacket& recvPacket);
+        void handleInviteToGuild(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
-        void HandleInviteToGuild(WorldPacket& recv_data);
         void HandleGuildAccept(WorldPacket& /*recv_data*/);
         void HandleGuildDecline(WorldPacket& /*recv_data*/);
         void HandleGuildInfo(WorldPacket& /*recv_data*/);
@@ -677,7 +677,6 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Guild
-        void HandleInviteToGuildOpcode(WorldPacket& recv_data);
         void HandleGuildRemoveOpcode(WorldPacket& recv_data);
         void HandleGuildAcceptOpcode(WorldPacket& /*recv_data*/);
         void HandleGuildDeclineOpcode(WorldPacket& /*recv_data*/);

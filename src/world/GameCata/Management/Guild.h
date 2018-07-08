@@ -156,7 +156,6 @@ class SERVER_DECL Guild
         void handleSetMemberNote(WorldSession* session, std::string const& note, uint64_t guid, bool isPublic);
         void handleSetRankInfo(WorldSession* session, uint8_t rankId, std::string const& name, uint32_t rights, uint32_t moneyPerDay, GuildBankRightsAndSlotsVec rightsAndSlots);
         void handleBuyBankTab(WorldSession* session, uint8_t tabId);
-        void handleInviteMember(WorldSession* session, std::string const& name);
         void handleAcceptMember(WorldSession* session);
         void handleLeaveMember(WorldSession* session);
         void handleRemoveMember(WorldSession* session, uint64_t guid);
@@ -275,6 +274,7 @@ class SERVER_DECL Guild
         inline uint8_t _getRanksSize() const { return uint8_t(_guildRankInfoStore.size()); }
         inline const GuildRankInfo* getRankInfo(uint8_t rankId) const { return rankId < _getRanksSize() ? &_guildRankInfoStore[rankId] : nullptr; }
         inline GuildRankInfo* getRankInfo(uint8_t rankId) { return rankId < _getRanksSize() ? &_guildRankInfoStore[rankId] : nullptr; }
+    public:
         inline bool _hasRankRight(uint64_t playerGuid, uint32_t right) const
         {
             if (playerGuid)
@@ -287,7 +287,7 @@ class SERVER_DECL Guild
 
             return false;
         }
-
+    private:
         inline uint8_t _getLowestRankId() const { return uint8_t(_guildRankInfoStore.size() - 1); }
 
         inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }
@@ -342,7 +342,7 @@ class SERVER_DECL Guild
         int32_t getMemberRemainingMoney(GuildMember const* member) const;
         void updateMemberWithdrawSlots(uint64_t guid, uint8_t tabId);
         bool memberHasTabRights(uint64_t guid, uint8_t tabId, uint32_t rights) const;
-
+    public:
         void logEvent(GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2 = 0, uint8_t newRank = 0);
         void logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t playerGuid, uint32_t itemOrMoney, uint16_t itemStackCount = 0, uint8_t destTabId = 0);
 
