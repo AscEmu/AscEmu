@@ -5074,39 +5074,47 @@ class LuaUnit
         Guild* pGuild = sender->GetGuild();
         if (!plyr)
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_FOUND_S, inviteeName.c_str());
+            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, inviteeName, GC_ERROR_PLAYER_NOT_FOUND_S);
+            return 0;
         }
-        else if (!pGuild)
+
+        if (!pGuild)
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_IN_GUILD, "");
+            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PLAYER_NOT_IN_GUILD);
+            return 0;
         }
-        else if (plyr->GetGuildId())
+
+        if (plyr->GetGuildId())
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->getName().c_str());
+            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_IN_GUILD);
+            return 0;
         }
+
 #if VERSION_STRING != Cata
-        else if (plyr->GetGuildInvitersGuid())
+        if (plyr->GetGuildInvitersGuid())
 #else
-        else if (plyr->GetGuildIdInvited())
+        if (plyr->GetGuildIdInvited())
 #endif
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
+            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD);
+            return 0;
         }
-        else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+
+        if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_NOT_ALLIED, "");
+            sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED);
+            return 0;
         }
-        else
-        {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_SUCCESS, inviteeName.c_str());
-            WorldPacket data(SMSG_GUILD_INVITE, 100);
-            data << sender->getName().c_str();
-            data << pGuild->getGuildName();
-            plyr->GetSession()->SendPacket(&data);
+
+        sender->GetSession()->sendGuildCommandResult(GC_TYPE_INVITE, inviteeName, GC_ERROR_SUCCESS);
+
+        WorldPacket data(SMSG_GUILD_INVITE, 100);
+        data << sender->getName().c_str();
+        data << pGuild->getGuildName();
+        plyr->GetSession()->SendPacket(&data);
 #if VERSION_STRING != Cata
-            plyr->SetGuildInvitersGuid(sender->getGuidLow());
+        plyr->SetGuildInvitersGuid(sender->getGuidLow());
 #endif
-        }
 
         return 0;
     }

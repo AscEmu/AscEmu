@@ -198,6 +198,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
+   ${PATH_PREFIX}/SmsgGuildCommandResult.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h

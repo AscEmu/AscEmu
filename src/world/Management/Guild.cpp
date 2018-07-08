@@ -31,6 +31,9 @@
 #include "Objects/ObjectMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/Packets/MsgGuildBankLogQuery.h"
+#include "Server/Packets/SmsgGuildCommandResult.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 
@@ -123,15 +126,6 @@ Guild::~Guild()
         free(m_motd);
     if (m_guildName)
         free(m_guildName);
-}
-
-void Guild::sendCommandResult(WorldSession* pClient, GuildCommandType iCmd, GuildCommandError iType, std::string szMsg)
-{
-    WorldPacket data(SMSG_GUILD_COMMAND_RESULT, (9 + szMsg.size()));
-    data << uint32_t(iCmd);
-    data << szMsg;
-    data << uint32_t(iType);
-    pClient->SendPacket(&data);
 }
 
 GuildRank* Guild::FindLowestRank()
@@ -342,7 +336,7 @@ void Guild::PromoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_PROMOTE) ||
         (pMember->guildRank->iId - pClient->GetPlayer()->getPlayerInfo()->guildRank->iId) <= 1)
     {
-        sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -406,7 +400,7 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
         pMember->guid == GetGuildLeader() ||
         pClient->GetPlayer()->getPlayerInfo()->guildRank->iId >= pMember->guildRank->iId)
     {
-        sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -703,7 +697,7 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
 
     if (pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_SETMOTD) == false)
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -731,7 +725,7 @@ void Guild::SetGuildInformation(const char* szGuildInformation, WorldSession* pC
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_EGUILDINFO))
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -822,7 +816,7 @@ void Guild::RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient)
             && pClient->GetPlayer()->getPlayerInfo() != pMember)
             || (RDiff <= 0 && pClient->GetPlayer()->getPlayerInfo() != pMember))
         {
-            Guild::sendCommandResult(pClient, GC_TYPE_CREATE, GC_ERROR_PERMISSIONS);
+            pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PERMISSIONS).serialise().get());
             return;
         }
     }
@@ -888,7 +882,7 @@ void Guild::SetPublicNote(PlayerInfo* pMember, const char* szNewNote, WorldSessi
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_EPNOTE))
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -915,7 +909,7 @@ void Guild::SetPublicNote(PlayerInfo* pMember, const char* szNewNote, WorldSessi
     }
     m_lock.Release();
 
-    Guild::sendCommandResult(pClient, GC_TYPE_PUBLIC_NOTE, GC_ERROR_SUCCESS, pMember->name);
+    pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PUBLIC_NOTE, pMember->name, GC_ERROR_SUCCESS).serialise().get());
 }
 
 void Guild::SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSession* pClient)
@@ -928,7 +922,7 @@ void Guild::SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSess
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_EOFFNOTE))
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -955,7 +949,7 @@ void Guild::SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSess
     }
     m_lock.Release();
 
-    Guild::sendCommandResult(pClient, GC_TYPE_CHANGE_RANK, GC_ERROR_SUCCESS, pMember->name);
+    pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_CHANGE_RANK, pMember->name, GC_ERROR_SUCCESS).serialise().get());
 }
 
 void Guild::RemoveGuildRank(WorldSession* pClient)
@@ -1020,7 +1014,7 @@ void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
 {
     if (pClient->GetPlayer()->getGuidLow() != m_guildLeader)
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -1037,14 +1031,14 @@ void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
     ARCEMU_ASSERT(m_ranks[0] != NULL);
     if (itr == m_members.end())
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_PLAYER_NOT_IN_GUILD_S, pNewMaster->name);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, pNewMaster->name, GC_ERROR_PLAYER_NOT_IN_GUILD_S).serialise().get());
         m_lock.Release();
         return;
     }
     if (itr2 == m_members.end())
     {
         // wtf??
-        Guild::sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_INTERNAL);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_INTERNAL).serialise().get());
         m_lock.Release();
         return;
     }
@@ -1080,7 +1074,7 @@ void Guild::GuildChat(const char* szMessage, WorldSession* pClient, uint32 iType
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_GCHATSPEAK))
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -1105,7 +1099,7 @@ void Guild::OfficerChat(const char* szMessage, WorldSession* pClient, uint32 iTy
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_OFFCHATSPEAK))
     {
-        Guild::sendCommandResult(pClient, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 

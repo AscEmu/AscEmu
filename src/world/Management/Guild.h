@@ -168,8 +168,6 @@ class SERVER_DECL Guild
 
         void ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient);
 
-        static void sendCommandResult(WorldSession* pClient, GuildCommandType iCmd, GuildCommandError iType, std::string szMsg = "");
-
         static void SendTurnInPetitionResult(WorldSession* pClient, uint32 result);
 
         void LogGuildEvent(uint8 iEvent, uint8 iStringCount, ...);

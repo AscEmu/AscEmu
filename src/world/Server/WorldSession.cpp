@@ -34,12 +34,22 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Auth/MD5.h"
 #include "Packets/SmsgBuyFailed.h"
+#include "Packets/SmsgGuildCommandResult.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
 #endif
 
 using namespace AscEmu::Packets;
+
+// MIT
+// helper functions
+void WorldSession::sendGuildCommandResult(uint32_t guildCommand, std::string text, uint32_t error)
+{
+    SendPacket(SmsgGuildCommandResult(guildCommand, text, error).serialise().get());
+}
+
+// MIT END
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

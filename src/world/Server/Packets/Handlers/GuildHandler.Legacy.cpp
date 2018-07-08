@@ -58,6 +58,7 @@
 #include "Server/Packets/MsgGuildBankLogQuery.h"
 #include "Server/Packets/MsgQueryGuildBankText.h"
 #include "Server/Packets/CmsgSetGuildBankText.h"
+#include "Server/Packets/SmsgGuildCommandResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -75,33 +76,37 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
 
     if (!plyr)
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_FOUND_S, recv_packet.name.c_str());
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
         return;
     }
-    else if (!pGuild)
+
+    if (!pGuild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     if (plyr->GetGuildId())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD_S, plyr->getName().c_str());
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_IN_GUILD_S).serialise().get());
         return;
     }
-    else if (plyr->GetGuildInvitersGuid())
+    
+    if (plyr->GetGuildInvitersGuid())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, plyr->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
         return;
     }
-    else if (!_player->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
+
+    if (!_player->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
-    else if (plyr->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+
+    if (plyr->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_NOT_ALLIED);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
         return;
     }
 
@@ -115,7 +120,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
         return;
     }
 
-    Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_SUCCESS, recv_packet.name.c_str());
+    SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, recv_packet.name, GC_ERROR_SUCCESS).serialise().get());
 
     WorldPacket data(SMSG_GUILD_INVITE, 100);
     data << _player->getName().c_str();
@@ -186,7 +191,7 @@ void WorldSession::HandleSetGuildInformation(WorldPacket& recv_data)
     Guild* pGuild = _player->m_playerInfo->guild;
     if (!pGuild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -219,7 +224,7 @@ void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -238,7 +243,7 @@ void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -255,7 +260,7 @@ void WorldSession::HandleGuildLeave(WorldPacket& /*recv_data*/)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -270,7 +275,7 @@ void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -287,13 +292,13 @@ void WorldSession::HandleGuildDisband(WorldPacket& /*recv_data*/)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -308,14 +313,14 @@ void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     PlayerInfo* dstplr = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
     if (dstplr == NULL)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_FOUND_S, recv_packet.name.c_str());
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
         return;
     }
 
@@ -330,7 +335,7 @@ void WorldSession::HandleGuildMotd(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
@@ -345,13 +350,13 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
 
     if (!_player->m_playerInfo->guild)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     if (GetPlayer()->getGuidLow() != _player->m_playerInfo->guild->GetGuildLeader())
     {
-        Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -420,13 +425,13 @@ void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
     Guild* pGuild = _player->GetGuild();
     if (pGuild == NULL)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -447,13 +452,13 @@ void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
     Guild* pGuild = _player->GetGuild();
     if (pGuild == nullptr)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 
     if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -1044,7 +1049,7 @@ void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
 
     if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
-        Guild::sendCommandResult(this, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -1092,7 +1097,7 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
 
     if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
-        Guild::sendCommandResult(this, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_GUILD_CHAT, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
@@ -1519,7 +1524,7 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
 
     if (!_player->IsInWorld() || _player->m_playerInfo->guild == NULL)
     {
-        Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
         return;
     }
 

@@ -141,6 +141,12 @@ class SERVER_DECL WorldSession
     friend class WorldSocket;
 
     public:
+        //MIT
+
+        //\brief: Used for LuAEngine
+        void sendGuildCommandResult(uint32_t guildCommand, std::string text, uint32_t error);
+
+        //MIT END
 
         WorldSession(uint32 id, std::string Name, WorldSocket* sock);
         ~WorldSession();
