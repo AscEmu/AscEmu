@@ -1010,7 +1010,7 @@ void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
     if (_player->m_playerInfo->guildMember == nullptr)
         return;
 
-    uint64 money = _player->m_playerInfo->guild->GetBankBalance();
+    uint64 money = _player->m_playerInfo->guild->getBankMoney();
     uint32 avail = _player->m_playerInfo->guildMember->CalculateAvailableAmount();
 
     WorldPacket data(MSG_GUILD_BANK_MONEY_WITHDRAWN, 4);

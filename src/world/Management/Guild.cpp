@@ -38,15 +38,14 @@
 
 using namespace AscEmu::Packets;
 
-Guild::Guild() : m_id(0), m_leaderGuid(0), m_createdDate(0)
+Guild::Guild() : m_id(0), m_leaderGuid(0), m_createdDate(0), m_bankMoney(0), m_level(1), m_experience(0), m_todayExperience(0)
 #if VERSION_STRING == Cata
-, mAccountsNumber(0), mBankMoney(0), mEventLog(nullptr),
-mNewsLog(nullptr), _level(1), _experience(0), _todayExperience(0)
+, mAccountsNumber(0), mEventLog(nullptr),
+mNewsLog(nullptr)
 #endif
 {
 #if VERSION_STRING != Cata
     m_commandLogging = true;
-    m_bankBalance = 0;
     creationDay = creationMonth = creationYear = 0;
     m_hiLogId = 1;
     memset(m_ranks, 0, sizeof(GuildRank*)*MAX_GUILD_RANKS);
@@ -454,7 +453,7 @@ bool Guild::LoadFromDB(Field* fields)
     m_info = fields[8].GetString();
     m_motd = fields[9].GetString();
     m_createdDate = fields[10].GetUInt32();
-    m_bankBalance = fields[11].GetUInt64();
+    m_bankMoney = fields[11].GetUInt64();
 
     // load ranks
     uint32 j;
@@ -1396,7 +1395,7 @@ bool GuildMember::RepairItem(uint32 cost)
     }
     if (pRank->iGoldLimitPerDay == 0)
         return false;                   //can't withdraw anymore
-    if (pPlayer->guild->GetBankBalance() < cost)
+    if (pPlayer->guild->getBankMoney() < cost)
         return false;                   //not enough gold in guildbank
     OnMoneyWithdraw(cost);
     pPlayer->guild->SpendMoney(cost);   //decrease the bank balance of "cost" amount
@@ -1430,17 +1429,17 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
         return;
 
     // add to the bank balance
-    m_bankBalance += uAmount;
+    m_bankMoney += uAmount;
 
     // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", m_bankBalance, m_id);
+    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", m_bankMoney, m_id);
 
     // take the money, oh noes gm pls gief gold mi hero poor
     pClient->GetPlayer()->ModGold(-(int32)uAmount);
 
     // broadcast guild event telling everyone the new balance
     char buf[20];
-    snprintf(buf, 20, "%llu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankMoney);
     LogGuildEvent(GE_BANK_TAB_UPDATED, 1, buf);
 
     // log it!
@@ -1470,7 +1469,7 @@ void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
         return;
     }
 
-    if (m_bankBalance < uAmount)
+    if (m_bankMoney < uAmount)
         return;
 
     // Check they dont have more than the max gold
@@ -1498,14 +1497,14 @@ void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
 void Guild::SpendMoney(uint32 uAmount)
 {
     // subtract the balance
-    m_bankBalance -= uAmount;//check if (m_bankBalance >= uAmount) before calling this, thank you.
+    m_bankMoney -= uAmount;//check if (m_bankBalance >= uAmount) before calling this, thank you.
 
     // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", (m_bankBalance > 0) ? m_bankBalance : 0, m_id);
+    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", (m_bankMoney > 0) ? m_bankMoney : 0, m_id);
 
     // notify everyone with the new balance
     char buf[20];
-    snprintf(buf, 20, "%llu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankMoney);
     LogGuildEvent(GE_BANK_TAB_UPDATED, 1, buf);
 }
 
@@ -1637,7 +1636,7 @@ void Guild::SendGuildBankInfo(WorldSession* pClient)
         return;
 
     WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
-    data << uint64(m_bankBalance);
+    data << uint64(m_bankMoney);
     data << uint8(0);
     data << uint32(0);
     data << uint8(1);
@@ -1678,7 +1677,7 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
 
     //LogDebugFlag(LF_OPCODE, "sending tab %u to client.", pTab->iTabId);
     WorldPacket data(SMSG_GUILD_BANK_LIST, 1300);
-    data << uint64(m_bankBalance);  // amount you have deposited
+    data << uint64(m_bankMoney);  // amount you have deposited
     data << uint8(pTab->iTabId);
     data << uint32(pMember->CalculateAllowedItemWithdraws(pTab->iTabId));        // remaining stacks for this day
     data << uint8(0);               // Packet type: 0-tab content, 1-tab info,

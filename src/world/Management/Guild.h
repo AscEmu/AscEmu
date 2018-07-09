@@ -116,6 +116,12 @@ class SERVER_DECL Guild
         std::string m_motd;
         std::string m_info;
         uint32_t m_createdDate;
+        uint64_t m_bankMoney;
+
+        //\todo implement cata fields in table `guilds`
+        uint8_t m_level;
+        uint64_t m_experience;
+        uint64_t m_todayExperience;
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -131,6 +137,12 @@ class SERVER_DECL Guild
         std::string const& getName() const { return m_name; }
         std::string const& getMOTD() const { return m_motd; }
         std::string const& getInfo() const { return m_info; }
+
+        uint64_t getBankMoney() const { return m_bankMoney; }
+
+        uint8_t getLevel() const { return m_level; }
+        uint64_t getExperience() const { return m_experience; }
+        uint64_t getTodayExperience() const { return m_todayExperience; }
 
         //\brief: Used only in LuAEngine!
         const char* getNameChar() const { return m_name.c_str(); }
@@ -223,8 +235,6 @@ class SERVER_DECL Guild
         uint32 creationYear;
 
         inline const uint8  GetBankTabCount() const { return (uint8)m_bankTabs.size(); }
-        inline const uint64 GetBankBalance() const { return m_bankBalance; }
-
 
         // Creates a guild rank with the specified permissions.
         GuildRank* CreateGuildRank(const char* szRankName, uint32 iPermissions, bool bFullGuildBankPermissions);
@@ -297,8 +307,6 @@ class SERVER_DECL Guild
         bool m_commandLogging;
 
         // Internal variables
-                
-        uint64 m_bankBalance; //use a 64 bit int so we can store more gold in the gbank
 
         typedef std::vector<GuildBankTab*> GuildBankTabVector;
         GuildBankTabVector m_bankTabs;

@@ -74,23 +74,23 @@ bool Guild::create(Player* pLeader, std::string const& name)
     m_name = name;
     m_info = "No message set.";
     m_motd = "No message set.";
-    mBankMoney = 0;
+    m_bankMoney = 0;
     m_createdDate = ::time(NULL);
-    _level = 1;
-    _experience = 0;
-    _todayExperience = 0;
+    m_level = 1;
+    m_experience = 0;
+    m_todayExperience = 0;
     createLogHolders();
 
     LogDebug("GUILD: creating guild %s for leader %s (%u)", name.c_str(), pLeader->getName().c_str(), Arcemu::Util::GUID_LOPART(m_leaderGuid));
 
     CharacterDatabase.Execute("DELETE FROM guild_member WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("INSERT INTO guild (guildId, guildName, leaderGuid, emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor,"
+    CharacterDatabase.Execute("INSERT INTO guilds (guildId, guildName, leaderGuid, emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor,"
         "guildInfo, motd, createdate, bankBalance, guildLevel, guildExperience, todayExperience) "
         "VALUES('%u', '%s', '%u', '%u', '%u', '%u', '%u', '%u', '%s', '%s', '%u', '%u', '%u', '0', '0')",
-        m_id, name.c_str(), m_leaderGuid, mEmblemInfo.getStyle(), mEmblemInfo.getColor(), mEmblemInfo.getBorderStyle(),
-        mEmblemInfo.getBorderColor(),mEmblemInfo.getBackgroundColor(), m_info.c_str(), m_motd.c_str(), uint32_t(m_createdDate),
-        mBankMoney, _level);
+        m_id, name.c_str(), m_leaderGuid, m_emblemInfo.getStyle(), m_emblemInfo.getColor(), m_emblemInfo.getBorderStyle(),
+        m_emblemInfo.getBorderColor(), m_emblemInfo.getBackgroundColor(), m_info.c_str(), m_motd.c_str(), uint32_t(m_createdDate),
+        m_bankMoney, m_level);
     
     createDefaultGuildRanks();
     bool ret = addMember(m_leaderGuid, GR_GUILDMASTER);
@@ -115,7 +115,7 @@ void Guild::disband()
         deleteMember(itr->second->getGUID(), true);
     }
 
-    CharacterDatabase.Execute("DELETE FROM guild WHERE guildId = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_id);
 
     CharacterDatabase.Execute("DELETE FROM guild_rank WHERE guildId = %u", m_id);
 
@@ -138,7 +138,7 @@ void Guild::disband()
 
 void Guild::saveGuildToDB()
 {
-    CharacterDatabase.Execute("UPDATE guild SET guildLevel = '%u', guildExperience = '%llu', todayExperience = '%llu' WHERE guildId = %u",
+    CharacterDatabase.Execute("UPDATE guilds SET guildLevel = '%u', guildExperience = '%llu', todayExperience = '%llu' WHERE guildId = %u",
         (uint32_t)getLevel(), getExperience(), getTodayExperience(), getId());
 }
 
@@ -330,7 +330,7 @@ void Guild::handleQuery(WorldSession* session)
         }
     }
 
-    mEmblemInfo.writeEmblemInfoToPacket(data);
+    m_emblemInfo.writeEmblemInfoToPacket(data);
     data << uint32_t(_getRanksSize());
 
     session->SendPacket(&data);
@@ -395,7 +395,7 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
     else
     {
         m_motd = motd;
-        CharacterDatabase.Execute("UPDATE guild SET motd = '%s' WHERE guildId = %u", motd.c_str(), m_id);
+        CharacterDatabase.Execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", motd.c_str(), m_id);
         broadcastEvent(GE_MOTD, 0, motd.c_str());
     }
 }
@@ -410,7 +410,7 @@ void Guild::handleSetInfo(WorldSession* session, std::string const& info)
     if (_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_MODIFY_GUILD_INFO))
     {
         m_info = info;
-        CharacterDatabase.Execute("UPDATE guild SET guildInfo = '%s' WHERE guildId = %u", info.c_str(), m_id);
+        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = '%s' WHERE guildId = %u", info.c_str(), m_id);
     }
 }
 
@@ -428,8 +428,8 @@ void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
     else
     {
         player->ModGold(-int64_t(EMBLEM_PRICE));
-        mEmblemInfo = emblemInfo;
-        mEmblemInfo.saveEmblemInfoToDB(m_id);
+        m_emblemInfo = emblemInfo;
+        m_emblemInfo.saveEmblemInfoToDB(m_id);
 
         sendSaveEmblemResult(session, GEM_ERROR_SUCCESS);
         handleQuery(session);
@@ -767,7 +767,7 @@ void Guild::handleMemberDepositMoney(WorldSession* session, uint64_t amount, boo
 
 bool Guild::handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bool repair)
 {
-    if (mBankMoney < amount)
+    if (m_bankMoney < amount)
     {
         return false;
     }
@@ -1031,15 +1031,15 @@ bool Guild::loadGuildFromDB(Field* fields)
     m_name = fields[1].GetString();
     m_leaderGuid = MAKE_NEW_GUID(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER);
 
-    mEmblemInfo.loadEmblemInfoFromDB(fields);
+    m_emblemInfo.loadEmblemInfoFromDB(fields);
 
     m_info = fields[8].GetString();
     m_motd = fields[9].GetString();
     m_createdDate = time_t(fields[10].GetUInt32());
-    mBankMoney = fields[11].GetUInt64();
-    _level = static_cast<uint8_t>(fields[12].GetUInt32());
-    _experience = fields[13].GetUInt64();
-    _todayExperience = fields[14].GetUInt64();
+    m_bankMoney = fields[11].GetUInt64();
+    m_level = static_cast<uint8_t>(fields[12].GetUInt32());
+    m_experience = fields[13].GetUInt64();
+    m_todayExperience = fields[14].GetUInt64();
 
     uint8_t purchasedTabs = uint8_t(fields[15].GetUInt64());
     if (purchasedTabs > MAX_GUILD_BANK_TABS)
@@ -1631,18 +1631,18 @@ bool Guild::modifyBankMoney(uint64_t amount, bool add)
 {
     if (add)
     {
-        mBankMoney += amount;
+        m_bankMoney += amount;
     }
     else
     {
-        if (mBankMoney < amount)
+        if (m_bankMoney < amount)
         {
             return false;
         }
-        mBankMoney -= amount;
+        m_bankMoney -= amount;
     }
 
-    CharacterDatabase.Execute("UPDATE guild SET bankBalance = %llu WHERE guildId = %u", mBankMoney, m_id);
+    CharacterDatabase.Execute("UPDATE guild SET bankBalance = %llu WHERE guildId = %u", m_bankMoney, m_id);
 
     return true;
 }
@@ -1958,7 +1958,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
         }
     }
 
-    data << uint64_t(mBankMoney);
+    data << uint64_t(m_bankMoney);
     if (tabData.size())
     {
         data.append(tabData);
@@ -2056,15 +2056,15 @@ void Guild::giveXP(uint32_t xp, Player* source)
 
     if (getLevel() >= UNCAPPED_GUILD_LEVEL)
     {
-        xp = std::min(xp, worldConfig.guild.maxXpPerDay - uint32_t(_todayExperience));
+        xp = std::min(xp, worldConfig.guild.maxXpPerDay - uint32_t(m_todayExperience));
     }
 
     WorldPacket data(SMSG_GUILD_XP_GAIN, 8);
     data << uint64_t(xp);
     source->GetSession()->SendPacket(&data);
 
-    _experience += xp;
-    _todayExperience += xp;
+    m_experience += xp;
+    m_todayExperience += xp;
 
     if (xp == 0)
     {
@@ -2075,8 +2075,8 @@ void Guild::giveXP(uint32_t xp, Player* source)
 
     while (getExperience() >= sGuildMgr.getXPForGuildLevel(getLevel()) && getLevel() < 25)
     {
-        _experience -= sGuildMgr.getXPForGuildLevel(getLevel());
-        ++_level;
+        m_experience -= sGuildMgr.getXPForGuildLevel(getLevel());
+        ++m_level;
 
         std::vector<uint32_t> perksToLearn;
         for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
@@ -2102,7 +2102,7 @@ void Guild::giveXP(uint32_t xp, Player* source)
             }
         }
 
-        addGuildNews(GN_LEVEL_UP, 0, 0, _level);
+        addGuildNews(GN_LEVEL_UP, 0, 0, m_level);
         ++oldLevel;
     }
 }
@@ -2132,7 +2132,7 @@ void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputat
 
 void Guild::resetTimes(bool weekly)
 {
-    _todayExperience = 0;
+    m_todayExperience = 0;
     for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
     {
         itr->second->resetValues(weekly);
@@ -2450,7 +2450,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
 
         data.flushBits();
 
-        data << uint64_t(mBankMoney);
+        data << uint64_t(m_bankMoney);
         if (tabData.size())
         {
             data.append(tabData);

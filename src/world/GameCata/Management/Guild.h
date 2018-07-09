@@ -39,6 +39,12 @@ class SERVER_DECL Guild
         std::string m_motd;
         std::string m_info;
         time_t m_createdDate;
+        uint64_t m_bankMoney;
+
+        //\todo implement cata fields in table `guilds`
+        uint8_t m_level;
+        uint64_t m_experience;
+        uint64_t m_todayExperience;
 
     public:
 
@@ -49,6 +55,12 @@ class SERVER_DECL Guild
         std::string const& getName() const { return m_name; }
         std::string const& getMOTD() const { return m_motd; }
         std::string const& getInfo() const { return m_info; }
+
+        uint64_t getBankMoney() const { return m_bankMoney; }
+
+        uint8_t getLevel() const { return m_level; }
+        uint64_t getExperience() const { return m_experience; }
+        uint64_t getTodayExperience() const { return m_todayExperience; }
         
         //\brief: Used only in LuAEngine!
         const char* getNameChar() const { return m_name.c_str(); }
@@ -150,9 +162,9 @@ class SERVER_DECL Guild
 
     protected:
 
-        EmblemInfo mEmblemInfo;
+        EmblemInfo m_emblemInfo;
         uint32_t mAccountsNumber;
-        uint64_t mBankMoney;
+        
 
         GuildRankInfoStore _guildRankInfoStore;
         GuildMembersStore _guildMembersStore;
@@ -161,10 +173,6 @@ class SERVER_DECL Guild
         GuildLogHolder* mEventLog;
         GuildLogHolder* mBankEventLog[MAX_GUILD_BANK_TABS + 1];
         GuildLogHolder* mNewsLog;
-
-        uint8_t _level;
-        uint64_t _experience;
-        uint64_t _todayExperience;
 
     public:
 
@@ -265,14 +273,11 @@ class SERVER_DECL Guild
 
         void setBankTabText(uint8_t tabId, std::string const& text);
 
-        uint8_t getLevel() const { return _level; }
         void giveXP(uint32_t xp, Player* source);
-        uint64_t getExperience() const { return _experience; }
-        uint64_t getTodayExperience() const { return _todayExperience; }
 
         void addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value);
 
-        EmblemInfo const& getEmblemInfo() const { return mEmblemInfo; }
+        EmblemInfo const& getEmblemInfo() const { return m_emblemInfo; }
         void resetTimes(bool weekly);
 
         bool hasAchieved(uint32_t achievementId) const;
