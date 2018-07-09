@@ -11,8 +11,6 @@ set(SRC_GAMECATA_MANAGEMENT_FILES
     ${PATH_PREFIX}/GuildBankRightsAndSlots.h
     ${PATH_PREFIX}/GuildBankTab.cpp
     ${PATH_PREFIX}/GuildBankTab.h
-    ${PATH_PREFIX}/GuildEmblemInfo.cpp
-    ${PATH_PREFIX}/GuildEmblemInfo.h
     ${PATH_PREFIX}/GuildEventLog.cpp
     ${PATH_PREFIX}/GuildEventLog.h
     ${PATH_PREFIX}/GuildFinderMgr.cpp

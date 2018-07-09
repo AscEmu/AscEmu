@@ -26,17 +26,11 @@
 #include "CommonTypes.hpp"
 #include "Guild/GuildDefinitions.h"
 #include "Management/Item.h"
+#include "GuildEmblemInfo.h"
 
-struct SERVER_DECL GuildEmblemInfo
-{
-    uint32_t style;
-    uint32_t color;
-    uint32_t borderStyle;
-    uint32_t borderColor;
-    uint32_t backgroundColor;
-};
 
 #if VERSION_STRING != Cata
+
 
 // MIT END
 //AGPL START
@@ -114,22 +108,42 @@ typedef std::map<PlayerInfo*, GuildMember*> GuildMemberMap;
 class SERVER_DECL Guild
 {
     // MIT START
+    protected:
+
+        uint32_t m_id;
+        std::string m_name;
+        uint64_t m_leaderGuid;
+        std::string m_motd;
+        std::string m_info;
+        uint32_t m_createdDate;
+
     public:
-
-        void setEmblemInfo(GuildEmblemInfo emblem_info);
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // new functions to serialize Guild classes
 
-        // on cata this is uint64_t!
-        uint32_t getLeaderGUID() const { return m_guildLeader; }
+        uint32_t getId() const { return m_id; }
 
-        uint32 getId() const { return m_guildId; }
+        uint64_t getGUID() const { return MAKE_NEW_GUID(m_id, 0, HIGHGUID_TYPE_GUILD); }
+        uint64_t getLeaderGUID() const { return m_leaderGuid; }
 
-        //switch to std::string instead of char*!
-        std::string getName() const { return m_guildName; }
+        uint32 getLeaderGUIDLow() const { return Arcemu::Util::GUID_LOPART(m_leaderGuid); }
 
+        std::string const& getName() const { return m_name; }
+        std::string const& getMOTD() const { return m_motd; }
+        std::string const& getInfo() const { return m_info; }
+
+        //\brief: Used only in LuAEngine!
+        const char* getNameChar() const { return m_name.c_str(); }
+        const char* getMOTDChar() const { return m_motd.c_str(); }
+
+
+        // misc
         uint32_t getMembersCount() const { return uint32_t(m_members.size()); }
+
+        EmblemInfo m_emblemInfo;
+        void setEmblemInfo(EmblemInfo emblem_info);
+        EmblemInfo const& getEmblemInfo() const { return m_emblemInfo; }
+
         //////////////////////////////////////////////////////////////////////////////////////////
     // MIT END
 
@@ -159,11 +173,7 @@ class SERVER_DECL Guild
 
         void SetMOTD(const char* szNewMotd, WorldSession* pClient);
 
-        inline const char* getMOTD() const { return (m_motd ? m_motd : ""); }
-
         void SetGuildInformation(const char* szGuildInformation, WorldSession* pClient);
-
-        inline const char* GetGuildInformation() const { return m_guildInfo; }
 
         void SendGuildRoster(WorldSession* pClient);
 
@@ -212,13 +222,9 @@ class SERVER_DECL Guild
         uint32 creationMonth;
         uint32 creationYear;
 
-        // Getters :P
-        inline const char* getGuildName() const { return m_guildName; }
-        inline const uint32 GetGuildLeader() const { return m_guildLeader; }
-        inline const uint32 getGuildId() const { return m_guildId; }
-        inline const uint8  GetBankTabCount() const { return (uint8) m_bankTabs.size(); }
+        inline const uint8  GetBankTabCount() const { return (uint8)m_bankTabs.size(); }
         inline const uint64 GetBankBalance() const { return m_bankBalance; }
-        inline const size_t GetNumMembers() const { return m_members.size(); }
+
 
         // Creates a guild rank with the specified permissions.
         GuildRank* CreateGuildRank(const char* szRankName, uint32 iPermissions, bool bFullGuildBankPermissions);
@@ -291,22 +297,14 @@ class SERVER_DECL Guild
         bool m_commandLogging;
 
         // Internal variables
-        uint32 m_guildId;
-
-    //MIT
-    GuildEmblemInfo emblemInfo;
-        
-
-        uint32 m_guildLeader;
-        uint32 m_creationTimeStamp;
+                
         uint64 m_bankBalance; //use a 64 bit int so we can store more gold in the gbank
 
         typedef std::vector<GuildBankTab*> GuildBankTabVector;
         GuildBankTabVector m_bankTabs;
 
-        char* m_guildName;
-        char* m_guildInfo;
-        char* m_motd;
+        
+        
 
         // Guild Member Map.
         //typedef map<PlayerInfo*, GuildMember*> GuildMemberMap;

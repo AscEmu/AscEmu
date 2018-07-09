@@ -622,7 +622,7 @@ void Player::setGuildAndGroupInfo()
 #if VERSION_STRING != Cata
     if (getPlayerInfo()->guild)
     {
-        SetGuildId(getPlayerInfo()->guild->getGuildId());
+        SetGuildId(getPlayerInfo()->guild->getId());
         SetGuildRank(getPlayerInfo()->guildRank->iId);
         SendGuildMOTD();
         getPlayerInfo()->guild->LogGuildEvent(GE_SIGNED_ON, 1, getName().c_str());

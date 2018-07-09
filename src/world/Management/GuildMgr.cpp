@@ -72,7 +72,7 @@ Guild* GuildMgr::getGuildById(uint32_t guildId) const
 Guild* GuildMgr::getGuildByLeader(uint64_t guid) const
 {
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-        if (uint64_t(itr->second->getLeaderGUID()) == guid)
+        if (itr->second->getLeaderGUID() == guid)
             return itr->second;
 
     return nullptr;

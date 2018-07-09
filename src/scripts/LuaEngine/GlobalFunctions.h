@@ -705,7 +705,7 @@ namespace luaGlobalFunctions
     {
         const char* name = luaL_checkstring(L, 1);
         Guild* guild = sGuildMgr.getGuildByName(name);
-        lua_pushnumber(L, guild ? guild->getGuildId() : -1);
+        lua_pushnumber(L, guild ? guild->getId() : -1);
         return 1;
     }
 
@@ -713,7 +713,7 @@ namespace luaGlobalFunctions
     {
         uint64 guid = CHECK_GUID(L, 1);
         Guild* guild = sGuildMgr.getGuildByLeader(guid);
-        lua_pushnumber(L, guild ? guild->getGuildId() : -1);
+        lua_pushnumber(L, guild ? guild->getId() : -1);
         return 1;
     }
 }

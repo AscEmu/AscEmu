@@ -20,8 +20,6 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         GuildMgr();
         ~GuildMgr();
 
-    public:
-
         void update(uint32_t diff);
         void saveGuilds();
 

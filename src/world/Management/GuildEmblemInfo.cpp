@@ -22,7 +22,7 @@ void EmblemInfo::loadEmblemInfoFromDB(Field* fields)
 
 void EmblemInfo::saveEmblemInfoToDB(uint32_t guildId) const
 {
-    CharacterDatabase.Execute("UPDATE guild SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
+    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
         mStyle, mColor, mBorderStyle, mBorderColor, mBackgroundColor, guildId);
 }
 

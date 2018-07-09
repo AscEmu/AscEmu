@@ -4337,7 +4337,7 @@ class LuaUnit
         TEST_PLAYER()
             Guild* pGuild = sGuildMgr.getGuildById(static_cast<Player*>(ptr)->GetGuildId());
         if (pGuild != NULL)
-            lua_pushstring(L, pGuild->getGuildName());
+            lua_pushstring(L, pGuild->getNameChar());
         else
             lua_pushnil(L);
         return 1;
@@ -5129,7 +5129,7 @@ class LuaUnit
         else
             guild = plr->GetGuild();
         if (guild != nullptr)
-            lua_pushstring(L, guild->getMOTD());
+            lua_pushstring(L, guild->getMOTDChar());
         else
             lua_pushnil(L);
 #else
@@ -5342,7 +5342,7 @@ class LuaUnit
             Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
         if (pGuild != NULL)
         {
-            Player* plr = objmgr.GetPlayer(pGuild->GetGuildLeader());
+            Player* plr = objmgr.GetPlayer(pGuild->getLeaderGUIDLow());
             if (plr != NULL)
                 lua_pushstring(L, plr->getName().c_str());
             else
@@ -5361,7 +5361,7 @@ class LuaUnit
         TEST_PLAYER()
 #if VERSION_STRING != Cata
             Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
-        (pGuild != NULL) ? lua_pushinteger(L, pGuild->GetNumMembers()) : lua_pushnil(L);
+        (pGuild != NULL) ? lua_pushinteger(L, pGuild->getMembersCount()) : lua_pushnil(L);
 #else
             if (L != nullptr && ptr != nullptr) { return 0; }
 #endif

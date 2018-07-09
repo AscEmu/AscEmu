@@ -143,13 +143,8 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
     }
 #endif
 
-#if VERSION_STRING != Cata
-    GreenSystemMessage(m_session, "Disbanded Guild: %s", selected_player->GetGuild()->getGuildName());
-    sGMLog.writefromsession(m_session, "Disbanded Guild %s", selected_player->GetGuild()->getGuildName());
-#else
     GreenSystemMessage(m_session, "Disbanded Guild: %s", selected_player->GetGuild()->getName().c_str());
     sGMLog.writefromsession(m_session, "Disbanded Guild %s", selected_player->GetGuild()->getName().c_str());
-#endif
     selected_player->GetGuild()->disband();
     return true;
 }
@@ -255,11 +250,8 @@ bool ChatHandler::HandleGuildListMembersCommand(const char* /*args*/, WorldSessi
     }
 #endif
 
-#if VERSION_STRING != Cata
-    GreenSystemMessage(m_session, "Now showing guild members for %s", selected_player->GetGuild()->getGuildName());
-#else
     GreenSystemMessage(m_session, "Now showing guild members for %s", selected_player->GetGuild()->getName().c_str());
-#endif
+
 
 #if VERSION_STRING != Cata
     selected_player->GetGuild()->Lock();
@@ -338,20 +330,6 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
     }
 #endif
 
-#if VERSION_STRING != Cata
-    if (selected_player->GetGuild()->GetGuildLeader() != selected_player->getGuidLow() || !m_session->GetPlayer()->isGMFlagSet())
-    {
-        RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
-        return true;
-    }
-
-    GreenSystemMessage(m_session, "Kicked %s from Guild: %s", selected_player->getName().c_str(), selected_player->GetGuild()->getGuildName());
-
-    if (selected_player != m_session->GetPlayer())
-        sGMLog.writefromsession(m_session, "Kicked %s from Guild %s", selected_player->getName().c_str(), selected_player->GetGuild()->getGuildName());
-
-    selected_player->GetGuild()->RemoveGuildMember(selected_player->getPlayerInfo(), selected_player->GetSession());
-#else
     if (selected_player->GetGuild()->getLeaderGUID() != selected_player->getGuid() || !m_session->GetPlayer()->isGMFlagSet())
     {
         RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
@@ -363,6 +341,9 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
     if (selected_player != m_session->GetPlayer())
         sGMLog.writefromsession(m_session, "Kicked %s from Guild %s", selected_player->getName().c_str(), selected_player->GetGuild()->getName().c_str());
 
+#if VERSION_STRING != Cata
+    selected_player->GetGuild()->RemoveGuildMember(selected_player->getPlayerInfo(), selected_player->GetSession());
+#else
     selected_player->GetGuild()->handleRemoveMember(selected_player->GetSession(), selected_player->getGuid());
 #endif
     return true;

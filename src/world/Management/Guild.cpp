@@ -19,6 +19,7 @@
  *
  */
 
+ // MIT START
 #include "StdAfx.h"
 #include "Management/Guild.h"
 #include "Management/Item.h"
@@ -33,36 +34,37 @@
 #include "Server/Packets/MsgGuildBankLogQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "GuildMgr.h"
+#include "GuildEmblemInfo.h"
 
 using namespace AscEmu::Packets;
 
+Guild::Guild() : m_id(0), m_leaderGuid(0), m_createdDate(0)
+#if VERSION_STRING == Cata
+, mAccountsNumber(0), mBankMoney(0), mEventLog(nullptr),
+mNewsLog(nullptr), _level(1), _experience(0), _todayExperience(0)
+#endif
+{
 #if VERSION_STRING != Cata
-
-// MIT START
-void Guild::setEmblemInfo(GuildEmblemInfo emblem_info)
-{
-    emblemInfo = emblem_info;
-
-    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
-        emblemInfo.style, emblemInfo.color, emblemInfo.borderStyle, emblemInfo.borderColor, emblemInfo.backgroundColor, m_guildId);
-}
-// MIT END
-
-Guild::Guild()
-{
     m_commandLogging = true;
-    m_guildId = 0;
-    m_guildLeader = 0;
-    m_guildName = NULL;
-    m_guildInfo = NULL;
-    m_motd = NULL;
-    emblemInfo = { 0, 0, 0, 0, 0 };
-    m_creationTimeStamp = 0;
     m_bankBalance = 0;
     creationDay = creationMonth = creationYear = 0;
     m_hiLogId = 1;
     memset(m_ranks, 0, sizeof(GuildRank*)*MAX_GUILD_RANKS);
+#else
+    memset(&mBankEventLog, 0, (MAX_GUILD_BANK_TABS + 1) * sizeof(GuildLogHolder*));
+#endif
 }
+
+#if VERSION_STRING != Cata
+
+
+void Guild::setEmblemInfo(EmblemInfo emblem_info)
+{
+    m_emblemInfo = emblem_info;
+    m_emblemInfo.saveEmblemInfoToDB(getId());
+}
+// MIT END
+
 
 Guild::~Guild()
 {
@@ -120,13 +122,6 @@ Guild::~Guild()
         delete(*it2);
 
     m_moneyLog.clear();
-
-    if (m_guildInfo)
-        free(m_guildInfo);
-    if (m_motd)
-        free(m_motd);
-    if (m_guildName)
-        free(m_guildName);
 }
 
 GuildRank* Guild::FindLowestRank()
@@ -213,14 +208,14 @@ void Guild::AddGuildLogEntry(uint8 iEvent, uint8 iParamCount, ...)
     va_end(ap);
 
     CharacterDatabase.Execute("INSERT INTO guild_logs VALUES(%u, %u, %u, %u, %u, %u, %u)",
-                              ev->iLogId, m_guildId, ev->iTimeStamp, ev->iEvent, ev->iEventData[0], ev->iEventData[1], ev->iEventData[2]);
+                              ev->iLogId, m_id, ev->iTimeStamp, ev->iEvent, ev->iEventData[0], ev->iEventData[1], ev->iEventData[2]);
 
     m_lock.Acquire();
     if (m_log.size() >= 25)
     {
         // limit it to 250 events.
         // delete the first (oldest) event.
-        CharacterDatabase.Execute("DELETE FROM guild_logs WHERE log_id = %u AND guildid = %u", (*(m_log.begin()))->iLogId, m_guildId);
+        CharacterDatabase.Execute("DELETE FROM guild_logs WHERE log_id = %u AND guildid = %u", (*(m_log.begin()))->iLogId, m_id);
         delete *(m_log.begin());
         m_log.pop_front();
     }
@@ -269,7 +264,7 @@ GuildRank* Guild::CreateGuildRank(const char* szRankName, uint32 iPermissions, b
 
             // save the rank into the database
             CharacterDatabase.Execute("INSERT INTO guild_ranks VALUES(%u, %u, \'%s\', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                                      m_guildId, i, CharacterDatabase.EscapeString(std::string(szRankName)).c_str(),
+                                      m_id, i, CharacterDatabase.EscapeString(std::string(szRankName)).c_str(),
                                       r->iRights, r->iGoldLimitPerDay,
                                       r->iTabPermissions[0].iFlags, r->iTabPermissions[0].iStacksPerDay,
                                       r->iTabPermissions[1].iFlags, r->iTabPermissions[1].iStacksPerDay,
@@ -278,7 +273,7 @@ GuildRank* Guild::CreateGuildRank(const char* szRankName, uint32 iPermissions, b
                                       r->iTabPermissions[4].iFlags, r->iTabPermissions[4].iStacksPerDay,
                                       r->iTabPermissions[5].iFlags, r->iTabPermissions[5].iStacksPerDay);
 
-            LOG_DEBUG("Created rank %u on guild %u (%s)", i, m_guildId, szRankName);
+            LOG_DEBUG("Created rank %u on guild %u (%s)", i, m_id, szRankName);
 
             return r;
         }
@@ -293,11 +288,11 @@ void Guild::CreateFromCharter(Charter* pCharter, WorldSession* pTurnIn)
     uint32 i;
     m_lock.Acquire();
 
-    m_guildId = objmgr.GenerateGuildId();
+    m_id = objmgr.GenerateGuildId();
     sGuildMgr.addGuild(this);
-    m_guildName = strdup(pCharter->GuildName.c_str());
-    m_guildLeader = pCharter->LeaderGuid;
-    m_creationTimeStamp = (uint32)UNIXTIME;
+    m_name = strdup(pCharter->GuildName.c_str());
+    m_leaderGuid = pCharter->LeaderGuid;
+    m_createdDate = (uint32)UNIXTIME;
 
     // create the guild in the database
     CreateInDB();
@@ -382,7 +377,7 @@ void Guild::PromoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     AddGuildLogEntry(GE_LOG_PROMOTE_PLAYER, 3, pClient->GetPlayer()->getGuidLow(), pMember->guid, newRank->iId);
 
     // update in the database
-    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
+    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_id);
 
     // if the player is online, update his guildrank
     if (pMember->m_loggedInPlayer)
@@ -398,7 +393,7 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
         return;
 
     if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_DEMOTE) ||
-        pMember->guid == GetGuildLeader() ||
+        pMember->guid == getLeaderGUIDLow() ||
         pClient->GetPlayer()->getPlayerInfo()->guildRank->iId >= pMember->guildRank->iId)
     {
         pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
@@ -439,7 +434,7 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     AddGuildLogEntry(GE_LOG_DEMOTE_PLAYER, 3, pClient->GetPlayer()->getGuidLow(), pMember->guid, newRank->iId);
 
     // update in the database
-    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
+    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_id);
 
     // if the player is online, update his guildrank
     if (pMember->m_loggedInPlayer)
@@ -449,25 +444,21 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     m_lock.Release();
 }
 
-bool Guild::LoadFromDB(Field* f)
+bool Guild::LoadFromDB(Field* fields)
 {
     m_lock.Acquire();
-    m_guildId = f[0].GetUInt32();
-    m_guildName = strdup(f[1].GetString());
-    m_guildLeader = f[2].GetUInt32();
-    emblemInfo.style = f[3].GetUInt32();
-    emblemInfo.color = f[4].GetUInt32();
-    emblemInfo.borderStyle = f[5].GetUInt32();
-    emblemInfo.borderColor = f[6].GetUInt32();
-    emblemInfo.backgroundColor = f[7].GetUInt32();
-    m_guildInfo = strlen(f[8].GetString()) ? strdup(f[8].GetString()) : NULL;
-    m_motd = strlen(f[9].GetString()) ? strdup(f[9].GetString()) : NULL;
-    m_creationTimeStamp = f[10].GetUInt32();
-    m_bankBalance = f[11].GetUInt64();
+    m_id = fields[0].GetUInt32();
+    m_name = fields[1].GetString();
+    m_leaderGuid = MAKE_NEW_GUID(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER);
+    m_emblemInfo.loadEmblemInfoFromDB(fields);
+    m_info = fields[8].GetString();
+    m_motd = fields[9].GetString();
+    m_createdDate = fields[10].GetUInt32();
+    m_bankBalance = fields[11].GetUInt64();
 
     // load ranks
     uint32 j;
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM guild_ranks WHERE guildId = %u ORDER BY rankId ASC", m_guildId);
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM guild_ranks WHERE guildId = %u ORDER BY rankId ASC", m_id);
     if (result == nullptr)
     {
         return false;
@@ -482,9 +473,9 @@ bool Guild::LoadFromDB(Field* f)
         r->iId = f2[1].GetUInt32();
         if (r->iId != sid)
         {
-            LogNotice("Guild : Renaming rank %u of guild %s to %u.", r->iId, m_guildName, sid);
+            LogNotice("Guild : Renaming rank %u of guild %s to %u.", r->iId, m_name, sid);
             CharacterDatabase.Execute("UPDATE guild_ranks SET rankId = %u WHERE guildId = %u AND rankName = \'%s\'", r->iId,
-                                      m_guildId, CharacterDatabase.EscapeString(std::string(f2[2].GetString())).c_str());
+                                      m_id, CharacterDatabase.EscapeString(std::string(f2[2].GetString())).c_str());
 
             r->iId = sid;
         }
@@ -509,7 +500,7 @@ bool Guild::LoadFromDB(Field* f)
     m_lock.Release();
 
     // load members
-    result = CharacterDatabase.Query("SELECT * FROM guild_data WHERE guildid = %u", m_guildId);
+    result = CharacterDatabase.Query("SELECT * FROM guild_data WHERE guildid = %u", m_id);
     if (result == NULL)
         return false;
 
@@ -561,7 +552,7 @@ bool Guild::LoadFromDB(Field* f)
     while (result->NextRow());
     delete result;
 
-    result = CharacterDatabase.Query("SELECT MAX(log_id) FROM guild_logs WHERE guildid = %u", m_guildId);
+    result = CharacterDatabase.Query("SELECT MAX(log_id) FROM guild_logs WHERE guildid = %u", m_id);
     m_hiLogId = 1;
     if (result != NULL)
     {
@@ -569,7 +560,7 @@ bool Guild::LoadFromDB(Field* f)
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(log_id) FROM guild_banklogs WHERE guildid = %u", m_guildId);
+    result = CharacterDatabase.Query("SELECT MAX(log_id) FROM guild_banklogs WHERE guildid = %u", m_id);
     if (result)
     {
         if ((result->Fetch()[0].GetUInt32() + 1) > m_hiLogId)
@@ -578,7 +569,7 @@ bool Guild::LoadFromDB(Field* f)
     }
 
     // load log
-    result = CharacterDatabase.Query("SELECT * FROM guild_logs WHERE guildid = %u ORDER BY timestamp ASC", m_guildId);
+    result = CharacterDatabase.Query("SELECT * FROM guild_logs WHERE guildid = %u ORDER BY timestamp ASC", m_id);
     if (result)
     {
         do
@@ -596,7 +587,7 @@ bool Guild::LoadFromDB(Field* f)
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT * FROM guild_banktabs WHERE guildId = %u ORDER BY tabId ASC", m_guildId);
+    result = CharacterDatabase.Query("SELECT * FROM guild_banktabs WHERE guildId = %u ORDER BY tabId ASC", m_id);
     sid = 0;
     if (result)
     {
@@ -613,7 +604,7 @@ bool Guild::LoadFromDB(Field* f)
 #endif
             }
 
-            QueryResult* res2 = CharacterDatabase.Query("SELECT * FROM guild_bankitems WHERE guildId = %u AND tabId = %u", m_guildId, result->Fetch()[1].GetUInt32());
+            QueryResult* res2 = CharacterDatabase.Query("SELECT * FROM guild_bankitems WHERE guildId = %u AND tabId = %u", m_id, result->Fetch()[1].GetUInt32());
             GuildBankTab* pTab = new GuildBankTab;
             pTab->iTabId = (uint8)result->Fetch()[1].GetUInt32();
             pTab->szTabName = (strlen(result->Fetch()[2].GetString()) > 0) ? strdup(result->Fetch()[2].GetString()) : NULL;
@@ -629,7 +620,7 @@ bool Guild::LoadFromDB(Field* f)
                     Item* pItem = objmgr.LoadItem(res2->Fetch()[3].GetUInt32());
                     if (pItem == NULL)
                     {
-                        CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE itemGuid = %u AND guildId = %u AND tabId = %u", res2->Fetch()[3].GetUInt32(), m_guildId, (uint32)pTab->iTabId);
+                        CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE itemGuid = %u AND guildId = %u AND tabId = %u", res2->Fetch()[3].GetUInt32(), m_id, (uint32)pTab->iTabId);
                         continue;
                     }
 
@@ -640,7 +631,7 @@ bool Guild::LoadFromDB(Field* f)
                 delete res2;
             }
 
-            res2 = CharacterDatabase.Query("SELECT * FROM guild_banklogs WHERE guildid = %u AND tabid = %u ORDER BY timestamp ASC", m_guildId, result->Fetch()[1].GetUInt32());
+            res2 = CharacterDatabase.Query("SELECT * FROM guild_banklogs WHERE guildid = %u AND tabid = %u ORDER BY timestamp ASC", m_id, result->Fetch()[1].GetUInt32());
             if (res2 != NULL)
             {
                 do
@@ -667,7 +658,7 @@ bool Guild::LoadFromDB(Field* f)
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT * FROM guild_banklogs WHERE guildid = %u AND tabid = 6 ORDER BY timestamp ASC", m_guildId);
+    result = CharacterDatabase.Query("SELECT * FROM guild_banklogs WHERE guildid = %u AND tabid = 6 ORDER BY timestamp ASC", m_id);
     if (result != NULL)
     {
         do
@@ -687,7 +678,7 @@ bool Guild::LoadFromDB(Field* f)
         delete result;
     }
 
-    LOG_DEBUG("Loaded guild %s, %u members.", m_guildName, m_members.size());
+    LOG_DEBUG("Loaded guild %s, %u members.", m_name.c_str(), m_members.size());
     return true;
 }
 
@@ -702,18 +693,14 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
         return;
     }
 
-    if (m_motd)
-        free(m_motd);
-
     if (strlen(szNewMotd))
     {
         m_motd = strdup(szNewMotd);
-        CharacterDatabase.Execute("UPDATE guilds SET motd = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szNewMotd)).c_str(), m_guildId);
+        CharacterDatabase.Execute("UPDATE guilds SET motd = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szNewMotd)).c_str(), m_id);
     }
     else
     {
-        m_motd = NULL;
-        CharacterDatabase.Execute("UPDATE guilds SET motd = \'\' WHERE guildId = %u", m_guildId);
+        CharacterDatabase.Execute("UPDATE guilds SET motd = \'\' WHERE guildId = %u", m_id);
     }
 
     LogGuildEvent(GE_MOTD, 1, szNewMotd);
@@ -730,18 +717,14 @@ void Guild::SetGuildInformation(const char* szGuildInformation, WorldSession* pC
         return;
     }
 
-    if (m_guildInfo)
-        free(m_guildInfo);
-
     if (strlen(szGuildInformation))
     {
-        m_guildInfo = strdup(szGuildInformation);
-        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szGuildInformation)).c_str(), m_guildId);
+        m_info = strdup(szGuildInformation);
+        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szGuildInformation)).c_str(), m_id);
     }
     else
     {
-        m_guildInfo = NULL;
-        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'\' WHERE guildId = %u", m_guildId);
+        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'\' WHERE guildId = %u", m_id);
     }
 }
 
@@ -791,12 +774,12 @@ void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* /*pClient*/, int32
 
     if (pMember->m_loggedInPlayer)
     {
-        pMember->m_loggedInPlayer->SetGuildId(m_guildId);
+        pMember->m_loggedInPlayer->SetGuildId(m_id);
         pMember->m_loggedInPlayer->SetGuildRank(r->iId);
         pMember->m_loggedInPlayer->SendGuildMOTD();
     }
 
-    CharacterDatabase.Execute("INSERT INTO guild_data VALUES(%u, %u, %u, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_guildId, pMember->guid, r->iId);
+    CharacterDatabase.Execute("INSERT INTO guild_data VALUES(%u, %u, %u, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_id, pMember->guid, r->iId);
     LogGuildEvent(GE_JOINED, 1, pMember->name);
     AddGuildLogEntry(GE_LOG_JOIN_GUILD, 1, pMember->guid);
     m_lock.Release();
@@ -977,7 +960,7 @@ void Guild::RemoveGuildRank(WorldSession* pClient)
         }
     }
 
-    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u AND rankId = %u", m_guildId, pLowestRank->iId);
+    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u AND rankId = %u", m_id, pLowestRank->iId);
     m_ranks[pLowestRank->iId] = NULL;
     delete pLowestRank;
     m_lock.Release();
@@ -1001,20 +984,20 @@ void Guild::disband()
     }
     m_members.clear();
 
-    sGuildMgr.removeGuild(m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildid = %u", m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guild_data WHERE guildid = %u", m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u", m_guildId);
-    CharacterDatabase.Execute("DELETE FROM guild_banktabs WHERE guildId = %u", m_guildId);
+    sGuildMgr.removeGuild(m_id);
+    CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildid = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_data WHERE guildid = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_banktabs WHERE guildId = %u", m_id);
     m_lock.Release();
     delete this;
 }
 
 void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
 {
-    if (pClient->GetPlayer()->getGuidLow() != m_guildLeader)
+    if (pClient->GetPlayer()->getGuidLow() != m_leaderGuid)
     {
         pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_PROMOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
@@ -1049,10 +1032,10 @@ void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
     itr->first->guildRank = itr->second->pRank;
     itr2->second->pRank = newRank;
     itr2->first->guildRank = newRank;
-    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = 0 WHERE playerid = %u AND guildid = %u", itr->first->guid, m_guildId);
-    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, itr2->first->guid, m_guildId);
-    CharacterDatabase.Execute("UPDATE guilds SET leaderGuid = %u WHERE guildId = %u", itr->first->guid, m_guildId);
-    m_guildLeader = itr->first->guid;
+    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = 0 WHERE playerid = %u AND guildid = %u", itr->first->guid, m_id);
+    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, itr2->first->guid, m_id);
+    CharacterDatabase.Execute("UPDATE guilds SET leaderGuid = %u WHERE guildId = %u", itr->first->guid, m_id);
+    m_leaderGuid = itr->first->guid;
     m_lock.Release();
 
 
@@ -1186,13 +1169,13 @@ void Guild::SendGuildRoster(WorldSession* pClient)
     m_lock.Acquire();
 
     data << uint32(m_members.size());
-    if (m_motd)
+    if (!m_motd.empty())
         data << m_motd;
     else
         data << uint8(0);
 
-    if (m_guildInfo)
-        data << m_guildInfo;
+    if (!m_info.empty())
+        data << m_info;
     else
         data << uint8(0);
 
@@ -1274,8 +1257,8 @@ void Guild::SendGuildQuery(WorldSession* pClient)
     uint8 i = 0;
     GuildRank* r;
     WorldPacket data(SMSG_GUILD_QUERY_RESPONSE, 300);
-    data << m_guildId;
-    data << m_guildName;
+    data << m_id;
+    data << m_name;
 
     m_lock.Acquire();
     for (i = 0; i < MAX_GUILD_RANKS; ++i)
@@ -1287,11 +1270,7 @@ void Guild::SendGuildQuery(WorldSession* pClient)
             data << uint8(0);
     }
 
-    data << emblemInfo.style;
-    data << emblemInfo.color;
-    data << emblemInfo.borderStyle;
-    data << emblemInfo.borderColor;
-    data << emblemInfo.backgroundColor;
+    m_emblemInfo.writeEmblemInfoToPacket(data);
 
     if (pClient != NULL)
     {
@@ -1322,8 +1301,8 @@ void Guild::SendTurnInPetitionResult(WorldSession* pClient, uint32 result)
 void Guild::CreateInDB()
 {
     CharacterDatabase.Execute("INSERT INTO guilds VALUES(%u, \'%s\', %u, %u, %u, %u, %u, %u, '', '', %u, 0)",
-                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, emblemInfo.style, emblemInfo.color,
-                                emblemInfo.borderColor, emblemInfo.borderStyle, emblemInfo.backgroundColor, m_creationTimeStamp);
+        m_id, CharacterDatabase.EscapeString(std::string(m_name)).c_str(), m_leaderGuid, getEmblemInfo().getStyle(), getEmblemInfo().getColor(),
+        getEmblemInfo().getBorderColor(), getEmblemInfo().getBorderStyle(), getEmblemInfo().getBackgroundColor(), m_createdDate);
 }
 
 Guild* Guild::Create()
@@ -1333,7 +1312,7 @@ Guild* Guild::Create()
 
 void Guild::BuyBankTab(WorldSession* pClient)
 {
-    if (pClient && pClient->GetPlayer()->getGuidLow() != m_guildLeader)
+    if (pClient && pClient->GetPlayer()->getGuidLow() != m_leaderGuid)
         return;
 
     if (GetBankTabCount() >= MAX_GUILD_BANK_TABS)
@@ -1350,7 +1329,7 @@ void Guild::BuyBankTab(WorldSession* pClient)
 
     m_bankTabs.push_back(pTab);
 
-    CharacterDatabase.Execute("INSERT INTO guild_banktabs VALUES(%u, %u, '', '', '')", m_guildId, (uint32)pTab->iTabId);
+    CharacterDatabase.Execute("INSERT INTO guild_banktabs VALUES(%u, %u, '', '', '')", m_id, (uint32)pTab->iTabId);
     m_lock.Release();
 }
 
@@ -1454,7 +1433,7 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
     m_bankBalance += uAmount;
 
     // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", m_bankBalance, m_guildId);
+    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", m_bankBalance, m_id);
 
     // take the money, oh noes gm pls gief gold mi hero poor
     pClient->GetPlayer()->ModGold(-(int32)uAmount);
@@ -1522,7 +1501,7 @@ void Guild::SpendMoney(uint32 uAmount)
     m_bankBalance -= uAmount;//check if (m_bankBalance >= uAmount) before calling this, thank you.
 
     // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", (m_bankBalance > 0) ? m_bankBalance : 0, m_guildId);
+    CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", (m_bankBalance > 0) ? m_bankBalance : 0, m_id);
 
     // notify everyone with the new balance
     char buf[20];
@@ -1589,7 +1568,7 @@ void Guild::LogGuildBankAction(uint8 iAction, uint32 uGuid, uint32 uEntry, uint8
         // pop one off the end
         GuildBankEvent* ev2 = *(pTab->lLog.begin());
         CharacterDatabase.Execute("DELETE FROM guild_banklogs WHERE guildid = %u AND log_id = %u",
-                                  m_guildId, ev2->iLogId);
+                                  m_id, ev2->iLogId);
 
         pTab->lLog.pop_front();
         delete ev2;
@@ -1600,7 +1579,7 @@ void Guild::LogGuildBankAction(uint8 iAction, uint32 uGuid, uint32 uEntry, uint8
     m_lock.Release();
 
     CharacterDatabase.Execute("INSERT INTO guild_banklogs VALUES(%u, %u, %u, %u, %u, %u, %u, %u)",
-                              ev->iLogId, m_guildId, (uint32)pTab->iTabId, (uint32)iAction, uGuid, uEntry, (uint32)iStack, timest);
+                              ev->iLogId, m_id, (uint32)pTab->iTabId, (uint32)iAction, uGuid, uEntry, (uint32)iStack, timest);
 }
 
 void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
@@ -1620,7 +1599,7 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
         // pop one off the end
         GuildBankEvent* ev2 = *(m_moneyLog.begin());
         CharacterDatabase.Execute("DELETE FROM guild_banklogs WHERE guildid = %u AND log_id = %u",
-                                  m_guildId, ev2->iLogId);
+                                  m_id, ev2->iLogId);
 
         m_moneyLog.pop_front();
         delete ev2;
@@ -1631,17 +1610,17 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
     m_lock.Release();
 
     CharacterDatabase.Execute("INSERT INTO guild_banklogs VALUES(%u, %u, 6, %u, %u, %u, 0, %u)",
-                              ev->iLogId, m_guildId, (uint32)iAction, uGuid, uAmount, timest);
+                              ev->iLogId, m_id, (uint32)iAction, uGuid, uAmount, timest);
 }
 
 void Guild::SendGuildInfo(WorldSession* pClient)
 {
     WorldPacket data(SMSG_GUILD_INFO, 4);
 
-    time_t ct = (time_t)m_creationTimeStamp;
+    time_t ct = (time_t)m_createdDate;
     tm* pTM = localtime(&ct);
 
-    data << m_guildName;
+    data << m_name;
     data << uint32(pTM->tm_year + 1900);
     data << uint32(pTM->tm_mon);
     data << uint32(pTM->tm_mday);

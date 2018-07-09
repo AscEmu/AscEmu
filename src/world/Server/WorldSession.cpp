@@ -101,7 +101,7 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
 
 #if VERSION_STRING != Cata
     guild->getLock().Acquire();
-    const auto memberCount = static_cast<uint32_t>(guild->GetNumMembers());
+    const auto memberCount = guild->getMembersCount();
     guild->getLock().Release();
 
     if (memberCount >= MAX_GUILD_MEMBERS)
@@ -116,13 +116,13 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
 #if VERSION_STRING != Cata
     invitedPlayer->SetGuildInvitersGuid(GetPlayer()->getGuidLow());
 
-    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getGuildName()).serialise().get());
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getName()).serialise().get());
 #else
-    invitedPlayer->SetGuildIdInvited(guild->getGuildId());
+    invitedPlayer->SetGuildIdInvited(guild->getId());
     guild->logEvent(GE_LOG_INVITE_PLAYER, GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
 
-    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getGuildName(), guild->getLevel(),
-        guild->getEmblemInfo(), guild->getGuildId(), guild->getGUID()).serialise().get());
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getName(), guild->getLevel(),
+        guild->getEmblemInfo(), guild->getId(), guild->getGUID()).serialise().get());
 #endif
 }
 

@@ -297,14 +297,10 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
 #if VERSION_STRING != Cata
     if (pl->guild)
     {
-        if (pl->guild->GetGuildLeader() == pl->guid)
-        {
+        if (pl->guild->getLeaderGUIDLow() == pl->guid)
             pl->guild->disband();
-        }
         else
-        {
             pl->guild->RemoveGuildMember(pl, nullptr);
-        }
     }
 #endif
 

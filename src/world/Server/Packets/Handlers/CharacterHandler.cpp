@@ -303,7 +303,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 #if VERSION_STRING != Cata
         if (playerInfo->guild)
         {
-            if (playerInfo->guild->GetGuildLeader() == playerInfo->guid)
+            if (playerInfo->guild->getLeaderGUIDLow() == playerInfo->guid)
                 return E_CHAR_DELETE_FAILED_GUILD_LEADER;
 
             playerInfo->guild->RemoveGuildMember(playerInfo, nullptr);

@@ -24,7 +24,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint64_t guid;
-        GuildEmblemInfo emblemInfo;
+        EmblemInfo emblemInfo;
 
         uint32_t error;
 
@@ -47,8 +47,8 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> emblemInfo.style >> emblemInfo.color >> emblemInfo.borderStyle
-                   >> emblemInfo.borderColor >> emblemInfo.backgroundColor;
+            packet >> guid;
+            emblemInfo.readEmblemInfoFromPacket(packet);
             return true;
         }
     };

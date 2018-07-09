@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 
 #include "Management/Guild/GuildDefinitions.h"
-#include "GuildEmblemInfo.h"
+#include "Management/GuildEmblemInfo.h"
 #include "GuildBankRightsAndSlots.h"
 #include "GuildLog.h"
 #include "GuildEventLog.h"
@@ -31,6 +31,31 @@ typedef std::set<uint8_t> SlotIds;
 
 class SERVER_DECL Guild
 {
+    protected:
+
+        uint32_t m_id;
+        std::string m_name;
+        uint64_t m_leaderGuid;
+        std::string m_motd;
+        std::string m_info;
+        time_t m_createdDate;
+
+    public:
+
+        uint32_t getId() const { return m_id; }
+
+        uint64_t getGUID() const { return MAKE_NEW_GUID(m_id, 0, HIGHGUID_TYPE_GUILD); }
+        uint64_t getLeaderGUID() const { return m_leaderGuid; }
+        std::string const& getName() const { return m_name; }
+        std::string const& getMOTD() const { return m_motd; }
+        std::string const& getInfo() const { return m_info; }
+        
+        //\brief: Used only in LuAEngine!
+        const char* getNameChar() const { return m_name.c_str(); }
+        const char* getMOTDChar() const { return m_motd.c_str(); }
+
+    private:
+
     class GuildMember
     {
         public:
@@ -123,6 +148,24 @@ class SERVER_DECL Guild
         typedef std::vector<GuildBankTab*> GuildBankTabsStore;
         typedef std::map<uint32_t, class GuildMember*> GuildMembersStore;
 
+    protected:
+
+        EmblemInfo mEmblemInfo;
+        uint32_t mAccountsNumber;
+        uint64_t mBankMoney;
+
+        GuildRankInfoStore _guildRankInfoStore;
+        GuildMembersStore _guildMembersStore;
+        GuildBankTabsStore _guildBankTabsStore;
+
+        GuildLogHolder* mEventLog;
+        GuildLogHolder* mBankEventLog[MAX_GUILD_BANK_TABS + 1];
+        GuildLogHolder* mNewsLog;
+
+        uint8_t _level;
+        uint64_t _experience;
+        uint64_t _todayExperience;
+
     public:
 
         static void sendCommandResult(WorldSession* session, GuildCommandType type, GuildCommandError errCode, std::string const& param = "");
@@ -135,16 +178,6 @@ class SERVER_DECL Guild
         void disband();
 
         void saveGuildToDB();
-
-        uint32_t getId() const { return mId; }
-        uint32_t getGuildId() const { return getId(); }
-
-        uint64_t getGUID() const { return MAKE_NEW_GUID(mId, 0, HIGHGUID_TYPE_GUILD); }
-        uint64_t getLeaderGUID() const { return mLeaderGuid; }
-        std::string const& getName() const { return mName; }
-        std::string const& getMOTD() const { return mMotd; }
-        std::string const& getInfo() const { return mInfo; }
-        const char* getGuildName() const { return getName().c_str(); }
 
         void handleRoster(WorldSession* session = nullptr);
         void handleQuery(WorldSession* session);
@@ -243,31 +276,6 @@ class SERVER_DECL Guild
         void resetTimes(bool weekly);
 
         bool hasAchieved(uint32_t achievementId) const;
-
-    protected:
-
-        uint32_t mId;
-        std::string mName;
-        uint64_t mLeaderGuid;
-        std::string mMotd;
-        std::string mInfo;
-        time_t mCreatedDate;
-
-        EmblemInfo mEmblemInfo;
-        uint32_t mAccountsNumber;
-        uint64_t mBankMoney;
-
-        GuildRankInfoStore _guildRankInfoStore;
-        GuildMembersStore _guildMembersStore;
-        GuildBankTabsStore _guildBankTabsStore;
-
-        GuildLogHolder* mEventLog;
-        GuildLogHolder* mBankEventLog[MAX_GUILD_BANK_TABS + 1];
-        GuildLogHolder* mNewsLog;
-
-        uint8_t _level;
-        uint64_t _experience;
-        uint64_t _todayExperience;
 
     private:
 

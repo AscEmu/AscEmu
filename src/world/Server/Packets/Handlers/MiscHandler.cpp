@@ -110,13 +110,8 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // Guild name
         if (gname)
         {
-#if VERSION_STRING != Cata
-            if (!plr->GetGuild() || recv_packet.guild_name != plr->GetGuild()->getGuildName())
-                continue;
-#else
             if (!plr->GetGuild() || recv_packet.guild_name.compare(plr->GetGuild()->getName()) != 0)
                 continue;
-#endif
         }
 
         // Level check
@@ -171,7 +166,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING != Cata
         if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->getGuildName();
+            data << plr->m_playerInfo->guild->getName();
         else
             data << uint8_t(0);
 #else
