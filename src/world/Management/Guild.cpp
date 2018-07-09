@@ -54,6 +54,34 @@ mNewsLog(nullptr)
 #endif
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// database loads
+bool Guild::loadGuildFromDB(Field* fields)
+{
+    m_id = fields[0].GetUInt32();
+    m_name = fields[1].GetString();
+    m_leaderGuid = MAKE_NEW_GUID(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER);
+
+    m_emblemInfo.loadEmblemInfoFromDB(fields);
+
+    m_info = fields[8].GetString();
+    m_motd = fields[9].GetString();
+    m_createdDate = fields[10].GetUInt32();
+    m_bankMoney = fields[11].GetUInt64();
+
+#if VERSION_STRING == Cata
+    m_level = static_cast<uint8_t>(fields[12].GetUInt32());
+    m_experience = fields[13].GetUInt64();
+    m_todayExperience = fields[14].GetUInt64();
+#endif
+
+    // load all other tables.
+    LoadFromDB();
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 #if VERSION_STRING != Cata
 
 
@@ -443,18 +471,8 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     m_lock.Release();
 }
 
-bool Guild::LoadFromDB(Field* fields)
+bool Guild::LoadFromDB()
 {
-    m_lock.Acquire();
-    m_id = fields[0].GetUInt32();
-    m_name = fields[1].GetString();
-    m_leaderGuid = MAKE_NEW_GUID(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER);
-    m_emblemInfo.loadEmblemInfoFromDB(fields);
-    m_info = fields[8].GetString();
-    m_motd = fields[9].GetString();
-    m_createdDate = fields[10].GetUInt32();
-    m_bankMoney = fields[11].GetUInt64();
-
     // load ranks
     uint32 j;
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM guild_ranks WHERE guildId = %u ORDER BY rankId ASC", m_id);
@@ -472,7 +490,7 @@ bool Guild::LoadFromDB(Field* fields)
         r->iId = f2[1].GetUInt32();
         if (r->iId != sid)
         {
-            LogNotice("Guild : Renaming rank %u of guild %s to %u.", r->iId, m_name, sid);
+            LogNotice("Guild : Renaming rank %u of guild %s to %u.", r->iId, m_name.c_str(), sid);
             CharacterDatabase.Execute("UPDATE guild_ranks SET rankId = %u WHERE guildId = %u AND rankName = \'%s\'", r->iId,
                                       m_id, CharacterDatabase.EscapeString(std::string(f2[2].GetString())).c_str());
 
@@ -686,7 +704,7 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
     if (pClient->GetPlayer()->getPlayerInfo()->guild != this)
         return;
 
-    if (pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_SETMOTD) == false)
+    if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_SETMOTD))
     {
         pClient->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;

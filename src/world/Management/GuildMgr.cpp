@@ -105,7 +105,7 @@ void GuildMgr::loadGuildDataFromDB()
         {
             Field* fields = result->Fetch();
             Guild* guild = Guild::Create();
-            if (!guild->LoadFromDB(fields))
+            if (!guild->loadGuildFromDB(fields))
                 delete guild;
             else
                 addGuild(guild);
