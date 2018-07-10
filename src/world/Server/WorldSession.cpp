@@ -67,27 +67,19 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
         return;
     }
 
-    if (invitedPlayer->GetGuildId())
+    if (invitedPlayer->getGuildId())
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_IN_GUILD_S).serialise().get());
         return;
     }
 
-#if VERSION_STRING != Cata
-    if (invitedPlayer->GetGuildInvitersGuid())
-#else
     if (invitedPlayer->GetGuildIdInvited())
-#endif
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
         return;
     }
 
-#if VERSION_STRING != Cata
-    if (!GetPlayer()->m_playerInfo->guildRank->CanPerformCommand(GR_RIGHT_INVITE))
-#else
     if (!GetPlayer()->GetGuild()->_hasRankRight(GetPlayer()->getGuid(), GR_RIGHT_INVITE))
-#endif
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
@@ -99,23 +91,16 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
         return;
     }
 
-#if VERSION_STRING != Cata
-    guild->getLock().Acquire();
     const auto memberCount = guild->getMembersCount();
-    guild->getLock().Release();
-
     if (memberCount >= MAX_GUILD_MEMBERS)
     {
         SystemMessage("Your guild is full.");
         return;
     }
-#endif
 
     SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
 
 #if VERSION_STRING != Cata
-    invitedPlayer->SetGuildInvitersGuid(GetPlayer()->getGuidLow());
-
     invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getName()).serialise().get());
 #else
     invitedPlayer->SetGuildIdInvited(guild->getId());
@@ -442,14 +427,6 @@ void WorldSession::LogoutPlayer(bool Save)
 
         // Issue a message telling all guild members that this player signed
         // off
-#if VERSION_STRING != Cata
-        if (_player->IsInGuild())
-        {
-            Guild* pGuild = _player->m_playerInfo->guild;
-            if (pGuild != NULL)
-                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->getName().c_str());
-        }
-#endif
 
         _player->GetItemInterface()->EmptyBuyBack();
         _player->GetItemInterface()->removeLootableItems();
@@ -1294,17 +1271,10 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->getHairColor());
         data << uint8(pcaster->getFacialFeatures());
 
-#if VERSION_STRING != Cata
         if (pcaster->IsInGuild())
-            data << uint32(pcaster->GetGuildId());
+            data << uint32(pcaster->getGuildId());
         else
             data << uint32(0);
-#else
-        if (pcaster->GetGuild())
-            data << uint32(pcaster->GetGuildId());
-        else
-            data << uint32(0);
-#endif
 
         static const uint32 imageitemslots[] =
         {

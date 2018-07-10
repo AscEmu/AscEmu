@@ -33,7 +33,7 @@
 #include "Server/Script/ScriptSetup.h"
 #include "../../world/WorldConf.h"
 #if VERSION_STRING == Cata
-#include "../../world/GameCata/Management/Guild.h"
+#include "../../world/Management/Guild.h"
 #endif
 
 #ifndef _WIN32

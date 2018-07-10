@@ -44,6 +44,7 @@ void GuildBankEventLogEntry::saveGuildLogToDB() const
 
 void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
+#if VERSION_STRING == Cata
     ObjectGuid logGuid = MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
 
     bool hasItem = mEventType == GB_LOG_DEPOSIT_ITEM || mEventType == GB_LOG_WITHDRAW_ITEM ||
@@ -96,4 +97,27 @@ void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& 
     {
         content << uint8_t(mDestTabId);
     }
+#else
+    data << uint8(mEventType);
+    data << MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
+
+    switch (mEventType)
+    {
+        case GB_LOG_DEPOSIT_ITEM:
+        case GB_LOG_WITHDRAW_ITEM:
+            data << uint32(mItemOrMoney);
+            data << uint32(mItemStackCount);
+            break;
+        case GB_LOG_MOVE_ITEM:
+        case GB_LOG_MOVE_ITEM2:
+            data << uint32(mItemOrMoney);
+            data << uint32(mItemStackCount);
+            data << uint8(mDestTabId);
+            break;
+        default:
+            data << uint32(mItemOrMoney);
+    }
+
+    data << uint32(time(nullptr) - mTimestamp);
+#endif
 }

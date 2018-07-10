@@ -34,10 +34,7 @@
 #include "Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
-
-#if VERSION_STRING == Cata
-#include "GameCata/Management/Guild.h"
-#endif
+#include "Management/Guild.h"
 
 struct CharCreate;
 class QuestLogEntry;
@@ -51,7 +48,6 @@ class GameObject;
 class Transporter;
 class Corpse;
 class Guild;
-struct GuildRank;
 class Pet;
 class Charter;
 class LfgMatch;
@@ -191,14 +187,8 @@ class SERVER_DECL PlayerInfo
         PlayerInstanceMap savedInstanceIds[NUM_INSTANCE_MODES];
 
         Player* m_loggedInPlayer;
-#if VERSION_STRING != Cata
-        Guild* guild;
-        GuildRank* guildRank;
-        GuildMember* guildMember;
-#else
         uint32 m_guild;
         uint32 guildRank;
-#endif
 };
 
 struct PlayerPet
@@ -424,6 +414,12 @@ public:
     void removePlayerFlags(uint32_t flags);
     bool hasPlayerFlags(uint32_t flags) const;
 
+    uint32_t getGuildId() const;
+    void setGuildId(uint32_t guildId);
+
+    uint32_t getGuildRank() const;
+    void setGuildRank(uint32_t guildRank);
+
     //bytes begin
     uint32_t getPlayerBytes() const;
     void setPlayerBytes(uint32_t bytes);
@@ -474,6 +470,9 @@ public:
 
     uint32_t getDuelTeam() const;
     void setDuelTeam(uint32_t team);
+
+    uint32_t getGuildTimestamp() const;
+    void setGuildTimestamp(uint32_t timestamp);
 
 #if VERSION_STRING > Classic
     uint32_t getChosenTitle() const;
@@ -1057,53 +1056,27 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Guilds
         /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
-        Guild* GetGuild() { return m_playerInfo->guild; }
 
-        //\todo fix this
-        bool IsInGuild()
-        {
-            return (getUInt32Value(PLAYER_GUILDID) != 0) ? true : false;
-        }
-        uint32 GetGuildId()
-        {
-            return getUInt32Value(PLAYER_GUILDID);
-        }
-        void SetGuildId(uint32 guildId);
-        uint32 GetGuildRank() { return getUInt32Value(PLAYER_GUILDRANK); }
-        GuildRank* GetGuildRankS() { return m_playerInfo->guildRank; }
-        void SetGuildRank(uint32 guildRank);
-        uint32 GetGuildInvitersGuid() { return m_invitersGuid; }
-        void SetGuildInvitersGuid(uint32 guid) { m_invitersGuid = guid; }
-        void UnSetGuildInvitersGuid() { m_invitersGuid = 0; }
-        GuildMember* GetGuildMember() { return m_playerInfo->guildMember; }
-#else
-        uint32 m_GuildId;
         uint32 m_GuildIdInvited;
 
-        void SetGuildId(uint32 guildId);
-        void SetGuildRank(uint32 guildRank);
-        void SetInGuild(uint32 guildId);
-
-        void SetRank(uint8 rankId) { setUInt32Value(PLAYER_GUILDRANK, rankId); }
-        uint8 GetRank() const { return uint8(getUInt32Value(PLAYER_GUILDRANK)); }
-
+#if VERSION_STRING == Cata
         void SetGuildLevel(uint32 level) { setUInt32Value(PLAYER_GUILDLEVEL, level); }
         uint32 GetGuildLevel() { return getUInt32Value(PLAYER_GUILDLEVEL); }
+#endif
 
         void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
-        uint32 GetGuildId() const { return getUInt32Value(OBJECT_FIELD_DATA); /* return only lower part */ }
+        uint32 GetGuildIdInvited() { return m_GuildIdInvited; }
+
+
+        static uint32 GetGuildIdFromDB(uint64 guid);
         Guild* GetGuild();
         bool IsInGuild() { return GetGuild() != nullptr; }
 
-        static uint32 GetGuildIdFromDB(uint64 guid);
+
         static int8 GetRankFromDB(uint64 guid);
         uint32 GetGuildRank() { return (uint32)GetRankFromDB(getGuid()); }
 
-        int GetGuildIdInvited() { return m_GuildIdInvited; }
-
         std::string GetGuildName();
-#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Duel

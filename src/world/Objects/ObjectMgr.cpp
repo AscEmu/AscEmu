@@ -294,16 +294,6 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
         pl->m_Group->RemovePlayer(pl);
     }
 
-#if VERSION_STRING != Cata
-    if (pl->guild)
-    {
-        if (pl->guild->getLeaderGUIDLow() == pl->guid)
-            pl->guild->disband();
-        else
-            pl->guild->RemoveGuildMember(pl, nullptr);
-    }
-#endif
-
     std::string pnam = std::string(pl->name);
     Util::StringToLowerCase(pnam);
     PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
@@ -421,14 +411,8 @@ void ObjectMgr::LoadPlayersInfo()
             pn->m_Group = nullptr;
             pn->subGroup = 0;
             pn->m_loggedInPlayer = nullptr;
-#if VERSION_STRING != Cata
-            pn->guild = nullptr;
-            pn->guildRank = nullptr;
-            pn->guildMember = nullptr;
-#else
             pn->m_guild = 0;
             pn->guildRank = GUILD_RANK_NONE;
-#endif
 
             // Raid & heroic Instance IDs
             // Must be done before entering world...
@@ -904,11 +888,7 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-#if VERSION_STRING != Cata
     result = CharacterDatabase.Query("SELECT MAX(guildid) FROM guilds");
-#else
-    result = CharacterDatabase.Query("SELECT MAX(guildid) FROM guild");
-#endif
     if (result)
     {
         m_hiGuildId = result->Fetch()[0].GetUInt32();

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildFinderMgr.h"
 #include "Management/GuildMgr.h"
-#include "Guild.h"
+#include "Management/Guild.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 

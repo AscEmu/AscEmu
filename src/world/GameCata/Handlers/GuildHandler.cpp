@@ -47,12 +47,10 @@ void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleGuildAcceptOpcode(WorldPacket& /*recv_data*/)
 {
-    if (!GetPlayer()->GetGuildId())
+    if (!GetPlayer()->getGuildId())
     {
         if (Guild* guild = sGuildMgr.getGuildById(GetPlayer()->GetGuildIdInvited()))
-        {
             guild->handleAcceptMember(this);
-        }
     }
 
 }
@@ -60,7 +58,7 @@ void WorldSession::HandleGuildAcceptOpcode(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGuildDeclineOpcode(WorldPacket& /*recv_data*/)
 {
     GetPlayer()->SetGuildIdInvited(0);
-    GetPlayer()->SetInGuild(0);
+    GetPlayer()->setGuildId(0);
 
 }
 
@@ -571,7 +569,7 @@ void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recvData)
 {
     recvData.read_skip<uint32_t>();
 
-    if (sGuildMgr.getGuildById(_player->GetGuildId()))
+    if (sGuildMgr.getGuildById(_player->getGuildId()))
     {
         std::vector<GuildReward> const& rewards = sGuildMgr.getGuildRewards();
 
@@ -1692,7 +1690,7 @@ void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
         return;
     }
 
-    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(playerGuid), GetPlayer()->GetGuildId());
+    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(playerGuid), GetPlayer()->getGuildId());
 }
 
 void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
@@ -1766,12 +1764,10 @@ void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
     recv_data >> unkTime;
 
     Player* player = GetPlayer();
-    if (!player->GetGuildId())
-    {
+    if (!player->getGuildId())
         return;
-    }
 
-    std::vector<MembershipRequest> recruitsList = sGuildFinderMgr.getAllMembershipRequestsForGuild(player->GetGuildId());
+    std::vector<MembershipRequest> recruitsList = sGuildFinderMgr.getAllMembershipRequestsForGuild(player->getGuildId());
     uint32_t recruitCount = static_cast<uint32_t>(recruitsList.size());
 
     ByteBuffer dataBuffer(53 * recruitCount);
@@ -1838,13 +1834,11 @@ void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
 void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
 {
     Player* player = GetPlayer();
-    if (!player->GetGuildId())
-    {
+    if (!player->getGuildId())
         return;
-    }
 
     bool isGuildMaster = true;
-    if (Guild* guild = sGuildMgr.getGuildById(player->GetGuildId()))
+    if (Guild* guild = sGuildMgr.getGuildById(player->getGuildId()))
     {
         if (guild->getLeaderGUID() != player->getGuid())
         {
@@ -1852,7 +1846,7 @@ void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
         }
     }
 
-    LFGuildSettings settings = sGuildFinderMgr.getGuildSettings(player->GetGuildId());
+    LFGuildSettings settings = sGuildFinderMgr.getGuildSettings(player->getGuildId());
 
     WorldPacket data(SMSG_LF_GUILD_POST_UPDATED, 35);
     data.writeBit(isGuildMaster);
@@ -1948,12 +1942,10 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
     }
 
     Player* player = GetPlayer();
-    if (!player->GetGuildId())
-    {
+    if (!player->getGuildId())
         return;
-    }
 
-    if (Guild* guild = sGuildMgr.getGuildById(player->GetGuildId()))
+    if (Guild* guild = sGuildMgr.getGuildById(player->getGuildId()))
     {
         if (guild->getLeaderGUID() != player->getGuid())
         {
@@ -1961,6 +1953,6 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
         }
     }
 
-    LFGuildSettings settings(listed, player->GetTeam(), player->GetGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
-    sGuildFinderMgr.setGuildSettings(player->GetGuildId(), settings);
+    LFGuildSettings settings(listed, player->GetTeam(), player->getGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
+    sGuildFinderMgr.setGuildSettings(player->getGuildId(), settings);
 }

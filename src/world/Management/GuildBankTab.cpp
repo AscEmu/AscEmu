@@ -91,6 +91,7 @@ void GuildBankTab::setText(std::string const& text)
 
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
 {
+#if VERSION_STRING == Cata
     WorldPacket data(SMSG_GUILD_BANK_QUERY_TEXT_RESULT, 1 + mText.size() + 1);
     data.writeBits(mText.length(), 14);
     data << uint32_t(mTabId);
@@ -107,6 +108,7 @@ void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
         LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_QUERY_TEXT_RESULT [Broadcast]: Tabid: %u, Text: %s", (uint32_t)mTabId, mText.c_str());
         guild->broadcastPacket(&data);
     }
+#endif
 }
 
 std::string const& GuildBankTab::getName() const

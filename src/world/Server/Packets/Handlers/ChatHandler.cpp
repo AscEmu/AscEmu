@@ -262,15 +262,15 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             if (is_gm_command)
                 break;
 
-            if (const auto guild = GetPlayer()->m_playerInfo->guild)
-                guild->GuildChat(recv_packet.message.c_str(), this, language);
+            if (const auto guild = GetPlayer()->GetGuild())
+                guild->broadcastToGuild(this, false, recv_packet.message, language);
             break;
         case CHAT_MSG_OFFICER:
             if (is_gm_command)
                 break;
 
-            if (const auto guild = GetPlayer()->m_playerInfo->guild)
-                guild->OfficerChat(recv_packet.message.c_str(), this, language);
+            if (const auto guild = GetPlayer()->GetGuild())
+                guild->broadcastToGuild(this, true, recv_packet.message, language);
             break;
         case CHAT_MSG_YELL:
         {

@@ -7,11 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Singleton.h"
 
-#if VERSION_STRING != Cata
 #include "Guild.h"
-#else
-#include "GameCata/Management/Guild.h"
-#endif
 
 class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
 {
@@ -33,7 +29,6 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         void loadGuildDataFromDB();
 
 
-#if VERSION_STRING == Cata
         std::string getGuildNameById(uint32_t guildId) const;
 
         void loadGuildXpForLevelFromDB();
@@ -45,7 +40,6 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         std::vector<GuildReward> const& getGuildRewards() const { return GuildRewards; }
 
         void resetTimes(bool week);
-#endif
         uint32_t lastSave;
         bool firstSave;
 
@@ -54,10 +48,8 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         typedef std::unordered_map<uint32_t, Guild*> GuildContainer;
 
         GuildContainer GuildStore;
-#if VERSION_STRING == Cata
         std::vector<uint64_t> GuildXPperLevel;
         std::vector<GuildReward> GuildRewards;
-#endif
 };
 
 #define sGuildMgr GuildMgr::getSingleton()

@@ -40,12 +40,12 @@ void GuildRankInfo::saveGuildRankToDB(bool _delete) const
 {
     if (_delete)
     {
-        CharacterDatabase.Execute("DELETE FROM guild_rank WHERE guildId = %u AND rid = %u", mGuildId, (uint32_t)mRankId);
+        CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u AND rankId = %u", mGuildId, (uint32_t)mRankId);
     }
     else
     {
-        CharacterDatabase.Execute("DELETE FROM guild_rank WHERE guildId = %u AND rid = %u", mGuildId, (uint32_t)mRankId);
-        CharacterDatabase.Execute("INSERT INTO guild_rank (guildId, rid, rname, rights, bankMoneyPerDay) VALUES ('%u', '%u', '%s', '%u', '0')",
+        CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u AND rankId = %u", mGuildId, (uint32_t)mRankId);
+        CharacterDatabase.Execute("INSERT INTO guild_ranks (guildId, rankId, rankName, rankRights, goldLimitPerDay) VALUES ('%u', '%u', '%s', '%u', '0')",
             mGuildId, (uint32_t)mRankId, mName.c_str(), mRights);
     }
 }
@@ -69,7 +69,7 @@ void GuildRankInfo::setName(std::string const& name)
 
     mName = name;
 
-    CharacterDatabase.Execute("UPDATE guild_rank SET rname = '%s', rid = %u WHERE guildId = %u", mName.c_str(), (uint32_t)mRankId, mGuildId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET rankName = '%s', rankId = %u WHERE guildId = %u", mName.c_str(), (uint32_t)mRankId, mGuildId);
 }
 
 uint32_t GuildRankInfo::getRights() const
@@ -91,7 +91,7 @@ void GuildRankInfo::setRights(uint32_t rights)
 
     mRights = rights;
 
-    CharacterDatabase.Execute("UPDATE guild_rank SET rights = %u WHERE guildId = %u AND rid = %u", mRights, mGuildId, (uint32_t)mRankId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET rankRights = %u WHERE guildId = %u AND rankId = %u", mRights, mGuildId, (uint32_t)mRankId);
 }
 
 int32_t GuildRankInfo::getBankMoneyPerDay() const
@@ -113,7 +113,7 @@ void GuildRankInfo::setBankMoneyPerDay(uint32_t money)
 
     mBankMoneyPerDay = money;
 
-    CharacterDatabase.Execute("UPDATE guild_rank SET BankMoneyPerDay = '%u', rid = '%u' WHERE guildId = %u", money, (uint32_t)mRankId, mGuildId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET goldLimitPerDay = '%u', rankId = '%u' WHERE guildId = %u", money, (uint32_t)mRankId, mGuildId);
 }
 
 int8_t GuildRankInfo::getBankTabRights(uint8_t tabId) const
@@ -147,7 +147,7 @@ void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool /*_delete*/, bo
             LogError("Guild %u has broken Tab %u for rank %u. Created default tab.", mGuildId, i, (uint32_t)mRankId);
         }
 
-        CharacterDatabase.Execute("REPLACE INTO guild_bank_right VALUES(%u, %u, %u, %u, %u);",
+        CharacterDatabase.Execute("REPLACE INTO guild_bankrights VALUES(%u, %u, %u, %u, %u);",
             mGuildId, i, (uint32_t)mRankId, (uint32_t)rightsAndSlots.getRights(), rightsAndSlots.getSlots());
     }
 }
@@ -164,7 +164,7 @@ void GuildRankInfo::setBankTabSlotsAndRights(GuildBankRightsAndSlots rightsAndSl
 
     if (saveToDB)
     {
-        CharacterDatabase.Execute("REPLACE INTO guild_bank_right VALUES(%u, %u, %u, %u, %u)",
+        CharacterDatabase.Execute("REPLACE INTO guild_bankrights VALUES(%u, %u, %u, %u, %u)",
             mGuildId, (uint32_t)guildBR.getTabId(), (uint32_t)mRankId, (uint32_t)guildBR.getRights(), guildBR.getSlots());
     }
 }

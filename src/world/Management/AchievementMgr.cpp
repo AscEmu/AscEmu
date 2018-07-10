@@ -30,7 +30,7 @@
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Spell/SpellEffects.h"
-
+#include "Guild.h"
 
 #if VERSION_STRING > TBC
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
-            Guild* guild = GetPlayer()->getPlayerInfo()->guild;
+            Guild* guild = GetPlayer()->GetGuild();
             WorldPacket data(SMSG_MESSAGECHAT, 200);
             data << uint8(CHAT_MSG_GUILD_ACHIEVEMENT);
             data << uint32(LANG_UNIVERSAL);
@@ -397,19 +397,6 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             data << msg;
             data << uint8(0);
             data << uint32(achievement->ID);
-            //            guild->SendPacket(&data);
-            GuildMemberMap::iterator guildItr = guild->GetGuildMembersBegin();
-            GuildMemberMap::iterator guildItrLast = guild->GetGuildMembersEnd();
-            while (guildItr != guildItrLast)
-            {
-                if (guildItr->first->m_loggedInPlayer && guildItr->first->m_loggedInPlayer->GetSession())
-                {
-                    guildItr->first->m_loggedInPlayer->GetSession()->SendPacket(&data);
-                    // store GUID, so we don't send message to the same player again (anti-spam)
-                    guidList[guidCount++] = guildItr->first->guid;
-                }
-                ++guildItr;
-            }
         }
 #endif
         // Build generic packet for group members and nearby players

@@ -164,17 +164,10 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // if we're here, it means we've passed all tests
         data << plr->getName().c_str();
 
-#if VERSION_STRING != Cata
-        if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->getName();
-        else
-            data << uint8_t(0);
-#else
         if (plr->m_playerInfo->m_guild)
             data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
         else
             data << uint8_t(0);
-#endif
 
         data << plr->getLevel();
         data << uint32_t(plr->getClass());

@@ -34,25 +34,10 @@ void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | 
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
 bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
 
-uint32_t Player::getGuildId() const
-{
 #if VERSION_STRING != Cata
-    return playerData()->guild_id;
-#else
-    return static_cast<uint32_t>(objectData()->data);
+uint32_t Player::getGuildId() const { return playerData()->guild_id; }
+void Player::setGuildId(uint32_t guildId) { write(playerData()->guild_id, guildId); }
 #endif
-}
-void Player::setGuildId(uint32_t guildId)
-{
-#if VERSION_STRING != Cata
-    write(playerData()->guild_id, guildId);
-#else
-    write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
-
-    ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0);
-    setUInt16Value(OBJECT_FIELD_TYPE, 1, guildId != 0);
-#endif
-}
 
 uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
 void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
@@ -643,7 +628,7 @@ void Player::setGuildAndGroupInfo()
     {
         if (const auto guild = sGuildMgr.getGuildById(getPlayerInfo()->m_guild))
         {
-            setGuildId(getPlayerInfo()->m_guild);
+            SetInGuild(getPlayerInfo()->m_guild);
             setGuildRank(getPlayerInfo()->guildRank);
             guild->sendLoginInfo(GetSession());
 #if VERSION_STRING == Cata

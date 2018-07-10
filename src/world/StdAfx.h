@@ -137,11 +137,9 @@
 #include "Management/Group.h"
 #include "Management/GuildMgr.h"
 
-#if VERSION_STRING != Cata
 #include "Management/Guild.h"
-#else
+#if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
-#include "GameCata/Management/Guild.h"
 #endif
 
 #include "Management/HonorHandler.h"

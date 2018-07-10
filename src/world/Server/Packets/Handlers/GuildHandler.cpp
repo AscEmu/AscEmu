@@ -23,7 +23,7 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
         return;
 
 #if VERSION_STRING != Cata
-    guild->SendGuildQuery(this);
+    guild->handleQuery(this);
 #else
 
     if (guild->isMember(recv_packet.playerGuid))
