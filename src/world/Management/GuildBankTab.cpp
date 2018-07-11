@@ -25,13 +25,12 @@ void GuildBankTab::loadGuildBankTabFromDB(Field* fields)
 bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
     uint8_t slotId = fields[2].GetUInt8();
-    // uint32_t itemGuid = fields[3].GetUInt32();
 
     Item* pItem = objmgr.LoadItem(fields[3].GetUInt32());
     if (pItem == nullptr)
     {
         CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
-            fields[3].GetUInt32(), mGuildId, (uint32_t)fields[1].GetUInt8());
+            fields[3].GetUInt32(), mGuildId, static_cast<uint32_t>(fields[1].GetUInt8()));
     }
 
     mItems[slotId] = pItem;
@@ -46,9 +45,7 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
         {
             pItem->RemoveFromWorld();
             if (removeItemsFromDB)
-            {
                 pItem->DeleteFromDB();
-            }
 
             delete pItem;
             pItem = nullptr;
@@ -58,35 +55,91 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
 
 void GuildBankTab::writeInfoPacket(WorldPacket& data) const
 {
+#if VERSION_STRING != Cata
+    uint8_t count = 0;
+
+    size_t pos = data.wpos();
+    data << uint8_t(0);
+
+    for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+        if (writeSlotPacket(data, slotId))
+            ++count;
+
+    data.put<uint8_t>(pos, count);
+#else
+
     data << mName;
     data << mIcon;
+#endif
+}
+
+bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty) const
+{
+    Item* pItem = slotId < MAX_GUILD_BANK_SLOTS ? mItems[slotId] : nullptr;
+    const uint32_t itemEntry = pItem ? pItem->getEntry() : 0;
+
+    if (!itemEntry && ignoreEmpty)
+        return false;
+
+    data << uint8_t(slotId);
+    data << uint32_t(itemEntry);
+    if (itemEntry)
+    {
+        data << uint32(0);
+
+        if (uint32_t random = pItem->getRandomPropertiesId())
+        {
+            data << uint32_t(random);
+            data << uint32_t(pItem->GenerateRandomSuffixFactor(pItem->getItemProperties()));
+        }
+        else
+        {
+            data << uint32_t(0);
+        }
+
+        data << uint32_t(pItem->getStackCount());
+        data << uint32_t(0);
+        data << uint8_t(abs(pItem->getSpellCharges(0)));
+
+        uint8_t enchCount = 0;
+        size_t enchCountPos = data.wpos();
+
+        data << uint8_t(enchCount);
+        for (uint32_t i = PERM_ENCHANTMENT_SLOT; i < MAX_ENCHANTMENT_SLOT; ++i)
+        {
+            if (uint32_t enchId = pItem->getEnchantmentId(EnchantmentSlot(i)))
+            {
+                data << uint8_t(i);
+                data << uint32_t(enchId);
+                ++enchCount;
+            }
+        }
+        data.put<uint8_t>(enchCountPos, enchCount);
+    }
+    return true;
 }
 
 void GuildBankTab::setInfo(std::string const& name, std::string const& icon)
 {
     if (mName == name && mIcon == icon)
-    {
         return;
-    }
 
     mName = name;
     mIcon = icon;
 
-    CharacterDatabase.Execute("UPDATE guild_bank_tab SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
-        mName.c_str(), mIcon.c_str(), mGuildId, (uint32_t)mTabId);
+    CharacterDatabase.Execute("UPDATE guild_banktabs SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
+        mName.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
 void GuildBankTab::setText(std::string const& text)
 {
     if (mText == text)
-    {
         return;
-    }
 
     mText = text;
 
-    CharacterDatabase.Execute("UPDATE guild_bank_tab SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
-        mText.c_str(), mIcon.c_str(), mGuildId, (uint32_t)mTabId);
+    CharacterDatabase.Execute("UPDATE guild_banktabs SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
+        mText.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
@@ -154,11 +207,11 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
             }
         }
 
-        CharacterDatabase.Execute("INSERT INTO guild_bank_item VALUES (%u, %u, %u, %u)", mGuildId, (uint32_t)mTabId, slot_id, item->getGuidLow());
+        CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, item->getGuidLow());
     }
     else
     {
-        CharacterDatabase.Execute("DELETE FROM guild_bank_item WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, (uint32_t)mTabId, (uint32_t)slotId);
+        CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
     }
 
     return true;

@@ -63,13 +63,11 @@ std::string const& GuildRankInfo::getName() const
 void GuildRankInfo::setName(std::string const& name)
 {
     if (mName == name)
-    {
         return;
-    }
 
     mName = name;
 
-    CharacterDatabase.Execute("UPDATE guild_ranks SET rankName = '%s', rankId = %u WHERE guildId = %u", mName.c_str(), (uint32_t)mRankId, mGuildId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET rankName = '%s', rankId = %u WHERE guildId = %u", mName.c_str(), static_cast<uint32_t>(mRankId), mGuildId);
 }
 
 uint32_t GuildRankInfo::getRights() const
@@ -80,18 +78,14 @@ uint32_t GuildRankInfo::getRights() const
 void GuildRankInfo::setRights(uint32_t rights)
 {
     if (mRankId == GR_GUILDMASTER)
-    {
         rights = GR_RIGHT_ALL;
-    }
 
     if (mRights == rights)
-    {
         return;
-    }
 
     mRights = rights;
 
-    CharacterDatabase.Execute("UPDATE guild_ranks SET rankRights = %u WHERE guildId = %u AND rankId = %u", mRights, mGuildId, (uint32_t)mRankId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET rankRights = %u WHERE guildId = %u AND rankId = %u", mRights, mGuildId, static_cast<uint32_t>(mRankId));
 }
 
 int32_t GuildRankInfo::getBankMoneyPerDay() const
@@ -102,18 +96,14 @@ int32_t GuildRankInfo::getBankMoneyPerDay() const
 void GuildRankInfo::setBankMoneyPerDay(uint32_t money)
 {
     if (mRankId == GR_GUILDMASTER)
-    {
         money = uint32_t(UNLIMITED_WITHDRAW_MONEY);
-    }
 
     if (mBankMoneyPerDay == money)
-    {
         return;
-    }
 
     mBankMoneyPerDay = money;
 
-    CharacterDatabase.Execute("UPDATE guild_ranks SET goldLimitPerDay = '%u', rankId = '%u' WHERE guildId = %u", money, (uint32_t)mRankId, mGuildId);
+    CharacterDatabase.Execute("UPDATE guild_ranks SET goldLimitPerDay = '%u', rankId = '%u' WHERE guildId = %u", money, static_cast<uint32_t>(mRankId), mGuildId);
 }
 
 int8_t GuildRankInfo::getBankTabRights(uint8_t tabId) const
@@ -132,32 +122,24 @@ void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool /*_delete*/, bo
     {
         GuildBankRightsAndSlots& rightsAndSlots = mBankTabRightsAndSlots[i];
         if (rightsAndSlots.getTabId() == i)
-        {
             continue;
-        }
 
         rightsAndSlots.setTabId(i);
         if (mRankId == GR_GUILDMASTER)
-        {
             rightsAndSlots.SetGuildMasterValues();
-        }
 
         if (logOnCreate)
-        {
-            LogError("Guild %u has broken Tab %u for rank %u. Created default tab.", mGuildId, i, (uint32_t)mRankId);
-        }
+            LogError("Guild %u has broken Tab %u for rank %u. Created default tab.", mGuildId, i, static_cast<uint32_t>(mRankId));
 
         CharacterDatabase.Execute("REPLACE INTO guild_bankrights VALUES(%u, %u, %u, %u, %u);",
-            mGuildId, i, (uint32_t)mRankId, (uint32_t)rightsAndSlots.getRights(), rightsAndSlots.getSlots());
+            mGuildId, i, static_cast<uint32_t>(mRankId), static_cast<uint32_t>(rightsAndSlots.getRights()), rightsAndSlots.getSlots());
     }
 }
 
 void GuildRankInfo::setBankTabSlotsAndRights(GuildBankRightsAndSlots rightsAndSlots, bool saveToDB)
 {
     if (mRankId == GR_GUILDMASTER)
-    {
         rightsAndSlots.SetGuildMasterValues();
-    }
 
     GuildBankRightsAndSlots& guildBR = mBankTabRightsAndSlots[rightsAndSlots.getTabId()];
     guildBR = rightsAndSlots;

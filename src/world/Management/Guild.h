@@ -177,6 +177,7 @@ protected:
 
 public:
 
+    void sendInfo(WorldSession* session) const;
     static void sendCommandResult(WorldSession* session, GuildCommandType type, GuildCommandError errCode, std::string const& param = "");
     static void sendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode);
 
@@ -204,6 +205,7 @@ public:
     void handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool demote);
     void handleSetMemberRank(WorldSession* session, uint64_t guid, uint64_t setterGuid, uint32_t rank);
     void handleAddNewRank(WorldSession* session, std::string const& name);
+    void handleRemoveLowestRank(WorldSession* session);
     void handleRemoveRank(WorldSession* session, uint8_t rankId);
     void handleMemberDepositMoney(WorldSession* session, uint64_t amount, bool cashFlow = false);
     bool handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bool repair = false);
@@ -267,7 +269,7 @@ public:
     void deleteMember(uint64_t guid, bool isDisbanding = false, bool isKicked = false);
     bool changeMemberRank(uint64_t guid, uint8_t newRank);
     bool isMember(uint64_t guid) const;
-    uint32_t getMembersCount() { return static_cast<uint32_t>(_guildMembersStore.size()); }
+    uint32_t getMembersCount() const { return static_cast<uint32_t>(_guildMembersStore.size()); }
 
     void swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t destTabId, uint8_t destSlotId, uint32_t splitedAmount);
     void swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, uint8_t slotId, uint8_t playerBag, uint8_t playerSlotId, uint32_t splitedAmount);
@@ -305,7 +307,9 @@ private:
     inline uint8_t _getLowestRankId() const { return uint8_t(_guildRankInfoStore.size() - 1); }
 
     inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }    //done
+public:
     inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
+private:
     inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
 
     inline const GuildMember* getMember(uint64_t guid) const

@@ -357,7 +357,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LogDebug("Loaded 0 guild bank tabs. DB table `guild_bank_tab` is empty.");
+            LogDebug("Loaded 0 guild bank tabs. DB table `guild_banktabs` is empty.");
         }
         else
         {

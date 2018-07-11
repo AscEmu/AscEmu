@@ -100,12 +100,13 @@ void WorldSession::sendGuildInvitePacket(std::string invitedName)
 
     SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
 
+    guild->logEvent(GE_LOG_INVITE_PLAYER, GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
+    invitedPlayer->SetGuildIdInvited(guild->getId());
+
 #if VERSION_STRING != Cata
     invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getName()).serialise().get());
-#else
-    invitedPlayer->SetGuildIdInvited(guild->getId());
-    guild->logEvent(GE_LOG_INVITE_PLAYER, GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
 
+#else
     invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(GetPlayer()->getName(), guild->getName(), guild->getLevel(),
         guild->getEmblemInfo(), guild->getId(), guild->getGUID()).serialise().get());
 #endif

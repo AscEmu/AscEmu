@@ -332,7 +332,6 @@ uint32_t const guildChallengeMaxLevelGoldReward[4] = { 0, 125, 500, 250 };
 uint32_t const guildChallengeXPReward[4] = { 0, 300000, 3000000, 1500000 };
 uint32_t const guildChallengesPerWeek[4] = { 0, 7, 1, 3 };
 
-#if VERSION_STRING == Cata
 inline std::string _GetGuildEventString(GuildEvents event)
 {
     switch (event)
@@ -347,20 +346,21 @@ inline std::string _GetGuildEventString(GuildEvents event)
         case GE_LEADER_CHANGED:             { return "Leader changed"; }
         case GE_DISBANDED:                  { return "Guild disbanded"; }
         case GE_TABARDCHANGE:               { return "Tabard change"; }
-        case GE_BANK_TEXT_CHANGED:          { return "Bank tab text changed"; }
+        case GE_RANK_UPDATED:               { return "Rank updated"; }
+        case GE_RANK_DELETED:               { return "Rank deleted"; }
         case GE_SIGNED_ON:                  { return "Member signed on"; }
         case GE_SIGNED_OFF:                 { return "Member signed off"; }
+        case GE_GUILDBANKBAGSLOTS_CHANGED:  { return "Bank bag slots changed"; }
         case GE_BANK_TAB_PURCHASED:         { return "Bank tab purchased"; }
         case GE_BANK_TAB_UPDATED:           { return "Bank tab updated"; }
         case GE_BANK_MONEY_SET:             { return "Bank money set"; }
-        case GE_BANK_TAB_AND_MONEY_UPDATED:         { return "Bank money changed"; }
-        case GE_RANK_UPDATED:               { return "Rank updated"; }
-        case GE_RANK_DELETED:               { return "Rank deleted"; }
-        case GE_GUILDBANKBAGSLOTS_CHANGED:  { return "Bank bag slots changed"; }
-        default:                            { return "<None>"; }
+        case GE_BANK_TAB_AND_MONEY_UPDATED: { return "Bank and money updated"; }
+        case GE_BANK_TEXT_CHANGED:          { return "Bank tab text changed"; }
+        default:
+            break;
     }
+    return "None";
 }
-#endif
 
 inline uint32_t _GetGuildBankTabPrice(uint8_t tabId)
 {
