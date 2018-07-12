@@ -18,6 +18,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildMotd.h"
 #include "Server/Packets/CmsgGuildAddRank.h"
 #include "Server/Packets/CmsgGuildInfoText.h"
+#include "Server/Packets/CmsgGuildRemove.h"
+#include "Server/Packets/CmsgGuildPromote.h"
+#include "Server/Packets/CmsgGuildDemote.h"
 
 using namespace AscEmu::Packets;
 
@@ -203,4 +206,63 @@ void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->handleSetInfo(this, recv_packet.text);
+}
+
+void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
+{
+    CmsgGuildRemove recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+#if VERSION_STRING != Cata
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleRemoveMember(this, targetPlayerInfo->guid);
+#else
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleRemoveMember(this, recv_packet.guid);
+
+#endif
+}
+
+void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
+{
+    CmsgGuildPromote recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+#if VERSION_STRING != Cata
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, false);
+#else
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleUpdateMemberRank(this, recv_packet.guid, false);
+
+#endif
+}
+
+void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
+{
+    CmsgGuildDemote recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+#if VERSION_STRING != Cata
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
+#else
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleUpdateMemberRank(this, recv_packet.guid, true);
+#endif
 }

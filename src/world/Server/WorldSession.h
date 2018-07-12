@@ -644,16 +644,16 @@ class SERVER_DECL WorldSession
         void handleGuildMotd(WorldPacket& recvPacket);
         void handleGuildAddRank(WorldPacket& recvPacket);
         void handleSetGuildInfo(WorldPacket& recvPacket);
+        void handleGuildRemove(WorldPacket& recvPacket);
+        void handleGuildPromote(WorldPacket& recvPacket);
+        void handleGuildDemote(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
         
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
         
-        void HandleGuildPromote(WorldPacket& recv_data);
-        void HandleGuildDemote(WorldPacket& recv_data);
-        
-        void HandleGuildRemove(WorldPacket& recv_data);
+      
         
         void HandleGuildRank(WorldPacket& recv_data);
         
@@ -684,10 +684,10 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Guild
-        void HandleGuildRemoveOpcode(WorldPacket& recv_data);
-        void HandleGuildPromoteOpcode(WorldPacket& recv_data);
+        
+        
         void HandleGuildAssignRankOpcode(WorldPacket& recv_data);
-        void HandleGuildDemoteOpcode(WorldPacket& recv_data);
+        
 
         
         

@@ -20,64 +20,6 @@ using namespace AscEmu::Packets;
 //////////////////////////////////////////////////////////////////////////////////////////
 // Guild
 
-void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvData)
-{
-    ObjectGuid playerGuid;
-
-    playerGuid[6] = recvData.readBit();
-    playerGuid[5] = recvData.readBit();
-    playerGuid[4] = recvData.readBit();
-    playerGuid[0] = recvData.readBit();
-    playerGuid[1] = recvData.readBit();
-    playerGuid[3] = recvData.readBit();
-    playerGuid[7] = recvData.readBit();
-    playerGuid[2] = recvData.readBit();
-
-    recvData.ReadByteSeq(playerGuid[2]);
-    recvData.ReadByteSeq(playerGuid[6]);
-    recvData.ReadByteSeq(playerGuid[5]);
-    recvData.ReadByteSeq(playerGuid[7]);
-    recvData.ReadByteSeq(playerGuid[1]);
-    recvData.ReadByteSeq(playerGuid[4]);
-    recvData.ReadByteSeq(playerGuid[3]);
-    recvData.ReadByteSeq(playerGuid[0]);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleRemoveMember(this, playerGuid);
-    }
-}
-
-void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvData)
-{
-    ObjectGuid targetGuid;
-
-    targetGuid[7] = recvData.readBit();
-    targetGuid[2] = recvData.readBit();
-    targetGuid[5] = recvData.readBit();
-    targetGuid[6] = recvData.readBit();
-    targetGuid[1] = recvData.readBit();
-    targetGuid[0] = recvData.readBit();
-    targetGuid[3] = recvData.readBit();
-    targetGuid[4] = recvData.readBit();
-
-    recvData.ReadByteSeq(targetGuid[0]);
-    recvData.ReadByteSeq(targetGuid[5]);
-    recvData.ReadByteSeq(targetGuid[2]);
-    recvData.ReadByteSeq(targetGuid[3]);
-    recvData.ReadByteSeq(targetGuid[6]);
-    recvData.ReadByteSeq(targetGuid[4]);
-    recvData.ReadByteSeq(targetGuid[1]);
-    recvData.ReadByteSeq(targetGuid[7]);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_PROMOTE %s: Target: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid));
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleUpdateMemberRank(this, targetGuid, false);
-    }
-}
-
 void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
 {
     ObjectGuid targetGuid;
@@ -140,36 +82,6 @@ void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
     if (Guild* guild = GetPlayer()->GetGuild())
     {
         guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
-    }
-}
-
-void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recvData)
-{
-    ObjectGuid targetGuid;
-
-    targetGuid[7] = recvData.readBit();
-    targetGuid[1] = recvData.readBit();
-    targetGuid[5] = recvData.readBit();
-    targetGuid[6] = recvData.readBit();
-    targetGuid[2] = recvData.readBit();
-    targetGuid[3] = recvData.readBit();
-    targetGuid[0] = recvData.readBit();
-    targetGuid[4] = recvData.readBit();
-
-    recvData.ReadByteSeq(targetGuid[1]);
-    recvData.ReadByteSeq(targetGuid[2]);
-    recvData.ReadByteSeq(targetGuid[7]);
-    recvData.ReadByteSeq(targetGuid[5]);
-    recvData.ReadByteSeq(targetGuid[6]);
-    recvData.ReadByteSeq(targetGuid[0]);
-    recvData.ReadByteSeq(targetGuid[4]);
-    recvData.ReadByteSeq(targetGuid[3]);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEMOTE %s: Target: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid));
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleUpdateMemberRank(this, targetGuid, true);
     }
 }
 

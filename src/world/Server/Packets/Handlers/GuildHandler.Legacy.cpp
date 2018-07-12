@@ -65,46 +65,6 @@ using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 
-
-void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
-{
-    CmsgGuildPromote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
-    if (targetPlayerInfo == nullptr)
-        return;
-
-    _player->GetGuild()->handleUpdateMemberRank(this, targetPlayerInfo->guid, false);
-}
-
-void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
-{
-    CmsgGuildDemote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
-    if (targetPlayerInfo == nullptr)
-        return;
-
-    _player->GetGuild()->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
-}
-
-void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
-{
-    CmsgGuildRemove recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
-    if (targetPlayerInfo == nullptr)
-        return;
-
-    GetPlayer()->GetGuild()->handleRemoveMember(this, targetPlayerInfo->guid);
-}
-
 void WorldSession::HandleGuildRank(WorldPacket& recvPacket)
 {
     uint32 rankId;
