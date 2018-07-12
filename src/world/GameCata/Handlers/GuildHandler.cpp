@@ -85,49 +85,6 @@ void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildSetNoteOpcode(WorldPacket& recvData)
-{
-    bool ispublic;          // 0 officer, 1 public
-    std::string note;
-
-    ObjectGuid playerGuid;
-
-    playerGuid[1] = recvData.readBit();
-    playerGuid[4] = recvData.readBit();
-    playerGuid[5] = recvData.readBit();
-    playerGuid[3] = recvData.readBit();
-    playerGuid[0] = recvData.readBit();
-    playerGuid[7] = recvData.readBit();
-
-    ispublic = recvData.readBit();
-
-    playerGuid[6] = recvData.readBit();
-
-    uint32_t noteLength = recvData.readBits(8);
-
-    playerGuid[2] = recvData.readBit();
-
-    recvData.ReadByteSeq(playerGuid[4]);
-    recvData.ReadByteSeq(playerGuid[5]);
-    recvData.ReadByteSeq(playerGuid[0]);
-    recvData.ReadByteSeq(playerGuid[3]);
-    recvData.ReadByteSeq(playerGuid[1]);
-    recvData.ReadByteSeq(playerGuid[6]);
-    recvData.ReadByteSeq(playerGuid[7]);
-
-    note = recvData.ReadString(noteLength);
-
-    recvData.ReadByteSeq(playerGuid[2]);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_NOTE %s: Target: %u, Note: %s, Public: %u",
-        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(playerGuid), note.c_str(), ispublic);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleSetMemberNote(this, note, playerGuid, ispublic);
-    }
-}
-
 void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
 {
     ObjectGuid guildGuid;

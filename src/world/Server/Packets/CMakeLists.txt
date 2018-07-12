@@ -82,6 +82,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildPromote.h
    ${PATH_PREFIX}/CmsgGuildQuery.h
    ${PATH_PREFIX}/CmsgGuildRemove.h
+   ${PATH_PREFIX}/CmsgGuildSetNote.h
    ${PATH_PREFIX}/CmsgGuildSetOfficerNote.h
    ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h

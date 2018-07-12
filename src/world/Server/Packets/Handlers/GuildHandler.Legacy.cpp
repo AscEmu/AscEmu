@@ -108,34 +108,6 @@ void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
         guild->handleRemoveLowestRank(this);
 }
 
-void WorldSession::HandleGuildSetPublicNote(WorldPacket& recv_data)
-{
-    CmsgGuildSetPublicNote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
-    if (targetPlayerInfo == nullptr)
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, true);
-}
-
-void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
-{
-    CmsgGuildSetOfficerNote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
-    if (targetPlayerInfo == nullptr)
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, false);
-}
-
 // Charter part
 void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 {

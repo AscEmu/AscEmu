@@ -21,6 +21,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildRemove.h"
 #include "Server/Packets/CmsgGuildPromote.h"
 #include "Server/Packets/CmsgGuildDemote.h"
+#include "Server/Packets/CmsgGuildSetPublicNote.h"
+#include "Server/Packets/CmsgGuildSetOfficerNote.h"
+#include "Server/Packets/CmsgGuildSetNote.h"
+
 
 using namespace AscEmu::Packets;
 
@@ -266,3 +270,43 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
         guild->handleUpdateMemberRank(this, recv_packet.guid, true);
 #endif
 }
+
+#if VERSION_STRING != Cata
+void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
+{
+    CmsgGuildSetPublicNote recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    if (targetPlayerInfo == nullptr)
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, true);
+}
+
+void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
+{
+    CmsgGuildSetOfficerNote recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    if (targetPlayerInfo == nullptr)
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, false);
+}
+#else
+void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
+{
+    CmsgGuildSetNote recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetMemberNote(this, recv_packet.note, recv_packet.guid, recv_packet.isPublic);
+}
+#endif

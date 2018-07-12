@@ -351,8 +351,8 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_GUILD_RANK].handler = &WorldSession::HandleGuildRank;
     WorldPacketHandlers[CMSG_GUILD_ADD_RANK].handler = &WorldSession::handleGuildAddRank;
     WorldPacketHandlers[CMSG_GUILD_DEL_RANK].handler = &WorldSession::HandleGuildDelRank;
-    WorldPacketHandlers[CMSG_GUILD_SET_PUBLIC_NOTE].handler = &WorldSession::HandleGuildSetPublicNote;
-    WorldPacketHandlers[CMSG_GUILD_SET_OFFICER_NOTE].handler = &WorldSession::HandleGuildSetOfficerNote;
+    WorldPacketHandlers[CMSG_GUILD_SET_PUBLIC_NOTE].handler = &WorldSession::handleGuildSetPublicNote;
+    WorldPacketHandlers[CMSG_GUILD_SET_OFFICER_NOTE].handler = &WorldSession::handleGuildSetOfficerNote;
     WorldPacketHandlers[CMSG_PETITION_BUY].handler = &WorldSession::HandleCharterBuy;
     WorldPacketHandlers[CMSG_PETITION_SHOW_SIGNATURES].handler = &WorldSession::HandleCharterShowSignatures;
     WorldPacketHandlers[CMSG_TURN_IN_PETITION].handler = &WorldSession::HandleCharterTurnInCharter;
