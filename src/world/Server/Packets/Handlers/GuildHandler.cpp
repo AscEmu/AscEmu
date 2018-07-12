@@ -11,6 +11,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgGuildInfo.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
+#include "Server/Packets/CmsgGuildBankBuyTab.h"
+#include "Server/Packets/MsgGuildBankLogQuery.h"
+#include "Server/Packets/CmsgSetGuildBankText.h"
+#include "Server/Packets/CmsgGuildLeader.h"
+#include "Server/Packets/CmsgGuildMotd.h"
+#include "Server/Packets/CmsgGuildAddRank.h"
+#include "Server/Packets/CmsgGuildInfoText.h"
 
 using namespace AscEmu::Packets;
 
@@ -74,4 +81,126 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
     }
 
     guild->handleSetEmblem(this, recv_packet.emblemInfo);
+}
+
+void WorldSession::handleGuildAccept(WorldPacket& /*recvPacket*/)
+{
+    if (!GetPlayer()->getGuildId())
+        if (Guild* guild = sGuildMgr.getGuildById(GetPlayer()->GetGuildIdInvited()))
+            guild->handleAcceptMember(this);
+}
+
+void WorldSession::handleGuildDecline(WorldPacket& /*recvPacket*/)
+{
+    GetPlayer()->SetGuildIdInvited(0);
+    GetPlayer()->setGuildId(0);
+}
+
+void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleRoster(this);
+    else
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+}
+
+void WorldSession::handleGuildLeave(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleLeaveMember(this);
+}
+
+void WorldSession::handleGuildDisband(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleDisband(this);
+}
+
+void WorldSession::handleGuildLog(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendEventLog(this);
+}
+
+void WorldSession::handleGuildPermissions(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendPermissions(this);
+}
+
+void WorldSession::handleGuildBankBuyTab(WorldPacket& recvPacket)
+{
+    CmsgGuildBankBuyTab recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleBuyBankTab(this, recv_packet.tabId);
+}
+
+void WorldSession::handleGuildBankLogQuery(WorldPacket& recvPacket)
+{
+    MsgGuildBankLogQuery recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendBankLog(this, recv_packet.tabId);
+}
+
+void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
+{
+    CmsgSetGuildBankText recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->setBankTabText(static_cast<uint8_t>(recv_packet.tabId), recv_packet.text);
+}
+
+void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
+{
+    CmsgGuildLeader recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        return;
+    }
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetNewGuildMaster(this, targetPlayerInfo->name);
+}
+
+void WorldSession::handleGuildMotd(WorldPacket& recvPacket)
+{
+    CmsgGuildMotd recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetMOTD(this, recv_packet.message);
+}
+
+void WorldSession::handleGuildAddRank(WorldPacket& recvPacket)
+{
+    CmsgGuildAddRank recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleAddNewRank(this, recv_packet.name);
+}
+
+void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
+{
+    CmsgGuildInfoText recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetInfo(this, recv_packet.text);
 }

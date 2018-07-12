@@ -66,37 +66,6 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING != Cata
 
 
-void WorldSession::HandleGuildAccept(WorldPacket& /*recv_data*/)
-{
-    if (!GetPlayer()->getGuildId())
-        if (Guild* guild = sGuildMgr.getGuildById(GetPlayer()->GetGuildIdInvited()))
-            guild->handleAcceptMember(this);
-}
-
-void WorldSession::HandleGuildDecline(WorldPacket& /*recv_data*/)
-{
-    GetPlayer()->SetGuildIdInvited(0);
-    GetPlayer()->setGuildId(0);
-}
-
-void WorldSession::HandleSetGuildInformation(WorldPacket& recv_data)
-{
-    CmsgGuildInfoText recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetInfo(this, recv_packet.text);
-}
-
-void WorldSession::HandleGuildRoster(WorldPacket& /*recv_data*/)
-{
-    if (GetPlayer()->GetGuild())
-        GetPlayer()->GetGuild()->handleRoster(this);
-    else
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-}
-
 void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
 {
     CmsgGuildPromote recv_packet;
@@ -123,12 +92,6 @@ void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
     _player->GetGuild()->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
 }
 
-void WorldSession::HandleGuildLeave(WorldPacket& /*recv_data*/)
-{
-    if (GetPlayer()->GetGuild())
-        GetPlayer()->GetGuild()->handleLeaveMember(this);
-}
-
 void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
 {
     CmsgGuildRemove recv_packet;
@@ -140,38 +103,6 @@ void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
         return;
 
     GetPlayer()->GetGuild()->handleRemoveMember(this, targetPlayerInfo->guid);
-}
-
-void WorldSession::HandleGuildDisband(WorldPacket& /*recv_data*/)
-{
-    if (GetPlayer()->GetGuild())
-        GetPlayer()->GetGuild()->handleDisband(this);
-}
-
-void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
-{
-    CmsgGuildLeader recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
-    if (targetPlayerInfo == nullptr)
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
-        return;
-    }
-
-    GetPlayer()->GetGuild()->handleSetNewGuildMaster(this, targetPlayerInfo->name);
-}
-
-void WorldSession::HandleGuildMotd(WorldPacket& recv_data)
-{
-    CmsgGuildMotd recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (GetPlayer()->GetGuild())
-        GetPlayer()->GetGuild()->handleSetMOTD(this, recv_packet.message);
 }
 
 void WorldSession::HandleGuildRank(WorldPacket& recvPacket)
@@ -209,16 +140,6 @@ void WorldSession::HandleGuildRank(WorldPacket& recvPacket)
     }
 
     guild->handleSetRankInfo(this, rankId, rankName, rights, money, rightsAndSlots);
-}
-
-void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
-{
-    CmsgGuildAddRank recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleAddNewRank(this, recv_packet.name);
 }
 
 void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
@@ -745,22 +666,6 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
 }
 
-void WorldSession::HandleGuildLog(WorldPacket& /*recv_data*/)
-{
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendEventLog(this);
-}
-
-void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
-{
-    CmsgGuildBankBuyTab recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleBuyBankTab(this, recv_packet.tabId);
-}
-
 void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
 {
     if (Guild* guild = GetPlayer()->GetGuild())
@@ -903,22 +808,6 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
     guild->sendBankList(this, recv_packet.tabId, false, true);
 }
 
-void WorldSession::HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/)
-{
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendPermissions(this);
-}
-
-void WorldSession::HandleGuildBankViewLog(WorldPacket& recv_data)
-{
-    MsgGuildBankLogQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankLog(this, recv_packet.slotId);
-}
-
 void WorldSession::HandleGuildBankQueryText(WorldPacket& recv_data)
 {
     MsgQueryGuildBankText recv_packet;
@@ -929,13 +818,4 @@ void WorldSession::HandleGuildBankQueryText(WorldPacket& recv_data)
         guild->sendBankTabText(this, recv_packet.tabId);
 }
 
-void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
-{
-    CmsgSetGuildBankText recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->setBankTabText(recv_packet.tabId, recv_packet.text);
-}
 #endif

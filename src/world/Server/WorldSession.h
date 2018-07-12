@@ -630,22 +630,33 @@ class SERVER_DECL WorldSession
         void handleGuildQuery(WorldPacket& recvPacket);
         void handleInviteToGuild(WorldPacket& recvPacket);
         void handleSaveGuildEmblem(WorldPacket& recvPacket);
+        void handleGuildAccept(WorldPacket& /*recvPacket*/);
+        void handleGuildDecline(WorldPacket& /*recvPacket*/);
+        void handleGuildRoster(WorldPacket& /*recvPacket*/);
+        void handleGuildLeave(WorldPacket& /*recvPacket*/);
+        void handleGuildDisband(WorldPacket& /*recvPacket*/);
+        void handleGuildLog(WorldPacket& /*recvPacket*/);
+        void handleGuildPermissions(WorldPacket& /*recvPacket*/);
+        void handleGuildBankBuyTab(WorldPacket& recvPacket);
+        void handleGuildBankLogQuery(WorldPacket& recvPacket);
+        void handleSetGuildBankText(WorldPacket& recvPacket);
+        void handleGuildLeader(WorldPacket& recvPacket);
+        void handleGuildMotd(WorldPacket& recvPacket);
+        void handleGuildAddRank(WorldPacket& recvPacket);
+        void handleSetGuildInfo(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
-        void HandleGuildAccept(WorldPacket& /*recv_data*/);
-        void HandleGuildDecline(WorldPacket& /*recv_data*/);
+        
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
-        void HandleGuildRoster(WorldPacket& /*recv_data*/);
+        
         void HandleGuildPromote(WorldPacket& recv_data);
         void HandleGuildDemote(WorldPacket& recv_data);
-        void HandleGuildLeave(WorldPacket& /*recv_data*/);
+        
         void HandleGuildRemove(WorldPacket& recv_data);
-        void HandleGuildDisband(WorldPacket& /*recv_data*/);
-        void HandleGuildLeader(WorldPacket& recv_data);
-        void HandleGuildMotd(WorldPacket& recv_data);
+        
         void HandleGuildRank(WorldPacket& recv_data);
-        void HandleGuildAddRank(WorldPacket& recv_data);
+        
         void HandleGuildDelRank(WorldPacket& /*recv_data*/);
         void HandleGuildSetPublicNote(WorldPacket& recv_data);
         void HandleGuildSetOfficerNote(WorldPacket& recv_data);
@@ -657,47 +668,36 @@ class SERVER_DECL WorldSession
         void HandleCharterSign(WorldPacket& recv_data);
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
-        void HandleSetGuildInformation(WorldPacket& recv_data);
-        void HandleGuildLog(WorldPacket& /*recv_data*/);
+        
         void HandleGuildBankViewTab(WorldPacket& recv_data);
-        void HandleGuildBankViewLog(WorldPacket& recv_data);
         void HandleGuildBankQueryText(WorldPacket& recv_data);
-        void HandleSetGuildBankText(WorldPacket& recv_data);
         void HandleGuildBankOpenVault(WorldPacket& recv_data);
-        void HandleGuildBankBuyTab(WorldPacket& recv_data);
+        
         void HandleGuildBankDepositMoney(WorldPacket& recv_data);
         void HandleGuildBankWithdrawMoney(WorldPacket& recv_data);
         void HandleGuildBankDepositItem(WorldPacket& recv_data);
         void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
         void HandleGuildBankModifyTab(WorldPacket& recv_data);
-        void HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/);
+        
 #else
     public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Guild
         void HandleGuildRemoveOpcode(WorldPacket& recv_data);
-        void HandleGuildAcceptOpcode(WorldPacket& /*recv_data*/);
-        void HandleGuildDeclineOpcode(WorldPacket& /*recv_data*/);
-        void HandleGuildRosterOpcode(WorldPacket& /*recv_data*/);
         void HandleGuildPromoteOpcode(WorldPacket& recv_data);
         void HandleGuildAssignRankOpcode(WorldPacket& recv_data);
         void HandleGuildDemoteOpcode(WorldPacket& recv_data);
-        void HandleGuildLeaveOpcode(WorldPacket& /*recv_data*/);
-        void HandleGuildDisbandOpcode(WorldPacket& /*recv_data*/);
 
-        void HandleGuildLeaderOpcode(WorldPacket& recv_data);
-        void HandleGuildMotdOpcode(WorldPacket& recv_data);
+        
+        
 
         void HandleGuildSetNoteOpcode(WorldPacket& recv_data);
         void HandleGuildQueryRanksOpcode(WorldPacket& recv_data);
 
-        void HandleGuildAddRankOpcode(WorldPacket& recv_data);
         void HandleGuildDelRankOpcode(WorldPacket& recv_data);
-        void HandleGuildChangeInfoTextOpcode(WorldPacket& recv_data);
-        void HandleGuildEventLogQueryOpcode(WorldPacket& /*recv_data*/);
+        
         void HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/);
-        void HandleGuildPermissions(WorldPacket& /*recv_data*/);
         void HandleGuildQueryXPOpcode(WorldPacket& recv_data);
         void HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data);
         void HandleGuildRequestPartyState(WorldPacket& recv_data);
@@ -716,11 +716,10 @@ class SERVER_DECL WorldSession
         void HandleGuildBankDepositMoney(WorldPacket& recv_data);
         void HandleGuildBankWithdrawMoney(WorldPacket& recv_data);
         void HandleGuildBankSwapItems(WorldPacket& recv_data);
-        void HandleGuildBankBuyTab(WorldPacket& recv_data);
         void HandleGuildBankUpdateTab(WorldPacket& recv_data);
-        void HandleGuildBankLogQuery(WorldPacket& recv_data);
+        
         void HandleQueryGuildBankTabText(WorldPacket& recv_data);
-        void HandleSetGuildBankTabText(WorldPacket& recv_data);
+        
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Charter
