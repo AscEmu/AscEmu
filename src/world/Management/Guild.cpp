@@ -2449,40 +2449,87 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
         ByteBuffer tabData;
         WorldPacket data(SMSG_GUILD_BANK_LIST, 1200);
         data.writeBit(0);
-        data.writeBits(slots.size(), 20);
+
+        if (sendAllSlots)
+            data.writeBits(MAX_GUILD_BANK_SLOTS, 20);
+        else
+            data.writeBits(slots.size(), 20);
+
         data.writeBits(0, 22);
 
-        for (SlotIds::const_iterator itr = slots.begin(); itr != slots.end(); ++itr)
+        if (sendAllSlots)
         {
-            data.writeBit(0);
-
-            Item* tabItem = guildBankTab->getItem(*itr);
-            uint32_t enchantCount = 0;
-            if (tabItem)
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
             {
-                for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                if (const auto tab = getBankTab(tabId))
                 {
-                    if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                    Item* tabItem = tab->getItem(slotId);
+
+                    data.writeBit(0);
+
+                    uint32_t enchantCount = 0;
+                    if (tabItem)
                     {
-                        tabData << uint32_t(enchantId);
-                        tabData << uint32_t(enchSlot);
-                        ++enchantCount;
+                        for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                        {
+                            if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                            {
+                                tabData << uint32_t(enchantId);
+                                tabData << uint32_t(enchSlot);
+                                ++enchantCount;
+                            }
+                        }
                     }
+
+                    data.writeBits(enchantCount, 23);
+
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
+                    tabData << uint32_t(slotId);
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
+                    tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
+                    tabData << uint32_t(tabItem ? 0 : 0);
+                    tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
                 }
             }
+        }
+        else
+        {
+            for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+            {
+                data.writeBit(0);
 
-            data.writeBits(enchantCount, 23);
+                Item* tabItem = guildBankTab->getItem(*itr);
+                uint32_t enchantCount = 0;
+                if (tabItem)
+                {
+                    for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                    {
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                        {
+                            tabData << uint32_t(enchantId);
+                            tabData << uint32_t(enchSlot);
+                            ++enchantCount;
+                        }
+                    }
+                }
 
-            tabData << uint32_t(0);
-            tabData << uint32_t(0);
-            tabData << uint32_t(0);
-            tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
-            tabData << uint32_t(*itr);
-            tabData << uint32_t(0);
-            tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
-            tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
-            tabData << uint32_t(tabItem ? 0 : 0);
-            tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
+                data.writeBits(enchantCount, 23);
+
+                tabData << uint32_t(0);
+                tabData << uint32_t(0);
+                tabData << uint32_t(0);
+                tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
+                tabData << uint32_t(*itr);
+                tabData << uint32_t(0);
+                tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
+                tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
+                tabData << uint32_t(tabItem ? 0 : 0);
+                tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
+            }
         }
 
         data.flushBits();
