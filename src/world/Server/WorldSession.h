@@ -78,7 +78,6 @@ struct AddonEntry;
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
 
 #define NOTIFICATION_MESSAGE_NO_PERMISSION "You do not have permission to perform that function."
-//#define CHECK_PACKET_SIZE(x, y) if (y > 0 && x.size() < y) { _socket->Disconnect(); return; }
 
 #define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 

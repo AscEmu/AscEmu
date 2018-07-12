@@ -934,7 +934,8 @@ void WorldSession::HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGuildBankViewLog(WorldPacket& recv_data)
 {
     MsgGuildBankLogQuery recv_packet;
-    recv_packet.deserialise(recv_data);
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->sendBankLog(this, recv_packet.slotId);

@@ -30,13 +30,18 @@ namespace AscEmu { namespace Packets
         }
 
         MsgGuildBankLogQuery(uint8_t slotId, std::vector<GuildBankMoneyLog> moneyLog) :
-            ManagedPacket(MSG_GUILD_BANK_LOG_QUERY, slotId != 6 ? 21 : 17 * moneyLog.size() + 2),
+            ManagedPacket(MSG_GUILD_BANK_LOG_QUERY, 1),
             slotId(slotId),
             moneyLog(moneyLog)
         {
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return slotId != 6 ? 21 : 17 * moneyLog.size() + 2;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << slotId;
