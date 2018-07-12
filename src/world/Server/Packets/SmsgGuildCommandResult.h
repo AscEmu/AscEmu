@@ -22,7 +22,7 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgGuildCommandResult(uint32_t command, std::string message, uint32_t error) :
-            ManagedPacket(SMSG_GUILD_COMMAND_RESULT, 8 + message.size() + 1),
+            ManagedPacket(SMSG_GUILD_COMMAND_RESULT, 0),
             command(command),
             message(message),
             error(error)
@@ -30,7 +30,7 @@ namespace AscEmu { namespace Packets
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
+        size_t expectedSize() const override { return 8 + message.size() + 1; }
 
         bool internalSerialise(WorldPacket& packet) override
         {

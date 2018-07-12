@@ -55,6 +55,8 @@ public:
     std::string const& getMOTD() const { return m_motd; }
     std::string const& getInfo() const { return m_info; }
 
+    time_t getCreatedDate() const { return m_createdDate; }
+
     uint64_t getBankMoney() const { return m_bankMoney; }
 
     uint8_t getLevel() const { return m_level; }
@@ -64,6 +66,8 @@ public:
     //\brief: Used only in LuAEngine!
     const char* getNameChar() const { return m_name.c_str(); }
     const char* getMOTDChar() const { return m_motd.c_str(); }
+
+    uint32_t getAccountCount() const { return mAccountsNumber; }
 
     class GuildMember
     {
@@ -176,10 +180,6 @@ protected:
     GuildLogHolder* mNewsLog;
 
 public:
-
-    void sendInfo(WorldSession* session) const;
-    static void sendCommandResult(WorldSession* session, GuildCommandType type, GuildCommandError errCode, std::string const& param = "");
-    static void sendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode);
 
     Guild();
     ~Guild();

@@ -12,7 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/WorldStrings.h"
+#include "Server/Packets/SmsgGuildCommandResult.h"
+#include "Server/Packets/MsgSaveGuildEmblem.h"
 
+using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Guild
@@ -65,13 +68,9 @@ void WorldSession::HandleGuildDeclineOpcode(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGuildRosterOpcode(WorldPacket& /*recv_data*/)
 {
     if (Guild* guild = GetPlayer()->GetGuild())
-    {
         guild->handleRoster(this);
-    }
     else
-    {
-        Guild::sendCommandResult(this, GC_TYPE_ROSTER, GC_ERROR_PLAYER_NOT_IN_GUILD);
-    }
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
 }
 
 void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvData)
@@ -364,32 +363,6 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recvData)
-{
-    uint64_t vendorGuid;
-    EmblemInfo emblemInfo;
-
-    recvData >> vendorGuid;
-    emblemInfo.readEmblemInfoFromPacket(recvData);
-
-    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u", _player->getName().c_str(),
-        Arcemu::Util::GUID_LOPART(vendorGuid), emblemInfo.getStyle(), emblemInfo.getColor(), emblemInfo.getBorderStyle(), emblemInfo.getBorderColor(), emblemInfo.getBackgroundColor());
-
-    if (GetPlayer()->GetGuild()->getLeaderGUID() != _player->getGuid())
-    {
-        Guild::sendSaveEmblemResult(this, GEM_ERROR_NOTGUILDMASTER);
-    }
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleSetEmblem(this, emblemInfo);
-    }
-    else
-    {
-        Guild::sendSaveEmblemResult(this, GEM_ERROR_NOGUILD);
-    }
-}
-
 void WorldSession::HandleGuildEventLogQueryOpcode(WorldPacket& /*recv_data*/)
 {
     if (Guild* guild = GetPlayer()->GetGuild())
@@ -676,14 +649,9 @@ void WorldSession::HandleGuildBankerActivate(WorldPacket& recvData)
         _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), sendAllSlots);
 
     if (Guild* guild = GetPlayer()->GetGuild())
-    {
         guild->sendBankList(this, 0, true, true);
-    }
     else
-    {
-        Guild::sendCommandResult(this, GC_TYPE_VIEW_TAB, GC_ERROR_PLAYER_NOT_IN_GUILD);
-        return;
-    }
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
 }
 
 void WorldSession::HandleGuildBankQueryTab(WorldPacket& recvData)

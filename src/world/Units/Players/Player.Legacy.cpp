@@ -3784,7 +3784,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     _AddLanguages(false);
 #endif
 
-    if (GetGuildId())
+    if (getGuildId())
         setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
 
 #undef get_next_field

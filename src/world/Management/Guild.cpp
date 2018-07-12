@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
+#include "Server/Packets/SmsgGuildCommandResult.h"
+#include "Server/Packets/MsgSaveGuildEmblem.h"
 
 using namespace AscEmu::Packets;
 
@@ -32,38 +34,6 @@ inline uint32_t GetGuildBankTabPrice(uint8_t tabId)
     ASSERT(tabId < MAX_GUILD_BANK_TABS);
 
     return tabPrices[tabId];
-}
-
-void Guild::sendInfo(WorldSession* session) const
-{
-    WorldPacket data(SMSG_GUILD_INFO, m_name.size() + 4 + 4 + 4);
-    data << m_name;
-    data.appendPackedTime(m_createdDate);           // 3.x (prev. year + month + day)
-    data << uint32_t(getMembersCount());               // Number of members
-    data << mAccountsNumber;                       // Number of accounts
-
-    session->SendPacket(&data);
-}
-
-void Guild::sendCommandResult(WorldSession* session, GuildCommandType type, GuildCommandError errCode, std::string const& param)
-{
-    WorldPacket data(SMSG_GUILD_COMMAND_RESULT, 8 + param.size() + 1);
-    data << uint32_t(type);
-    data << param;
-    data << uint32_t(errCode);
-    session->SendPacket(&data);
-
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_COMMAND_RESULT %s: Type: %u, code: %u, param: %s",
-        session->GetPlayer()->getName().c_str(), type, errCode, param.c_str());
-}
-
-void Guild::sendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode)
-{
-    WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
-    data << uint32_t(errCode);
-    session->SendPacket(&data);
-
-    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s Code: %u", session->GetPlayer()->getName().c_str(), errCode);
 }
 
 Guild::~Guild()
@@ -455,7 +425,7 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
 
     if (!_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_SETMOTD))
     {
-        sendCommandResult(session, GC_TYPE_EDIT_MOTD, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_EDIT_MOTD, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else
     {
@@ -480,13 +450,13 @@ void Guild::handleSetInfo(WorldSession* session, std::string const& info)
 void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
 {
     Player* player = session->GetPlayer();
-    if (isLeader(player) == false)
+    if (!isLeader(player))
     {
-        sendSaveEmblemResult(session, GEM_ERROR_NOTGUILDMASTER);
+        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTGUILDMASTER).serialise().get());
     }
     else if (!player->HasGold(uint64_t(EMBLEM_PRICE)))
     {
-        sendSaveEmblemResult(session, GEM_ERROR_NOTENOUGHMONEY);
+        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTENOUGHMONEY).serialise().get());
     }
     else
     {
@@ -494,7 +464,7 @@ void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
         m_emblemInfo = emblemInfo;
         m_emblemInfo.saveEmblemInfoToDB(m_id);
 
-        sendSaveEmblemResult(session, GEM_ERROR_SUCCESS);
+        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_SUCCESS).serialise().get());
         handleQuery(session);
     }
 }
@@ -504,7 +474,7 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
     Player* player = session->GetPlayer();
     if (!isLeader(player))
     {
-        sendCommandResult(session, GC_TYPE_CHANGE_LEADER, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CHANGE_LEADER, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else if (GuildMember* oldGuildMaster = getMember(player->getGuid()))
     {
@@ -534,7 +504,7 @@ void Guild::handleSetMemberNote(WorldSession* session, std::string const& note, 
 {
     if (!_hasRankRight(session->GetPlayer()->getGuid(), isPublic ? GR_RIGHT_EPNOTE : GR_RIGHT_EOFFNOTE))
     {
-        sendCommandResult(session, GC_TYPE_PUBLIC_NOTE, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_PUBLIC_NOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -551,7 +521,7 @@ void Guild::handleSetRankInfo(WorldSession* session, uint8_t rankId, std::string
 {
     if (!isLeader(session->GetPlayer()))
     {
-        sendCommandResult(session, GC_TYPE_CHANGE_RANK, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CHANGE_RANK, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else if (GuildRankInfo* rankInfo = getRankInfo(rankId))
     {
@@ -617,9 +587,9 @@ void Guild::handleLeaveMember(WorldSession* session)
     if (isLeader(player))
     {
         if (_guildMembersStore.size() > 1)
-            sendCommandResult(session, GC_TYPE_QUIT, GC_ERROR_LEADER_LEAVE);
+            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE).serialise().get());
         else if (getLevel() >= worldConfig.guild.undeletabelLevel)
-            sendCommandResult(session, GC_TYPE_QUIT, GC_ERROR_UNDELETABLE_DUE_TO_LEVEL);
+            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL).serialise().get());
         else
             disband();
     }
@@ -630,7 +600,7 @@ void Guild::handleLeaveMember(WorldSession* session)
         logEvent(GE_LOG_LEAVE_GUILD, player->getGuidLow());
         broadcastEvent(GE_LEFT, player->getGuid(), player->getName().c_str());
 
-        sendCommandResult(session, GC_TYPE_QUIT, GC_ERROR_SUCCESS, m_name);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, m_name, GC_ERROR_SUCCESS).serialise().get());
     }
 }
 
@@ -640,7 +610,7 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
 
     if (!_hasRankRight(player->getGuid(), GR_RIGHT_REMOVE))
     {
-        sendCommandResult(session, GC_TYPE_REMOVE, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -648,21 +618,21 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
 
         if (member->isRank(GR_GUILDMASTER))
         {
-            sendCommandResult(session, GC_TYPE_REMOVE, GC_ERROR_LEADER_LEAVE);
+            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, "", GC_ERROR_LEADER_LEAVE).serialise().get());
         }
         else
         {
             GuildMember const* memberMe = getMember(player->getGuid());
             if (memberMe == nullptr || member->isRankNotLower(memberMe->getRankId()))
             {
-                sendCommandResult(session, GC_TYPE_REMOVE, GC_ERROR_RANK_TOO_HIGH_S, name);
+                session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
             }
             else
             {
                 deleteMember(guid, false, true);
                 logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(guid));
                 broadcastEvent(GE_REMOVED, 0, name.c_str(), player->getName().c_str());
-                sendCommandResult(session, GC_TYPE_REMOVE, GC_ERROR_SUCCESS, name);
+                session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS).serialise().get());
             }
         }
     }
@@ -675,7 +645,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
 
     if (!_hasRankRight(player->getGuid(), demote ? GR_RIGHT_DEMOTE : GR_RIGHT_PROMOTE))
     {
-        sendCommandResult(session, type, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_PERMISSIONS).serialise().get());
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -683,7 +653,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
 
         if (member->isSamePlayer(player->getGuid()))
         {
-            sendCommandResult(session, type, GC_ERROR_NAME_INVALID);
+            session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_NAME_INVALID).serialise().get());
             return;
         }
 
@@ -693,13 +663,13 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         {
             if (member->isRankNotLower(rankId))
             {
-                sendCommandResult(session, type, GC_ERROR_RANK_TOO_HIGH_S, name);
+                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
                 return;
             }
 
             if (member->getRankId() >= _getLowestRankId())
             {
-                sendCommandResult(session, type, GC_ERROR_RANK_TOO_LOW_S, name);
+                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_LOW_S).serialise().get());
                 return;
             }
         }
@@ -707,7 +677,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         {
             if (member->isRankNotLower(rankId + 1))
             {
-                sendCommandResult(session, type, GC_ERROR_RANK_TOO_HIGH_S, name);
+                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
                 return;
             }
         }
@@ -735,13 +705,13 @@ void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint
 
     if (!_hasRankRight(player->getGuid(), rights))
     {
-        sendCommandResult(session, type, GC_ERROR_PERMISSIONS);
+        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
     }
 
     if (member->isSamePlayer(player->getGuid()))
     {
-        sendCommandResult(session, type, GC_ERROR_NAME_INVALID);
+        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_NAME_INVALID).serialise().get());
         return;
     }
 
@@ -1353,6 +1323,7 @@ void Guild::broadcastPacket(WorldPacket* packet) const
 
 void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t maxLevel, uint32_t minRank)
 {
+#if VERSION_STRING > TBC
     uint32_t count = 0;
 
     WorldPacket data(SMSG_CALENDAR_FILTER_GUILD);
@@ -1374,6 +1345,7 @@ void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t
     data.put<uint32_t>(0, count);
 
     session->SendPacket(&data);
+#endif
 }
 
 bool Guild::addMember(uint64_t guid, uint8_t rankId)

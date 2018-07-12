@@ -629,12 +629,13 @@ class SERVER_DECL WorldSession
         // Guild
         void handleGuildQuery(WorldPacket& recvPacket);
         void handleInviteToGuild(WorldPacket& recvPacket);
+        void handleSaveGuildEmblem(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
         void HandleGuildAccept(WorldPacket& /*recv_data*/);
         void HandleGuildDecline(WorldPacket& /*recv_data*/);
-        void HandleGuildInfo(WorldPacket& /*recv_data*/);
+        void handleGuildInfo(WorldPacket& /*recvPacket*/);
         void HandleGuildRoster(WorldPacket& /*recv_data*/);
         void HandleGuildPromote(WorldPacket& recv_data);
         void HandleGuildDemote(WorldPacket& recv_data);
@@ -648,7 +649,6 @@ class SERVER_DECL WorldSession
         void HandleGuildDelRank(WorldPacket& /*recv_data*/);
         void HandleGuildSetPublicNote(WorldPacket& recv_data);
         void HandleGuildSetOfficerNote(WorldPacket& recv_data);
-        void HandleSaveGuildEmblem(WorldPacket& recv_data);
         void HandleCharterBuy(WorldPacket& recv_data);
         void HandleCharterShowSignatures(WorldPacket& recv_data);
         void HandleCharterTurnInCharter(WorldPacket& recv_data);
@@ -695,7 +695,6 @@ class SERVER_DECL WorldSession
         void HandleGuildAddRankOpcode(WorldPacket& recv_data);
         void HandleGuildDelRankOpcode(WorldPacket& recv_data);
         void HandleGuildChangeInfoTextOpcode(WorldPacket& recv_data);
-        void HandleSaveGuildEmblemOpcode(WorldPacket& recv_data);
         void HandleGuildEventLogQueryOpcode(WorldPacket& /*recv_data*/);
         void HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/);
         void HandleGuildPermissions(WorldPacket& /*recv_data*/);

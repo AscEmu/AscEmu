@@ -89,18 +89,12 @@ void WorldSession::HandleSetGuildInformation(WorldPacket& recv_data)
         guild->handleSetInfo(this, recv_packet.text);
 }
 
-void WorldSession::HandleGuildInfo(WorldPacket& /*recv_data*/)
-{
-    if (GetPlayer()->GetGuild())
-        GetPlayer()->GetGuild()->sendInfo(this);
-}
-
 void WorldSession::HandleGuildRoster(WorldPacket& /*recv_data*/)
 {
     if (GetPlayer()->GetGuild())
         GetPlayer()->GetGuild()->handleRoster(this);
     else
-        Guild::sendCommandResult(this, GC_TYPE_ROSTER, GC_ERROR_PLAYER_NOT_IN_GUILD);
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
 }
 
 void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
@@ -259,22 +253,6 @@ void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, false);
-}
-
-void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
-{
-    MsgSaveGuildEmblem recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Guild* guild = _player->GetGuild();
-    if (guild == nullptr)
-    {
-        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOGUILD).serialise().get());
-        return;
-    }
-
-    guild->handleSetEmblem(this, recv_packet.emblemInfo);
 }
 
 // Charter part
