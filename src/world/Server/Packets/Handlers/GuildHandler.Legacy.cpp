@@ -109,17 +109,11 @@ void WorldSession::HandleGuildPromote(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    if (!_player->GetGuild())
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-        return;
-    }
-
-    Player* dstplr = objmgr.GetPlayer(recv_packet.name.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
         return;
 
-    _player->GetGuild()->handleUpdateMemberRank(this, dstplr->getGuid(), false);
+    _player->GetGuild()->handleUpdateMemberRank(this, targetPlayerInfo->guid, false);
 }
 
 void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
@@ -128,17 +122,11 @@ void WorldSession::HandleGuildDemote(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    if (!_player->GetGuild())
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-        return;
-    }
-
-    Player* dstplr = objmgr.GetPlayer(recv_packet.name.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
         return;
 
-    _player->GetGuild()->handleUpdateMemberRank(this, dstplr->getGuid(), true);
+    _player->GetGuild()->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
 }
 
 void WorldSession::HandleGuildLeave(WorldPacket& /*recv_data*/)
@@ -153,17 +141,11 @@ void WorldSession::HandleGuildRemove(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    if (!_player->GetGuild())
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-        return;
-    }
-
-    Player* dstplr = objmgr.GetPlayer(recv_packet.name.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
         return;
 
-    GetPlayer()->GetGuild()->handleRemoveMember(this, dstplr->getGuid());
+    GetPlayer()->GetGuild()->handleRemoveMember(this, targetPlayerInfo->guid);
 }
 
 void WorldSession::HandleGuildDisband(WorldPacket& /*recv_data*/)
@@ -178,20 +160,14 @@ void WorldSession::HandleGuildLeader(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    if (!_player->GetGuild())
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-        return;
-    }
-
-    Player* dstplr = objmgr.GetPlayer(recv_packet.name.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    if (targetPlayerInfo == nullptr)
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
         return;
     }
 
-    GetPlayer()->GetGuild()->handleSetNewGuildMaster(this, dstplr->getName());
+    GetPlayer()->GetGuild()->handleSetNewGuildMaster(this, targetPlayerInfo->name);
 }
 
 void WorldSession::HandleGuildMotd(WorldPacket& recv_data)
@@ -263,12 +239,12 @@ void WorldSession::HandleGuildSetPublicNote(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    Player* dstplr = objmgr.GetPlayer(recv_packet.targetName.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    if (targetPlayerInfo == nullptr)
         return;
 
     if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, dstplr->getGuid(), true);
+        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, true);
 }
 
 void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
@@ -277,12 +253,12 @@ void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    Player* dstplr = objmgr.GetPlayer(recv_packet.targetName.c_str(), true);
-    if (dstplr == NULL)
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    if (targetPlayerInfo == nullptr)
         return;
 
     if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, dstplr->getGuid(), false);
+        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, false);
 }
 
 void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
@@ -334,7 +310,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        if (objmgr.GetCharterByName(recv_packet.name, (CharterTypes)recv_packet.arenaIndex))
+        if (objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(recv_packet.arenaIndex)))
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(72));
             return;
@@ -377,7 +353,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         {
             // Create the item and charter
             Item* i = objmgr.CreateItem(item_ids[arena_type], _player);
-            Charter* c = objmgr.CreateCharter(_player->getGuidLow(), (CharterTypes)recv_packet.arenaIndex);
+            Charter* c = objmgr.CreateCharter(_player->getGuidLow(), static_cast<CharterTypes>(recv_packet.arenaIndex));
             if (i == NULL || c == NULL)
                 return;
 
@@ -552,13 +528,9 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     data << uint16(0);
 
     if (c->CharterType == CHARTER_TYPE_GUILD)
-    {
         data << uint32(0);
-    }
     else
-    {
         data << uint32(1);
-    }
 
     SendPacket(&data);
 }
@@ -781,7 +753,7 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
         return;
 
     Guild* g = sGuildMgr.getGuildByName(recv_packet.name);
-    Charter* c = objmgr.GetCharterByName(recv_packet.name, (CharterTypes)pCharter->CharterType);
+    Charter* c = objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(pCharter->CharterType));
     if (c || g)
     {
         SendNotification("That name is in use by another guild.");
@@ -962,8 +934,7 @@ void WorldSession::HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGuildBankViewLog(WorldPacket& recv_data)
 {
     MsgGuildBankLogQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
+    recv_packet.deserialise(recv_data);
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->sendBankLog(this, recv_packet.slotId);
