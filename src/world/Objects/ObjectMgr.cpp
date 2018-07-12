@@ -493,9 +493,7 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 
     PlayerNameStringIndexMap::iterator i = m_playersInfoByName.find(lpn);
     if (i != m_playersInfoByName.end())
-    {
         rv = i->second;
-    }
 
     playernamelock.ReleaseReadLock();
     return rv;

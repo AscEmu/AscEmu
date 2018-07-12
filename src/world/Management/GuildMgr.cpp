@@ -156,9 +156,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadRankFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -192,9 +190,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadMemberFromDB(fields, fields2);
-                }
 
                 ++count;
             } while (result->NextRow() && result2->NextRow());
@@ -227,9 +223,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadBankRightFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -262,9 +256,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadEventLogFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -298,9 +290,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadBankEventLogFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -333,9 +323,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadGuildNewsLogFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -368,9 +356,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadBankTabFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -399,9 +385,7 @@ void GuildMgr::loadGuildDataFromDB()
                 uint32_t guildId = fields[0].GetUInt32();
 
                 if (Guild* guild = getGuildById(guildId))
-                {
                     guild->loadBankItemFromDB(fields);
-                }
 
                 ++count;
             } while (result->NextRow());
@@ -427,9 +411,7 @@ uint32_t GuildMgr::getNextGuildId()
 std::string GuildMgr::getGuildNameById(uint32_t guildId) const
 {
     if (Guild* guild = getGuildById(guildId))
-    {
         return guild->getName();
-    }
 
     return "";
 }
@@ -450,9 +432,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
     GuildXPperLevel.resize(worldConfig.guild.maxLevel);
     for (uint8_t level = 0; level < worldConfig.guild.maxLevel; ++level)
-    {
         GuildXPperLevel[level] = 0;
-    }
 
     //                                                 0         1
     QueryResult* result = WorldDatabase.Query("SELECT lvl, xp_for_next_level FROM guild_xp_for_level");
@@ -540,11 +520,9 @@ void GuildMgr::loadGuildRewardsFromDB()
 
 void GuildMgr::resetTimes(bool week)
 {
-    for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
+    for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
     {
         if (Guild* guild = itr->second)
-        {
             guild->resetTimes(week);
-        }
     }
 }

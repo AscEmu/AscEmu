@@ -296,9 +296,7 @@ public:
         if (playerGuid)
         {
             if (GuildMember const* member = getMember(playerGuid))
-            {
                 return (getRankRights(member->getRankId()) & right) != GR_RIGHT_EMPTY;
-            }
         }
 
         return false;

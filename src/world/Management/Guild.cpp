@@ -1434,7 +1434,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     member->saveGuildMembersToDB(false);
 
-    CharacterDatabase.Execute("INSERT INTO guild_member_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0 , 0, 0 )", Arcemu::Util::GUID_LOPART(m_id));
+    CharacterDatabase.Execute("INSERT INTO guild_member_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0)", Arcemu::Util::GUID_LOPART(m_id));
 
     updateAccountsNumber();
 
@@ -2741,7 +2741,7 @@ void Guild::GuildMember::changeRank(uint8_t newRank)
     if (Player* player = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(mGuid)))
         player->setGuildRank(newRank);
 
-    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = '%u' WHERE playerid = %u", (uint32_t)newRank, Arcemu::Util::GUID_LOPART(mGuid));
+    CharacterDatabase.Execute("UPDATE guild_data SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), Arcemu::Util::GUID_LOPART(mGuid));
 }
 
 void Guild::GuildMember::updateLogoutTime()
@@ -2768,10 +2768,10 @@ void Guild::GuildMember::updateBankWithdrawValue(uint8_t tabId, uint32_t amount)
 {
     mBankWithdraw[tabId] += amount;
 
-    CharacterDatabase.Execute("REPLACE INTO guild_member_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u' ,'%u', '%u' )",
+    CharacterDatabase.Execute("REPLACE INTO guild_member_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
         Arcemu::Util::GUID_LOPART(mGuid),
         mBankWithdraw[0], mBankWithdraw[1], mBankWithdraw[2], mBankWithdraw[3], mBankWithdraw[4],
-        mBankWithdraw[5], mBankWithdraw[7], mBankWithdraw[7], 0);
+        mBankWithdraw[5], mBankWithdraw[6],  0);
 }
 
 void Guild::GuildMember::resetValues(bool weekly)
