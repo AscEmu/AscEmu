@@ -229,7 +229,7 @@ public:
     void sendLoginInfo(WorldSession* session);
     void sendNewsUpdate(WorldSession* session);
     static void sendTurnInPetitionResult(WorldSession* pClient, uint32_t result);
-    void _sendBankContentUpdate(uint8_t tabId, SlotIds slots) const;
+    void _sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlots = false) const;
 
     bool loadGuildFromDB(Field* fields);
     void loadGuildNewsLogFromDB(Field* fields);

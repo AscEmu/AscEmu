@@ -2375,7 +2375,6 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
             pDestItem->setOwner(player);
             pDestItem->SaveToDB(playerBag, playerSlotId, true, nullptr);
-            getBankTab(tabId)->setItem(slotId, nullptr);
 
             if (!player->GetItemInterface()->SafeAddItem(pDestItem, 0, 0))
             {
@@ -2385,6 +2384,8 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
             logBankEvent(GB_LOG_WITHDRAW_ITEM, tabId, player->getGuidLow(),
                 getBankTab(tabId)->getItem(slotId)->getEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->getStackCount()));
+
+            getBankTab(tabId)->setItem(slotId, nullptr);
         }
     }
 
@@ -2392,14 +2393,12 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
     slots.insert(slotId);
 
-    _sendBankContentUpdate(tabId, slots);
+    _sendBankContentUpdate(tabId, slots, true);
 }
 
-void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
+void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlots) const
 {
 #if VERSION_STRING != Cata
-    bool sendAllSlots = true;
-
     WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
     data << uint64_t(m_bankMoney);
     data << uint8_t(tabId);
@@ -2407,7 +2406,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
     data << uint32_t(0);
     data << uint8_t(sendAllSlots);
 
-    if (!tabId)
+    if (!tabId && sendAllSlots)
     {
         data << uint8_t(_getPurchasedTabsSize());                  // Number of tabs
         for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
@@ -2422,6 +2421,12 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
         data << uint8_t(0);
     else if (sendAllSlots)
         tab->writeInfoPacket(data);
+    else if (!slots.empty())
+    {
+        data << uint8(slots.size());
+        for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+            tab->writeSlotPacket(data, *itr, true);
+    }
     else
         data << uint8_t(0);
 
@@ -2768,10 +2773,10 @@ void Guild::GuildMember::updateBankWithdrawValue(uint8_t tabId, uint32_t amount)
 {
     mBankWithdraw[tabId] += amount;
 
-    CharacterDatabase.Execute("REPLACE INTO guild_member_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
+    CharacterDatabase.Execute("REPLACE INTO guild_member_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
         Arcemu::Util::GUID_LOPART(mGuid),
         mBankWithdraw[0], mBankWithdraw[1], mBankWithdraw[2], mBankWithdraw[3], mBankWithdraw[4],
-        mBankWithdraw[5], mBankWithdraw[6],  0);
+        mBankWithdraw[5], mBankWithdraw[6], 0, 0);
 }
 
 void Guild::GuildMember::resetValues(bool weekly)

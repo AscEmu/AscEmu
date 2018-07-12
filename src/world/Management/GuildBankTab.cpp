@@ -75,7 +75,7 @@ void GuildBankTab::writeInfoPacket(WorldPacket& data) const
 
 bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty) const
 {
-    Item* pItem = slotId < MAX_GUILD_BANK_SLOTS ? mItems[slotId] : nullptr;
+    Item* pItem = getItem(slotId);
     const uint32_t itemEntry = pItem ? pItem->getEntry() : 0;
 
     if (!itemEntry && ignoreEmpty)
@@ -187,9 +187,7 @@ Item* GuildBankTab::getItem(uint8_t slotId) const
 bool GuildBankTab::setItem(uint8_t slotId, Item* item)
 {
     if (slotId >= MAX_GUILD_BANK_SLOTS && slotId != UNDEFINED_TAB_SLOT)
-    {
         return false;
-    }
 
     if (item != nullptr)
     {
@@ -211,6 +209,7 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
     }
     else
     {
+        mItems[slotId] = nullptr;
         CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
     }
 
