@@ -393,25 +393,6 @@ void WorldSession::HandleGuildBankerActivate(WorldPacket& recvData)
         SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
 }
 
-void WorldSession::HandleGuildBankQueryTab(WorldPacket& recvData)
-{
-    uint64_t bankGuid;
-    uint8_t tabId;
-    bool sendAllSlots;
-
-    recvData >> bankGuid;
-    recvData >> tabId;
-    recvData >> sendAllSlots;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_QUERY_TAB %s: gameobject: %u, tabId: %u, allSlots: %u",
-        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, sendAllSlots);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->sendBankList(this, tabId, true, false);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 

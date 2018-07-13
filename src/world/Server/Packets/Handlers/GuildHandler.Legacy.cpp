@@ -617,21 +617,4 @@ void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
     _player->GetGuild()->sendBankList(this, 0, false, false);
 }
 
-void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
-{
-    CmsgGuildBankQueryTab recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Guild* guild = GetPlayer()->GetGuild();
-    if (guild == nullptr)
-        return;
-
-    GuildBankTab* pTab = guild->getBankTab(recv_packet.tabId);
-    if (pTab == NULL)
-        return;
-
-    guild->sendBankList(this, recv_packet.tabId, false, true);
-}
-
 #endif

@@ -651,6 +651,7 @@ class SERVER_DECL WorldSession
         void handleGuildBankDepositMoney(WorldPacket& recvPacket);
         void handleGuildBankUpdateTab(WorldPacket& recvPacket);
         void handleGuildBankSwapItems(WorldPacket& recvPacket);
+        void handleGuildBankQueryTab(WorldPacket& recvPacket);
 
     //\brief this was two seperated opcodes on versions < Cata.
     //       now it is one since cata.
@@ -692,7 +693,6 @@ class SERVER_DECL WorldSession
         void HandleCharterSign(WorldPacket& recv_data);
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
-        void HandleGuildBankViewTab(WorldPacket& recv_data);
         
         void HandleGuildBankOpenVault(WorldPacket& recv_data);
         
@@ -722,7 +722,7 @@ class SERVER_DECL WorldSession
         // Guild Bank
         void HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/);
         void HandleGuildBankerActivate(WorldPacket& recv_data);
-        void HandleGuildBankQueryTab(WorldPacket& recv_data);
+        
         
         
 
