@@ -504,8 +504,8 @@ public:
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
 
-        const uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
-        const uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
+    uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
+    uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
 
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
@@ -576,8 +576,8 @@ public:
 
         // Only for MapMgr use
         MapCell* GetMapCell() const;
-        const uint32 GetMapCellX() { return m_mapCell_x; }
-        const uint32 GetMapCellY() { return m_mapCell_y; }
+    uint32 GetMapCellX() { return m_mapCell_x; }
+    uint32 GetMapCellY() { return m_mapCell_y; }
         // Only for MapMgr use
         void SetMapCell(MapCell* cell);
         // Only for MapMgr use
@@ -594,7 +594,7 @@ public:
         void SetMapId(uint32 newMap) { m_mapId = newMap; }
         void SetZoneId(uint32 newZone);
 
-        const uint32 GetMapId() const { return m_mapId; }
+    uint32 GetMapId() const { return m_mapId; }
         const uint32 & GetZoneId() const { return m_zoneId; }
 
         void SetNewGuid(uint32 Guid)
@@ -654,7 +654,7 @@ public:
         // Converts to 360 > x > 0
         float getEasyAngle(float angle);
 
-        const float getDistanceSq(Object* obj)
+    float getDistanceSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range
@@ -666,7 +666,7 @@ public:
             return comp.Distance(m_position);
         }
 
-        const float GetDistance2dSq(Object* obj)
+    float GetDistance2dSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range
@@ -738,7 +738,7 @@ public:
 
         uint32 m_phase;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-        const uint32 GetPhase() { return m_phase; }
+    uint32 GetPhase() { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);

@@ -60,7 +60,7 @@ public:
             _curbitval = 0;
         }
 
-        ByteBuffer(const ByteBuffer & buf) : _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage), _bitpos(buf._bitpos), _curbitval(buf._curbitval)
+        ByteBuffer(const ByteBuffer & buf) : _rpos(buf._rpos), _wpos(buf._wpos), _bitpos(buf._bitpos), _curbitval(buf._curbitval), _storage(buf._storage)
         {}
 
         virtual ~ByteBuffer()
