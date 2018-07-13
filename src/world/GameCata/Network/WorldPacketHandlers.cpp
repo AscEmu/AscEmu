@@ -391,9 +391,9 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_TURN_IN_PETITION].handler = &WorldSession::HandleCharterTurnInCharterOpcode;
     WorldPacketHandlers[CMSG_PETITION_QUERY].handler = &WorldSession::HandleCharterQueryOpcode;
     WorldPacketHandlers[CMSG_OFFER_PETITION].handler = &WorldSession::handleCharterOffer;
-    WorldPacketHandlers[CMSG_PETITION_SIGN].handler = &WorldSession::HandleCharterSignOpcode;
-    WorldPacketHandlers[MSG_PETITION_DECLINE].handler = &WorldSession::HandleCharterDeclineOpcode;
-    WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::HandleCharterRenameOpcode;
+    WorldPacketHandlers[CMSG_PETITION_SIGN].handler = &WorldSession::handleCharterSign;
+    WorldPacketHandlers[MSG_PETITION_DECLINE].handler = &WorldSession::handleCharterDecline;
+    WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::handleCharterRename;
     WorldPacketHandlers[MSG_SAVE_GUILD_EMBLEM].handler = &WorldSession::handleSaveGuildEmblem;
     WorldPacketHandlers[CMSG_GUILD_INFO_TEXT].handler = &WorldSession::handleSetGuildInfo;
     WorldPacketHandlers[CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY].handler = &WorldSession::handleGuildBankMoneyWithdrawn;

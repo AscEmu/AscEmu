@@ -679,6 +679,9 @@ class SERVER_DECL WorldSession
 
         void handleCharterShowSignatures(WorldPacket& recvPacket);
         void handleCharterOffer(WorldPacket& recvPacket);
+        void handleCharterSign(WorldPacket& recvPacket);
+        void handleCharterDecline(WorldPacket& recvPacket);
+        void handleCharterRename(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
@@ -689,10 +692,7 @@ class SERVER_DECL WorldSession
         
         void HandleCharterTurnInCharter(WorldPacket& recv_data);
         void HandleCharterQuery(WorldPacket& recv_data);
-        void HandleCharterSign(WorldPacket& recv_data);
-        void HandleCharterDecline(WorldPacket& recv_data);
-        void HandleCharterRename(WorldPacket& recv_data);
-        
+
 #else
     public:
 
@@ -718,10 +718,7 @@ class SERVER_DECL WorldSession
         void HandleCharterBuyOpcode(WorldPacket& recv_data);
         void HandleCharterQueryOpcode(WorldPacket& recv_data);
         
-        void HandleCharterSignOpcode(WorldPacket& recv_data);
-        void HandleCharterDeclineOpcode(WorldPacket& recv_data);
         void HandleCharterTurnInCharterOpcode(WorldPacket& recv_data);
-        void HandleCharterRenameOpcode(WorldPacket& recv_data);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildFinder

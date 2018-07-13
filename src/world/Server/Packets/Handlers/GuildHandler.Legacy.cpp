@@ -296,67 +296,6 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-namespace PetitionSignResult
-{
-    enum
-    {
-        OK = 0,
-        AlreadySigned = 1
-    };
-}
-
-void WorldSession::HandleCharterSign(WorldPacket& recv_data)
-{
-    CmsgPetitionSign recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Charter* c = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
-    if (c == nullptr)
-        return;
-
-    for (uint32 i = 0; i < c->SignatureCount; ++i)
-    {
-        if (c->Signatures[i] == _player->getGuid())
-        {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
-            SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
-            return;
-        }
-    }
-
-    if (c->IsFull())
-        return;
-
-    c->AddSignature(_player->getGuidLow());
-    c->SaveToDB();
-    _player->m_charters[c->CharterType] = c;
-    _player->SaveToDB(false);
-
-    Player* l = _player->GetMapMgr()->GetPlayer(c->GetLeader());
-    if (l == nullptr)
-        return;
-
-    l->SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
-    SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, uint64_t(c->GetLeader()), PetitionSignResult::OK).serialise().get());
-}
-
-void WorldSession::HandleCharterDecline(WorldPacket& recv_data)
-{
-    MsgPetitionDecline recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Charter* c = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
-    if (c == nullptr)
-        return;
-
-    Player* owner = objmgr.GetPlayer(c->GetLeader());
-    if (owner)
-        owner->GetSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
-}
-
-
 void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 {
     CmsgTurnInPetition recv_packet;
@@ -472,31 +411,6 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
     }
 
     Guild::sendTurnInPetitionResult(this, PETITION_ERROR_OK);
-}
-
-void WorldSession::HandleCharterRename(WorldPacket& recv_data)
-{
-    MsgPetitionRename recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
-    if (pCharter == nullptr)
-        return;
-
-    Guild* g = sGuildMgr.getGuildByName(recv_packet.name);
-    Charter* c = objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(pCharter->CharterType));
-    if (c || g)
-    {
-        SendNotification("That name is in use by another guild.");
-        return;
-    }
-
-    c = pCharter;
-    c->GuildName = recv_packet.name;
-    c->SaveToDB();
-
-    SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
 }
 
 #endif

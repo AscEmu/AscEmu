@@ -617,76 +617,6 @@ void WorldSession::HandleCharterQueryOpcode(WorldPacket& recvData)
     SendPacket(&data);
 }
 
-void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)
-{
-    uint64_t itemGuid;
-    recvData >> itemGuid;
-
-    Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
-    if (charter == nullptr)
-    {
-        return;
-    }
-
-    for (uint32_t i = 0; i < charter->SignatureCount; ++i)
-    {
-        if (charter->Signatures[i] == _player->getGuid())
-        {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
-            return;
-        }
-    }
-
-    if (charter->IsFull())
-    {
-        return;
-    }
-
-    charter->AddSignature(_player->getGuidLow());
-    charter->SaveToDB();
-    _player->m_charters[charter->CharterType] = charter;
-    _player->SaveToDB(false);
-
-    Player* player = _player->GetMapMgr()->GetPlayer(charter->GetLeader());
-    if (player == nullptr)
-    {
-        return;
-    }
-
-    WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
-    data << uint64_t(itemGuid);
-    data << uint64_t(_player->getGuid());
-    data << uint32_t(0);
-    player->GetSession()->SendPacket(&data);
-
-    data.clear();
-
-    data << uint64_t(itemGuid);
-    data << uint64_t(charter->GetLeader());
-    data << uint32_t(0);
-
-    SendPacket(&data);
-}
-
-void WorldSession::HandleCharterDeclineOpcode(WorldPacket& recv_data)
-{
-    uint64_t itemGuid;
-    recv_data >> itemGuid;
-
-    Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
-    if (charter == nullptr)
-    {
-        return;
-    }
-
-    if (Player* owner = objmgr.GetPlayer(charter->GetLeader()))
-    {
-        WorldPacket data(MSG_PETITION_DECLINE, 8);
-        data << uint64_t(_player->getGuid());
-        owner->GetSession()->SendPacket(&data);
-    }
-}
-
 void WorldSession::HandleCharterTurnInCharterOpcode(WorldPacket& recv_data)
 {
     uint64_t charterGuid;
@@ -798,39 +728,6 @@ void WorldSession::HandleCharterTurnInCharterOpcode(WorldPacket& recv_data)
     }
 
     Guild::sendTurnInPetitionResult(this, PETITION_ERROR_OK);
-}
-
-void WorldSession::HandleCharterRenameOpcode(WorldPacket& recv_data)
-{
-    uint64_t charterGuid;
-    std::string name;
-
-    recv_data >> charterGuid;
-    recv_data >> name;
-
-    Charter* charter = objmgr.GetCharterByItemGuid(charterGuid);
-    if (charter == nullptr)
-    {
-        return;
-    }
-
-    Guild* guild = sGuildMgr.getGuildByName(name);
-    Charter* guildCharter = objmgr.GetCharterByName(name, (CharterTypes)charter->CharterType);
-    if (guildCharter || guild)
-    {
-        SendNotification("Guild name already in use.");
-        return;
-    }
-
-    guildCharter = charter;
-    guildCharter->GuildName = name;
-    guildCharter->SaveToDB();
-
-    WorldPacket data(MSG_PETITION_RENAME, 100);
-    data << uint64_t(charterGuid);
-    data << name;
-
-    SendPacket(&data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -38,6 +38,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetitionShowSignatures.h"
 #include "Server/Packets/SmsgPetitionShowSignatures.h"
 #include "Server/Packets/CmsgOfferPetition.h"
+#include "Server/Packets/SmsgPetitionSignResult.h"
+#include "Server/Packets/CmsgPetitionSign.h"
+#include "Server/Packets/MsgPetitionDecline.h"
+#include "Server/Packets/MsgPetitionRename.h"
 
 
 using namespace AscEmu::Packets;
@@ -519,4 +523,88 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
 
     pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(recv_packet.itemGuid, pCharter->GetLeader(), pCharter->GetID(), pCharter->SignatureCount,
         pCharter->Slots, pCharter->Signatures).serialise().get());
+}
+
+namespace PetitionSignResult
+{
+    enum
+    {
+        OK = 0,
+        AlreadySigned = 1
+    };
+}
+
+void WorldSession::handleCharterSign(WorldPacket& recvPacket)
+{
+    CmsgPetitionSign recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
+    {
+        for (uint32_t i = 0; i < charter->SignatureCount; ++i)
+        {
+            if (charter->Signatures[i] == _player->getGuid())
+            {
+                SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
+                SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
+                return;
+            }
+        }
+
+        if (charter->IsFull())
+            return;
+
+        charter->AddSignature(_player->getGuidLow());
+        charter->SaveToDB();
+        _player->m_charters[charter->CharterType] = charter;
+        _player->SaveToDB(false);
+
+        Player* player = _player->GetMapMgr()->GetPlayer(charter->GetLeader());
+        if (player == nullptr)
+            return;
+
+        player->SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
+        SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, uint64_t(charter->GetLeader()), PetitionSignResult::OK).serialise().get());
+    }
+}
+
+void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
+{
+    MsgPetitionDecline recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    if (charter == nullptr)
+        return;
+
+    Player* player = objmgr.GetPlayer(charter->GetLeader());
+    if (player)
+        player->GetSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
+}
+
+void WorldSession::handleCharterRename(WorldPacket& recvPacket)
+{
+    MsgPetitionRename recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    Charter* charter1 = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    if (charter1 == nullptr)
+        return;
+
+    Guild* guild = sGuildMgr.getGuildByName(recv_packet.name);
+    Charter* charter = objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(charter1->CharterType));
+    if (charter || guild)
+    {
+        SendNotification("That name is in use by another guild.");
+        return;
+    }
+
+    charter = charter1;
+    charter->GuildName = recv_packet.name;
+    charter->SaveToDB();
+
+    SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
 }
