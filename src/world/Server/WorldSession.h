@@ -648,6 +648,7 @@ class SERVER_DECL WorldSession
         void handleGuildPromote(WorldPacket& recvPacket);
         void handleGuildDemote(WorldPacket& recvPacket);
         void handleGuildBankWithdrawMoney(WorldPacket& recvPacket);
+        void handleGuildBankDepositMoney(WorldPacket& recvPacket);
 
 #if VERSION_STRING != Cata
         void handleGuildSetPublicNote(WorldPacket& recvPacket);
@@ -680,7 +681,7 @@ class SERVER_DECL WorldSession
         void HandleGuildBankViewTab(WorldPacket& recv_data);
         void HandleGuildBankQueryText(WorldPacket& recv_data);
         void HandleGuildBankOpenVault(WorldPacket& recv_data);
-        void HandleGuildBankDepositMoney(WorldPacket& recv_data);
+        
         void HandleGuildBankDepositItem(WorldPacket& recv_data);
         void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
         void HandleGuildBankModifyTab(WorldPacket& recv_data);
@@ -710,7 +711,6 @@ class SERVER_DECL WorldSession
         void HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/);
         void HandleGuildBankerActivate(WorldPacket& recv_data);
         void HandleGuildBankQueryTab(WorldPacket& recv_data);
-        void HandleGuildBankDepositMoney(WorldPacket& recv_data);
         
         void HandleGuildBankSwapItems(WorldPacket& recv_data);
         void HandleGuildBankUpdateTab(WorldPacket& recv_data);
