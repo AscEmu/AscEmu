@@ -1,115 +1,58 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
-#include "Map/MapMgr.h"
-#include "Spell/SpellAuras.h"
+#include "Server/Packets/SmsgDuelCountdown.h"
+#include "Server/Packets/SmsgDuelComplete.h"
 #include "Server/WorldSession.h"
-#include "Objects/GameObject.h"
-#include "Units/Creatures/Pet.h"
+#include "Units/Players/Player.h"
 
-#if VERSION_STRING != Cata
-void WorldSession::HandleDuelAccepted(WorldPacket& /*recv_data*/)
+using namespace AscEmu::Packets;
+
+void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
-    if (_player->DuelingWith == NULL)
+    const auto duelPlayer = GetPlayer()->DuelingWith;
+    if (duelPlayer == nullptr)
         return;
 
-    if (_player->m_duelState != DUEL_STATE_FINISHED)
+    if (GetPlayer()->m_duelState != DUEL_STATE_FINISHED)
         return;
 
-    if (_player->m_duelCountdownTimer > 0)
+    if (GetPlayer()->m_duelCountdownTimer > 0)
         return;
 
-    _player->m_duelStatus = DUEL_STATUS_INBOUNDS;
-    _player->DuelingWith->m_duelStatus = DUEL_STATUS_INBOUNDS;
+    GetPlayer()->m_duelStatus = DUEL_STATUS_INBOUNDS;
+    GetPlayer()->m_duelState = DUEL_STATE_STARTED;
 
-    _player->m_duelState = DUEL_STATE_STARTED;
-    _player->DuelingWith->m_duelState = DUEL_STATE_STARTED;
+    duelPlayer->m_duelStatus = DUEL_STATUS_INBOUNDS;
+    duelPlayer->m_duelState = DUEL_STATE_STARTED;
 
-    WorldPacket data(SMSG_DUEL_COUNTDOWN, 4);
-    data << uint32(3000);   // time in ms
+    const uint32_t defaultDuelCountdown = 3000;
 
-    SendPacket(&data);
-    _player->DuelingWith->m_session->SendPacket(&data);
+    SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
+    duelPlayer->SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
 
-    _player->m_duelCountdownTimer = 3000;
+    GetPlayer()->m_duelCountdownTimer = defaultDuelCountdown;
 
     sEventMgr.AddEvent(_player, &Player::DuelCountdown, EVENT_PLAYER_DUEL_COUNTDOWN, 1000, 3, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void WorldSession::HandleDuelCancelled(WorldPacket& /*recv_data*/)
+void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
-    if (_player->DuelingWith == NULL)
+    const auto duelPlayer = GetPlayer()->DuelingWith;
+    if (duelPlayer == nullptr)
         return;
 
-    if (_player->m_duelState == DUEL_STATE_STARTED)
+    if (GetPlayer()->m_duelState == DUEL_STATE_STARTED)
     {
-        _player->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
+        duelPlayer->EndDuel(DUEL_WINNER_KNOCKOUT);
         return;
     }
 
-    WorldPacket data(SMSG_DUEL_COMPLETE, 1);
-    data << uint8(1);   //bool 1 = true
+    SendPacket(SmsgDuelComplete(1).serialise().get());
+    duelPlayer->SendPacket(SmsgDuelComplete(1).serialise().get());
 
-    SendPacket(&data);
-    _player->DuelingWith->m_session->SendPacket(&data);
-
-    GameObject* arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(_player->getDuelArbiter())) : NULL;
-    if (arbiter != NULL)
-    {
-        arbiter->RemoveFromWorld(true);
-        delete arbiter;
-    }
-
-    _player->DuelingWith->setDuelArbiter(0);
-    _player->DuelingWith->setDuelTeam(0);
-    _player->DuelingWith->m_duelState = DUEL_STATE_FINISHED;
-    _player->DuelingWith->m_duelCountdownTimer = 0;
-    _player->DuelingWith->DuelingWith = NULL;
-
-    _player->setDuelArbiter(0);
-    _player->setDuelTeam(0);
-    _player->m_duelState = DUEL_STATE_FINISHED;
-    _player->m_duelCountdownTimer = 0;
-    _player->DuelingWith = NULL;
-
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; x++)
-    {
-        if (_player->m_auras[x])
-        {
-            _player->m_auras[x]->Remove();
-        }
-    }
-    std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-    {
-        if ((*itr)->isAlive())
-        {
-            (*itr)->SetPetAction(PET_ACTION_STAY);
-            (*itr)->SetPetAction(PET_ACTION_FOLLOW);
-        }
-    }
+    GetPlayer()->cancelDuel();
 }
-#endif

@@ -433,9 +433,9 @@ void ObjectMgr::LoadPlayersInfo()
             pn->subGroup = 0;
             pn->m_loggedInPlayer = nullptr;
 #if VERSION_STRING != Cata
-            pn->guild = NULL;
-            pn->guildRank = NULL;
-            pn->guildMember = NULL;
+            pn->guild = nullptr;
+            pn->guildRank = nullptr;
+            pn->guildMember = nullptr;
 #else
             pn->m_guild = 0;
             pn->guildRank = GUILD_RANK_NONE;
@@ -480,14 +480,7 @@ void ObjectMgr::LoadPlayersInfo()
                 delete result2;
             }
 
-#if VERSION_STRING != Cata
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI)
-#else
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI || pn->race == RACE_WORGEN)
-#endif
-                pn->team = 0;
-            else
-                pn->team = 1;
+            pn->team = getSideByRace(pn->race);
 
             if (GetPlayerInfoByName(pn->name) != nullptr)
             {
@@ -922,21 +915,21 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns");
+    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiCreatureSpawnId = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns");
+    result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiGameObjectSpawnId = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(group_id) FROM groups");
+    result = CharacterDatabase.Query("SELECT MAX(group_id) FROM `groups`");
     if (result)
     {
         m_hiGroupId = result->Fetch()[0].GetUInt32();
@@ -1064,7 +1057,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
         Util::StringToLowerCase(strName);
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!stricmp(itr->second->GetNameString()->c_str(), strName.c_str()))
+            if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
             {
                 rv = itr->second;
                 break;
@@ -1075,7 +1068,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
     {
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
-            if (!strcmp(itr->second->GetName(), name))
+            if (!strcmp(itr->second->getName().c_str(), name))
             {
                 rv = itr->second;
                 break;
@@ -1438,7 +1431,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
                 }
                 else
                 {
-                    LOG_ERROR("Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
+                    LogDebugFlag(LF_DB_TABLES, "Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
                 }
             }
 
@@ -2283,6 +2276,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalManaGain += 54;
                         break;
+#if VERSION_STRING > TBC
                     case DEATHKNIGHT: // Based on 55-56 more testing will be done.
                         if (Level < 60)
                             TotalHealthGain += 92;
@@ -2291,6 +2285,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                         else
                             TotalHealthGain += 92;
                         break;
+#endif
                 }
 
                 // Apply HP/Mana
@@ -2575,9 +2570,11 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
         case PRIEST:
             result = new Priest(guid);
             break;
+#if VERSION_STRING > TBC
         case DEATHKNIGHT:
             result = new DeathKnight(guid);
             break;
+#endif
         case SHAMAN:
             result = new Shaman(guid);
             break;
@@ -2736,10 +2733,6 @@ Charter::Charter(Field* fields)
             ++SignatureCount;
     }
 
-    // Unknown... really?
-    Unk1 = 0;
-    Unk2 = 0;
-    Unk3 = 0;
     PetitionSignerCount = 0;
 }
 
@@ -3057,7 +3050,7 @@ void ObjectMgr::ReloadDisabledSpells()
 
 void ObjectMgr::LoadGroups()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM groups");
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM `groups`");
     if (result)
     {
         if (result->GetFieldCount() != 52)
@@ -3581,7 +3574,7 @@ void ObjectMgr::LoadEventScripts()
     LogNotice("ObjectMgr : Loading Event Scripts...");
 
     bool success = false;
-    const char* eventScriptsQuery = "SELECT event_id, function, script_type, data_1, data_2, data_3, data_4, data_5, x, y, z, o, delay, next_event FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
+    const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
     auto result = WorldDatabase.Query(&success, eventScriptsQuery);
 
     if (!success)

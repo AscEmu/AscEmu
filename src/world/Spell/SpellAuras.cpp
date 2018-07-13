@@ -4988,6 +4988,7 @@ void Aura::SpellAuraTransform(bool apply)
                     else
                         m_target->setDisplayId(10145);
                 }
+#if VERSION_STRING > Classic
                 if (m_target->getRace() == RACE_BLOODELF)
                 {
                     if (m_target->getGender() == 0)
@@ -4995,7 +4996,7 @@ void Aura::SpellAuraTransform(bool apply)
                     else
                         m_target->setDisplayId(17830);
                 }
-
+#endif
                 if (m_target->getRace() == RACE_GNOME)
                 {
                     if (m_target->getGender() == 0)
@@ -5024,6 +5025,7 @@ void Aura::SpellAuraTransform(bool apply)
                     else
                         m_target->setDisplayId(10144);
                 }
+#if VERSION_STRING > Classic
                 if (m_target->getRace() == RACE_DRAENEI)
                 {
                     if (m_target->getGender() == 0)
@@ -5031,6 +5033,7 @@ void Aura::SpellAuraTransform(bool apply)
                     else
                         m_target->setDisplayId(17828);
                 }
+#endif
             }
             else
                 m_target->setDisplayId(m_target->getNativeDisplayId());
@@ -9278,7 +9281,7 @@ void Aura::SpellAuraCallStabledPet(bool apply)
     {
         Player* pcaster = GetPlayerCaster();
         if (pcaster != nullptr && pcaster->getClass() == HUNTER && pcaster->GetSession() != nullptr)
-            pcaster->GetSession()->SendStabledPetList(0);
+            pcaster->GetSession()->sendStabledPetList(0);
     }
 }
 

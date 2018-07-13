@@ -1,448 +1,281 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
-#include "Management/Item.h"
-#include "Management/AuctionHouse.h"
-#include "Management/AuctionMgr.h"
-#include "Management/ItemInterface.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Storage/MySQLStructures.h"
-#include "Server/MainServerDefines.h"
+#include "Server/Packets/ManagedPacket.h"
+#include "Server/WorldSession.h"
+#include "Server/Packets/MsgTabardvendorActivate.h"
+#include "Server/Packets/CmsgBankerActivate.h"
+#include "Server/Packets/SmsgShowBank.h"
+#include "Server/Packets/MsgAuctionHello.h"
+#include "Server/Packets/SmsgSpiritHealerConfirm.h"
+#include "Server/Packets/CmsgTrainerBuySpell.h"
+#include "Server/Packets/SmsgTrainerBuySucceeded.h"
+#include "Server/Packets/SmsgPetitionShowlist.h"
+#include "Server/Packets/CmsgPetitionShowlist.h"
+#include "Units/Players/PlayerClasses.hpp"
+#include "Units/Creatures/Creature.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellAuras.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
-#include "Units/Creatures/Pet.h"
-#include "Server/Packets/CmsgGossipHello.h"
-#include "Server/Packets/CmsgNpcTextQuery.h"
+#include "Management/AuctionMgr.h"
+#include "Server/MainServerDefines.h"
+#include "Objects/ObjectMgr.h"
 #include "Server/Packets/CmsgGossipSelectOption.h"
+#include "Server/Packets/CmsgGossipHello.h"
+#include "Management/ItemInterface.h"
+#include "Server/Packets/SmsgBinderConfirm.h"
+#include "Server/Packets/CmsgTrainerList.h"
+#include "Server/Packets/CmsgBinderActivate.h"
+#include "Units/Creatures/Pet.h"
+#include "Server/Packets/MsgListStabledPets.h"
+#include "Server/Packets/CmsgNpcTextQuery.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Spell/SpellMgr.h"
+#include "Server/Packets/CmsgBuyBankSlot.h"
+#include "Server/Packets/SmsgBuyBankSlotResult.h"
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING != Cata
-trainertype trainer_types[TRAINER_TYPE_MAX] =
+void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
 {
-    { "Warrior"         , 0 },
-    { "Paladin"         , 0 },
-    { "Rogue"           , 0 },
-    { "Warlock"         , 0 },
-    { "Mage"            , 0 },
-    { "Shaman"          , 0 },
-    { "Priest"          , 0 },
-    { "Hunter"          , 0 },
-    { "Druid"           , 0 },
-    { "Leatherwork"     , 2 },
-    { "Skinning"        , 2 },
-    { "Fishing"         , 2 },
-    { "First Aid"       , 2 },
-    { "Physician"       , 2 },
-    { "Engineer"        , 2 },
-    { "Weapon Master"   , 0 },
-};
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles MSG_TABARDVENDOR_ACTIVATE:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendTabardHelp(pCreature);
-}
-
-void WorldSession::SendTabardHelp(Creature* pCreature)
-{
-    WorldPacket data(8);
-    data.Initialize(MSG_TABARDVENDOR_ACTIVATE);
-    data << pCreature->getGuid();
-    SendPacket(&data);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_BANKER_ACTIVATE:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendBankerList(pCreature);
-}
-
-void WorldSession::SendBankerList(Creature* pCreature)
-{
-
-    WorldPacket data(8);
-    data.Initialize(SMSG_SHOW_BANK);
-    data << pCreature->getGuid();
-    SendPacket(&data);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_TRAINER_LIST
-//////////////////////////////////////////////////////////////////////////////////////////
-//NOTE: we select prerequirements for spell that TEACHES you
-//not by spell that you learn!
-
-void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    // Inits, grab creature, check.
-    uint64 guid;
-    recv_data >> guid;
-    Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!train) return;
-
-    _player->Reputation_OnTalk(train->m_factionEntry);
-    SendTrainerList(train);
-}
-
-#if VERSION_STRING != Cata
-void WorldSession::SendTrainerList(Creature* pCreature)
-{
-    Trainer* pTrainer = pCreature->GetTrainer();
-    //if (pTrainer == 0 || !CanTrainAt(_player, pTrainer)) return;
-    if (pTrainer == NULL)
+    MsgTabardvendorActivate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    if (!_player->CanTrainAt(pTrainer))
-        Arcemu::Gossip::Menu::SendSimpleMenu(pCreature->getGuid(), pTrainer->Cannot_Train_GossipTextId, GetPlayer());
-    else
-    {
-        WorldPacket data(SMSG_TRAINER_LIST, 5000);
-        TrainerSpell* pSpell;
-        uint32 Spacer = 0;
-        uint32 Count = 0;
-        uint8 Status;
-        std::string Text;
+    LOG_DEBUG("Received MSG_TABARDVENDOR_ACTIVATE: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
 
-        data << pCreature->getGuid();
-        data << pTrainer->TrainerType;
-
-        data << uint32(0);
-        for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
-        {
-            pSpell = &(*itr);
-            Status = TrainerGetSpellStatus(pSpell);
-            if (pSpell->pCastRealSpell != NULL)
-                data << pSpell->pCastSpell->getId();
-            else if (pSpell->pLearnSpell)
-                data << pSpell->pLearnSpell->getId();
-            else
-                continue;
-
-            data << Status;
-            data << pSpell->Cost;
-            data << Spacer;
-            data << uint32(pSpell->IsProfession);
-            data << uint8(pSpell->RequiredLevel);
-            data << pSpell->RequiredSkillLine;
-            data << pSpell->RequiredSkillLineValue;
-            data << pSpell->RequiredSpell;
-            data << Spacer;    //this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
-            data << Spacer;
-            ++Count;
-        }
-
-        *(uint32*)&data.contents()[12] = Count;
-
-        if (stricmp(pTrainer->UIMessage, "DMSG") == 0)
-            data << _player->GetSession()->LocalizedWorldSrv(37);
-        else
-            data << pTrainer->UIMessage;
-        SendPacket(&data);
-    }
-}
-
-void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 Guid;
-    uint32 TeachingSpellID;
-
-    recvPacket >> Guid >> TeachingSpellID;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(Guid));
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Checks
-    if (pCreature == NULL) return;
-
-    Trainer* pTrainer = pCreature->GetTrainer();
-    if (pTrainer == 0)
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
         return;
 
-    // Check if the trainer offers that spell
-    TrainerSpell* pSpell = NULL;
-    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+    SendPacket(MsgTabardvendorActivate(recv_packet.guid).serialise().get());
+}
+
+//helper
+void WorldSession::sendTabardHelp(Creature* creature)
+{
+    if (creature == nullptr)
+        return;
+
+    SendPacket(MsgTabardvendorActivate(creature->getGuid()).serialise().get());
+}
+
+void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
+{
+    CmsgBankerActivate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received CMSG_BANKER_ACTIVATE: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    SendPacket(SmsgShowBank(recv_packet.guid).serialise().get());
+}
+
+//helper
+void WorldSession::sendBankerList(Creature* creature)
+{
+    if (creature == nullptr)
+        return;
+
+    SendPacket(SmsgShowBank(creature->getGuid()).serialise().get());
+}
+
+void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
+{
+    MsgAuctionHello recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    LOG_DEBUG("Received MSG_AUCTION_HELLO: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    sendAuctionList(creature);
+}
+
+//helper
+void WorldSession::sendAuctionList(Creature* creature)
+{
+    if (creature == nullptr)
+        return;
+
+    const auto auctionHouse = sAuctionMgr.GetAuctionHouse(creature->getEntry());
+    if (auctionHouse == nullptr)
+        return;
+
+    SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->GetID(), auctionHouse->enabled ? 1 : 0).serialise().get());
+}
+
+//helper
+void WorldSession::sendSpiritHealerRequest(Creature* creature)
+{
+    SendPacket(SmsgSpiritHealerConfirm(creature->getGuid()).serialise().get());
+}
+
+void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
+{
+    CmsgTrainerBuySpell recv_packet;
+    if (!recv_packet.deserialise((recvPacket)))
+        return;
+
+    LOG_DEBUG("Received CMSG_TRAINER_BUY_SPELL: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    const auto trainer = creature->GetTrainer();
+    if (trainer == nullptr)
+        return;
+
+    TrainerSpell* trainerSpell = nullptr;
+#if VERSION_STRING == Cata
+    for (auto itr : trainer->Spells)
     {
-        if ((itr->pCastSpell && itr->pCastSpell->getId() == TeachingSpellID) ||
-            (itr->pLearnSpell && itr->pLearnSpell->getId() == TeachingSpellID))
+        if (itr.spell == recv_packet.spellId)
         {
-            pSpell = &(*itr);
+            trainerSpell = &itr;
         }
     }
-
-    // If the trainer doesn't offer it, this is probably some packet mangling
-    if (pSpell == NULL)
+#else
+    for (auto itr : trainer->Spells)
     {
-        // Disconnecting the player
-        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->GetName());
-        this->Disconnect();
-        return;
+        if ((itr.pCastSpell && itr.pCastSpell->getId() == recv_packet.spellId) ||
+            (itr.pLearnSpell && itr.pLearnSpell->getId() == recv_packet.spellId))
+        {
+            trainerSpell = &itr;
+        }
     }
-
-    // We can't learn it
-    if (TrainerGetSpellStatus(pSpell) > 0)
-        return;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Teaching
-    _player->ModGold(-(int32)pSpell->Cost);
-
-    if (pSpell->pCastSpell)
-    {
-        _player->CastSpell(_player, pSpell->pCastSpell->getId(), true);
-    }
-    else
-    {
-        //Showing the learning spellvisuals
-        _player->playSpellVisual(pCreature->getGuid(), 1459);
-        _player->playSpellVisual(_player->getGuid(), 362);
-
-        // add the spell itself
-        _player->addSpell(pSpell->pLearnSpell->getId());
-    }
-
-    if (pSpell->DeleteSpell)
-    {
-        // Remove old spell.
-        if (pSpell->pLearnSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->getId());
-        else if (pSpell->pCastSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->getId());
-        else
-            _player->removeSpell(pSpell->DeleteSpell, true, false, 0);
-    }
-
-    _player->_UpdateSkillFields();
-
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-
-    data << uint64(Guid) << uint32(TeachingSpellID);        // GUID of the trainer, ID of the spell we bought
-    this->SendPacket(&data);
-}
-
-uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
-{
-    if (!pSpell->pCastSpell && !pSpell->pLearnSpell)
-        return TRAINER_STATUS_NOT_LEARNABLE;
-
-    if (pSpell->pCastRealSpell && (_player->HasSpell(pSpell->pCastRealSpell->getId()) || _player->HasDeletedSpell(pSpell->pCastRealSpell->getId())))
-        return TRAINER_STATUS_ALREADY_HAVE;
-
-    if (pSpell->pLearnSpell && (_player->HasSpell(pSpell->pLearnSpell->getId()) || _player->HasDeletedSpell(pSpell->pLearnSpell->getId())))
-        return TRAINER_STATUS_ALREADY_HAVE;
-
-    if (pSpell->DeleteSpell && _player->HasDeletedSpell(pSpell->DeleteSpell))
-        return TRAINER_STATUS_ALREADY_HAVE;
-
-    if ((pSpell->RequiredLevel && _player->getLevel() < pSpell->RequiredLevel)
-        || (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
-        || (pSpell->Cost && !_player->HasGold(pSpell->Cost))
-        || (pSpell->RequiredSkillLine && _player->_GetSkillLineCurrent(pSpell->RequiredSkillLine, true) < pSpell->RequiredSkillLineValue)
-        || (pSpell->IsProfession && _player->GetPrimaryProfessionPoints() == 0)     //check level 1 professions if we can learn a new profession
-       )
-        return TRAINER_STATUS_NOT_LEARNABLE;
-    return TRAINER_STATUS_LEARNABLE;
-}
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_PETITION_SHOWLIST:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleCharterShowListOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+    if (trainerSpell == nullptr)
+    {
+        sCheatLog.writefromsession(this, "%s tried to learn none-obtainable spell - Possibly using WPE", GetPlayer()->getName().c_str());
+        Disconnect();
+        return;
+    }
 
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendCharterRequest(pCreature);
-}
-
-void WorldSession::SendCharterRequest(Creature* pCreature)
-{
-    if (!pCreature)
+#if VERSION_STRING == Cata
+    if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
         return;
 
-    if (!pCreature->isTabardDesigner())
+    GetPlayer()->ModGold(-static_cast<int32_t>(trainerSpell->spellCost));
+
+    if (trainerSpell->IsCastable())
     {
-        WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
-
-        data << pCreature->getGuid();
-        data << uint8(0x03);        //number of charter types in packet
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //2v2 arena charters
-        data << uint32(0x01);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_2v2); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_2v2_COST); //charter cost
-        data << uint32(0x01);       //unknown, (charter type? seems to be 0x0 for guilds and 0x1 for arena charters)
-        data << uint32(0x01);       // Signatures required (besides petition owner)
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //3v3 arena charters
-        data << uint32(0x02);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_3v3); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_3v3_COST); //charter cost
-        data << uint32(0x01);
-        data << uint32(0x02);       // Signatures required (besides petition owner)
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //5v5 arena charters
-        data << uint32(0x03);       //petition number (in packet)
-        data << uint32(ARENA_TEAM_CHARTER_5v5); //itemid
-        data << uint32(0x3F21);     //item displayid
-        data << uint32(ARENA_TEAM_CHARTER_5v5_COST); //charter cost
-        data << uint32(0x01);
-        data << uint32(0x04);       // Signatures required (besides petition owner)
-
-        SendPacket(&data);
+        GetPlayer()->CastSpell(GetPlayer(), trainerSpell->spell, true);
     }
     else
     {
-        WorldPacket data(33);
-        data.Initialize(SMSG_PETITION_SHOWLIST);
-        data << pCreature->getGuid();
-        data << uint8(1);               // num charters in packet (although appears to only turn off the cost display, maybe due to packet not being parsed /shrug)
-        data << uint32(1);              // charter 1 in packet
-        data << uint32(0x16E7);         // ItemId of the guild charter
-        data << uint32(0x3F21);         // item displayid
+        GetPlayer()->playSpellVisual(creature->getGuid(), 179);
+        GetPlayer()->playSpellVisual(GetPlayer()->getGuid(), 362);
 
-        data << uint32(1000);           // charter price
-        data << uint32(0);              // unknown, maybe charter type
-        data << uint32(9);              // amount of unique players needed to sign the charter
-        SendPacket(&data);
+        GetPlayer()->addSpell(trainerSpell->spell);
     }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles MSG_AUCTION_HELLO:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!auctioneer)
+#else
+    if (trainerGetSpellStatus(trainerSpell) != TRAINER_STATUS_LEARNABLE)
         return;
 
-    SendAuctionList(auctioneer);
-}
-
-void WorldSession::SendAuctionList(Creature* auctioneer)
-{
-    AuctionHouse* AH = sAuctionMgr.GetAuctionHouse(auctioneer->getEntry());
-    if (!AH)
+    // teach the spell
+    GetPlayer()->ModGold(-static_cast<int32>(trainerSpell->Cost));
+    if (trainerSpell->pCastSpell)
     {
-        sChatHandler.BlueSystemMessage(this, "Report to devs: Unbound auction house npc %u.", auctioneer->getEntry());
-        return;
+        GetPlayer()->CastSpell(GetPlayer(), trainerSpell->pCastSpell->getId(), true);
+    }
+    else
+    {
+        GetPlayer()->playSpellVisual(creature->getGuid(), 1459);
+        GetPlayer()->playSpellVisual(GetPlayer()->getGuid(), 362);
+
+        GetPlayer()->addSpell(trainerSpell->pLearnSpell->getId());
     }
 
-    WorldPacket data(MSG_AUCTION_HELLO, 12);
-    data << uint64(auctioneer->getGuid());
-    data << uint32(AH->GetID());
-    data << uint8(AH->enabled ? 1 : 0);         // Alleycat - Need to correct this properly.
-    SendPacket(&data);
+    if (trainerSpell->DeleteSpell)
+    {
+        if (trainerSpell->pLearnSpell)
+            GetPlayer()->removeSpell(trainerSpell->DeleteSpell, true, true, trainerSpell->pLearnSpell->getId());
+        else if (trainerSpell->pCastSpell)
+            GetPlayer()->removeSpell(trainerSpell->DeleteSpell, true, true, trainerSpell->pCastRealSpell->getId());
+        else
+            GetPlayer()->removeSpell(trainerSpell->DeleteSpell, true, false, 0);
+    }
+#endif
+    GetPlayer()->_UpdateSkillFields();
+
+    SendPacket(SmsgTrainerBuySucceeded(recv_packet.guid.GetOldGuid(), recv_packet.spellId).serialise().get());
 }
 
-void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
+void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgPetitionShowlist recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
+    LOG_DEBUG("Received CMSG_CHARTER_SHOW_LIST: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    sendCharterRequest(creature);
+}
+
+//helper
+void WorldSession::sendCharterRequest(Creature* creature)
+{
+    if (creature == nullptr)
+        return;
+
+    SendPacket(SmsgPetitionShowlist(creature->getGuid(), creature->isTabardDesigner()).serialise().get());
+}
+
+void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
+{
     CmsgGossipHello gossipPacket;
-    if (!gossipPacket.deserialise(recv_data))
+    if (!gossipPacket.deserialise(recvPacket))
         return;
 
-    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(gossipPacket.guid));
+    LOG_DEBUG("Received CMSG_GOSSIP_HELLO: %u (guidLowPart)", gossipPacket.guid.getGuidLowPart());
 
-    if (qst_giver != nullptr)
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(gossipPacket.guid.getGuidLowPart());
+    if (creature != nullptr)
     {
-        //stop when talked to
-        if (qst_giver->GetAIInterface())
-            qst_giver->GetAIInterface()->StopMovement(30000);
+        if (creature->GetAIInterface())
+            creature->GetAIInterface()->StopMovement(30000);
 
-        // unstealth meh
-        if (_player->IsStealth())
-            _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
+        if (GetPlayer()->IsStealth())
+            GetPlayer()->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
 
-        // reputation
-        _player->Reputation_OnTalk(qst_giver->m_factionEntry);
+        GetPlayer()->Reputation_OnTalk(creature->m_factionEntry);
 
-        LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(gossipPacket.guid));
-
-        Arcemu::Gossip::Script* script = Arcemu::Gossip::Script::GetInterface(qst_giver);
+        const auto script = Arcemu::Gossip::Script::GetInterface(creature);
         if (script != nullptr)
-            script->OnHello(qst_giver, GetPlayer());
+            script->OnHello(creature, GetPlayer());
     }
 }
 
 
-void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
+void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgGossipSelectOption gossipSelectPacket;
-    if (!gossipSelectPacket.deserialise(recv_data))
+    if (!gossipSelectPacket.deserialise(recvPacket))
         return;
 
-    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X",
-        gossipSelectPacket.gossip_id, gossipSelectPacket.option, gossipSelectPacket.guid);
+    LOG_DETAIL("Received CMSG_GOSSIP_SELECT_OPTION: %u (gossipId), %i (option), %u (guidLow)",
+        gossipSelectPacket.gossip_id, gossipSelectPacket.option, gossipSelectPacket.guid.getGuidLow());
 
     Arcemu::Gossip::Script* script = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(gossipSelectPacket.guid);
+    const uint32 guidtype = GET_TYPE_FROM_GUID(gossipSelectPacket.guid);
 
     Object* object;
-    if (guidtype == HIGHGUID_TYPE_ITEM)         //Item objects are retrieved differently.
+    if (guidtype == HIGHGUID_TYPE_ITEM)
     {
         object = GetPlayer()->GetItemInterface()->GetItemByGUID(gossipSelectPacket.guid);
         if (object != nullptr)
@@ -470,57 +303,382 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// This function handles CMSG_SPIRIT_HEALER_ACTIVATE:
-//////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
+void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgBinderActivate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-        if (!_player->IsDead())
-            return;
+    LOG_DEBUG("Received CMSG_BINDER_ACTIVATE: %u (guidLowPart)", recv_packet.guid.getGuidLowPart());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    sendInnkeeperBind(creature);
+}
+
+void WorldSession::sendInnkeeperBind(Creature* creature)
+{
+    const uint32_t current_zone = GetPlayer()->GetZoneId();
+    if (GetPlayer()->m_bind_zoneid == current_zone)
+    {
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+
+        WorldPacket data(SMSG_PLAYERBINDERROR, 1);
+        data << uint32_t(1);
+        SendPacket(&data);
+        return;
+    }
+
+    if (!GetPlayer()->bHasBindDialogOpen)
+    {
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+
+        SendPacket(SmsgBinderConfirm(creature->getGuid(), GetPlayer()->GetZoneId()).serialise().get());
+
+        GetPlayer()->bHasBindDialogOpen = true;
+        return;
+    }
+
+    GetPlayer()->bHasBindDialogOpen = false;
+    OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+    creature->CastSpell(GetPlayer()->getGuid(), 3286, true);
+}
+
+void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
+{
+    CmsgTrainerList recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    GetPlayer()->Reputation_OnTalk(creature->m_factionEntry);
+    sendTrainerList(creature);
+}
+
+void WorldSession::handleStabledPetList(WorldPacket& recvPacket)
+{
+    MsgListStabledPets recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (GetPlayer()->getClass() != HUNTER)
+    {
+        Arcemu::Gossip::Menu::SendSimpleMenu(recv_packet.guid, 13584, GetPlayer());
+        return;
+    }
+
+    sendStabledPetList(recv_packet.guid);
+}
+
+void WorldSession::sendStabledPetList(uint64 npcguid)
+{
+    std::vector<PlayerStablePetList> stableList;
+    PlayerStablePetList stablePet;
+
+    for (const auto itr : GetPlayer()->m_Pets)
+    {
+        stablePet.petNumber = itr.first;
+        stablePet.entry = itr.second->entry;
+        stablePet.level = itr.second->level;
+        stablePet.name = itr.second->name;
+        if (itr.second->stablestate == STABLE_STATE_ACTIVE)
+            stablePet.stableState = STABLE_STATE_ACTIVE;
+        else
+            stablePet.stableState = STABLE_STATE_PASSIVE + 1;
+
+        stableList.push_back(stablePet);
+    }
+
+    SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(GetPlayer()->m_Pets.size()), GetPlayer()->m_StableSlotCount, stableList).serialise().get());
+}
+
+#if VERSION_STRING != Cata
+void WorldSession::sendTrainerList(Creature* creature)
+{
+    const auto trainer = creature->GetTrainer();
+    if (trainer == nullptr)
+        return;
+
+    if (!GetPlayer()->CanTrainAt(trainer))
+    {
+        Arcemu::Gossip::Menu::SendSimpleMenu(creature->getGuid(), trainer->Cannot_Train_GossipTextId, GetPlayer());
+    }
+    else
+    {
+        WorldPacket data(SMSG_TRAINER_LIST, 5000);
+        TrainerSpell* pSpell;
+        uint32_t Spacer = 0;
+        uint32_t Count = 0;
+        uint8_t Status;
+        std::string Text;
+
+        data << creature->getGuid();
+        data << trainer->TrainerType;
+
+        data << uint32_t(0);
+        for (auto itr : trainer->Spells)
+        {
+            pSpell = &itr;
+            Status = trainerGetSpellStatus(pSpell);
+            if (pSpell->pCastRealSpell != nullptr)
+                data << pSpell->pCastSpell->getId();
+            else if (pSpell->pLearnSpell)
+                data << pSpell->pLearnSpell->getId();
+            else
+                continue;
+
+            data << Status;
+            data << pSpell->Cost;
+            data << Spacer;
+            data << uint32_t(pSpell->IsProfession);
+            data << uint8_t(pSpell->RequiredLevel);
+            data << pSpell->RequiredSkillLine;
+            data << pSpell->RequiredSkillLineValue;
+            data << pSpell->RequiredSpell;
+            data << Spacer;    //this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
+            data << Spacer;
+            ++Count;
+        }
+
+        *(uint32_t*)&data.contents()[12] = Count;
+
+        if (stricmp(trainer->UIMessage, "DMSG") == 0)
+            data << GetPlayer()->GetSession()->LocalizedWorldSrv(37);
+        else
+            data << trainer->UIMessage;
+        SendPacket(&data);
+    }
+}
+
+uint8_t WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
+{
+    if (!trainerSpell->pCastSpell && !trainerSpell->pLearnSpell)
+        return TRAINER_STATUS_NOT_LEARNABLE;
+
+    if (trainerSpell->pCastRealSpell && (GetPlayer()->HasSpell(trainerSpell->pCastRealSpell->getId()) || GetPlayer()->HasDeletedSpell(trainerSpell->pCastRealSpell->getId())))
+        return TRAINER_STATUS_ALREADY_HAVE;
+
+    if (trainerSpell->pLearnSpell && (GetPlayer()->HasSpell(trainerSpell->pLearnSpell->getId()) || GetPlayer()->HasDeletedSpell(trainerSpell->pLearnSpell->getId())))
+        return TRAINER_STATUS_ALREADY_HAVE;
+
+    if (trainerSpell->DeleteSpell && GetPlayer()->HasDeletedSpell(trainerSpell->DeleteSpell))
+        return TRAINER_STATUS_ALREADY_HAVE;
+
+    if ((trainerSpell->RequiredLevel && GetPlayer()->getLevel() < trainerSpell->RequiredLevel)
+        || (trainerSpell->RequiredSpell && !GetPlayer()->HasSpell(trainerSpell->RequiredSpell))
+        || (trainerSpell->Cost && !GetPlayer()->HasGold(trainerSpell->Cost))
+        || (trainerSpell->RequiredSkillLine && GetPlayer()->_GetSkillLineCurrent(trainerSpell->RequiredSkillLine, true) < trainerSpell->RequiredSkillLineValue)
+        || (trainerSpell->IsProfession && GetPlayer()->GetPrimaryProfessionPoints() == 0)
+        )
+        return TRAINER_STATUS_NOT_LEARNABLE;
+    return TRAINER_STATUS_LEARNABLE;
+}
+#else
+void WorldSession::sendTrainerList(Creature* creature)
+{
+    Trainer* trainer = creature->GetTrainer();
+    if (trainer == nullptr)
+        return;
+
+    if (!GetPlayer()->CanTrainAt(trainer))
+    {
+        Arcemu::Gossip::Menu::SendSimpleMenu(creature->getGuid(), trainer->Cannot_Train_GossipTextId, GetPlayer());
+    }
+    else
+    {
+        WorldPacket data(SMSG_TRAINER_LIST, 5000);
+        std::string text;
+
+        data << creature->getGuid();
+        data << trainer->TrainerType;
+
+        data << uint32_t(1);                    // different value for each trainer, also found in CMSG_TRAINER_BUY_SPELL
+
+        size_t count_pos = data.wpos();
+        data << uint32_t(trainer->Spells.size());
+
+        bool can_learn_primary_prof = GetPlayer()->getFreePrimaryProfessionPoints() < 2;
+
+        uint32_t count = 0;
+        for (auto itr : trainer->Spells)
+        {
+            TrainerSpell* pSpell = &itr;
+
+            bool valid = true;
+            bool primary_prof_first_rank = false;
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (!pSpell->learnedSpell[i])
+                    continue;
+
+                if (!GetPlayer()->isSpellFitByClassAndRace(pSpell->learnedSpell[i]))
+                {
+                    valid = false;
+                    break;
+                }
+
+                SpellInfo* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
+                if (learnedSpellInfo && learnedSpellInfo->isPrimaryProfession())
+                    primary_prof_first_rank = true;
+            }
+            if (!valid)
+                continue;
+
+            TrainerSpellState state = trainerGetSpellStatus(pSpell);
+
+            data << uint32_t(pSpell->spell);
+            data << uint8_t(state);
+            data << uint32_t(floor(pSpell->spellCost));
+
+            data << uint8_t(pSpell->reqLevel);
+            data << uint32_t(pSpell->reqSkill);
+            data << uint32_t(pSpell->reqSkillValue);
+
+            uint8_t maxReq = 0;
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (!pSpell->learnedSpell[i])
+                    continue;
+
+
+                data << uint32_t(0);
+                ++maxReq;
+
+                if (maxReq == 2)
+                    break;
+
+                SpellsRequiringSpellMapBounds spellsRequired = objmgr.GetSpellsRequiredForSpellBounds(pSpell->learnedSpell[i]);
+                for (auto itr2 = spellsRequired.first; itr2 != spellsRequired.second && maxReq < 3; ++itr2)
+                {
+                    data << uint32_t(itr2->second);
+                    ++maxReq;
+                }
+
+                if (maxReq == 2)
+                    break;
+            }
+            while (maxReq < 2)
+            {
+                data << uint32_t(0);
+                ++maxReq;
+            }
+
+            const auto spellInfo = sSpellCustomizations.GetSpellInfo(pSpell->spell);
+            if (spellInfo && spellInfo->isPrimaryProfession())
+                data << uint32_t(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
+            else
+                data << uint32_t(1);
+
+            data << uint32_t(primary_prof_first_rank ? 1 : 0);    // must be equal prev. field to have learn button in enabled state
+
+            ++count;
+        }
+
+        if (stricmp(trainer->UIMessage, "DMSG") == 0)
+            data << GetPlayer()->GetSession()->LocalizedWorldSrv(37);
+        else
+            data << trainer->UIMessage;
+
+        data.put<uint32_t>(count_pos, count);
+
+        SendPacket(&data);
+    }
+}
+
+TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
+{
+    if (trainerSpell == nullptr)
+        return TRAINER_SPELL_RED;
+
+    bool hasSpell = true;
+    for (uint32_t spellId : trainerSpell->learnedSpell)
+    {
+        if (!spellId)
+            continue;
+
+        if (!GetPlayer()->HasSpell(spellId))
+        {
+            hasSpell = false;
+            break;
+        }
+    }
+
+    if (hasSpell)
+        return TRAINER_SPELL_GRAY;
+
+    if (trainerSpell->reqSkill && GetPlayer()->_GetSkillLineCurrent(trainerSpell->reqSkill, true) < trainerSpell->reqSkillValue)
+        return TRAINER_SPELL_RED;
+
+    if (GetPlayer()->getLevel() < trainerSpell->reqLevel)
+        return TRAINER_SPELL_RED;
+
+    for (uint32_t spellId : trainerSpell->learnedSpell)
+    {
+        if (spellId == 0)
+            continue;
+
+        if (!GetPlayer()->isSpellFitByClassAndRace(spellId))
+            return TRAINER_SPELL_RED;
+
+        SpellsRequiringSpellMapBounds spellsRequired = objmgr.GetSpellsRequiredForSpellBounds(spellId);
+        for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
+        {
+            if (!GetPlayer()->HasSpell(itr->second))
+                return TRAINER_SPELL_RED;
+        }
+    }
+
+    return TRAINER_SPELL_GREEN;
+}
+#endif
+
+void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (!GetPlayer()->IsDead())
+        return;
 
     GetPlayer()->DeathDurabilityLoss(0.25);
     GetPlayer()->ResurrectPlayer();
 
-    if (_player->getLevel() > 10)
+    if (GetPlayer()->getLevel() > 10)
     {
-        Aura* aur = GetPlayer()->getAuraWithId(15007);
-
-        if (aur == nullptr)        // If the player already have the aura, just extend it.
+        const auto aura = GetPlayer()->getAuraWithId(15007);
+        if (aura == nullptr)
         {
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);    //resurrection sickness
+            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);
             SpellCastTargets targets;
             targets.m_unitTarget = GetPlayer()->getGuid();
-            Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr);
-            sp->prepare(&targets);
+            const auto spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, true, nullptr);
+            spell->prepare(&targets);
         }
 
-        //calc new duration
-        int32 duration = 600000;        //10mins
+        int32_t duration = 600000;
 
-        if (_player->getLevel() < 20)
-            duration = (_player->getLevel() - 10) * 60000;
+        if (GetPlayer()->getLevel() < 20)
+            duration = (GetPlayer()->getLevel() - 10) * 60000;
 
-        _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
+        GetPlayer()->SetAurDuration(15007, duration);
     }
 
     GetPlayer()->setHealth(GetPlayer()->getMaxHealth() / 2);
 }
 
-void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgNpcTextQuery npcTextPacket;
-    if (!npcTextPacket.deserialise(recv_data))
+    if (!npcTextPacket.deserialise(recvPacket))
         return;
 
-    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", npcTextPacket.text_id);
+    LOG_DETAIL("Received: CMSG_NPC_TEXT_QUERY: %u (textId)", npcTextPacket.text_id);
 
     GetPlayer()->setTargetGuid(npcTextPacket.guid);
 
-    auto lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(npcTextPacket.text_id, language) : nullptr;
+    const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcText(npcTextPacket.text_id, language) : nullptr;
 
     WorldPacket data;
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
@@ -528,21 +686,21 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 
     if (const auto pGossip = sMySQLStore.getNpcText(npcTextPacket.text_id))
     {
-        for (uint8 i = 0; i < 8; i++)
+        for (uint8_t i = 0; i < 8; ++i)
         {
             data << float(pGossip->textHolder[i].probability);
 
-            if (lnc)
+            if (localesNpcText)
             {
-                if (strlen(lnc->texts[i][0]) == 0)
-                    data << lnc->texts[i][1];
+                if (strlen(localesNpcText->texts[i][0]) == 0)
+                    data << localesNpcText->texts[i][1];
                 else
-                    data << lnc->texts[i][0];
+                    data << localesNpcText->texts[i][0];
 
-                if (strlen(lnc->texts[i][1]) == 0)
-                    data << lnc->texts[i][0];
+                if (strlen(localesNpcText->texts[i][1]) == 0)
+                    data << localesNpcText->texts[i][0];
                 else
-                    data << lnc->texts[i][1];
+                    data << localesNpcText->texts[i][1];
             }
             else
             {
@@ -559,26 +717,26 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 
             data << pGossip->textHolder[i].language;
 
-            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; ++e)
             {
-                data << uint32(pGossip->textHolder[i].gossipEmotes[e].delay);
-                data << uint32(pGossip->textHolder[i].gossipEmotes[e].emote);
+                data << uint32_t(pGossip->textHolder[i].gossipEmotes[e].delay);
+                data << uint32_t(pGossip->textHolder[i].gossipEmotes[e].emote);
             }
         }
     }
     else
     {
-        for (uint8 i = 0; i < 8; i++)
+        for (uint8_t i = 0; i < 8; ++i)
         {
-            data << float(1.0f);            // Prob
-            data << _player->GetSession()->LocalizedWorldSrv(70);
-            data << _player->GetSession()->LocalizedWorldSrv(70);
-            data << uint32(0x00);           // Language
+            data << float(1.0f);              // Prob
+            data << GetPlayer()->GetSession()->LocalizedWorldSrv(70);
+            data << GetPlayer()->GetSession()->LocalizedWorldSrv(70);
+            data << uint32_t(0x00);           // Language
 
-            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
-                data << uint32(0x00);       // Emote delay
-                data << uint32(0x00);       // Emote
+                data << uint32_t(0x00);       // Emote delay
+                data << uint32_t(0x00);       // Emote
             }
         }
     }
@@ -586,77 +744,50 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
+namespace BankslotError
 {
-    CHECK_INWORLD_RETURN;
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* creatureBinder = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!creatureBinder)
-        return;
-
-    SendInnkeeperBind(creatureBinder);
+    enum
+    {
+        TooMany = 0,
+        InsufficientFunds = 1,
+        NotABanker = 2
+    };
 }
 
-#define BIND_SPELL_ID 3286
-
-#if VERSION_STRING != Cata
-void WorldSession::SendInnkeeperBind(Creature* pCreature)
+void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
 {
-    WorldPacket data(45);
+    CmsgBuyBankSlot recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    if (!_player->bHasBindDialogOpen)
+    LOG_DEBUG("Received CMSG_BUY_BANK_SLOT: %u (guidLow)", recv_packet.guid.getGuidLow());
+
+    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    if (creature == nullptr || !creature->isBanker())
     {
-        OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
-
-        data.Initialize(SMSG_BINDER_CONFIRM);
-        data << pCreature->getGuid() << _player->GetZoneId();
-        SendPacket(&data);
-
-        _player->bHasBindDialogOpen = true;
+        SendPacket(SmsgBuyBankSlotResult(BankslotError::NotABanker).serialise().get());
         return;
     }
 
-    _player->bHasBindDialogOpen = false;
-    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
-
-    pCreature->CastSpell(_player->getGuid(), BIND_SPELL_ID, true);
-}
-#endif
-
-#undef BIND_SPELL_ID
-
-void WorldSession::SendSpiritHealerRequest(Creature* pCreature)
-{
-    WorldPacket data(SMSG_SPIRIT_HEALER_CONFIRM, 8);
-    data << pCreature->getGuid();
-    SendPacket(&data);
-}
-
-void WorldSession::SendStabledPetList(uint64 npcguid)
-{
-    WorldPacket data(10 + (_player->m_Pets.size() * 25));
-    data.SetOpcode(MSG_LIST_STABLED_PETS);
-
-    data << npcguid;
-
-    data << uint8(_player->m_Pets.size());
-    data << uint8(_player->m_StableSlotCount);
-    for (std::map<uint32, PlayerPet*>::iterator itr = _player->m_Pets.begin(); itr != _player->m_Pets.end(); ++itr)
+    const uint8_t slots = GetPlayer()->getBankSlots();
+    const auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
+    if (bank_bag_slot_prices == nullptr)
     {
-        data << uint32(itr->first);             // pet no
-        data << uint32(itr->second->entry);     // entryid
-        data << uint32(itr->second->level);     // level
-        data << itr->second->name;              // name
-        if (itr->second->stablestate == STABLE_STATE_ACTIVE)
-            data << uint8(STABLE_STATE_ACTIVE);
-        else
-        {
-            data << uint8(STABLE_STATE_PASSIVE + 1);
-        }
+        SendPacket(SmsgBuyBankSlotResult(BankslotError::TooMany).serialise().get());
+        return;
     }
 
-    SendPacket(&data);
-}
+    const auto price = bank_bag_slot_prices->Price;
+    if (!GetPlayer()->HasGold(price))
+    {
+        SendPacket(SmsgBuyBankSlotResult(BankslotError::InsufficientFunds).serialise().get());
+        return;
+    }
+
+    GetPlayer()->setBankSlots(slots + 1);
+    GetPlayer()->ModGold(-static_cast<int32_t>(price));
+#if VERSION_STRING > TBC
+    GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
 #endif
+
+}

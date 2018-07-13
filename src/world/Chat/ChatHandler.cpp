@@ -533,16 +533,16 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
     Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
-        sGMLog.writefromsession(m_session, "used modify field value: %s, %u on %s", fieldname, av, plr->GetName());
+        sGMLog.writefromsession(m_session, "used modify field value: %s, %u on %s", fieldname, av, plr->getName().c_str());
         if (fieldmax)
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %d/%d.", fieldname, plr->GetName(), av, mv);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d/%d.", m_session->GetPlayer()->GetName(), fieldname, av, mv);
+            BlueSystemMessage(m_session, "You set the %s of %s to %d/%d.", fieldname, plr->getName().c_str(), av, mv);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d/%d.", m_session->GetPlayer()->getName().c_str(), fieldname, av, mv);
         }
         else
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %d.", fieldname, plr->GetName(), av);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d.", m_session->GetPlayer()->GetName(), fieldname, av);
+            BlueSystemMessage(m_session, "You set the %s of %s to %d.", fieldname, plr->getName().c_str(), av);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %d.", m_session->GetPlayer()->getName().c_str(), fieldname, av);
         }
 
         if (field == UNIT_FIELD_STAT1) av /= 2;
@@ -579,7 +579,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
                 case UNIT_FIELD_FACTIONTEMPLATE:
                     {
                         if (cr->m_spawn)
-                            WorldDatabase.Execute("UPDATE creature_spawns SET faction = %u WHERE entry = %u", av, cr->m_spawn->entry);
+                            WorldDatabase.Execute("UPDATE creature_spawns SET faction = %u WHERE entry = %u AND min_build <= %u AND max_build >= %u", av, cr->m_spawn->entry, VERSION_STRING, VERSION_STRING);
                     }
                     break;
                 case UNIT_NPC_FLAGS:
@@ -654,16 +654,16 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint16 field, uint16
     Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
-        sGMLog.writefromsession(m_session, "used modify field value: %s, %f on %s", fieldname, av, plr->GetName());
+        sGMLog.writefromsession(m_session, "used modify field value: %s, %f on %s", fieldname, av, plr->getName().c_str());
         if (fieldmax)
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %.1f/%.1f.", fieldname, plr->GetName(), av, mv);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f/%.1f.", m_session->GetPlayer()->GetName(), fieldname, av, mv);
+            BlueSystemMessage(m_session, "You set the %s of %s to %.1f/%.1f.", fieldname, plr->getName().c_str(), av, mv);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f/%.1f.", m_session->GetPlayer()->getName().c_str(), fieldname, av, mv);
         }
         else
         {
-            BlueSystemMessage(m_session, "You set the %s of %s to %.1f.", fieldname, plr->GetName(), av);
-            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->GetName(), fieldname, av);
+            BlueSystemMessage(m_session, "You set the %s of %s to %.1f.", fieldname, plr->getName().c_str(), av);
+            GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->getName().c_str(), fieldname, av);
         }
         plr->setFloatValue(field, av);
         if (fieldmax)

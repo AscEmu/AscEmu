@@ -383,8 +383,8 @@ void Creature::generateLoot()
         // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
         gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
 
-        /// \ brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
-        /// case you're interested, the probability is around 2.98e-8.
+        //\brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
+        // case you're interested, the probability is around 2.98e-8.
         if (gold_fp < chunk_size)
             gold_fp = chunk_size;
 
@@ -443,6 +443,10 @@ void Creature::SaveToDB()
 
     ss << "DELETE FROM creature_spawns WHERE id = ";
     ss << spawnid;
+    ss << " AND min_build <= ";
+    ss << VERSION_STRING;
+    ss << " AND max_build >= ";
+    ss << VERSION_STRING;
     ss << ";";
 
     WorldDatabase.Execute(ss.str().c_str());
@@ -451,6 +455,8 @@ void Creature::SaveToDB()
 
     ss << "INSERT INTO creature_spawns VALUES("
         << spawnid << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
         << m_position.x << ","
@@ -486,7 +492,10 @@ void Creature::SaveToDB()
     else
         ss << 0 << ",";
 
-    ss << m_phase << ")";
+    ss << m_phase << ","
+        << "0,"             // event_entry
+        << "0,"             // waypoint_group
+        << ")";
 
     WorldDatabase.Execute(ss.str().c_str());
 }
@@ -502,7 +511,9 @@ void Creature::DeleteFromDB()
     if (!GetSQL_id())
         return;
 
-    WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u", GetSQL_id());
+    WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", GetSQL_id(), VERSION_STRING, VERSION_STRING);
+
+    //\todo: are waypoint version specific?
     WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE spawnid = %u", GetSQL_id());
 }
 
@@ -2657,7 +2668,7 @@ Object* Creature::GetPlayerOwner()
     return NULL;
 }
 
-bool Creature::isVehicle()
+bool Creature::isVehicle() const
 {
     if (creature_properties->vehicleid != 0)
         return true;

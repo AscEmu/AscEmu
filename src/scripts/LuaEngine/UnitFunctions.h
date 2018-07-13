@@ -250,7 +250,7 @@ class LuaUnit
                 break;
 
             case TYPEID_PLAYER:
-                lua_pushstring(L, static_cast<Player*>(ptr)->GetName());
+                lua_pushstring(L, static_cast<Player*>(ptr)->getName().c_str());
                 break;
 
             default:
@@ -4461,13 +4461,13 @@ class LuaUnit
         if (!crc && actionid < 9)
             return 0;
         if (actionid == 1) plr->GetSession()->SendInventoryList(crc);
-        else if (actionid == 2) plr->GetSession()->SendTrainerList(crc);
-        else if (actionid == 3) plr->GetSession()->SendInnkeeperBind(crc);
-        else if (actionid == 4) plr->GetSession()->SendBankerList(crc);
+        else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
+        else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
+        else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
         else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
-        else if (actionid == 6) plr->GetSession()->SendAuctionList(crc);
-        else if (actionid == 7) plr->GetSession()->SendTabardHelp(crc);
-        else if (actionid == 8) plr->GetSession()->SendSpiritHealerRequest(crc);
+        else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
+        else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
+        else if (actionid == 8) plr->GetSession()->sendSpiritHealerRequest(crc);
         else if (actionid == 9) plr->SendTalentResetConfirm();
         else if (actionid == 10) plr->SendPetUntrainConfirm();
         return 0;
@@ -4489,7 +4489,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendTrainerList(crc);
+            plr->GetSession()->sendTrainerList(crc);
         return 0;
     }
 
@@ -4499,7 +4499,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendInnkeeperBind(crc);
+            plr->GetSession()->sendInnkeeperBind(crc);
         return 0;
     }
 
@@ -4509,7 +4509,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendBankerList(crc);
+            plr->GetSession()->sendBankerList(crc);
         return 0;
     }
 
@@ -4519,7 +4519,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != NULL)
-            plr->GetSession()->SendAuctionList(crc);
+            plr->GetSession()->sendAuctionList(crc);
         return 0;
     }
 
@@ -5069,7 +5069,7 @@ class LuaUnit
         TEST_PLAYER()
         Player* sender = static_cast<Player*>(ptr);
         Player* plyr = CHECK_PLAYER(L, 1);
-        std::string inviteeName = plyr->GetName();
+        std::string inviteeName = plyr->getName().c_str();
 
         Guild* pGuild = sender->GetGuild();
         if (!plyr)
@@ -5082,7 +5082,7 @@ class LuaUnit
         }
         else if (plyr->GetGuildId())
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->GetName());
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->getName().c_str());
         }
 #if VERSION_STRING != Cata
         else if (plyr->GetGuildInvitersGuid())
@@ -5090,7 +5090,7 @@ class LuaUnit
         else if (plyr->GetGuildIdInvited())
 #endif
         {
-            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->GetName());
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->getName().c_str());
         }
         else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
         {
@@ -5100,7 +5100,7 @@ class LuaUnit
         {
             Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_SUCCESS, inviteeName.c_str());
             WorldPacket data(SMSG_GUILD_INVITE, 100);
-            data << sender->GetName();
+            data << sender->getName().c_str();
             data << pGuild->getGuildName();
             plyr->GetSession()->SendPacket(&data);
 #if VERSION_STRING != Cata
@@ -5379,7 +5379,7 @@ class LuaUnit
         {
             Player* plr = objmgr.GetPlayer(pGuild->GetGuildLeader());
             if (plr != NULL)
-                lua_pushstring(L, plr->GetName());
+                lua_pushstring(L, plr->getName().c_str());
             else
                 lua_pushnil(L);
         }

@@ -463,7 +463,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     }
 
     plr->m_arenateaminviteguid = _player->m_arenaTeams[pTeam->m_type]->m_id;
-    data << _player->GetName();
+    data << _player->getName().c_str();
     data << _player->m_arenaTeams[pTeam->m_type]->m_name;
     plr->GetSession()->SendPacket(&data);
 }
@@ -557,7 +557,7 @@ void WorldSession::HandleArenaTeamInviteAcceptOpcode(WorldPacket& /*recv_data*/)
     {
         char buffer[1024];
         WorldPacket* data;
-        snprintf(buffer, 1024, "%s joined the arena team, '%s'.", _player->GetName(), team->m_name.c_str());
+        snprintf(buffer, 1024, "%s joined the arena team, '%s'.", _player->getName().c_str(), team->m_name.c_str());
         data = sChatHandler.FillSystemMessageData(buffer);
         team->SendPacket(data);
         delete data;
@@ -584,7 +584,7 @@ void WorldSession::HandleArenaTeamInviteDenyOpcode(WorldPacket& /*recv_data*/)
 
     Player* plr = objmgr.GetPlayer(team->m_leader);
     if (plr != nullptr)
-        plr->GetSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->GetName(), team->m_name.c_str());
+        plr->GetSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
 }
 
 void WorldSession::HandleArenaTeamLeaveOpcode(WorldPacket& recv_data)
@@ -623,7 +623,7 @@ void WorldSession::HandleArenaTeamLeaveOpcode(WorldPacket& recv_data)
     {
         char buffer[1024];
         WorldPacket* data;
-        snprintf(buffer, 1024, "%s left the arena team, '%s'.", _player->GetName(), team->m_name.c_str());
+        snprintf(buffer, 1024, "%s left the arena team, '%s'.", _player->getName().c_str(), team->m_name.c_str());
         data = sChatHandler.FillSystemMessageData(buffer);
         team->SendPacket(data);
         delete data;

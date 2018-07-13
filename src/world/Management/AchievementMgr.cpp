@@ -372,7 +372,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
         WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, 200);
-        data << GetPlayer()->GetName();
+        data << GetPlayer()->getName().c_str();
         data << uint64(GetPlayer()->getGuid());
         data << uint32(achievement->ID);
         data << uint32(0);

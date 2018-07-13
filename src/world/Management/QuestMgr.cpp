@@ -391,7 +391,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 
     *data << uint32(0);
     uint32 xp = 0;
-    if (plr->getLevel() < plr->GetMaxLevel())
+    if (plr->getLevel() < plr->getMaxLevel())
     {
         xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     }
@@ -604,7 +604,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     uint32 rewardtalents = qst->rewardtalents;
     uint32 playerlevel = plr->getLevel();
 
-    if (playerlevel >= plr->GetMaxLevel())
+    if (playerlevel >= plr->getMaxLevel())
     {
         xp = 0;
     }
@@ -2097,56 +2097,63 @@ void QuestMgr::LoadExtraQuestStuff()
 
     // load creature starters
     uint32 creature, quest;
-
-    QueryResult* pResult = WorldDatabase.Query("SELECT * FROM creature_quest_starter");
+    QueryResult* pResult = nullptr;
     uint32 pos = 0;
-    uint32 total;
-    if (pResult)
-    {
-        total = pResult->GetRowCount();
-        do
-        {
-            Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+    uint32 total = 0;
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
+    for (auto tableiterator = CreatureQuestStarterTables.begin(); tableiterator != CreatureQuestStarterTables.end(); ++tableiterator)
+    {
+        std::string table_name = *tableiterator;
+        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        if (pResult)
+        {
+            total = pResult->GetRowCount();
+            do
             {
-                LOG_ERROR("Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
-            }
-            else
-            {
-                _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
-            }
+                Field* data = pResult->Fetch();
+                creature = data[0].GetUInt32();
+                quest = data[1].GetUInt32();
+
+                auto qst = sMySQLStore.getQuestProperties(quest);
+                if (qst == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                }
+                else
+                {
+                    _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
+                }
+            } while (pResult->NextRow());
+            delete pResult;
         }
-        while (pResult->NextRow());
-        delete pResult;
     }
 
-    pResult = WorldDatabase.Query("SELECT * FROM creature_quest_finisher");
-    pos = 0;
-    if (pResult)
+    for (auto tableiterator = CreatureQuestFinisherTables.begin(); tableiterator != CreatureQuestFinisherTables.end(); ++tableiterator)
     {
-        total = pResult->GetRowCount();
-        do
+        std::string table_name = *tableiterator;
+        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        pos = 0;
+        if (pResult)
         {
-            Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            total = pResult->GetRowCount();
+            do
+            {
+                Field* data = pResult->Fetch();
+                creature = data[0].GetUInt32();
+                quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                LOG_ERROR("Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
-            }
-            else
-            {
-                _AddQuest<Creature>(creature, qst, 2);  // 1 = starter
-            }
+                auto qst = sMySQLStore.getQuestProperties(quest);
+                if (qst == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                }
+                else
+                {
+                    _AddQuest<Creature>(creature, qst, 2);  // 2 = finisher
+                }
+            } while (pResult->NextRow());
+            delete pResult;
         }
-        while (pResult->NextRow());
-        delete pResult;
     }
 
     pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_starter");
@@ -2163,7 +2170,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add starter to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2188,7 +2195,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2219,7 +2226,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOG_ERROR("Tried to add association to item %d for non-existent quest %d.", item, quest);
+                LogDebugFlag(LF_DB_TABLES, "Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {

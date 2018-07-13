@@ -112,7 +112,7 @@ static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koK
 void CreateDir(std::experimental::filesystem::path const& path)
 {
     namespace fs = std::experimental::filesystem;
-
+  
     if (fs::exists(path))
         return;
 

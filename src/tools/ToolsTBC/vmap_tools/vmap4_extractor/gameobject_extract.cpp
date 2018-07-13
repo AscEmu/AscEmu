@@ -117,6 +117,7 @@ void ExtractGameobjectModels()
             uint32_t path_length = static_cast<uint32_t>(strlen(name));
             fwrite(&displayId, sizeof(uint32_t), 1, model_list);
             fwrite(&path_length, sizeof(uint32_t), 1, model_list);
+
             fwrite(name, sizeof(char), path_length, model_list);
         }
     }

@@ -594,7 +594,7 @@ public:
                     auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
                     if (!result)
                     {
-                        LOG_ERROR("Error while adding item %u to player %s", item->getEntry(), plr->GetNameString());
+                        LOG_ERROR("Error while adding item %u to player %s", item->getEntry(), plr->getName().c_str());
                         item->DeleteMe();
                         return;
                     }

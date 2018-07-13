@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 
 #include <ctime>
+#include <string>
 
 enum PlayerTeam : uint8_t
 {
@@ -73,7 +74,11 @@ enum PlayerTeam : uint8_t
 // Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 
+#if VERSION_STRING > Classic
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
+#else
+#define PLAYER_EXPLORED_ZONES_LENGTH 64
+#endif
 
 #define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 #define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
@@ -85,6 +90,7 @@ enum Gender
     GENDER_NONE     = 2
 };
 
+//\note defined for all versions!
 enum Classes
 {
     WARRIOR         = 1,
@@ -113,8 +119,10 @@ enum Races
 #if VERSION_STRING == Cata
     RACE_GOBLIN     = 9,
 #endif
+#if VERSION_STRING > Classic
     RACE_BLOODELF   = 10,
     RACE_DRAENEI    = 11,
+#endif
 #if VERSION_STRING != Cata
     NUM_RACES
 #else
@@ -440,12 +448,6 @@ enum ModType
     MOD_SPELL     = 2
 };
 
-struct spells
-{
-    uint16 spellId;
-    uint16 slotId;
-};
-
 enum DrunkenState
 {
     DRUNKEN_SOBER    = 0,
@@ -695,6 +697,415 @@ enum PlayerCheats
     PLAYER_CHEAT_TAXI           = 0x100,
 };
 
+//char enum
+struct PlayerItem
+{
+    uint32_t displayId;
+    uint8_t inventoryType;
+    uint32_t enchantmentId;
+};
+
+struct CharEnum_Pet
+{
+    uint32_t display_id;
+    uint32_t level;
+    uint32_t family;
+};
+
+struct CharEnumData
+{
+    uint64_t guid;
+    uint8_t level;
+    uint8_t race;
+    uint8_t Class;
+    uint8_t gender;
+    uint32_t bytes;
+    uint32_t bytes2;
+    std::string name;
+    float x;
+    float y;
+    float z;
+    uint32_t mapId;
+    uint32_t zoneId;
+    uint32_t banned;
+
+    uint32_t deathState;
+    uint32_t loginFlags;
+    uint32_t flags;
+    uint32_t guildId;
+
+    uint32_t char_flags;
+    uint32_t customization_flag;
+
+    CharEnum_Pet pet_data;
+
+    //\todo verfify this!
+#if VERSION_STRING <= TBC
+    PlayerItem player_items[20];
+#else
+    PlayerItem player_items[23];
+#endif
+};
+
+
+// table taken from https://wow.gamepedia.com/Class
+static const uint32_t ClassRaceCombinations[91][3] =
+{
+    //WARRIOR
+    {1, 1, 4044},
+    {1, 2, 4044},
+    {1, 3, 4044},
+    {1, 4, 4044},
+    {1, 5, 4044},
+    {1, 6, 4044},
+    {1, 7, 4044},
+    {1, 8, 4044},
+    {1, 9, 13164},
+    {1, 10, 13164},
+    {1, 11, 6080},
+    {1, 22, 13164},
+    //PALADIN
+    {2, 1, 4044},
+    {2, 3, 4044},
+    {2, 6, 13164},
+    {2, 10, 6080},
+    {2, 11, 6080},
+    //HUNTER
+    {3, 1, 13164},
+    {3, 2, 4044},
+    {3, 3, 4044},
+    {3, 4, 4044},
+    {3, 5, 13164},
+    {3, 6, 4044},
+    {3, 8, 4044},
+    {3, 9, 13164},
+    {3, 10, 6080},
+    {3, 11, 6080},
+    {3, 22, 13164},
+    //ROGUE
+    {4, 1, 4044},
+    {4, 2, 4044},
+    {4, 3, 4044},
+    {4, 4, 4044},
+    {4, 5, 4044},
+    {4, 7, 4044},
+    {4, 8, 4044},
+    {4, 9, 13164},
+    {4, 10, 6080},
+    {4, 22, 13164},
+    //PRIEST
+    {5, 1, 4044},
+    {5, 3, 4044},
+    {5, 4, 4044},
+    {5, 5, 4044},
+    {5, 6, 13164},
+    {5, 7, 13164},
+    {5, 8, 4044},
+    {5, 9, 13164},
+    {5, 10, 6080},
+    {5, 11, 6080},
+    {5, 22, 13164},
+    //DEATHKNIGHT
+    {6, 1, 9056},
+    {6, 2, 9056},
+    {6, 3, 9056},
+    {6, 4, 9056},
+    {6, 5, 9056},
+    {6, 6, 9056},
+    {6, 7, 9056},
+    {6, 8, 9056},
+    {6, 9, 13164},
+    {6, 10, 9056},
+    {6, 11, 9056},
+    {6, 22, 13164},
+    //SHAMAN
+    {7, 2, 4044},
+    {7, 3, 13164},
+    {7, 6, 4044},
+    {7, 8, 4044},
+    {7, 9, 13164},
+    {7, 11, 6080},
+    //MAGE
+    {8, 1, 4044},
+    {8, 2, 13164},
+    {8, 3, 13164},
+    {8, 4, 13164},
+    {8, 5, 4044},
+    {8, 7, 4044},
+    {8, 8, 4044},
+    {8, 9, 13164},
+    {8, 10, 6080},
+    {8, 11, 6080},
+    {8, 22, 13164},
+    //WARLOCK
+    {9, 1, 4044},
+    {9, 2, 4044},
+    {9, 3, 13164},
+    {9, 5, 4044},
+    {9, 7, 4044},
+    {9, 8, 13164},
+    {9, 9, 13164},
+    {9, 10, 6080},
+    {9, 22, 13164},
+    //DRUID
+    {11, 4, 4044},
+    {11, 6, 4044},
+    {11, 8, 13164},
+    {11, 22, 13164},
+};
+
+inline uint32_t getAEVersion()
+{
+#if VERSION_STRING == Classic
+    return 5875;
+#elif VERSION_STRING == TBC
+    return 8606;
+#elif VERSION_STRING == WotLK
+    return 12340;
+#else
+    return 15595;
+#endif
+}
+
+inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
+{
+    for (uint8_t i = 0; i < 91; ++i)
+    {
+        if (ClassRaceCombinations[i][0] == _class && ClassRaceCombinations[i][1] == _race)
+        {
+            if (ClassRaceCombinations[i][2] < getAEVersion())
+                return true;
+        }
+    }
+
+    return false;
+}
+
+// table from http://www.wowwiki.com/Mana_regeneration
+static float BaseManaRegenByAEVersion[165][3] =
+{
+    //\ brief wrong for classic. Mana regen was calculated based on spirit etc.
+    //       redo this for classic someday.
+
+    // Build: 8089
+    { 1, 0.034965f, 5875 },
+    { 2, 0.034191f, 5875 },
+    { 3, 0.033465f, 5875 },
+    { 4, 0.032526f, 5875 },
+    { 5, 0.031661f, 5875 },
+    { 6, 0.031076f, 5875 },
+    { 7, 0.030523f, 5875 },
+    { 8, 0.029994f, 5875 },
+    { 9, 0.029307f, 5875 },
+    { 10, 0.028661f, 5875 },
+    { 11, 0.027584f, 5875 },
+    { 12, 0.026215f, 5875 },
+    { 13, 0.025381f, 5875 },
+    { 14, 0.024300f, 5875 },
+    { 15, 0.023345f, 5875 },
+    { 16, 0.022748f, 5875 },
+    { 17, 0.021958f, 5875 },
+    { 18, 0.021386f, 5875 },
+    { 19, 0.020790f, 5875 },
+    { 20, 0.020121f, 5875 },
+    { 21, 0.019733f, 5875 },
+    { 22, 0.019155f, 5875 },
+    { 23, 0.018819f, 5875 },
+    { 24, 0.018316f, 5875 },
+    { 25, 0.017936f, 5875 },
+    { 26, 0.017576f, 5875 },
+    { 27, 0.017201f, 5875 },
+    { 28, 0.016919f, 5875 },
+    { 29, 0.016581f, 5875 },
+    { 30, 0.016233f, 5875 },
+    { 31, 0.015994f, 5875 },
+    { 32, 0.015707f, 5875 },
+    { 33, 0.015464f, 5875 },
+    { 34, 0.015204f, 5875 },
+    { 35, 0.014956f, 5875 },
+    { 36, 0.014744f, 5875 },
+    { 37, 0.014495f, 5875 },
+    { 38, 0.014302f, 5875 },
+    { 39, 0.014094f, 5875 },
+    { 40, 0.013895f, 5875 },
+    { 41, 0.013724f, 5875 },
+    { 42, 0.013522f, 5875 },
+    { 43, 0.013363f, 5875 },
+    { 44, 0.013175f, 5875 },
+    { 45, 0.012996f, 5875 },
+    { 46, 0.012853f, 5875 },
+    { 47, 0.012687f, 5875 },
+    { 48, 0.012539f, 5875 },
+    { 49, 0.012384f, 5875 },
+    { 50, 0.012233f, 5875 },
+    { 51, 0.012113f, 5875 },
+    { 52, 0.011973f, 5875 },
+    { 53, 0.011859f, 5875 },
+    { 54, 0.011714f, 5875 },
+    { 55, 0.011575f, 5875 },
+    { 56, 0.011473f, 5875 },
+    { 57, 0.011342f, 5875 },
+    { 58, 0.011245f, 5875 },
+    { 59, 0.011110f, 5875 },
+    { 60, 0.010999f, 5875 },
+
+    // Build: 8089
+    { 61, 0.010700f, 8478 },
+    { 62, 0.010522f, 8478 },
+    { 63, 0.010290f, 8478 },
+    { 64, 0.010119f, 8478 },
+    { 65, 0.009968f, 8478 },
+    { 66, 0.009808f, 8478 },
+    { 67, 0.009651f, 8478 },
+    { 68, 0.009553f, 8478 },
+    { 69, 0.009445f, 8478 },
+    { 70, 0.009327f, 8478 },
+
+    //Build: 9056
+    { 71, 0.008859f, 12340 },
+    { 72, 0.008415f, 12340 },
+    { 73, 0.007993f, 12340 },
+    { 74, 0.007592f, 12340 },
+    { 75, 0.007211f, 12340 },
+    { 76, 0.006849f, 12340 },
+    { 77, 0.006506f, 12340 },
+    { 78, 0.006179f, 12340 },
+    { 79, 0.005869f, 12340 },
+    { 80, 0.005575f, 12340 },
+
+    // Build: 13164
+    { 1, 0.020979f, 15595 },
+    { 2, 0.020515f, 15595 },
+    { 3, 0.020079f, 15595 },
+    { 4, 0.019516f, 15595 },
+    { 5, 0.018997f, 15595 },
+    { 6, 0.018646f, 15595 },
+    { 7, 0.018314f, 15595 },
+    { 8, 0.017997f, 15595 },
+    { 9, 0.017584f, 15595 },
+    { 10, 0.017197f, 15595 },
+    { 11, 0.016551f, 15595 },
+    { 12, 0.015729f, 15595 },
+    { 13, 0.015229f, 15595 },
+    { 14, 0.014580f, 15595 },
+    { 15, 0.014008f, 15595 },
+    { 16, 0.013650f, 15595 },
+    { 17, 0.013175f, 15595 },
+    { 18, 0.012832f, 15595 },
+    { 19, 0.012475f, 15595 },
+    { 20, 0.012073f, 15595 },
+    { 21, 0.011840f, 15595 },
+    { 22, 0.011494f, 15595 },
+    { 23, 0.011292f, 15595 },
+    { 24, 0.010990f, 15595 },
+    { 25, 0.010761f, 15595 },
+    { 26, 0.010546f, 15595 },
+    { 27, 0.010321f, 15595 },
+    { 28, 0.010151f, 15595 },
+    { 29, 0.009949f, 15595 },
+    { 30, 0.009740f, 15595 },
+    { 31, 0.009597f, 15595 },
+    { 32, 0.009425f, 15595 },
+    { 33, 0.009278f, 15595 },
+    { 34, 0.009123f, 15595 },
+    { 35, 0.008974f, 15595 },
+    { 36, 0.008847f, 15595 },
+    { 37, 0.008698f, 15595 },
+    { 38, 0.008581f, 15595 },
+    { 39, 0.008457f, 15595 },
+    { 40, 0.008338f, 15595 },
+    { 41, 0.008235f, 15595 },
+    { 42, 0.008113f, 15595 },
+    { 43, 0.008018f, 15595 },
+    { 44, 0.007906f, 15595 },
+    { 45, 0.007798f, 15595 },
+    { 46, 0.007713f, 15595 },
+    { 47, 0.007612f, 15595 },
+    { 48, 0.007524f, 15595 },
+    { 49, 0.007430f, 15595 },
+    { 50, 0.007340f, 15595 },
+    { 51, 0.007268f, 15595 },
+    { 52, 0.007184f, 15595 },
+    { 53, 0.007116f, 15595 },
+    { 54, 0.007029f, 15595 },
+    { 55, 0.006945f, 15595 },
+    { 56, 0.006884f, 15595 },
+    { 57, 0.006805f, 15595 },
+    { 58, 0.006747f, 15595 },
+    { 59, 0.006667f, 15595 },
+    { 60, 0.006600f, 15595 },
+    { 61, 0.006421f, 15595 },
+    { 62, 0.006314f, 15595 },
+    { 63, 0.006175f, 15595 },
+    { 64, 0.006072f, 15595 },
+    { 65, 0.005981f, 15595 },
+    { 66, 0.005885f, 15595 },
+    { 67, 0.005791f, 15595 },
+    { 68, 0.005732f, 15595 },
+    { 69, 0.005668f, 15595 },
+    { 70, 0.005596f, 15595 },
+    { 71, 0.005316f, 15595 },
+    { 72, 0.005049f, 15595 },
+    { 73, 0.004796f, 15595 },
+    { 74, 0.004555f, 15595 },
+    { 75, 0.004327f, 15595 },
+    { 76, 0.004110f, 15595 },
+    { 77, 0.003903f, 15595 },
+    { 78, 0.003708f, 15595 },
+    { 79, 0.003522f, 15595 },
+    { 80, 0.003345f, 15595 },
+    { 81, 0.003345f, 15595 },
+    { 82, 0.003345f, 15595 },
+    { 83, 0.003345f, 15595 },
+    { 84, 0.003345f, 15595 },
+    { 85, 0.003345f, 15595 },
+};
+
+inline float getBaseManaRegen(uint32_t level)
+{
+    // classic   = 60
+    // tbc      += 10
+    // wotlk    += 10
+    // cata     += 85
+
+    for (uint8_t i = 0; i < 165; ++i)
+    {
+        if (BaseManaRegenByAEVersion[i][0] == level)
+        {
+#if VERSION_STRING <= WotLK
+            if (BaseManaRegenByAEVersion[i][2] <= getAEVersion())
+                return BaseManaRegenByAEVersion[i][1];
+#else
+            if (BaseManaRegenByAEVersion[i][2] == getAEVersion())
+                return BaseManaRegenByAEVersion[i][1];
+#endif
+        }
+    }
+
+    return 0.f;
+}
+
+
+static uint8_t getSideByRace(uint8_t race)
+{
+    switch (race)
+    {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+#if VERSION_STRING > Classic
+        case RACE_DRAENEI:
+#endif
+#if VERSION_STRING > WotLK
+        case RACE_WORGEN:
+#endif
+            return TEAM_ALLIANCE;
+        default:
+            return TEAM_HORDE;
+    }
+}
+
 // action button defines
 #if VERSION_STRING != TBC
     #define PLAYER_ACTION_BUTTON_COUNT 144
@@ -721,4 +1132,8 @@ enum PlayerCheats
 #endif
 
 
+#if VERSION_STRING == Classic
+#define MAX_QUEST_SLOT 20
+#else
 #define MAX_QUEST_SLOT 25
+#endif

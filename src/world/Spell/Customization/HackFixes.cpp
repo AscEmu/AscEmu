@@ -793,8 +793,6 @@ void ApplyNormalFixes()
 			}
         }
 
-        sp->Dspell_coef_override = -1;
-        sp->OTspell_coef_override = -1;
         sp->casttime_coef = 0;
         sp->fixed_dddhcoef = -1;
         sp->fixed_hotdotcoef = -1;
@@ -1493,26 +1491,6 @@ void ApplyNormalFixes()
         }
     }
     // END OF LOOP
-
-    //                                                  0    1            2                       3
-    QueryResult* resultx = WorldDatabase.Query("SELECT id, name, Dspell_coef_override, OTspell_coef_override FROM spell_coef_override");
-    if (resultx != nullptr)
-    {
-        do
-        {
-            Field* f = resultx->Fetch();
-            sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
-            if (sp != nullptr)
-            {
-                sp->Dspell_coef_override = f[2].GetFloat();
-                sp->OTspell_coef_override = f[3].GetFloat();
-            }
-            else
-                LOG_ERROR("Has nonexistent spell %u.", f[0].GetUInt32());
-        }
-        while (resultx->NextRow());
-        delete resultx;
-    }
 
     //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)

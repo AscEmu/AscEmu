@@ -49,7 +49,7 @@ void InstanceMgr::Load(TaskList* l)
         m_InstanceHigh = 1;
 
     // load each map we have in the database.
-    result = WorldDatabase.Query("SELECT DISTINCT Map FROM creature_spawns");
+    result = WorldDatabase.Query("SELECT DISTINCT Map FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         do

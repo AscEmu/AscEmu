@@ -100,8 +100,8 @@ float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - l
 
 // List MPQ for extract from / Version 8606
 const char* CONF_mpq_list[] = {
-    "common.MPQ",
-    "expansion.MPQ",
+    "dbc.MPQ",
+    "terrain.MPQ",
     "patch.MPQ",
     "patch-2.MPQ",
 };
@@ -195,43 +195,6 @@ void HandleArgs(int argc, char * arg[])
                 break;
         }
     }
-}
-
-uint32 ReadBuild(int locale)
-{
-    // include build info file also
-    std::string filename  = std::string("component.wow-")+langs[locale]+".txt";
-    //printf("Read %s file... ", filename.c_str());
-
-    MPQFile m(filename.c_str());
-    if(m.isEof())
-    {
-        printf("Fatal error: Not found %s file!\n", filename.c_str());
-        exit(1);
-    }
-
-    std::string text = std::string(m.getPointer(), m.getSize());
-    m.close();
-
-    size_t pos = text.find("version=\"");
-    size_t pos1 = pos + strlen("version=\"");
-    size_t pos2 = text.find("\"",pos1);
-    if (pos == text.npos || pos2 == text.npos || pos1 >= pos2)
-    {
-        printf("Fatal error: Invalid  %s file format!\n", filename.c_str());
-        exit(1);
-    }
-
-    std::string build_str = text.substr(pos1,pos2-pos1);
-
-    int build = atoi(build_str.c_str());
-    if (build <= 0)
-    {
-        printf("Fatal error: Invalid  %s file format!\n", filename.c_str());
-        exit(1);
-    }
-
-    return build;
 }
 
 uint32 ReadMapDBC()
@@ -957,7 +920,7 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
     return true;
 }
 
-void ExtractMapsFromMpq(uint32 build)
+void ExtractMapsFromMpq()
 {
     char mpq_filename[1024];
     char output_filename[1024];
@@ -995,7 +958,7 @@ void ExtractMapsFromMpq(uint32 build)
                     continue;
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
                 sprintf(output_filename, "%s/maps/%04u_%02u_%02u.map", output_path, map_ids[z].id, y, x);
-                ConvertADT(mpq_filename, output_filename, y, x, build);
+                ConvertADT(mpq_filename, output_filename, y, x, 5875);
             }
             // draw progress bar
             printf("Processing........................%d%%\r", (100 * (y+1)) / WDT_MAP_SIZE);
@@ -1022,7 +985,7 @@ bool ExtractFile( char const* mpq_name, std::string const& filename )
     return true;
 }
 
-void ExtractDBCFiles(int locale, bool basicLocale)
+void ExtractDBCFiles()
 {
     printf("Extracting dbc files...\n");
 
@@ -1041,30 +1004,13 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     std::string path = output_path;
     path += "/dbc/";
     CreateDir(path);
-    if(!basicLocale)
-    {
-        path += langs[locale];
-        path += "/";
-        CreateDir(path);
-    }
 
     // extract Build info file
-    {
-        std::string mpq_name = std::string("component.wow-") + langs[locale] + ".txt";
-        std::string filename = path + mpq_name;
-
-        ExtractFile(mpq_name.c_str(), filename);
-    }
-
-    // extract DBCs
-    uint32 count = 0;
+    int count = 0;
     for (std::set<std::string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
     {
         std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
-
-        if(FileExists(filename.c_str()))
-            continue;
 
         if (ExtractFile(iter->c_str(), filename))
             ++count;
@@ -1116,64 +1062,20 @@ int main(int argc, char * arg[])
 
     HandleArgs(argc, arg);
 
-    int FirstLocale = -1;
-    uint32 build = 0;
+    // Open MPQs
+    LoadCommonMPQFiles();
 
-    for (int i = 0; i < LANG_COUNT; i++)
-    {
-        char tmp1[512];
-        sprintf(tmp1, "%s/Data/%s/locale-%s.MPQ", input_path, langs[i], langs[i]);
-        if (FileExists(tmp1))
-        {
-            printf("Detected locale: %s\n", langs[i]);
 
-            //Open MPQs
-            LoadLocaleMPQFiles(i);
+    // Extract dbc
+    if (CONF_extract & EXTRACT_DBC)
+        ExtractDBCFiles();
 
-            if((CONF_extract & EXTRACT_DBC) == 0)
-            {
-                FirstLocale = i;
-                build = ReadBuild(FirstLocale);
-                printf("Detected client build: %u\n", build);
-                break;
-            }
-
-            //Extract DBC files
-            if(FirstLocale < 0)
-            {
-                FirstLocale = i;
-                build = ReadBuild(FirstLocale);
-                printf("Detected client build: %u\n", build);
-                ExtractDBCFiles(i, true);
-            }
-            else
-                ExtractDBCFiles(i, false);
-
-            //Close MPQs
-            CloseMPQFiles();
-        }
-    }
-
-    if(FirstLocale < 0)
-    {
-        printf("No locales detected\n");
-        return 0;
-    }
-
+    // Extract maps
     if (CONF_extract & EXTRACT_MAP)
-    {
-        printf("Using locale: %s\n", langs[FirstLocale]);
+        ExtractMapsFromMpq();
 
-        // Open MPQs
-        LoadLocaleMPQFiles(FirstLocale);
-        LoadCommonMPQFiles();
-
-        // Extract maps
-        ExtractMapsFromMpq(build);
-
-        // Close MPQs
-        CloseMPQFiles();
-    }
+    // Close MPQs
+    CloseMPQFiles();
 
     return 0;
 }

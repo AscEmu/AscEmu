@@ -148,7 +148,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
 
     if (ticketOwner != nullptr)
     {
-        ticketOwner->GetSession()->SystemMessage("Your Ticket was closed by %s Comment: %s", player->GetName(), comment);
+        ticketOwner->GetSession()->SystemMessage("Your Ticket was closed by %s Comment: %s", player->getName().c_str(), comment);
 
         // Notify player about removing ticket
         WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
@@ -167,7 +167,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, player->getGuid(), playerGuid, subject, comment, 0, 0, 0, MAIL_STATIONERY_GM, MAIL_CHECK_MASK_NONE);
     }
 
-    CharacterDatabase.Execute("UPDATE gm_tickets SET deleted = 1, comment = 'GM: %s %s', assignedto = %u WHERE ticketid = %u", player->GetName(), comment, player->getGuid(), ticketID);
+    CharacterDatabase.Execute("UPDATE gm_tickets SET deleted = 1, comment = 'GM: %s %s', assignedto = %u WHERE ticketid = %u", player->getName().c_str(), comment, player->getGuid(), ticketID);
     GreenSystemMessage(m_session, "Ticket %u is now closed and assigned to you.", ticketID);
     sGMLog.writefromsession(m_session, "closed ticket %u ", ticketID);
     delete result;

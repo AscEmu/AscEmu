@@ -47,6 +47,7 @@
 #include "Data/WoWUnit.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#include "Server/Packets/SmsgEmote.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -7656,8 +7657,10 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             }
 
             // Rune strike
+#if VERSION_STRING > TBC
             if (pVictim->isPlayer() && pVictim->getClass() == DEATHKNIGHT)   // omg! dirty hack!
                 pVictim->CastSpell(pVictim, 56817, true);
+#endif
 
             pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);
             if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
@@ -7676,9 +7679,11 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
             if (pVictim->isPlayer())
             {
+#if VERSION_STRING > TBC
                 // Rune strike
                 if (pVictim->getClass() == DEATHKNIGHT)         // omg! dirty hack!
                     pVictim->CastSpell(pVictim, 56817, true);
+#endif
 
                 pVictim->addAuraStateAndAuras(AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
                 if (!sEventMgr.HasEvent(pVictim, EVENT_PARRY_FLAG_EXPIRE))
@@ -9926,7 +9931,9 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
         {
             case ROGUE:
             case WARRIOR:
+#if VERSION_STRING > TBC
             case DEATHKNIGHT:
+#endif
             case HUNTER:
                 return 0;
             default:
@@ -10148,23 +10155,15 @@ void Unit::DeMorph()
 #if VERSION_STRING < Cata
 void Unit::Emote(EmoteType emote)
 {
-#if VERSION_STRING < Cata
     if (emote == 0)
         return;
-#endif
 
-    WorldPacket data(SMSG_EMOTE, 12);
-    data << uint32(emote);
-    data << this->getGuid();
-    SendMessageToSet(&data, true);
+    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, this->getGuid()).serialise().get(), true);
 }
 #else
 void Unit::Emote(EmoteType emote)
 {
-    WorldPacket data(SMSG_EMOTE, 12);
-    data << uint32_t(emote);
-    data << uint64_t(getGuid());
-    SendMessageToSet(&data, true);
+    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, getGuid()).serialise().get(), true);
 }
 #endif
 

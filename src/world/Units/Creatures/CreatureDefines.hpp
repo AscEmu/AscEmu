@@ -16,9 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATURE_DEFINES_HPP
-#define CREATURE_DEFINES_HPP
-
+#pragma once
 
 #include "CommonTypes.hpp"
 #include "Storage/DBC/DBCStores.h"
@@ -386,4 +384,99 @@ enum CREATURE_TYPE
 //    int32 cooldown;
 //};
 
-#endif // _CREATURE_DEFINES_HPP
+#include <string>
+
+enum GOSSIP_SPECIAL
+{
+    GOSSIP_NO_SPECIAL = 0x00,
+    GOSSIP_POI = 0x01,
+    GOSSIP_SPIRIT_HEALER_ACTIVE = 0x02,
+    GOSSIP_VENDOR = 0x03,
+    GOSSIP_TRAINER = 0x04,
+    GOSSIP_TABARD_VENDOR = 0x05,
+    GOSSIP_INNKEEPER = 0x06,
+    GOSSIP_PETITIONER = 0x07,
+    GOSSIP_TAXI = 0x08,
+    GOSSIP_TEXT = 0x09,
+    GOSSIP_MENU = 0x0A,
+    GOSSIP_BATTLEMASTER = 0x0B,
+    GOSSIP_BANKER = 0x0C
+};
+
+enum TrainerServiceType
+{
+    TRAINER_SERVICE_AVAILABLE = 0x0,
+    TRAINER_SERVICE_UNAVAILABLE = 0x1,
+    TRAINER_SERVICE_USED = 0x2,
+    TRAINER_SERVICE_NOT_SHOWN = 0x3,
+    TRAINER_SERVICE_NEVER = 0x4,
+    TRAINER_SERVICE_NO_PET = 0x5
+};
+#define NUM_TRAINER_SERVICE_TYPES 0x6
+
+enum TrainerType
+{
+    TRAINER_TYPE_GENERAL = 0x0,
+    TRAINER_TYPE_TALENTS = 0x1,
+    TRAINER_TYPE_TRADESKILLS = 0x2,
+    TRAINER_TYPE_PET = 0x3
+};
+#define NUM_TRAINER_TYPES 0x4
+
+struct GossipOptions
+{
+    uint32 ID;
+    uint32 GossipID;
+    uint16 Icon;
+    std::string OptionText;
+    uint32 NextTextID;
+    uint32 Special;
+    float PoiX;
+    float PoiY;
+    uint32 PoiIcon;
+    uint32 PoiFlags;
+    uint32 PoiData;
+    std::string PoiName;
+    uint32 BgMapId;
+};
+
+struct GossipNpc
+{
+    GossipNpc() { pOptions = NULL; }
+    uint32 ID;
+    uint32 EntryId;
+    uint32 TextID;
+    uint32 OptionCount;
+    GossipOptions* pOptions;
+};
+
+struct trainertype
+{
+    const char* partialname;
+    uint32 type;
+};
+
+#define TRAINER_TYPE_MAX 16
+#define TRAINER_STATUS_LEARNABLE 0
+#define TRAINER_STATUS_NOT_LEARNABLE 1
+#define TRAINER_STATUS_ALREADY_HAVE 2
+
+static trainertype trainer_types[TRAINER_TYPE_MAX] =
+{
+    { "Warrior"         , 0 },
+    { "Paladin"         , 0 },
+    { "Rogue"           , 0 },
+    { "Warlock"         , 0 },
+    { "Mage"            , 0 },
+    { "Shaman"          , 0 },
+    { "Priest"          , 0 },
+    { "Hunter"          , 0 },
+    { "Druid"           , 0 },
+    { "Leatherwork"     , 2 },
+    { "Skinning"        , 2 },
+    { "Fishing"         , 2 },
+    { "First Aid"       , 2 },
+    { "Physician"       , 2 },
+    { "Engineer"        , 2 },
+    { "Weapon Master"   , 0 },
+};

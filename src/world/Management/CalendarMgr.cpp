@@ -71,7 +71,7 @@ void CalendarMgr::LoadFromDB()
 
     LogNotice("CalendarMgr : Start loading calendar_invites");
     {
-        const char* loadCalendarInvites = "SELECT id, event, invitee, sender, status, statustime, rank, text FROM calendar_invites";
+        const char* loadCalendarInvites = "SELECT `id`, `event`, `invitee`, `sender`, `status`, `statustime`, `rank`, `text` FROM `calendar_invites`";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
         if (!success)

@@ -23,7 +23,7 @@
 #include "Creature.h"
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"
-#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/HonorHandler.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"

@@ -27,11 +27,19 @@
 #include "Guild/GuildDefinitions.h"
 #include "Management/Item.h"
 
-// MIT END
-//AGPL START
+struct SERVER_DECL GuildEmblemInfo
+{
+    uint32_t style;
+    uint32_t color;
+    uint32_t borderStyle;
+    uint32_t borderColor;
+    uint32_t backgroundColor;
+};
 
 #if VERSION_STRING != Cata
 
+// MIT END
+//AGPL START
 class PlayerInfo;
 
 
@@ -105,7 +113,11 @@ typedef std::map<PlayerInfo*, GuildMember*> GuildMemberMap;
 
 class SERVER_DECL Guild
 {
+    // MIT START
     public:
+
+        void setEmblemInfo(GuildEmblemInfo emblem_info);
+    // MIT END
 
         Guild();
         ~Guild();
@@ -257,9 +269,6 @@ class SERVER_DECL Guild
         void SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 updated_slot1 = -1, int8 updated_slot2 = -1);
         void SendGuildBankInfo(WorldSession* pClient);
 
-        // Changes the tabard info.
-        void SetTabardInfo(uint32 EmblemStyle, uint32 EmblemColor, uint32 BorderStyle, uint32 BorderColor, uint32 BackgroundColor);
-
         // Sends the guild information packet to the specified client.
         void SendGuildInfo(WorldSession* pClient);
 
@@ -271,11 +280,11 @@ class SERVER_DECL Guild
 
         // Internal variables
         uint32 m_guildId;
-        uint32 m_emblemStyle;
-        uint32 m_emblemColor;
-        uint32 m_borderStyle;
-        uint32 m_borderColor;
-        uint32 m_backgroundColor;
+
+    //MIT
+    GuildEmblemInfo emblemInfo;
+        
+
         uint32 m_guildLeader;
         uint32 m_creationTimeStamp;
         uint64 m_bankBalance; //use a 64 bit int so we can store more gold in the gbank

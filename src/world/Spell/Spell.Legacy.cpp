@@ -1112,7 +1112,7 @@ void Spell::castMe(bool check)
     {
         Player* player = static_cast<Player*>(m_caster);
         LogDebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Players: %s (guid: %u)",
-                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), player->GetName(), player->getPlayerInfo()->guid);
+                      GetSpellInfo()->getId(), GetSpellInfo()->getName().c_str(), player->getName().c_str(), player->getPlayerInfo()->guid);
     }
     else if (m_caster->isCreature())
     {
@@ -4217,8 +4217,12 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (i_caster->getItemProperties()->Spells[0].Charges != 0)
             {
+                // no charges required
+                if (i_caster->getItemProperties()->Spells[0].Charges == -1)
+                    return SPELL_FAILED_SUCCESS;
+
                 // check if the item has the required charges
-                if (i_caster->getSpellCharges(0) <= 0)
+                if (i_caster->getSpellCharges(0) == 0)
                     return SPELL_FAILED_NO_CHARGES_REMAIN;
             }
         }
@@ -6438,7 +6442,13 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     {
         //Basic bonus
         if (p_caster == nullptr ||
-            !(p_caster->getClass() == ROGUE || p_caster->getClass() == WARRIOR || p_caster->getClass() == HUNTER || p_caster->getClass() == DEATHKNIGHT))
+            !(p_caster->getClass() == ROGUE
+            || p_caster->getClass() == WARRIOR
+            || p_caster->getClass() == HUNTER
+#if VERSION_STRING > TBC
+            || p_caster->getClass() == DEATHKNIGHT
+#endif
+            ))
             bonus += u_caster->HealDoneMod[school];
 
         bonus += unitTarget->HealTakenMod[school];

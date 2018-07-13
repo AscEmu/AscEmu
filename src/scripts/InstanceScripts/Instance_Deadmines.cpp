@@ -310,7 +310,7 @@ class VanCleefAI : public CreatureAIScript
     {
         char msg[200];
         if (pTarget->isPlayer())
-            sprintf(msg, "And stay down, %s.", static_cast<Player*>(pTarget)->GetName());
+            sprintf(msg, "And stay down, %s.", static_cast<Player*>(pTarget)->getName().c_str());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
             sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
 

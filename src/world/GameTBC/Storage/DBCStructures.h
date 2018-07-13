@@ -33,6 +33,7 @@ namespace DBC
             char const area_trigger_entry_format[] = "niffffffff";
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
+            char const char_start_outfit_format[] = "dbbbXiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxx";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
@@ -143,6 +144,21 @@ namespace DBC
             uint32_t Id;              // 0
             uint32_t Price;           // 1
         };
+
+        #define OUTFIT_ITEMS 12
+
+        struct CharStartOutfitEntry
+        {
+            //uint32_t Id;                                    // 0
+            uint8_t Race;                                     // 1
+            uint8_t Class;                                    // 2
+            uint8_t Gender;                                   // 3
+            //uint8_t Unused;                                 // 4
+            int32_t ItemId[OUTFIT_ITEMS];                     // 5-16
+            //int32_t ItemDisplayId[OUTFIT_ITEMS];            // 17-28
+            //int32_t ItemInventorySlot[OUTFIT_ITEMS];        // 29-40
+        };
+
 
         struct CharTitlesEntry
         {

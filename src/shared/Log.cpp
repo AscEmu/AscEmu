@@ -326,10 +326,6 @@ void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
     vsnprintf(message_buffer, 32768, format, ap);
     va_end(ap);
 
-#ifdef EVAIRFAIRY_LOG_SKIP
-    return;
-#endif
-
     if (!file_only)
     {
         SetConsoleColor(CONSOLE_COLOR_RED);
@@ -354,10 +350,6 @@ void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, co
     va_start(ap, format);
     vsnprintf(message_buffer, 32768, function_message, ap);
     va_end(ap);
-
-#ifdef EVAIRFAIRY_LOG_SKIP
-    return;
-#endif
 
     if (!file_only)
     {

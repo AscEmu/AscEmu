@@ -253,13 +253,13 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         Group* group = plr->GetGroup();
         if (group == nullptr || instance->m_creatorGroup != group->GetID())
         {
-            RedSystemMessage(m_session, "Player %s is not a member of the group assigned to the non-persistent instance with id %u.", plr->GetName(), instanceId);
+            RedSystemMessage(m_session, "Player %s is not a member of the group assigned to the non-persistent instance with id %u.", plr->getName().c_str(), instanceId);
             return true;
         }
     }
     else if (instance->m_creatorGuid == 0 || instance->m_creatorGuid != plr->getGuidLow())
     {
-        RedSystemMessage(m_session, "Player %s is not assigned to instance with id %u.", plr->GetName(), instanceId);
+        RedSystemMessage(m_session, "Player %s is not assigned to instance with id %u.", plr->getName().c_str(), instanceId);
         return true;
     }
 
@@ -271,7 +271,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     // shut down instance
     sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);
     //    RedSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
-    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->GetName(), instanceId);
+    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);
     return true;
 }
 
@@ -300,11 +300,11 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
             return true;
     }
 
-    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->GetName());
+    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->getName().c_str());
     sInstanceMgr.ResetSavedInstances(player);
     SystemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->GetName());
+    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());
     return true;
 }
 

@@ -148,7 +148,7 @@ public:
             return;
 
         std::string say = "Puny ";
-        say += mTarget->GetName();
+        say += mTarget->getName().c_str();
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
         Overlord->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         Overlord->SetFaction(72);

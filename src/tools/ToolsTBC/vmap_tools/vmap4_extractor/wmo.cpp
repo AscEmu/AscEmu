@@ -516,7 +516,9 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-	int count = static_cast<int>(fread(&nVertices, sizeof(int), 1, input));
+
+    const auto count = fread(&nVertices, sizeof (int), 1, input);
+
     fclose(input);
 
     if (count != 1 || nVertices == 0)
@@ -549,7 +551,12 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     fwrite(&scale, sizeof(float), 1, pDirfile);
     fwrite(&pos2, sizeof(float), 3, pDirfile);
     fwrite(&pos3, sizeof(float), 3, pDirfile);
-    uint32_t nlen=static_cast<uint32_t>(strlen(WmoInstName));
+
+    
+      
+      
+      const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
+
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(WmoInstName, sizeof(char), nlen, pDirfile);
 

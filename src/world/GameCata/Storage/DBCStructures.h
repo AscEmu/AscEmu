@@ -214,7 +214,7 @@ namespace DBC
             char const barber_shop_style_entry_format[] = "nixxxiii";
             char const banned_addons_entry_format[] = "nxxxxxxxxxx";
             //char const battlemaster_list_format[]="niiiiiiiiixsiiiiiiii"; new
-            //char const char_start_outfit_format[]="diiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; new
+            char const char_start_outfit_format[]="dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"; 
             char const char_titles_format[] = "nxsxix";
             char const chat_channels_format[] = "iixsx";
             char const chr_classes_format[] = "nixsxxxixiiiii";
@@ -860,20 +860,19 @@ namespace DBC
 
         #define OUTFIT_ITEMS 24
 
-        //\todo danko
-        //struct CharStartOutfitEntry
-        //{
-        //    //uint32_t Id;                                // 0
-        //    uint32_t RaceClassGender;                     // 1
-        //    int32_t ItemId[OUTFIT_ITEMS];                 // 2-25
-        //    //int32_t ItemDisplayId[OUTFIT_ITEMS];        // 26-29
-        //    //int32_t ItemInventorySlot[OUTFIT_ITEMS];    // 50-73
-        //    //uint32_t Unknown1;                          // 74
-        //    //uint32_t Unknown2;                          // 75
-        //    //uint32_t Unknown3;                          // 76
-        //    //uint32_t Unknown4;                          // 77
-        //    //uint32_t Unknown5;                          // 78
-        //};
+        struct CharStartOutfitEntry
+        {
+            //uint32_t Id;                                    // 0
+            uint8_t Race;                                     // 1
+            uint8_t Class;                                    // 2
+            uint8_t Gender;                                   // 3
+            //uint8_t Unused;                                 // 4
+            int32_t ItemId[OUTFIT_ITEMS];                     // 5-28
+            //int32_t ItemDisplayId[OUTFIT_ITEMS];            // 29-52
+            //int32_t ItemInventorySlot[OUTFIT_ITEMS];        // 53-76
+            uint32_t PetDisplayId;                            // 77
+            uint32_t PetFamilyEntry;                          // 78
+        };
 
         struct CharTitlesEntry
         {
@@ -905,7 +904,7 @@ namespace DBC
             //char* name_capitalized            // 6
             uint32_t spellfamily;               // 7
             //uint32_t unk4;                    // 8
-            uint32_t cinematic_sequence;        // 9 CinematicSequences.dbc
+            uint32_t cinematic_id;              // 9 CinematicSequences.dbc
             uint32_t expansion;                 // 10
             uint32_t apPerStr;                  // 11
             uint32_t apPerAgi;                  // 12

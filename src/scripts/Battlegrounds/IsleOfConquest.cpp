@@ -960,10 +960,10 @@ void IsleOfConquest::AssaultControlPoint(Player *player, uint32 id)
     }
 
     if (player->GetTeam() == TEAM_ALLIANCE)
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "%s has assaulted the %s! If it remains uncontested, the alliance will take it within a minute!", player->GetName(), ControlPointNames[id]);
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "%s has assaulted the %s! If it remains uncontested, the alliance will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
     else
         if (player->GetTeam() == TEAM_HORDE)
-            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "%s has assaulted the %s! If it remains uncontested, the horde will take it within a minute!", player->GetName(), ControlPointNames[id]);
+            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "%s has assaulted the %s! If it remains uncontested, the horde will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
 
     sEventMgr.AddEvent(this, &IsleOfConquest::CaptureControlPoint, id, EVENT_IOC_CAPTURE_CP_1 + id, 60 * 1 * 1000, 1, 0);
 }

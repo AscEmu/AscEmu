@@ -154,13 +154,13 @@ Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
     }
 }
 
-/// Creates and adds a item that can be manipulated after
+// Creates and adds a item that can be manipulated after
 AddItemResult ItemInterface::SafeAddItem(Item* pItem, int8 ContainerSlot, int16 slot)
 {
     return m_AddItem(pItem, ContainerSlot, slot);
 }
 
-/// Adds items to player inventory, this includes all types of slots.
+// Adds items to player inventory, this includes all types of slots.
 AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slot)
 {
     ARCEMU_ASSERT(slot < MAX_INVENTORY_SLOT);
@@ -2537,7 +2537,7 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
     return INV_ERR_OK;
 }
 
-/// Gets the Item slot by item type
+// Gets the Item slot by item type
 int8 ItemInterface::GetItemSlotByType(uint32 type)
 {
     switch (type)
@@ -2545,113 +2545,77 @@ int8 ItemInterface::GetItemSlotByType(uint32 type)
         case INVTYPE_NON_EQUIP:
             return ITEM_NO_SLOT_AVAILABLE;
         case INVTYPE_HEAD:
-        {
             return EQUIPMENT_SLOT_HEAD;
-        }
         case INVTYPE_NECK:
-        {
             return EQUIPMENT_SLOT_NECK;
-        }
         case INVTYPE_SHOULDERS:
-        {
             return EQUIPMENT_SLOT_SHOULDERS;
-        }
         case INVTYPE_BODY:
-        {
             return EQUIPMENT_SLOT_BODY;
-        }
         case INVTYPE_CHEST:
-        {
             return EQUIPMENT_SLOT_CHEST;
-        }
         case INVTYPE_ROBE: // ???
-        {
             return EQUIPMENT_SLOT_CHEST;
-        }
         case INVTYPE_WAIST:
-        {
             return EQUIPMENT_SLOT_WAIST;
-        }
         case INVTYPE_LEGS:
-        {
             return EQUIPMENT_SLOT_LEGS;
-        }
         case INVTYPE_FEET:
-        {
             return EQUIPMENT_SLOT_FEET;
-        }
         case INVTYPE_WRISTS:
-        {
             return EQUIPMENT_SLOT_WRISTS;
-        }
         case INVTYPE_HANDS:
-        {
             return EQUIPMENT_SLOT_HANDS;
-        }
         case INVTYPE_FINGER:
         {
             if (!GetInventoryItem(EQUIPMENT_SLOT_FINGER1))
                 return EQUIPMENT_SLOT_FINGER1;
-            else if (!GetInventoryItem(EQUIPMENT_SLOT_FINGER2))
+            if (!GetInventoryItem(EQUIPMENT_SLOT_FINGER2))
                 return EQUIPMENT_SLOT_FINGER2;
-            else
-                return EQUIPMENT_SLOT_FINGER1;          //auto equips always in finger 1
+            
+            return EQUIPMENT_SLOT_FINGER1;          //auto equips always in finger 1
         }
         case INVTYPE_TRINKET:
         {
             if (!GetInventoryItem(EQUIPMENT_SLOT_TRINKET1))
                 return EQUIPMENT_SLOT_TRINKET1;
-            else if (!GetInventoryItem(EQUIPMENT_SLOT_TRINKET2))
+            if (!GetInventoryItem(EQUIPMENT_SLOT_TRINKET2))
                 return EQUIPMENT_SLOT_TRINKET2;
-            else
-                return EQUIPMENT_SLOT_TRINKET1;         //auto equips always on trinket 1
+            
+            return EQUIPMENT_SLOT_TRINKET1;         //auto equips always on trinket 1
         }
         case INVTYPE_CLOAK:
-        {
             return EQUIPMENT_SLOT_BACK;
-        }
         case INVTYPE_WEAPON:
         {
             if (!GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
                 return EQUIPMENT_SLOT_MAINHAND;
-            else if (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND))
+            if (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND))
                 return EQUIPMENT_SLOT_OFFHAND;
-            else
-                return EQUIPMENT_SLOT_MAINHAND;
+            
+            return EQUIPMENT_SLOT_MAINHAND;
         }
         case INVTYPE_SHIELD:
-        {
             return EQUIPMENT_SLOT_OFFHAND;
-        }
         case INVTYPE_RANGED:
-        {
             return EQUIPMENT_SLOT_RANGED;
-        }
         case INVTYPE_2HWEAPON:
         {
             if (!GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
                 return EQUIPMENT_SLOT_MAINHAND;
-            else if (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND))
+            if (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND))
                 return EQUIPMENT_SLOT_OFFHAND;
-            else
-                return EQUIPMENT_SLOT_MAINHAND;
+            
+             return EQUIPMENT_SLOT_MAINHAND;
         }
         case INVTYPE_TABARD:
-        {
             return EQUIPMENT_SLOT_TABARD;
-        }
         case INVTYPE_WEAPONMAINHAND:
-        {
             return EQUIPMENT_SLOT_MAINHAND;
-        }
         case INVTYPE_WEAPONOFFHAND:
-        {
             return EQUIPMENT_SLOT_OFFHAND;
-        }
         case INVTYPE_HOLDABLE:
-        {
             return EQUIPMENT_SLOT_OFFHAND;
-        }
         case INVTYPE_THROWN:
             return EQUIPMENT_SLOT_RANGED;   // ?
         case INVTYPE_RANGEDRIGHT:
@@ -3043,7 +3007,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 auto result = m_pOwner->GetItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
                 if (!result)
                 {
-                    LOG_ERROR("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->GetNameString());
+                    LOG_ERROR("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->getName().c_str());
                     return;
                 }
             }

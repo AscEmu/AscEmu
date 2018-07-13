@@ -104,13 +104,13 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (lootSlot >= pLoot->items.size())
     {
-        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), lootSlot, pLoot->items.size());
+        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), lootSlot, pLoot->items.size());
         return;
     }
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -641,7 +641,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (slotid >= pLoot->items.size())
     {
-        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), slotid, pLoot->items.size());
+        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->getName().c_str(), slotid, pLoot->items.size());
         return;
     }
 
@@ -730,50 +730,4 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     {
         pLoot->items.at(slotid).has_looted.insert(player->getGuidLow());
     }
-}
-
-void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
-{
-    uint64_t creatureguid;
-    uint32_t slotid;
-    uint8_t choice;
-
-    recv_data >> creatureguid;
-    recv_data >> slotid;
-    recv_data >> choice;
-
-    LootRoll* li = nullptr;
-
-    uint32_t guidtype = GET_TYPE_FROM_GUID(creatureguid);
-    if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-    {
-        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32_t)creatureguid);
-        if (pGO == nullptr || pGO->IsLootable())
-            return;
-
-        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-        if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
-            return;
-
-        if (pGO->getGoType() == GAMEOBJECT_TYPE_CHEST)
-            li = pLGO->loot.items[slotid].roll;
-    }
-    else if (guidtype == HIGHGUID_TYPE_UNIT)
-    {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-        if (pCreature == nullptr)
-            return;
-
-        if (slotid >= pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
-            return;
-
-        li = pCreature->loot.items[slotid].roll;
-    }
-    else
-        return;
-
-    if (li == nullptr)
-        return;
-
-    li->PlayerRolled(_player, choice);
 }

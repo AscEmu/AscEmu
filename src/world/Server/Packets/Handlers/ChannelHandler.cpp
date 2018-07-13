@@ -1,36 +1,36 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
-#include "Server/WorldSession.h"
-#include "Server/World.h"
-#include "Server/World.Legacy.h"
-#include "Objects/ObjectMgr.h"
 #include "Server/Packets/CmsgJoinChannel.h"
 #include "Server/Packets/SmsgChannelMemberCount.h"
+#include "Server/Packets/CmsgChannelDisplayList.h"
+#include "Server/Packets/CmsgChannelModerate.h"
+#include "Server/Packets/CmsgChannelAnnouncements.h"
+#include "Server/Packets/CmsgChannelUnban.h"
+#include "Server/Packets/CmsgChannelBan.h"
+#include "Server/Packets/CmsgChannelKick.h"
+#include "Server/Packets/CmsgChannelInvite.h"
+#include "Server/Packets/CmsgChannelUnmute.h"
+#include "Server/Packets/CmsgChannelMute.h"
+#include "Server/Packets/CmsgChannelUnmoderator.h"
+#include "Server/Packets/CmsgChannelModerator.h"
+#include "Server/Packets/CmsgChannelOwner.h"
+#include "Server/Packets/CmsgChannelSetOwner.h"
+#include "Server/Packets/CmsgChannelPassword.h"
+#include "Server/Packets/CmsgChannelList.h"
+#include "Server/Packets/CmsgLeaveChannel.h"
+#include "Server/Packets/CmsgGetChannelMemberCount.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "Objects/ObjectMgr.h"
 
 initialiseSingleton(ChannelMgr);
 
-//MIT
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
@@ -43,289 +43,232 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
     if (!recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
         return;
 
-    auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), _player, recv_packet.dbc_id);
+    const auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), GetPlayer(), recv_packet.dbc_id);
     if (channel == nullptr)
         return;
 
-    channel->AttemptJoin(_player, recv_packet.password.c_str());
+    channel->AttemptJoin(GetPlayer(), recv_packet.password.c_str());
     LogDebugFlag(LF_OPCODE, "CMSG_JOIN_CHANNEL %s", recv_packet.channel_name.c_str());
 }
+#else
+void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
+{
+    uint32_t channelId;
+
+    recvPacket >> channelId;
+    recvPacket.readBit();       // has voice
+    recvPacket.readBit();       // zone update
+
+    const uint32_t channelLength = recvPacket.readBits(8);
+    const uint32_t passwordLength = recvPacket.readBits(8);
+
+    std::string channelname = recvPacket.ReadString(channelLength);
+    std::string pass = recvPacket.ReadString(passwordLength);
+
+    if (!sWorld.settings.gm.gmClientChannelName.empty() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), channelname.c_str()) && !GetPermissionCount())
+        return;
+
+    const auto channel = channelmgr.GetCreateChannel(channelname.c_str(), GetPlayer(), channelId);
+    if (channel == nullptr)
+        return;
+
+    channel->AttemptJoin(GetPlayer(), pass.c_str());
+    LogDebugFlag(LF_OPCODE, "ChannelJoin %s", channelname.c_str());
+}
+#endif
 
 void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 {
-    std::string name;
-    recvPacket >> name;
-
-    auto channel = channelmgr.GetChannel(name.c_str(), _player);
-    if (channel)
-        SendPacket(SmgsChannelMemberCount(name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
-}
-//MIT end
-
-
-void WorldSession::HandleChannelLeave(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname;
-    uint32 code = 0;
-    Channel* chn;
-
-    recvPacket >> code;
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn == NULL)
+    CmsgGetChannelMemberCount recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    chn->Part(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        SendPacket(SmgsChannelMemberCount(recv_packet.name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
 }
 
-void WorldSession::HandleChannelList(WorldPacket& recvPacket)
+void WorldSession::handleChannelLeave(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgLeaveChannel recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname;
-    Channel* chn;
-
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn != NULL)
-        chn->List(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->Part(GetPlayer());
 }
 
-void WorldSession::HandleChannelPassword(WorldPacket& recvPacket)
+void WorldSession::handleChannelList(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelList recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, pass;
-    Channel* chn;
-
-    recvPacket >> channelname;
-    recvPacket >> pass;
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->Password(_player, pass.c_str());
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->List(GetPlayer());
 }
 
-void WorldSession::HandleChannelSetOwner(WorldPacket& recvPacket)
+void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelPassword recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->SetOwner(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->Password(GetPlayer(), recv_packet.password.c_str());
 }
 
-void WorldSession::HandleChannelOwner(WorldPacket& recvPacket)
+void WorldSession::handleChannelSetOwner(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelSetOwner recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, pass;
-    Channel* chn;
-
-    recvPacket >> channelname;
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->GetOwner(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.setName.c_str(), false);
+    if (channel && player)
+        channel->SetOwner(GetPlayer(), player);
 }
 
-void WorldSession::HandleChannelModerator(WorldPacket& recvPacket)
+void WorldSession::handleChannelOwner(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelOwner recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->GiveModerator(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->GetOwner(GetPlayer());
 }
 
-void WorldSession::HandleChannelUnmoderator(WorldPacket& recvPacket)
+void WorldSession::handleChannelModerator(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelModerator recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->TakeModerator(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.modName.c_str(), false);
+    if (channel && player)
+        channel->GiveModerator(GetPlayer(), player);
 }
 
-void WorldSession::HandleChannelMute(WorldPacket& recvPacket)
+void WorldSession::handleChannelUnmoderator(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelUnmoderator recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->Mute(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.unmodName.c_str(), false);
+    if (channel && player)
+        channel->TakeModerator(GetPlayer(), player);
 }
 
-void WorldSession::HandleChannelUnmute(WorldPacket& recvPacket)
+void WorldSession::handleChannelMute(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelMute recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->Unmute(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.muteName.c_str(), false);
+    if (channel && player)
+        channel->Mute(GetPlayer(), player);
 }
 
-void WorldSession::HandleChannelInvite(WorldPacket& recvPacket)
+void WorldSession::handleChannelUnmute(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelUnmute recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->Invite(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.unmuteName.c_str(), false);
+    if (channel && player)
+        channel->Unmute(GetPlayer(), player);
 }
-void WorldSession::HandleChannelKick(WorldPacket& recvPacket)
+
+void WorldSession::handleChannelInvite(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelInvite recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->Kick(_player, plr, false);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.inviteName.c_str(), false);
+    if (channel && player)
+        channel->Invite(GetPlayer(), player);
 }
 
-void WorldSession::HandleChannelBan(WorldPacket& recvPacket)
+void WorldSession::handleChannelKick(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelKick recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    Player* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayer(newp.c_str(), false);
-    if (chn && plr)
-        chn->Kick(_player, plr, true);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.kickName.c_str(), false);
+    if (channel && player)
+        channel->Kick(GetPlayer(), player, false);
 }
 
-void WorldSession::HandleChannelUnban(WorldPacket& recvPacket)
+void WorldSession::handleChannelBan(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelBan recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, newp;
-    Channel* chn;
-    PlayerInfo* plr;
-
-    recvPacket >> channelname;
-    recvPacket >> newp;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    plr = objmgr.GetPlayerInfoByName(newp.c_str());
-    if (chn && plr)
-        chn->Unban(_player, plr);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(recv_packet.banName.c_str(), false);
+    if (channel && player)
+        channel->Kick(GetPlayer(), player, true);
 }
 
-void WorldSession::HandleChannelAnnounce(WorldPacket& recvPacket)
+void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelUnban recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname;
-    Channel* chn;
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->Announce(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto playerInfo = objmgr.GetPlayerInfoByName(recv_packet.unbanName.c_str());
+    if (channel && playerInfo)
+        channel->Unban(GetPlayer(), playerInfo);
 }
 
-void WorldSession::HandleChannelModerate(WorldPacket& recvPacket)
+void WorldSession::handleChannelAnnounce(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelAnnouncements recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname;
-    Channel* chn;
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->Moderate(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->Announce(GetPlayer());
 }
 
-void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
+void WorldSession::handleChannelModerate(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgChannelModerate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    std::string channelname;
-    Channel* chn;
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->List(_player);
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->Moderate(GetPlayer());
 }
 
-#endif
+void WorldSession::handleChannelRosterQuery(WorldPacket& recvPacket)
+{
+    CmsgChannelDisplayList recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    if (channel)
+        channel->List(GetPlayer());
+}

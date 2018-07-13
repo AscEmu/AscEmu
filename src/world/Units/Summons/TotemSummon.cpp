@@ -38,40 +38,11 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
     uint32 displayID = 0;
 
-    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(creature_properties->Male_DisplayID);
+    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(pOwner->getRace(), creature_properties->Male_DisplayID);
     if (totemdisplay != nullptr)
-    {
-        switch (pOwner->getRace())
-        {
-            case RACE_DRAENEI:
-                displayID = totemdisplay->draeneiId;
-                break;
-            case RACE_TROLL:
-                displayID = totemdisplay->trollId;
-                break;
-            case RACE_ORC:
-                displayID = totemdisplay->orcId;
-                break;
-#if VERSION_STRING == Cata
-            case RACE_TAUREN:
-                displayID = totemdisplay->taurenId;
-                break;
-            case RACE_DWARF:
-                displayID = totemdisplay->dwarfId;
-                break;
-            case RACE_GOBLIN:
-                displayID = totemdisplay->goblinId;
-                break;
-#endif
-            default:
-                displayID = totemdisplay->displayId;
-                break;
-        }
-    }
+        displayID = totemdisplay->race_specific_id;
     else
-    {
         displayID = creature_properties->Male_DisplayID;
-    }
 
     // Set up the creature.
     SetMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);

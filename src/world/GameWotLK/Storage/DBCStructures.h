@@ -37,6 +37,7 @@ namespace DBC
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
+            char const char_start_outfit_format[] = "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
@@ -605,6 +606,21 @@ namespace DBC
             uint32_t hair_id;         // 39 Hair ID
         };
 
+        #define OUTFIT_ITEMS 24
+
+        struct CharStartOutfitEntry
+        {
+            //uint32_t Id;                                    // 0
+            uint8_t Race;                                     // 1
+            uint8_t Class;                                    // 2
+            uint8_t Gender;                                   // 3
+            //uint8_t Unused;                                 // 4
+            int32_t ItemId[OUTFIT_ITEMS];                     // 5-28
+            //int32_t ItemDisplayId[OUTFIT_ITEMS];            // 29-52
+            //int32_t ItemInventorySlot[OUTFIT_ITEMS];        // 53-76
+        };
+
+
         struct CharTitlesEntry
         {
             uint32_t ID;                      // 0, title ids
@@ -641,7 +657,7 @@ namespace DBC
             //uint32_t unk3;                  // 55
             uint32_t spellfamily;             // 56
             //uint32_t unk4;                  // 57
-            uint32_t cinematic_sequence;      // 58 CinematicSequences.dbc
+            uint32_t cinematic_id;            // 58 CinematicSequences.dbc
             uint32_t expansion;               // 59
         };
 

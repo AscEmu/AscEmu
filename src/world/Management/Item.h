@@ -293,6 +293,8 @@ public:
 
         uint32 getEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
         void setEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
+
+		void setTextId(uint32 textId);
 #endif
 
         // DB Serialization
@@ -352,7 +354,7 @@ public:
                 return itr->second.ApplyTime;
         }
 
-        /// Adds an enchantment to the item.
+        // Adds an enchantment to the item.
         int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
         uint32 GetSocketsCount();
 

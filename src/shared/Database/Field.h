@@ -29,6 +29,9 @@ class Field
 {
     public:
 
+    //MIT start
+        bool isSet() const { return mValue ? true : false; }
+    //MIT end
         inline void SetValue(char* value) { mValue = value; }
 
         inline const char* GetString() { return mValue; }

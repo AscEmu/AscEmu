@@ -61,7 +61,7 @@ public:
         virtual ~Creature();
 
         // For derived subclasses of Creature
-        bool isVehicle();
+        bool isVehicle() const override;
 
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();

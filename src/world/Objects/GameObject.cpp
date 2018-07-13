@@ -332,6 +332,10 @@ void GameObject::SaveToDB()
 
     ss << "DELETE FROM gameobject_spawns WHERE id = ";
     ss << m_spawn->id;
+    ss << "AND min_build <= ";
+    ss << VERSION_STRING;
+    ss << " AND max_build >= ";
+    ss << VERSION_STRING;
     ss << ";";
 
     WorldDatabase.ExecuteNA(ss.str().c_str());
@@ -340,6 +344,8 @@ void GameObject::SaveToDB()
 
     ss << "INSERT INTO gameobject_spawns VALUES("
         << m_spawn->id << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
         << GetPositionX() << ","
@@ -354,9 +360,10 @@ void GameObject::SaveToDB()
         << getFlags() << ","
         << getFactionTemplate() << ","
         << getScale() << ","
-        << "0,"
+        << "0,"             // respawnNpcLink
         << m_phase << ","
-        << m_overrides << ")";
+        << m_overrides << ","
+        << "0)";            // event
     WorldDatabase.Execute(ss.str().c_str());
 }
 
@@ -367,6 +374,8 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     ss << "INSERT INTO gameobject_spawns VALUES("
         << ((m_spawn == NULL) ? 0 : m_spawn->id) << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
         << GetPositionX() << ","
@@ -381,9 +390,10 @@ void GameObject::SaveToFile(std::stringstream & name)
         << getFlags() << ","
         << getFactionTemplate() << ","
         << getScale() << ","
-        << "0,"
+        << "0,"             // respawnNpcLink
         << m_phase << ","
-        << m_overrides << ")";
+        << m_overrides << ","
+        << "0)";            // event
 
     FILE* OutFile;
 
@@ -421,7 +431,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
 void GameObject::DeleteFromDB()
 {
     if (m_spawn != NULL)
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", m_spawn->id);
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

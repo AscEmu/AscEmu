@@ -95,7 +95,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
         } break;
         case 2:     // BINDER
         {
-            Plr->GetSession()->SendInnkeeperBind(pCreature);
+            Plr->GetSession()->sendInnkeeperBind(pCreature);
         } break;
         case 3:     // WHAT CAN I DO ?
         {

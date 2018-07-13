@@ -145,7 +145,9 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     else
         setPropertySeed(0);
 
-    //SetTextId(fields[11].GetUInt32());
+#ifdef AE_TBC
+    setTextId(fields[11].GetUInt32());
+#endif
 
     setMaxDurability(m_itemProperties->MaxDurability);
     setDurability(fields[12].GetUInt32());
@@ -196,7 +198,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     ApplyRandomProperties(false);
 
     // Charter stuff
-    if (getEntry() == ITEM_ENTRY_GUILD_CHARTER)
+    if (getEntry() == CharterEntry::Guild)
     {
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
@@ -205,7 +207,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_GUILD]->GetID());
     }
 
-    if (getEntry() == ARENA_TEAM_CHARTER_2v2)
+    if (getEntry() == CharterEntry::TwoOnTwo)
     {
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
@@ -214,7 +216,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_2V2]->GetID());
     }
 
-    if (getEntry() == ARENA_TEAM_CHARTER_3v3)
+    if (getEntry() == CharterEntry::ThreeOnThree)
     {
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
@@ -223,7 +225,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_3V3]->GetID());
     }
 
-    if (getEntry() == ARENA_TEAM_CHARTER_5v5)
+    if (getEntry() == CharterEntry::FiveOnFive)
     {
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);

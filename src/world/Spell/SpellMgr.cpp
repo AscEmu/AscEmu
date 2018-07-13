@@ -80,6 +80,7 @@ Spell* SpellFactoryMgr::NewSpell(Object* Caster, SpellInfo* info, bool triggered
 
 Aura* SpellFactoryMgr::NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
 {
+    //\brief... nullptr when downgrading ae from wotlk to tbc (active auras from newer client versions should be removed before entering tbc)
     if (proto->AuraFactoryFunc == NULL)
         return new Aura(proto, duration, caster, target, temporary, i_caster);
     else
