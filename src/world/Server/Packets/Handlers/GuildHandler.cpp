@@ -29,6 +29,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
 #include "Server/Packets/CmsgGuildBankUpdateTab.h"
 #include "Server/Packets/CmsgGuildBankSwapItems.h"
+#include "Server/Packets/MsgQueryGuildBankText.h"
+#include "Server/Packets/CmsgGuildBankQueryText.h"
 
 
 using namespace AscEmu::Packets;
@@ -385,3 +387,25 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
     else
         guild->swapItemsWithInventory(GetPlayer(), recv_packet.toChar, recv_packet.tabId, recv_packet.slotId, recv_packet.playerBag, recv_packet.playerSlotId, recv_packet.splitedAmount);
 }
+
+#if VERSION_STRING != Cata
+void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
+{
+    MsgQueryGuildBankText recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendBankTabText(this, recv_packet.tabId);
+}
+#else
+void WorldSession::handleQueryGuildBankTabText(WorldPacket& recvPacket)
+{
+    CmsgGuildBankQueryText recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendBankTabText(this, recv_packet.tabId);
+}
+#endif

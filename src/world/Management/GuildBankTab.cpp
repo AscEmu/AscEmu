@@ -8,7 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Management/Item.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/MsgQueryGuildBankText.h"
+#include "Server/Packets/SmsgGuildBankQueryTextResult.h"
 
+using namespace AscEmu::Packets;
 
 GuildBankTab::GuildBankTab(uint32_t guildId, uint8_t tabId) : mGuildId(guildId), mTabId(tabId)
 {
@@ -144,23 +147,21 @@ void GuildBankTab::setText(std::string const& text)
 
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
 {
-#if VERSION_STRING == Cata
-    WorldPacket data(SMSG_GUILD_BANK_QUERY_TEXT_RESULT, 1 + mText.size() + 1);
-    data.writeBits(mText.length(), 14);
-    data << uint32_t(mTabId);
-    data.WriteString(mText);
-
     if (session)
-    {
-        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_QUERY_TEXT_RESULT %s: Tabid: %u, Text: %s",
-            session->GetPlayer()->getName().c_str(), (uint32_t)mTabId, mText.c_str());
-        session->SendPacket(&data);
-    }
+        LogDebugFlag(LF_OPCODE, "sendText %s: Tabid: %u, Text: %s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
     else
-    {
-        LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_QUERY_TEXT_RESULT [Broadcast]: Tabid: %u, Text: %s", (uint32_t)mTabId, mText.c_str());
-        guild->broadcastPacket(&data);
-    }
+        LogDebugFlag(LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
+
+#if VERSION_STRING != Cata
+    if (session)
+        session->SendPacket(MsgQueryGuildBankText(mTabId, mText).serialise().get());
+    else
+        guild->broadcastPacket(MsgQueryGuildBankText(mTabId, mText).serialise().get());
+#else
+    if (session)
+        session->SendPacket(SmsgGuildBankQueryTextResult(mTabId, mText).serialise().get());
+    else
+        guild->broadcastPacket(SmsgGuildBankQueryTextResult(mTabId, mText).serialise().get());
 #endif
 }
 

@@ -652,6 +652,8 @@ class SERVER_DECL WorldSession
         void handleGuildBankUpdateTab(WorldPacket& recvPacket);
         void handleGuildBankSwapItems(WorldPacket& recvPacket);
 
+    //\brief this was two seperated opcodes on versions < Cata.
+    //       now it is one since cata.
 #if VERSION_STRING != Cata
         void handleGuildSetPublicNote(WorldPacket& recvPacket);
         void handleGuildSetOfficerNote(WorldPacket& recvPacket);
@@ -659,10 +661,20 @@ class SERVER_DECL WorldSession
         void handleGuildSetNoteOpcode(WorldPacket& recvPacket);
 #endif
 
+    //\brief this was an empty opcodes on versions < Cata.
+    //       now it has some content since cata.
 #if VERSION_STRING != Cata
         void handleGuildDelRank(WorldPacket& /*recvPacket*/);
 #else
         void handleGuildDelRank(WorldPacket& recvPacket);
+#endif
+
+    //\brief this was an MSG opcode on versions < Cata.
+    //       now it is split into CMSG and SMSG packets since cata.
+#if VERSION_STRING != Cata
+        void handleGuildBankQueryText(WorldPacket& recvPacket);
+#else
+        void handleQueryGuildBankTabText(WorldPacket& recvPacket);
 #endif
 
 #if VERSION_STRING != Cata
@@ -681,7 +693,7 @@ class SERVER_DECL WorldSession
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
         void HandleGuildBankViewTab(WorldPacket& recv_data);
-        void HandleGuildBankQueryText(WorldPacket& recv_data);
+        
         void HandleGuildBankOpenVault(WorldPacket& recv_data);
         
         void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
@@ -711,7 +723,7 @@ class SERVER_DECL WorldSession
         void HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/);
         void HandleGuildBankerActivate(WorldPacket& recv_data);
         void HandleGuildBankQueryTab(WorldPacket& recv_data);
-        void HandleQueryGuildBankTabText(WorldPacket& recv_data);
+        
         
 
         //////////////////////////////////////////////////////////////////////////////////////////

@@ -362,7 +362,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::HandleCharterRename;
     WorldPacketHandlers[MSG_SAVE_GUILD_EMBLEM].handler = &WorldSession::handleSaveGuildEmblem;
     WorldPacketHandlers[CMSG_GUILD_INFO_TEXT].handler = &WorldSession::handleSetGuildInfo;
-    WorldPacketHandlers[MSG_QUERY_GUILD_BANK_TEXT].handler = &WorldSession::HandleGuildBankQueryText;
+    WorldPacketHandlers[MSG_QUERY_GUILD_BANK_TEXT].handler = &WorldSession::handleGuildBankQueryText;
     WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::handleSetGuildBankText;
     WorldPacketHandlers[MSG_GUILD_EVENT_LOG_QUERY].handler = &WorldSession::handleGuildLog;
     WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::HandleGuildBankOpenVault;

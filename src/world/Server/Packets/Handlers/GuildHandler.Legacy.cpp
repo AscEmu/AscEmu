@@ -634,14 +634,4 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
     guild->sendBankList(this, recv_packet.tabId, false, true);
 }
 
-void WorldSession::HandleGuildBankQueryText(WorldPacket& recv_data)
-{
-    MsgQueryGuildBankText recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankTabText(this, recv_packet.tabId);
-}
-
 #endif

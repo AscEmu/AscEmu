@@ -72,6 +72,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
    ${PATH_PREFIX}/CmsgGuildBankerActivate.h
    ${PATH_PREFIX}/CmsgGuildBankQueryTab.h
+   ${PATH_PREFIX}/CmsgGuildBankQueryText.h
    ${PATH_PREFIX}/CmsgGuildBankSwapItems.h
    ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
    ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
@@ -201,6 +202,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
+   ${PATH_PREFIX}/SmsgGuildBankQueryTextResult.h
    ${PATH_PREFIX}/SmsgGuildCommandResult.h
    ${PATH_PREFIX}/SmsgGuildInfo.h
    ${PATH_PREFIX}/SmsgGuildInvite.h

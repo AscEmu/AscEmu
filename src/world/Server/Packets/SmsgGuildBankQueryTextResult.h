@@ -10,19 +10,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class MsgQueryGuildBankText : public ManagedPacket
+    class SmsgGuildBankQueryTextResult : public ManagedPacket
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == Cata
     public:
-        uint8_t tabId;
+        uint32_t tabId;
         std::string tabInfo;
 
-        MsgQueryGuildBankText() : MsgQueryGuildBankText(0, "")
+        SmsgGuildBankQueryTextResult() : SmsgGuildBankQueryTextResult(0, "")
         {
         }
 
-        MsgQueryGuildBankText(uint8_t tabId, std::string tabInfo) :
-            ManagedPacket(MSG_QUERY_GUILD_BANK_TEXT, 1),
+        SmsgGuildBankQueryTextResult(uint32_t tabId, std::string tabInfo) :
+            ManagedPacket(SMSG_GUILD_BANK_QUERY_TEXT_RESULT, 0),
             tabId(tabId),
             tabInfo(tabInfo)
         {
@@ -33,19 +33,15 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            packet.writeBits(tabInfo.length(), 14);
             packet << tabId;
-            if (tabInfo.empty())
-                packet << uint8_t(0);
-            else
-                packet << tabInfo;
-
-            return true;
+            packet.WriteString(tabInfo);
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> tabId;
-            return true;
+            return false;
         }
 #endif
     };

@@ -412,19 +412,6 @@ void WorldSession::HandleGuildBankQueryTab(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleQueryGuildBankTabText(WorldPacket &recvData)
-{
-    uint8_t tabId;
-    recvData >> tabId;
-
-    LogDebugFlag(LF_OPCODE, "MSG_QUERY_GUILD_BANK_TEXT %s: tabId: %u", _player->getName().c_str(), tabId);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->sendBankTabText(this, tabId);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 
