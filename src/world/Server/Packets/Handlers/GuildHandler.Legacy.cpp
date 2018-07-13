@@ -102,12 +102,6 @@ void WorldSession::HandleGuildRank(WorldPacket& recvPacket)
     guild->handleSetRankInfo(this, rankId, rankName, rights, money, rightsAndSlots);
 }
 
-void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
-{
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleRemoveLowestRank(this);
-}
-
 // Charter part
 void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 {

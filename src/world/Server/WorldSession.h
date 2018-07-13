@@ -656,11 +656,17 @@ class SERVER_DECL WorldSession
 #endif
 
 #if VERSION_STRING != Cata
+        void handleGuildDelRank(WorldPacket& /*recvPacket*/);
+#else
+        void handleGuildDelRank(WorldPacket& recvPacket);
+#endif
+
+#if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
         
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
         void HandleGuildRank(WorldPacket& recv_data);
-        void HandleGuildDelRank(WorldPacket& /*recv_data*/);
+        
         
         void HandleCharterBuy(WorldPacket& recv_data);
         void HandleCharterShowSignatures(WorldPacket& recv_data);
@@ -687,7 +693,7 @@ class SERVER_DECL WorldSession
         void HandleGuildAssignRankOpcode(WorldPacket& recv_data);
         
         void HandleGuildQueryRanksOpcode(WorldPacket& recv_data);
-        void HandleGuildDelRankOpcode(WorldPacket& recv_data);
+        
         void HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/);
         void HandleGuildQueryXPOpcode(WorldPacket& recv_data);
         void HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data);

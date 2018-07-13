@@ -118,19 +118,6 @@ void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildDelRankOpcode(WorldPacket& recvData)
-{
-    uint32_t rankId;
-    recvData >> rankId;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEL_RANK %s: Rank: %u", _player->getName().c_str(), rankId);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleRemoveRank(this, static_cast<uint8_t>(rankId));
-    }
-}
-
 void WorldSession::HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/)
 {
     if (Guild* guild = _player->GetGuild())

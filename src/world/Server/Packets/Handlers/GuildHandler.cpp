@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildSetPublicNote.h"
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
 #include "Server/Packets/CmsgGuildSetNote.h"
+#include "Server/Packets/CmsgGuildDelRank.h"
 
 
 using namespace AscEmu::Packets;
@@ -308,5 +309,23 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->handleSetMemberNote(this, recv_packet.note, recv_packet.guid, recv_packet.isPublic);
+}
+#endif
+
+#if VERSION_STRING != Cata
+void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleRemoveLowestRank(this);
+}
+#else
+void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
+{
+    CmsgGuildDelRank recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleRemoveRank(this, static_cast<uint8_t>(recv_packet.rankId));
 }
 #endif
