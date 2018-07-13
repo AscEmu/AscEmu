@@ -654,6 +654,10 @@ class SERVER_DECL WorldSession
         void handleGuildBankQueryTab(WorldPacket& recvPacket);
         void handleGuildBankerActivate(WorldPacket& recvPacket);
 
+        //\brief this was an MSG opcode on versions < Cata.
+        //       now it is split into CMSG and SMSG packets since cata.
+        void handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/);
+
     //\brief this was two seperated opcodes on versions < Cata.
     //       now it is one since cata.
 #if VERSION_STRING != Cata
@@ -694,9 +698,6 @@ class SERVER_DECL WorldSession
         void HandleCharterSign(WorldPacket& recv_data);
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
-       
-        
-        void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
         
 #else
     public:
@@ -718,13 +719,6 @@ class SERVER_DECL WorldSession
         void HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data);
         void HandleGuildSetGuildMaster(WorldPacket& recv_data);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Guild Bank
-        void HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/);
-        
-        
-        
-        
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Charter

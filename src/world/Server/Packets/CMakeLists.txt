@@ -156,6 +156,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
    ${PATH_PREFIX}/MsgGuildBankLogQuery.h
+   ${PATH_PREFIX}/MsgGuildBankMoneyWithdrawn.h
    ${PATH_PREFIX}/MsgInspectArenaTeams.h
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgListStabledPets.h
@@ -202,6 +203,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
+   ${PATH_PREFIX}/SmsgGuildBankMoneyWithdrawn.h
    ${PATH_PREFIX}/SmsgGuildBankQueryTextResult.h
    ${PATH_PREFIX}/SmsgGuildCommandResult.h
    ${PATH_PREFIX}/SmsgGuildInfo.h

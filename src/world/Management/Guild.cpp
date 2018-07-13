@@ -17,6 +17,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
+#include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
+#include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
 
 using namespace AscEmu::Packets;
 
@@ -973,18 +975,13 @@ void Guild::sendMoneyInfo(WorldSession* session) const
     if (member == nullptr)
         return;
 
-    int32_t amount = getMemberRemainingMoney(member);
+    const int32_t amount = getMemberRemainingMoney(member);
 
 #if VERSION_STRING == Cata
-    WorldPacket data(SMSG_GUILD_BANK_MONEY_WITHDRAWN, 8);
-    data << int64_t(amount);
+    session->SendPacket(SmsgGuildBankMoneyWithdrawn(amount).serialise().get());
 #else
-    WorldPacket data(MSG_GUILD_BANK_MONEY_WITHDRAWN, 4);
-    data << int32(amount);
+    session->SendPacket(MsgGuildBankMoneyWithdrawn(amount).serialise().get());
 #endif
-    session->SendPacket(&data);
-
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_MONEY_WITHDRAWN %s Money: %u", session->GetPlayer()->getName().c_str(), amount);
 }
 
 void Guild::sendLoginInfo(WorldSession* session)

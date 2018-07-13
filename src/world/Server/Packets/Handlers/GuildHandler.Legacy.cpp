@@ -592,10 +592,4 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
 }
 
-void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
-{
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendMoneyInfo(this);
-}
-
 #endif

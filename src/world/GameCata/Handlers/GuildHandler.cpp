@@ -364,18 +364,6 @@ void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recvData)
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Guild Bank
-
-void WorldSession::HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/)
-{
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->sendMoneyInfo(this);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 

@@ -456,3 +456,10 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
     guild->sendBankList(this, 0, true, true);
 #endif
 }
+
+void WorldSession::handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendMoneyInfo(this);
+}
+
