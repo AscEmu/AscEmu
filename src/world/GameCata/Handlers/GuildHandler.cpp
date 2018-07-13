@@ -487,30 +487,6 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildBankUpdateTab(WorldPacket& recvData)
-{
-    uint64_t bankGuid;
-    uint8_t tabId;
-    std::string name;
-    std::string icon;
-
-    recvData >> bankGuid;
-    recvData >> tabId;
-    recvData >> name;
-    recvData >> icon;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_UPDATE_TAB %s: gameobject: %u, tabId: %u, name: %s, icon: %s",
-        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, name.c_str(), icon.c_str());
-
-    if (name.empty() == false && icon.empty() == false)
-    {
-        if (Guild* guild = GetPlayer()->GetGuild())
-        {
-            guild->handleSetBankTabInfo(this, tabId, name, icon);
-        }
-    }
-}
-
 void WorldSession::HandleQueryGuildBankTabText(WorldPacket &recvData)
 {
     uint8_t tabId;

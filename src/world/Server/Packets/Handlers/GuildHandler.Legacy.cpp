@@ -598,17 +598,6 @@ void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
         guild->sendMoneyInfo(this);
 }
 
-void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
-{
-    CmsgGuildBankUpdateTab recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (!recv_packet.tabName.empty() && !recv_packet.tabIcon.empty())
-        if (Guild* guild = GetPlayer()->GetGuild())
-            guild->handleSetBankTabInfo(this, recv_packet.slot, recv_packet.tabName, recv_packet.tabIcon);
-}
-
 void WorldSession::HandleGuildBankDepositItem(WorldPacket& recvData)
 {
     uint64_t GoGuid;

@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildDelRank.h"
 #include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
+#include "Server/Packets/CmsgGuildBankUpdateTab.h"
 
 
 using namespace AscEmu::Packets;
@@ -348,7 +349,20 @@ void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    if (recv_packet.money && GetPlayer()->HasGold(recv_packet.money))
+    //\todo HasGold requires an uint32_t
+    if (recv_packet.money && GetPlayer()->HasGold(static_cast<uint32_t>(recv_packet.money)))
         if (Guild* guild = GetPlayer()->GetGuild())
             guild->handleMemberDepositMoney(this, recv_packet.money);
 }
+
+void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)
+{
+    CmsgGuildBankUpdateTab recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (!recv_packet.tabName.empty() && !recv_packet.tabIcon.empty())
+        if (Guild* guild = GetPlayer()->GetGuild())
+            guild->handleSetBankTabInfo(this, recv_packet.slot, recv_packet.tabName, recv_packet.tabIcon);
+}
+
