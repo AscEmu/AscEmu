@@ -35,8 +35,8 @@ class RingOfTrials : public Arena
             return new RingOfTrials(m, i, l, t, players_per_side);
         }
 
-        void OnCreate();
-        void HookOnShadowSight();
-        LocationVector GetStartingCoords(uint32 Team);
-        bool HookHandleRepop(Player* plr);
+        void OnCreate() override;
+        void HookOnShadowSight() override;
+        LocationVector GetStartingCoords(uint32 Team) override;
+        bool HookHandleRepop(Player* plr) override;
 };
