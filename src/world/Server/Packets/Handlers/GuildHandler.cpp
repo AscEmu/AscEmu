@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgQueryGuildBankText.h"
 #include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
+#include "Server/Packets/CmsgGuildBankerActivate.h"
 
 
 using namespace AscEmu::Packets;
@@ -429,5 +430,29 @@ void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
     guild->sendBankList(this, recv_packet.tabId, false, true);
 #else
     guild->sendBankList(this, recv_packet.tabId, true, false);
+#endif
+}
+
+void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
+{
+    CmsgGuildBankerActivate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto gameObject = GetPlayer()->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLow());
+    if (gameObject == nullptr)
+        return;
+
+    Guild* guild = GetPlayer()->GetGuild();
+    if (guild == nullptr)
+    {
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+        return;
+    }
+
+#if VERSION_STRING != Cata
+    guild->sendBankList(this, 0, false, false);
+#else
+    guild->sendBankList(this, 0, true, true);
 #endif
 }

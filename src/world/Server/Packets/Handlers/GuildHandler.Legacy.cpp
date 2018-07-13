@@ -598,23 +598,4 @@ void WorldSession::HandleGuildBankGetAvailableAmount(WorldPacket& /*recv_data*/)
         guild->sendMoneyInfo(this);
 }
 
-void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
-{
-    CmsgGuildBankerActivate recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    if (!_player->IsInWorld() || _player->GetGuild() == nullptr)
-    {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-        return;
-    }
-
-    GameObject* pObj = _player->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLow());
-    if (pObj == NULL)
-        return;
-
-    _player->GetGuild()->sendBankList(this, 0, false, false);
-}
-
 #endif

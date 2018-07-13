@@ -365,7 +365,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[MSG_QUERY_GUILD_BANK_TEXT].handler = &WorldSession::handleGuildBankQueryText;
     WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::handleSetGuildBankText;
     WorldPacketHandlers[MSG_GUILD_EVENT_LOG_QUERY].handler = &WorldSession::handleGuildLog;
-    WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::HandleGuildBankOpenVault;
+    WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::handleGuildBankerActivate;
     WorldPacketHandlers[CMSG_GUILD_BANK_BUY_TAB].handler = &WorldSession::handleGuildBankBuyTab;
     WorldPacketHandlers[MSG_GUILD_BANK_MONEY_WITHDRAWN].handler = &WorldSession::HandleGuildBankGetAvailableAmount;
     WorldPacketHandlers[CMSG_GUILD_BANK_UPDATE_TAB].handler = &WorldSession::handleGuildBankUpdateTab;

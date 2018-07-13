@@ -376,23 +376,6 @@ void WorldSession::HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGuildBankerActivate(WorldPacket& recvData)
-{
-    uint64_t bankGuid;
-    bool sendAllSlots;
-
-    recvData >> bankGuid;
-    recvData >> sendAllSlots;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANKER_ACTIVATE %s: gameobject: %u allSlots: %u",
-        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), sendAllSlots);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankList(this, 0, true, true);
-    else
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 
