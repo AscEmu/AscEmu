@@ -36,10 +36,8 @@
 #include "Packets/SmsgBuyFailed.h"
 #include "Packets/SmsgGuildCommandResult.h"
 #include "Packets/SmsgGuildInvite.h"
-
-#if VERSION_STRING != Cata
 #include "Management/Guild.h"
-#endif
+
 
 using namespace AscEmu::Packets;
 

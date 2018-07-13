@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
 #include "Server/Packets/CmsgGuildSetRank.h"
+#include "Map/MapMgr.h"
 
 
 using namespace AscEmu::Packets;
