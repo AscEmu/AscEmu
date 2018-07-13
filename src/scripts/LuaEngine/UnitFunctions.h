@@ -5071,8 +5071,8 @@ class LuaUnit
         TEST_PLAYER()
         const auto sender = static_cast<Player*>(ptr);
         const auto invitedPlayer = CHECK_PLAYER(L, 1);
-        if (invitedPlayer != nullptr)
-            sender->GetSession()->sendGuildInvitePacket(invitedPlayer->getName());
+        if (invitedPlayer != nullptr && sender)
+            sender->GetGuild()->sendGuildInvitePacket(sender->GetSession(), invitedPlayer->getName());
 
         return 0;
     }

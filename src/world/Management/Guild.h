@@ -247,6 +247,8 @@ public:
     void broadcastPacketToRank(WorldPacket* packet, uint8_t rankId) const;
     void broadcastPacket(WorldPacket* packet) const;
     void sendPacket(WorldPacket* packet) const { broadcastPacket(packet); }
+    void sendGuildCommandResult(WorldSession* session, uint32_t guildCommand, std::string text, uint32_t error);
+    void sendGuildInvitePacket(WorldSession* session, std::string invitedName);
 
     void massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t maxLevel, uint32_t minRank);
 

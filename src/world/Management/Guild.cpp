@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgSaveGuildEmblem.h"
 #include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
+#include "Server/Packets/SmsgGuildInvite.h"
 
 using namespace AscEmu::Packets;
 
@@ -36,6 +37,73 @@ inline uint32_t GetGuildBankTabPrice(uint8_t tabId)
     ASSERT(tabId < MAX_GUILD_BANK_TABS);
 
     return tabPrices[tabId];
+}
+
+void Guild::sendGuildCommandResult(WorldSession* session, uint32_t guildCommand, std::string text, uint32_t error)
+{
+    session->SendPacket(SmsgGuildCommandResult(guildCommand, text, error).serialise().get());
+}
+
+void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName)
+{
+    const auto invitedPlayer = objmgr.GetPlayer(invitedName.c_str(), false);
+    const auto guild = session->GetPlayer()->GetGuild();
+
+    if (invitedPlayer == nullptr)
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        return;
+    }
+
+    if (guild == nullptr)
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+        return;
+    }
+
+    if (invitedPlayer->getGuildId())
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_IN_GUILD_S).serialise().get());
+        return;
+    }
+
+    if (invitedPlayer->GetGuildIdInvited())
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
+        return;
+    }
+
+    if (!session->GetPlayer()->GetGuild()->_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_INVITE))
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
+        return;
+    }
+
+    if (invitedPlayer->GetTeam() != session->GetPlayer()->GetTeam() && session->GetPlayer()->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+    {
+        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
+        return;
+    }
+
+    const auto memberCount = guild->getMembersCount();
+    if (memberCount >= MAX_GUILD_MEMBERS)
+    {
+        session->SystemMessage("Your guild is full.");
+        return;
+    }
+
+    session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
+
+    guild->logEvent(GE_LOG_INVITE_PLAYER, session->GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
+    invitedPlayer->SetGuildIdInvited(guild->getId());
+
+#if VERSION_STRING != Cata
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
+
+#else
+    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName(), guild->getLevel(),
+        guild->getEmblemInfo(), guild->getId(), guild->getGUID()).serialise().get());
+#endif
 }
 
 Guild::~Guild()

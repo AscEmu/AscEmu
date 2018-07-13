@@ -64,7 +64,8 @@ void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    sendGuildInvitePacket(recv_packet.name);
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->sendGuildInvitePacket(GetPlayer()->GetSession(), recv_packet.name);
 }
 
 #if VERSION_STRING != Cata
