@@ -265,7 +265,6 @@ class SERVER_DECL WorldSession
         bool bDeleted;
         uint32 GetInstance() { return instanceId; }
         Mutex deleteMutex;
-        void _HandleAreaTriggerOpcode(uint32 id);//real handle
         int32 m_moveDelayTime;
         int32 m_clientTimeDelay;
 
@@ -624,24 +623,25 @@ class SERVER_DECL WorldSession
         void handleSetTradeGold(WorldPacket& recvPacket);
 
         // Guild
+        void handleGuildQuery(WorldPacket& recvPacket);
+
 #if VERSION_STRING != Cata
-        void HandleGuildQuery(WorldPacket& recv_data);
-        void HandleCreateGuild(WorldPacket& recv_data);
+        //void HandleCreateGuild(WorldPacket& recv_data);
         void HandleInviteToGuild(WorldPacket& recv_data);
-        void HandleGuildAccept(WorldPacket& recv_data);
-        void HandleGuildDecline(WorldPacket& recv_data);
-        void HandleGuildInfo(WorldPacket& recv_data);
-        void HandleGuildRoster(WorldPacket& recv_data);
+        void HandleGuildAccept(WorldPacket& /*recv_data*/);
+        void HandleGuildDecline(WorldPacket& /*recv_data*/);
+        void HandleGuildInfo(WorldPacket& /*recv_data*/);
+        void HandleGuildRoster(WorldPacket& /*recv_data*/);
         void HandleGuildPromote(WorldPacket& recv_data);
         void HandleGuildDemote(WorldPacket& recv_data);
-        void HandleGuildLeave(WorldPacket& recv_data);
+        void HandleGuildLeave(WorldPacket& /*recv_data*/);
         void HandleGuildRemove(WorldPacket& recv_data);
-        void HandleGuildDisband(WorldPacket& recv_data);
+        void HandleGuildDisband(WorldPacket& /*recv_data*/);
         void HandleGuildLeader(WorldPacket& recv_data);
         void HandleGuildMotd(WorldPacket& recv_data);
         void HandleGuildRank(WorldPacket& recv_data);
         void HandleGuildAddRank(WorldPacket& recv_data);
-        void HandleGuildDelRank(WorldPacket& recv_data);
+        void HandleGuildDelRank(WorldPacket& /*recv_data*/);
         void HandleGuildSetPublicNote(WorldPacket& recv_data);
         void HandleGuildSetOfficerNote(WorldPacket& recv_data);
         void HandleSaveGuildEmblem(WorldPacket& recv_data);
@@ -654,7 +654,7 @@ class SERVER_DECL WorldSession
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
         void HandleSetGuildInformation(WorldPacket& recv_data);
-        void HandleGuildLog(WorldPacket& recv_data);
+        void HandleGuildLog(WorldPacket& /*recv_data*/);
         void HandleGuildBankViewTab(WorldPacket& recv_data);
         void HandleGuildBankViewLog(WorldPacket& recv_data);
         void HandleGuildBankQueryText(WorldPacket& recv_data);
@@ -666,13 +666,12 @@ class SERVER_DECL WorldSession
         void HandleGuildBankDepositItem(WorldPacket& recv_data);
         void HandleGuildBankGetAvailableAmount(WorldPacket& recv_data);
         void HandleGuildBankModifyTab(WorldPacket& recv_data);
-        void HandleGuildGetFullPermissions(WorldPacket& recv_data);
+        void HandleGuildGetFullPermissions(WorldPacket& /*recv_data*/);
 #else
     public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Guild
-        void HandleGuildQueryOpcode(WorldPacket& recv_data);
         void HandleInviteToGuildOpcode(WorldPacket& recv_data);
         void HandleGuildRemoveOpcode(WorldPacket& recv_data);
         void HandleGuildAcceptOpcode(WorldPacket& /*recv_data*/);

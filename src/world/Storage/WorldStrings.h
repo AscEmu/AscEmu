@@ -26,7 +26,7 @@ enum ServerString
                                         // "Heroic mode unavailable for this instance."
                                         // "You must be in a raid group to pass through here."
                                         // "You do not have the required attunement to pass through here."
-                                        // "You must be at least level %u to pass through here."
+    SS_MUST_BE_LEVEL_X = 31,            // "You must be at least level %u to pass through here."
                                         // "You must be in a party to pass through here."
                                         // "You must be level 70 to enter heroic mode."
                                         // "-"

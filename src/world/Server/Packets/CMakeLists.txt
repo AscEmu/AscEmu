@@ -65,6 +65,25 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGroupChangeSubGroup.h
    ${PATH_PREFIX}/CmsgGroupInvite.h
    ${PATH_PREFIX}/CmsgGroupSetLeader.h
+   ${PATH_PREFIX}/CmsgGroupUninvite.h
+   ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
+   ${PATH_PREFIX}/CmsgGuildAddRank.h
+   ${PATH_PREFIX}/CmsgGuildBankBuyTab.h
+   ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
+   ${PATH_PREFIX}/CmsgGuildBankerActivate.h
+   ${PATH_PREFIX}/CmsgGuildBankQueryTab.h
+   ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
+   ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
+   ${PATH_PREFIX}/CmsgGuildDemote.h
+   ${PATH_PREFIX}/CmsgGuildInfoText.h
+   ${PATH_PREFIX}/CmsgGuildInvite.h
+   ${PATH_PREFIX}/CmsgGuildLeader.h
+   ${PATH_PREFIX}/CmsgGuildMotd.h
+   ${PATH_PREFIX}/CmsgGuildPromote.h
+   ${PATH_PREFIX}/CmsgGuildQuery.h
+   ${PATH_PREFIX}/CmsgGuildRemove.h
+   ${PATH_PREFIX}/CmsgGuildSetOfficerNote.h
+   ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
@@ -78,12 +97,17 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgNpcTextQuery.h
+   ${PATH_PREFIX}/CmsgOfferPetition.h
    ${PATH_PREFIX}/CmsgOpenItem.h
    ${PATH_PREFIX}/CmsgOptOutOfLoot.h
    ${PATH_PREFIX}/CmsgPageTextQuery.h
    ${PATH_PREFIX}/CmsgPetAction.h
    ${PATH_PREFIX}/CmsgPetCancelAura.h
+   ${PATH_PREFIX}/CmsgPetitionBuy.h
+   ${PATH_PREFIX}/CmsgPetitionQuery.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
+   ${PATH_PREFIX}/CmsgPetitionShowSignatures.h
+   ${PATH_PREFIX}/CmsgPetitionSign.h
    ${PATH_PREFIX}/CmsgPetLearnTalent.h
    ${PATH_PREFIX}/CmsgPetNameQuery.h
    ${PATH_PREFIX}/CmsgPetRename.h
@@ -104,6 +128,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetFactionAtWar.h
    ${PATH_PREFIX}/CmsgSetFactionInactive.h
+   ${PATH_PREFIX}/CmsgSetGuildBankText.h
    ${PATH_PREFIX}/CmsgSetPlayerDeclinedNames.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h
@@ -117,6 +142,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTextEmote.h
    ${PATH_PREFIX}/CmsgTrainerBuySpell.h
    ${PATH_PREFIX}/CmsgTrainerList.h
+   ${PATH_PREFIX}/CmsgTurnInPetition.h
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgWho.h
@@ -125,15 +151,20 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgAuctionHello.h
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
+   ${PATH_PREFIX}/MsgGuildBankLogQuery.h
    ${PATH_PREFIX}/MsgInspectArenaTeams.h
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgListStabledPets.h
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/MsgPartyAssign.h
+   ${PATH_PREFIX}/MsgPetitionDecline.h
+   ${PATH_PREFIX}/MsgPetitionRename.h
+   ${PATH_PREFIX}/MsgQueryGuildBankText.h
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
+   ${PATH_PREFIX}/MsgSaveGuildEmblem.h
    ${PATH_PREFIX}/MsgSetDungeonDifficulty.h
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/MsgTabardvendorActivate.h
@@ -167,8 +198,6 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
-   ${PATH_PREFIX}/CmsgGroupUninvite.h
-   ${PATH_PREFIX}/CmsgGroupUninviteGuid.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
@@ -184,6 +213,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
+   ${PATH_PREFIX}/SmsgPetitionSignResult.h
    ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h

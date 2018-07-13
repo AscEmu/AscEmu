@@ -2733,10 +2733,6 @@ Charter::Charter(Field* fields)
             ++SignatureCount;
     }
 
-    // Unknown... really?
-    Unk1 = 0;
-    Unk2 = 0;
-    Unk3 = 0;
     PetitionSignerCount = 0;
 }
 

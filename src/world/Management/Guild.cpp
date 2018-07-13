@@ -30,8 +30,19 @@
 #include "Units/Players/Player.h"
 #include "Objects/ObjectMgr.h"
 #include "Chat/ChatHandler.hpp"
+#include "Server/Packets/MsgGuildBankLogQuery.h"
 
 #if VERSION_STRING != Cata
+
+// MIT START
+void Guild::setEmblemInfo(GuildEmblemInfo emblem_info)
+{
+    emblemInfo = emblem_info;
+
+    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
+        emblemInfo.style, emblemInfo.color, emblemInfo.borderStyle, emblemInfo.borderColor, emblemInfo.backgroundColor, m_guildId);
+}
+// MIT END
 
 Guild::Guild()
 {
@@ -41,11 +52,7 @@ Guild::Guild()
     m_guildName = NULL;
     m_guildInfo = NULL;
     m_motd = NULL;
-    m_backgroundColor = 0;
-    m_emblemColor = 0;
-    m_emblemStyle = 0;
-    m_borderColor = 0;
-    m_borderStyle = 0;
+    emblemInfo = { 0, 0, 0, 0, 0 };
     m_creationTimeStamp = 0;
     m_bankBalance = 0;
     creationDay = creationMonth = creationYear = 0;
@@ -453,11 +460,11 @@ bool Guild::LoadFromDB(Field* f)
     m_guildId = f[0].GetUInt32();
     m_guildName = strdup(f[1].GetString());
     m_guildLeader = f[2].GetUInt32();
-    m_emblemStyle = f[3].GetUInt32();
-    m_emblemColor = f[4].GetUInt32();
-    m_borderStyle = f[5].GetUInt32();
-    m_borderColor = f[6].GetUInt32();
-    m_backgroundColor = f[7].GetUInt32();
+    emblemInfo.style = f[3].GetUInt32();
+    emblemInfo.color = f[4].GetUInt32();
+    emblemInfo.borderStyle = f[5].GetUInt32();
+    emblemInfo.borderColor = f[6].GetUInt32();
+    emblemInfo.backgroundColor = f[7].GetUInt32();
     m_guildInfo = strlen(f[8].GetString()) ? strdup(f[8].GetString()) : NULL;
     m_motd = strlen(f[9].GetString()) ? strdup(f[9].GetString()) : NULL;
     m_creationTimeStamp = f[10].GetUInt32();
@@ -1284,11 +1291,11 @@ void Guild::SendGuildQuery(WorldSession* pClient)
             data << uint8(0);
     }
 
-    data << m_emblemStyle;
-    data << m_emblemColor;
-    data << m_borderStyle;
-    data << m_borderColor;
-    data << m_backgroundColor;
+    data << emblemInfo.style;
+    data << emblemInfo.color;
+    data << emblemInfo.borderStyle;
+    data << emblemInfo.borderColor;
+    data << emblemInfo.backgroundColor;
 
     if (pClient != NULL)
     {
@@ -1319,8 +1326,8 @@ void Guild::SendTurnInPetitionResult(WorldSession* pClient, uint32 result)
 void Guild::CreateInDB()
 {
     CharacterDatabase.Execute("INSERT INTO guilds VALUES(%u, \'%s\', %u, %u, %u, %u, %u, %u, '', '', %u, 0)",
-                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, m_emblemStyle, m_emblemColor, m_borderColor, m_borderStyle,
-                              m_backgroundColor, m_creationTimeStamp);
+                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, emblemInfo.style, emblemInfo.color,
+                                emblemInfo.borderColor, emblemInfo.borderStyle, emblemInfo.backgroundColor, m_creationTimeStamp);
 }
 
 Guild* Guild::Create()
@@ -1529,71 +1536,44 @@ void Guild::SpendMoney(uint32 uAmount)
 
 void Guild::SendGuildBankLog(WorldSession* pClient, uint8 iSlot)
 {
-    uint32 count = 0;
     if (iSlot > 6)
         return;
 
-    m_lock.Acquire();
-    if (iSlot == 6)
-    {
-        // sending the money log
-        WorldPacket data(MSG_GUILD_BANK_LOG_QUERY, (17 * m_moneyLog.size()) + 2);
-        uint32 lt = (uint32)UNIXTIME;
-        data << uint8(iSlot);
-        data << uint8((m_moneyLog.size() < 25) ? m_moneyLog.size() : 25);
-        std::list<GuildBankEvent*>::iterator itr = m_moneyLog.begin();
-        for (; itr != m_moneyLog.end(); ++itr)
-        {
-            data << (*itr)->iAction;
-            data << (*itr)->uPlayer;
-            data << uint32(0);              // highguid
-            data << (*itr)->uEntry;
-            data << uint32(lt - (*itr)->uTimeStamp);
-
-            if ((++count) >= 25)
-                break;
-        }
-
-        m_lock.Release();
-        pClient->SendPacket(&data);
-    }
-    else
+    if (iSlot < 6)
     {
         if (iSlot >= GetBankTabCount())
-        {
-            m_lock.Release();
             return;
-        }
 
         GuildBankTab* pTab = m_bankTabs[iSlot];
-        if (pTab == NULL)
-        {
-            m_lock.Release();
+        if (pTab == nullptr)
             return;
-        }
-
-        WorldPacket data(MSG_GUILD_BANK_LOG_QUERY, (21 * m_moneyLog.size()) + 2);
-        uint32 lt = (uint32)UNIXTIME;
-        data << uint8(iSlot);
-        data << uint8((pTab->lLog.size() < 25) ? pTab->lLog.size() : 25);
-
-        std::list<GuildBankEvent*>::iterator itr = pTab->lLog.begin();
-        for (; itr != pTab->lLog.end(); ++itr)
-        {
-            data << (*itr)->iAction;
-            data << (*itr)->uPlayer;
-            data << uint32(0);              // highguid
-            data << (*itr)->uEntry;
-            data << uint32((*itr)->iStack);
-            data << uint32(lt - (*itr)->uTimeStamp);
-
-            if ((++count) >= 25)
-                break;
-        }
-
-        m_lock.Release();
-        pClient->SendPacket(&data);
     }
+
+    m_lock.Acquire();
+    std::vector<GuildBankMoneyLog> moneyLog;
+    GuildBankMoneyLog log;
+
+    uint32 count = 0;
+
+    for (const auto& bankLog : m_moneyLog)
+    {
+        log.action = bankLog->iAction;
+        log.memberGuid = bankLog->uPlayer;
+        log.entry = bankLog->uEntry;
+
+        if (iSlot < 6)
+            log.stackCount = bankLog->iStack;
+
+        log.timestamp = bankLog->uTimeStamp;
+
+        moneyLog.push_back(log);
+
+        if (++count >= 25)
+            break;
+    }
+
+    m_lock.Release();
+    pClient->SendPacket(AscEmu::Packets::MsgGuildBankLogQuery(iSlot, moneyLog).serialise().get());
 }
 
 void Guild::LogGuildBankAction(uint8 iAction, uint32 uGuid, uint32 uEntry, uint8 iStack, GuildBankTab* pTab)
@@ -1658,19 +1638,6 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
                               ev->iLogId, m_guildId, (uint32)iAction, uGuid, uAmount, timest);
 }
 
-void Guild::SetTabardInfo(uint32 EmblemStyle, uint32 EmblemColor, uint32 BorderStyle, uint32 BorderColor, uint32 BackgroundColor)
-{
-    m_emblemStyle = EmblemStyle;
-    m_emblemColor = EmblemColor;
-    m_borderStyle = BorderStyle;
-    m_borderColor = BorderColor;
-    m_backgroundColor = BackgroundColor;
-
-    // update in db
-    CharacterDatabase.Execute("UPDATE guilds SET emblemStyle = %u, emblemColor = %u, borderStyle = %u, borderColor = %u, backgroundColor = %u WHERE guildId = %u",
-                              EmblemStyle, EmblemColor, BorderStyle, BorderColor, BackgroundColor, m_guildId);
-}
-
 void Guild::SendGuildInfo(WorldSession* pClient)
 {
     WorldPacket data(SMSG_GUILD_INFO, 4);
@@ -1685,6 +1652,129 @@ void Guild::SendGuildInfo(WorldSession* pClient)
     data << uint32(m_members.size());
     data << uint32(m_members.size());
 
+    pClient->SendPacket(&data);
+}
+
+void Guild::SendGuildBankInfo(WorldSession* pClient)
+{
+    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
+    if (pMember == NULL)
+        return;
+
+    WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
+    data << uint64(m_bankBalance);
+    data << uint8(0);
+    data << uint32(0);
+    data << uint8(1);
+    data << GetBankTabCount();
+
+    for (uint8 i = 0; i < GetBankTabCount(); ++i)
+    {
+        GuildBankTab* pTab = GetBankTab(i);
+        if (pTab == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, i))
+        {
+            data << uint16(0);        // shouldn't happen
+            continue;
+        }
+
+        if (pTab->szTabName)
+            data << pTab->szTabName;
+        else
+            data << uint8(0);
+
+        if (pTab->szTabIcon)
+            data << pTab->szTabIcon;
+        else
+            data << uint8(0);
+    }
+
+    data << uint8(0);
+    pClient->SendPacket(&data);
+}
+
+void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 updated_slot1 /* = -1 */, int8 updated_slot2 /* = -1 */)
+{
+    size_t pos;
+    uint32 count = 0;
+
+    GuildMember* pMember = pClient->GetPlayer()->getPlayerInfo()->guildMember;
+    if (pMember == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, pTab->iTabId))
+        return;
+
+    //LogDebugFlag(LF_OPCODE, "sending tab %u to client.", pTab->iTabId);
+    WorldPacket data(SMSG_GUILD_BANK_LIST, 1300);
+    data << uint64(m_bankBalance);  // amount you have deposited
+    data << uint8(pTab->iTabId);
+    data << uint32(pMember->CalculateAllowedItemWithdraws(pTab->iTabId));        // remaining stacks for this day
+    data << uint8(0);               // Packet type: 0-tab content, 1-tab info,
+
+                                    // no need to send tab names here..
+
+    pos = data.wpos();
+    data << uint8(0);               // number of items, will be filled later
+
+    for (int8 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
+    {
+        if (pTab->pSlots[j] != NULL)
+        {
+            if (updated_slot1 >= 0 && j == updated_slot1)
+                updated_slot1 = -1;
+
+            if (updated_slot2 >= 0 && j == updated_slot2)
+                updated_slot2 = -1;
+
+            ++count;
+
+            data << uint8(j);                   // slot
+            data << pTab->pSlots[j]->getEntry();
+            data << uint32(0);                  // 3.3.0 (0x8000, 0x8020) from MaNGOS
+            data << (uint32)pTab->pSlots[j]->getRandomPropertiesId();
+
+            if (pTab->pSlots[j]->getRandomPropertiesId())
+                data << (uint32)pTab->pSlots[j]->getPropertySeed();
+
+            data << uint32(pTab->pSlots[j]->getStackCount());
+            data << uint32(0);                  // unknown value
+            data << uint8(0);                   // unknown 2.4.2
+            uint32 Enchant0 = 0;
+            EnchantmentInstance* ei = pTab->pSlots[j]->GetEnchantment(PERM_ENCHANTMENT_SLOT);
+            if (ei != NULL)
+                Enchant0 = ei->Enchantment->Id;
+            if (Enchant0)
+            {
+                data << uint8(1);               // number of enchants
+                data << uint8(0);               // enchantment slot
+                data << uint32(Enchant0);       // enchantment id
+            }
+            else
+                data << uint8(0);               // no enchantment
+        }
+    }
+
+    // send the forced update slots
+    if (updated_slot1 >= 0)
+    {
+        // this should only be hit if the items null though..
+        if (pTab->pSlots[updated_slot1] == NULL)
+        {
+            ++count;
+            data << uint8(updated_slot1);
+            data << uint32(0);
+        }
+    }
+
+    if (updated_slot2 >= 0)
+    {
+        // this should only be hit if the items null though..
+        if (pTab->pSlots[updated_slot2] == NULL)
+        {
+            ++count;
+            data << uint8(updated_slot2);
+            data << uint32(0);
+        }
+    }
+
+    *(uint8*)&data.contents()[pos] = (uint8)count;      // push number of items
     pClient->SendPacket(&data);
 }
 #endif

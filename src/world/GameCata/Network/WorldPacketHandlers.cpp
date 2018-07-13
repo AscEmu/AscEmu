@@ -370,7 +370,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::HandleMailCreateTextItem;
 
     // Guild 
-    WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::HandleGuildQueryOpcode;
+    WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::handleGuildQuery;
     WorldPacketHandlers[CMSG_GUILD_QUERY].status = STATUS_AUTHED;
 
     WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::HandleInviteToGuildOpcode;
