@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
 #include "Server/Packets/CmsgGuildSetNote.h"
 #include "Server/Packets/CmsgGuildDelRank.h"
+#include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 
 
 using namespace AscEmu::Packets;
@@ -329,3 +330,13 @@ void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
         guild->handleRemoveRank(this, static_cast<uint8_t>(recv_packet.rankId));
 }
 #endif
+
+void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
+{
+    CmsgGuildBankWithdrawMoney recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleMemberWithdrawMoney(this, recv_packet.money);
+}

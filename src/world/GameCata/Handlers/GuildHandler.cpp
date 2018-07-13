@@ -432,23 +432,6 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recvData)
-{
-    uint64_t bankGuid;
-    uint64_t money;
-
-    recvData >> bankGuid;
-    recvData >> money;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_WITHDRAW_MONEY %s: gameobject: %u, money: " I64FMTD,
-        _player->getName().c_str(), Arcemu::Util::GUID_LOPART(bankGuid), money);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
-    {
-        guild->handleMemberWithdrawMoney(this, money);
-    }
-}
-
 void WorldSession::HandleGuildBankSwapItems(WorldPacket& recvData)
 {
     Guild* guild = GetPlayer()->GetGuild();
