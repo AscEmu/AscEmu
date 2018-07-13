@@ -677,16 +677,18 @@ class SERVER_DECL WorldSession
         void handleQueryGuildBankTabText(WorldPacket& recvPacket);
 #endif
 
+        void handleCharterShowSignatures(WorldPacket& recvPacket);
+        void handleCharterOffer(WorldPacket& recvPacket);
+
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
         
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
         
         void HandleCharterBuy(WorldPacket& recv_data);
-        void HandleCharterShowSignatures(WorldPacket& recv_data);
+        
         void HandleCharterTurnInCharter(WorldPacket& recv_data);
         void HandleCharterQuery(WorldPacket& recv_data);
-        void HandleCharterOffer(WorldPacket& recv_data);
         void HandleCharterSign(WorldPacket& recv_data);
         void HandleCharterDecline(WorldPacket& recv_data);
         void HandleCharterRename(WorldPacket& recv_data);
@@ -714,9 +716,8 @@ class SERVER_DECL WorldSession
         //////////////////////////////////////////////////////////////////////////////////////////
         // Charter
         void HandleCharterBuyOpcode(WorldPacket& recv_data);
-        void HandleCharterShowSignaturesOpcode(WorldPacket& recv_data);
         void HandleCharterQueryOpcode(WorldPacket& recv_data);
-        void HandleCharterOfferOpcode(WorldPacket& recv_data);
+        
         void HandleCharterSignOpcode(WorldPacket& recv_data);
         void HandleCharterDeclineOpcode(WorldPacket& recv_data);
         void HandleCharterTurnInCharterOpcode(WorldPacket& recv_data);

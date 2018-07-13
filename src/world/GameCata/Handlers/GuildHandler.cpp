@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
+#include "Server/Packets/SmsgPetitionShowSignatures.h"
 
 using namespace AscEmu::Packets;
 
@@ -547,38 +548,6 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
     }
 }
 
-void SendShowSignatures(Charter* charter, uint64_t itemGuid, Player* player)
-{
-    WorldPacket data(SMSG_PETITION_SHOW_SIGNATURES, 100);
-    data << uint64_t(itemGuid);
-    data << uint64_t(charter->GetLeader());
-    data << uint32_t(charter->GetID());
-    data << uint8_t(charter->SignatureCount);
-    for (uint32_t j = 0; j < charter->Slots; ++j)
-    {
-        if (charter->Signatures[j] == 0)
-        {
-            continue;
-        }
-
-        data << uint64_t(charter->Signatures[j]);
-        data << uint32_t(1);
-    }
-    data << uint8_t(0);
-    player->GetSession()->SendPacket(&data);
-}
-
-void WorldSession::HandleCharterShowSignaturesOpcode(WorldPacket& recvData)
-{
-    uint64_t itemGuid;
-    recvData >> itemGuid;
-
-    if (Charter* pCharter = objmgr.GetCharterByItemGuid(itemGuid))
-    {
-        SendShowSignatures(pCharter, itemGuid, _player);
-    }
-}
-
 void WorldSession::HandleCharterQueryOpcode(WorldPacket& recvData)
 {
     uint32_t charterId;
@@ -646,41 +615,6 @@ void WorldSession::HandleCharterQueryOpcode(WorldPacket& recvData)
     }
 
     SendPacket(&data);
-}
-
-void WorldSession::HandleCharterOfferOpcode(WorldPacket& recvData)
-{
-    uint32_t unk;
-    uint64_t itemGuid;
-    uint64_t targetGuid;
-
-    recvData >> unk;
-    recvData >> itemGuid;
-    recvData >> targetGuid;
-
-    
-    Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
-    if (charter == nullptr)
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
-        return;
-    }
-
-    Player* pTarget = _player->GetMapMgr()->GetPlayer((uint32_t)targetGuid);
-    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() ||
-        (pTarget == _player && worldConfig.player.isInterfactionGuildEnabled == false))
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
-        return;
-    }
-
-    if (pTarget->CanSignCharter(charter, _player) == false)
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(78));
-        return;
-    }
-
-    SendShowSignatures(charter, itemGuid, pTarget);
 }
 
 void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)

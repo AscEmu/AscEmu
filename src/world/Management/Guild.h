@@ -203,7 +203,7 @@ public:
     void handleLeaveMember(WorldSession* session);
     void handleRemoveMember(WorldSession* session, uint64_t guid);
     void handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool demote);
-    void handleSetMemberRank(WorldSession* session, uint64_t guid, uint64_t setterGuid, uint32_t rank);
+    void handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t setterGuid, uint32_t rank);
     void handleAddNewRank(WorldSession* session, std::string const& name);
     void handleRemoveLowestRank(WorldSession* session);
     void handleRemoveRank(WorldSession* session, uint8_t rankId);

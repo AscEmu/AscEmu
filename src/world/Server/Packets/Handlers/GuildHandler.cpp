@@ -35,6 +35,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankerActivate.h"
 #include "Server/Packets/CmsgGuildSetRank.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgPetitionShowSignatures.h"
+#include "Server/Packets/SmsgPetitionShowSignatures.h"
+#include "Server/Packets/CmsgOfferPetition.h"
 
 
 using namespace AscEmu::Packets;
@@ -474,4 +477,46 @@ void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->handleSetRankInfo(this, recv_packet.newRankId, recv_packet.rankName, recv_packet.newRights, recv_packet.moneyPerDay, recv_packet._rightsAndSlots);
+}
+
+
+void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
+{
+    CmsgPetitionShowSignatures recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
+        _player->GetSession()->SendPacket(SmsgPetitionShowSignatures(recv_packet.itemGuid, charter->GetLeader(), charter->GetID(), charter->SignatureCount,
+            charter->Slots, charter->Signatures).serialise().get());
+}
+
+void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
+{
+    CmsgOfferPetition recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    Player* pTarget = _player->GetMapMgr()->GetPlayer(recv_packet.playerGuid.getGuidLow());
+    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    if (pCharter != nullptr)
+    {
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
+        return;
+    }
+
+    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
+    {
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
+        return;
+    }
+
+    if (!pTarget->CanSignCharter(pCharter, _player))
+    {
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(78));
+        return;
+    }
+
+    pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(recv_packet.itemGuid, pCharter->GetLeader(), pCharter->GetID(), pCharter->SignatureCount,
+        pCharter->Slots, pCharter->Signatures).serialise().get());
 }

@@ -245,33 +245,6 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
     }
 }
 
-void SendShowSignatures(Charter* c, uint64 i, Player* p)
-{
-    WorldPacket data(SMSG_PETITION_SHOW_SIGNATURES, 100);
-    data << i;
-    data << (uint64)c->GetLeader();
-    data << c->GetID();
-    data << uint8(c->SignatureCount);
-    for (uint32 j = 0; j < c->Slots; ++j)
-    {
-        if (c->Signatures[j] == 0) continue;
-        data << uint64(c->Signatures[j]) << uint32(1);
-    }
-    data << uint8(0);
-    p->GetSession()->SendPacket(&data);
-}
-
-void WorldSession::HandleCharterShowSignatures(WorldPacket& recv_data)
-{
-    CmsgPetitionShowSignatures recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
-    if (pCharter != nullptr)
-        SendShowSignatures(pCharter, recv_packet.itemGuid, _player);
-}
-
 void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
 {
     CmsgPetitionQuery recv_packet;
@@ -321,35 +294,6 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
         data << uint32(1);
 
     SendPacket(&data);
-}
-
-void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
-{
-    CmsgOfferPetition recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Player* pTarget = _player->GetMapMgr()->GetPlayer(recv_packet.playerGuid.getGuidLow());
-    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
-    if (pCharter != nullptr)
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
-        return;
-    }
-
-    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
-        return;
-    }
-
-    if (!pTarget->CanSignCharter(pCharter, _player))
-    {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(78));
-        return;
-    }
-
-    SendShowSignatures(pCharter, recv_packet.itemGuid, pTarget);
 }
 
 namespace PetitionSignResult
