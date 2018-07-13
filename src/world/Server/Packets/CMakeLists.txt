@@ -72,6 +72,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
    ${PATH_PREFIX}/CmsgGuildBankerActivate.h
    ${PATH_PREFIX}/CmsgGuildBankQueryTab.h
+   ${PATH_PREFIX}/CmsgGuildBankSwapItems.h
    ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
    ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
    ${PATH_PREFIX}/CmsgGuildDelRank.h

@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
 #include "Server/Packets/CmsgGuildBankUpdateTab.h"
+#include "Server/Packets/CmsgGuildBankSwapItems.h"
 
 
 using namespace AscEmu::Packets;
@@ -366,3 +367,21 @@ void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)
             guild->handleSetBankTabInfo(this, recv_packet.slot, recv_packet.tabName, recv_packet.tabIcon);
 }
 
+void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
+{
+    Guild* guild = GetPlayer()->GetGuild();
+    if (guild == nullptr)
+    {
+        recvPacket.rfinish();
+        return;
+    }
+
+    CmsgGuildBankSwapItems recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (recv_packet.bankToBank)
+        guild->swapItems(GetPlayer(), recv_packet.tabId, recv_packet.slotId, recv_packet.destTabId, recv_packet.destSlotId, recv_packet.splitedAmount);
+    else
+        guild->swapItemsWithInventory(GetPlayer(), recv_packet.toChar, recv_packet.tabId, recv_packet.slotId, recv_packet.playerBag, recv_packet.playerSlotId, recv_packet.splitedAmount);
+}
