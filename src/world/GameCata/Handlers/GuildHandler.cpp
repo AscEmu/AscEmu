@@ -161,47 +161,6 @@ void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recvData)
-{
-    Guild* guild = GetPlayer()->GetGuild();
-    if (guild == nullptr)
-    {
-        return;
-    }
-
-    uint32_t oldRankId;
-    uint32_t newRankId;
-    uint32_t oldRights;
-    uint32_t newRights;
-    uint32_t moneyPerDay;
-
-    recvData >> oldRankId;
-    recvData >> oldRights;
-    recvData >> newRights;
-
-    GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
-    for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
-    {
-        uint32_t bankRights;
-        uint32_t slots;
-
-        recvData >> bankRights;
-        recvData >> slots;
-
-        rightsAndSlots[tabId] = GuildBankRightsAndSlots(tabId, uint8_t(bankRights), slots);
-    }
-
-    recvData >> moneyPerDay;
-    recvData >> newRankId;
-
-    uint32_t nameLength = recvData.readBits(7);
-    std::string rankName = recvData.ReadString(nameLength);
-
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_RANK_PERMISSIONS %s: rank: %s (%u)", _player->getName().c_str(), rankName.c_str(), newRankId);
-
-    guild->handleSetRankInfo(this, static_cast<uint8_t>(newRankId), rankName, newRights, moneyPerDay, rightsAndSlots);
-}
-
 void WorldSession::HandleGuildRequestPartyState(WorldPacket& recvData)
 {
     ObjectGuid guildGuid;

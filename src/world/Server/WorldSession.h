@@ -653,6 +653,7 @@ class SERVER_DECL WorldSession
         void handleGuildBankSwapItems(WorldPacket& recvPacket);
         void handleGuildBankQueryTab(WorldPacket& recvPacket);
         void handleGuildBankerActivate(WorldPacket& recvPacket);
+        void handleGuildSetRank(WorldPacket& recvPacket);
 
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
@@ -687,8 +688,6 @@ class SERVER_DECL WorldSession
         //void HandleCreateGuild(WorldPacket& recv_data);
         
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
-        void HandleGuildRank(WorldPacket& recv_data);
-        
         
         void HandleCharterBuy(WorldPacket& recv_data);
         void HandleCharterShowSignatures(WorldPacket& recv_data);
@@ -710,7 +709,6 @@ class SERVER_DECL WorldSession
         
         void HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/);
         void HandleGuildQueryXPOpcode(WorldPacket& recv_data);
-        void HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data);
         void HandleGuildRequestPartyState(WorldPacket& recv_data);
         void HandleGuildRequestMaxDailyXP(WorldPacket& recv_data);
         void HandleAutoDeclineGuildInvites(WorldPacket& recv_data);

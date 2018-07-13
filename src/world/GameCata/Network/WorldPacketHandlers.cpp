@@ -408,7 +408,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_GUILD_BANK_DEPOSIT_MONEY].handler = &WorldSession::handleGuildBankDepositMoney;
     WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::handleSetGuildBankText;
     WorldPacketHandlers[CMSG_QUERY_GUILD_XP].handler = &WorldSession::HandleGuildQueryXPOpcode;
-    WorldPacketHandlers[CMSG_GUILD_SET_RANK_PERMISSIONS].handler = &WorldSession::HandleGuildSetRankPermissionsOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_RANK].handler = &WorldSession::handleGuildSetRank;
     WorldPacketHandlers[CMSG_GUILD_SET_NOTE].handler = &WorldSession::handleGuildSetNoteOpcode;
     WorldPacketHandlers[CMSG_QUERY_GUILD_REWARDS].handler = &WorldSession::HandleGuildRewardsQueryOpcode;
     WorldPacketHandlers[CMSG_GUILD_QUERY_RANKS].handler = &WorldSession::HandleGuildQueryRanksOpcode;

@@ -33,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
+#include "Server/Packets/CmsgGuildSetRank.h"
 
 
 using namespace AscEmu::Packets;
@@ -463,3 +464,12 @@ void WorldSession::handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/)
         guild->sendMoneyInfo(this);
 }
 
+void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
+{
+    CmsgGuildSetRank recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->handleSetRankInfo(this, recv_packet.newRankId, recv_packet.rankName, recv_packet.newRights, recv_packet.moneyPerDay, recv_packet._rightsAndSlots);
+}

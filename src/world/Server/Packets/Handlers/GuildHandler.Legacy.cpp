@@ -65,43 +65,6 @@ using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 
-void WorldSession::HandleGuildRank(WorldPacket& recvPacket)
-{
-    uint32 rankId;
-    recvPacket >> rankId;
-
-    uint32 rights;
-    recvPacket >> rights;
-
-    std::string rankName;
-    recvPacket >> rankName;
-
-    uint32 money;
-    recvPacket >> money;
-
-    Guild* guild = GetPlayer()->GetGuild();
-    if (!guild)
-    {
-        recvPacket.rpos(recvPacket.wpos());
-        return;
-    }
-
-    GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
-
-    for (uint8 tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
-    {
-        uint32 bankRights;
-        uint32 slots;
-
-        recvPacket >> bankRights;
-        recvPacket >> slots;
-
-        rightsAndSlots[tabId] = GuildBankRightsAndSlots(tabId, bankRights, slots);
-    }
-
-    guild->handleSetRankInfo(this, rankId, rankName, rights, money, rightsAndSlots);
-}
-
 // Charter part
 void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 {

@@ -88,6 +88,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildSetNote.h
    ${PATH_PREFIX}/CmsgGuildSetOfficerNote.h
    ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
+   ${PATH_PREFIX}/CmsgGuildSetRank.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
