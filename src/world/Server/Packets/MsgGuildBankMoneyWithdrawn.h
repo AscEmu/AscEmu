@@ -20,7 +20,7 @@ namespace AscEmu { namespace Packets
         {
         }
 
-        MsgGuildBankMoneyWithdrawn(int64_t amount) :
+        MsgGuildBankMoneyWithdrawn(int32_t amount) :
             ManagedPacket(MSG_GUILD_BANK_MONEY_WITHDRAWN, 0),
             amount(amount)
         {
@@ -32,7 +32,7 @@ namespace AscEmu { namespace Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << amount;
-            return false;
+            return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override

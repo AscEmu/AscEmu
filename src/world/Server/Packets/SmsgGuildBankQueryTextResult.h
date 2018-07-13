@@ -36,7 +36,7 @@ namespace AscEmu { namespace Packets
             packet.writeBits(tabInfo.length(), 14);
             packet << tabId;
             packet.WriteString(tabInfo);
-            return false;
+            return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override

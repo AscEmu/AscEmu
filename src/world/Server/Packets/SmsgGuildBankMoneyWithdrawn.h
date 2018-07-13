@@ -32,7 +32,7 @@ namespace AscEmu { namespace Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << amount;
-            return false;
+            return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
