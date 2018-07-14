@@ -45,6 +45,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgTurnInPetition.h"
 #include "Server/Packets/CmsgPetitionQuery.h"
 #include "Server/Packets/SmsgPetitionQueryResponse.h"
+#include "Server/Packets/CmsgPetitionBuy.h"
 
 
 using namespace AscEmu::Packets;
@@ -717,4 +718,189 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
     if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
         SendPacket(SmsgPetitionQueryResponse(recv_packet.charterId, static_cast<uint64>(charter->LeaderGuid),
             charter->GuildName, charter->CharterType, charter->Slots).serialise().get());
+}
+
+void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
+{
+    CmsgPetitionBuy recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    Creature* creature = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLow());
+    if (!creature)
+    {
+        Disconnect();
+        return;
+    }
+
+    if (!creature->isTabardDesigner())
+    {
+        const uint32_t arena_type = recv_packet.arenaIndex - 1;
+        if (arena_type > 2)
+            return;
+
+        if (_player->m_arenaTeams[arena_type])
+        {
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_ARENA_TEAM));
+            return;
+        }
+
+        ArenaTeam* arenaTeam = objmgr.GetArenaTeamByName(recv_packet.name, arena_type);
+        if (arenaTeam != nullptr)
+        {
+            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
+            return;
+        }
+
+        if (objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(recv_packet.arenaIndex)))
+        {
+            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
+            return;
+        }
+
+        if (_player->m_charters[recv_packet.arenaIndex])
+        {
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_ARENA_CHARTER));
+            return;
+        }
+
+        if (_player->getLevel() < PLAYER_ARENA_MIN_LEVEL)
+        {
+            SendNotification("You must be at least level %u to buy Arena charter", PLAYER_ARENA_MIN_LEVEL);
+            return;
+        }
+
+        static uint32_t item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
+        static uint32_t costs[] = { CharterCost::TwoOnTwo, CharterCost::ThreeOnThree, CharterCost::FiveOnFive };
+
+        if (!_player->HasGold(costs[arena_type]))
+        {
+            SendNotification("You do not have enough gold to purchase this charter");
+            return;
+        }
+
+        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_ids[arena_type]);
+        if (itemProperties == nullptr)
+            return;
+
+        const SlotResult slotResult = _player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
+        if (slotResult.Result == 0)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+            return;
+        }
+
+        const uint8_t error = _player->GetItemInterface()->CanReceiveItem(itemProperties, 1);
+        if (error)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
+        }
+        else
+        {
+            Item* item = objmgr.CreateItem(item_ids[arena_type], _player);
+
+            Charter* charter = objmgr.CreateCharter(_player->getGuidLow(), static_cast<CharterTypes>(recv_packet.arenaIndex));
+            if (item == nullptr || charter == nullptr)
+                return;
+
+            charter->GuildName = recv_packet.name;
+            charter->ItemGuid = item->getGuid();
+
+            charter->PetitionSignerCount = recv_packet.signerCount;
+
+            item->setStackCount(1);
+            item->addFlags(ITEM_FLAG_SOULBOUND);
+            item->setEnchantmentId(0, charter->GetID());
+            item->setPropertySeed(57813883);
+            if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
+            {
+                charter->Destroy();
+                item->DeleteMe();
+                return;
+            }
+
+            charter->SaveToDB();
+
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(),
+                _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+
+            _player->ModGold(-static_cast<int32_t>(costs[arena_type]));
+            _player->m_charters[recv_packet.arenaIndex] = charter;
+            _player->SaveToDB(false);
+        }
+    }
+    else
+    {
+        if (!_player->HasGold(1000))
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_NOT_ENOUGH_MONEY);
+            return;
+        }
+
+        Guild* guild = sGuildMgr.getGuildByName(recv_packet.name);
+        Charter* charter = objmgr.GetCharterByName(recv_packet.name, CHARTER_TYPE_GUILD);
+        if (guild != nullptr || charter != nullptr)
+        {
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_GUILD_NAME_ALREADY_IN_USE));
+            return;
+        }
+
+        if (_player->m_charters[CHARTER_TYPE_GUILD])
+        {
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_GUILD_CHARTER));
+            return;
+        }
+
+        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(CharterEntry::Guild);
+        if (itemProperties == nullptr)
+            return;
+
+        const SlotResult slotResult = _player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
+        if (slotResult.Result == 0)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+            return;
+        }
+
+        const uint8_t error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(CharterEntry::Guild), 1);
+        if (error)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
+        }
+        else
+        {
+            _player->PlaySoundToPlayer(recv_packet.creatureGuid, 6594);
+
+            Item* item = objmgr.CreateItem(CharterEntry::Guild, _player);
+
+            Charter* guildCharter = objmgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
+            if (item == nullptr || guildCharter == nullptr)
+                return;
+
+            guildCharter->GuildName = recv_packet.name;
+            guildCharter->ItemGuid = item->getGuid();
+
+            guildCharter->PetitionSignerCount = recv_packet.signerCount;
+
+            item->setStackCount(1);
+            item->addFlags(ITEM_FLAG_SOULBOUND);
+            item->setEnchantmentId(0, guildCharter->GetID());
+            item->setPropertySeed(57813883);
+            if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
+            {
+                guildCharter->Destroy();
+                item->DeleteMe();
+                return;
+            }
+
+            guildCharter->SaveToDB();
+
+            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(),
+                _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+
+            _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
+            _player->ModGold(-1000);
+            _player->SaveToDB(false);
+        }
+    }
 }

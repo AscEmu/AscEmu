@@ -15,8 +15,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/GMTicketHandler.cpp
    ${PATH_PREFIX}/GroupHandler.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
-   ${PATH_PREFIX}/GuildHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/LfgHandler.cpp
    ${PATH_PREFIX}/LfgHandler.Legacy.cpp
    

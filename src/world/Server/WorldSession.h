@@ -684,12 +684,12 @@ class SERVER_DECL WorldSession
         void handleCharterRename(WorldPacket& recvPacket);
         void handleCharterTurnInCharter(WorldPacket& recvPacket);
         void handleCharterQuery(WorldPacket& recvPacket);
+        void handleCharterBuy(WorldPacket& recvPacket);
 
 
 #if VERSION_STRING != Cata
         //void HandleCreateGuild(WorldPacket& recv_data);
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
-        void HandleCharterBuy(WorldPacket& recv_data);
 #else
     public:
 
@@ -708,10 +708,6 @@ class SERVER_DECL WorldSession
         void HandleGuildQueryNewsOpcode(WorldPacket& recv_data);
         void HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data);
         void HandleGuildSetGuildMaster(WorldPacket& recv_data);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Charter
-        void HandleCharterBuyOpcode(WorldPacket& recv_data);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildFinder
