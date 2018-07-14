@@ -32,7 +32,7 @@ bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
     Item* pItem = objmgr.LoadItem(fields[3].GetUInt32());
     if (pItem == nullptr)
     {
-        CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
+        CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
             fields[3].GetUInt32(), mGuildId, static_cast<uint32_t>(fields[1].GetUInt8()));
     }
 
@@ -130,7 +130,7 @@ void GuildBankTab::setInfo(std::string const& name, std::string const& icon)
     mName = name;
     mIcon = icon;
 
-    CharacterDatabase.Execute("UPDATE guild_banktabs SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
+    CharacterDatabase.Execute("UPDATE guild_bank_tabs SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
         mName.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
@@ -141,7 +141,7 @@ void GuildBankTab::setText(std::string const& text)
 
     mText = text;
 
-    CharacterDatabase.Execute("UPDATE guild_banktabs SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
+    CharacterDatabase.Execute("UPDATE guild_bank_tabs SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
         mText.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
@@ -206,12 +206,12 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
             }
         }
 
-        CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, item->getGuidLow());
+        CharacterDatabase.Execute("INSERT INTO guild_bank_items VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, item->getGuidLow());
     }
     else
     {
         mItems[slotId] = nullptr;
-        CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
+        CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
     }
 
     return true;

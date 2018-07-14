@@ -9910,7 +9910,7 @@ Guild* Player::GetGuild()
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_data WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
     if (result)
     {
         Field* fields = result->Fetch();
@@ -9922,7 +9922,7 @@ uint32 Player::GetGuildIdFromDB(uint64 guid)
 
 int8 Player::GetRankFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_data WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
     if (result)
     {
         Field* fields = result->Fetch();

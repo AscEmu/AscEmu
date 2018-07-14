@@ -131,7 +131,7 @@ void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool /*_delete*/, bo
         if (logOnCreate)
             LogError("Guild %u has broken Tab %u for rank %u. Created default tab.", mGuildId, i, static_cast<uint32_t>(mRankId));
 
-        CharacterDatabase.Execute("REPLACE INTO guild_bankrights VALUES(%u, %u, %u, %u, %u);",
+        CharacterDatabase.Execute("REPLACE INTO guild_bank_rights VALUES(%u, %u, %u, %u, %u);",
             mGuildId, i, static_cast<uint32_t>(mRankId), static_cast<uint32_t>(rightsAndSlots.getRights()), rightsAndSlots.getSlots());
     }
 }
@@ -146,7 +146,7 @@ void GuildRankInfo::setBankTabSlotsAndRights(GuildBankRightsAndSlots rightsAndSl
 
     if (saveToDB)
     {
-        CharacterDatabase.Execute("REPLACE INTO guild_bankrights VALUES(%u, %u, %u, %u, %u)",
-            mGuildId, (uint32_t)guildBR.getTabId(), (uint32_t)mRankId, (uint32_t)guildBR.getRights(), guildBR.getSlots());
+        CharacterDatabase.Execute("REPLACE INTO guild_bank_rights VALUES(%u, %u, %u, %u, %u)",
+            mGuildId, static_cast<uint32_t>(guildBR.getTabId()), static_cast<uint32_t>(mRankId), static_cast<uint32_t>(guildBR.getRights()), guildBR.getSlots());
     }
 }

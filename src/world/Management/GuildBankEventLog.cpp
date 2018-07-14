@@ -34,10 +34,10 @@ bool GuildBankEventLogEntry::isMoneyEvent() const
 
 void GuildBankEventLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_bank_eventlog WHERE guildId = %u AND logGuid = %u AND tabId = %u",
+    CharacterDatabase.Execute("DELETE FROM guild_bank_logs WHERE guildId = %u AND logGuid = %u AND tabId = %u",
         mGuildId, mGuid, mBankTabId);
 
-    CharacterDatabase.Execute("INSERT INTO guild_bank_eventlog VALUES('%u', '%u', '%u', '%u', '%u', '%llu', '%u', '%u', '%llu')",
+    CharacterDatabase.Execute("INSERT INTO guild_bank_logs VALUES('%u', '%u', '%u', '%u', '%u', '%llu', '%u', '%u', '%llu')",
         mGuildId, mGuid, mBankTabId, (uint32_t)mEventType, mPlayerGuid, mItemOrMoney, (uint32_t)mItemStackCount,
         (uint32_t)mDestTabId, mTimestamp);
 }
