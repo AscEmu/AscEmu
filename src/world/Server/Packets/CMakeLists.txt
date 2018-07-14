@@ -223,6 +223,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
+   ${PATH_PREFIX}/SmsgPetitionQueryResponse.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
    ${PATH_PREFIX}/SmsgPetitionShowSignatures.h
    ${PATH_PREFIX}/SmsgPetitionSignResult.h

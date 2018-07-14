@@ -42,6 +42,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetitionSign.h"
 #include "Server/Packets/MsgPetitionDecline.h"
 #include "Server/Packets/MsgPetitionRename.h"
+#include "Server/Packets/CmsgTurnInPetition.h"
+#include "Server/Packets/CmsgPetitionQuery.h"
+#include "Server/Packets/SmsgPetitionQueryResponse.h"
 
 
 using namespace AscEmu::Packets;
@@ -607,4 +610,111 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     charter->SaveToDB();
 
     SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
+}
+
+void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
+{
+    CmsgTurnInPetition recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const auto charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    if (charter == nullptr)
+        return;
+
+    if (charter->CharterType == CHARTER_TYPE_GUILD)
+    {
+        const auto playerCharter = _player->m_charters[CHARTER_TYPE_GUILD];
+        if (playerCharter == nullptr)
+            return;
+
+        if (playerCharter->SignatureCount < 9 && worldConfig.server.requireAllSignatures)
+        {
+            Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
+            return;
+        }
+
+        const auto guild = new Guild;
+        if (!guild->create(_player, playerCharter->GuildName))
+        {
+            delete guild;
+            return;
+        }
+
+        _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
+        playerCharter->Destroy();
+
+        _player->GetItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
+        sHookInterface.OnGuildCreate(_player, guild);
+    }
+    else
+    {
+        uint16_t type;
+
+        switch (charter->CharterType)
+        {
+            case CHARTER_TYPE_ARENA_2V2:
+                type = ARENA_TEAM_TYPE_2V2;
+                break;
+
+            case CHARTER_TYPE_ARENA_3V3:
+                type = ARENA_TEAM_TYPE_3V3;
+                break;
+
+            case CHARTER_TYPE_ARENA_5V5:
+                type = ARENA_TEAM_TYPE_5V5;
+                break;
+
+            default:
+                SendNotification("Internal Error");
+                return;
+        }
+
+        if (_player->m_arenaTeams[charter->CharterType - 1] != nullptr)
+        {
+            sChatHandler.SystemMessage(this, LocalizedWorldSrv(SS_ALREADY_ARENA_TEAM));
+            return;
+        }
+
+        if (charter->SignatureCount < charter->GetNumberOfSlotsByType() && worldConfig.server.requireAllSignatures)
+        {
+            Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
+            return;
+        }
+
+        const auto arenaTeam = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
+        arenaTeam->m_name = charter->GuildName;
+        arenaTeam->m_emblemColour = recv_packet.iconColor;
+        arenaTeam->m_emblemStyle = recv_packet.icon;
+        arenaTeam->m_borderColour = recv_packet.borderColor;
+        arenaTeam->m_borderStyle = recv_packet.border;
+        arenaTeam->m_backgroundColour = recv_packet.background;
+        arenaTeam->m_leader = _player->getGuidLow();
+        arenaTeam->m_stat_rating = 1500;
+
+        objmgr.AddArenaTeam(arenaTeam);
+        objmgr.UpdateArenaTeamRankings();
+        arenaTeam->AddMember(_player->m_playerInfo);
+
+        for (uint32_t i = 0; i < charter->SignatureCount; ++i)
+            if (PlayerInfo* info = objmgr.GetPlayerInfo(charter->Signatures[i]))
+                arenaTeam->AddMember(info);
+
+        _player->GetItemInterface()->SafeFullRemoveItemByGuid(recv_packet.itemGuid);
+        _player->m_charters[charter->CharterType] = nullptr;
+        charter->Destroy();
+    }
+
+    Guild::sendTurnInPetitionResult(this, PETITION_ERROR_OK);
+}
+
+void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
+{
+    CmsgPetitionQuery recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
+        SendPacket(SmsgPetitionQueryResponse(recv_packet.charterId, static_cast<uint64>(charter->LeaderGuid),
+            charter->GuildName, charter->CharterType, charter->Slots).serialise().get());
 }

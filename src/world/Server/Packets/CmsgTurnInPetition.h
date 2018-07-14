@@ -16,6 +16,13 @@ namespace AscEmu { namespace Packets
     public:
         uint64_t itemGuid;
 
+        //arena fields
+        uint32_t iconColor;
+        uint32_t icon;
+        uint32_t borderColor;
+        uint32_t border;
+        uint32_t background;
+
         CmsgTurnInPetition() : CmsgTurnInPetition(0)
         {
         }
@@ -35,6 +42,8 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> itemGuid;
+            if (packet.size() >= 28)
+                packet >> iconColor >> icon >> borderColor >> border >> background;
             return true;
         }
     };
