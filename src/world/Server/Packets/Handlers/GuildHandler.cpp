@@ -46,6 +46,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetitionQuery.h"
 #include "Server/Packets/SmsgPetitionQueryResponse.h"
 #include "Server/Packets/CmsgPetitionBuy.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "scripts/InstanceScripts/Setup.h"
+#include "Storage/WorldStrings.h"
 
 
 using namespace AscEmu::Packets;
@@ -771,7 +774,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
 
         static uint32_t item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
-        static uint32_t costs[] = { CharterCost::TwoOnTwo, CharterCost::ThreeOnThree, CharterCost::FiveOnFive };
+        static uint32_t costs[] = { worldConfig.charterCost._2V2, worldConfig.charterCost._3V3, worldConfig.charterCost._5V5 };
 
         if (!_player->HasGold(costs[arena_type]))
         {

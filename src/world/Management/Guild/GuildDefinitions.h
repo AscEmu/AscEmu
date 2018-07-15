@@ -21,17 +21,6 @@ namespace CharterEntry
     };
 }
 
-namespace CharterCost
-{
-    enum
-    {
-        Guild = 1000,
-        TwoOnTwo = 800000,
-        ThreeOnThree = 1200000,
-        FiveOnFive = 2000000
-    };
-}
-
 namespace CharterRequiredSigns
 {
     enum

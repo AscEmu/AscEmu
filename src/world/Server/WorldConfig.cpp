@@ -202,6 +202,12 @@ WorldConfig::WorldConfig()
     arena.maxPlayerCount5V5 = 5;
     arena.minPlayerCount5V5 = 5;
 
+    // world.conf - CharterCost
+    charterCost._guild = 1000;
+    charterCost._2V2 = 800000;
+    charterCost._3V3 = 1200000;
+    charterCost._5V5 = 2000000;
+
     // world.conf - Limits settings
     limit.isLimitSystemEnabled = true;
     limit.maxAutoAttackDamageCap = 10000;
@@ -557,6 +563,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     arena.maxPlayerCount3V3 = Config.MainConfig.getIntDefault("Arena", "3V3_MAX", 3);
     arena.minPlayerCount5V5 = Config.MainConfig.getIntDefault("Arena", "5V5_MIN", 5);
     arena.maxPlayerCount5V5 = Config.MainConfig.getIntDefault("Arena", "5V5_MAX", 5);
+
+    // world.conf - CharterCost
+    charterCost._guild = Config.MainConfig.getIntDefault("CharterCost", "Guild", 1000);
+    charterCost._2V2 = Config.MainConfig.getIntDefault("CharterCost", "2V2", 800000);
+    charterCost._3V3 = Config.MainConfig.getIntDefault("CharterCost", "3V3", 1200000);
+    charterCost._5V5 = Config.MainConfig.getIntDefault("CharterCost", "5V5", 2000000);
 
     // world.conf - Limits settings
     limit.isLimitSystemEnabled = Config.MainConfig.getBoolDefault("Limits", "Enable", true);

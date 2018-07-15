@@ -1063,6 +1063,24 @@
        3V3_MAX   = "3"
        5V5_MIN   = "5"
        5V5_MAX   = "5">
+       
+################################################################################
+# Charter Costs
+#
+#    Allows you to control the cost of the charters.
+#    The cost is defined in copper (100 copper = 1 silver).
+#
+#   Default:
+#    Guild = "1000"     (10 silver)
+#    2V2   = "800000"   (80 gold)
+#    3V3   = "1200000"  (120 gold)
+#    5V5   = "2000000"  (200 gold)
+#
+
+<CharterCost Guild  = "1000"
+             2V2    = "800000"
+             3V3    = "1200000"
+             5V5    = "2000000">
 
 ################################################################################
 # Limits settings
