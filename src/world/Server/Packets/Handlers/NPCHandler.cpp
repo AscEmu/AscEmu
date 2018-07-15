@@ -142,6 +142,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         if (itr.spell == recv_packet.spellId)
         {
             trainerSpell = &itr;
+            break;
         }
     }
 #else
@@ -151,6 +152,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
             (itr.pLearnSpell && itr.pLearnSpell->getId() == recv_packet.spellId))
         {
             trainerSpell = &itr;
+            break;
         }
     }
 #endif
@@ -413,19 +415,21 @@ void WorldSession::sendTrainerList(Creature* creature)
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
         TrainerSpell* pSpell;
         uint32_t Spacer = 0;
-        uint32_t Count = 0;
         uint8_t Status;
         std::string Text;
 
         data << creature->getGuid();
         data << trainer->TrainerType;
 
-        data << uint32_t(0);
+        size_t count_p = data.wpos();
+        data << uint32_t(trainer->Spells.size());
+
+        uint32_t count = 0;
         for (auto itr : trainer->Spells)
         {
             pSpell = &itr;
             Status = trainerGetSpellStatus(pSpell);
-            if (pSpell->pCastRealSpell != nullptr)
+            if (pSpell->pCastRealSpell)
                 data << pSpell->pCastSpell->getId();
             else if (pSpell->pLearnSpell)
                 data << pSpell->pLearnSpell->getId();
@@ -442,10 +446,10 @@ void WorldSession::sendTrainerList(Creature* creature)
             data << pSpell->RequiredSpell;
             data << Spacer;    //this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
             data << Spacer;
-            ++Count;
+            ++count;
         }
 
-        *(uint32_t*)&data.contents()[12] = Count;
+        data.put<uint32_t>(count_p, count);
 
         if (stricmp(trainer->UIMessage, "DMSG") == 0)
             data << GetPlayer()->GetSession()->LocalizedWorldSrv(37);
