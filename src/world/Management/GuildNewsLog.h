@@ -26,8 +26,8 @@ class GuildNewsLogEntry : public GuildLogEntry
         uint32_t getFlags() const;
         void setSticky(bool isSticky);
 
-        void saveGuildLogToDB() const;
-        void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const;
+        void saveGuildLogToDB() const override;
+        void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const override;
 
     private:
 

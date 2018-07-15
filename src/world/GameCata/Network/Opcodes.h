@@ -336,7 +336,6 @@ enum Opcodes
     CMSG_GUILD_QUERY                                        = 0x4426, // checked
     CMSG_GUILD_QUERY_NEWS                                   = 0x3020, // checked
     CMSG_GUILD_QUERY_RANKS                                  = 0x1026, // checked
-    CMSG_GUILD_RANK = 0x1024,
     CMSG_GUILD_REMOVE                                       = 0x1231, // checked
     CMSG_REPLACE_GUILD_MASTER                               = 0x1034, // new
     CMSG_GUILD_REQUEST_CHALLENGE_UPDATE                     = 0x1224, // checked
@@ -347,7 +346,7 @@ enum Opcodes
     CMSG_GUILD_SET_NOTE                                     = 0x1233, // checked
     CMSG_GUILD_SET_OFFICER_NOTE = 0x0000,
     CMSG_GUILD_SET_PUBLIC_NOTE = 0x0000,
-    CMSG_GUILD_SET_RANK_PERMISSIONS                         = 0x1024, // checked
+        CMSG_GUILD_SET_RANK = 0x1024, // checked
     CMSG_GUILD_SWITCH_RANK                                  = 0x1221, // checked
     CMSG_HEARTH_AND_RESURRECT                               = 0x4B34, // changed
     CMSG_IGNORE_DIMINISHING_RETURNS_CHEAT = 0x405,

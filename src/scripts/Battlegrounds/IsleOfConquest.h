@@ -188,38 +188,38 @@ class IsleOfConquest : public CBattleground
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new IsleOfConquest(m, i, l, t); }
 
         void Init();
-        void OnCreate();
-        void OnStart();
+        void OnCreate() override;
+        void OnStart() override;
         void OpenGates();
         void CloseGates();
         void SpawnControlPoint(uint32 Id, uint32 Type);
         void SpawnGraveyard(uint32 id, uint32 team);
         void Finish(uint32 losingTeam);
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnAreaTrigger(Player* plr, uint32 id);
-        void HookOnPlayerDeath(Player* plr);
-        void HookOnPlayerResurrect(Player* player);
+        void HookOnAreaTrigger(Player* plr, uint32 id) override;
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookOnPlayerResurrect(Player* player) override;
         void HookOnPlayerKill(Player* /*plr*/, Player* /*pVictim*/) override {}
         void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) override {}
         void HookOnFlagDrop(Player* /*plr*/) override {}
         void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) override {}
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell);
+        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell) override;
         void HookOnMount(Player* /*plr*/)  override {}
         void HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/) override {}
-        void OnAddPlayer(Player* plr);
+        void OnAddPlayer(Player* plr) override;
         void OnRemovePlayer(Player* plr) override;
-        void HookOnShadowSight();
-        void SetIsWeekend(bool isweekend);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnUnitDied(Unit* victim);
-        LocationVector GetStartingCoords(uint32 Team);
+        void HookOnShadowSight() override;
+        void SetIsWeekend(bool isweekend) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnUnitDied(Unit* victim) override;
+        LocationVector GetStartingCoords(uint32 Team) override;
         void AddReinforcements(uint32 team, uint32 amount);
         void RemoveReinforcements(uint32 team, uint32 amount);
         void UpdateResources();
-        void HookOnHK(Player* plr);
+        void HookOnHK(Player* plr) override;
         void AssaultControlPoint(Player* player, uint32 id);
         void CaptureControlPoint(uint32 id);
-        bool HookHandleRepop(Player* plr);
+        bool HookHandleRepop(Player* plr) override;
         void BuildWorkshopVehicle(uint32 delay);
 
         // Capture events

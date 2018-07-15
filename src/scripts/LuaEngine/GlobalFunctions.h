@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #if VERSION_STRING == Cata
-#include "GameCata/Management/Guild.h"
+#include "Management/Guild.h"
 #endif
 
 #define ENGINE_NAME "ALE" //You should check in your scripts that GetLuaEngine() == "ALE"
@@ -704,16 +704,16 @@ namespace luaGlobalFunctions
     int GetGuildByName(lua_State* L)
     {
         const char* name = luaL_checkstring(L, 1);
-        Guild* guild = objmgr.GetGuildByGuildName(name);
-        lua_pushnumber(L, guild ? guild->getGuildId() : -1);
+        Guild* guild = sGuildMgr.getGuildByName(name);
+        lua_pushnumber(L, guild ? guild->getId() : -1);
         return 1;
     }
 
     int GetGuildByLeaderGuid(lua_State* L)
     {
         uint64 guid = CHECK_GUID(L, 1);
-        Guild* guild = objmgr.GetGuildByLeaderGuid(guid);
-        lua_pushnumber(L, guild ? guild->getGuildId() : -1);
+        Guild* guild = sGuildMgr.getGuildByLeader(guid);
+        lua_pushnumber(L, guild ? guild->getId() : -1);
         return 1;
     }
 }

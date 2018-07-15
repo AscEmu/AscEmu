@@ -29,9 +29,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BroadcastMgr.h"
 #include "World.Legacy.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Management/GuildMgr.h"
 
 #if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
 #include "GameCata/Management/GuildFinderMgr.h"
 #endif
 
@@ -741,8 +741,8 @@ bool World::setInitialWorldSettings()
     new TaxiMgr;
 #if VERSION_STRING == Cata
     new GuildFinderMgr;
-    new GuildMgr;
 #endif
+    new GuildMgr;
     new ChatHandler;
     new SpellProcMgr;
 
@@ -782,10 +782,11 @@ bool World::setInitialWorldSettings()
     new LfgMgr;
     sLfgMgr.LoadRewards();
 
+    sGuildMgr.loadGuildDataFromDB();
+
 #if VERSION_STRING == Cata
     sGuildMgr.loadGuildXpForLevelFromDB();
     sGuildMgr.loadGuildRewardsFromDB();
-    sGuildMgr.loadGuildDataFromDB();
 
     sGuildFinderMgr.loadGuildFinderDataFromDB();
 #endif
@@ -1013,9 +1014,7 @@ void World::Update(unsigned long time_passed)
         TerminateProcess(GetCurrentProcess(), 0);
 #endif
 
-#if VERSION_STRING == Cata
     sGuildMgr.update((uint32)time_passed);
-#endif
 }
 
 void World::saveAllPlayersToDb()

@@ -54,7 +54,7 @@ namespace AscEmu { namespace Packets
             packet.read_skip<uint32_t>();
             packet.read_skip<uint32_t>();
             packet >> signerCount;
-            for (uint8 s = 0; s < 10; ++s)
+            for (uint8_t s = 0; s < 10; ++s)
                 packet.read_skip<std::string>();
 
             packet >> arenaIndex;

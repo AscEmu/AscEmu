@@ -577,7 +577,6 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recvData*/)
 
 void WorldSession::LoadAccountDataProc(QueryResult* result)
 {
-    size_t len;
     const char* data;
     char* d;
 
@@ -590,7 +589,7 @@ void WorldSession::LoadAccountDataProc(QueryResult* result)
     for (uint8 i = 0; i < 7; ++i)
     {
         data = result->Fetch()[1 + i].GetString();
-        len = data ? strlen(data) : 0;
+        size_t len = data ? strlen(data) : 0;
         if (len > 1)
         {
             d = new char[len + 1];

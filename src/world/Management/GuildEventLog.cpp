@@ -25,13 +25,14 @@ GuildEventLogEntry::~GuildEventLogEntry()
 
 void GuildEventLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_eventlog WHERE guildId = %u AND logGuid = %u", mGuildId, mGuid);
-    CharacterDatabase.Execute("INSERT INTO guild_eventlog VALUES(%u, %u, %u, %u, %u, %u, %llu)",
+    CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildId = %u AND logGuid = %u", mGuildId, mGuid);
+    CharacterDatabase.Execute("INSERT INTO guild_logs VALUES(%u, %u, %u, %u, %u, %u, %llu)",
         mGuildId, mGuid, uint8_t(mEventType), mPlayerGuid1, mPlayerGuid2, (uint32_t)mNewRank, mTimestamp);
 }
 
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
+#if VERSION_STRING == Cata
     ObjectGuid guid1 = MAKE_NEW_GUID(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
     ObjectGuid guid2 = MAKE_NEW_GUID(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
 
@@ -77,4 +78,16 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
     content.WriteByteSeq(guid1[2]);
     content.WriteByteSeq(guid1[6]);
     content.WriteByteSeq(guid1[1]);
+#else
+    data << uint8(mEventType);
+    data << MAKE_NEW_GUID(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
+
+    if (mEventType != GE_LOG_JOIN_GUILD && mEventType != GE_LOG_LEAVE_GUILD)
+        data << MAKE_NEW_GUID(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
+
+    if (mEventType == GE_LOG_PROMOTE_PLAYER || mEventType == GE_LOG_DEMOTE_PLAYER)
+        data << uint8(mNewRank);
+
+    data << uint32(::time(nullptr) - mTimestamp);
+#endif
 }

@@ -101,7 +101,6 @@ enum GuildDefaultRanks
 
 enum GuildRankRights
 {
-#if VERSION_STRING == Cata
     GR_RIGHT_EMPTY = 0x00000040,
     GR_RIGHT_GCHATLISTEN = GR_RIGHT_EMPTY | 0x00000001,
     GR_RIGHT_GCHATSPEAK = GR_RIGHT_EMPTY | 0x00000002,
@@ -121,39 +120,10 @@ enum GuildRankRights
     GR_RIGHT_WITHDRAW_GOLD = 0x00080000,
     GR_RIGHT_CREATE_GUILD_EVENT = 0x00100000,
     GR_RIGHT_ALL = 0x00DDFFBF
-#else
-    GR_RIGHT_EMPTY = 0x00040,
-    GR_RIGHT_GCHATLISTEN = 0x00001,
-    GR_RIGHT_GCHATSPEAK = 0x00002,
-    GR_RIGHT_OFFCHATLISTEN = 0x00004,
-    GR_RIGHT_OFFCHATSPEAK = 0x00008,
-    GR_RIGHT_INVITE = 0x00010,
-    GR_RIGHT_REMOVE = 0x00020,
-    // unk 0x00040
-    GR_RIGHT_PROMOTE = 0x00080,
-    GR_RIGHT_DEMOTE = 0x00100,
-    // unk 0x00200
-    // unk 0x00400
-    // unk 0x00800
-    GR_RIGHT_SETMOTD = 0x01000,
-    GR_RIGHT_EPNOTE = 0x02000,
-    GR_RIGHT_VIEWOFFNOTE = 0x04000,
-    GR_RIGHT_EOFFNOTE = 0x08000,
-    GR_RIGHT_EGUILDINFO = 0x10000,
-    GR_RIGHT_GUILD_BANK_REPAIR = 0x40000,
-    GR_RIGHT_GUILD_BANK_WITHDRAW_MONEY = 0x80000,
-    GR_RIGHT_ALL = 0xDF1FF,
-    GR_RIGHT_DEFAULT = GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK | GR_RIGHT_EMPTY,
-    GR_RIGHT_GUILD_BANK_VIEW_TAB = 0x01,
-    GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS = 0x02,
-    GR_RIGHT_GUILD_BANK_CHANGE_TABTXT = 0x04,
-    GR_RIGHT_GUILD_BANK_ALL = GR_RIGHT_GUILD_BANK_VIEW_TAB | GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS | GR_RIGHT_GUILD_BANK_CHANGE_TABTXT
-#endif
 };
 
 enum GuildCommandType
 {
-#if VERSION_STRING == Cata
     GC_TYPE_CREATE = 0,
     GC_TYPE_INVITE = 1,
     GC_TYPE_QUIT = 3,
@@ -170,16 +140,6 @@ enum GuildCommandType
     GC_TYPE_VIEW_TAB = 21,
     GC_TYPE_MOVE_ITEM = 22,
     GC_TYPE_REPAIR = 25
-#else
-    GC_TYPE_CREATE = 0,
-    GC_TYPE_INVITE = 1,
-    GC_TYPE_QUIT = 2,
-    GC_TYPE_PROMOTE = 3,
-    GC_TYPE_FOUNDER = 12,
-    GC_TYPE_GUILD_CHAT = 13,
-    GC_TYPE_PUBLIC_NOTE = 19,
-    GC_TYPE_CHANGE_RANK = 20
-#endif
 };
 
 enum GuildCommandError
@@ -242,7 +202,7 @@ enum GuildEvents
     GE_BANK_TAB_PURCHASED = 19,
     GE_BANK_TAB_UPDATED = 20,
     GE_BANK_MONEY_SET = 21,
-    GE_BANK_MONEY_CHANGED = 22,
+    GE_BANK_TAB_AND_MONEY_UPDATED = 22,
     GE_BANK_TEXT_CHANGED = 23,
     GE_SIGNED_ON_MOBILE = 25,
     GE_SIGNED_Off_MOBILE = 26
@@ -257,10 +217,15 @@ enum GuildEvents
     GE_LEADER_CHANGED = 7,
     GE_DISBANDED = 8,
     GE_TABARDCHANGE = 9,
+    GE_RANK_UPDATED = 10,
+    GE_RANK_DELETED = 11,
     GE_SIGNED_ON = 12,
     GE_SIGNED_OFF = 13,
+    GE_GUILDBANKBAGSLOTS_CHANGED = 14,
     GE_BANK_TAB_PURCHASED = 15,
-    GE_BANK_TAB_UPDATED = 17,
+    GE_BANK_TAB_UPDATED = 16,
+    GE_BANK_MONEY_SET = 17,
+    GE_BANK_TAB_AND_MONEY_UPDATED = 18,
     GE_BANK_TEXT_CHANGED = 19
 #endif
 };
@@ -367,7 +332,6 @@ uint32_t const guildChallengeMaxLevelGoldReward[4] = { 0, 125, 500, 250 };
 uint32_t const guildChallengeXPReward[4] = { 0, 300000, 3000000, 1500000 };
 uint32_t const guildChallengesPerWeek[4] = { 0, 7, 1, 3 };
 
-#if VERSION_STRING == Cata
 inline std::string _GetGuildEventString(GuildEvents event)
 {
     switch (event)
@@ -382,20 +346,21 @@ inline std::string _GetGuildEventString(GuildEvents event)
         case GE_LEADER_CHANGED:             { return "Leader changed"; }
         case GE_DISBANDED:                  { return "Guild disbanded"; }
         case GE_TABARDCHANGE:               { return "Tabard change"; }
-        case GE_BANK_TEXT_CHANGED:          { return "Bank tab text changed"; }
+        case GE_RANK_UPDATED:               { return "Rank updated"; }
+        case GE_RANK_DELETED:               { return "Rank deleted"; }
         case GE_SIGNED_ON:                  { return "Member signed on"; }
         case GE_SIGNED_OFF:                 { return "Member signed off"; }
+        case GE_GUILDBANKBAGSLOTS_CHANGED:  { return "Bank bag slots changed"; }
         case GE_BANK_TAB_PURCHASED:         { return "Bank tab purchased"; }
         case GE_BANK_TAB_UPDATED:           { return "Bank tab updated"; }
         case GE_BANK_MONEY_SET:             { return "Bank money set"; }
-        case GE_BANK_MONEY_CHANGED:         { return "Bank money changed"; }
-        case GE_RANK_UPDATED:               { return "Rank updated"; }
-        case GE_RANK_DELETED:               { return "Rank deleted"; }
-        case GE_GUILDBANKBAGSLOTS_CHANGED:  { return "Bank bag slots changed"; }
-        default:                            { return "<None>"; }
+        case GE_BANK_TAB_AND_MONEY_UPDATED: { return "Bank and money updated"; }
+        case GE_BANK_TEXT_CHANGED:          { return "Bank tab text changed"; }
+        default:
+            break;
     }
+    return "None";
 }
-#endif
 
 inline uint32_t _GetGuildBankTabPrice(uint8_t tabId)
 {

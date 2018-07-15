@@ -1463,18 +1463,6 @@ void Group::ExpandToLFG()
     Update();
 }
 
-/* unused
-uint64 Group::GetLeaderGUID()
-{
-    if (m_Leader != nullptr)
-    {
-        if (m_Leader->m_loggedInPlayer)
-            return m_Leader->m_loggedInPlayer->getGuid();
-        return (uint64)m_Leader->guid;
-    }
-}
-*/
-
 void Group::GoOffline(Player* p)
 {
     uint32 mask = GROUP_UPDATE_FLAG_STATUS;

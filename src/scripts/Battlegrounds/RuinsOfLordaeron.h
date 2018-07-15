@@ -35,9 +35,9 @@ class RuinsOfLordaeron : public Arena
             return new RuinsOfLordaeron(m, i, l, t, players_per_side);
         }
 
-        void OnCreate();
-        void HookOnShadowSight();
-        LocationVector GetStartingCoords(uint32 Team);
-        void HookOnAreaTrigger(Player* plr, uint32 trigger);
-        bool HookHandleRepop(Player* plr);
+        void OnCreate() override;
+        void HookOnShadowSight() override;
+        LocationVector GetStartingCoords(uint32 Team) override;
+        void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+        bool HookHandleRepop(Player* plr) override;
 };

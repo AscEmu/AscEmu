@@ -32,9 +32,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - kalakris-cmake
           packages:
-            - cmake
             - zlib1g-dev
             - libssl-dev
             - libpcre3-dev
@@ -50,9 +48,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - kalakris-cmake
           packages:
-            - cmake
             - zlib1g-dev
             - libssl-dev
             - libpcre3-dev
@@ -71,9 +67,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - kalakris-cmake
           packages:
-            - cmake
             - zlib1g-dev
             - libssl-dev
             - libpcre3-dev
@@ -89,9 +83,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - kalakris-cmake
           packages:
-            - cmake
             - zlib1g-dev
             - libssl-dev
             - libpcre3-dev
@@ -109,7 +101,7 @@ matrix:
 install:
   - mkdir ascemu_build
   - cd ascemu_build
-  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=1 -DBUILD_TOOLS=0 -DASCEMU_VERSION=${ASC_VERSION}
+  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=${ASC_VERSION}
     
 before_script:
   - ${CXX} --version

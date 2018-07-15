@@ -29,13 +29,17 @@ namespace AscEmu { namespace Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << name;
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING != Cata
             packet >> name;
+#else
+            uint32_t nameLength = packet.readBits(7);
+            name = packet.ReadString(nameLength);
+#endif
             return true;
         }
     };

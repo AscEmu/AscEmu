@@ -9,22 +9,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 
-struct PlayerStablePetList
-{
-    uint32_t petNumber;
-    uint32_t entry;
-    uint32_t level;
-    uint8_t stableState;
-    std::string name;
-};
 
 namespace AscEmu { namespace Packets
 {
     class MsgSaveGuildEmblem : public ManagedPacket
     {
     public:
-        uint64_t guid;
-        GuildEmblemInfo emblemInfo;
+        WoWGuid guid;
+        EmblemInfo emblemInfo;
 
         uint32_t error;
 
@@ -33,12 +25,15 @@ namespace AscEmu { namespace Packets
         }
 
         MsgSaveGuildEmblem(uint32_t error) :
-            ManagedPacket(MSG_SAVE_GUILD_EMBLEM, 4),
+            ManagedPacket(MSG_SAVE_GUILD_EMBLEM, 8 + 4 + 4 + 4 + 4 + 4),
             error(error)
         {
         }
 
     protected:
+
+        size_t expectedSize() const override { return 4; }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << error;
@@ -47,8 +42,11 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> emblemInfo.style >> emblemInfo.color >> emblemInfo.borderStyle
-                   >> emblemInfo.borderColor >> emblemInfo.backgroundColor;
+            uint64_t unpackedGuid;
+            packet >> unpackedGuid;
+            guid.Init(unpackedGuid);
+
+            emblemInfo.readEmblemInfoFromPacket(packet);
             return true;
         }
     };

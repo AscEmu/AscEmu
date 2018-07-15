@@ -21,9 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Objects/ObjectMgr.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
@@ -35,6 +33,29 @@ void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, 
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
 bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
+
+uint32_t Player::getGuildId() const
+{
+#if VERSION_STRING != Cata
+    return playerData()->guild_id;
+#else
+    return static_cast<uint32_t>(objectData()->data);
+#endif
+}
+void Player::setGuildId(uint32_t guildId)
+{
+#if VERSION_STRING != Cata
+    write(playerData()->guild_id, guildId);
+#else
+    write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
+
+    ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0);
+    setUInt16Value(OBJECT_FIELD_TYPE, 1, guildId != 0);
+#endif
+}
+
+uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
+void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
 
 //bytes begin
 uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
@@ -85,6 +106,9 @@ void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp
 
 uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
 void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
+
+uint32_t Player::getGuildTimestamp() const { return playerData()->guild_timestamp; }
+void Player::setGuildTimestamp(uint32_t timestamp) { write(playerData()->guild_timestamp, timestamp); }
 
 #if VERSION_STRING > Classic
 uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
@@ -601,13 +625,7 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->lastZone = GetZoneId();
         playerInfo->race = getRace();
         playerInfo->team = GetTeam();
-#if VERSION_STRING == Cata
         playerInfo->guildRank = GUILD_RANK_NONE;
-#else
-        playerInfo->guild = nullptr;
-        playerInfo->guildRank = nullptr;
-        playerInfo->guildMember = nullptr;
-#endif
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
@@ -621,24 +639,18 @@ void Player::setPlayerInfoIfNeeded()
 
 void Player::setGuildAndGroupInfo()
 {
-#if VERSION_STRING != Cata
-    if (getPlayerInfo()->guild)
+    if (getPlayerInfo()->m_guild)
     {
-        SetGuildId(getPlayerInfo()->guild->getGuildId());
-        SetGuildRank(getPlayerInfo()->guildRank->iId);
-        SendGuildMOTD();
-        getPlayerInfo()->guild->LogGuildEvent(GE_SIGNED_ON, 1, getName().c_str());
-    }
-#else
-    if (getPlayerInfo()->m_guild && sGuildMgr.getGuildById(getPlayerInfo()->m_guild) != nullptr)
-    {
-        SetInGuild(getPlayerInfo()->m_guild);
-        SetRank(static_cast<uint8_t>(getPlayerInfo()->guildRank));
-        GetGuild()->sendLoginInfo(GetSession());
-        if (Guild* guild = sGuildMgr.getGuildById(GetGuildId()))
+        if (const auto guild = sGuildMgr.getGuildById(getPlayerInfo()->m_guild))
+        {
+            setGuildId(getPlayerInfo()->m_guild);
+            setGuildRank(getPlayerInfo()->guildRank);
+            guild->sendLoginInfo(GetSession());
+#if VERSION_STRING == Cata
             SetGuildLevel(guild->getLevel());
-    }
 #endif
+        }
+    }
 
     if (getPlayerInfo()->m_Group)
         getPlayerInfo()->m_Group->Update();

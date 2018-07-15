@@ -22,6 +22,7 @@ class GuildBankTab
         void removeBankTabItemFromDB(bool removeItemsFromDB = false);
 
         void writeInfoPacket(WorldPacket& data) const;
+        bool writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty = true) const;
 
         void setInfo(std::string const& name, std::string const& icon);
         void setText(std::string const& text);

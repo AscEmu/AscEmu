@@ -34,16 +34,17 @@ bool GuildBankEventLogEntry::isMoneyEvent() const
 
 void GuildBankEventLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_bank_eventlog WHERE guildId = %u AND logGuid = %u AND tabId = %u",
+    CharacterDatabase.Execute("DELETE FROM guild_bank_logs WHERE guildId = %u AND logGuid = %u AND tabId = %u",
         mGuildId, mGuid, mBankTabId);
 
-    CharacterDatabase.Execute("INSERT INTO guild_bank_eventlog VALUES('%u', '%u', '%u', '%u', '%u', '%llu', '%u', '%u', '%llu')",
+    CharacterDatabase.Execute("INSERT INTO guild_bank_logs VALUES('%u', '%u', '%u', '%u', '%u', '%llu', '%u', '%u', '%llu')",
         mGuildId, mGuid, mBankTabId, (uint32_t)mEventType, mPlayerGuid, mItemOrMoney, (uint32_t)mItemStackCount,
         (uint32_t)mDestTabId, mTimestamp);
 }
 
 void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
+#if VERSION_STRING == Cata
     ObjectGuid logGuid = MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
 
     bool hasItem = mEventType == GB_LOG_DEPOSIT_ITEM || mEventType == GB_LOG_WITHDRAW_ITEM ||
@@ -96,4 +97,27 @@ void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& 
     {
         content << uint8_t(mDestTabId);
     }
+#else
+    data << uint8(mEventType);
+    data << MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
+
+    switch (mEventType)
+    {
+        case GB_LOG_DEPOSIT_ITEM:
+        case GB_LOG_WITHDRAW_ITEM:
+            data << uint32(mItemOrMoney);
+            data << uint32(mItemStackCount);
+            break;
+        case GB_LOG_MOVE_ITEM:
+        case GB_LOG_MOVE_ITEM2:
+            data << uint32(mItemOrMoney);
+            data << uint32(mItemStackCount);
+            data << uint8(mDestTabId);
+            break;
+        default:
+            data << uint32(mItemOrMoney);
+    }
+
+    data << uint32(time(nullptr) - mTimestamp);
+#endif
 }
