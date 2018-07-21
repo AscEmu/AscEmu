@@ -21,9 +21,9 @@
 
 #include "wdt.h"
 
-u_map_fcc MWMOMagic = { {'O', 'M', 'W', 'M'} };
-u_map_fcc MPHDMagic = { {'D', 'H', 'P', 'M'} };
-u_map_fcc MAINMagic = { {'N', 'I', 'A', 'M'} };
+u_map_fcc MWMOMagic = { { 'O', 'M', 'W', 'M' } };
+u_map_fcc MPHDMagic = { { 'D', 'H', 'P', 'M' } };
+u_map_fcc MAINMagic = { { 'N', 'I', 'A', 'M' } };
 
 bool wdt_MWMO::prepareLoadedData()
 {
@@ -72,13 +72,13 @@ bool WDT_file::prepareLoadedData()
     if (!FileLoader::prepareLoadedData())
         return false;
 
-    mphd = (wdt_MPHD *)((uint8*)version+version->size+8);
+    mphd = (wdt_MPHD *)((uint8*)version + version->size + 8);
     if (!mphd->prepareLoadedData())
         return false;
-    main = (wdt_MAIN *)((uint8*)mphd + mphd->size+8);
+    main = (wdt_MAIN *)((uint8*)mphd + mphd->size + 8);
     if (!main->prepareLoadedData())
         return false;
-    wmo = (wdt_MWMO *)((uint8*)main+ main->size+8);
+    wmo = (wdt_MWMO *)((uint8*)main + main->size + 8);
     if (!wmo->prepareLoadedData())
         return false;
     return true;
