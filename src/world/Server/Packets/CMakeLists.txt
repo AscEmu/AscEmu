@@ -72,8 +72,11 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildBankDepositMoney.h
    ${PATH_PREFIX}/CmsgGuildBankerActivate.h
    ${PATH_PREFIX}/CmsgGuildBankQueryTab.h
+   ${PATH_PREFIX}/CmsgGuildBankQueryText.h
+   ${PATH_PREFIX}/CmsgGuildBankSwapItems.h
    ${PATH_PREFIX}/CmsgGuildBankUpdateTab.h
    ${PATH_PREFIX}/CmsgGuildBankWithdrawMoney.h
+   ${PATH_PREFIX}/CmsgGuildDelRank.h
    ${PATH_PREFIX}/CmsgGuildDemote.h
    ${PATH_PREFIX}/CmsgGuildInfoText.h
    ${PATH_PREFIX}/CmsgGuildInvite.h
@@ -82,8 +85,10 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildPromote.h
    ${PATH_PREFIX}/CmsgGuildQuery.h
    ${PATH_PREFIX}/CmsgGuildRemove.h
+   ${PATH_PREFIX}/CmsgGuildSetNote.h
    ${PATH_PREFIX}/CmsgGuildSetOfficerNote.h
    ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
+   ${PATH_PREFIX}/CmsgGuildSetRank.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
@@ -152,6 +157,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
    ${PATH_PREFIX}/MsgGuildBankLogQuery.h
+   ${PATH_PREFIX}/MsgGuildBankMoneyWithdrawn.h
    ${PATH_PREFIX}/MsgInspectArenaTeams.h
    ${PATH_PREFIX}/MsgInspectHonorStats.h
    ${PATH_PREFIX}/MsgListStabledPets.h
@@ -198,6 +204,11 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
+   ${PATH_PREFIX}/SmsgGuildBankMoneyWithdrawn.h
+   ${PATH_PREFIX}/SmsgGuildBankQueryTextResult.h
+   ${PATH_PREFIX}/SmsgGuildCommandResult.h
+   ${PATH_PREFIX}/SmsgGuildInfo.h
+   ${PATH_PREFIX}/SmsgGuildInvite.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
@@ -212,7 +223,9 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
+   ${PATH_PREFIX}/SmsgPetitionQueryResponse.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
+   ${PATH_PREFIX}/SmsgPetitionShowSignatures.h
    ${PATH_PREFIX}/SmsgPetitionSignResult.h
    ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPlayedTime.h

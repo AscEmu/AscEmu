@@ -16,15 +16,17 @@ namespace AscEmu { namespace Packets
     public:
         uint64_t guid;
         uint8_t tabId;
+        bool full;
 
-        CmsgGuildBankQueryTab() : CmsgGuildBankQueryTab(0, 0)
+        CmsgGuildBankQueryTab() : CmsgGuildBankQueryTab(0, 0, false)
         {
         }
 
-        CmsgGuildBankQueryTab(uint64_t guid, uint8_t tabId) :
-            ManagedPacket(CMSG_GUILD_BANK_QUERY_TAB, 9),
+        CmsgGuildBankQueryTab(uint64_t guid, uint8_t tabId, bool full) :
+            ManagedPacket(CMSG_GUILD_BANK_QUERY_TAB, 10),
             guid(guid),
-            tabId(tabId)
+            tabId(tabId),
+            full(full)
         {
         }
 
@@ -36,7 +38,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> tabId;
+            packet >> guid >> tabId >> full;
             return true;
         }
     };

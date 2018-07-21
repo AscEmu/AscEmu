@@ -22,31 +22,36 @@ namespace AscEmu { namespace Packets
     class MsgGuildBankLogQuery : public ManagedPacket
     {
     public:
-        uint8_t slotId;
+        uint8_t tabId;
         std::vector<GuildBankMoneyLog> moneyLog;
 
         MsgGuildBankLogQuery() : MsgGuildBankLogQuery(0, {})
         {
         }
 
-        MsgGuildBankLogQuery(uint8_t slotId, std::vector<GuildBankMoneyLog> moneyLog) :
-            ManagedPacket(MSG_GUILD_BANK_LOG_QUERY, slotId != 6 ? 21 : 17 * moneyLog.size() + 2),
-            slotId(slotId),
+        MsgGuildBankLogQuery(uint8_t tabId, std::vector<GuildBankMoneyLog> moneyLog) :
+            ManagedPacket(MSG_GUILD_BANK_LOG_QUERY, 1),
+            tabId(tabId),
             moneyLog(moneyLog)
         {
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return tabId != 6 ? 21 : 17 * moneyLog.size() + 2;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << slotId;
+            packet << tabId;
             packet << uint8_t(moneyLog.size() > 25 ? 25 : moneyLog.size());
 
             for (const auto& log : moneyLog)
             {
                 packet << log.action << log.memberGuid << log.entry;
 
-                if (slotId < 6)
+                if (tabId < 6)
                     packet << log.stackCount;
 
                 const uint32_t currentTime = static_cast<uint32_t>(UNIXTIME);
@@ -57,7 +62,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> slotId;
+            packet >> tabId;
             return true;
         }
     };

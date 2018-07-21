@@ -363,6 +363,15 @@ class SERVER_DECL WorldConfig
             uint32_t maxPlayerCount5V5;
         } arena;
 
+        // world.conf - CharterCost
+        struct CharterCost
+        {
+            uint32_t _guild;
+            uint32_t _2V2;
+            uint32_t _3V3;
+            uint32_t _5V5;
+        } charterCost;
+
         // world.conf - Limits settings
         struct LimitSettings
         {

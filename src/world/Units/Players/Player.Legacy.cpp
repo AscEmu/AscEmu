@@ -72,10 +72,7 @@
 #include <limits>
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgFriendStatus.h"
-
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -253,9 +250,7 @@ Player::Player(uint32 guid)
     m_duelCountdownTimer(0),
     m_duelStatus(0),
     m_duelState(DUEL_STATE_FINISHED),        // finished
-#if VERSION_STRING == Cata
     m_GuildIdInvited(0),
-#endif
     // Rest
     m_timeLogoff(0),
     m_isResting(0),
@@ -451,8 +446,6 @@ Player::Player(uint32 guid)
     m_talentSpecsCount = 1;
 #if VERSION_STRING == Cata
     m_FirstTalentTreeLock = 0;
-
-    m_GuildId = 0;
 #endif
 
 #ifdef FT_DUAL_SPEC
@@ -3791,7 +3784,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     _AddLanguages(false);
 #endif
 
-    if (GetGuildId())
+    if (getGuildId())
         setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
 
 #undef get_next_field
@@ -4573,8 +4566,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     _AddLanguages(false);
 #endif
 
-    if (GetGuildId())
-        setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
+    if (getGuildId())
+        setGuildTimestamp(static_cast<uint32_t>(UNIXTIME));
 
 #undef get_next_field
 
@@ -9910,71 +9903,14 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     ForceZoneUpdate();
 }
 
-void Player::SetGuildId(uint32 guildId)
-{
-#if VERSION_STRING != Cata
-    if (IsInWorld())
-    {
-        const uint16 field = PLAYER_GUILDID;
-        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::setUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
-                           1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-    {
-        setUInt32Value(PLAYER_GUILDID, guildId);
-    }
-#else
-    if (IsInWorld())
-    {
-        m_GuildId = guildId;
-        if (m_GuildId == 0)
-        {
-            setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setOType(getOType() | 0x00010000);
-        }
-        else
-        {
-            setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setOType(getOType() & ~0x00010000);
-        }
-
-        //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
-        setUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
-    }
-#endif
-}
-
-#if VERSION_STRING == Cata
-void Player::SetInGuild(uint32 guildId)
-{
-    if (IsInWorld())
-    {
-        m_GuildId = guildId;
-        if (m_GuildId == 0)
-        {
-            setUInt64Value(OBJECT_FIELD_DATA, 0);
-            setOType(getOType() | 0x00010000);
-        }
-        else
-        {
-            setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            setOType(getOType() & ~0x00010000);
-        }
-
-        ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0 );
-        setUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
-    }
-}
-
 Guild* Player::GetGuild()
 {
-    uint32 guildId = GetGuildId();
-    return guildId ? sGuildMgr.getGuildById(guildId) : NULL;
+    return getGuildId() ? sGuildMgr.getGuildById(getGuildId()) : nullptr;
 }
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_member WHERE playerGuid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
     if (result)
     {
         Field* fields = result->Fetch();
@@ -9986,7 +9922,7 @@ uint32 Player::GetGuildIdFromDB(uint64 guid)
 
 int8 Player::GetRankFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT playerGuid, rank FROM guild_member WHERE playerGuid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
     if (result)
     {
         Field* fields = result->Fetch();
@@ -9998,23 +9934,9 @@ int8 Player::GetRankFromDB(uint64 guid)
 
 std::string Player::GetGuildName()
 {
-    return GetGuildId() ? sGuildMgr.getGuildById(GetGuildId())->getName() : "";
+    return getGuildId() ? sGuildMgr.getGuildById(getGuildId())->getName() : "";
 }
-#endif
 
-void Player::SetGuildRank(uint32 guildRank)
-{
-    if (IsInWorld())
-    {
-        const uint16 field = PLAYER_GUILDRANK;
-        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::setUInt32Value, field, guildRank, EVENT_PLAYER_SEND_PACKET, 1,
-                           1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-    {
-        setUInt32Value(PLAYER_GUILDRANK, guildRank);
-    }
-}
 
 void Player::UpdatePvPArea()
 {

@@ -38,9 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Server/Packets/CmsgSetTitle.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -112,13 +110,8 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // Guild name
         if (gname)
         {
-#if VERSION_STRING != Cata
-            if (!plr->GetGuild() || recv_packet.guild_name != plr->GetGuild()->getGuildName())
-                continue;
-#else
             if (!plr->GetGuild() || recv_packet.guild_name.compare(plr->GetGuild()->getName()) != 0)
                 continue;
-#endif
         }
 
         // Level check
@@ -171,17 +164,10 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // if we're here, it means we've passed all tests
         data << plr->getName().c_str();
 
-#if VERSION_STRING != Cata
-        if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->getGuildName();
-        else
-            data << uint8_t(0);
-#else
         if (plr->m_playerInfo->m_guild)
             data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
         else
             data << uint8_t(0);
-#endif
 
         data << plr->getLevel();
         data << uint32_t(plr->getClass());

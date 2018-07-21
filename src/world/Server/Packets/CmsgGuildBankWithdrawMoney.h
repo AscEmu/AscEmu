@@ -15,7 +15,11 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint64_t guid;
+#if VERSION_STRING != Cata
         uint32_t money;
+#else
+        uint64_t money;
+#endif
 
         CmsgGuildBankWithdrawMoney() : CmsgGuildBankWithdrawMoney(0, 0)
         {

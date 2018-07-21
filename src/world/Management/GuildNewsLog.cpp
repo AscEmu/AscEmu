@@ -60,10 +60,10 @@ void GuildNewsLogEntry::setSticky(bool isSticky)
 
 void GuildNewsLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_newslog WHERE guildId = %u AND logGuid = %u", mGuildId, getGUID());
+    CharacterDatabase.Execute("DELETE FROM guild_news_log WHERE guildId = %u AND logGuid = %u", mGuildId, getGUID());
 
-    CharacterDatabase.Execute("INSERT INTO guild_newslog VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%llu')",
-        mGuildId, getGUID(), (uint32_t)getType(), (uint32_t)getPlayerGuid(), getFlags(), getValue(), getTimestamp());
+    CharacterDatabase.Execute("INSERT INTO guild_news_log VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%llu')",
+        mGuildId, getGUID(), static_cast<uint32_t>(getType()), static_cast<uint32_t>(getPlayerGuid()), getFlags(), getValue(), getTimestamp());
 }
 
 void GuildNewsLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer&) const

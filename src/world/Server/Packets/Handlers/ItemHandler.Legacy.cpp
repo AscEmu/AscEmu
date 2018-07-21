@@ -1885,21 +1885,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
     if (_player->getDistanceSq(pCreature) > 100)
         return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
 
-    if (guildmoney)
-    {
-#if VERSION_STRING != Cata
-        if (_player->IsInGuild())
-        {
-            if (!(_player->GetGuildRankS()->iRights & GR_RIGHT_GUILD_BANK_REPAIR))
-            {
-                return; //we have not permissions to do that
-            }
-        }
-        else
-            return;//can't repair with guild money if player is not in guild.
-#endif
-    }
-
     if (!itemguid)
     {
         int32 totalcost = 0;
@@ -1930,10 +1915,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
                 }
             }
         }
-#if VERSION_STRING != Cata
-        if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
-            _player->GetGuild()->LogGuildBankActionMoney(GB_LOG_REPAIR_MONEY, _player->getGuidLow(), totalcost);
-#endif
     }
     else
     {

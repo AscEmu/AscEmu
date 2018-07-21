@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('20180427-00_character_db_version');
+	('20180714-00_guild_tables');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
@@ -529,31 +529,11 @@ CREATE TABLE IF NOT EXISTS `groups` (
 /*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 
 
--- Dumping structure for table guilds
-CREATE TABLE IF NOT EXISTS `guilds` (
-  `guildId` bigint(20) NOT NULL AUTO_INCREMENT,
-  `guildName` varchar(32) NOT NULL DEFAULT '',
-  `leaderGuid` bigint(20) NOT NULL DEFAULT '0',
-  `emblemStyle` int(10) NOT NULL DEFAULT '0',
-  `emblemColor` int(10) NOT NULL DEFAULT '0',
-  `borderStyle` int(10) NOT NULL DEFAULT '0',
-  `borderColor` int(10) NOT NULL DEFAULT '0',
-  `backgroundColor` int(10) NOT NULL DEFAULT '0',
-  `guildInfo` varchar(300) NOT NULL DEFAULT '',
-  `motd` varchar(300) NOT NULL DEFAULT '',
-  `createdate` int(30) NOT NULL,
-  `bankBalance` bigint(30) unsigned NOT NULL,
-  PRIMARY KEY (`guildId`),
-  UNIQUE KEY `guildId` (`guildId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
--- Dumping data for table guilds: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guilds` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guilds` ENABLE KEYS */;
-
-
--- Dumping structure for table guild_bankitems
-CREATE TABLE IF NOT EXISTS `guild_bankitems` (
+-- ----------------------------
+-- Table structure for `guild_bank_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_bank_items`;
+CREATE TABLE `guild_bank_items` (
   `guildId` int(30) NOT NULL,
   `tabId` int(30) NOT NULL,
   `slotId` int(30) NOT NULL,
@@ -562,35 +542,47 @@ CREATE TABLE IF NOT EXISTS `guild_bankitems` (
   KEY `a` (`guildId`),
   KEY `b` (`tabId`),
   KEY `c` (`slotId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table guild_bankitems: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_bankitems` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bankitems` ENABLE KEYS */;
+-- ----------------------------
+-- Table structure for `guild_bank_logs`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_bank_logs`;
+CREATE TABLE `guild_bank_logs` (
+  `guildId` int(10) unsigned NOT NULL DEFAULT '0',
+  `logGuid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Log id for this guild',
+  `tabId` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `eventType` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `playerGuid` int(10) unsigned NOT NULL DEFAULT '0',
+  `itemOrMoney` int(10) unsigned NOT NULL DEFAULT '0',
+  `itemStackCount` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `destTabId` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `timeStamp` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'UNIX time',
+  PRIMARY KEY (`guildId`,`logGuid`,`tabId`),
+  KEY `guildid_key` (`guildId`),
+  KEY `Idx_PlayerGuid` (`playerGuid`),
+  KEY `Idx_LogGuid` (`logGuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------
+-- Table structure for `guild_bank_rights`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_bank_rights`;
+CREATE TABLE `guild_bank_rights` (
+  `guildId` int(10) unsigned NOT NULL DEFAULT '0',
+  `tabId` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `rankId` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `bankRight` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `slotPerDay` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guildId`,`tabId`,`rankId`),
+  KEY `guildid_key` (`guildId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table guild_banklogs
-CREATE TABLE IF NOT EXISTS `guild_banklogs` (
-  `log_id` int(30) NOT NULL,
-  `guildid` int(30) NOT NULL,
-  `tabid` int(30) NOT NULL COMMENT 'tab 6 is money logs',
-  `action` int(5) NOT NULL,
-  `player_guid` int(30) NOT NULL,
-  `item_entry` int(30) NOT NULL,
-  `stack_count` int(30) NOT NULL,
-  `timestamp` int(30) NOT NULL,
-  PRIMARY KEY (`log_id`,`guildid`),
-  KEY `a` (`guildid`),
-  KEY `b` (`tabid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dumping data for table guild_banklogs: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_banklogs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_banklogs` ENABLE KEYS */;
-
-
--- Dumping structure for table guild_banktabs
-CREATE TABLE IF NOT EXISTS `guild_banktabs` (
+-- ----------------------------
+-- Table structure for `guild_bank_tabs`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_bank_tabs`;
+CREATE TABLE `guild_bank_tabs` (
   `guildId` int(30) NOT NULL,
   `tabId` int(30) NOT NULL,
   `tabName` varchar(200) NOT NULL,
@@ -599,62 +591,82 @@ CREATE TABLE IF NOT EXISTS `guild_banktabs` (
   PRIMARY KEY (`guildId`,`tabId`),
   KEY `a` (`guildId`),
   KEY `b` (`tabId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table guild_banktabs: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_banktabs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_banktabs` ENABLE KEYS */;
+-- ----------------------------
+-- Table structure for `guild_logs`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_logs`;
+CREATE TABLE `guild_logs` (
+  `guildId` int(10) unsigned NOT NULL,
+  `logGuid` int(10) unsigned NOT NULL COMMENT 'Log id for this guild',
+  `eventType` tinyint(3) unsigned NOT NULL,
+  `playerGuid1` int(10) unsigned NOT NULL,
+  `playerGuid2` int(10) unsigned NOT NULL,
+  `newRank` tinyint(3) unsigned NOT NULL,
+  `timeStamp` int(10) unsigned NOT NULL COMMENT 'UNIX time',
+  PRIMARY KEY (`guildId`,`logGuid`),
+  KEY `Idx_PlayerGuid1` (`playerGuid1`),
+  KEY `Idx_PlayerGuid2` (`playerGuid2`),
+  KEY `Idx_LogGuid` (`logGuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------
+-- Table structure for `guild_members`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_members`;
+CREATE TABLE `guild_members` (
+  `guildId` int(10) unsigned NOT NULL,
+  `playerid` int(10) unsigned NOT NULL,
+  `guildRank` tinyint(3) unsigned NOT NULL,
+  `publicNote` varchar(31) NOT NULL DEFAULT '',
+  `officerNote` varchar(31) NOT NULL DEFAULT '',
+  UNIQUE KEY `guid_key` (`playerid`),
+  KEY `guildid_key` (`guildId`),
+  KEY `guildid_rank_key` (`guildId`,`guildRank`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table guild_data
-CREATE TABLE IF NOT EXISTS `guild_data` (
-  `guildid` int(30) NOT NULL,
-  `playerid` int(30) NOT NULL,
-  `guildRank` int(30) NOT NULL,
-  `publicNote` varchar(300) NOT NULL,
-  `officerNote` varchar(300) NOT NULL,
-  `lastWithdrawReset` int(30) NOT NULL DEFAULT '0',
-  `withdrawlsSinceLastReset` int(30) NOT NULL DEFAULT '0',
-  `lastItemWithdrawReset0` int(30) NOT NULL DEFAULT '0',
-  `itemWithdrawlsSinceLastReset0` int(30) NOT NULL DEFAULT '0',
-  `lastItemWithdrawReset1` int(30) NOT NULL,
-  `itemWithdrawlsSinceLastReset1` int(30) NOT NULL,
-  `lastItemWithdrawReset2` int(30) NOT NULL,
-  `itemWithdrawlsSinceLastReset2` int(30) NOT NULL,
-  `lastItemWithdrawReset3` int(30) NOT NULL,
-  `itemWithdrawlsSinceLastReset3` int(30) NOT NULL,
-  `lastItemWithdrawReset4` int(30) NOT NULL,
-  `itemWithdrawlsSinceLastReset4` int(30) NOT NULL,
-  `lastItemWithdrawReset5` int(30) NOT NULL,
-  `itemWithdrawlsSinceLastReset5` int(30) NOT NULL,
-  KEY `a` (`guildid`),
-  KEY `b` (`playerid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- ----------------------------
+-- Table structure for `guild_members_withdraw`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_members_withdraw`;
+CREATE TABLE `guild_members_withdraw` (
+  `guid` int(10) unsigned NOT NULL,
+  `tab0` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab1` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab2` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab3` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab4` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab5` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab6` int(10) unsigned NOT NULL DEFAULT '0',
+  `tab7` int(10) unsigned NOT NULL DEFAULT '0',
+  `money` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table guild_data: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_data` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_data` ENABLE KEYS */;
+-- ----------------------------
+-- Table structure for `guild_news_log`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_news_log`;
+CREATE TABLE `guild_news_log` (
+  `guildId` int(10) unsigned NOT NULL DEFAULT '0',
+  `logGuid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Log id for this guild',
+  `eventType` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `playerGuid` int(10) unsigned NOT NULL DEFAULT '0',
+  `flags` int(10) unsigned NOT NULL DEFAULT '0',
+  `value` int(10) unsigned NOT NULL DEFAULT '0',
+  `timeStamp` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'UNIX time',
+  PRIMARY KEY (`guildId`,`logGuid`),
+  KEY `guildid_key` (`guildId`),
+  KEY `Idx_PlayerGuid` (`playerGuid`),
+  KEY `Idx_LogGuid` (`logGuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- Dumping structure for table guild_logs
-CREATE TABLE IF NOT EXISTS `guild_logs` (
-  `log_id` int(30) NOT NULL,
-  `guildid` int(30) NOT NULL,
-  `timestamp` int(30) NOT NULL,
-  `event_type` int(30) NOT NULL,
-  `misc1` int(30) NOT NULL,
-  `misc2` int(30) NOT NULL,
-  `misc3` int(30) NOT NULL,
-  PRIMARY KEY (`log_id`,`guildid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dumping data for table guild_logs: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_logs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_logs` ENABLE KEYS */;
-
-
--- Dumping structure for table guild_ranks
-CREATE TABLE IF NOT EXISTS `guild_ranks` (
+-- ----------------------------
+-- Table structure for `guild_ranks`
+-- ----------------------------
+DROP TABLE IF EXISTS `guild_ranks`;
+CREATE TABLE `guild_ranks` (
   `guildId` int(6) unsigned NOT NULL DEFAULT '0',
   `rankId` int(1) NOT NULL DEFAULT '0',
   `rankName` varchar(255) NOT NULL DEFAULT '',
@@ -673,11 +685,31 @@ CREATE TABLE IF NOT EXISTS `guild_ranks` (
   `bankTabFlags5` int(30) NOT NULL DEFAULT '0',
   `itemStacksPerDay5` int(30) NOT NULL DEFAULT '0',
   PRIMARY KEY (`guildId`,`rankId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table guild_ranks: ~0 rows (approximately)
-/*!40000 ALTER TABLE `guild_ranks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_ranks` ENABLE KEYS */;
+-- ----------------------------
+-- Table structure for `guilds`
+-- ----------------------------
+DROP TABLE IF EXISTS `guilds`;
+CREATE TABLE `guilds` (
+  `guildId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `guildName` varchar(32) NOT NULL DEFAULT '',
+  `leaderGuid` bigint(20) NOT NULL DEFAULT '0',
+  `emblemStyle` int(10) NOT NULL DEFAULT '0',
+  `emblemColor` int(10) NOT NULL DEFAULT '0',
+  `borderStyle` int(10) NOT NULL DEFAULT '0',
+  `borderColor` int(10) NOT NULL DEFAULT '0',
+  `backgroundColor` int(10) NOT NULL DEFAULT '0',
+  `guildInfo` varchar(300) NOT NULL DEFAULT '',
+  `motd` varchar(300) NOT NULL DEFAULT '',
+  `createdate` int(30) NOT NULL,
+  `bankBalance` bigint(30) unsigned NOT NULL,
+  `guildLevel` int(10) NOT NULL DEFAULT '1',
+  `guildExperience` bigint(20) NOT NULL DEFAULT '0',
+  `todayExperience` bigint(20) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guildId`),
+  UNIQUE KEY `guildId` (`guildId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Dumping structure for table instanceids

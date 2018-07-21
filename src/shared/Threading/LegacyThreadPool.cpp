@@ -421,7 +421,7 @@ namespace Arcemu
     }
 }
 
-volatile long Sync_Add(volatile long* value)
+long Sync_Add(volatile long* value)
 {
 #ifdef WIN32
     return InterlockedIncrement(value);
@@ -430,7 +430,7 @@ volatile long Sync_Add(volatile long* value)
 #endif
 }
 
-volatile long Sync_Sub(volatile long* value)
+long Sync_Sub(volatile long* value)
 {
 #ifdef WIN32
     return InterlockedDecrement(value);

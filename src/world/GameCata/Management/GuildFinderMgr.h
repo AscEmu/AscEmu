@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Singleton.h"
-#include "Guild.h"
+#include "Management/Guild.h"
 #include <string>
 #include <map>
 #include <vector>

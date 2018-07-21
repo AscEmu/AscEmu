@@ -31,9 +31,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgCharEnum.h"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildMgr.h"
-#endif
+#include "Management/GuildMgr.h"
+
 
 using namespace AscEmu::Packets;
 
@@ -301,15 +300,6 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         std::string name = result->Fetch()[0].GetString();
         delete result;
 
-#if VERSION_STRING != Cata
-        if (playerInfo->guild)
-        {
-            if (playerInfo->guild->GetGuildLeader() == playerInfo->guid)
-                return E_CHAR_DELETE_FAILED_GUILD_LEADER;
-
-            playerInfo->guild->RemoveGuildMember(playerInfo, nullptr);
-        }
-#else
         if (playerInfo->m_guild)
         {
             const auto guild = sGuildMgr.getGuildById(playerInfo->m_guild);
@@ -319,7 +309,6 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
             if (guild != nullptr)
                 guild->handleRemoveMember(this, playerInfo->guid);
         }
-#endif
 
         for (uint8_t i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
@@ -491,14 +480,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->subGroup = 0;
     playerInfo->m_loggedInPlayer = nullptr;
     playerInfo->team = newPlayer->GetTeam();
-#if VERSION_STRING != Cata
-    playerInfo->guild = nullptr;
-    playerInfo->guildRank = nullptr;
-    playerInfo->guildMember = nullptr;
-#else
     playerInfo->m_guild = 0;
     playerInfo->guildRank = GUILD_RANK_NONE;
-#endif
     playerInfo->lastOnline = UNIXTIME;
 
     objmgr.AddPlayerInfo(playerInfo);
@@ -911,7 +894,7 @@ void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 {
     const auto asyncQuery = new AsyncQuery(new SQLClassCallbackP1<World, uint32_t>(World::getSingletonPtr(), &World::sendCharacterEnumToAccountSession, GetAccountId()));
 
-    asyncQuery->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_data.guildid FROM characters LEFT JOIN guild_data ON characters.guid = guild_data.playerid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
+    asyncQuery->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_members.guildId FROM characters LEFT JOIN guild_members ON characters.guid = guild_members.playerid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
 
     CharacterDatabase.QueueAsyncQuery(asyncQuery);
 }

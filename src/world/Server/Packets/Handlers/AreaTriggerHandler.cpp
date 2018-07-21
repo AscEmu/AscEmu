@@ -7,6 +7,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
+#include "Server/World.Legacy.h"
+#include "Map/WorldCreatorDefines.hpp"
+#include "Management/Group.h"
+#include "Management/ItemInterface.h"
+#include "Management/QuestMgr.h"
+#include "Map/MapMgrDefines.hpp"
+#include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
+#include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;
 

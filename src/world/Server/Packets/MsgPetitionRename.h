@@ -21,13 +21,15 @@ namespace AscEmu { namespace Packets
         }
 
         MsgPetitionRename(uint64_t itemGuid, std::string name) :
-            ManagedPacket(MSG_PETITION_RENAME, 100),
+            ManagedPacket(MSG_PETITION_RENAME, 8 + 1),
             itemGuid(itemGuid),
             name(name)
         {
         }
 
     protected:
+        size_t expectedSize() const override { return 8 + name.size() + 1; }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << itemGuid << name;

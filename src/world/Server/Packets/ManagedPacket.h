@@ -22,13 +22,13 @@ namespace AscEmu { namespace Packets
 
         virtual bool internalDeserialise(WorldPacket&) { return true; }
 
-        ManagedPacket(uint16_t opcode, size_t expected_size) :
+        ManagedPacket(uint16_t opcode, size_t minimum_size) :
             m_opcode(opcode),
-            m_minimum_size(expected_size)
+            m_minimum_size(minimum_size)
         {
         }
 
-        virtual size_t expectedSize() const { return m_minimum_size; }
+        virtual size_t expectedSize() const { return size_t(0); }
 
     public:
         virtual std::unique_ptr<WorldPacket> serialise()

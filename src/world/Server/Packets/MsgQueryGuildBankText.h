@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class MsgQueryGuildBankText : public ManagedPacket
     {
+#if VERSION_STRING != Cata
     public:
         uint8_t tabId;
         std::string tabInfo;
@@ -21,13 +22,15 @@ namespace AscEmu { namespace Packets
         }
 
         MsgQueryGuildBankText(uint8_t tabId, std::string tabInfo) :
-            ManagedPacket(MSG_QUERY_GUILD_BANK_TEXT, 1 + tabInfo.size() + 1),
+            ManagedPacket(MSG_QUERY_GUILD_BANK_TEXT, 1),
             tabId(tabId),
             tabInfo(tabInfo)
         {
         }
 
     protected:
+        size_t expectedSize() const override { return 1 + tabInfo.size() + 1; }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << tabId;
@@ -44,5 +47,6 @@ namespace AscEmu { namespace Packets
             packet >> tabId;
             return true;
         }
+#endif
     };
 }}

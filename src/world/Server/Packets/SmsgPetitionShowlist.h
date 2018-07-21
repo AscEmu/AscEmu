@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Management/Guild/GuildDefinitions.h"
+#include "Server/World.h"
 
 namespace AscEmu { namespace Packets
 {
@@ -41,20 +42,20 @@ namespace AscEmu { namespace Packets
             {
                 packet << uint8_t(3);   // charter count
 
-                packet << uint32_t(1) << uint32_t(CharterEntry::TwoOnTwo) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(CharterCost::TwoOnTwo)
+                packet << uint32_t(1) << uint32_t(CharterEntry::TwoOnTwo) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._2V2)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::TwoOnTwo);
 
-                packet << uint32_t(2) << uint32_t(CharterEntry::ThreeOnThree) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(CharterCost::ThreeOnThree)
+                packet << uint32_t(2) << uint32_t(CharterEntry::ThreeOnThree) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._3V3)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::ThreeOnThree);
 
-                packet << uint32_t(3) << uint32_t(CharterEntry::FiveOnFive) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(CharterCost::FiveOnFive)
+                packet << uint32_t(3) << uint32_t(CharterEntry::FiveOnFive) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._5V5)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::FiveOnFive);
             }
             else
             {
                 packet << uint8_t(1);   // charter count
 
-                packet << uint32_t(1) << uint32_t(CharterEntry::Guild) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(CharterCost::Guild)
+                packet << uint32_t(1) << uint32_t(CharterEntry::Guild) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._guild)
                     << uint32_t(CharterType::Guild) << uint32_t(CharterRequiredSigns::Guild);
             }
             return true;
