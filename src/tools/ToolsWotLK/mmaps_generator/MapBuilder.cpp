@@ -774,12 +774,12 @@ namespace MMAP
             // so we have a clear error message
             if (params.nvp > DT_VERTS_PER_POLYGON)
             {
-                printf("%s Invalid verts-per-polygon value! \n", tileString);
+                printf("%s Invalid verts-per-polygon value!\n", tileString);
                 break;
             }
             if (params.vertCount >= 0xffff)
             {
-                printf("%s Too many vertices! \n", tileString);
+                printf("%s Too many vertices!\n", tileString);
                 break;
             }
             if (!params.vertCount || !params.verts)
@@ -797,7 +797,7 @@ namespace MMAP
                 // we have flat tiles with no actual geometry - don't build those, its useless
                 // keep in mind that we do output those into debug info
                 // drop tiles with only exact count - some tiles may have geometry while having less tiles
-                printf("%s No polygons to build on tile! \n", tileString);
+                printf("%s No polygons to build on tile!\n", tileString);
                 break;
             }
             if (!params.detailMeshes || !params.detailVerts || !params.detailTris)

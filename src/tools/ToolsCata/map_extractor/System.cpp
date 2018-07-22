@@ -33,6 +33,11 @@
 #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
+#include <stdlib.h>
+#include <errno.h>
+
+#include <experimental/filesystem>
+
 #include "StormLib.h"
 #include "dbcfile.h"
 
@@ -138,19 +143,15 @@ TCHAR const* LocalesT[LOCALES_COUNT] =
     _T("itIT"),
 };
 
-void CreateDir(std::string const& path)
+void CreateDir(std::experimental::filesystem::path const& path)
 {
-    if (chdir(path.c_str()) == 0)
-    {
-        chdir("../");
-        return;
-    }
+    namespace fs = std::experimental::filesystem;
 
-#ifdef _WIN32
-    _mkdir(path.c_str());
-#else
-    mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO); // 0777
-#endif
+    if (fs::exists(path))
+        return;
+
+    if (!fs::create_directory(path))
+        throw new std::runtime_error("Unable to create directory" + path.string());
 }
 
 bool FileExists(TCHAR const* fileName)
@@ -308,7 +309,7 @@ uint32 ReadMapDBC()
 
     SFileCloseFile(dbcFile);
     printf("Done! (%u maps loaded)\n", uint32(map_count));
-    return map_count;
+    return static_cast<uint32>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -329,11 +330,11 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    maxAreaId = dbc.getMaxId();
+    maxAreaId = static_cast<uint32>(dbc.getMaxId());
     areas = new uint16[maxAreaId + 1];
 
     for (uint32 x = 0; x < area_count; ++x)
-        areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        areas[dbc.getRecord(x).getUInt(0)] = static_cast<uint16>(dbc.getRecord(x).getUInt(3));
 
     SFileCloseFile(dbcFile);
     printf("Done! (%u areas loaded)\n", uint32(area_count));
@@ -362,7 +363,7 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (liqTypeMaxId + 1) * sizeof(uint16));
 
     for (uint32 x = 0; x < liqTypeCount; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16>(dbc.getRecord(x).getUInt(3));
 
     SFileCloseFile(dbcFile);
     printf("Done! (%u LiqTypes loaded)\n", (uint32)liqTypeCount);
@@ -900,10 +901,10 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
         liquidHeader.fourcc = *(uint32 const*)MAP_LIQUID_MAGIC;
         liquidHeader.flags = 0;
         liquidHeader.liquidType = 0;
-        liquidHeader.offsetX = minX;
-        liquidHeader.offsetY = minY;
-        liquidHeader.width = maxX - minX + 1 + 1;
-        liquidHeader.height = maxY - minY + 1 + 1;
+        liquidHeader.offsetX = static_cast<uint8>(minX);
+        liquidHeader.offsetY = static_cast<uint8>(minY);
+        liquidHeader.width = static_cast<uint8>(maxX - minX + 1 + 1);
+        liquidHeader.height = static_cast<uint8>(maxY - minY + 1 + 1);
         liquidHeader.liquidLevel = minHeight;
 
         if (maxHeight == minHeight)
@@ -943,7 +944,7 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
             adt_MCNK * cell = adt.cells[i][j];
             if (!cell)
                 continue;
-            holes[i][j] = cell->holes;
+            holes[i][j] = static_cast<uint16>(cell->holes);
             if (!hasHoles && cell->holes != 0)
                 hasHoles = true;
         }

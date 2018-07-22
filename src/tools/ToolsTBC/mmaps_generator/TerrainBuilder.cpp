@@ -187,9 +187,11 @@ namespace MMAP
             {
                 uint8 v9[V9_SIZE_SQ];
                 uint8 v8[V8_SIZE_SQ];
+
                 size_t count = 0;
-                count += fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile));
+
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
 
@@ -205,9 +207,11 @@ namespace MMAP
             {
                 uint16 v9[V9_SIZE_SQ];
                 uint16 v8[V8_SIZE_SQ];
+
                 size_t count = 0;
-                count += fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile));
+
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
 
@@ -222,8 +226,9 @@ namespace MMAP
             else
             {
                 size_t count = 0;
-                count += fread(V9, sizeof(float), V9_SIZE_SQ, mapFile);
-                count += fread(V8, sizeof(float), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(V9, sizeof(float), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(V8, sizeof(float), V8_SIZE_SQ, mapFile));
+
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
             }
@@ -674,9 +679,11 @@ namespace MMAP
 
                 // transform data
                 float scale = instance.iScale;
-				const float pi = static_cast<float>(G3D::pi());
-	            auto rotation = G3D::Matrix3::fromEulerAnglesXYZ(pi*instance.iRot.z/-180.f, pi*instance.iRot.x/-180.f, pi*instance.iRot.y/-180.f);
-	            auto position = instance.iPos;
+
+                const float pi = static_cast<float>(G3D::pi());
+                auto rotation = G3D::Matrix3::fromEulerAnglesXYZ(pi*instance.iRot.z/-180.f, pi*instance.iRot.x/-180.f, pi*instance.iRot.y/-180.f);
+                auto position = instance.iPos;
+
                 position.x -= 32*GRID_SIZE;
                 position.y -= 32*GRID_SIZE;
 

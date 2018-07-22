@@ -251,10 +251,10 @@ namespace MMAP
             rcCalcBounds(meshData.liquidVerts.getCArray(), meshData.liquidVerts.size() / 3, lmin, lmax);
 
         // convert coord bounds to grid bounds
-        maxX = 32 - bmin[0] / GRID_SIZE;
-        maxY = 32 - bmin[2] / GRID_SIZE;
-        minX = 32 - bmax[0] / GRID_SIZE;
-        minY = 32 - bmax[2] / GRID_SIZE;
+        maxX = static_cast<uint32>(32 - bmin[0] / GRID_SIZE);
+        maxY = static_cast<uint32>(32 - bmin[2] / GRID_SIZE);
+        minX = static_cast<uint32>(32 - bmax[0] / GRID_SIZE);
+        minY = static_cast<uint32>(32 - bmax[2] / GRID_SIZE);
     }
 
     void MapBuilder::buildMeshFromFile(char* name)
@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        int maxTiles = tiles->size();
+        int maxTiles = static_cast<int>(tiles->size());
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
@@ -755,8 +755,8 @@ namespace MMAP
         params.walkableHeight = BASE_UNIT_DIM*config.walkableHeight;    // agent height
         params.walkableRadius = BASE_UNIT_DIM*config.walkableRadius;    // agent radius
         params.walkableClimb = BASE_UNIT_DIM*config.walkableClimb;      // keep less that walkableHeight (aka agent height)!
-        params.tileX = (((bmin[0] + bmax[0]) / 2) - navMesh->getParams()->orig[0]) / GRID_SIZE;
-        params.tileY = (((bmin[2] + bmax[2]) / 2) - navMesh->getParams()->orig[2]) / GRID_SIZE;
+        params.tileX = static_cast<int>((((bmin[0] + bmax[0]) / 2) - navMesh->getParams()->orig[0]) / GRID_SIZE);
+        params.tileY = static_cast<int>((((bmin[2] + bmax[2]) / 2) - navMesh->getParams()->orig[2]) / GRID_SIZE);
         rcVcopy(params.bmin, bmin);
         rcVcopy(params.bmax, bmax);
         params.cs = config.cs;
@@ -797,7 +797,7 @@ namespace MMAP
                 // we have flat tiles with no actual geometry - don't build those, its useless
                 // keep in mind that we do output those into debug info
                 // drop tiles with only exact count - some tiles may have geometry while having less tiles
-                printf("%s No polygons to build on tile!              \n", tileString);
+                printf("%s No polygons to build on tile!\n", tileString);
                 break;
             }
             if (!params.detailMeshes || !params.detailVerts || !params.detailTris)
@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        int count = fread(&header, sizeof(MmapTileHeader), 1, file);
+        int count = static_cast<int>(fread(&header, sizeof(MmapTileHeader), 1, file));
         fclose(file);
         if (count != 1)
             return false;

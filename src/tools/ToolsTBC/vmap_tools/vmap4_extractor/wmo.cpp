@@ -21,6 +21,7 @@
 #include "wmo.h"
 #include "vec3d.h"
 #include "mpq_libmpq04.h"
+#include "Errors.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -41,7 +42,7 @@ WMORoot::WMORoot(std::string &filename)
 bool WMORoot::open()
 {
     MPQFile f(filename.c_str());
-    if(f.isEof ())
+    if (f.isEof())
     {
         printf("No such file.\n");
         return false;
@@ -119,7 +120,7 @@ bool WMORoot::open()
         */
         f.seek((int)nextpos);
     }
-    f.close ();
+    f.close();
     return true;
 }
 
@@ -149,7 +150,7 @@ WMOGroup::WMOGroup(const std::string &filename) :
 bool WMOGroup::open()
 {
     MPQFile f(filename.c_str());
-    if(f.isEof ())
+    if (f.isEof())
     {
         printf("No such file.\n");
         return false;
@@ -375,7 +376,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         // translate triangle indices to new numbers
         for (int i=0; i<3*nColTriangles; ++i)
         {
-            assert(MoviEx[i] < nVertices);
+            ASSERT(MoviEx[i] < nVertices);
             MoviEx[i] = IndexRenum[MoviEx[i]];
         }
 
@@ -392,7 +393,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
             if(IndexRenum[i] >= 0)
                 check -= static_cast<int>(fwrite(MOVT+3*i, sizeof(float), 3, output));
 
-        assert(check==0);
+        ASSERT(check == 0);
 
         delete [] MoviEx;
         delete [] IndexRenum;
@@ -516,7 +517,9 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-	const auto count = fread(&nVertices, sizeof (int), 1, input);
+
+    const auto count = fread(&nVertices, sizeof (int), 1, input);
+
     fclose(input);
 
     if (count != 1 || nVertices == 0)
@@ -549,7 +552,9 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     fwrite(&scale, sizeof(float), 1, pDirfile);
     fwrite(&pos2, sizeof(float), 3, pDirfile);
     fwrite(&pos3, sizeof(float), 3, pDirfile);
-	const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
+
+    const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
+
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(WmoInstName, sizeof(char), nlen, pDirfile);
 

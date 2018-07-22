@@ -253,7 +253,7 @@ void strToLower(char* str)
 {
     while(*str)
     {
-        *str=tolower(*str);
+        *str = static_cast<char>(tolower(*str));
         ++str;
     }
 }
@@ -275,8 +275,8 @@ void ReadLiquidTypeTableDBC()
     LiqType = new uint16[LiqType_maxid + 1];
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16));
 
-    for(uint32 x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+    for(uint32_t x = 0; x < LiqType_count; ++x)
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 }
@@ -570,7 +570,7 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=dbc->getRecordCount ();
+        map_count = static_cast<uint32_t>(dbc->getRecordCount());
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {

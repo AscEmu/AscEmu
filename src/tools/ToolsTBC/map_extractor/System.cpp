@@ -33,6 +33,11 @@
 #include <unistd.h>
 #endif
 
+#include <stdlib.h>
+#include <errno.h>
+
+#include <experimental/filesystem>
+
 #include "dbcfile.h"
 #include "mpq_libmpq04.h"
 
@@ -104,25 +109,15 @@ const char* CONF_mpq_list[] = {
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
 
-void CreateDir( const std::string& Path )
+void CreateDir(std::experimental::filesystem::path const& path)
 {
-    if(_chdir(Path.c_str()) == 0)
-    {
-        _chdir("../");
+    namespace fs = std::experimental::filesystem;
+  
+    if (fs::exists(path))
         return;
-    }
 
-    int ret;
-    #ifdef _WIN32
-    ret = _mkdir( Path.c_str());
-    #else
-    ret = mkdir( Path.c_str(), 0777 );
-    #endif
-    if (ret != 0)
-    {
-        printf("Fatal Error: Could not create directory %s check your permissions", Path.c_str());
-        exit(1);
-    }
+    if (!fs::create_directory(path))
+        throw new std::runtime_error("Unable to create directory" + path.string());
 }
 
 bool FileExists( const char* FileName )

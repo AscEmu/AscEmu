@@ -492,8 +492,8 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=static_cast<uint32_t>(dbc->getRecordCount());
-        map_ids=new map_id[map_count];
+        map_count = static_cast<uint32_t>(dbc->getRecordCount());
+        map_ids = new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {
             map_ids[x].id = dbc->getRecord(x).getUInt(0);

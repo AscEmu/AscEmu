@@ -294,5 +294,6 @@ int main(int argc, char** argv)
 
     if (!silent)
         printf("Finished. MMAPS were built in %lld ms!\n", Util::GetTimeDifferenceToNow(startTime));
+
     return 0;
 }
