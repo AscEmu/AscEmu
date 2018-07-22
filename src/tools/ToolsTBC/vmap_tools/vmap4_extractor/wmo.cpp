@@ -21,6 +21,7 @@
 #include "wmo.h"
 #include "vec3d.h"
 #include "mpq_libmpq04.h"
+#include "Errors.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -375,7 +376,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         // translate triangle indices to new numbers
         for (int i=0; i<3*nColTriangles; ++i)
         {
-            assert(MoviEx[i] < nVertices);
+            ASSERT(MoviEx[i] < nVertices);
             MoviEx[i] = IndexRenum[MoviEx[i]];
         }
 
@@ -392,7 +393,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
             if(IndexRenum[i] >= 0)
                 check -= static_cast<int>(fwrite(MOVT+3*i, sizeof(float), 3, output));
 
-        assert(check==0);
+        ASSERT(check == 0);
 
         delete [] MoviEx;
         delete [] IndexRenum;
@@ -552,10 +553,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     fwrite(&pos2, sizeof(float), 3, pDirfile);
     fwrite(&pos3, sizeof(float), 3, pDirfile);
 
-    
-      
-      
-      const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
+    const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
 
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(WmoInstName, sizeof(char), nlen, pDirfile);
