@@ -183,6 +183,7 @@ void LogonCommClientSocket::SendPing()
 {
     pingtime = Util::getMSTime();
     WorldPacket data(LRCMSG_LOGON_PING_STATUS, 4);
+    data << uint8_t(Config.MainConfig.getIntDefault("Realms1", "Id", 1));
     SendPacket(&data, false);
 
     last_ping = (uint32)UNIXTIME;
@@ -248,8 +249,9 @@ void LogonCommClientSocket::SendChallenge()
     // packets are encrypted from now on
     use_crypto = true;
 
-    WorldPacket data(LRCMSG_AUTH_REQUEST, 20);
+    WorldPacket data(LRCMSG_AUTH_REQUEST, 21);
     data.append(key, 20);
+    data << uint8_t(Config.MainConfig.getIntDefault("Realms1", "Id", 1));
     SendPacket(&data, true);
 }
 

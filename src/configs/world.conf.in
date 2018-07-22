@@ -185,7 +185,8 @@
 #                            20 = CN4
 #
 
-<Realm1 Name       = "AscEmu"
+<Realm1 Id         = "1"
+        Name       = "AscEmu"
         Address    = "127.0.0.1:8129" 
         Icon       = "Normal"
         Population = "1.0"

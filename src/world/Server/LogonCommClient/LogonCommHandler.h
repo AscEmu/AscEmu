@@ -26,6 +26,7 @@ struct LogonServerStructure
 
 struct RealmStructure
 {
+    uint32_t id;
     std::string name;
     std::string address;
     uint32_t flags;

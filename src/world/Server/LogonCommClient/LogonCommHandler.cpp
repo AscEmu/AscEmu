@@ -446,6 +446,7 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmString << "Realm" << i;
 
             RealmStructure* realmStructure = new RealmStructure;
+            realmStructure->id = Config.MainConfig.getIntDefault(realmString.str(), "Id", 1);
             realmStructure->name = Config.MainConfig.getStringDefault(realmString.str(), "Name", "AscEmu");
             realmStructure->address = Config.MainConfig.getStringDefault(realmString.str(), "Address", "127.0.0.1:8129");
             realmStructure->flags = 0;

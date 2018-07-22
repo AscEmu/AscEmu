@@ -258,11 +258,16 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     SendPacket(&data);
 }
 
-void LogonCommServerSocket::HandlePing(WorldPacket & /*recvData*/)
+void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 {
+    uint8_t realmId;
+    recvData >> realmId;
+
     WorldPacket data(LRSMSG_LOGON_PING_RESULT, 4);
     SendPacket(&data);
     last_ping = (uint32)time(NULL);
+
+    sRealmsMgr.setLastPing(realmId);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)
@@ -304,13 +309,15 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 {
     unsigned char key[20];
     uint32 result = 1;
+    uint8_t realmId = 0;
     recvData.read(key, 20);
+    recvData >> realmId;
 
     // check if we have the correct password
     if (memcmp(key, LogonServer::getSingleton().sql_hash, 20))
         result = 0;
 
-    LogDefault("Authentication request from %s, result %s.", GetRemoteIP().c_str(), result ? "OK" : "FAIL");
+    LogDefault("Authentication request from %s, id %u - result %s.", GetRemoteIP().c_str(), uint32_t(realmId), result ? "OK" : "FAIL");
 
     std::stringstream sstext;
     sstext << "Key: ";
@@ -335,6 +342,9 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 
     // set our general var
     authenticated = result;
+
+    if (result)
+        sRealmsMgr.setStatusForRealm(realmId, 1);
 }
 
 void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)

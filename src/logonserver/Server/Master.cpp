@@ -70,8 +70,13 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
 
     new PatchMgr;
     LogNotice("AccountMgr : Precaching accounts...");
+
     sAccountMgr.ReloadAccounts(true);
     LogDetail("AccountMgr : %u accounts are loaded and ready.", sAccountMgr.GetCount());
+
+    new RealmsMgr;
+    sRealmsMgr.LoadRealms();
+    LogDetail("Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
 
     // Spawn periodic function caller thread for account reload every 10mins
     uint32 accountReloadPeriod = Config.MainConfig.getIntDefault("Rates", "AccountRefresh", 600);
@@ -80,6 +85,10 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     PeriodicFunctionCaller<AccountMgr> * periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
     ThreadPool.ExecuteTask(periodicReloadAccounts);
     //AEThreadPool::globalThreadPool()->queueRecurringTask([](AEThread&) {AccountMgr::getSingletonPtr()->ReloadAccountsCallback();}, milliseconds(accountReloadPeriod), "Reload Accounts");
+
+    // periodic ping check for realm status
+    PeriodicFunctionCaller<RealmsMgr> * checkRealmStatusFromPing = new PeriodicFunctionCaller<RealmsMgr>(RealmsMgr::getSingletonPtr(), &RealmsMgr::checkRealmStatus, 60000);
+    ThreadPool.ExecuteTask(checkRealmStatusFromPing);
 
     // Load conf settings..
     uint32 realmlistPort = Config.MainConfig.getIntDefault("Listen", "RealmListPort", 3724);
