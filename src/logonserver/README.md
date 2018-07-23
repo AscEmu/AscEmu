@@ -1,4 +1,4 @@
-# ![logo](http://ascemu.org/style/img/logon_icon_small.png)
+﻿# ![logo](http://ascemu.org/images/logo.png)
 
 # AscEmu LogonServer
 ## Supported client versions:
