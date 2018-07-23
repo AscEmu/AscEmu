@@ -1512,14 +1512,14 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     if (sscanf(args, "%s %s", &current_name, &new_name_cmd) != 2)
         return false;
 
-    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static wchar_t const* bannedCharacters = L"\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static wchar_t const* allowedCharacters = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     size_t nlen = strlen(new_name_cmd);
 
     for (size_t i = 0; i < nlen; ++i)
     {
-        const char* p = allowedCharacters;
+        wchar_t const* p = allowedCharacters;
         for (; *p != 0; ++p)
         {
             if (new_name_cmd[i] == *p)
@@ -1533,7 +1533,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
 
     for (size_t i = 0; i < nlen; ++i)
     {
-        const char* p = bannedCharacters;
+        wchar_t const* p = bannedCharacters;
         while (*p != 0 && new_name_cmd[i] != *p && new_name_cmd[i] != 0)
             ++p;
 

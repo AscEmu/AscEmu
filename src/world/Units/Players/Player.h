@@ -1368,7 +1368,8 @@ public:
         void Reset_Spells();
         void Reset_Talents();
         void Reset_AllTalents();
-        // Battlegrounds xD
+
+        // Battlegrounds
         CBattleground* m_bg;
         CBattleground* m_pendingBattleground;
         uint32 m_bgEntryPointMap;
@@ -2307,7 +2308,7 @@ public:
     PlayerSpec& getActiveSpec();
 
         uint8 m_roles;
-		uint32 GroupUpdateFlags;
+        uint32 GroupUpdateFlags;
 
     public:
 
@@ -2319,14 +2320,14 @@ public:
         Object* GetPlayerOwner() { return this; };
 
         void SetRoles(uint8 role) { m_roles = role; }
-		uint8 GetRoles() { return m_roles; }
+        uint8 GetRoles() { return m_roles; }
         void SetBattlegroundEntryPoint();
 
         uint32 GetGroupUpdateFlags() { return GroupUpdateFlags; }
-		void SetGroupUpdateFlags(uint32 flags);
-		void AddGroupUpdateFlag(uint32 flag);
-		uint16 GetGroupStatus();
-		void SendUpdateToOutOfRangeGroupMembers();
+        void SetGroupUpdateFlags(uint32 flags);
+        void AddGroupUpdateFlag(uint32 flag);
+        uint16 GetGroupStatus();
+        void SendUpdateToOutOfRangeGroupMembers();
 
         void SendTeleportPacket(float x, float y, float z, float o);
         void SendTeleportAckPacket(float x, float y, float z, float o);

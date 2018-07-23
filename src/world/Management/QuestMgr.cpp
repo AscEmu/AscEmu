@@ -655,21 +655,22 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 }
 #endif
 
-void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
+void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language)
 {
-    if (!plr || !plr->GetSession()) return;
-    uint32 status;
+    if (!plr || !plr->GetSession())
+        return;
+
     std::list<QuestRelation*>::iterator it;
     std::list<QuestRelation*>::iterator st;
     std::list<QuestRelation*>::iterator ed;
-    std::map<uint32, uint8> tmp_map;
+    std::map<uint32_t, uint8_t> tmp_map;
 
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
     *data << qst_giver->getGuid();
-    *data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
-    *data << uint32(1);//Emote Delay
-    *data << uint32(1);//Emote
+    *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; //Hello line
+    *data << uint32_t(1); // Emote Delay
+    *data << uint32_t(1); // Emote
 
     bool bValid = false;
     if (qst_giver->isGameObject())
@@ -690,30 +691,30 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     }
     else if (qst_giver->isCreature())
     {
-        bValid = static_cast< Creature* >(qst_giver)->HasQuests();
+        bValid = static_cast<Creature*>(qst_giver)->HasQuests();
         if (bValid)
         {
-            st = static_cast< Creature* >(qst_giver)->QuestsBegin();
-            ed = static_cast< Creature* >(qst_giver)->QuestsEnd();
+            st = static_cast<Creature*>(qst_giver)->QuestsBegin();
+            ed = static_cast<Creature*>(qst_giver)->QuestsEnd();
         }
     }
 
     if (!bValid)
     {
-        *data << uint8(0);
+        *data << uint8_t(0);
         return;
     }
 
-    *data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
+    *data << uint8_t(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
 
     for (it = st; it != ed; ++it)
     {
-        status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+        uint32_t status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
         if (status >= QMGR_QUEST_CHAT)
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
             {
-                tmp_map.insert(std::map<uint32, uint8>::value_type((*it)->qst->id, static_cast<uint8_t>(1)));
+                tmp_map.insert(std::map<uint32_t, uint8_t>::value_type((*it)->qst->id, static_cast<uint8_t>(1)));
                 MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
 
                 *data << (*it)->qst->id;
@@ -723,32 +724,28 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
                 switch (status)
                 {
                     case QMGR_QUEST_NOT_FINISHED:
-                        *data << uint32(4);
+                        *data << uint32_t(4);
                         break;
 
                     case QMGR_QUEST_FINISHED:
-                        *data << uint32(4);
+                        *data << uint32_t(4);
                         break;
 
                     case QMGR_QUEST_CHAT:
-                        *data << uint32(QMGR_QUEST_AVAILABLE);
+                        *data << uint32_t(QMGR_QUEST_AVAILABLE);
                         break;
 
                     default:
                         *data << status;
                 }
-                *data << int32((*it)->qst->questlevel);
-                *data << uint32((*it)->qst->quest_flags);
-                *data << uint8(0);   // According to MANGOS: "changes icon: blue question or yellow exclamation"
+                *data << int32_t((*it)->qst->questlevel);
+                *data << uint32_t((*it)->qst->quest_flags);
+                *data << uint8_t((*it)->qst->is_repeatable);   // Changes icon: blue question or yellow exclamation
 
                 if (lq != nullptr)
-                {
                     *data << lq->title;
-                }
                 else
-                {
                     *data << (*it)->qst->title;
-                }
             }
         }
     }

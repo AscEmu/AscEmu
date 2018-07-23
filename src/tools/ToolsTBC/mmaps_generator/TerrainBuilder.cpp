@@ -674,9 +674,9 @@ namespace MMAP
 
                 // transform data
                 float scale = instance.iScale;
-				const float pi = static_cast<float>(G3D::pi());
-	            auto rotation = G3D::Matrix3::fromEulerAnglesXYZ(pi*instance.iRot.z/-180.f, pi*instance.iRot.x/-180.f, pi*instance.iRot.y/-180.f);
-	            auto position = instance.iPos;
+                const float pi = static_cast<float>(G3D::pi());
+                auto rotation = G3D::Matrix3::fromEulerAnglesXYZ(pi*instance.iRot.z/-180.f, pi*instance.iRot.x/-180.f, pi*instance.iRot.y/-180.f);
+                auto position = instance.iPos;
                 position.x -= 32*GRID_SIZE;
                 position.y -= 32*GRID_SIZE;
 

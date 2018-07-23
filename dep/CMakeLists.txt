@@ -17,6 +17,7 @@ endif()
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 
+add_subdirectory(utf8cpp)
 add_subdirectory(lualib/src)
 
 if(BUILD_TOOLS)

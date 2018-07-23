@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `account_data` (
   `uiconfig7` blob,
   `uiconfig8` blob,
   PRIMARY KEY (`acct`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table account_data: ~0 rows (approximately)
 /*!40000 ALTER TABLE `account_data` DISABLE KEYS */;
@@ -36,7 +36,7 @@ CREATE TABLE `account_permissions` (
   `permissions` varchar(100) NOT NULL,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table account_permissions: ~0 rows (approximately)
 /*!40000 ALTER TABLE `account_permissions` DISABLE KEYS */;
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `arenateams` (
   `player_data9` varchar(60) NOT NULL,
   `player_data10` varchar(60) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table arenateams: ~0 rows (approximately)
 /*!40000 ALTER TABLE `arenateams` DISABLE KEYS */;
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `auctions` (
   `deposit` int(32) DEFAULT NULL,
   PRIMARY KEY (`auctionId`),
   KEY `b` (`auctionhouse`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table auctions: ~0 rows (approximately)
 /*!40000 ALTER TABLE `auctions` DISABLE KEYS */;
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `banned_char_log` (
   `timestamp` int(11) NOT NULL,
   `banned_until` int(11) NOT NULL,
   `reason` varchar(150) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table banned_char_log: ~0 rows (approximately)
 /*!40000 ALTER TABLE `banned_char_log` DISABLE KEYS */;
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `calendar_events` (
   `date` int(10) unsigned NOT NULL DEFAULT '0',
   `flags` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`entry`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table calendar_events: ~0 rows (approximately)
 /*!40000 ALTER TABLE `calendar_events` DISABLE KEYS */;
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `calendar_invites` (
   `rank` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `text` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table calendar_invites: ~0 rows (approximately)
 /*!40000 ALTER TABLE `calendar_invites` DISABLE KEYS */;
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   KEY `name` (`name`),
   KEY `b` (`banned`),
   KEY `c` (`online`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table characters: ~0 rows (approximately)
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
@@ -271,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `character_achievement` (
   `achievement` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`guid`,`achievement`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table character_achievement: ~0 rows (approximately)
 /*!40000 ALTER TABLE `character_achievement` DISABLE KEYS */;
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `character_achievement_progress` (
   `counter` int(10) DEFAULT NULL,
   `date` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`guid`,`criteria`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table character_achievement_progress: ~0 rows (approximately)
 /*!40000 ALTER TABLE `character_achievement_progress` DISABLE KEYS */;
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `character_achievement_progress` (
 CREATE TABLE IF NOT EXISTS `character_db_version` (
   `LastUpdate` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`LastUpdate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `charters` (
   `signer9` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`charterId`),
   UNIQUE KEY `leaderGuid` (`charterType`,`leaderGuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table charters: ~0 rows (approximately)
 /*!40000 ALTER TABLE `charters` DISABLE KEYS */;
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS `clientaddons` (
   `version` VARCHAR(60) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table clientaddons: ~0 rows (approximately)
 /*!40000 ALTER TABLE `clientaddons` DISABLE KEYS */;
@@ -353,7 +353,7 @@ CREATE TABLE IF NOT EXISTS `command_overrides` (
   `command_name` varchar(100) NOT NULL,
   `access_level` varchar(10) NOT NULL,
   PRIMARY KEY (`command_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table command_overrides: ~0 rows (approximately)
 /*!40000 ALTER TABLE `command_overrides` DISABLE KEYS */;
@@ -373,7 +373,7 @@ CREATE TABLE IF NOT EXISTS `corpses` (
   `data` longtext NOT NULL,
   PRIMARY KEY (`guid`),
   KEY `b` (`instanceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table corpses: ~0 rows (approximately)
 /*!40000 ALTER TABLE `corpses` DISABLE KEYS */;
@@ -407,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `equipmentsets` (
   `ranged` int(10) unsigned NOT NULL DEFAULT '0',
   `tabard` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ownerguid`,`setGUID`,`setid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table equipmentsets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `equipmentsets` DISABLE KEYS */;
@@ -420,7 +420,7 @@ CREATE TABLE IF NOT EXISTS `event_save` (
   `state` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `next_start` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`event_entry`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 -- Dumping structure for table gm_survey
@@ -431,7 +431,7 @@ CREATE TABLE IF NOT EXISTS `gm_survey` (
   `comment` longtext NOT NULL,
   `create_time` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`survey_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='GM Survey';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='GM Survey';
 
 
 -- Dumping structure for table gm_survey_answers
@@ -440,7 +440,7 @@ CREATE TABLE IF NOT EXISTS `gm_survey_answers` (
   `question_id` int(10) unsigned NOT NULL DEFAULT '0',
   `answer_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`survey_id`,`question_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='GM Survey';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='GM Survey';
 
 
 -- Dumping structure for table gm_tickets
@@ -460,7 +460,7 @@ CREATE TABLE IF NOT EXISTS `gm_tickets` (
   `comment` text NOT NULL,
   UNIQUE KEY `guid` (`ticketid`),
   UNIQUE KEY `guid_2` (`ticketid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table gm_tickets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `gm_tickets` DISABLE KEYS */;
@@ -522,11 +522,14 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `timestamp` int(30) NOT NULL,
   `instanceids` text NOT NULL,
   PRIMARY KEY (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table groups: ~0 rows (approximately)
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
 /*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+
+
+
 
 
 -- ----------------------------
@@ -542,7 +545,7 @@ CREATE TABLE `guild_bank_items` (
   KEY `a` (`guildId`),
   KEY `b` (`tabId`),
   KEY `c` (`slotId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_bank_logs`
@@ -562,7 +565,7 @@ CREATE TABLE `guild_bank_logs` (
   KEY `guildid_key` (`guildId`),
   KEY `Idx_PlayerGuid` (`playerGuid`),
   KEY `Idx_LogGuid` (`logGuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_bank_rights`
@@ -576,7 +579,7 @@ CREATE TABLE `guild_bank_rights` (
   `slotPerDay` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guildId`,`tabId`,`rankId`),
   KEY `guildid_key` (`guildId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_bank_tabs`
@@ -591,7 +594,7 @@ CREATE TABLE `guild_bank_tabs` (
   PRIMARY KEY (`guildId`,`tabId`),
   KEY `a` (`guildId`),
   KEY `b` (`tabId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_logs`
@@ -609,7 +612,7 @@ CREATE TABLE `guild_logs` (
   KEY `Idx_PlayerGuid1` (`playerGuid1`),
   KEY `Idx_PlayerGuid2` (`playerGuid2`),
   KEY `Idx_LogGuid` (`logGuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_members`
@@ -624,7 +627,7 @@ CREATE TABLE `guild_members` (
   UNIQUE KEY `guid_key` (`playerid`),
   KEY `guildid_key` (`guildId`),
   KEY `guildid_rank_key` (`guildId`,`guildRank`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_members_withdraw`
@@ -642,7 +645,7 @@ CREATE TABLE `guild_members_withdraw` (
   `tab7` int(10) unsigned NOT NULL DEFAULT '0',
   `money` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_news_log`
@@ -660,7 +663,7 @@ CREATE TABLE `guild_news_log` (
   KEY `guildid_key` (`guildId`),
   KEY `Idx_PlayerGuid` (`playerGuid`),
   KEY `Idx_LogGuid` (`logGuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guild_ranks`
@@ -685,7 +688,7 @@ CREATE TABLE `guild_ranks` (
   `bankTabFlags5` int(30) NOT NULL DEFAULT '0',
   `itemStacksPerDay5` int(30) NOT NULL DEFAULT '0',
   PRIMARY KEY (`guildId`,`rankId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `guilds`
@@ -709,7 +712,19 @@ CREATE TABLE `guilds` (
   `todayExperience` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`guildId`),
   UNIQUE KEY `guildId` (`guildId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- Dumping structure for table instanceids
@@ -720,7 +735,7 @@ CREATE TABLE IF NOT EXISTS `instanceids` (
   `instanceid` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`playerguid`,`mapid`,`mode`),
   KEY `ix_instanceid` (`playerguid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Player / InstanceID - Reference Table';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Player / InstanceID - Reference Table';
 
 -- Dumping data for table instanceids: ~0 rows (approximately)
 /*!40000 ALTER TABLE `instanceids` DISABLE KEYS */;
@@ -740,7 +755,7 @@ CREATE TABLE IF NOT EXISTS `instances` (
   `persistent` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `a` (`mapid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table instances: ~0 rows (approximately)
 /*!40000 ALTER TABLE `instances` DISABLE KEYS */;
@@ -759,7 +774,7 @@ CREATE TABLE IF NOT EXISTS `lag_reports` (
   `position_z` float DEFAULT '0',
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`lag_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table lag_reports: ~0 rows (approximately)
 /*!40000 ALTER TABLE `lag_reports` DISABLE KEYS */;
@@ -772,7 +787,7 @@ CREATE TABLE IF NOT EXISTS `lfg_data` (
   `dungeon` int(10) NOT NULL,
   `state` int(10) NOT NULL,
   PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table lfg_data: ~0 rows (approximately)
 /*!40000 ALTER TABLE `lfg_data` DISABLE KEYS */;
@@ -797,7 +812,7 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   `deleted_flag` int(30) NOT NULL DEFAULT '0',
   PRIMARY KEY (`message_id`),
   KEY `b` (`player_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table mailbox: ~0 rows (approximately)
 /*!40000 ALTER TABLE `mailbox` DISABLE KEYS */;
@@ -813,7 +828,7 @@ CREATE TABLE IF NOT EXISTS `playerbugreports` (
   `Type` text NOT NULL,
   `Content` text NOT NULL,
   PRIMARY KEY (`UID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerbugreports: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerbugreports` DISABLE KEYS */;
@@ -828,7 +843,7 @@ CREATE TABLE IF NOT EXISTS `playercooldowns` (
   `cooldown_expire_time` int(30) NOT NULL COMMENT 'expiring time in unix epoch format',
   `cooldown_spellid` int(30) NOT NULL COMMENT 'spell that cast it',
   `cooldown_itemid` int(30) NOT NULL COMMENT 'item that cast it'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playercooldowns: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playercooldowns` DISABLE KEYS */;
@@ -840,7 +855,7 @@ CREATE TABLE IF NOT EXISTS `playerdeletedspells` (
   `GUID` int(10) unsigned NOT NULL,
   `SpellID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`GUID`,`SpellID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerdeletedspells: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerdeletedspells` DISABLE KEYS */;
@@ -872,7 +887,7 @@ CREATE TABLE IF NOT EXISTS `playeritems` (
   PRIMARY KEY (`guid`),
   KEY `ownerguid` (`ownerguid`),
   KEY `itemtext` (`itemtext`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playeritems: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playeritems` DISABLE KEYS */;
@@ -902,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `playerpets` (
   `renamable` int(10) unsigned NOT NULL DEFAULT '1',
   `type` int(10) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`ownerguid`,`petnumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerpets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerpets` DISABLE KEYS */;
@@ -917,7 +932,7 @@ CREATE TABLE IF NOT EXISTS `playerpetspells` (
   `flags` int(4) NOT NULL DEFAULT '0',
   KEY `a` (`ownerguid`),
   KEY `b` (`petnumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerpetspells: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerpetspells` DISABLE KEYS */;
@@ -932,7 +947,7 @@ CREATE TABLE IF NOT EXISTS `playerreputations` (
   `basestanding` int(11) NOT NULL DEFAULT '0',
   `standing` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`,`faction`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerreputations: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerreputations` DISABLE KEYS */;
@@ -946,7 +961,7 @@ CREATE TABLE IF NOT EXISTS `playerskills` (
   `CurrentValue` int(10) unsigned NOT NULL,
   `MaximumValue` int(10) unsigned NOT NULL,
   PRIMARY KEY (`GUID`,`SkillID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerskills: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerskills` DISABLE KEYS */;
@@ -958,7 +973,7 @@ CREATE TABLE IF NOT EXISTS `playerspells` (
   `GUID` int(10) unsigned NOT NULL,
   `SpellID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`GUID`,`SpellID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playerspells: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playerspells` DISABLE KEYS */;
@@ -971,7 +986,7 @@ CREATE TABLE IF NOT EXISTS `playersummons` (
   `entry` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(64) NOT NULL,
   KEY `a` (`ownerguid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playersummons: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playersummons` DISABLE KEYS */;
@@ -984,7 +999,7 @@ CREATE TABLE IF NOT EXISTS `playersummonspells` (
   `entryid` int(4) NOT NULL DEFAULT '0',
   `spellid` int(4) NOT NULL DEFAULT '0',
   KEY `a` (`ownerguid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table playersummonspells: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playersummonspells` DISABLE KEYS */;
@@ -1007,7 +1022,7 @@ CREATE TABLE IF NOT EXISTS `questlog` (
   `mob_kill4` bigint(20) NOT NULL DEFAULT '0',
   `completed` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_guid`,`quest_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table questlog: ~0 rows (approximately)
 /*!40000 ALTER TABLE `questlog` DISABLE KEYS */;
@@ -1019,7 +1034,7 @@ CREATE TABLE IF NOT EXISTS `server_settings` (
   `setting_id` varchar(200) NOT NULL,
   `setting_value` int(50) NOT NULL,
   PRIMARY KEY (`setting_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table server_settings: ~2 rows (approximately)
 /*!40000 ALTER TABLE `server_settings` DISABLE KEYS */;
@@ -1037,7 +1052,7 @@ CREATE TABLE IF NOT EXISTS `social_friends` (
   PRIMARY KEY (`character_guid`,`friend_guid`),
   KEY `a` (`character_guid`),
   KEY `b` (`friend_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table social_friends: ~0 rows (approximately)
 /*!40000 ALTER TABLE `social_friends` DISABLE KEYS */;
@@ -1050,7 +1065,7 @@ CREATE TABLE IF NOT EXISTS `social_ignores` (
   `ignore_guid` int(30) NOT NULL,
   PRIMARY KEY (`character_guid`,`ignore_guid`),
   KEY `a` (`character_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table social_ignores: ~0 rows (approximately)
 /*!40000 ALTER TABLE `social_ignores` DISABLE KEYS */;
@@ -1069,7 +1084,7 @@ CREATE TABLE IF NOT EXISTS `tutorials` (
   `tut6` bigint(20) unsigned NOT NULL DEFAULT '0',
   `tut7` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`playerId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Dumping data for table tutorials: ~0 rows (approximately)
 /*!40000 ALTER TABLE `tutorials` DISABLE KEYS */;

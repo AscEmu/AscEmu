@@ -26,6 +26,8 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 {
+    //\todo check utf8 and cyrillic chars
+
     CmsgNameQuery query;
     if (!query.deserialise(recvData))
     {
