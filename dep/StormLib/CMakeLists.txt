@@ -235,12 +235,6 @@ set(TEST_SRC_FILES
 )
 
 add_definitions(-D_7ZIP_ST -DBZ_STRICT_ANSI)
-if( MSVC )
-  add_definitions(/W0)
-else()
-  add_definitions(-w)
-
-endif()
 
 if(WIN32)
     if(MSVC)
