@@ -49,6 +49,9 @@ CREATE TABLE `ipbans` (
 /*Data for the table `ipbans` */
 LOCK TABLES `ipbans` WRITE;
 
+UNLOCK TABLES;
+
+
 /*Table structure for `realms`*/
 DROP TABLE IF EXISTS `realms`;
 
