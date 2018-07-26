@@ -112,7 +112,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 #include <iostream>
 #include <string>
 
-#if(WIN32)
+#if(WIN32 || _WIN64)
 #include <filesystem>
 namespace fs = std::experimental::filesystem;
 #else
@@ -122,6 +122,7 @@ namespace fs = std::experimental::filesystem::v1;
 
 void testFileSystem()
 {
+#if(WIN32 || _WIN64)
     // get the current path of world.exe
     const std::string programmPath = fs::current_path().string();
     std::cout << programmPath << std::endl;
@@ -153,6 +154,7 @@ void testFileSystem()
     // list all files in dir
     for (auto& p : fs::recursive_directory_iterator("configs"))
         std::cout << p << std::endl;
+#endif
 
 }
 /////////////////////////////////////////////////////////////////////////////
