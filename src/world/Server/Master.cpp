@@ -105,6 +105,53 @@ ThreadBase* GetConsoleListener();
 
 std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 
+/////////////////////////////////////////////////////////////////////////////
+// Testscript fo experimental filesystem
+
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <filesystem>
+
+namespace fs = std::experimental::filesystem;
+
+void testFileSystem()
+{
+    // get the current path of world.exe
+    const std::string programmPath = fs::current_path().string();
+    std::cout << programmPath << std::endl;
+
+    // create dir logs for logs
+    std::string dir = "logs";
+    fs::create_directories(dir);
+
+    std::string configDataDir = worldConfig.server.dataDir;
+    configDataDir.erase(0, 2); //remove ./ from string
+
+    // check required dirs for example maps/dbcs
+    fs::path dbcDir = fs::current_path() /= configDataDir;
+    dbcDir /= "dbc";
+
+    if (fs::exists(dbcDir))
+        std::cout << "dbc dir exists: " << dbcDir << std::endl;
+    else
+        std::cout << "dbc dir does not exist! Path: " << dbcDir << std::endl;
+
+    fs::path mapsDir = fs::current_path() /= configDataDir;
+    mapsDir /= "maps";
+
+    if (fs::exists(mapsDir))
+        std::cout << "maps dir exists: " << mapsDir << std::endl;
+    else
+        std::cout << "maps dir does not exist! Path: " << mapsDir << std::endl;
+
+    // list all files in dir
+    for (auto& p : fs::recursive_directory_iterator("configs"))
+        std::cout << p << std::endl;
+
+}
+/////////////////////////////////////////////////////////////////////////////
+
 bool Master::Run(int /*argc*/, char** /*argv*/)
 {
     char* config_file = (char*)CONFDIR "/world.conf";
@@ -137,6 +184,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     }
 
     sWorld.loadWorldConfigValues();
+
+    testFileSystem();
 
     AscLog.SetFileLoggingLevel(worldConfig.log.worldFileLogLevel);
     AscLog.SetDebugFlags(worldConfig.log.worldDebugFlags);
