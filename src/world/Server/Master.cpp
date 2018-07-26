@@ -117,10 +117,8 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 namespace fs = std::experimental::filesystem;
 #else
 #include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#endif
-
 namespace fs = std::experimental::filesystem::v1;
+#endif
 
 void testFileSystem()
 {
