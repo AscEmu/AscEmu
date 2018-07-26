@@ -111,7 +111,12 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 #include <fstream>
 #include <iostream>
 #include <string>
+
+#if(WIN32)
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 
 namespace fs = std::experimental::filesystem;
 
