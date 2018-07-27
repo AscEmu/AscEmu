@@ -159,7 +159,7 @@ if(WIN32 AND NOT USE_PCH)
 endif()
 
 if(NOT WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-lstdc++fs")
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
