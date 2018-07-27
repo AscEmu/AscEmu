@@ -18,7 +18,7 @@ env:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
 before_install:
-  - if [ "$COMPILER" = "g++-6" ]; then export CXX="g++-6" CC="gcc-6"; fi
+  - if [ "$COMPILER" = "g++-8" ]; then export CXX="g++-8" CC="gcc-8"; fi
   - if [ "$COMPILER" = "clang++-3.8" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
     
 matrix:
@@ -39,8 +39,8 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-6
-            - g++-6
+            - gcc-8
+            - g++-8
       env: ASC_VERSION=WotLK COMPILER=g++-6 
     - os: linux
       compiler: clang
@@ -55,8 +55,8 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-6
-            - g++-6
+            - gcc-8
+            - g++-8
             - clang-3.8
             - clang++-3.8
       env: ASC_VERSION=WotLK COMPILER=clang++-3.8 
@@ -74,8 +74,8 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-6
-            - g++-6
+            - gcc-8
+            - g++-8
       env: ASC_VERSION=Cata COMPILER=g++-6 
     - os: linux
       compiler: clang
@@ -90,8 +90,8 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-6
-            - g++-6
+            - gcc-8
+            - g++-8
             - clang-3.8
             - clang++-3.8
       env: ASC_VERSION=Cata COMPILER=clang++-3.8 
