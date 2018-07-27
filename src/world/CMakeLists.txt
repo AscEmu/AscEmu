@@ -158,6 +158,10 @@ if(WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif()
 
+if(NOT WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-lstdc++fs")
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast lualib)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
