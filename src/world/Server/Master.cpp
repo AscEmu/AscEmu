@@ -122,7 +122,6 @@ namespace fs = std::experimental::filesystem::v1;
 
 void testFileSystem()
 {
-#if(WIN32 || _WIN64)
     // get the current path of world.exe
     const std::string programmPath = fs::current_path().string();
     std::cout << programmPath << std::endl;
@@ -154,7 +153,6 @@ void testFileSystem()
     // list all files in dir
     for (auto& p : fs::recursive_directory_iterator("configs"))
         std::cout << p << std::endl;
-#endif
 
 }
 /////////////////////////////////////////////////////////////////////////////
