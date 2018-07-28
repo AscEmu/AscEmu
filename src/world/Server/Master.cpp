@@ -143,6 +143,21 @@ struct DatabaseUpdateFile
     uint32_t minorVersion;
 };
 
+std::string readFile(fs::path path)
+{
+    std::ifstream filestream{ path };
+
+    const auto filesize = fs::file_size(path);
+
+    std::string fileString(filesize, ' ');
+
+    // fileString[0] since not all functions are available.
+    // if C++17 is completely available use fileString.data()
+    filestream.read(&fileString[0] , filesize);
+
+    return fileString;
+}
+
 void testFileSystem()
 {
     // get the current path of world.exe
@@ -248,7 +263,23 @@ void testFileSystem()
         }
     }
 
+    std::cout << "\n=========== Iterate apply new files ===========" << std::endl;
+
     // apply updatefiles stored in applyNewUpdateFilesStore
+    for (const auto execute : applyNewUpdateFilesStore)
+    {
+        fs::path sqlFile = fs::current_path() /= execute.second.fullName;
+
+        if (fs::exists(sqlFile))
+        {
+            std::cout << sqlFile << std::endl;
+
+            std::string loadedFile = readFile(sqlFile);
+            std::cout << loadedFile << std::endl;
+
+            WorldDatabase.Execute(loadedFile.c_str());
+        }
+    }
 
 }
 /////////////////////////////////////////////////////////////////////////////
