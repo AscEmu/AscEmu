@@ -120,6 +120,29 @@ namespace fs = std::experimental::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
+uint32_t getMajorVersionFronString(std::string fileName, int offset = 0)
+{
+    const auto majorStringVersion = fileName.substr(0 + offset, 8 + offset);
+    uint32_t majorVersion = stoul(majorStringVersion);
+
+    return majorVersion;
+}
+
+uint32_t getMinorVersionFronString(std::string fileName, int offset = 0)
+{
+    const auto minorStringVersion = fileName.substr(9 + offset, 11 + offset);
+    uint32_t minorVersion = stoul(minorStringVersion);
+
+    return minorVersion;
+}
+
+struct DatabaseUpdateFile
+{
+    std::string fullName;
+    uint32_t majorVersion;
+    uint32_t minorVersion;
+};
+
 void testFileSystem()
 {
     // get the current path of world.exe
@@ -153,6 +176,79 @@ void testFileSystem()
     // list all files in dir
     for (auto& p : fs::recursive_directory_iterator("configs"))
         std::cout << p << std::endl;
+
+    // sql/world files
+    const std::string sqlUpdateDir = "sql/world";
+
+    // set up map to store parsed file names
+    std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
+
+    uint32_t count = 0;
+    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
+    {
+        std::string fileName = p.path().string();
+
+        //get major version
+        uint32_t majorVersion = getMajorVersionFronString(fileName, 10);
+
+        // get minor version
+        uint32_t minorVersion = getMinorVersionFronString(fileName, 10);
+
+        DatabaseUpdateFile dbUpdateFile;
+        dbUpdateFile.fullName = fileName;
+        dbUpdateFile.majorVersion = majorVersion;
+        dbUpdateFile.minorVersion = minorVersion;
+
+        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
+        ++count;
+    }
+
+    //get last updatefile name from db
+    std::string dbLastUpdate;
+    const auto query = WorldDatabase.Query("SELECT LastUpdate FROM world_db_version ORDER BY LastUpdate DESC LIMIT 1");
+    if (!query)
+    {
+        LogError("world_db_version query failed!");
+    }
+    else
+    {
+        Field* fields = query->Fetch();
+        dbLastUpdate = fields[0].GetString();
+
+        std::cout << "WorldDatabase Version: " << dbLastUpdate << std::endl;
+    }
+
+    std::cout << "\n=========== Available files in " << sqlUpdateDir << " ===========" << std::endl;
+    // print out updateSqlStore
+    for (const auto update : updateSqlStore)
+        std::cout << update.first << " Loaded: " << update.second.fullName << " major: " << update.second.majorVersion << " minor: " << update.second.minorVersion << std::endl;
+
+
+    const auto lastUpdateMajor = getMajorVersionFronString(dbLastUpdate);
+    const auto lastUpdateMinor = getMinorVersionFronString(dbLastUpdate);
+
+    // set up map to store parsed file names
+    std::map<uint32_t, DatabaseUpdateFile> applyNewUpdateFilesStore;
+
+    std::cout << "\n=========== New world update files in " << sqlUpdateDir << " ===========" << std::endl;
+    //compare it with latest update in mysql
+    for (const auto update : updateSqlStore)
+    {
+        bool addToUpdateFiles = false;
+        if (update.second.majorVersion == lastUpdateMajor && update.second.minorVersion > lastUpdateMinor)
+            addToUpdateFiles = true;
+
+        if (update.second.majorVersion > lastUpdateMajor)
+            addToUpdateFiles = true;
+
+        if (addToUpdateFiles)
+        {
+            applyNewUpdateFilesStore.insert(update);
+            std::cout << update.first << " File: " << update.second.fullName << " not already applied" << std::endl;
+        }
+    }
+
+    // apply updatefiles stored in applyNewUpdateFilesStore
 
 }
 /////////////////////////////////////////////////////////////////////////////
@@ -190,8 +286,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.loadWorldConfigValues();
 
-    testFileSystem();
-
     AscLog.SetFileLoggingLevel(worldConfig.log.worldFileLogLevel);
     AscLog.SetDebugFlags(worldConfig.log.worldDebugFlags);
 
@@ -209,6 +303,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         AscLog.~AscEmuLog();
         return false;
     }
+
+    testFileSystem();
 
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();
