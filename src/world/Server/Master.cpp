@@ -277,7 +277,26 @@ void testFileSystem()
             std::string loadedFile = readFile(sqlFile);
             std::cout << loadedFile << std::endl;
 
-            WorldDatabase.Execute(loadedFile.c_str());
+            ///////////////////////////////////////////////////////////////////////////////////
+            // split into seperated string
+            std::vector<std::string> seglist;
+            std::string delimiter = ";\n";
+
+            size_t pos = 0;
+            std::string token;
+            while ((pos = loadedFile.find(delimiter)) != std::string::npos)
+            {
+                token = loadedFile.substr(0, pos);
+                seglist.push_back(token + ";");
+                loadedFile.erase(0, pos + delimiter.length());
+            }
+
+            for (const auto& statements : seglist)
+            {
+                std::cout << "=========================== Execute part: " << std::endl; 
+                std::cout << statements << std::endl;
+                WorldDatabase.ExecuteNA(statements.c_str());
+            }
         }
     }
 
