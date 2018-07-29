@@ -147,7 +147,7 @@ std::string readFile(fs::path path)
 {
     std::ifstream filestream{ path };
 
-    const auto filesize = fs::file_size(path);
+    auto const filesize = static_cast<unsigned int>(fs::file_size(path));
 
     std::string fileString(filesize, ' ');
 
