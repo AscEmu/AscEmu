@@ -171,38 +171,12 @@ bool checkRequiredDirs()
 
 void applyUpdatesForDatabase(std::string database)
 {
-    // sql/world files
     const std::string sqlUpdateDir = "sql/" + database;
 
-    // set up map to store parsed file names
-    std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
-
-    uint32_t count = 0;
-    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
-    {
-        std::string filePathName = p.path().string();
-
-        std::string fileName = filePathName;
-        fileName.erase(0, sqlUpdateDir.size() + 1);
-
-        //get major version
-        uint32_t majorVersion = Util::readMajorVersionFromString(fileName);
-
-        // get minor version
-        uint32_t minorVersion = Util::readMinorVersionFromString(fileName);
-
-        DatabaseUpdateFile dbUpdateFile;
-        dbUpdateFile.fullName = filePathName;
-        dbUpdateFile.majorVersion = majorVersion;
-        dbUpdateFile.minorVersion = minorVersion;
-
-        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
-        ++count;
-    }
-
-    //get last updatefile name from db
-    std::string dbLastUpdate;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 1. get current version
     QueryResult* result;
+
     if (database == "character")
         result = CharacterDatabase.Query("SELECT LastUpdate FROM character_db_version ORDER BY LastUpdate DESC LIMIT 1");
     else
@@ -215,76 +189,97 @@ void applyUpdatesForDatabase(std::string database)
     }
 
     Field* fields = result->Fetch();
-    dbLastUpdate = fields[0].GetString();
+    const std::string dbLastUpdate = fields[0].GetString();
 
-    std::cout << database << " Database Version: " << dbLastUpdate << std::endl;
-
-    std::cout << "\n=========== Available files in " << sqlUpdateDir << " ===========" << std::endl;
-    // print out updateSqlStore
-    for (const auto update : updateSqlStore)
-        std::cout << update.first << " Loaded: " << update.second.fullName << " major: " << update.second.majorVersion << " minor: " << update.second.minorVersion << std::endl;
-
+    LogDetail(" %s Database Version : %s", database.c_str(), dbLastUpdate.c_str());
 
     const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
     const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
 
-    // set up map to store parsed file names
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 2. check if update folder exist in *dir*/sql/
+    std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
+
+    uint32_t count = 0;
+    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
+    {
+        const std::string filePathName = p.path().string();
+
+        std::string fileName = filePathName;
+        fileName.erase(0, sqlUpdateDir.size() + 1);
+
+        const uint32_t majorVersion = Util::readMajorVersionFromString(fileName);
+        const uint32_t minorVersion = Util::readMinorVersionFromString(fileName);
+
+        DatabaseUpdateFile dbUpdateFile;
+        dbUpdateFile.fullName = filePathName;
+        dbUpdateFile.majorVersion = majorVersion;
+        dbUpdateFile.minorVersion = minorVersion;
+
+        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
+        ++count;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 3. save filenames into vector, when newer than current db version
     std::map<uint32_t, DatabaseUpdateFile> applyNewUpdateFilesStore;
 
-    std::cout << "\n=========== New world update files in " << sqlUpdateDir << " ===========" << std::endl;
-    //compare it with latest update in mysql
-    for (const auto update : updateSqlStore)
+    if (!updateSqlStore.empty())
     {
-        bool addToUpdateFiles = false;
-        if (update.second.majorVersion == lastUpdateMajor && update.second.minorVersion > lastUpdateMinor)
-            addToUpdateFiles = true;
-
-        if (update.second.majorVersion > lastUpdateMajor)
-            addToUpdateFiles = true;
-
-        if (addToUpdateFiles)
+        LogDebugFlag(LF_DB_TABLES, "=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
+        //compare it with latest update in mysql
+        for (const auto update : updateSqlStore)
         {
-            applyNewUpdateFilesStore.insert(update);
-            std::cout << update.first << " File: " << update.second.fullName << " not already applied" << std::endl;
+            bool addToUpdateFiles = false;
+            if (update.second.majorVersion == lastUpdateMajor && update.second.minorVersion > lastUpdateMinor)
+                addToUpdateFiles = true;
+
+            if (update.second.majorVersion > lastUpdateMajor)
+                addToUpdateFiles = true;
+
+            if (addToUpdateFiles)
+            {
+                applyNewUpdateFilesStore.insert(update);
+                LogDebugFlag(LF_DB_TABLES, "Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
+            }
         }
     }
 
-    std::cout << "\n=========== Iterate apply new files ===========" << std::endl;
-
-    // apply updatefiles stored in applyNewUpdateFilesStore
-    for (const auto execute : applyNewUpdateFilesStore)
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 4. open/parse files and apply to db
+    if (!applyNewUpdateFilesStore.empty())
     {
-        fs::path sqlFile = fs::current_path() /= execute.second.fullName;
+        LogDebugFlag(LF_DB_TABLES, "=========== Applying sql updates from %s ===========", sqlUpdateDir.c_str());
 
-        if (fs::exists(sqlFile))
+        for (const auto execute : applyNewUpdateFilesStore)
         {
-            std::cout << sqlFile << std::endl;
+            const fs::path sqlFile = fs::current_path() /= execute.second.fullName;
 
-            std::string loadedFile = Util::readFileIntoString(sqlFile);
-            std::cout << loadedFile << std::endl;
-
-            ///////////////////////////////////////////////////////////////////////////////////
-            // split into seperated string
-            std::vector<std::string> seglist;
-            std::string delimiter = ";\n";
-
-            size_t pos = 0;
-            std::string token;
-            while ((pos = loadedFile.find(delimiter)) != std::string::npos)
+            if (fs::exists(sqlFile))
             {
-                token = loadedFile.substr(0, pos);
-                seglist.push_back(token + ";");
-                loadedFile.erase(0, pos + delimiter.length());
-            }
+                LogDebugFlag(LF_DB_TABLES, "%s", execute.second.fullName.c_str());
+                std::string loadedFile = Util::readFileIntoString(sqlFile);
 
-            for (const auto& statements : seglist)
-            {
-                std::cout << "=========================== Execute part: " << std::endl;
-                std::cout << statements << std::endl;
-                if (database == "character")
-                    CharacterDatabase.ExecuteNA(statements.c_str());
-                else
-                    WorldDatabase.ExecuteNA(statements.c_str());
+                // split into seperated string
+                std::vector<std::string> seglist;
+                std::string delimiter = ";\n";
+
+                size_t pos = 0;
+                std::string token;
+                while ((pos = loadedFile.find(delimiter)) != std::string::npos)
+                {
+                    token = loadedFile.substr(0, pos);
+                    seglist.push_back(token + ";");
+                    loadedFile.erase(0, pos + delimiter.length());
+                }
+
+                for (const auto& statements : seglist)
+                {
+                    if (database == "character")
+                        CharacterDatabase.ExecuteNA(statements.c_str());
+                    else
+                        WorldDatabase.ExecuteNA(statements.c_str());
+                }
             }
         }
     }
