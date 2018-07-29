@@ -38,6 +38,7 @@ class LogonServer : public Singleton< LogonServer >
         void Stop();
 
         bool StartDb();
+        bool CheckDBVersion();
         bool LoadLogonConfiguration();
 
         bool IsServerAllowed(unsigned int IP);

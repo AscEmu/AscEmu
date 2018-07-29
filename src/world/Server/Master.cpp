@@ -342,15 +342,15 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
+    testFileSystem();
+#endif
+
     if (!_CheckDBVersion())
     {
         AscLog.~AscEmuLog();
         return false;
     }
-
-#ifdef USE_EXPERIMENTAL_FILESYSTEM
-    testFileSystem();
-#endif
 
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();

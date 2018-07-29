@@ -18,6 +18,7 @@
 
 #include "LogonStdAfx.h"
 #include <Threading/AEThreadPool.h>
+#include "Util.hpp"
 
 using AscEmu::Threading::AEThread;
 using AscEmu::Threading::AEThreadPool;
@@ -31,6 +32,135 @@ Mutex _authSocketLock;
 std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
+
+// DB version
+static const char* REQUIRED_LOGON_DB_VERSION = "20180729-00_logon_db_version";
+
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
+
+#include <fstream>
+#include <iostream>
+#include <string>
+
+struct DatabaseUpdateFile
+{
+    std::string fullName;
+    uint32_t majorVersion;
+    uint32_t minorVersion;
+};
+
+void applyUpdatesForDatabase(std::string database)
+{
+    const std::string sqlUpdateDir = "sql/" + database;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 1. get current version
+    QueryResult* result;
+
+    if (database == "logon")
+        result = sLogonSQL->Query("SELECT LastUpdate FROM logon_db_version ORDER BY LastUpdate DESC LIMIT 1");
+
+    if (!result)
+    {
+        LogError("%s_db_version query failed!", database.c_str());
+        return;
+    }
+
+    Field* fields = result->Fetch();
+    const std::string dbLastUpdate = fields[0].GetString();
+
+    LogDetail(" %s Database Version : %s", database.c_str(), dbLastUpdate.c_str());
+
+    const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
+    const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 2. check if update folder exist in *dir*/sql/
+    std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
+
+    uint32_t count = 0;
+    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
+    {
+        const std::string filePathName = p.path().string();
+
+        std::string fileName = filePathName;
+        fileName.erase(0, sqlUpdateDir.size() + 1);
+
+        const uint32_t majorVersion = Util::readMajorVersionFromString(fileName);
+        const uint32_t minorVersion = Util::readMinorVersionFromString(fileName);
+
+        DatabaseUpdateFile dbUpdateFile;
+        dbUpdateFile.fullName = filePathName;
+        dbUpdateFile.majorVersion = majorVersion;
+        dbUpdateFile.minorVersion = minorVersion;
+
+        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
+        ++count;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 3. save filenames into vector, when newer than current db version
+    std::map<uint32_t, DatabaseUpdateFile> applyNewUpdateFilesStore;
+
+    if (!updateSqlStore.empty())
+    {
+        LogDebugFlag(LF_DB_TABLES, "=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
+        //compare it with latest update in mysql
+        for (const auto update : updateSqlStore)
+        {
+            bool addToUpdateFiles = false;
+            if (update.second.majorVersion == lastUpdateMajor && update.second.minorVersion > lastUpdateMinor)
+                addToUpdateFiles = true;
+
+            if (update.second.majorVersion > lastUpdateMajor)
+                addToUpdateFiles = true;
+
+            if (addToUpdateFiles)
+            {
+                applyNewUpdateFilesStore.insert(update);
+                LogDebugFlag(LF_DB_TABLES, "Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 4. open/parse files and apply to db
+    if (!applyNewUpdateFilesStore.empty())
+    {
+        LogDebugFlag(LF_DB_TABLES, "=========== Applying sql updates from %s ===========", sqlUpdateDir.c_str());
+
+        for (const auto execute : applyNewUpdateFilesStore)
+        {
+            const fs::path sqlFile = fs::current_path() /= execute.second.fullName;
+
+            if (fs::exists(sqlFile))
+            {
+                LogDebugFlag(LF_DB_TABLES, "%s", execute.second.fullName.c_str());
+                std::string loadedFile = Util::readFileIntoString(sqlFile);
+
+                // split into seperated string
+                std::vector<std::string> seglist;
+                std::string delimiter = ";\n";
+
+                size_t pos = 0;
+                std::string token;
+                while ((pos = loadedFile.find(delimiter)) != std::string::npos)
+                {
+                    token = loadedFile.substr(0, pos);
+                    seglist.push_back(token + ";");
+                    loadedFile.erase(0, pos + delimiter.length());
+                }
+
+                for (const auto& statements : seglist)
+                {
+                    if (database == "logon")
+                        sLogonSQL->ExecuteNA(statements.c_str());
+                }
+            }
+        }
+    }
+}
+#endif
 
 void LogonServer::Run(int /*argc*/, char** /*argv*/)
 {
@@ -56,6 +186,16 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     ThreadPool.Startup();
 
     if (!StartDb())
+    {
+        AscLog.~AscEmuLog();
+        return;
+    }
+
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
+    applyUpdatesForDatabase("logon");
+#endif
+
+    if (!CheckDBVersion())
     {
         AscLog.~AscEmuLog();
         return;
@@ -335,6 +475,54 @@ bool LogonServer::StartDb()
         LOG_ERROR("sql: Logon database initialization failed. Exiting.");
         return false;
     }
+
+    return true;
+}
+
+bool LogonServer::CheckDBVersion()
+{
+    QueryResult* dbVersion = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
+    if (dbVersion == NULL)
+    {
+        LogError("Database : logon database is missing the table `logon_db_version`. AE will create one for you now!");
+        std::string createTable = "CREATE TABLE `logon_db_version` (`LastUpdate` varchar(255) NOT NULL DEFAULT '', PRIMARY KEY(`LastUpdate`)) ENGINE = InnoDB DEFAULT CHARSET = utf8;";
+        sLogonSQL->ExecuteNA(createTable.c_str());
+
+        std::string insertData = "INSERT INTO `logon_db_version` VALUES ('20180729-00_logon_db_version');";
+        sLogonSQL->ExecuteNA(insertData.c_str());
+    }
+
+    QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
+    if (cqr == NULL)
+    {
+        LogError("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        LogError("Database : You may need to update your database");
+        return false;
+    }
+
+    Field* f = cqr->Fetch();
+    const char *LogonDBVersion = f->GetString();
+
+    LogNotice("Database : Last logon database update: %s", LogonDBVersion);
+    int result = strcmp(LogonDBVersion, REQUIRED_LOGON_DB_VERSION);
+    if (result != 0)
+    {
+        LogError("Database : Last logon database update doesn't match the required one which is %s.", REQUIRED_LOGON_DB_VERSION);
+        if (result < 0)
+        {
+            LogError("Database : You need to apply the logon update queries that are newer than %s. Exiting.", LogonDBVersion);
+            LogError("Database : You can find the logon update queries in the sql/logon/updates sub-directory of your AscEmu source directory.");
+        }
+        else
+            LogError("Database : Your logon database is too new for this AscEmu version, you need to update your server. Exiting.");
+
+        delete cqr;
+        return false;
+    }
+
+    delete cqr;
+
+    LogDetail("Database : Database successfully validated.");
 
     return true;
 }

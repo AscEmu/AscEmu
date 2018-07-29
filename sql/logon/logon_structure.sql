@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu logon structure
-Last update: 09/13/2017
+Last update: 07/29/2018
 ********************************************************************
 */
 
@@ -50,6 +50,18 @@ CREATE TABLE `ipbans` (
 LOCK TABLES `ipbans` WRITE;
 
 UNLOCK TABLES;
+
+
+/*Table structure for `logon_db_version`*/
+DROP TABLE IF EXISTS `logon_db_version`;
+
+CREATE TABLE `logon_db_version` (
+  `LastUpdate` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`LastUpdate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Records of logon_db_version*/
+INSERT INTO `logon_db_version` VALUES ('20180729-00_logon_db_version');
 
 
 /*Table structure for `realms`*/
