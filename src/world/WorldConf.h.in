@@ -3,8 +3,7 @@ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef WORLD_CONF_H
-#define WORLD_CONF_H
+#pragma once
 
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 #define PREFIX "@ASCEMU_SCRIPTLIB_PATH@"
@@ -53,5 +52,3 @@ This file is released under the MIT license. See README-MIT for more information
     #define FT_TRANSMOG
     #define FT_LFR
 #endif
-
-#endif // WORLD_CONF_H

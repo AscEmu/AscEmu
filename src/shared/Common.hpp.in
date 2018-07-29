@@ -3,8 +3,7 @@ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef COMMON_HPP
-#define COMMON_HPP
+#pragma once
 
 #include "Common.Legacy.h"
 
@@ -16,5 +15,3 @@ This file is released under the MIT license. See README-MIT for more information
 
 // Use experimental file System
 @ASCEMU_COMMENT_WITH_EXPERIMENTAL_FILESYSTEM@#define USE_EXPERIMENTAL_FILESYSTEM
-
-#endif  // COMMON_HPP

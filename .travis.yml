@@ -101,7 +101,7 @@ matrix:
 install:
   - mkdir ascemu_build
   - cd ascemu_build
-  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=${ASC_VERSION}
+  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=${ASC_VERSION} -DWITH_EXPERIMENTAL_FILESYSTEM=1
     
 before_script:
   - ${CXX} --version

@@ -137,6 +137,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+if(NOT WIN32)
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
+endif()
+
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARIES} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp)
