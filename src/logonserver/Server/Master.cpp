@@ -157,10 +157,40 @@ void applyUpdatesForDatabase(std::string database)
                 for (const auto& statements : seglist)
                 {
                     if (database == "logon")
-                        sLogonSQL->ExecuteNA(statements.c_str());
+                        if (sLogonSQL->WaitExecuteNA(statements.c_str()))
+                            continue;
                 }
             }
         }
+    }
+}
+
+void setupDatabase(std::string database)
+{
+    const std::string sqlBaseDir = "sql/" + database;
+    fs::path baseFilePath = fs::current_path();
+    baseFilePath /= sqlBaseDir + "/logon_structure.sql";
+
+    if (fs::exists(baseFilePath))
+    {
+        LogDebugFlag(LF_DB_TABLES, "%s", baseFilePath.c_str());
+        std::string loadedFile = Util::readFileIntoString(baseFilePath);
+
+        // split into seperated string
+        std::vector<std::string> seglist;
+        std::string delimiter = ";\n";
+
+        size_t pos = 0;
+        std::string token;
+        while ((pos = loadedFile.find(delimiter)) != std::string::npos)
+        {
+            token = loadedFile.substr(0, pos);
+            seglist.push_back(token + ";");
+            loadedFile.erase(0, pos + delimiter.length());
+        }
+
+        for (const auto& statements : seglist)
+            sLogonSQL->ExecuteNA(statements.c_str());
     }
 }
 #endif
@@ -197,6 +227,14 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     }
 
     //\todo if database is empty, apply basic files
+    std::string dbName = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
+    QueryResult* dbResult = sLogonSQL->Query("SHOW TABLES FROM %s", dbName.c_str());
+    if (dbResult == nullptr)
+    {
+        LogDetail("Database: Your Database %s has no tables. AE is setting up the database now.", dbName.c_str());
+        setupDatabase("logon");
+        Arcemu::Sleep(6000);
+    }
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
     applyUpdatesForDatabase("logon");
@@ -488,8 +526,8 @@ bool LogonServer::StartDb()
 
 bool LogonServer::CheckDBVersion()
 {
-    QueryResult* dbVersion = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
-    if (dbVersion == NULL)
+    QueryResult* versionQuery = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
+    if (!versionQuery)
     {
         LogError("Database : logon database is missing the table `logon_db_version`. AE will create one for you now!");
         std::string createTable = "CREATE TABLE `logon_db_version` (`LastUpdate` varchar(255) NOT NULL DEFAULT '', PRIMARY KEY(`LastUpdate`)) ENGINE = InnoDB DEFAULT CHARSET = utf8;";
