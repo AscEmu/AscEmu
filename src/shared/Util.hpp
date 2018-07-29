@@ -9,9 +9,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include <chrono>
 #include <iomanip>
 
+//\ brief: C++17 filesystem. It is currently experimental.
+//         On MSVC it is included wit <filesystem> (which includes <experimental/filesystem>
+//         On GCC and Clang you have to include <experimental/filesystem> and set the
+//         compilerflag =stdc++17 and link stdc++fs.
+//         We use the namespace fs to simplify it. On GCC it is v1.
+#if (WIN32 || _WIN64)
+#include <filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem::v1;
+#endif
+
 namespace Util
 {
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // String functions
 
@@ -32,6 +44,9 @@ namespace Util
 
     /*! \brief Returns wow specific language string to id*/
     uint32_t getLanguagesIdFromString(std::string langstr);
+
+    /*! \brief Returns an uint32_t from a string between start/endcharacter */
+    uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +81,7 @@ namespace Util
 
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray = false);
 
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Random number helper functions
 
@@ -77,6 +93,18 @@ namespace Util
 
     float getRandomFloat(float end);
     float getRandomFloat(float start, float end);
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // C++17 filesystem dependent functions
+
+    /*! \brief Reads the file into a string based on the given path. */
+    std::string readFileIntoString(fs::path path);
+
+    /*! \brief Returns the first 8 chars of the file name as major version. */
+    uint32_t readMajorVersionFromString(std::string fileName);
+
+    uint32_t readMinorVersionFromString(std::string fileName);
 }
 
 struct SmallTimeTracker

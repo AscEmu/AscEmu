@@ -10,9 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 #include <random>
 
+#include <fstream>
+
 namespace Util
 {
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // String functions
 
@@ -83,6 +84,12 @@ namespace Util
             return 5;
 
         return 0;
+    }
+
+    uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter)
+    {
+        auto const stringVersion = string.substr(startCharacter, endCharacter);
+        return std::stoul(stringVersion);
     }
 
 
@@ -259,6 +266,7 @@ namespace Util
         return ss.str();
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Random number helper functions
 
@@ -299,6 +307,43 @@ namespace Util
         std::mt19937 mt(rd());
         std::uniform_real_distribution<float> dist(start, end);
         return dist(mt);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // C++17 filesystem dependent functions
+
+    std::string readFileIntoString(fs::path path)
+    {
+        std::ifstream fileStream{ path };
+
+        auto const fileSize = static_cast<unsigned int>(fs::file_size(path));
+
+        std::string fileString(fileSize, ' ');
+
+        //\ brief: fileString[0] here. Replace it with fileString.data() as soon as compilers
+        //         implemented C++17 completely (or at least the filesystem).
+        fileStream.read(&fileString[0], fileSize);
+
+        return fileString;
+    }
+
+    // Database update files only
+    uint32_t readMajorVersionFromString(std::string fileName)
+    {
+        //         <-------->  0 - 8
+        // example: 20180722-00_some_update_file.sql
+        uint32_t const version = getNumberFromStringByRange(fileName, 0, 8);
+        return version;
+    }
+
+    // Database update files only
+    uint32_t readMinorVersionFromString(std::string fileName)
+    {
+        //                  <-->  9 - 11
+        // example: 20180722-00_some_update_file.sql
+        uint32_t const version = getNumberFromStringByRange(fileName, 9, 11);
+        return version;
     }
 
 }

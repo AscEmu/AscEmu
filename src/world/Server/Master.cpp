@@ -33,6 +33,7 @@
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
 #include "Spell/SpellTarget.h"
+#include "Util.hpp"
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -112,29 +113,6 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 #include <iostream>
 #include <string>
 
-#if(WIN32 || _WIN64)
-#include <filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem::v1;
-#endif
-
-uint32_t getMajorVersionFronString(std::string fileName, int offset = 0)
-{
-    const auto majorStringVersion = fileName.substr(0 + offset, 8 + offset);
-    uint32_t majorVersion = stoul(majorStringVersion);
-
-    return majorVersion;
-}
-
-uint32_t getMinorVersionFronString(std::string fileName, int offset = 0)
-{
-    const auto minorStringVersion = fileName.substr(9 + offset, 11 + offset);
-    uint32_t minorVersion = stoul(minorStringVersion);
-
-    return minorVersion;
-}
 
 struct DatabaseUpdateFile
 {
@@ -142,21 +120,6 @@ struct DatabaseUpdateFile
     uint32_t majorVersion;
     uint32_t minorVersion;
 };
-
-std::string readFile(fs::path path)
-{
-    std::ifstream filestream{ path };
-
-    auto const filesize = static_cast<unsigned int>(fs::file_size(path));
-
-    std::string fileString(filesize, ' ');
-
-    // fileString[0] since not all functions are available.
-    // if C++17 is completely available use fileString.data()
-    filestream.read(&fileString[0] , filesize);
-
-    return fileString;
-}
 
 void testFileSystem()
 {
@@ -201,16 +164,19 @@ void testFileSystem()
     uint32_t count = 0;
     for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
     {
-        std::string fileName = p.path().string();
+        std::string filePathName = p.path().string();
+
+        std::string fileName = filePathName;
+        fileName.erase(0, sqlUpdateDir.size() + 1);
 
         //get major version
-        uint32_t majorVersion = getMajorVersionFronString(fileName, 10);
+        uint32_t majorVersion = Util::readMajorVersionFromString(fileName);
 
         // get minor version
-        uint32_t minorVersion = getMinorVersionFronString(fileName, 10);
+        uint32_t minorVersion = Util::readMinorVersionFromString(fileName);
 
         DatabaseUpdateFile dbUpdateFile;
-        dbUpdateFile.fullName = fileName;
+        dbUpdateFile.fullName = filePathName;
         dbUpdateFile.majorVersion = majorVersion;
         dbUpdateFile.minorVersion = minorVersion;
 
@@ -224,14 +190,14 @@ void testFileSystem()
     if (!query)
     {
         LogError("world_db_version query failed!");
+        return;
     }
-    else
-    {
-        Field* fields = query->Fetch();
-        dbLastUpdate = fields[0].GetString();
 
-        std::cout << "WorldDatabase Version: " << dbLastUpdate << std::endl;
-    }
+    Field* fields = query->Fetch();
+    dbLastUpdate = fields[0].GetString();
+
+    std::cout << "WorldDatabase Version: " << dbLastUpdate << std::endl;
+
 
     std::cout << "\n=========== Available files in " << sqlUpdateDir << " ===========" << std::endl;
     // print out updateSqlStore
@@ -239,8 +205,8 @@ void testFileSystem()
         std::cout << update.first << " Loaded: " << update.second.fullName << " major: " << update.second.majorVersion << " minor: " << update.second.minorVersion << std::endl;
 
 
-    const auto lastUpdateMajor = getMajorVersionFronString(dbLastUpdate);
-    const auto lastUpdateMinor = getMinorVersionFronString(dbLastUpdate);
+    const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
+    const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
 
     // set up map to store parsed file names
     std::map<uint32_t, DatabaseUpdateFile> applyNewUpdateFilesStore;
@@ -274,7 +240,7 @@ void testFileSystem()
         {
             std::cout << sqlFile << std::endl;
 
-            std::string loadedFile = readFile(sqlFile);
+            std::string loadedFile = Util::readFileIntoString(sqlFile);
             std::cout << loadedFile << std::endl;
 
             ///////////////////////////////////////////////////////////////////////////////////
