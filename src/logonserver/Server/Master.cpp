@@ -33,7 +33,7 @@ std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
 
-// DB version
+// MIT start
 static const char* REQUIRED_LOGON_DB_VERSION = "20180729-00_logon_db_version";
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
@@ -51,7 +51,7 @@ struct DatabaseUpdateFile
 
 void applyUpdatesForDatabase(std::string database)
 {
-    const std::string sqlUpdateDir = "sql/" + database;
+    const std::string sqlUpdateDir = "sql/" + database + "/updates";
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // 1. get current version
@@ -94,6 +94,9 @@ void applyUpdatesForDatabase(std::string database)
         dbUpdateFile.majorVersion = majorVersion;
         dbUpdateFile.minorVersion = minorVersion;
 
+        //\todo Remove me
+        LogDetail("Available file in updates dir: %s", filePathName.c_str());
+
         updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
     }
@@ -104,7 +107,7 @@ void applyUpdatesForDatabase(std::string database)
 
     if (!updateSqlStore.empty())
     {
-        LogDebugFlag(LF_DB_TABLES, "=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
+        LogDebug("=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
         //compare it with latest update in mysql
         for (const auto update : updateSqlStore)
         {
@@ -118,7 +121,7 @@ void applyUpdatesForDatabase(std::string database)
             if (addToUpdateFiles)
             {
                 applyNewUpdateFilesStore.insert(update);
-                LogDebugFlag(LF_DB_TABLES, "Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
+                LogDebug("Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
             }
         }
     }
@@ -162,6 +165,8 @@ void applyUpdatesForDatabase(std::string database)
 }
 #endif
 
+// MIT end
+
 void LogonServer::Run(int /*argc*/, char** /*argv*/)
 {
     UNIXTIME = time(NULL);
@@ -190,6 +195,8 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
         AscLog.~AscEmuLog();
         return;
     }
+
+    //\todo if database is empty, apply basic files
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
     applyUpdatesForDatabase("logon");

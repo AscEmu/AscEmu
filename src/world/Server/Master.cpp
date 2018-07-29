@@ -171,7 +171,7 @@ bool checkRequiredDirs()
 
 void applyUpdatesForDatabase(std::string database)
 {
-    const std::string sqlUpdateDir = "sql/" + database;
+    const std::string sqlUpdateDir = "sql/" + database + "/updates";
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // 1. get current version
@@ -215,6 +215,9 @@ void applyUpdatesForDatabase(std::string database)
         dbUpdateFile.fullName = filePathName;
         dbUpdateFile.majorVersion = majorVersion;
         dbUpdateFile.minorVersion = minorVersion;
+
+        //\todo Remove me
+        LogDetail("Available file in updates dir: %s", filePathName.c_str());
 
         updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
