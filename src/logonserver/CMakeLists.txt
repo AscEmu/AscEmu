@@ -44,6 +44,11 @@ add_executable(${PROJECT_NAME} ${sources})
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
 endif()
+
+if(NOT WIN32)
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h)
 
 #Link our shared lib.
