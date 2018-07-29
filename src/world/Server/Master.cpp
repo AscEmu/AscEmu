@@ -169,22 +169,10 @@ bool checkRequiredDirs()
     return requiredDirsExist;
 }
 
-void testFileSystem()
+void applyUpdatesForDatabase(std::string database)
 {
-    // get the current path of world.exe
-    const std::string programmPath = fs::current_path().string();
-    std::cout << programmPath << std::endl;
-
-    createExtendedLogDir();
-
-    checkRequiredDirs();
-
-    // list all files in dir
-    /*for (auto& p : fs::recursive_directory_iterator("configs"))
-        std::cout << p << std::endl;*/
-
     // sql/world files
-    const std::string sqlUpdateDir = "sql/world";
+    const std::string sqlUpdateDir = "sql/" + database;
 
     // set up map to store parsed file names
     std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
@@ -214,18 +202,22 @@ void testFileSystem()
 
     //get last updatefile name from db
     std::string dbLastUpdate;
-    const auto query = WorldDatabase.Query("SELECT LastUpdate FROM world_db_version ORDER BY LastUpdate DESC LIMIT 1");
-    if (!query)
+    QueryResult* result;
+    if (database == "character")
+        result = CharacterDatabase.Query("SELECT LastUpdate FROM character_db_version ORDER BY LastUpdate DESC LIMIT 1");
+    else
+        result = WorldDatabase.Query("SELECT LastUpdate FROM world_db_version ORDER BY LastUpdate DESC LIMIT 1");
+
+    if (!result)
     {
-        LogError("world_db_version query failed!");
+        LogError("%s_db_version query failed!", database.c_str());
         return;
     }
 
-    Field* fields = query->Fetch();
+    Field* fields = result->Fetch();
     dbLastUpdate = fields[0].GetString();
 
-    std::cout << "WorldDatabase Version: " << dbLastUpdate << std::endl;
-
+    std::cout << database << " Database Version: " << dbLastUpdate << std::endl;
 
     std::cout << "\n=========== Available files in " << sqlUpdateDir << " ===========" << std::endl;
     // print out updateSqlStore
@@ -287,12 +279,25 @@ void testFileSystem()
 
             for (const auto& statements : seglist)
             {
-                std::cout << "=========================== Execute part: " << std::endl; 
+                std::cout << "=========================== Execute part: " << std::endl;
                 std::cout << statements << std::endl;
-                WorldDatabase.ExecuteNA(statements.c_str());
+                if (database == "character")
+                    CharacterDatabase.ExecuteNA(statements.c_str());
+                else
+                    WorldDatabase.ExecuteNA(statements.c_str());
             }
         }
     }
+}
+
+void testFileSystem()
+{
+    createExtendedLogDir();
+
+    checkRequiredDirs();
+
+    applyUpdatesForDatabase("world");
+    applyUpdatesForDatabase("character");
 }
 #endif
 /////////////////////////////////////////////////////////////////////////////
