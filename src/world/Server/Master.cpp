@@ -122,39 +122,66 @@ struct DatabaseUpdateFile
     uint32_t minorVersion;
 };
 
+void createExtendedLogDir()
+{
+    std::string logDir = worldConfig.log.extendedLogsDir;
+
+    if (!logDir.empty())
+        fs::create_directories(logDir);
+}
+
+bool checkRequiredDirs()
+{
+    std::vector<std::string> requiredDirs;
+    requiredDirs.emplace_back("configs");
+    requiredDirs.emplace_back("dbc");
+    requiredDirs.emplace_back("maps");
+
+    std::string dataDir = worldConfig.server.dataDir;
+    dataDir.erase(0, 2); //remove ./ from string
+
+    bool requiredDirsExist = true;
+    for (const auto& dir : requiredDirs)
+    {
+        fs::path requiredPath = fs::current_path();
+
+        if (dataDir.empty() || dir == "configs")
+        {
+            requiredPath /= dir;
+        }
+        else
+        {
+            requiredPath /= dataDir;
+            requiredPath /= dir;
+        }
+
+        if (fs::exists(requiredPath))
+        {
+            std::cout << "Required dir " << requiredPath << " found!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Required dir " << requiredPath << " not found!" << std::endl;
+            requiredDirsExist = false;
+        }
+    }
+
+    return requiredDirsExist;
+}
+
 void testFileSystem()
 {
     // get the current path of world.exe
     const std::string programmPath = fs::current_path().string();
     std::cout << programmPath << std::endl;
 
-    // create dir logs for logs
-    std::string dir = "logs";
-    fs::create_directories(dir);
+    createExtendedLogDir();
 
-    std::string configDataDir = worldConfig.server.dataDir;
-    configDataDir.erase(0, 2); //remove ./ from string
-
-    // check required dirs for example maps/dbcs
-    fs::path dbcDir = fs::current_path() /= configDataDir;
-    dbcDir /= "dbc";
-
-    if (fs::exists(dbcDir))
-        std::cout << "dbc dir exists: " << dbcDir << std::endl;
-    else
-        std::cout << "dbc dir does not exist! Path: " << dbcDir << std::endl;
-
-    fs::path mapsDir = fs::current_path() /= configDataDir;
-    mapsDir /= "maps";
-
-    if (fs::exists(mapsDir))
-        std::cout << "maps dir exists: " << mapsDir << std::endl;
-    else
-        std::cout << "maps dir does not exist! Path: " << mapsDir << std::endl;
+    checkRequiredDirs();
 
     // list all files in dir
-    for (auto& p : fs::recursive_directory_iterator("configs"))
-        std::cout << p << std::endl;
+    /*for (auto& p : fs::recursive_directory_iterator("configs"))
+        std::cout << p << std::endl;*/
 
     // sql/world files
     const std::string sqlUpdateDir = "sql/world";
