@@ -14,4 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define RIGHT_MODE "r"
 #endif
 
+// Use experimental file System
+@ASCEMU_COMMENT_WITH_EXPERIMENTAL_FILESYSTEM@#define USE_EXPERIMENTAL_FILESYSTEM
+
 #endif  // COMMON_HPP

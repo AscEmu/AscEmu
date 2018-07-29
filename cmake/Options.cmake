@@ -18,16 +18,21 @@ option(BUILD_MAPSCRIPTS "Build ascMapScripts." ON)
 option(BUILD_MISCSCRIPTS "Build ascMiscScripts." ON)
 option(BUILD_LUAENGINE "Build LuaEngine." ON)
 option(WITH_NEW_SPELL_SYSTEM "Use experimental spell system" OFF)
+option(WITH_EXPERIMENTAL_FILESYSTEM "Use experiemntal file system" OFF)
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
 option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" ON)
 option(USE_PCH "Enable precompiled headers - it will reduce compilation time" ON)
+
+if(NOT USE_PCH)
+    set(ASCEMU_COMMENT_PCH //)
+endif()
 
 if(NOT WITH_NEW_SPELL_SYSTEM)
     set(ASCEMU_COMMENT_WITH_NEW_SPELL_SYSTEM //)
 endif()
 
-if(NOT USE_PCH)
-    set(ASCEMU_COMMENT_PCH //)
+if(NOT WITH_EXPERIMENTAL_FILESYSTEM)
+    set(ASCEMU_COMMENT_WITH_EXPERIMENTAL_FILESYSTEM //)
 endif()
 
 # platform specific

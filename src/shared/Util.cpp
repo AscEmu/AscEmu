@@ -312,7 +312,7 @@ namespace Util
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions
-
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
     std::string readFileIntoString(fs::path path)
     {
         std::ifstream fileStream{ path };
@@ -327,7 +327,7 @@ namespace Util
 
         return fileString;
     }
-
+#endif
     // Database update files only
     uint32_t readMajorVersionFromString(std::string fileName)
     {

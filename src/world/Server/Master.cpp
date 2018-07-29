@@ -108,6 +108,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 
 /////////////////////////////////////////////////////////////////////////////
 // Testscript fo experimental filesystem
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
 
 #include <fstream>
 #include <iostream>
@@ -265,8 +266,8 @@ void testFileSystem()
             }
         }
     }
-
 }
+#endif
 /////////////////////////////////////////////////////////////////////////////
 
 bool Master::Run(int /*argc*/, char** /*argv*/)
@@ -320,7 +321,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
     testFileSystem();
+#endif
 
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();

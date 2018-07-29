@@ -14,12 +14,14 @@ This file is released under the MIT license. See README-MIT for more information
 //         On GCC and Clang you have to include <experimental/filesystem> and set the
 //         compilerflag =stdc++17 and link stdc++fs.
 //         We use the namespace fs to simplify it. On GCC it is v1.
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
 #if (WIN32 || _WIN64)
 #include <filesystem>
 namespace fs = std::experimental::filesystem;
 #else
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem::v1;
+#endif
 #endif
 
 namespace Util
@@ -97,10 +99,10 @@ namespace Util
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions
-
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
     /*! \brief Reads the file into a string based on the given path. */
     std::string readFileIntoString(fs::path path);
-
+#endif
     /*! \brief Returns the first 8 chars of the file name as major version. */
     uint32_t readMajorVersionFromString(std::string fileName);
 
