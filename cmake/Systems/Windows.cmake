@@ -51,6 +51,15 @@ set(INSTALLED_DEPENDENCIES
     ${DEPENDENCY_DLLS}/libeay32.dll
 )
 
+#check for db update files
+set(PATH_DB_LOGON_UPDATES ${CMAKE_SOURCE_DIR}/sql/logon/updates/)
+set(PATH_DB_CHARACTER_UPDATES ${CMAKE_SOURCE_DIR}/sql/character/updates/)
+set(PATH_DB_WORLD_UPDATES ${CMAKE_SOURCE_DIR}/sql/world/updates/)
+
+set(INSTALL_LOGON_UPDATES ${PATH_DB_LOGON_UPDATES})
+set(INSTALL_CHARACTER_UPDATES ${PATH_DB_CHARACTER_UPDATES})
+set(INSTALL_WORLD_UPDATES ${PATH_DB_WORLD_UPDATES})
+
 if(MSVC)
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/msvc.cmake)
 else()
