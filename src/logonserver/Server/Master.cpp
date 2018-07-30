@@ -238,12 +238,23 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
 
         while (sLogonSQL->GetQueueSize() > 0)
         {
-            LogDetail("-- busy creating basic database. Waiting for %u queries to be executet.", sLogonSQL->GetQueueSize());
+            LogDetail("-- busy creating database. Waiting for %u queries to be executed.", sLogonSQL->GetQueueSize());
             Arcemu::Sleep(500);
         }
     }
 
-    applyUpdatesForDatabase("logon");
+    {
+        applyUpdatesForDatabase("logon");
+
+        while (sLogonSQL->GetQueueSize() > 0)
+        {
+            LogDetail("-- busy updating database. Waiting for %u queries to be executed.", sLogonSQL->GetQueueSize());
+            Arcemu::Sleep(500);
+        }
+    }
+
+    // now we are ready to check the db version.
+
 #endif
 
     if (!CheckDBVersion())
