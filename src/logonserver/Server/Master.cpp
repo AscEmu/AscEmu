@@ -226,17 +226,23 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-    //\todo if database is empty, apply basic files
-    std::string dbName = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
-    QueryResult* dbResult = sLogonSQL->Query("SHOW TABLES FROM %s", dbName.c_str());
-    if (dbResult == nullptr)
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
     {
-        LogDetail("Database: Your Database %s has no tables. AE is setting up the database now.", dbName.c_str());
-        setupDatabase("logon");
-        Arcemu::Sleep(6000);
+        std::string dbName = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
+        QueryResult* dbResult = sLogonSQL->Query("SHOW TABLES FROM %s", dbName.c_str());
+        if (dbResult == nullptr)
+        {
+            LogDetail("Database: Your Database %s has no tables. AE is setting up the database for you.", dbName.c_str());
+            setupDatabase("logon");
+        }
+
+        while (sLogonSQL->GetQueueSize() > 0)
+        {
+            LogDetail("-- busy creating basic database. Waiting for %u queries to be executet.", sLogonSQL->GetQueueSize());
+            Arcemu::Sleep(500);
+        }
     }
 
-#ifdef USE_EXPERIMENTAL_FILESYSTEM
     applyUpdatesForDatabase("logon");
 #endif
 
