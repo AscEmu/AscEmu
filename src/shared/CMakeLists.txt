@@ -28,6 +28,7 @@ set(sources
     CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
+    DatabaseUpdater.cpp
     DynLib.cpp
     FindFiles.cpp
 	LocationVector.cpp
@@ -57,6 +58,7 @@ set(headers
 	crc32.h
 	CRefcounter.h
 	CThreads.h
+    DatabaseUpdater.h
     DynLib.hpp
 	Errors.h
 	FastQueue.h

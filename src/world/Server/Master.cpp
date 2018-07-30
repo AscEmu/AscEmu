@@ -34,6 +34,7 @@
 #include "Management/AuctionMgr.h"
 #include "Spell/SpellTarget.h"
 #include "Util.hpp"
+#include "DatabaseUpdater.h"
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -114,14 +115,6 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 #include <iostream>
 #include <string>
 
-
-struct DatabaseUpdateFile
-{
-    std::string fullName;
-    uint32_t majorVersion;
-    uint32_t minorVersion;
-};
-
 void createExtendedLogDir()
 {
     std::string logDir = worldConfig.log.extendedLogsDir;
@@ -169,133 +162,12 @@ bool checkRequiredDirs()
     return requiredDirsExist;
 }
 
-void applyUpdatesForDatabase(std::string database)
-{
-    const std::string sqlUpdateDir = "sql/" + database + "/updates";
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // 1. get current version
-    QueryResult* result;
-
-    if (database == "character")
-        result = CharacterDatabase.Query("SELECT LastUpdate FROM character_db_version ORDER BY LastUpdate DESC LIMIT 1");
-    else
-        result = WorldDatabase.Query("SELECT LastUpdate FROM world_db_version ORDER BY LastUpdate DESC LIMIT 1");
-
-    if (!result)
-    {
-        LogError("%s_db_version query failed!", database.c_str());
-        return;
-    }
-
-    Field* fields = result->Fetch();
-    const std::string dbLastUpdate = fields[0].GetString();
-
-    LogDetail(" %s Database Version : %s", database.c_str(), dbLastUpdate.c_str());
-
-    const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
-    const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // 2. check if update folder exist in *dir*/sql/
-    std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
-
-    uint32_t count = 0;
-    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
-    {
-        const std::string filePathName = p.path().string();
-
-        std::string fileName = filePathName;
-        fileName.erase(0, sqlUpdateDir.size() + 1);
-
-        const uint32_t majorVersion = Util::readMajorVersionFromString(fileName);
-        const uint32_t minorVersion = Util::readMinorVersionFromString(fileName);
-
-        DatabaseUpdateFile dbUpdateFile;
-        dbUpdateFile.fullName = filePathName;
-        dbUpdateFile.majorVersion = majorVersion;
-        dbUpdateFile.minorVersion = minorVersion;
-
-        //\todo Remove me
-        LogDetail("Available file in updates dir: %s", filePathName.c_str());
-
-        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
-        ++count;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // 3. save filenames into vector, when newer than current db version
-    std::map<uint32_t, DatabaseUpdateFile> applyNewUpdateFilesStore;
-
-    if (!updateSqlStore.empty())
-    {
-        LogDebugFlag(LF_DB_TABLES, "=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
-        //compare it with latest update in mysql
-        for (const auto update : updateSqlStore)
-        {
-            bool addToUpdateFiles = false;
-            if (update.second.majorVersion == lastUpdateMajor && update.second.minorVersion > lastUpdateMinor)
-                addToUpdateFiles = true;
-
-            if (update.second.majorVersion > lastUpdateMajor)
-                addToUpdateFiles = true;
-
-            if (addToUpdateFiles)
-            {
-                applyNewUpdateFilesStore.insert(update);
-                LogDebugFlag(LF_DB_TABLES, "Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
-            }
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // 4. open/parse files and apply to db
-    if (!applyNewUpdateFilesStore.empty())
-    {
-        LogDebugFlag(LF_DB_TABLES, "=========== Applying sql updates from %s ===========", sqlUpdateDir.c_str());
-
-        for (const auto execute : applyNewUpdateFilesStore)
-        {
-            const fs::path sqlFile = fs::current_path() /= execute.second.fullName;
-
-            if (fs::exists(sqlFile))
-            {
-                LogDebugFlag(LF_DB_TABLES, "%s", execute.second.fullName.c_str());
-                std::string loadedFile = Util::readFileIntoString(sqlFile);
-
-                // split into seperated string
-                std::vector<std::string> seglist;
-                std::string delimiter = ";\n";
-
-                size_t pos = 0;
-                std::string token;
-                while ((pos = loadedFile.find(delimiter)) != std::string::npos)
-                {
-                    token = loadedFile.substr(0, pos);
-                    seglist.push_back(token + ";");
-                    loadedFile.erase(0, pos + delimiter.length());
-                }
-
-                for (const auto& statements : seglist)
-                {
-                    if (database == "character")
-                        CharacterDatabase.ExecuteNA(statements.c_str());
-                    else
-                        WorldDatabase.ExecuteNA(statements.c_str());
-                }
-            }
-        }
-    }
-}
-
 void testFileSystem()
 {
     createExtendedLogDir();
 
     checkRequiredDirs();
 
-    applyUpdatesForDatabase("world");
-    applyUpdatesForDatabase("character");
 }
 #endif
 /////////////////////////////////////////////////////////////////////////////
@@ -347,6 +219,12 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
     testFileSystem();
+
+    const std::string dbName = worldConfig.charDb.dbName;
+    DatabaseUpdater::initBaseIfNeeded(dbName, "character", CharacterDatabase);
+
+    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("character", CharacterDatabase);
+    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("world", WorldDatabase);
 #endif
 
     if (!_CheckDBVersion())
