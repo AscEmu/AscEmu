@@ -220,10 +220,12 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
     testFileSystem();
 
-    const std::string dbName = worldConfig.charDb.dbName;
-    DatabaseUpdater::initBaseIfNeeded(dbName, "character", CharacterDatabase);
-
+    const std::string charDbName = worldConfig.charDb.dbName;
+    DatabaseUpdater::initBaseIfNeeded(charDbName, "character", CharacterDatabase);
     DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("character", CharacterDatabase);
+
+    const std::string worldDbName = worldConfig.worldDb.dbName;
+    DatabaseUpdater::initBaseIfNeeded(worldDbName, "world", WorldDatabase);
     DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("world", WorldDatabase);
 #endif
 

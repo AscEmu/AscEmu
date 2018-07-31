@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/Field.h"
 #include "Common.hpp"
 #include "Util.hpp"
+#include <iostream>
 
 void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer)
 {
@@ -19,10 +20,39 @@ void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseTyp
         setupDatabase(dbBaseType, dbPointer);
     }
 
-    while (dbPointer.GetQueueSize() > 0)
+    // save 100% (current queue)
+    if (auto const queue = dbPointer.GetQueueSize())
     {
-        LogDetail("-- busy creating database \"%s\". Waiting for %u queries to be executed.", dbName.c_str(), dbPointer.GetQueueSize());
-        Arcemu::Sleep(500);
+        // set up bar size
+        const int barSize = 70;
+
+        // set up progress
+        float currentProgress = 0.0f;
+
+        // update the line
+        while (currentProgress < 1.0f)
+        {
+            // calc percentage
+            const uint32_t sendQueues = queue - dbPointer.GetQueueSize();
+            currentProgress = static_cast<float>(sendQueues) / static_cast<float>(queue);
+
+            std::cout << "Creating '" << dbName << "' : ";
+            const auto position = static_cast<int>(barSize * currentProgress);
+            for (auto i = 0; i < barSize; ++i)
+            {
+                if (i < position)
+                    std::cout << "-";
+                else if (i == position)
+                    std::cout << ">";
+                else
+                    std::cout << " ";
+            }
+
+            std::cout << " | " << int(currentProgress * 100.0f) << " %\r";
+            std::cout.flush();
+
+            Arcemu::Sleep(250);
+        }
     }
 }
 
