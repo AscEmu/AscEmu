@@ -48,8 +48,14 @@ void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseTyp
                     std::cout << " ";
             }
 
-            std::cout << " | " << int(currentProgress * 100.0f) << " %\r";
-            std::cout.flush();
+            std::cout << " | " << int(currentProgress * 100.0f);
+            if (currentProgress < 1.0f)
+            {
+                std::cout << " %\r";
+                std::cout.flush();
+            }
+            else
+                std::cout << " %\n";
 
             Arcemu::Sleep(250);
         }
@@ -60,7 +66,7 @@ void DatabaseUpdater::setupDatabase(std::string database, Database& dbPointer)
 {
     const std::string sqlBaseDir = "sql/" + database;
     fs::path baseFilePath = fs::current_path();
-    baseFilePath /= sqlBaseDir + "/" + database + "_structure.sql";
+    baseFilePath /= sqlBaseDir + "/" + database + "_base.sql";
 
     if (fs::exists(baseFilePath))
     {
