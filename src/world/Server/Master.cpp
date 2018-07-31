@@ -161,14 +161,6 @@ bool checkRequiredDirs()
 
     return requiredDirsExist;
 }
-
-void testFileSystem()
-{
-    createExtendedLogDir();
-
-    checkRequiredDirs();
-
-}
 #endif
 /////////////////////////////////////////////////////////////////////////////
 
@@ -218,7 +210,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     }
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
-    testFileSystem();
+    createExtendedLogDir();
+
+    checkRequiredDirs();
 
     const std::string charDbName = worldConfig.charDb.dbName;
     DatabaseUpdater::initBaseIfNeeded(charDbName, "character", CharacterDatabase);
