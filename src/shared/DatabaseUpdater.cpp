@@ -11,6 +11,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util.hpp"
 #include <iostream>
 
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
+#if (WIN32 || _WIN64)
+#include <filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem::v1;
+#endif
+#endif
+
 void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer)
 {
     QueryResult* dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
