@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util.hpp"
 #include <iostream>
 
-
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
 void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer)
 {
     QueryResult* dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
@@ -221,3 +221,4 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
         }
     }
 }
+#endif

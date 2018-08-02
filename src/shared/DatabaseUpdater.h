@@ -4,8 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include <string>
 
+#include <string>
+#include "Common.hpp"
+
+#ifdef USE_EXPERIMENTAL_FILESYSTEM
 class Database;
 
 class DatabaseUpdater
@@ -19,3 +22,4 @@ private:
     void static setupDatabase(std::string database,  Database& dbPointer);
     void static applyUpdatesForDatabase(std::string database, Database& dbPointer);
 };
+#endif
