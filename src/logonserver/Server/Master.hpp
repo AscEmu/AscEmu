@@ -33,13 +33,14 @@ class LogonServer : public Singleton< LogonServer >
 {
     public:
 
+        bool LoadLogonConfiguration();
         void CheckForDeadSockets();
         void Run(int argc, char** argv);
         void Stop();
 
         bool StartDb();
         bool CheckDBVersion();
-        bool LoadLogonConfiguration();
+        bool SetLogonConfiguration();
 
         bool IsServerAllowed(unsigned int IP);
         bool IsServerAllowedMod(unsigned int IP);

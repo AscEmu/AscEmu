@@ -3,6 +3,10 @@
 set(PATH_PREFIX Server)
 
 set(SRC_SERVER_FILES
+   ${PATH_PREFIX}/Logon.cpp
+   ${PATH_PREFIX}/Logon.h
+   ${PATH_PREFIX}/LogonConfig.cpp
+   ${PATH_PREFIX}/LogonConfig.h
    ${PATH_PREFIX}/LogonServerDefines.hpp
    ${PATH_PREFIX}/Main.cpp
    ${PATH_PREFIX}/Master.cpp

@@ -20,6 +20,7 @@
 #include <Threading/AEThreadPool.h>
 #include "Util.hpp"
 #include "DatabaseUpdater.h"
+#include "Logon.h"
 
 using AscEmu::Threading::AEThread;
 using AscEmu::Threading::AEThreadPool;
@@ -47,6 +48,7 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
 
     LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 
+    new Logon;
     LogDetail("Config : Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
@@ -54,7 +56,13 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-    AscLog.SetFileLoggingLevel(Config.MainConfig.getIntDefault("LogLevel", "File", 0));
+    if (!SetLogonConfiguration())
+    {
+        AscLog.~AscEmuLog();
+        return;
+    }
+
+    AscLog.SetFileLoggingLevel(logonConfig.logLevel.file);
 
     LogDetail("ThreadMgr : Starting...");
     ThreadPool.Startup();
@@ -66,8 +74,7 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     }
 
 #ifdef USE_EXPERIMENTAL_FILESYSTEM
-    const std::string dbName = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
-    DatabaseUpdater::initBaseIfNeeded(dbName, "logon", *sLogonSQL);
+    DatabaseUpdater::initBaseIfNeeded(logonConfig.logonDb.db, "logon", *sLogonSQL);
 
     DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("logon", *sLogonSQL);
 #endif
@@ -96,8 +103,7 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     LogDetail("Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
 
     // Spawn periodic function caller thread for account reload every 10mins
-    uint32 accountReloadPeriod = Config.MainConfig.getIntDefault("Rates", "AccountRefresh", 600);
-    accountReloadPeriod *= 1000;
+    const uint32 accountReloadPeriod = logonConfig.rates.accountRefreshTime * 1000;
 
     PeriodicFunctionCaller<AccountMgr> * periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
     ThreadPool.ExecuteTask(periodicReloadAccounts);
@@ -108,18 +114,11 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     ThreadPool.ExecuteTask(checkRealmStatusFromPing);
 
     // Load conf settings..
-    uint32 realmlistPort = Config.MainConfig.getIntDefault("Listen", "RealmListPort", 3724);
-    uint32 logonServerPort = Config.MainConfig.getIntDefault("Listen", "ServerPort", 8093);
-
-    std::string host = Config.MainConfig.getStringDefault("Listen", "Host", "0.0.0.0");
-    std::string shost = Config.MainConfig.getStringDefault("Listen", "ISHost", host.c_str());
-
     clientMinBuild = 5875;
     clientMaxBuild = 15595;
 
-    std::string logonServerPassword = Config.MainConfig.getStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
-    hash.UpdateData(logonServerPassword);
+    hash.UpdateData(logonConfig.logonServer.remotePassword);
     hash.Finalize();
     memcpy(sql_hash, hash.GetDigest(), 20);
 
@@ -128,8 +127,8 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     new SocketMgr;
     new SocketGarbageCollector;
 
-    ListenSocket<AuthSocket> * realmlistSocket = new ListenSocket<AuthSocket>(host.c_str(), realmlistPort);
-    ListenSocket<LogonCommServerSocket> * logonServerSocket = new ListenSocket<LogonCommServerSocket>(shost.c_str(), logonServerPort);
+    auto realmlistSocket = new ListenSocket<AuthSocket>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
+    auto logonServerSocket = new ListenSocket<LogonCommServerSocket>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
 
     sSocketMgr.SpawnWorkerThreads();
 
@@ -300,12 +299,12 @@ void LogonServer::_UnhookSignals()
 
 bool LogonServer::StartDb()
 {
-    std::string dbHostname = Config.MainConfig.getStringDefault("LogonDatabase", "Hostname", "");
-    std::string dbUsername = Config.MainConfig.getStringDefault("LogonDatabase", "Username", "");
-    std::string dbPassword = Config.MainConfig.getStringDefault("LogonDatabase", "Password", "");
-    std::string dbDatabase = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
+    std::string dbHostname = logonConfig.logonDb.host;
+    std::string dbUsername = logonConfig.logonDb.user;
+    std::string dbPassword = logonConfig.logonDb.password;
+    std::string dbDatabase = logonConfig.logonDb.db;
 
-    int dbPort = Config.MainConfig.getIntDefault("LogonDatabase", "Port", 3306);
+    int dbPort = logonConfig.logonDb.port;
 
     // Configure Main Database
     bool existsUsername = !dbUsername.empty();
@@ -346,7 +345,7 @@ bool LogonServer::StartDb()
 
     // Initialize it
     if (!sLogonSQL->Initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
-        dbPassword.c_str(), dbDatabase.c_str(), Config.MainConfig.getIntDefault("LogonDatabase", "ConnectionCount", 5),
+        dbPassword.c_str(), dbDatabase.c_str(), logonConfig.logonDb.connections,
         16384))
     {
         LOG_ERROR("sql: Logon database initialization failed. Exiting.");
@@ -410,19 +409,25 @@ std::vector<AllowedIP> m_allowedModIps;
 
 bool LogonServer::LoadLogonConfiguration()
 {
-    char* config_file = (char*)CONFDIR "/logon.conf";
-    if (!Config.MainConfig.openAndLoadConfigFile(config_file))
+    if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/logon.conf"))
     {
-        LOG_ERROR("Config file could not be rehashed.");
+        LogDetail("Config : " CONFDIR "/logon.conf loaded");
+    }
+    else
+    {
+        LogError("Config : error occurred loading " CONFDIR "/logon.conf");
         return false;
     }
 
-    // re-set the allowed server IP's
-    std::string allowedIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedIPs", "");
-    std::vector<std::string> vips = Util::SplitStringBySeperator(allowedIps, " ");
+    return true;
+}
 
-    std::string allowedModIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedModIPs", "");
-    std::vector<std::string> vipsmod = Util::SplitStringBySeperator(allowedModIps, " ");
+bool LogonServer::SetLogonConfiguration()
+{
+    logonConfig.loadConfigValues();
+
+    std::vector<std::string> allowedIPs = Util::SplitStringBySeperator(logonConfig.logonServer.allowedIps, " ");
+    std::vector<std::string> allowedModIPs = Util::SplitStringBySeperator(logonConfig.logonServer.allowedModIps, " ");
 
     m_allowedIpLock.Acquire();
     m_allowedIps.clear();
@@ -430,23 +435,23 @@ bool LogonServer::LoadLogonConfiguration()
 
     std::vector<std::string>::iterator itr;
 
-    for (itr = vips.begin(); itr != vips.end(); ++itr)
+    for (const auto allowedIP : allowedIPs)
     {
-        std::string::size_type i = itr->find("/");
+        std::string::size_type i = allowedIP.find('/');
         if (i == std::string::npos)
         {
-            LOG_ERROR("Ips: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
             continue;
         }
 
-        std::string stmp = itr->substr(0, i);
-        std::string smask = itr->substr(i + 1);
+        std::string stmp = allowedIP.substr(0, i);
+        std::string smask = allowedIP.substr(i + 1);
 
-        unsigned int ipraw = MakeIP(stmp.c_str());
-        unsigned char ipmask = (char)atoi(smask.c_str());
+        const unsigned int ipraw = MakeIP(stmp.c_str());
+        const unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
-            LOG_ERROR("Ips: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
             continue;
         }
 
@@ -456,23 +461,23 @@ bool LogonServer::LoadLogonConfiguration()
         m_allowedIps.push_back(tmp);
     }
 
-    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    for (const auto allowedModIP : allowedModIPs)
     {
-        std::string::size_type i = itr->find("/");
+        std::string::size_type i = allowedModIP.find('/');
         if (i == std::string::npos)
         {
-            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
             continue;
         }
 
-        std::string stmp = itr->substr(0, i);
-        std::string smask = itr->substr(i + 1);
+        std::string stmp = allowedModIP.substr(0, i);
+        std::string smask = allowedModIP.substr(i + 1);
 
         unsigned int ipraw = MakeIP(stmp.c_str());
         unsigned char ipmask = (char)atoi(smask.c_str());
         if (ipraw == 0 || ipmask == 0)
         {
-            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
             continue;
         }
 
@@ -482,7 +487,7 @@ bool LogonServer::LoadLogonConfiguration()
         m_allowedModIps.push_back(tmp);
     }
 
-    if (InformationCore::getSingletonPtr() != NULL)
+    if (InformationCore::getSingletonPtr() != nullptr)
         sInfoCore.CheckServers();
 
     m_allowedIpLock.Release();
