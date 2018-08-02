@@ -1,23 +1,9 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _LOGON_MASTER_HPP
-#define _LOGON_MASTER_HPP
+#pragma once
 
 #include "../shared/Singleton.h"
 #include "LogonServerDefines.hpp"
@@ -28,8 +14,8 @@ class AuthSocket;
 extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
 
-class LogonServer;
-class LogonServer : public Singleton< LogonServer >
+class MasterLogon;
+class MasterLogon : public Singleton<MasterLogon>
 {
     public:
 
@@ -62,6 +48,4 @@ class LogonServer : public Singleton< LogonServer >
         bool m_stopEvent;
 };
 
-#define sLogonServer LogonServer::getSingleton()
-
-#endif      //_LOGON_MASTER_HPP
+#define sMasterLogon MasterLogon::getSingleton()

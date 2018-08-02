@@ -602,7 +602,7 @@ void AuthSocket::HandleReconnectChallenge()
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
-    if (m_challenge.build > sLogonServer.clientMaxBuild || m_challenge.build < sLogonServer.clientMinBuild)
+    if (m_challenge.build > sMasterLogon.clientMaxBuild || m_challenge.build < sMasterLogon.clientMinBuild)
     {
         SendChallengeError(CE_WRONG_BUILD_NUMBER);
         return;

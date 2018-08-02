@@ -25,7 +25,7 @@ initialiseSingleton(LogonConsole);
 void LogonConsole::TranslateRehash(char* /*str*/)
 {
     LogDefault("rehashing config file...");
-    if (sLogonServer.LoadLogonConfiguration())
+    if (sMasterLogon.LoadLogonConfiguration())
         LogDefault("Rehashing config file finished succesfull!");
 }
 
@@ -236,8 +236,8 @@ void LogonConsole::Info(char* /*str*/)
 {
     std::cout << "LogonServer information" << std::endl;
     std::cout << "-----------------------" << std::endl;
-    std::cout << "CPU Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentCPUUsage() << " %" << std::endl;
-    std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << " MB" << std::endl;
+    std::cout << "CPU Usage: " << MasterLogon::getSingleton().perfcounter.GetCurrentCPUUsage() << " %" << std::endl;
+    std::cout << "RAM Usage: " << MasterLogon::getSingleton().perfcounter.GetCurrentRAMUsage() << " MB" << std::endl;
 }
 
 void LogonConsole::AccountCreate(char* str)

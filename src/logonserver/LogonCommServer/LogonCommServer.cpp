@@ -58,7 +58,7 @@ void LogonCommServerSocket::OnDisconnect()
 
 void LogonCommServerSocket::OnConnect()
 {
-    if (!sLogonServer.IsServerAllowed(GetRemoteAddress().s_addr))
+    if (!sMasterLogon.IsServerAllowed(GetRemoteAddress().s_addr))
     {
         LOG_ERROR("Server connection from %s:%u DENIED, not an allowed IP.", GetRemoteIP().c_str(), GetRemotePort());
         Disconnect();
@@ -314,7 +314,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     recvData >> realmId;
 
     // check if we have the correct password
-    if (memcmp(key, LogonServer::getSingleton().sql_hash, 20))
+    if (memcmp(key, MasterLogon::getSingleton().sql_hash, 20))
         result = 0;
 
     LogDefault("Authentication request from %s, id %u - result %s.", GetRemoteIP().c_str(), uint32_t(realmId), result ? "OK" : "FAIL");

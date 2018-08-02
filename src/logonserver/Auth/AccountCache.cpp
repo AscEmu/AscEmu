@@ -631,7 +631,7 @@ void InformationCore::CheckServers()
         it2 = itr;
         ++itr;
 
-        if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))
+        if (!sMasterLogon.IsServerAllowed(s->GetRemoteAddress().s_addr))
         {
             LOG_DETAIL("Disconnecting socket: %s due to it no longer being on an allowed IP.", s->GetRemoteIP().c_str());
             s->Disconnect();

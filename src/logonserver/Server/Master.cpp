@@ -1,19 +1,6 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "LogonStdAfx.h"
@@ -28,7 +15,7 @@ using std::chrono::milliseconds;
 
 // Database impl
 Database* sLogonSQL;
-initialiseSingleton(LogonServer);
+initialiseSingleton(MasterLogon);
 std::atomic<bool> mrunning(true);
 Mutex _authSocketLock;
 std::set<AuthSocket*> _authSockets;
@@ -37,7 +24,7 @@ ConfigMgr Config;
 
 static const char* REQUIRED_LOGON_DB_VERSION = "20180729-00_logon_db_version";
 
-void LogonServer::Run(int /*argc*/, char** /*argv*/)
+void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 {
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
@@ -222,7 +209,7 @@ void OnCrash(bool /*Terminate*/)
 
 }
 
-void LogonServer::CheckForDeadSockets()
+void MasterLogon::CheckForDeadSockets()
 {
     _authSocketLock.Acquire();
     time_t t = time(NULL);
@@ -248,7 +235,7 @@ void LogonServer::CheckForDeadSockets()
     _authSocketLock.Release();
 }
 
-void LogonServer::PrintBanner()
+void MasterLogon::PrintBanner()
 {
     AscLog.ConsoleLogDefault(false, "<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     AscLog.ConsoleLogDefault(false, "========================================================");
@@ -256,7 +243,7 @@ void LogonServer::PrintBanner()
     AscLog.ConsoleLogError(true, "========================================================"); // Echo off.
 }
 
-void LogonServer::WritePidFile()
+void MasterLogon::WritePidFile()
 {
     FILE* pidFile = fopen("logonserver.pid", "w");
     if (pidFile)
@@ -272,7 +259,7 @@ void LogonServer::WritePidFile()
     }
 }
 
-void LogonServer::_HookSignals()
+void MasterLogon::_HookSignals()
 {
     LogDefault("Hooking signals...");
     signal(SIGINT, _OnSignal);
@@ -285,7 +272,7 @@ void LogonServer::_HookSignals()
 #endif
 }
 
-void LogonServer::_UnhookSignals()
+void MasterLogon::_UnhookSignals()
 {
     signal(SIGINT, 0);
     signal(SIGTERM, 0);
@@ -297,7 +284,7 @@ void LogonServer::_UnhookSignals()
 #endif
 }
 
-bool LogonServer::StartDb()
+bool MasterLogon::StartDb()
 {
     std::string dbHostname = logonConfig.logonDb.host;
     std::string dbUsername = logonConfig.logonDb.user;
@@ -355,7 +342,7 @@ bool LogonServer::StartDb()
     return true;
 }
 
-bool LogonServer::CheckDBVersion()
+bool MasterLogon::CheckDBVersion()
 {
     QueryResult* versionQuery = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
     if (!versionQuery)
@@ -407,7 +394,7 @@ Mutex m_allowedIpLock;
 std::vector<AllowedIP> m_allowedIps;
 std::vector<AllowedIP> m_allowedModIps;
 
-bool LogonServer::LoadLogonConfiguration()
+bool MasterLogon::LoadLogonConfiguration()
 {
     if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/logon.conf"))
     {
@@ -422,7 +409,7 @@ bool LogonServer::LoadLogonConfiguration()
     return true;
 }
 
-bool LogonServer::SetLogonConfiguration()
+bool MasterLogon::SetLogonConfiguration()
 {
     logonConfig.loadConfigValues();
 
@@ -495,7 +482,7 @@ bool LogonServer::SetLogonConfiguration()
     return true;
 }
 
-bool LogonServer::IsServerAllowed(unsigned int IP)
+bool MasterLogon::IsServerAllowed(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
     for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
@@ -510,7 +497,7 @@ bool LogonServer::IsServerAllowed(unsigned int IP)
     return false;
 }
 
-bool LogonServer::IsServerAllowedMod(unsigned int IP)
+bool MasterLogon::IsServerAllowedMod(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
     for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
@@ -525,7 +512,7 @@ bool LogonServer::IsServerAllowedMod(unsigned int IP)
     return false;
 }
 
-void LogonServer::_OnSignal(int s)
+void MasterLogon::_OnSignal(int s)
 {
     switch (s)
     {

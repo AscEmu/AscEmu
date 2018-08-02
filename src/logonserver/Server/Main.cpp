@@ -33,8 +33,8 @@ int main(int argc, char** argv)
     }
 #endif
 
-    new LogonServer;
+    new MasterLogon;
 
-    sLogonServer.Run(argc, argv);
-    delete LogonServer::getSingletonPtr();
+    sMasterLogon.Run(argc, argv);
+    delete MasterLogon::getSingletonPtr();
 }
