@@ -19,6 +19,7 @@
 
 #include "LogonStdAfx.h"
 #include "LogonConsole.h"
+#include "Server/Logon.h"
 
 initialiseSingleton(LogonConsole);
 
@@ -236,8 +237,8 @@ void LogonConsole::Info(char* /*str*/)
 {
     std::cout << "LogonServer information" << std::endl;
     std::cout << "-----------------------" << std::endl;
-    std::cout << "CPU Usage: " << MasterLogon::getSingleton().perfcounter.GetCurrentCPUUsage() << " %" << std::endl;
-    std::cout << "RAM Usage: " << MasterLogon::getSingleton().perfcounter.GetCurrentRAMUsage() << " MB" << std::endl;
+    std::cout << "CPU Usage: " << sLogon.getCPUUsage() << " %" << std::endl;
+    std::cout << "RAM Usage: " << sLogon.getRAMUsage() << " MB" << std::endl;
 }
 
 void LogonConsole::AccountCreate(char* str)

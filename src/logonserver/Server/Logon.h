@@ -14,13 +14,21 @@ class SERVER_DECL Logon : public Singleton<Logon>
         Logon();
         ~Logon();
 
-    private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // LogonConfig
     public:
         LogonConfig settings;
 
         void loadLogonConfigValues(bool reload = false);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // InfoCore
+    private:
+        Arcemu::PerformanceCounter perfcounter;
+
+    public:
+        float getCPUUsage();
+        float getRAMUsage();
 };
 
 #define sLogon Logon::getSingleton()

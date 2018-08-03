@@ -19,3 +19,13 @@ void Logon::loadLogonConfigValues(bool reload /*false*/)
 {
     settings.loadConfigValues(reload);
 }
+
+float Logon::getCPUUsage()
+{
+    return perfcounter.GetCurrentCPUUsage();
+}
+
+float Logon::getRAMUsage()
+{
+    return perfcounter.GetCurrentRAMUsage();
+}

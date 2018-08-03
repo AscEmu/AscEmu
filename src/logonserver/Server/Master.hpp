@@ -38,7 +38,6 @@ class MasterLogon : public Singleton<MasterLogon>
         uint32 clientMinBuild;
         uint32 clientMaxBuild;
 
-        Arcemu::PerformanceCounter perfcounter;
     private:
 
         void _HookSignals();
