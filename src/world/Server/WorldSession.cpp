@@ -37,6 +37,7 @@
 #include "Packets/SmsgGuildCommandResult.h"
 #include "Packets/SmsgGuildInvite.h"
 #include "Management/Guild.h"
+#include "CharacterErrors.h"
 
 
 using namespace AscEmu::Packets;
@@ -1333,7 +1334,7 @@ void WorldSession::Disconnect()
 }
 
 //\todo replace leftovers from legacy CharacterHandler.cpp file
-LoginErrorCode VerifyName(const char* name, size_t nlen)
+CharacterErrorCodes VerifyName(const char* name, size_t nlen)
 {
     const char* p;
     size_t i;

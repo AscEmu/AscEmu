@@ -29,7 +29,7 @@
 #include "Management/Container.h"
 #include "Server/Packets/Opcode.h"
 #include "Objects/DynamicObject.h"
-#include "AuthCodes.h"
+#include "Server/CharacterErrors.h"
 #include "VMapFactory.h"
 #include "Management/HonorHandler.h"
 #include "Storage/WorldStrings.h"

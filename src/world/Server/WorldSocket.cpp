@@ -22,7 +22,7 @@
 // reading/writing of all packets.
 
 #include "StdAfx.h"
-#include "AuthCodes.h"
+#include "Server/CharacterErrors.h"
 #include "Management/AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"

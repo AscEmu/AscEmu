@@ -32,6 +32,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgCharEnum.h"
 #include "Management/GuildMgr.h"
+#include "Server/CharacterErrors.h"
+#include "AuthCodes.h"
 
 
 using namespace AscEmu::Packets;

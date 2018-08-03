@@ -83,6 +83,7 @@
 #include "Server/UpdateFieldInclude.h"
 #include "Server/UpdateMask.h"
 #include "Server/Packets/Opcode.h"
+#include "Server/CharacterErrors.h"
 
 #include "Management/WordFilter.h"
 #include "Server/EventMgr.h"

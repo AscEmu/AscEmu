@@ -3,6 +3,7 @@
 set(PATH_PREFIX Server)
 
 set(SRC_SERVER_FILES
+   ${PATH_PREFIX}/CharacterErrors.h
    ${PATH_PREFIX}/BroadcastMgr.cpp
    ${PATH_PREFIX}/BroadcastMgr.h
    ${PATH_PREFIX}/Definitions.h

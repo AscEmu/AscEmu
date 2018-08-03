@@ -26,7 +26,7 @@
 #include "Management/Quest.h"
 #include "FastQueue.h"
 #include "Units/Unit.h"
-#include "AuthCodes.h"
+#include "Server/CharacterErrors.h"
 #include "Data/Flags.h"
 #if VERSION_STRING == Cata
     #include "Management/AddonMgr.h"
@@ -133,7 +133,7 @@ struct CharCreate
 };
 
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
-extern LoginErrorCode VerifyName(const char* name, size_t nlen);
+extern CharacterErrorCodes VerifyName(const char* name, size_t nlen);
 
 class SERVER_DECL WorldSession
 {
