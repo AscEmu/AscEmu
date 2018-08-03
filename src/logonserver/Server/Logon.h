@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LogonConfig.h"
 #include "Singleton.h"
+#include "PerformanceCounter.hpp"
 
 class SERVER_DECL Logon : public Singleton<Logon>
 {
