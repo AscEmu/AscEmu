@@ -287,6 +287,11 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         player->setStandState(STANDSTATE_SIT);
+#if VERSION_STRING == TBC
+        WorldPacket packet(SMSG_STANDSTATE_UPDATE, 1);
+        packet << uint8_t(STANDSTATE_SIT);
+        player->SendPacket(&packet);
+#endif
         SetLogoutTimer(20000);
     }
 }

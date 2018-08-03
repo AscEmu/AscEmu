@@ -785,6 +785,12 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     //unroot player
     pPlayer->setMoveRoot(false);
 
+#if VERSION_STRING == TBC
+    WorldPacket packet(SMSG_STANDSTATE_UPDATE, 1);
+    packet << uint8_t(STANDSTATE_STAND);
+    pPlayer->SendPacket(&packet);
+#endif
+
     // Remove the "player locked" flag, to allow movement
     pPlayer->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
