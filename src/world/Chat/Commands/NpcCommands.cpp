@@ -499,6 +499,13 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Is spawnd by an internal script");
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // equipment
+    GreenSystemMessage(m_session, "Equipment ============================");
+    GreenSystemMessage(m_session, "-- Melee: %u (displayid)", creature_target->getVirtualItemSlotId(MELEE));
+    GreenSystemMessage(m_session, "-- Offhand: %u (displayid)", creature_target->getVirtualItemSlotId(OFFHAND));
+    GreenSystemMessage(m_session, "-- Ranged: %u (displayid)", creature_target->getVirtualItemSlotId(RANGED));
+
 
     return true;
 }
