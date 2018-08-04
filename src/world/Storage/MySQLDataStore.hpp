@@ -293,6 +293,8 @@ public:
 
     void loadGossipMenuItemsTable();
 
+    void checkCreatureEquipment();
+
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;

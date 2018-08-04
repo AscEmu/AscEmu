@@ -507,8 +507,6 @@ uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
     if (entry != 0)
     {
         // get display id for equipped item entry
-        uint32_t itemDisplayId = 0;
-
         uint32_t dbcDisplay = 0;
         uint32_t mysqlDisplay = 0;
 
@@ -519,10 +517,16 @@ uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
             mysqlDisplay = itemProperties->DisplayInfoID;
 
         if (mysqlDisplay != 0 && mysqlDisplay != dbcDisplay)
-            return mysqlDisplay;
+        {
+            if (const auto itemDisplayInfo = sItemDisplayInfoStore.LookupEntry(mysqlDisplay))
+                return mysqlDisplay;
+        }
 
-        if (dbcDisplay != 0 && mysqlDisplay == 0)
+        if (dbcDisplay != 0)
+        {
+            LogDebugFlag(LF_DB_TABLES, "Item entry %u not available in item_properties or has an invalid displayId! Using dbcDisplayId %u!", entry, dbcDisplay);
             return dbcDisplay;
+        }
 
         LogDebugFlag(LF_DB_TABLES, "Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
     }
@@ -4023,4 +4027,49 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
         LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
     }
+}
+
+void MySQLDataStore::checkCreatureEquipment()
+{
+    LogDebugFlag(LF_DB_TABLES, "===================== Start check for creature_initial_equip ================================");
+
+    QueryResult* resultItems = WorldDatabase.Query("SELECT itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip");
+    if (resultItems)
+    {
+        do
+        {
+            Field* fields = resultItems->Fetch();
+            if (fields[0].GetUInt32())
+                getItemDisplayIdForEntry(fields[0].GetUInt32());
+            if (fields[1].GetUInt32())
+                getItemDisplayIdForEntry(fields[1].GetUInt32());
+            if (fields[2].GetUInt32())
+                getItemDisplayIdForEntry(fields[2].GetUInt32());
+
+        } while (resultItems->NextRow());
+
+        delete resultItems;
+    }
+
+    LogDebugFlag(LF_DB_TABLES, "===================== End check for creature_initial_equip ================================");
+    LogDebugFlag(LF_DB_TABLES, "===================== Start check for creature_spawns ================================");
+
+    QueryResult* resultItemsSpawn = WorldDatabase.Query("SELECT slot1item, slot2item, slot3item FROM creature_spawns WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    if (resultItemsSpawn)
+    {
+        do
+        {
+            Field* fields = resultItemsSpawn->Fetch();
+            if (fields[0].GetUInt32())
+                getItemDisplayIdForEntry(fields[0].GetUInt32());
+            if (fields[1].GetUInt32())
+                getItemDisplayIdForEntry(fields[1].GetUInt32());
+            if (fields[2].GetUInt32())
+                getItemDisplayIdForEntry(fields[2].GetUInt32());
+
+        } while (resultItemsSpawn->NextRow());
+
+        delete resultItemsSpawn;
+    }
+    LogDebugFlag(LF_DB_TABLES, "===================== End check for creature_spawns ================================");
 }
