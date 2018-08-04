@@ -38,9 +38,9 @@ void GameEvent::CreateNPCs()
         c->SetFaction(npc.faction);
 
         // Equipment
-        c->setVirtualItemSlotId(MELEE, cp->itemslot_1);
-        c->setVirtualItemSlotId(OFFHAND, cp->itemslot_2);
-        c->setVirtualItemSlotId(RANGED, cp->itemslot_3);
+        c->setVirtualItemSlotId(MELEE, sMySQLStore.getItemDisplayIdForEntry(cp->itemslot_1));
+        c->setVirtualItemSlotId(OFFHAND, sMySQLStore.getItemDisplayIdForEntry(cp->itemslot_2));
+        c->setVirtualItemSlotId(RANGED, sMySQLStore.getItemDisplayIdForEntry(cp->itemslot_3));
 
         if (npc.mountdisplayid != 0)
             c->setMountDisplayId(npc.mountdisplayid);

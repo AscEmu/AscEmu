@@ -146,9 +146,14 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     spawn->channel_spell = 0;
     spawn->MountedDisplayID = 0;
 
-    spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_1);
-    spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_2);
-    spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_3);
+    spawn->Item1SlotEntry = creature_properties->itemslot_1;
+    spawn->Item2SlotEntry = creature_properties->itemslot_2;
+    spawn->Item3SlotEntry = creature_properties->itemslot_3;
+
+    spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item1SlotEntry);
+    spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item2SlotEntry);
+    spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item3SlotEntry);
+
     spawn->CanFly = 0;
     spawn->phase = phase;
 

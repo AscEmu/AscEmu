@@ -421,9 +421,15 @@ void Creature::SaveToDB()
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID];
+
+        m_spawn->Item1SlotEntry = 0;
+        m_spawn->Item2SlotEntry = 0;
+        m_spawn->Item3SlotEntry = 0;
+
         m_spawn->Item1SlotDisplay = getVirtualItemSlotId(MELEE);
         m_spawn->Item2SlotDisplay = getVirtualItemSlotId(OFFHAND);
         m_spawn->Item3SlotDisplay = getVirtualItemSlotId(RANGED);
+
         if (GetAIInterface()->isFlying())
             m_spawn->CanFly = 1;
         else if (GetAIInterface()->onGameobject)
@@ -481,9 +487,9 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID] << ","
-        << getVirtualItemSlotId(MELEE) << ","
-        << getVirtualItemSlotId(OFFHAND) << ","
-        << getVirtualItemSlotId(RANGED) << ",";
+        << m_spawn->Item1SlotEntry << ","
+        << m_spawn->Item2SlotEntry << ","
+        << m_spawn->Item3SlotEntry << ",";
 
     if (GetAIInterface()->isFlying())
         ss << 1 << ",";
@@ -1382,6 +1388,16 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setVirtualItemSlotId(MELEE, spawn->Item1SlotDisplay);
     setVirtualItemSlotId(OFFHAND, spawn->Item2SlotDisplay);
     setVirtualItemSlotId(RANGED, spawn->Item3SlotDisplay);
+
+#if VERSION_STRING < WotLK
+    setVirtualItemInfo(0, 0);
+    setVirtualItemInfo(1, 0);
+    setVirtualItemInfo(2, 0);
+
+    setVirtualItemInfo(3, 0);
+    setVirtualItemInfo(4, 0);
+    setVirtualItemInfo(5, 0);
+#endif
 
     SetFaction(spawn->factionid);
     setUnitFlags(spawn->flags);

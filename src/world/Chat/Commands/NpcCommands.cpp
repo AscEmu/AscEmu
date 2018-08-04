@@ -724,9 +724,14 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->death_state = 0;
     creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
     creature_spawn->MountedDisplayID = 0;
-    creature_spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_1);
-    creature_spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_2);
-    creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_3);
+
+    creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
+    creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;
+    creature_spawn->Item3SlotEntry = creature_properties->itemslot_3;
+
+    creature_spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item1SlotEntry);
+    creature_spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item2SlotEntry);
+    creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item3SlotEntry);
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
 
@@ -1054,20 +1059,23 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     {
         case MELEE:
         {
-            GreenSystemMessage(m_session, "Melee slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed melee slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->spawnid);
+            creature_target->m_spawn->Item1SlotEntry = item_id;
+            GreenSystemMessage(m_session, "Melee slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed melee slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
             break;
         }
         case OFFHAND:
         {
-            GreenSystemMessage(m_session, "Offhand slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed offhand slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->spawnid);
+            creature_target->m_spawn->Item2SlotEntry = item_id;
+            GreenSystemMessage(m_session, "Offhand slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed offhand slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
             break;
         }
         case RANGED:
         {
-            GreenSystemMessage(m_session, "Ranged slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed ranged slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_id, creature_target->spawnid);
+            creature_target->m_spawn->Item3SlotEntry = item_id;
+            GreenSystemMessage(m_session, "Ranged slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed ranged slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
             break;
         }
         default:
@@ -1077,7 +1085,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    creature_target->setVirtualItemSlotId(equipment_slot, item_id);
+    creature_target->setVirtualItemSlotId(equipment_slot, item_entry->DisplayId);
     creature_target->SaveToDB();
     return true;
 }

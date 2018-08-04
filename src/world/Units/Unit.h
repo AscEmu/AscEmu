@@ -293,6 +293,11 @@ public:
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
+#if VERSION_STRING < WotLK
+    uint32_t getVirtualItemInfo(uint8_t offset) const;
+    void setVirtualItemInfo(uint8_t offset, uint32_t item_info);
+#endif
+
     uint32_t getUnitFlags() const;
     void setUnitFlags(uint32_t unitFlags);
     void addUnitFlags(uint32_t unitFlags);
