@@ -105,6 +105,7 @@ public:
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
     ItemProperties const* getItemProperties(uint32_t entry);
     ItemPropertiesContainer const* getItemPropertiesStore() { return &_itemPropertiesStore; }
+    uint32_t const getItemDisplayIdForEntry(uint32_t entry);
 
     CreatureProperties const* getCreatureProperties(uint32_t entry);
     CreaturePropertiesContainer const* getCreaturePropertiesStore() { return &_creaturePropertiesStore; }

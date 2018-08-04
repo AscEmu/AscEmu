@@ -724,9 +724,9 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->death_state = 0;
     creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
     creature_spawn->MountedDisplayID = 0;
-    creature_spawn->Item1SlotDisplay = creature_properties->itemslot_1;
-    creature_spawn->Item2SlotDisplay = creature_properties->itemslot_2;
-    creature_spawn->Item3SlotDisplay = creature_properties->itemslot_3;
+    creature_spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_1);
+    creature_spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_2);
+    creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_3);
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
 

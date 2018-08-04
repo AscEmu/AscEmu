@@ -207,9 +207,9 @@ void Map::LoadSpawns(bool reload)
                     cspawn->stand_state = fields[21].GetUInt16();
                     cspawn->death_state = fields[22].GetUInt32();
                     cspawn->MountedDisplayID = fields[23].GetUInt32();
-                    cspawn->Item1SlotDisplay = fields[24].GetUInt32();
-                    cspawn->Item2SlotDisplay = fields[25].GetUInt32();
-                    cspawn->Item3SlotDisplay = fields[26].GetUInt32();
+                    cspawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(fields[24].GetUInt32());
+                    cspawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(fields[25].GetUInt32());
+                    cspawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(fields[26].GetUInt32());
                     cspawn->CanFly = fields[27].GetUInt32();
 
                     cspawn->phase = fields[28].GetUInt32();

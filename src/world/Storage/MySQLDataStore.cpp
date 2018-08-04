@@ -502,6 +502,34 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
     return nullptr;
 }
 
+uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
+{
+    if (entry != 0)
+    {
+        // get display id for equipped item entry
+        uint32_t itemDisplayId = 0;
+
+        uint32_t dbcDisplay = 0;
+        uint32_t mysqlDisplay = 0;
+
+        if (const auto ItemDBC = sItemStore.LookupEntry(entry))
+            dbcDisplay = ItemDBC->DisplayId;
+
+        if (const auto itemProperties = getItemProperties(entry))
+            mysqlDisplay = itemProperties->DisplayInfoID;
+
+        if (mysqlDisplay != 0 && mysqlDisplay != dbcDisplay)
+            return mysqlDisplay;
+
+        if (dbcDisplay != 0 && mysqlDisplay == 0)
+            return dbcDisplay;
+
+        LogDebugFlag(LF_DB_TABLES, "Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
+    }
+
+    return 0;
+}
+
 void MySQLDataStore::loadCreaturePropertiesTable()
 {
     auto startTime = Util::TimeNow();
@@ -2211,13 +2239,13 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
         CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            LogDebugFlag(LF_DB_TABLES, "Invalid creature_entry %u in table creature_initial_equip!", entry);
+            //LogDebugFlag(LF_DB_TABLES, "Invalid creature_entry %u in table creature_initial_equip!", entry);
             continue;
         }
 
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = fields[1].GetUInt32();
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = fields[2].GetUInt32();
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = fields[3].GetUInt32();
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = sMySQLStore.getItemDisplayIdForEntry(fields[1].GetUInt32());
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = sMySQLStore.getItemDisplayIdForEntry(fields[2].GetUInt32());
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = sMySQLStore.getItemDisplayIdForEntry(fields[3].GetUInt32());
 
         ++initial_equipment_count;
 
