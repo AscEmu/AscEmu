@@ -127,6 +127,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
    ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h
+   ${PATH_PREFIX}/CmsgSellItem.h
    ${PATH_PREFIX}/CmsgSetActionbarToggles.h
    ${PATH_PREFIX}/CmsgSetActionButton.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
@@ -234,6 +235,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
+   ${PATH_PREFIX}/SmsgSellItem.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetPlayerDeclinedNamesResult.h
    ${PATH_PREFIX}/SmsgSetProficiency.h

@@ -31,6 +31,8 @@
 #include "Server/Packets/CmsgItemQuerySingle.h"
 #include "Server/Packets/CmsgBuyItem.h"
 #include "Server/Packets/SmsgBuyItem.h"
+#include "Server/Packets/CmsgSellItem.h"
+#include "Server/Packets/SmsgSellItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1068,40 +1070,33 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 17);
+    CmsgSellItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
+
     LOG_DETAIL("WORLD: Received CMSG_SELL_ITEM");
-
-    uint64 vendorguid = 0, itemguid = 0;
-    int8 amount = 0;
-    //uint8 slot = INVENTORY_NO_SLOT_AVAILABLE;
-    //uint8 bagslot = INVENTORY_NO_SLOT_AVAILABLE;
-    //int check = 0;
-
-    recvData >> vendorguid;
-    recvData >> itemguid;
-    recvData >> amount;
 
     _player->interruptSpell();
 
     // Check if item exists
-    if (!itemguid)
+    if (!recv_packet.itemGuid)
     {
-        SendSellItem(vendorguid, itemguid, 1);
+        SendSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid, 1);
         return;
     }
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(vendorguid));
+    Creature* unit = _player->GetMapMgr()->GetCreature(recv_packet.vendorGuid.getGuidLowPart());
     // Check if Vendor exists
     if (unit == nullptr)
     {
-        SendSellItem(vendorguid, itemguid, 3);
+        SendSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid, 3);
         return;
     }
 
-    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+    Item* item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
     if (!item)
     {
-        SendSellItem(vendorguid, itemguid, 1);
+        SendSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid, 1);
         return; //our player doesn't have this item
     }
 
@@ -1109,37 +1104,34 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 
     if (item->isContainer() && static_cast< Container* >(item)->HasItems())
     {
-        SendSellItem(vendorguid, itemguid, 6);
+        SendSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid, 6);
         return;
     }
 
     // Check if item can be sold
     if (it->SellPrice == 0 || item->wrapped_item_id != 0)
     {
-        SendSellItem(vendorguid, itemguid, 2);
+        SendSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid, 2);
         return;
     }
 
     uint32 stackcount = item->getStackCount();
     uint32 quantity = 0;
 
-    if (amount != 0)
-    {
-        quantity = amount;
-    }
+    if (recv_packet.amount != 0)
+        quantity = recv_packet.amount;
     else
-    {
         quantity = stackcount; //allitems
-    }
 
-    if (quantity > stackcount) quantity = stackcount; //make sure we don't over do it
+    if (quantity > stackcount)
+        quantity = stackcount; //make sure we don't over do it
 
     uint32 price = GetSellPriceForItem(it, quantity);
 
     // Check they don't have more than the max gold
     if (worldConfig.player.isGoldCapEnabled)
     {
-        if ((_player->GetGold() + price) > worldConfig.player.limitGoldAmount)
+        if (_player->GetGold() + price > worldConfig.player.limitGoldAmount)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
@@ -1156,7 +1148,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
     else
     {
         //removing the item from the char's inventory
-        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemguid, false); //again to remove item from slot
+        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(recv_packet.itemGuid, false); //again to remove item from slot
         if (item)
         {
             _player->GetItemInterface()->AddBuyBackItem(item, (it->SellPrice) * quantity);
@@ -1164,13 +1156,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
         }
     }
 
-    WorldPacket data(SMSG_SELL_ITEM, 12);
-    data << vendorguid;
-    data << itemguid;
-    data << uint8(0);
-    SendPacket(&data);
-
-    LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
+    SendPacket(SmsgSellItem(recv_packet.vendorGuid.GetOldGuid(), recv_packet.itemGuid).serialise().get());
 }
 
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & drop
