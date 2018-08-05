@@ -170,7 +170,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
 {
     // no water breathing is required

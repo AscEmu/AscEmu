@@ -56,6 +56,102 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
 #endif
 
 #ifdef AE_TBC
+void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
+{
+    // no water breathing is required
+    if (!worldConfig.server.enableBreathing || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
+    {
+        // player is flagged as in water
+        if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
+            _player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
+
+        // player is flagged as under water
+        if (_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+        {
+            _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            _player->SendMirrorTimer(MIRROR_TYPE_BREATH, _player->m_UnderwaterTime, _player->m_UnderwaterMaxTime, -1);
+        }
+
+        // player is above water level
+        if (pSession->m_bIsWLevelSet)
+        {
+            if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
+            {
+                _player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+
+                // unset swim session water level
+                pSession->m_bIsWLevelSet = false;
+            }
+        }
+
+        return;
+    }
+
+    //player is swimming and not flagged as in the water
+    if (movement_info.flags & MOVEFLAG_SWIMMING && !(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    {
+        _player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
+
+        // get water level only if it was not set before
+        if (!pSession->m_bIsWLevelSet)
+        {
+            // water level is somewhere below the nose of the character when entering water
+            pSession->m_wLevel = movement_info.position.z + _player->m_noseLevel * 0.95f;
+            pSession->m_bIsWLevelSet = true;
+        }
+
+        _player->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
+    }
+
+    // player is not swimming and is not stationary and is flagged as in the water
+    if (!(movement_info.flags & MOVEFLAG_SWIMMING) && (movement_info.flags != MOVEFLAG_MOVE_STOP) && (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    {
+        // player is above water level
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
+        {
+            _player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+
+            // unset swim session water level
+            pSession->m_bIsWLevelSet = false;
+
+            _player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
+        }
+    }
+
+    // player is flagged as in the water and is not flagged as under the water
+    if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
+    {
+        //the player is in the water and has gone under water, requires breath bar.
+        if ((movement_info.position.z + _player->m_noseLevel) < pSession->m_wLevel)
+        {
+            _player->m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
+            _player->SendMirrorTimer(MIRROR_TYPE_BREATH, _player->m_UnderwaterTime, _player->m_UnderwaterMaxTime, -1);
+        }
+    }
+
+    // player is flagged as in the water and is flagged as under the water
+    if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING && _player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        //the player is in the water but their face is above water, no breath bar needed.
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
+        {
+            _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            _player->SendMirrorTimer(MIRROR_TYPE_BREATH, _player->m_UnderwaterTime, _player->m_UnderwaterMaxTime, 10);
+        }
+    }
+
+    // player is flagged as not in the water and is flagged as under the water
+    if (!(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && _player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        //the player is out of the water, no breath bar needed.
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
+        {
+            _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            _player->SendMirrorTimer(MIRROR_TYPE_BREATH, _player->m_UnderwaterTime, _player->m_UnderwaterMaxTime, 10);
+        }
+    }
+}
+
 void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
@@ -340,7 +436,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     /* Breathing System                                                     */
     /************************************************************************/
     // TODO Restructure and implement
-    //_HandleBreathing(movement_info, _player, this);
+    _HandleBreathing(movement_info, _player, this);
 
     /************************************************************************/
     /* Remove Spells                                                        */
