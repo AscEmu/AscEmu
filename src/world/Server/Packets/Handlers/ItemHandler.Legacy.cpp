@@ -29,6 +29,8 @@
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgListInventory.h"
 #include "Server/Packets/CmsgItemQuerySingle.h"
+#include "Server/Packets/CmsgBuyItem.h"
+#include "Server/Packets/SmsgBuyItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1374,37 +1376,26 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
 
 void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click on item
 {
-    CHECK_PACKET_SIZE(recvData, 14);
+    CmsgBuyItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
+
     LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
 
-    uint64 srcguid = 0;
-    uint32 itemid = 0;
-    int32 slot = 0;
-    uint8 amount = 0;
     uint8 error = 0;
     SlotResult slotresult;
 
-    recvData >> srcguid;
-
-#if VERSION_STRING == Cata
-    uint8 itemtype;
-    recvData >> itemtype;
-#endif
-    recvData >> itemid;
-    recvData >> slot;
-    recvData >> amount;
-
-    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+    auto creature = _player->GetMapMgr()->GetCreature(recv_packet.sourceGuid.getGuidLowPart());
     if (creature == nullptr || !creature->HasItems())
         return;
 
-    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
+    auto item_extended_cost = creature->GetItemExtendedCostByItemId(recv_packet.itemEntry);
 
-    if (amount < 1)
-        amount = 1;
+    if (recv_packet.amount < 1)
+        recv_packet.amount = 1;
 
     CreatureItem creature_item;
-    creature->GetSellItemByItemId(itemid, creature_item);
+    creature->GetSellItemByItemId(recv_packet.itemEntry, creature_item);
 
     if (creature_item.itemid == 0)
     {
@@ -1413,13 +1404,13 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
         return;
     }
 
-    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
+    if (creature_item.max_amount > 0 && creature_item.available_amount < recv_packet.amount)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
         return;
     }
 
-    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(recv_packet.itemEntry);
     if (!it)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -1427,26 +1418,26 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
     }
 
     uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
+    if (itemMaxStack > 0 && recv_packet.amount * creature_item.amount > itemMaxStack)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_CANT_STACK);
         return;
     }
 
-    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
+    if ((error = _player->GetItemInterface()->CanReceiveItem(it, recv_packet.amount * creature_item.amount)) != 0)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
         return;
     }
 
-    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
+    if ((error = _player->GetItemInterface()->CanAffordItem(it, recv_packet.amount, creature)) != 0)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
         return;
     }
 
     // Find free slot and break if inv full
-    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
+    auto add_item = _player->GetItemInterface()->FindItemLessMax(recv_packet.itemEntry, recv_packet.amount * creature_item.amount, false);
     if (!add_item)
     {
         slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
@@ -1468,7 +1459,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
         }
 
         item->m_isDirty = true;
-        item->setStackCount(amount * creature_item.amount);
+        item->setStackCount(recv_packet.amount * creature_item.amount);
 
         if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
         {
@@ -1483,7 +1474,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                 {
                     item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, recv_packet.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
             }
         }
         else
@@ -1507,25 +1498,18 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
     }
     else
     {
-        add_item->modStackCount(amount * creature_item.amount);
+        add_item->modStackCount(recv_packet.amount * creature_item.amount);
         add_item->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->getEntry(), add_item->getPropertySeed(), add_item->getRandomPropertiesId(), add_item->getStackCount());
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, recv_packet.amount * creature_item.amount, add_item->getEntry(), add_item->getPropertySeed(), add_item->getRandomPropertiesId(), add_item->getStackCount());
     }
 
-    _player->GetItemInterface()->BuyItem(it, amount, creature);
+    _player->GetItemInterface()->BuyItem(it, recv_packet.amount, creature);
 
-    WorldPacket data(45);
-    data.Initialize(SMSG_BUY_ITEM);
-    data << uint64(srcguid);
-    data <<Util::getMSTime();
-    data << uint32(itemid);
-    data << uint32(amount * creature_item.amount);
-
-    SendPacket(&data);
+    SendPacket(SmsgBuyItem(recv_packet.sourceGuid.GetOldGuid(), Util::getMSTime(), recv_packet.itemEntry, recv_packet.amount * creature_item.amount).serialise().get());
 
     if (creature_item.max_amount)
     {
-        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
+        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * recv_packet.amount);
 
         // there is probably a proper opcode for this. - burlex
         SendInventoryList(creature);

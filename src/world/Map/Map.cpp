@@ -276,7 +276,7 @@ void Map::LoadSpawns(bool reload)
                     //\ brief: the following 3 go types crashing tbc
                     switch (gameobject_info->type)
                     {
-                        case GAMEOBJECT_TYPE_TRANSPORT:
+                        //case GAMEOBJECT_TYPE_TRANSPORT:
                         case GAMEOBJECT_TYPE_MAP_OBJECT:
                         case GAMEOBJECT_TYPE_MO_TRANSPORT:
                         {
