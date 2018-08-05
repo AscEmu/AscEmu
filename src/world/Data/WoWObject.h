@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <cmath>
-
+#include "GuidData.h"
 #include "world/WorldConf.h"
 
 #pragma pack(push, 1)

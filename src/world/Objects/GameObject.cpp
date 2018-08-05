@@ -37,8 +37,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint64_t GameObject::getCreatedByGuid() const { return gameObjectData()->guid; }
-void GameObject::setCreatedByGuid(uint64_t guid) { write(gameObjectData()->guid, guid); }
+uint64_t GameObject::getCreatedByGuid() const { return gameObjectData()->object_field_created_by.guid; }
+void GameObject::setCreatedByGuid(uint64_t guid) { write(gameObjectData()->object_field_created_by.guid, guid); }
 
 uint32_t GameObject::getDisplayId() const { return gameObjectData()->display_id; }
 void GameObject::setDisplayId(uint32_t id) { write(gameObjectData()->display_id, id); }

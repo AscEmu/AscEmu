@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 #include "WoWObject.h"
+#include "GuidData.h"
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
@@ -21,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct WoWGameObject : WoWObject
 {
-    uint64_t object_field_created_by;
+    guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];
@@ -46,7 +47,7 @@ struct WoWGameObject : WoWObject
 
 struct WoWGameObject : WoWObject
 {
-    uint64_t object_field_created_by;
+    guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];
@@ -71,7 +72,7 @@ struct WoWGameObject : WoWObject
 
 struct WoWGameObject : WoWObject
 {
-    uint64_t object_field_created_by;
+    guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];
@@ -98,7 +99,7 @@ struct WoWGameObject : WoWObject
 
 struct WoWGameObject : WoWObject
 {
-    uint64_t object_field_created_by;
+    guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
     float_t rotation[GAMEOBJECT_ROTATION_COUNT];

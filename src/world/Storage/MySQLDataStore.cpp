@@ -502,10 +502,13 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
     return nullptr;
 }
 
+//\ brief: On versions lower than wotlk our db includes the item entry instead of the displayid.
+//         In wotlk and newer the database includes the displayid since no more additional data is required for creature equipment.
 uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
 {
     if (entry != 0)
     {
+#if VERSION_STRING == TBC
         // get display id for equipped item entry
         uint32_t dbcDisplay = 0;
         uint32_t mysqlDisplay = 0;
@@ -529,6 +532,9 @@ uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
         }
 
         LogDebugFlag(LF_DB_TABLES, "Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
+#else
+        return entry;
+#endif
     }
 
     return 0;

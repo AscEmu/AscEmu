@@ -272,6 +272,20 @@ void Map::LoadSpawns(bool reload)
                         continue;
                     }
 
+#if VERSION_STRING == TBC
+                    //\ brief: the following 3 go types crashing tbc
+                    switch (gameobject_info->type)
+                    {
+                        case GAMEOBJECT_TYPE_TRANSPORT:
+                        case GAMEOBJECT_TYPE_MAP_OBJECT:
+                        case GAMEOBJECT_TYPE_MO_TRANSPORT:
+                        {
+                            delete go_spawn;
+                            continue;
+                        }
+                    }
+#endif
+
                     go_spawn->entry = gameobject_entry;
                     go_spawn->map = fields[4].GetUInt32();
                     go_spawn->position_x = fields[5].GetFloat();
