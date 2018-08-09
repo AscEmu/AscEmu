@@ -520,7 +520,7 @@ public:
     bool hasAurasWithId(uint32_t auraId);
     bool hasAurasWithId(uint32_t* auraId);
     bool hasAuraWithAuraEffect(AuraEffect type) const;
-    bool hasAuraState(AuraState state, SpellInfo *spellInfo = nullptr, Unit* caster = nullptr) const;
+    bool hasAuraState(AuraState state, SpellInfo const* spellInfo = nullptr, Unit const* caster = nullptr) const;
 
     void addAuraStateAndAuras(AuraState state);
     void removeAuraStateAndAuras(AuraState state);

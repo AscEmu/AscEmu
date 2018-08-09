@@ -9,16 +9,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/Opcode.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/World.h"
+#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/Spec.h"
+#include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Spell.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellAuras.h"
 #include "Spell/SpellFailure.h"
+#include "Spell/SpellMgr.h"
 #include "Map/MapMgr.h"
 #include "Data/WoWPlayer.h"
 #include "Management/Battleground/Battleground.h"
 #include "Objects/GameObject.h"
 #include "Units/Creatures/Pet.h"
-#include "Spell/SpellAuras.h"
-#include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Objects/ObjectMgr.h"
 #include "Management/GuildMgr.h"
@@ -118,8 +120,21 @@ void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, 
 uint32_t Player::getXp() const { return playerData()->xp; }
 void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 
-uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
+uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+
+#if VERSION_STRING <= WotLK
+uint32_t Player::getFreeTalentPoints() const { return playerData()->character_points_1; }
+void Player::setFreeTalentPoints(uint32_t points) { write(playerData()->character_points_1, points); }
+
+uint32_t Player::getFreePrimaryProfessionPoints() const { return playerData()->character_points_2; }
+void Player::setFreePrimaryProfessionPoints(uint32_t points) { write(playerData()->character_points_2, points); }
+#else
+uint32_t Player::getFreeTalentPoints() const { return m_specs[m_talentActiveSpec].GetTP(); }
+
+uint32_t Player::getFreePrimaryProfessionPoints() const { return playerData()->character_points_1; }
+void Player::setFreePrimaryProfessionPoints(uint32_t points) { write(playerData()->character_points_1, points); }
+#endif
 
 void Player::setAttackPowerMultiplier(float val) { write(playerData()->attack_power_multiplier, val); }
 
@@ -343,6 +358,40 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
     }
 }
 
+bool Player::isTransferPending() const
+{
+    return GetPlayerStatus() == TRANSFER_PENDING;
+}
+
+void Player::toggleAfk()
+{
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
+    {
+        removePlayerFlags(PLAYER_FLAG_AFK);
+        if (worldConfig.getKickAFKPlayerTime())
+            sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
+    }
+    else
+    {
+        addPlayerFlags(PLAYER_FLAG_AFK);
+
+        if (m_bg)
+            m_bg->RemovePlayer(this, false);
+
+        if (worldConfig.getKickAFKPlayerTime())
+            sEventMgr.AddEvent(this, &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
+                worldConfig.getKickAFKPlayerTime(), 1, 0);
+    }
+}
+
+void Player::toggleDnd()
+{
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
+        removePlayerFlags(PLAYER_FLAG_DND);
+    else
+        addPlayerFlags(PLAYER_FLAG_DND);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 void Player::updateAutoRepeatSpell()
@@ -402,38 +451,426 @@ void Player::updateAutoRepeatSpell()
     }
 }
 
-bool Player::isTransferPending() const
+//////////////////////////////////////////////////////////////////////////////////////////
+// Talents
+void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 {
-    return GetPlayerStatus() == TRANSFER_PENDING;
+    auto curTalentPoints = getActiveSpec().GetTP();
+    if (curTalentPoints == 0)
+        return;
+
+    if (talentRank > 4)
+        return;
+
+    auto talentInfo = sTalentStore.LookupEntry(talentId);
+    if (talentInfo == nullptr)
+        return;
+
+    if (objmgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
+    {
+        if (IsInWorld())
+            SendCastResult(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
+        return;
+    }
+
+    // Check if player already has the talent with same or higher rank
+    for (auto i = talentRank; i <= 4; ++i)
+    {
+        if (talentInfo->RankID[i] != 0 && HasSpell(talentInfo->RankID[i]))
+            return;
+    }
+
+    // Check if talent tree is for player's class
+    auto talentTreeInfo = sTalentTabStore.LookupEntry(talentInfo->TalentTree);
+    if (talentTreeInfo == nullptr || !(getClassMask() & talentTreeInfo->ClassMask))
+        return;
+
+#if VERSION_STRING == Cata
+    // Check if enough talent points are spent in the primary talent tree before unlocking other trees
+    if (talentInfo->TalentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
+    {
+        auto pointsUsed = 0;
+        for (const auto talent : getActiveSpec().talents)
+        {
+            pointsUsed += talent.second + 1;
+        }
+
+        // You need to spent 31 points in the primary tree before you're able to unlock other trees
+        if (pointsUsed < 31)
+            return;
+    }
+#endif
+
+    // Check if talent requires another talent
+    if (talentInfo->DependsOn > 0)
+    {
+        auto dependsOnTalent = sTalentStore.LookupEntry(talentInfo->DependsOn);
+        if (dependsOnTalent != nullptr)
+        {
+            auto hasEnoughRank = false;
+            for (auto i = 0; i <= 4; ++i)
+            {
+                if (dependsOnTalent->RankID[i] != 0)
+                {
+                    if (HasSpell(dependsOnTalent->RankID[i]))
+                    {
+                        hasEnoughRank = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasEnoughRank)
+                return;
+        }
+    }
+
+    auto spellId = talentInfo->RankID[talentRank];
+    if (spellId == 0)
+    {
+        LOG_DETAIL("Player::learnTalent: Player tried to learn talent %u (rank %u) but talent's spell id is 0.", talentId, talentRank);
+        return;
+    }
+
+    // Check can player yet access this talent
+    uint32_t spentPoints = 0;
+    if (talentInfo->Row > 0)
+    {
+        // Loop through player's talents
+        for (const auto talent : getActiveSpec().talents)
+        {
+            auto tmpTalent = sTalentStore.LookupEntry(talent.first);
+            if (tmpTalent == nullptr)
+                continue;
+            // Skip talents from other trees
+            if (tmpTalent->TalentTree != talentInfo->TalentTree)
+                continue;
+            spentPoints += talent.second + 1;
+        }
+    }
+
+    if (spentPoints < (talentInfo->Row * 5))
+        return;
+
+    // Get current talent rank
+    uint8_t curTalentRank = 0;
+    for (int8_t _talentRank = 4; _talentRank >= 0; --_talentRank)
+    {
+        if (talentInfo->RankID[_talentRank] != 0 && HasSpell(talentInfo->RankID[_talentRank]))
+        {
+            curTalentRank = _talentRank + 1;
+            break;
+        }
+    }
+
+    // Check does player have enough talent points
+    auto requiredTalentPoints = (talentRank + 1) - curTalentRank;
+    if (curTalentPoints < requiredTalentPoints)
+        return;
+
+    // Check if player already knows this or higher rank
+    if (curTalentRank >= (talentRank + 1))
+        return;
+
+    // Check if player already has the talent spell
+    if (HasSpell(spellId))
+        return;
+
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    // Add to player's spellmap
+    addSpell(spellId);
+
+    if (talentRank > 0)
+    {
+        // Remove the current rank
+        if (talentInfo->RankID[talentRank - 1] != 0)
+            removeTalent(talentInfo->RankID[talentRank - 1]);
+    }
+
+#if VERSION_STRING == Cata
+    // Set primary talent tree and lock others
+    if (m_FirstTalentTreeLock == 0)
+    {
+        m_FirstTalentTreeLock = talentInfo->TalentTree;
+        // TODO: learning Mastery and spec spells
+        // also need to handle them in talent reset
+    }
+#endif
+
+    if (spellInfo->hasEffect(SPELL_EFFECT_LEARN_SPELL))
+        CastSpell(getGuid(), spellInfo, true);
+    else if (spellInfo->isPassive())
+    {
+        if (spellInfo->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (spellInfo->getRequiredShapeShift() & getShapeShiftMask())) ||
+           (getShapeShiftMask() == 0 && (spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
+        {
+            if (spellInfo->getCasterAuraState() == 0 || hasAuraState(AuraState(spellInfo->getCasterAuraState()), spellInfo, this))
+                // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
+                if (((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
+                    CastSpell(getGuid(), spellInfo, true);
+        }
+    }
+
+    // Add the new talent to player
+    getActiveSpec().AddTalent(talentId, talentRank);
+    setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 }
 
-void Player::toggleAfk()
+void Player::removeTalent(uint32_t spellId)
 {
-    if (hasPlayerFlags(PLAYER_FLAG_AFK))
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo != nullptr)
     {
-        removePlayerFlags(PLAYER_FLAG_AFK);
-        if (worldConfig.getKickAFKPlayerTime())
-            sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
+        for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            // If talent teaches another spell, remove it as well
+            if (spellInfo->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+            {
+                auto taughtSpellId = spellInfo->getEffectTriggerSpell(i);
+                // There is one case in 3.3.5a and 4.3.4 where the learnt spell yet teaches another spell
+                SpellInfo const* taughtSpell = sSpellCustomizations.GetSpellInfo(taughtSpellId);
+                if (taughtSpell != nullptr)
+                {
+                    for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
+                    {
+                        if (taughtSpell->getEffect(u) == SPELL_EFFECT_LEARN_SPELL)
+                        {
+                            auto taughtSpell2Id = taughtSpell->getEffectTriggerSpell(u);
+                            removeSpell(taughtSpell2Id, false, false, 0);
+                            RemoveAura(taughtSpell2Id);
+                        }
+                    }
+                }
+                removeSpell(taughtSpellId, false, false, 0);
+                RemoveAura(taughtSpellId);
+            }
+
+            // If talent triggers another spell, remove it (but only self-applied auras)
+            if (spellInfo->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL && spellInfo->getEffectTriggerSpell(i) > 0)
+                RemoveAura(spellInfo->getEffectTriggerSpell(i), getGuid());
+        }
+    }
+    removeSpell(spellId, false, false, 0);
+    RemoveAura(spellId);
+}
+
+void Player::resetTalents()
+{
+    // Loop through player's talents
+    for (const auto talent : getActiveSpec().talents)
+    {
+        auto tmpTalent = sTalentStore.LookupEntry(talent.first);
+        if (tmpTalent == nullptr)
+            continue;
+        removeTalent(tmpTalent->RankID[talent.second]);
+        // TODO: Spells, which have multiple ranks and where the first rank is a talent, must be removed from spell book as well
+        // (i.e. Mortal Strike and Pyroblast)
+    }
+
+    // Unsummon pet
+    if (GetSummon() != nullptr)
+        GetSummon()->Dismiss();
+
+    // TODO: also need to check for 1h offhand weapon in case dual wield was from talents
+    if (DualWield2H)
+        ResetDualWield2H();
+
+    // Clear talents
+    getActiveSpec().talents.clear();
+#if VERSION_STRING == Cata
+    m_FirstTalentTreeLock = 0;
+#endif
+
+    // Reset talent point amount
+    setInitialTalentPoints(true);
+}
+
+void Player::setTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/)
+{
+    if (!forBothSpecs)
+        getActiveSpec().SetTP(talentPoints);
+    else
+    {
+#ifndef FT_DUAL_SPEC
+        getActiveSpec().SetTP(talentPoints);
+#else
+        m_specs[SPEC_PRIMARY].SetTP(talentPoints);
+        m_specs[SPEC_SECONDARY].SetTP(talentPoints);
+#endif
+    }
+
+#if VERSION_STRING != Cata
+    // Send talent points also to client
+    setFreeTalentPoints(talentPoints);
+#endif
+}
+
+void Player::addTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/)
+{
+    if (!forBothSpecs)
+        setTalentPoints(getActiveSpec().GetTP() + talentPoints);
+    else
+    {
+#ifndef FT_DUAL_SPEC
+        setTalentPoints(getActiveSpec().GetTP() + talentPoints);
+#else
+        m_specs[SPEC_PRIMARY].SetTP(m_specs[SPEC_PRIMARY].GetTP() + talentPoints);
+        m_specs[SPEC_SECONDARY].SetTP(m_specs[SPEC_SECONDARY].GetTP() + talentPoints);
+
+#if VERSION_STRING != Cata
+        setFreeTalentPoints(getFreeTalentPoints() + talentPoints);
+#endif
+#endif
+    }
+}
+
+void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
+{
+    if (getLevel() < 10)
+    {
+        setTalentPoints(0);
+        return;
+    }
+
+    // Calculate initial talent points based on level
+    uint32_t talentPoints = 0;
+#if VERSION_STRING == Cata
+    auto talentPointsAtLevel = sNumTalentsAtLevel.LookupEntry(getLevel());
+    if (talentPointsAtLevel != nullptr)
+        talentPoints = uint32_t(talentPointsAtLevel->talentPoints);
+#else
+    talentPoints = getLevel() - 9;
+#endif
+
+#ifdef FT_DEATH_KNIGHT
+    if (getClass() == DEATHKNIGHT)
+    {
+        if (GetMapId() == 609)
+        {
+            // If Death Knight is in the instanced Ebon Hold (map 609), talent points are calculated differently,
+            // because Death Knights receive their talent points from their starting quest chain.
+            // However if Death Knight is not in the instanced Ebon Hold, it is safe to assume that
+            // the player has completed the DK starting quest chain and normal calculation can be used.
+            uint32_t dkTalentPoints = 0;
+#if VERSION_STRING == Cata
+            auto dkBaseTalentPoints = sNumTalentsAtLevel.LookupEntry(55);
+            if (dkBaseTalentPoints != nullptr)
+                dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - uint32_t(dkBaseTalentPoints->talentPoints);
+#else
+            dkTalentPoints = getLevel() < 55 ? 0 : getLevel() - 55;
+#endif
+            // Add talent points from quests
+            dkTalentPoints += m_talentPointsFromQuests;
+
+            if (dkTalentPoints < talentPoints)
+                talentPoints = dkTalentPoints;
+        }
+
+        // Add extra talent points if any is set in config files
+        talentPoints += worldConfig.player.deathKnightStartTalentPoints;
+    }
+#endif
+
+    // If player's level is increased, player's already spent talent points must be subtracted from initial talent points
+    uint32_t usedTalentPoints = 0;
+    if (!talentsResetted)
+    {
+#ifdef FT_DUAL_SPEC
+        if (m_talentSpecsCount == 2)
+        {
+            auto inactiveSpec = m_talentActiveSpec == SPEC_PRIMARY ? SPEC_SECONDARY : SPEC_PRIMARY;
+            if (m_specs[inactiveSpec].talents.size() > 0)
+            {
+                uint32_t usedTalentPoints2 = 0;
+                for (const auto talent : m_specs[inactiveSpec].talents)
+                {
+                    usedTalentPoints2 += talent.second + 1;
+                }
+
+                if (usedTalentPoints2 > talentPoints)
+                    usedTalentPoints2 = talentPoints;
+
+                m_specs[inactiveSpec].SetTP(talentPoints - usedTalentPoints2);
+            }
+        }
+#endif
+        if (getActiveSpec().talents.size() > 0)
+        {
+            for (const auto talent : getActiveSpec().talents)
+            {
+                usedTalentPoints += talent.second + 1;
+            }
+
+            if (usedTalentPoints > talentPoints)
+                usedTalentPoints = talentPoints;
+        }
+    }
+
+    setTalentPoints(talentPoints - usedTalentPoints, false);
+    smsg_TalentsInfo(false);
+}
+
+uint32_t Player::getTalentPointsFromQuests() const
+{
+    return m_talentPointsFromQuests;
+}
+
+void Player::setTalentPointsFromQuests(uint32_t talentPoints)
+{
+    m_talentPointsFromQuests = talentPoints;
+}
+
+void Player::smsg_TalentsInfo(bool SendPetTalents)
+{
+    // TODO: classic and tbc
+#if VERSION_STRING >= WotLK
+    WorldPacket data(SMSG_TALENTS_INFO, 1000);
+    data << uint8_t(SendPetTalents ? 1 : 0);
+    if (SendPetTalents)
+    {
+        if (GetSummon() != nullptr)
+            GetSummon()->SendTalentsToOwner();
+        return;
     }
     else
     {
-        addPlayerFlags(PLAYER_FLAG_AFK);
+        data << uint32_t(getActiveSpec().GetTP()); // Free talent points
+        data << uint8_t(m_talentSpecsCount); // How many specs player has
+        data << uint8_t(m_talentActiveSpec); // Which spec is active right now
 
-        if (m_bg)
-            m_bg->RemovePlayer(this, false);
+        if (m_talentSpecsCount > MAX_SPEC_COUNT)
+            m_talentSpecsCount = MAX_SPEC_COUNT;
 
-        if (worldConfig.getKickAFKPlayerTime())
-            sEventMgr.AddEvent(this, &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
-                               worldConfig.getKickAFKPlayerTime(), 1, 0);
+        // Loop through specs
+        for (auto specId = 0; specId < m_talentSpecsCount; ++specId)
+        {
+            PlayerSpec spec = m_specs[specId];
+
+#if VERSION_STRING == Cata
+            // Send primary talent tree
+            data << uint32_t(m_FirstTalentTreeLock);
+#endif
+
+            // How many talents player has learnt
+            data << uint8_t(spec.talents.size());
+            for (const auto talent : spec.talents)
+            {
+                data << uint32_t(talent.first);
+                data << uint8_t(talent.second);
+            }
+
+            // What kind of glyphs player has
+            data << uint8_t(GLYPHS_COUNT);
+            for (auto i = 0; i < GLYPHS_COUNT; ++i)
+            {
+                data << uint16_t(GetGlyph(specId, i));
+            }
+        }
     }
-}
-
-void Player::toggleDnd()
-{
-    if (hasPlayerFlags(PLAYER_FLAG_DND))
-        removePlayerFlags(PLAYER_FLAG_DND);
-    else
-        addPlayerFlags(PLAYER_FLAG_DND);
+    GetSession()->SendPacket(&data);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

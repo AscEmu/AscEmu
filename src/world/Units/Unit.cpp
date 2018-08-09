@@ -1156,7 +1156,7 @@ bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
     return false;
 }
 
-bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) const
+bool Unit::hasAuraState(AuraState state, SpellInfo const* spellInfo, Unit const* caster) const
 {
     if (caster != nullptr && spellInfo != nullptr && caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
     {
