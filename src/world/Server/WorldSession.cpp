@@ -860,7 +860,8 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
     recv_data >> requested_rank;
     recv_data >> unk;
 
-    _player->LearnTalent(talent_id, requested_rank);
+    _player->learnTalent(talent_id, requested_rank);
+    _player->smsg_TalentsInfo(false);
 }
 
 void WorldSession::HandleUnlearnTalents(WorldPacket& /*recv_data*/)
@@ -872,7 +873,7 @@ void WorldSession::HandleUnlearnTalents(WorldPacket& /*recv_data*/)
 
     GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
     GetPlayer()->ModGold(-(int32)price);
-    GetPlayer()->Reset_Talents();
+    GetPlayer()->resetTalents();
 }
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
@@ -880,7 +881,7 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint32 skill_line_id;
-    uint32 points_remaining = _player->GetPrimaryProfessionPoints();
+    uint32 points_remaining = _player->getFreePrimaryProfessionPoints();
     recv_data >> skill_line_id;
 
     // Remove any spells within that line that the player has
@@ -891,7 +892,7 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 
     // added by Zack : This is probably wrong or already made elsewhere :
     // restore skill learnability
-    if (points_remaining == _player->GetPrimaryProfessionPoints())
+    if (points_remaining == _player->getFreePrimaryProfessionPoints())
     {
         // we unlearned a skill so we enable a new one to be learned
         auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
@@ -899,7 +900,7 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
             return;
 
         if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
-            _player->SetPrimaryProfessionPoints(points_remaining + 1);
+            _player->setFreePrimaryProfessionPoints(points_remaining + 1);
     }
 }
 
@@ -938,8 +939,10 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
         recvPacket >> talentid;
         recvPacket >> rank;
 
-        _player->LearnTalent(talentid, rank, true);
+        _player->learnTalent(talentid, rank);
     }
+
+    _player->smsg_TalentsInfo(false);
 }
 #endif
 

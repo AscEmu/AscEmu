@@ -345,7 +345,6 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
     uint32_t xp;
-    uint32_t currtalentpoints = plr->GetCurrentTalentPoints();
     uint32_t rewardtalents = qst->rewardtalents;
     uint32_t playerlevel = plr->getLevel();
 
@@ -359,9 +358,11 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         plr->GiveXP(xp, 0, false);
     }
 
-    if (currtalentpoints <= (playerlevel - 9 - rewardtalents))
+    // Bonus talents
+    if (rewardtalents > 0)
     {
-        plr->AddTalentPointsToAllSpec(rewardtalents);
+        plr->setTalentPointsFromQuests(plr->getTalentPointsFromQuests() + rewardtalents);
+        plr->setInitialTalentPoints();
     }
 
     // Reward title
