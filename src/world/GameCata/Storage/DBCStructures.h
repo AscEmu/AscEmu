@@ -277,7 +277,7 @@ namespace DBC
             //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
             //char const movie_entry_format[] = "nxxx"; new
             char const name_gen_format[] = "nsii";
-            //char const num_talents_at_level_format[] = "df"; new
+            char const num_talents_at_level_format[] = "df";
             //char const override_spell_data_format[] = "niiiiiiiiiixx"; new
             char const phase_entry_format[] = "nii";
             //char const power_display_format[] = "nixxxx"; new
@@ -1346,6 +1346,12 @@ namespace DBC
             char* Name;                         // 1
             uint32_t unk1;                      // 2
             uint32_t type;                      // 3
+        };
+
+        struct NumTalentsAtLevel
+        {
+            //uint32_t level;                   // 0
+            float talentPoints;                 // 1
         };
 
         struct PhaseEntry

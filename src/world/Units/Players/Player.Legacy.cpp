@@ -446,6 +446,7 @@ Player::Player(uint32 guid)
     m_maxTalentPoints = 0; //VLack: 3 Aspire values initialized
     m_talentActiveSpec = 0;
     m_talentSpecsCount = 1;
+    m_talentPointsFromQuests = 0;
 #if VERSION_STRING == Cata
     m_FirstTalentTreeLock = 0;
 #endif
@@ -903,25 +904,15 @@ bool Player::Create(CharCreate& charCreateContent)
         SetFaction(0);
 
 #if VERSION_STRING > TBC
-    if (charCreateContent._class == DEATHKNIGHT)
-        SetTalentPointsForAllSpec(worldConfig.player.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
-    else
-#endif
-        SetTalentPointsForAllSpec(0);
-
-#if VERSION_STRING > TBC
     if (charCreateContent._class != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
 #endif
     {
         setLevel(worldConfig.player.playerStartingLevel);
-        if (worldConfig.player.playerStartingLevel >= 10)
-            SetTalentPointsForAllSpec(worldConfig.player.playerStartingLevel - 9);
     }
 #if VERSION_STRING > TBC
     else
     {
         setLevel(55);
-        setNextLevelXp(148200);
     }
 #endif
 
@@ -929,7 +920,7 @@ bool Player::Create(CharCreate& charCreateContent)
     UpdateGlyphs();
 #endif
 
-    SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
+    setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     setRace(charCreateContent._race);
     setClass(charCreateContent._class);
@@ -1722,9 +1713,6 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         nextlevelxp = sMySQLStore.getPlayerXPForLevel(level);
         levelup = true;
 
-        if (level > 9)
-            AddTalentPointsToAllSpec(1);
-
         if (level >= getMaxLevel())
             break;
     }
@@ -1756,6 +1744,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         _UpdateMaxSkillCounts();
         UpdateStats();
         //UpdateChances();
+        setInitialTalentPoints();
 #if VERSION_STRING > TBC
         UpdateGlyphs();
 #endif
@@ -1901,135 +1890,6 @@ void Player::smsg_InitialSpells()
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 
-#if VERSION_STRING != Cata
-void Player::smsg_TalentsInfo(bool SendPetTalents)
-{
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_TALENTS_INFO, 1000);
-    data << uint8(SendPetTalents ? 1 : 0);
-    if (SendPetTalents)
-    {
-        if (GetSummon())
-            GetSummon()->SendTalentsToOwner();
-        return;
-    }
-    else
-    {
-        //data << uint32(GetTalentPoints(SPEC_PRIMARY)); // Wrong, calculate the amount of talent points per spec
-        data << uint32(m_specs[m_talentActiveSpec].GetTP());
-        data << uint8(m_talentSpecsCount);
-        data << uint8(m_talentActiveSpec);
-        for (uint8 s = 0; s < m_talentSpecsCount; s++)
-        {
-            PlayerSpec spec = m_specs[s];
-            data << uint8(spec.talents.size());
-            std::map<uint32, uint8>::iterator itr;
-            for (itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
-            {
-                data << uint32(itr->first);     // TalentId
-                data << uint8(itr->second);     // TalentRank
-            }
-
-            // Send Glyph info
-            data << uint8(GLYPHS_COUNT);
-            for (uint8 i = 0; i < GLYPHS_COUNT; i++)
-            {
-                data << uint16(spec.glyphs[i]);
-            }
-        }
-    }
-    GetSession()->SendPacket(&data);
-#endif
-}
-#else
-void Player::smsg_TalentsInfo(bool SendPetTalents)
-{
-    WorldPacket data(SMSG_TALENTS_INFO, 1000);
-    data << uint8(SendPetTalents ? 1 : 0);
-    if (SendPetTalents)
-    {
-        if (GetSummon())
-            GetSummon()->SendTalentsToOwner();
-        return;
-    }
-    else
-    {
-        data << uint32(GetCurrentTalentPoints());
-        data << uint8(m_talentSpecsCount);
-        data << uint8(m_talentActiveSpec);
-
-        if (m_talentSpecsCount)
-        {
-            if (m_talentSpecsCount > MAX_SPEC_COUNT)
-            {
-                m_talentSpecsCount = MAX_SPEC_COUNT;
-            }
-
-            for (uint8 s = 0; s < m_talentSpecsCount; ++s)
-            {
-                PlayerSpec spec = m_specs[s];
-                data << uint32(m_FirstTalentTreeLock);
-
-                uint8 talentCount = 0;
-                size_t pos = data.wpos();
-                data << uint8(talentCount);
-
-                uint32 const* talentTabPages = getTalentTabPages(getClass());
-
-                for (uint8 i = 0; i < 3; ++i)
-                {
-                    uint32 talentTabPage = talentTabPages[i];
-
-                    for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)
-                    {
-                        DBC::Structures::TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
-                        if (!talentInfo)
-                        {
-                            continue;
-                        }
-
-                        if (talentInfo->TalentTree != talentTabPage)
-                        {
-                            continue;
-                        }
-
-                        int8 currrentTalentMaxRank = -1;
-                        for (int8 rank = 5 - 1; rank >= 0; --rank)
-                        {
-                            if (talentInfo->RankID[rank] && spec.HasTalent(talentInfo->RankID[rank], s))
-                            {
-                                currrentTalentMaxRank = rank;
-                                break;
-                            }
-                        }
-
-                        if (currrentTalentMaxRank < 0)
-                        {
-                            continue;
-                        }
-
-                        data << uint32(talentInfo->TalentID);
-                        data << uint8(currrentTalentMaxRank);
-
-                        ++talentCount;
-                    }
-                }
-
-                data.put<uint8>(pos, talentCount);
-
-                data << uint8(GLYPHS_COUNT);
-
-                for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
-                {
-                    data << uint16(GetGlyph(s, i));
-                }
-            }
-        }
-    }
-    GetSession()->SendPacket(&data);
-}
-#endif
-
 void Player::ActivateSpec(uint8 spec)
 {
 #ifndef FT_DUAL_SPEC
@@ -2084,12 +1944,8 @@ void Player::ActivateSpec(uint8 spec)
 
         addSpell(talent_info->RankID[itr->second]);
     }
-#if VERSION_STRING != Cata
-    setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
-#else
-    setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
-#endif
-    smsg_TalentsInfo(false);
+
+    setInitialTalentPoints();
 #endif
 }
 
@@ -2610,8 +2466,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (m_bg != nullptr && isArena(m_bg->GetType()))
         in_arena = true;
 
-    if (GetPrimaryProfessionPoints() > worldConfig.player.maxProfessions)
-        SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
+    if (getFreePrimaryProfessionPoints() > worldConfig.player.maxProfessions)
+        setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     //Calc played times
     uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
@@ -2703,7 +2559,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #else
         ss << (uint32)0 << ",";
 #endif
-    ss << GetPrimaryProfessionPoints() << ",";
+    ss << getFreePrimaryProfessionPoints() << ",";
 
     ss << load_health << ","
         << load_mana << ","
@@ -3670,7 +3526,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         ss >> tp2;
 
         m_spec.SetTP(tp1);
-        setUInt32Value(PLAYER_CHARACTER_POINTS1, getActiveSpec().GetTP());
+        setFreeTalentPoints(getActiveSpec().GetTP());
     }
 
     get_next_field;//skipping firsttalenttree
@@ -4342,7 +4198,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         end = strchr(start, ',');
         if (!end)break;
         *end = 0;
-        m_finishedQuests.insert(atol(start));
+        const uint32_t questEntry = atol(start);
+        m_finishedQuests.insert(questEntry);
+
+        // Load talent points from finished quests
+        auto questProperties = sMySQLStore.getQuestProperties(questEntry);
+        if (questProperties != nullptr && questProperties->rewardtalents > 0)
+            m_talentPointsFromQuests += questProperties->rewardtalents;
+
         start = end + 1;
     }
 
@@ -4442,9 +4305,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
 #if VERSION_STRING != Cata
-        setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
-#else
-        setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
+        setFreeTalentPoints(getActiveSpec().GetTP());
 #endif
     }
 
@@ -4905,6 +4766,7 @@ void Player::OnPushToWorld()
         sHookInterface.OnFirstEnterWorld(this);
         LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), start_level);
         ApplyLevelInfo(Info, start_level);
+        setInitialTalentPoints();
         m_FirstLogin = false;
     }
 
@@ -5016,6 +4878,7 @@ void Player::OnPushToWorld()
         sHookInterface.OnFirstEnterWorld(this);
         LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
         ApplyLevelInfo(Info, startlevel);
+        setInitialTalentPoints();
         m_FirstLogin = false;
     }
 
@@ -7543,91 +7406,17 @@ void Player::ResetDualWield2H()
     }
 }
 
-void Player::Reset_Talents()
-{
-    uint8 playerClass = getClass();
-    SpellInfo* spellInfo;
-    SpellInfo* spellInfo2;
-
-    // Loop through all talents.
-    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-    {
-        auto temp_talent = sTalentStore.LookupEntry(i);
-        if (temp_talent == nullptr)
-            continue;
-
-        if (temp_talent->TalentTree != TalentTreesPerClass[playerClass][0] &&
-            temp_talent->TalentTree != TalentTreesPerClass[playerClass][1] &&
-            temp_talent->TalentTree != TalentTreesPerClass[playerClass][2])
-        {
-            // Not a talent for this class
-            continue;
-        }
-
-        // this is a normal talent (i hope)
-        for (uint8 j = 0; j < 5; ++j)
-        {
-            if (temp_talent->RankID[j] != 0)
-            {
-                spellInfo = sSpellCustomizations.GetSpellInfo(temp_talent->RankID[j]);
-                if (spellInfo != nullptr)
-                {
-                    for (uint8 k = 0; k < 3; ++k)
-                    {
-                        if (spellInfo->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
-                        {
-                            // removeSpell(spellInfo->EffectTriggerSpell[k], false, 0, 0);
-                            // remove higher ranks of this spell too (like earth shield lvl 1 is talent and the rest is taught from trainer)
-                            spellInfo2 = sSpellCustomizations.GetSpellInfo(spellInfo->getEffectTriggerSpell(k));
-                            if (spellInfo2 != nullptr)
-                            {
-                                removeSpellByHashName(spellInfo2->custom_NameHash);
-                            }
-                        }
-                    }
-                    // remove them all in 1 shot
-                    removeSpellByHashName(spellInfo->custom_NameHash);
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    uint32 l = getLevel();
-    if (l > 9)
-    {
-        SetCurrentTalentPoints(l - 9);
-    }
-    else
-    {
-        SetCurrentTalentPoints(0);
-    }
-
-    if (DualWield2H)
-    {
-        ResetDualWield2H();
-    }
-
-    getActiveSpec().talents.clear();
-#if VERSION_STRING == Cata
-    m_FirstTalentTreeLock = 0;
-#endif
-    smsg_TalentsInfo(false); //VLack: should we send this as Aspire? Yes...
-}
-
 void Player::Reset_AllTalents()
 {
     uint8 originalspec = m_talentActiveSpec;
-    Reset_Talents();
+    resetTalents();
 
     if (originalspec == SPEC_PRIMARY)
         ActivateSpec(SPEC_SECONDARY);
     else
         ActivateSpec(SPEC_PRIMARY);
 
-    Reset_Talents();
+    resetTalents();
     ActivateSpec(originalspec);
 }
 
@@ -9561,11 +9350,10 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     SetMaxPower(POWER_TYPE_MANA, Info->Mana);
     SetPower(POWER_TYPE_MANA, Info->Mana);
 
-
     if (Level > PreviousLevel)
     {
         if (Level > 9)
-            SetTalentPointsForAllSpec(Level - 9);
+            setInitialTalentPoints();
     }
     else
     {
@@ -10327,6 +10115,10 @@ void Player::CompleteLoading()
                 if (!(getShapeShiftMask() & spellInfo->getRequiredShapeShift()))
                     continue;
             }
+
+            // Check aurastate
+            if (spellInfo->getCasterAuraState() != 0 && !hasAuraState(AuraState(spellInfo->getCasterAuraState()), spellInfo, this))
+                continue;
 
             Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);
             spell->prepare(&targets);
@@ -12897,11 +12689,11 @@ void Player::UpdateGlyphs()
     }
     if (level >= 50)
     {
-        slotMask = GS_MASK_LEVEL_50;
+        slotMask = (GS_MASK_LEVEL_25 | GS_MASK_LEVEL_50);
     }
     if (level >= 75)
     {
-        slotMask = GS_MASK_LEVEL_75;
+        slotMask = (GS_MASK_LEVEL_25 | GS_MASK_LEVEL_50 | GS_MASK_LEVEL_75);
     }
 
     setUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
@@ -13210,364 +13002,6 @@ void Player::HandleSpellLoot(uint32 itemid)
         m_ItemInterface->AddItemById(looteditemid, count, 0);
     }
 }
-
-#if VERSION_STRING != Cata
-void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
-{
-    uint32 CurTalentPoints = getActiveSpec().GetTP();   // Calculate free points in active spec
-
-    if (CurTalentPoints == 0)
-        return;
-
-    if (rank > 4)
-        return;
-
-    auto talent_info = sTalentStore.LookupEntry(talentid);
-    if (talent_info == nullptr)
-        return;
-
-    if (objmgr.IsSpellDisabled(talent_info->RankID[rank]))
-    {
-        if (IsInWorld())
-            SendCastResult(talent_info->RankID[rank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
-
-        return;
-    }
-
-    // Check if it requires another talent
-    if (talent_info->DependsOn > 0)
-    {
-        auto depends_talent = sTalentStore.LookupEntry(talent_info->DependsOn);
-        if (depends_talent)
-        {
-            bool hasEnoughRank = false;
-            for (uint8 i = 0; i < 5; ++i)
-            {
-                if (depends_talent->RankID[i] != 0)
-                {
-                    if (HasSpell(depends_talent->RankID[i]))
-                    {
-                        hasEnoughRank = true;
-                        break;
-                    }
-                }
-            }
-            if (!hasEnoughRank)
-                return;
-        }
-    }
-
-    // Find out how many points we have in this field
-    uint32 spentPoints = 0;
-
-    // points we are spending now
-    int32 points = 0;
-
-    uint32 tTree = talent_info->TalentTree;
-    uint32 cl = getClass();
-
-    for (uint8 k = 0; k < 3; ++k)
-    {
-        if (tTree == TalentTreesPerClass[cl][k])
-        {
-            break;
-        }
-    }
-
-    if (talent_info->Row > 0)
-    {
-        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)           // Loop through all talents.
-        {
-            // Someday, someone needs to revamp
-            auto temp_talent = sTalentStore.LookupEntry(i);
-            if (temp_talent)                                   // the way talents are tracked
-            {
-                if (temp_talent->TalentTree == tTree)
-                {
-                    for (uint8 j = 0; j < 5; j++)
-                    {
-                        if (temp_talent->RankID[j] != 0)
-                        {
-                            if (HasSpell(temp_talent->RankID[j]))
-                            {
-                                spentPoints += j + 1;
-                                //    break;
-                            }
-                        }
-                        else
-                            break;
-                    }
-                }
-            }
-        }
-    }
-
-    uint32 spellid = talent_info->RankID[rank];
-    if (spellid == 0)
-    {
-        LOG_DETAIL("Talent: %u Rank: %u = 0", talentid, rank);
-    }
-    else
-    {
-        if (spentPoints < (talent_info->Row * 5))             // Min points spent
-        {
-            return;
-        }
-
-
-        // Check if we already have the talent with the same or higher rank
-        for (uint32 i = rank; i < 5; ++i)
-            if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
-                return; // cheater
-
-        if (rank > 0)
-        {
-            // If we are not learning thru the preview system, check if we have the lower rank of the talent
-            if (talent_info->RankID[rank - 1] && !HasSpell(talent_info->RankID[rank - 1]) && !isPreviewed)
-            {
-                // cheater
-                return;
-            }
-
-            int32 highest = 0;
-            for (highest = 4; highest >= 0; highest--)
-                if ((talent_info->RankID[highest] != 0) && HasSpell(talent_info->RankID[highest]))
-                    break;
-
-            points = static_cast<int32>(rank)-highest;
-        }
-        else
-            points = 1;
-
-        if (static_cast<uint32>(points) > CurTalentPoints)
-            return;
-
-        if (!(HasSpell(spellid)))
-        {
-            addSpell(spellid);
-
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
-
-            if (rank > 0)
-            {
-                uint32 respellid = talent_info->RankID[rank - 1];
-                if (respellid && !isPreviewed)
-                {
-                    removeSpell(respellid, false, false, 0);
-                    RemoveAura(respellid);
-                }
-            }
-
-            if (spellInfo->isPassive() || ((spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
-                spellInfo->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
-                spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
-                && ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
-            {
-                if (spellInfo->getRequiredShapeShift() && !(getShapeShiftMask() & spellInfo->getRequiredShapeShift()))
-                {
-                    // do nothing
-                }
-                else
-                {
-                    Spell* sp = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
-                    SpellCastTargets tgt;
-                    tgt.m_unitTarget = this->getGuid();
-                    sp->prepare(&tgt);
-                }
-            }
-
-            SetCurrentTalentPoints(CurTalentPoints - static_cast<uint32>(points));
-            getActiveSpec().AddTalent(talentid, uint8(rank));
-            smsg_TalentsInfo(false);
-        }
-    }
-}
-#else
-void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
-{
-    uint32 CurTalentPoints = m_specs[m_talentActiveSpec].GetTP();   // Calculate free points in active spec
-
-    int32 TP_needed;
-    if (isPreviewed == false)
-        TP_needed = 1;
-    else
-        TP_needed = rank + 1;
-
-    if ((int32)CurTalentPoints < TP_needed)
-    {
-        LogDebug("LearnTalent: Have not enough talentpoints to spend");
-        return;
-    }
-
-    if (rank > 4)
-    {
-        LogDebug("LearnTalent: Requested rank is greater then 4");
-        return;
-    }
-
-    auto talent_info = sTalentStore.LookupEntry(talentid);
-    if (talent_info == nullptr)
-        return;
-
-    if (objmgr.IsSpellDisabled(talent_info->RankID[rank]))
-    {
-        if (IsInWorld())
-            SendCastResult(talent_info->RankID[rank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
-
-        return;
-    }
-
-    DBC::Structures::TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talent_info->TalentTree);
-
-    if (!talentTabInfo)
-    {
-        LogDebug("Could not find talent tab %u in talent DBC \n", talent_info->TalentTree);
-        return;
-    }
-
-    if (m_FirstTalentTreeLock == 0)
-    {
-        m_FirstTalentTreeLock = talent_info->TalentTree;
-        //TODO Mastery Spells
-
-    }
-
-    //tree is locked until we have 31 points in it
-    if (talentTabInfo->TalentTabID != m_FirstTalentTreeLock && CalcTalentPointsHaveSpent(m_talentActiveSpec) < 31)
-    {
-        LogDebug("Trying to learn non primary tab spell before we have full tab spec \n");
-        return;
-    }
-
-    // Check if it requires another talent
-    if (talent_info->DependsOn > 0)
-    {
-        auto depends_talent = sTalentStore.LookupEntry(talent_info->DependsOn);
-        if (depends_talent)
-        {
-            bool hasEnoughRank = false;
-            for (int32 i = (int32)talent_info->DependsOnRank - 1; i < 5; ++i)
-            {
-                if (depends_talent->RankID[i] != 0)
-                {
-                    if (HasSpell(depends_talent->RankID[i]))
-                    {
-                        hasEnoughRank = true;
-                        break;
-                    }
-                }
-            }
-            if (!hasEnoughRank)
-                return;
-        }
-        else
-        {
-            LogDebug("Could not find talent dependency %u for talent %u \n", talent_info->DependsOn, talentid);
-            return;
-        }
-    }
-
-    if ((talentTabInfo->ClassMask & (1 << (getClass() - 1))) == 0)
-    {
-        SoftDisconnect();
-        LogDebug("LearnTalent: Talent is not for our class");
-        return;
-    }
-
-    uint32 spellid = talent_info->RankID[rank];
-    if (spellid == 0)
-    {
-        LogDetail("Talent: %u Rank: %u = 0", talentid, rank);
-    }
-    else
-    {
-        if (rank > 0)
-        {
-            if (talent_info->RankID[rank - 1] && !HasSpell(talent_info->RankID[rank - 1]) && !isPreviewed)
-            {
-                // cheater
-                LogDebug("LearnTalent: Missing required rank");
-                return;
-            }
-        }
-
-        for (uint32_t i = rank; i < 5; ++i)
-        {
-            if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
-            {
-                LogDebug("LearnTalent: Has rank %u higher already higher or equal.Spell id %u", i, talent_info->RankID[i]);
-                //return; // cheater
-            }
-        }
-
-
-        if (!HasSpell(spellid))
-        {
-            addSpell(spellid);
-
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
-            if (spellInfo == nullptr)
-            {
-                LOG_ERROR("Your table `spells` miss skill spell %u!", spellid);
-                return;
-            }
-            //make sure pets that get bonus from owner do not stack it up
-            if (getClass() == HUNTER && GetSummon())
-                GetSummon()->RemoveAura(spellInfo->getId());
-
-            if (rank > 0)
-            {
-                uint32 respellid = talent_info->RankID[rank - 1];
-                if (respellid)
-                {
-                    removeSpell(respellid, false, false, 0);
-                    RemoveAura(respellid);
-
-                    SpellInfo* spellInfoReq = sSpellCustomizations.GetSpellInfo(respellid);
-                    if (spellInfoReq == nullptr)
-                    {
-                        LOG_ERROR("Your table `spells` miss skill spell %u!", spellid);
-                        return;
-                    }
-                    if (getClass() == HUNTER && GetSummon())
-                        GetSummon()->RemoveAura(spellInfoReq->getId());
-                }
-            }
-
-            int32 ss = getShapeShiftMask();
-            if (spellInfo->getRequiredShapeShift() == 0 || (ss & spellInfo->getRequiredShapeShift()) != 0)
-            {
-                if (spellInfo->isPassive()
-                     || (spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
-                         spellInfo->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
-                         spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL))
-                {
-                    Spell* sp = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);
-                    SpellCastTargets tgt;
-                    tgt.m_unitTarget = this->getGuid();
-                    sp->prepare(&tgt);
-                }
-            }
-
-            m_specs[m_talentActiveSpec].AddTalent(talentid, uint8(rank));
-            SetCurrentTalentPoints(CurTalentPoints - static_cast<uint32>(TP_needed));
-            if (isPreviewed == false)
-                smsg_TalentsInfo(false);
-        }
-    }
-}
-
-uint32 Player::CalcTalentPointsHaveSpent(uint32 spec)
-{
-    std::map<uint32, uint8>::iterator treeitr;
-    int32 points_used_up = 0;
-
-    for (treeitr = m_specs[spec].talents.begin(); treeitr != m_specs[spec].talents.end(); treeitr++)
-        points_used_up += treeitr->second + 1;
-
-    return points_used_up;
-}
-#endif
 
 void Player::SetDungeonDifficulty(uint8 diff)
 {

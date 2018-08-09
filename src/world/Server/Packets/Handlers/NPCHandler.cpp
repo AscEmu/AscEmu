@@ -477,7 +477,7 @@ uint8_t WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
         || (trainerSpell->RequiredSpell && !GetPlayer()->HasSpell(trainerSpell->RequiredSpell))
         || (trainerSpell->Cost && !GetPlayer()->HasGold(trainerSpell->Cost))
         || (trainerSpell->RequiredSkillLine && GetPlayer()->_GetSkillLineCurrent(trainerSpell->RequiredSkillLine, true) < trainerSpell->RequiredSkillLineValue)
-        || (trainerSpell->IsProfession && GetPlayer()->GetPrimaryProfessionPoints() == 0)
+        || (trainerSpell->IsProfession && GetPlayer()->getFreePrimaryProfessionPoints() == 0)
         )
         return TRAINER_STATUS_NOT_LEARNABLE;
     return TRAINER_STATUS_LEARNABLE;
