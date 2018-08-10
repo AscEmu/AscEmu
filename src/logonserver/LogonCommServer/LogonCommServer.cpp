@@ -316,7 +316,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     const auto realm = sRealmsMgr.getRealmById(realmId);
     if (realm == nullptr)
     {
-        LogError("Realm %u is missing in  table realms. Please add the server to your realms table.", realmId);
+        LogError("Realm %u is missing in  table realms. Please add the server to your realms table.", static_cast<uint32_t>(realmId));
         return;
     }
 
@@ -325,7 +325,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     hash.Finalize();
 
     // check if we have the correct password
-    uint32 result = 1;
+    uint32_t result = 1;
 
     if (memcmp(key, hash.GetDigest(), 20) != 0)
         result = 0;
