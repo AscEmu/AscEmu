@@ -59,7 +59,6 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     rates.accountRefreshTime = Config.MainConfig.getIntDefault("Rates", "AccountRefresh", 600);
 
     // logon.conf - LogonServer
-    logonServer.remotePassword = Config.MainConfig.getStringDefault("LogonServer", "RemotePassword", "");
     logonServer.allowedIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedIPs", "127.0.0.1/24");
     logonServer.allowedModIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedModIPs", "127.0.0.1/24");
 }

@@ -53,7 +53,6 @@ class SERVER_DECL LogonConfig
         // logon.conf - LogonServer
         struct LogonServer
         {
-            std::string remotePassword;
             std::string allowedIps;
             std::string allowedModIps;
         }logonServer;

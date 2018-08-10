@@ -13,16 +13,17 @@ initialiseSingleton(RealmsMgr);
 
 void RealmsMgr::LoadRealms()
 {
-    QueryResult* result = sLogonSQL->Query("SELECT id, status FROM realms");
+    QueryResult* result = sLogonSQL->Query("SELECT id, password, status FROM realms");
     if (result)
     {
         do
         {
             Field* field = result->Fetch();
 
-            auto realms = std::make_unique<Realms>();
+            auto realms = std::make_shared<Realms>();
             realms->id = field[0].GetUInt32();
-            realms->status = field[1].GetUInt8();
+            realms->password = field[1].GetString();
+            realms->status = field[2].GetUInt8();
             realms->lastPing = Util::TimeNow();
 
             _realmStore.push_back(std::move(realms));
@@ -30,11 +31,22 @@ void RealmsMgr::LoadRealms()
     }
 }
 
+std::shared_ptr<Realms> RealmsMgr::getRealmById(uint32_t id)
+{
+    for (auto& realm : _realmStore)
+    {
+        if (realm->id == id)
+            return realm;
+    }
+
+    return nullptr;
+}
+
 void RealmsMgr::setStatusForRealm(uint8_t realm_id, uint32_t status)
 {
     if (_realmStore.empty())
     {
-        auto realms = std::make_unique<Realms>();
+        auto realms = std::make_shared<Realms>();
         realms->id = realm_id;
         realms->status = uint8_t(status);
         realms->lastPing = Util::TimeNow();

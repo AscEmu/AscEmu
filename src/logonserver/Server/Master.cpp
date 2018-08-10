@@ -22,7 +22,7 @@ std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
 
-static const char* REQUIRED_LOGON_DB_VERSION = "20180729-00_logon_db_version";
+static const char* REQUIRED_LOGON_DB_VERSION = "20180810-00_realms";
 
 void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 {
@@ -103,11 +103,6 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     // Load conf settings..
     clientMinBuild = 5875;
     clientMaxBuild = 15595;
-
-    Sha1Hash hash;
-    hash.UpdateData(logonConfig.logonServer.remotePassword);
-    hash.Finalize();
-    memcpy(sql_hash, hash.GetDigest(), 20);
 
     ThreadPool.ExecuteTask(new LogonConsoleThread);
 

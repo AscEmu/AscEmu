@@ -308,13 +308,26 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
 void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 {
     unsigned char key[20];
-    uint32 result = 1;
     uint8_t realmId = 0;
+
     recvData.read(key, 20);
     recvData >> realmId;
 
+    const auto realm = sRealmsMgr.getRealmById(realmId);
+    if (realm == nullptr)
+    {
+        LogError("Realm %u is missing in  table realms. Please add the server to your realms table.", realmId);
+        return;
+    }
+
+    Sha1Hash hash;
+    hash.UpdateData(realm->password);
+    hash.Finalize();
+
     // check if we have the correct password
-    if (memcmp(key, MasterLogon::getSingleton().sql_hash, 20))
+    uint32 result = 1;
+
+    if (memcmp(key, hash.GetDigest(), 20) != 0)
         result = 0;
 
     LogDefault("Authentication request from %s, id %u - result %s.", GetRemoteIP().c_str(), uint32_t(realmId), result ? "OK" : "FAIL");

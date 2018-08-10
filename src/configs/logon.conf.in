@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu Logonserver Configuration File
-# Last edited: 2/08/2017
+# Last edited: 10/08/2017
 ################################################################################
 
 ################################################################################
@@ -59,12 +59,6 @@
 ################################################################################
 # WorldServer Setup
 #
-#    RemotePassword
-#        This directive controls the password used to authenticate with the
-#        worldserver. It must be the same between the two configs. If it is not,
-#        your server will not register.
-#        Default: "change_me_logon"
-#
 #    AllowedIPs
 #        This section MUST be completed, otherwise all attempts to link your
 #        servers will fail. These "Allowed" fields are a space-separated list of
@@ -82,6 +76,5 @@
 #        modify the database (adding bans, GMs, account permissions, etc)
 #
 
-<LogonServer RemotePassword = "change_me_logon" 
-             AllowedIPs     = "127.0.0.1/24" 
+<LogonServer AllowedIPs     = "127.0.0.1/24" 
              AllowedModIPs  = "127.0.0.1/24">

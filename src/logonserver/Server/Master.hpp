@@ -34,7 +34,6 @@ class MasterLogon : public Singleton<MasterLogon>
         void PrintBanner();
         void WritePidFile();
 
-        uint8 sql_hash[20];
         uint32 clientMinBuild;
         uint32 clientMaxBuild;
 
