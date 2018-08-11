@@ -20,7 +20,7 @@
 #ifndef AUTHSOCKET_H
 #define AUTHSOCKET_H
 
-#include "AccountCache.h"
+#include "Server/InfoCore.h"
 #include "AuthStructs.h"
 
 class LogonCommServerSocket;

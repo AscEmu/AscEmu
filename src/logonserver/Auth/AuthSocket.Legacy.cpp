@@ -173,7 +173,7 @@ void AuthSocket::HandleChallenge()
     }*/
 
     // Check for a possible IP ban on this client.
-    BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
+    IpBanStatus ipb = sIpBanMgr.getBanStatus(GetRemoteAddress());
 
     if (ipb != BAN_STATUS_NOT_BANNED)
         LOG_DETAIL("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
@@ -571,7 +571,7 @@ void AuthSocket::OnRead()
 
 void AuthSocket::HandleRealmlist()
 {
-    sInfoCore.SendRealms(this);
+    sInfoCore.sendRealms(this);
 }
 
 void AuthSocket::HandleReconnectChallenge()
@@ -609,7 +609,7 @@ void AuthSocket::HandleReconnectChallenge()
     }
 
     // Check for a possible IP ban on this client.
-    BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
+    IpBanStatus ipb = sIpBanMgr.getBanStatus(GetRemoteAddress());
 
     switch (ipb)
     {

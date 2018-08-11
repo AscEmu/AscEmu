@@ -178,13 +178,14 @@ void LogonConsole::ProcessCmd(char* cmd)
             return;
         }
 
-    printf("Console: Unknown console command (use \"help\" for help).\n");
+    if (strncmp(cmd, "c", 1) == 0)
+        printf("Console: Unknown console command (use \"help\" for help).\n");
 }
 
 void LogonConsole::ReloadAccts(char* /*str*/)
 {
     sAccountMgr.reloadAccounts(false);
-    IPBanner::getSingleton().Reload();
+    sIpBanMgr.reload();
 }
 
 void LogonConsole::NetworkStatus(char* /*str*/)

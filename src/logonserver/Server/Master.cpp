@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util.hpp"
 #include "DatabaseUpdater.h"
 #include "Logon.h"
+#include "IpBanMgr.h"
+#include "InfoCore.h"
 
 using std::chrono::milliseconds;
 
@@ -70,11 +72,10 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-    new IPBanner;
+    new IpBanMgr;
     new AccountMgr;
 
-    LogDetail("InfoCore : Starting...");
-    new InformationCore;
+    new InfoCore;
 
     new PatchMgr;
     
@@ -134,7 +135,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
             if (!(loop_counter % 5))
             {
-                sInfoCore.TimeoutSockets();
+                sInfoCore.timeoutSockets();
                 sSocketGarbageCollector.Update();
                 CheckForDeadSockets();              // Flood Protection
                 UNIXTIME = time(NULL);
@@ -181,9 +182,9 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         LOG_DEBUG("File logonserver.pid successfully deleted");
 
     delete AccountMgr::getSingletonPtr();
-    delete InformationCore::getSingletonPtr();
+    delete InfoCore::getSingletonPtr();
     delete PatchMgr::getSingletonPtr();
-    delete IPBanner::getSingletonPtr();
+    delete IpBanMgr::getSingletonPtr();
     delete SocketMgr::getSingletonPtr();
     delete SocketGarbageCollector::getSingletonPtr();
     delete periodicReloadAccounts;
@@ -466,8 +467,9 @@ bool MasterLogon::SetLogonConfiguration()
         m_allowedModIps.push_back(tmp);
     }
 
-    if (InformationCore::getSingletonPtr() != nullptr)
-        sInfoCore.CheckServers();
+    //\todo always nullptr!
+    if (InfoCore::getSingletonPtr() != nullptr)
+        sInfoCore.checkServers();
 
     m_allowedIpLock.Release();
 

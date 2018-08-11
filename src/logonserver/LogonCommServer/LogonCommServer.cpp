@@ -50,9 +50,9 @@ void LogonCommServerSocket::OnDisconnect()
         std::set<uint32>::iterator itr = server_ids.begin();
 
         for (; itr != server_ids.end(); ++itr)
-            sInfoCore.SetRealmOffline((*itr));
+            sInfoCore.setRealmOffline((*itr));
 
-        sInfoCore.RemoveServerSocket(this);
+        sInfoCore.removeServerSocket(this);
     }
 }
 
@@ -65,7 +65,7 @@ void LogonCommServerSocket::OnConnect()
         return;
     }
 
-    sInfoCore.AddServerSocket(this);
+    sInfoCore.addServerSocket(this);
     removed = false;
 }
 
@@ -167,25 +167,25 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 {
     std::string Name;
-    int32 my_id;
+    uint32 my_id;
 
     recvData >> Name;
-    my_id = sInfoCore.GetRealmIdByName(Name);
+    my_id = sInfoCore.getRealmIdByName(Name);
 
-    if (my_id == -1)
+    if (my_id == 0)
     {
-        my_id = sInfoCore.GenerateRealmID();
+        my_id = sInfoCore.generateRealmID();
         LogDefault("Registering realm `%s` under ID %u.", Name.c_str(), my_id);
     }
     else
     {
-        sInfoCore.RemoveRealm(my_id);
-        int new_my_id = sInfoCore.GenerateRealmID(); //socket timout will DC old id after a while, make sure it's not the one we restarted
+        sInfoCore.removeRealm(my_id);
+        uint32_t new_my_id = sInfoCore.generateRealmID(); //socket timout will DC old id after a while, make sure it's not the one we restarted
         LogDefault("Updating realm `%s` with ID %u to new ID %u.", Name.c_str(), my_id, new_my_id);
         my_id = new_my_id;
     }
 
-    Realm* realm = new Realm;
+    auto realm = std::make_shared<Realm>();
     realm->flags = 0;
     realm->Icon = 0;
     realm->TimeZone = 0;
@@ -204,7 +204,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realm->GameBuild;
 
     // Add to the main realm list
-    sInfoCore.AddRealm(my_id, realm);
+    sInfoCore.addRealm(my_id, realm);
 
     // Send back response packet.
     WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
@@ -382,7 +382,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     uint32 count;
     uint32 realm_id;
     buf >> realm_id;
-    Realm* realm = sInfoCore.GetRealm(realm_id);
+    auto realm = sInfoCore.getRealm(realm_id);
     if (!realm)
         return;
 
@@ -411,7 +411,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     uint8 chars_to_add;
     recvData >> realm_id;
 
-    Realm* realm = sInfoCore.GetRealm(realm_id);
+    auto realm = sInfoCore.getRealm(realm_id);
     if (!realm)
         return;
 
@@ -551,7 +551,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> duration;
             recvData >> banreason;
 
-            if (sIPBanner.Add(ip.c_str(), duration))
+            if (sIpBanMgr.add(ip, duration))
                 sLogonSQL->Execute("INSERT INTO ipbans VALUES(\"%s\", %u, \"%s\")", sLogonSQL->EscapeString(ip).c_str(), duration, sLogonSQL->EscapeString(banreason).c_str());
 
         }
@@ -562,7 +562,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string ip;
             recvData >> ip;
 
-            if (sIPBanner.Remove(ip.c_str()))
+            if (sIpBanMgr.remove(ip))
                 sLogonSQL->Execute("DELETE FROM ipbans WHERE ip = \"%s\"", sLogonSQL->EscapeString(ip).c_str());
 
         }
@@ -788,7 +788,7 @@ void LogonCommServerSocket::HandlePopulationRespond(WorldPacket & recvData)
     float population;
     uint32 realmId;
     recvData >> realmId >> population;
-    sInfoCore.UpdateRealmPop(realmId, population);
+    sInfoCore.updateRealmPop(realmId, population);
 }
 
 void LogonCommServerSocket::RefreshRealmsPop()

@@ -3,8 +3,6 @@
 set(PATH_PREFIX Auth)
 
 set(SRC_AUTH_FILES
-   ${PATH_PREFIX}/AccountCache.cpp
-   ${PATH_PREFIX}/AccountCache.h
    ${PATH_PREFIX}/AuthSocket.Legacy.cpp
    ${PATH_PREFIX}/AuthSocket.cpp
    ${PATH_PREFIX}/AuthSocket.h

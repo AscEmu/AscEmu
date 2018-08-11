@@ -198,8 +198,6 @@ void AccountMgr::reloadAccounts(bool silent)
         LogDefault("[AccountMgr] Found %u accounts.", _accountMap.size());
 
     accountMgrMutex.Release();
-
-    IPBanner::getSingleton().Reload();
 }
 
 void AccountMgr::reloadAccountsCallback()
