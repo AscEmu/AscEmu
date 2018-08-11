@@ -230,7 +230,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 
     // get sessionkey!
     uint32 error = 0;
-    Account* acct = sAccountMgr.GetAccount(account_name);
+    std::shared_ptr<Account> acct = sAccountMgr.getAccountByName(account_name);
     if (acct == NULL || acct->SessionKey == NULL)
         error = 1;          // Unauthorized user.
 
@@ -441,7 +441,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 
     data << request;
 
-    Account* pAccount = sAccountMgr.GetAccount(accountname);
+    std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(accountname);
     if (pAccount == NULL)
     {
         data << uint32(0);
@@ -486,7 +486,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             Util::StringToUpperCase(account);
 
-            Account* pAccount = sAccountMgr.GetAccount(account);
+            std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
                 return;
 
@@ -508,7 +508,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             //// remember we expect this in uppercase
             //Util::StringToUpperCase(account);
 
-            //Account* pAccount = sAccountMgr.GetAccount(account);
+            //Account* pAccount = sAccountMgr.getAccountByName(account);
             //if (pAccount == NULL)
             //    return;
 
@@ -530,7 +530,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             Util::StringToUpperCase(account);
 
-            Account* pAccount = sAccountMgr.GetAccount(account);
+            std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
                 return;
 
@@ -613,7 +613,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 SendPacket(&data);
                 //}
 
-                sAccountMgr.ReloadAccounts(false);
+                sAccountMgr.reloadAccounts(false);
             }
 
         }
@@ -637,7 +637,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             Util::StringToUpperCase(name);
 
-            auto account_check = sAccountMgr.GetAccount(name);
+            auto account_check = sAccountMgr.getAccountByName(name);
 
             if (account_check != nullptr)
             {
@@ -667,7 +667,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 SendPacket(&data);
             }
 
-            sAccountMgr.ReloadAccounts(false);
+            sAccountMgr.reloadAccounts(false);
         }
         break;
     }
@@ -701,7 +701,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             // remember we expect this in uppercase
             Util::StringToUpperCase(account_name);
 
-            Account* account_check = sAccountMgr.GetAccount(account_name);
+            std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
             {
                 // Send packet "account not available"
@@ -736,7 +736,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             // remember we expect this in uppercase
             Util::StringToUpperCase(account_name);
 
-            Account* account_check = sAccountMgr.GetAccount(account_name);
+            std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
             {
                 // Send packet "account not available"

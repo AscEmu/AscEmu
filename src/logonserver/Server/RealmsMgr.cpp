@@ -19,6 +19,8 @@ void RealmsMgr::LoadRealms()
         do
         {
             Field* field = result->Fetch();
+            const uint32_t realmsCount = result->GetRowCount();
+            _realmStore.reserve(realmsCount);
 
             auto realms = std::make_shared<Realms>();
             realms->id = field[0].GetUInt32();
@@ -26,7 +28,7 @@ void RealmsMgr::LoadRealms()
             realms->status = field[2].GetUInt8();
             realms->lastPing = Util::TimeNow();
 
-            _realmStore.push_back(std::move(realms));
+            _realmStore.emplace_back(std::move(realms));
         } while (result->NextRow());
     }
 }

@@ -3,6 +3,8 @@
 set(PATH_PREFIX Server)
 
 set(SRC_SERVER_FILES
+   ${PATH_PREFIX}/AccountMgr.cpp
+   ${PATH_PREFIX}/AccountMgr.h
    ${PATH_PREFIX}/Logon.cpp
    ${PATH_PREFIX}/Logon.h
    ${PATH_PREFIX}/LogonConfig.cpp

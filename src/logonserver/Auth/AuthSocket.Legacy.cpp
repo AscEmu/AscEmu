@@ -209,7 +209,7 @@ void AuthSocket::HandleChallenge()
     // Look up the account information
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
-    m_account = AccountMgr::getSingleton().GetAccount(AccountName);
+    m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
         LOG_DEBUG("[AuthChallenge] Invalid account.");
@@ -650,7 +650,7 @@ void AuthSocket::HandleReconnectChallenge()
     std::string AccountName = (char*)&m_challenge.I;
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
-    m_account = AccountMgr::getSingleton().GetAccount(AccountName);
+    m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
         LOG_DEBUG("[AuthChallenge] Invalid account.");

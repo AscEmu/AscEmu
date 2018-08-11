@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DatabaseUpdater.h"
 #include "Logon.h"
 
-using AscEmu::Threading::AEThread;
-using AscEmu::Threading::AEThreadPool;
 using std::chrono::milliseconds;
 
 // Database impl
@@ -72,18 +70,14 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-    LogDetail("AccountMgr : Starting...");
-    new AccountMgr;
     new IPBanner;
+    new AccountMgr;
 
     LogDetail("InfoCore : Starting...");
     new InformationCore;
 
     new PatchMgr;
-    LogNotice("AccountMgr : Precaching accounts...");
-
-    sAccountMgr.ReloadAccounts(true);
-    LogDetail("AccountMgr : %u accounts are loaded and ready.", sAccountMgr.GetCount());
+    
 
     new RealmsMgr;
     sRealmsMgr.LoadRealms();
@@ -92,7 +86,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     // Spawn periodic function caller thread for account reload every 10mins
     const uint32 accountReloadPeriod = logonConfig.rates.accountRefreshTime * 1000;
 
-    auto periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
+    auto periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::reloadAccountsCallback, accountReloadPeriod);
     ThreadPool.ExecuteTask(periodicReloadAccounts);
 
     // periodic ping check for realm status
