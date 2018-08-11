@@ -115,7 +115,7 @@ void MySQLDataStore::loadItemPagesTable()
     QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM item_pages");
     if (itempages_result == nullptr)
     {
-        LogNotice("MySQLDataLoads : able `item_pages` is empty!");
+        LogNotice("MySQLDataLoads : Table `item_pages` is empty!");
         return;
     }
 
