@@ -136,13 +136,25 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
 
 void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 {
-    uint32 realmlid;
+    uint32_t realmlid;
     uint32 error;
     std::string realmname;
 
     recvData >> error;
     recvData >> realmlid;
     recvData >> realmname;
+
+    if (error == 1)
+    {
+        LOG_ERROR("Realm `%s` with id %u is not known by logonserver - failed!", realmname.c_str(), realmlid);
+        return;
+    }
+
+    if (error == 2)
+    {
+        LOG_ERROR("Realm `%s` already registered - failed!", realmname.c_str());
+        return;
+    }
 
     LogDefault("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
 

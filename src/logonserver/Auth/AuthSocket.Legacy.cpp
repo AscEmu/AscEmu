@@ -571,7 +571,7 @@ void AuthSocket::OnRead()
 
 void AuthSocket::HandleRealmlist()
 {
-    sInfoCore.sendRealms(this);
+    sRealmsMgr.sendRealms(this);
 }
 
 void AuthSocket::HandleReconnectChallenge()

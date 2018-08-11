@@ -216,6 +216,7 @@ void LogonCommHandler::addRealmToRealmlist(LogonCommClientSocket* Socket)
 
         // Add realm to the packet
         RealmStructure* realm = itr;
+        data << uint32_t(Config.MainConfig.getIntDefault("Realm1", "Id", 1));
         data << realm->name;
         data << realm->address;
         data << realm->flags;

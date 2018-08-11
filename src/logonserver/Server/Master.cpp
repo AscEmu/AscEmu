@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DatabaseUpdater.h"
 #include "Logon.h"
 #include "IpBanMgr.h"
-#include "InfoCore.h"
+#include "RealmsMgr.h"
 
 using std::chrono::milliseconds;
 
@@ -75,14 +75,11 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     new IpBanMgr;
     new AccountMgr;
 
-    new InfoCore;
-
     new PatchMgr;
     
 
     new RealmsMgr;
-    sRealmsMgr.LoadRealms();
-    LogDetail("Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
+    
 
     // Spawn periodic function caller thread for account reload every 10mins
     const uint32 accountReloadPeriod = logonConfig.rates.accountRefreshTime * 1000;
@@ -135,7 +132,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
             if (!(loop_counter % 5))
             {
-                sInfoCore.timeoutSockets();
+                sRealmsMgr.timeoutSockets();
                 sSocketGarbageCollector.Update();
                 CheckForDeadSockets();              // Flood Protection
                 UNIXTIME = time(NULL);
@@ -182,7 +179,6 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         LOG_DEBUG("File logonserver.pid successfully deleted");
 
     delete AccountMgr::getSingletonPtr();
-    delete InfoCore::getSingletonPtr();
     delete PatchMgr::getSingletonPtr();
     delete IpBanMgr::getSingletonPtr();
     delete SocketMgr::getSingletonPtr();
@@ -468,8 +464,8 @@ bool MasterLogon::SetLogonConfiguration()
     }
 
     //\todo always nullptr!
-    if (InfoCore::getSingletonPtr() != nullptr)
-        sInfoCore.checkServers();
+    if (RealmsMgr::getSingletonPtr() != nullptr)
+        sRealmsMgr.checkServers();
 
     m_allowedIpLock.Release();
 

@@ -45,7 +45,6 @@
 #include "LogonConf.h"
 #include "Server/AccountMgr.h"
 #include "Server/IpBanMgr.h"
-#include "Server/InfoCore.h"
 #include "Server/PeriodicFunctionCall_Thread.h"
 #include "Auth/AutoPatcher.h"
 #include "Auth/AuthSocket.h"
