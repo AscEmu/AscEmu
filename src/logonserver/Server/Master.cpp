@@ -510,7 +510,7 @@ void MasterLogon::_OnSignal(int s)
         case SIGHUP:
         {
             LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
-            AccountMgr::getSingleton().ReloadAccounts(true);
+            AccountMgr::getSingleton().reloadAccounts(true);
         }
         break;
 #endif
