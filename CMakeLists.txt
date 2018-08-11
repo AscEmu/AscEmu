@@ -13,6 +13,8 @@ if(UNIX)
     else()
         message(STATUS "Detected ${CMAKE_BUILD_TYPE} configuration")
     endif()
+    # Link atomic library
+    set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 endif()
 
 # cmake options
