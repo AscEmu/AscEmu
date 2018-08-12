@@ -24,12 +24,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == Classic
     #define AE_CLASSIC
+    #define VERSION 1, 12, 1
 #elif VERSION_STRING == TBC
     #define AE_TBC
+    #define VERSION 2, 4, 3
 #elif VERSION_STRING == WotLK
     #define AE_WOTLK
+    #define VERSION 3, 3, 5
 #elif VERSION_STRING == Cata
     #define AE_CATA
+    #define VERSION 4, 3, 4
 #endif
 
 #if VERSION_STRING >= TBC
