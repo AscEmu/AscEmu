@@ -313,7 +313,7 @@ static MovementFlagName MoveFlagsToNames[] =
 };
 
 static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementFlagName);
-#ifndef AE_TBC
+#if VERSION_STRING == WotLK
 void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN

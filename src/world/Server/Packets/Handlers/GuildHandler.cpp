@@ -50,6 +50,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "scripts/InstanceScripts/Setup.h"
 #include "Storage/WorldStrings.h"
 
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildFinderMgr.h"
+#endif
 
 using namespace AscEmu::Packets;
 

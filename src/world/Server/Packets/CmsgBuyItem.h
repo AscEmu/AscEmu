@@ -52,7 +52,7 @@ namespace AscEmu { namespace Packets
             packet >> rawGuid >> itemEntry >> slot >> amount;
 #endif
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING <= TBC
             packet >> rawGuid >> itemEntry >> slot >> amount;
 #endif
             sourceGuid.Init(rawGuid);

@@ -55,7 +55,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
 }
 #endif
 
-#ifdef AE_TBC
+#if VERSION_STRING <= TBC
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
 {
     // no water breathing is required
