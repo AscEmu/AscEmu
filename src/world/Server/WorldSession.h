@@ -567,10 +567,10 @@ class SERVER_DECL WorldSession
         void handleChatIgnoredOpcode(WorldPacket& recvPacket);
         void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
-        /// Corpse opcodes (Corpse.cpp)
+        // Corpse opcodes (Corpse.cpp)
         void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
         
-        void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
+        void handleResurrectResponse(WorldPacket& recvPacket);
 
         // Channel Opcodes (ChannelHandler.cpp)
         void handleChannelJoin(WorldPacket& recvPacket);

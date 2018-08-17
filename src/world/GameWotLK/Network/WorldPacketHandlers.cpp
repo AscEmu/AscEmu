@@ -303,7 +303,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::HandleQuestgiverCompleteQuestOpcode;
     WorldPacketHandlers[CMSG_QUESTLOG_REMOVE_QUEST].handler = &WorldSession::HandleQuestlogRemoveQuestOpcode;
     WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::HandleCorpseReclaimOpcode;
-    WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::HandleResurrectResponseOpcode;
+    WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::handleResurrectResponse;
     WorldPacketHandlers[CMSG_PUSHQUESTTOPARTY].handler = &WorldSession::HandlePushQuestToPartyOpcode;
     WorldPacketHandlers[MSG_QUEST_PUSH_RESULT].handler = &WorldSession::HandleQuestPushResult;
     WorldPacketHandlers[CMSG_QUEST_POI_QUERY].handler = &WorldSession::HandleQuestPOIQueryOpcode;

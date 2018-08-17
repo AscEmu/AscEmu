@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GuildMgr.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Server/Packets/CmsgZoneupdate.h"
+#include "Server/Packets/CmsgResurrectResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -695,4 +696,32 @@ void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
     sWeatherMgr.SendWeather(GetPlayer());
     GetPlayer()->ZoneUpdate(recv_packet.zoneId);
     GetPlayer()->GetItemInterface()->EmptyBuyBack();
+}
+
+void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
+{
+    CmsgResurrectResponse recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (!GetPlayer()->isAlive())
+        return;
+
+    auto player = GetPlayer()->GetMapMgr()->GetPlayer(recv_packet.guid.getGuidLow());
+    if (player == nullptr)
+        player = objmgr.GetPlayer(recv_packet.guid.getGuidLow());
+
+    if (player == nullptr)
+        return;
+
+    if (recv_packet.status != 1 || GetPlayer()->m_resurrecter || GetPlayer()->m_resurrecter != recv_packet.guid.GetOldGuid())
+    {
+        GetPlayer()->m_resurrectHealth = 0;
+        GetPlayer()->m_resurrectMana = 0;
+        GetPlayer()->m_resurrecter = 0;
+        return;
+    }
+
+    GetPlayer()->ResurrectPlayer();
+    GetPlayer()->setMoveRoot(false);
 }

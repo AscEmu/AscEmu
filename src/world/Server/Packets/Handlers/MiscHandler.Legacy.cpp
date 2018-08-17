@@ -885,38 +885,6 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    LOG_DETAIL("WORLD: Received CMSG_RESURRECT_RESPONSE");
-
-    if (_player->isAlive())
-        return;
-
-    uint64 guid;
-    uint8 status;
-    recv_data >> guid;
-    recv_data >> status;
-
-    // need to check guid
-    Player* pl = _player->GetMapMgr()->GetPlayer((uint32)guid);
-    if (pl == NULL)
-        pl = objmgr.GetPlayer((uint32)guid);
-
-    // checking valid resurrecter fixes exploits
-    if (pl == NULL || status != 1 || !_player->m_resurrecter || _player->m_resurrecter != guid)
-    {
-        _player->m_resurrectHealth = 0;
-        _player->m_resurrectMana = 0;
-        _player->m_resurrecter = 0;
-        return;
-    }
-
-    _player->ResurrectPlayer();
-    _player->setMoveRoot(false);
-}
-
 #if VERSION_STRING != Cata
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
 {

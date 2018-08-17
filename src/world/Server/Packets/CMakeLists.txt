@@ -128,6 +128,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
    ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h
+   ${PATH_PREFIX}/CmsgResurrectResponse.h
    ${PATH_PREFIX}/CmsgSellItem.h
    ${PATH_PREFIX}/CmsgSetActionbarToggles.h
    ${PATH_PREFIX}/CmsgSetActionButton.h
