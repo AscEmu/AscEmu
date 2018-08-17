@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180714-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20180803-02_playercreateinfo_bars";
+static const char* REQUIRED_WORLD_DB_VERSION = "20180817-00_guild_data";
 
 void Master::_OnSignal(int s)
 {
