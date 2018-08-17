@@ -725,3 +725,17 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
     GetPlayer()->ResurrectPlayer();
     GetPlayer()->setMoveRoot(false);
 }
+
+void WorldSession::handleSelfResurrect(WorldPacket& /*recvPacket*/)
+{
+    if (const auto resurrectSpell = GetPlayer()->getSelfResurrectSpell())
+    {
+        const auto spellInfo = sSpellCustomizations.GetSpellInfo(resurrectSpell);
+        if (const auto spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, true, nullptr))
+        {
+            SpellCastTargets spellCastTargets;
+            spellCastTargets.m_unitTarget = GetPlayer()->getGuid();
+            spell->prepare(&spellCastTargets);
+        }
+    }
+}

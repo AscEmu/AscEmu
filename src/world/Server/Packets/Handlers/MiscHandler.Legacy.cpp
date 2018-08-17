@@ -1755,22 +1755,6 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::HandleSelfResurrectOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 self_res_spell = _player->getSelfResurrectSpell();
-    if (self_res_spell)
-    {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
-        Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
-        SpellCastTargets tgt;
-        tgt.m_unitTarget = _player->getGuid();
-        s->prepare(&tgt);
-    }
-}
-
-
 #if VERSION_STRING != Cata
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvPacket)
 {

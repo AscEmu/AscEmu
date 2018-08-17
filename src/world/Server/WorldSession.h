@@ -772,7 +772,7 @@ class SERVER_DECL WorldSession
         void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
         void HandleMountSpecialAnimOpcode(WorldPacket& recv_data);
 
-        void HandleSelfResurrectOpcode(WorldPacket& recv_data);
+        void handleSelfResurrect(WorldPacket& /*recvPacket*/);
         void HandleUnlearnSkillOpcode(WorldPacket& recv_data);
         void handleRandomRollOpcode(WorldPacket& recv_data);
         void handleOpenItemOpcode(WorldPacket& recvPacket);
