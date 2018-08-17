@@ -2334,7 +2334,6 @@ public:
         void SendTeleportPacket(float x, float y, float z, float o);
         void SendTeleportAckPacket(float x, float y, float z, float o);
 
-        bool camControle;
         void SendCinematicCamera(uint32 id);
         void SetClientControl(Unit* target, uint8 allowMove);
 

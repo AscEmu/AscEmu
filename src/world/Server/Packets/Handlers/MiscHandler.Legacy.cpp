@@ -1900,13 +1900,11 @@ void WorldSession::HandleCompleteCinematic(WorldPacket& /*recv_data*/)
 
     // when a Cinematic is started the player is going to sit down, when its finished its standing up.
     _player->setStandState(STANDSTATE_STAND);
-    _player->camControle = false;
 }
 
 void WorldSession::HandleNextCinematic(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
-    _player->camControle = true;
     _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01), float(_player->GetPositionZ() + 0.01), _player->GetOrientation());
 }
 

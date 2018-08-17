@@ -548,8 +548,6 @@ Player::Player(uint32 guid)
     ChampioningFactionID = 0;
     mountvehicleid = 0;
 
-    camControle = false;
-
     isTurning = false;
     m_bgTeam = 0;
     myRace = nullptr;
@@ -15343,7 +15341,6 @@ void Player::SetClientControl(Unit* target, uint8 allowMove)
 
 void Player::SendCinematicCamera(uint32 id)
 {
-    camControle = true;
     GetMapMgr()->ChangeObjectLocation(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
     GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);

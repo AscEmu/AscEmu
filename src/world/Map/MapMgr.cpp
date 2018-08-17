@@ -686,7 +686,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     uint32 startY = cellY > 0 ? cellY - cellNumber : 0;
 
     //If the object announcing it's position is a special one, then it should do so in a much wider area - like the distance between the two transport towers in Orgrimmar, or more. - By: VLack
-    if (obj->isGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE) || plObj && plObj->camControle)
+    if (obj->isGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE))
     {
         endX = cellX + 5 <= _sizeX ? cellX + 6 : (_sizeX - 1);
         endY = cellY + 5 <= _sizeY ? cellY + 6 : (_sizeY - 1);
@@ -885,8 +885,6 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return no_distance;
     //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
     else if (plObj && curObj->isGameObject() && (static_cast<GameObject*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-        return no_distance;
-    else if (plObj != nullptr && plObj->camControle)
         return no_distance;
     else
         return m_UpdateDistance;                  // normal distance
