@@ -273,7 +273,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
     setAnimationProgress(255);
 
-    setOType(GAMEOBJECT_TYPE_MO_TRANSPORT);
+    setGoType(GAMEOBJECT_TYPE_MO_TRANSPORT);
 
     m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE;
 
