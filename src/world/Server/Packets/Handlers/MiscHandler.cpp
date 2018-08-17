@@ -40,6 +40,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetTitle.h"
 #include "Management/GuildMgr.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
+#include "Server/Packets/CmsgZoneupdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -680,4 +681,18 @@ void WorldSession::handleSetTitle(WorldPacket& recvPacket)
     if (GetPlayer()->HasTitle(static_cast<RankTitles>(recv_packet.titleId)))
         GetPlayer()->setChosenTitle(recv_packet.titleId);
 #endif
+}
+
+void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
+{
+    CmsgZoneupdate recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    if (GetPlayer()->GetZoneId() == recv_packet.zoneId)
+        return;
+
+    sWeatherMgr.SendWeather(GetPlayer());
+    GetPlayer()->ZoneUpdate(recv_packet.zoneId);
+    GetPlayer()->GetItemInterface()->EmptyBuyBack();
 }

@@ -77,8 +77,6 @@ struct AddonEntry;
 #define WORLDSOCKET_TIMEOUT 120
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
 
-#define NOTIFICATION_MESSAGE_NO_PERMISSION "You do not have permission to perform that function."
-
 #define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 
 struct OpcodeHandler
@@ -301,7 +299,7 @@ class SERVER_DECL WorldSession
         void handleLogoutRequestOpcode(WorldPacket& recvPacket);
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
-        void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
+        void handleZoneupdate(WorldPacket& recvPacket);
         //void HandleSetTargetOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);

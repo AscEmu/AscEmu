@@ -672,7 +672,7 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         if (group->GetLeader() == GetPlayer()->getPlayerInfo() || group->GetAssistantLeader() == GetPlayer()->getPlayerInfo())
             group->SendPacketToAll(MsgRaidReadyCheck(GetPlayer()->getGuid(), 0, true).serialise().get());
         else
-            SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+            SendNotification("You do not have permission to perform that function.");
     }
     else
     {

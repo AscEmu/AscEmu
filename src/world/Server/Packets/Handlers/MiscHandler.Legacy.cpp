@@ -675,6 +675,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 }
 #endif
 
+// LOOT related
+//////////////////////////////////////////////////////////////////////////////////////////
+// MISC
 void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 {
     std::string charname;
@@ -682,7 +685,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 
     if (!GetPlayer()->GetSession()->CanUseCommand('3'))
     {
-        SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+        SendNotification("You do not have permission to perform that function.");
         return;
     }
 
@@ -755,14 +758,9 @@ void WorldSession::HandlePlayerLogoutOpcode(WorldPacket& /*recv_data*/)
 
     LOG_DEBUG("WORLD: Recvd CMSG_PLAYER_LOGOUT Message");
     if (!HasGMPermissions())
-    {
-        // send "You do not have permission to use this"
-        SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
-    }
+        SendNotification("You do not have permission to perform that function.");
     else
-    {
         LogoutPlayer(true);
-    }
 }
 
 void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
@@ -774,8 +772,10 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     Player* pPlayer = GetPlayer();
     if (!pPlayer)
         return;
+
     if (!LoggingOut)
         return;
+
     LoggingOut = false;
 
     //Cancel logout Timer
@@ -787,33 +787,13 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     //unroot player
     pPlayer->setMoveRoot(false);
 
+    pPlayer->setStandState(STANDSTATE_STAND);
     pPlayer->SendPacket(SmsgStandstateUpdate(STANDSTATE_STAND).serialise().get());
 
     // Remove the "player locked" flag, to allow movement
     pPlayer->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    //make player stand
-    pPlayer->setStandState(STANDSTATE_STAND);
-
     LOG_DEBUG("WORLD: sent SMSG_LOGOUT_CANCEL_ACK Message");
-}
-
-void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 newZone;
-
-    recv_data >> newZone;
-
-    if (GetPlayer()->GetZoneId() == newZone)
-        return;
-
-    sWeatherMgr.SendWeather(GetPlayer());
-    _player->ZoneUpdate(newZone);
-
-    //clear buyback
-    _player->GetItemInterface()->EmptyBuyBack();
 }
 
 #if VERSION_STRING != Cata
@@ -1345,13 +1325,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 if (plyr->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
                     plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 
-                GameObject* go = nullptr;
                 GameObject_FishingHole* school = nullptr;
 
-                go = fn->GetMapMgr()->FindNearestGoWithType(fn, GAMEOBJECT_TYPE_FISHINGHOLE);
+                GameObject* go = fn->GetMapMgr()->FindNearestGoWithType(fn, GAMEOBJECT_TYPE_FISHINGHOLE);
                 if (go != nullptr)
                 {
-                    school = static_cast<GameObject_FishingHole*>(go);
+                    school = dynamic_cast<GameObject_FishingHole*>(go);
 
                     if (!fn->isInRange(school, static_cast<float>(school->GetGameObjectProperties()->fishinghole.radius)))
                         school = nullptr;
@@ -1359,7 +1338,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
                 if (school != nullptr)
                 {
-                    if (school->GetMapMgr() != NULL)
+                    if (school->GetMapMgr() != nullptr)
                         lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
                     else
                         lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
@@ -1993,7 +1972,7 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
         return;
     if (!_player->m_summoner)
     {
-        SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+        SendNotification("You do not have permission to perform that function.");
         return;
     }
 
