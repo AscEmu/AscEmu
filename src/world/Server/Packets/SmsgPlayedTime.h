@@ -22,7 +22,7 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgPlayedTime(uint32_t totalPlayedTime, uint32_t playedTimeOnLevel, uint8_t displayInUi) :
-            ManagedPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE, 8),
+            ManagedPacket(SMSG_PLAYED_TIME, 8),
             totalPlayedTime(totalPlayedTime),
             playedTimeOnLevel(playedTimeOnLevel),
             displayInUi(displayInUi)
