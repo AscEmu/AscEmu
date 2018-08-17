@@ -261,6 +261,7 @@ void RealmsMgr::setRealmOffline(uint32_t realm_id)
         realm->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;
         realm->_characterMap.clear();
         LogNotice("RealmsMgr : Realm %u is now offline (socket close).", realm_id);
+        sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
     }
 
 
