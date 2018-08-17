@@ -14286,7 +14286,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             }
         }
 
-        setUInt32Value(PLAYER_SELF_RES_SPELL, self_res_spell);
+        setSelfResurrectSpell(self_res_spell);
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     }
 

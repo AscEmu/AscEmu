@@ -5134,7 +5134,7 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
     playerTarget->ResurrectPlayer();
     playerTarget->setMoveRoot(false);
 
-    playerTarget->setUInt32Value(PLAYER_SELF_RES_SPELL, 0);
+    playerTarget->setSelfResurrectSpell(0);
 
     if (GetSpellInfo()->getId() == 21169)
         AddCooldown();

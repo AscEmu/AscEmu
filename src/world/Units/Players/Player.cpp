@@ -132,6 +132,9 @@ void Player::setExploredZone(uint32_t idx, uint32_t data)
     write(playerData()->explored_zones[idx], data);
 }
 
+uint32_t Player::getSelfResurrectSpell() const { return playerData()->self_resurrection_spell; }
+void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_resurrection_spell, spell); }
+
 uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
 void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
 

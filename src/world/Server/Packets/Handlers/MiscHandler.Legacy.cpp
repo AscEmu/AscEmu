@@ -1759,7 +1759,7 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 self_res_spell = _player->getUInt32Value(PLAYER_SELF_RES_SPELL);
+    uint32 self_res_spell = _player->getSelfResurrectSpell();
     if (self_res_spell)
     {
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
