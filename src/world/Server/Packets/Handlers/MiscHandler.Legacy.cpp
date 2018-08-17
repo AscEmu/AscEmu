@@ -40,6 +40,7 @@
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Management/GuildMgr.h"
+#include "Server/Packets/CmsgGameobjUse.h"
 
 using namespace AscEmu::Packets;
 
@@ -1254,15 +1255,17 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
+    CmsgGameobjUse recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 guid;
-    recv_data >> guid;
     SpellCastTargets targets;
     Spell* spell = NULL;
     SpellInfo* spellInfo = NULL;
-    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
 
-    GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", recv_packet.guid.getGuidLowPart());
+
+    GameObject* obj = _player->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLowPart());
     if (!obj)
         return;
     auto gameobject_info = obj->GetGameObjectProperties();
@@ -1578,7 +1581,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             obj->Use(plyr->getGuid());
 
-            plyr->CastSpell(guid, gameobject_info->goober.spell_id, false);
+            plyr->CastSpell(recv_packet.guid.GetOldGuid(), gameobject_info->goober.spell_id, false);
 
             // show page
             if (gameobject_info->goober.page_id)

@@ -59,6 +59,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgEmote.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
    ${PATH_PREFIX}/CmsgGameobjReportUse.h
+   ${PATH_PREFIX}/CmsgGameobjUse.h
    ${PATH_PREFIX}/CmsgGetChannelMemberCount.h
    ${PATH_PREFIX}/CmsgGossipHello.h
    ${PATH_PREFIX}/CmsgGossipSelectOption.h
