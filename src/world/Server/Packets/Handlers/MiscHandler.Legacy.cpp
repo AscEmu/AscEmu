@@ -41,6 +41,7 @@
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Management/GuildMgr.h"
 #include "Server/Packets/CmsgGameobjUse.h"
+#include "Server/Packets/SmsgStandstateUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -786,11 +787,7 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     //unroot player
     pPlayer->setMoveRoot(false);
 
-#if VERSION_STRING == TBC
-    WorldPacket packet(SMSG_STANDSTATE_UPDATE, 1);
-    packet << uint8_t(STANDSTATE_STAND);
-    pPlayer->SendPacket(&packet);
-#endif
+    pPlayer->SendPacket(SmsgStandstateUpdate(STANDSTATE_STAND).serialise().get());
 
     // Remove the "player locked" flag, to allow movement
     pPlayer->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
@@ -1254,14 +1251,9 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 
 void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
     CmsgGameobjUse recv_packet;
     if (!recv_packet.deserialise(recv_data))
         return;
-
-    SpellCastTargets targets;
-    Spell* spell = NULL;
-    SpellInfo* spellInfo = NULL;
 
     LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", recv_packet.guid.getGuidLowPart());
 
@@ -1282,6 +1274,10 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
     _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
 
+    SpellCastTargets targets;
+    Spell* spell = nullptr;
+    SpellInfo* spellInfo = nullptr;
+
     uint32 type = obj->getGoType();
     switch (type)
     {
@@ -1289,6 +1285,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
             plyr->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
+            SendPacket(SmsgStandstateUpdate(STANDSTATE_SIT_MEDIUM_CHAIR).serialise().get());
+
             plyr->UpdateSpeed();
         }
         break;
