@@ -306,9 +306,11 @@ Player::Player(uint32 guid)
     setObjectType(TYPEID_PLAYER);
     setGuidLow(guid);
     m_wowGuid.Init(getGuid());
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= TBC
     addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
 
+#if VERSION_STRING >= WotLK
     setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
@@ -6580,8 +6582,11 @@ void Player::UpdateStats()
     /* modifiers */
     RAP += m_rap_mod_pct * m_uint32Values[UNIT_FIELD_STAT3] / 100;
 
-    if (RAP < 0)RAP = 0;
-    if (AP < 0)AP = 0;
+    if (RAP < 0)
+        RAP = 0;
+
+    if (AP < 0)
+        AP = 0;
 
     setAttackPower(AP);
     SetRangedAttackPower(RAP);
@@ -6702,6 +6707,14 @@ void Player::UpdateStats()
 #if VERSION_STRING > TBC
         setFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
         setFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
+#elif VERSION_STRING == TBC
+        const static float BaseRegen[70] = { 0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f };
+        if (level > 70)
+            level = 70;
+
+        float BCamt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1])*PctPowerRegenModifier[POWER_TYPE_MANA];
+        setFloatValue(PLAYER_FIELD_MOD_MANA_REGEN, BCamt + m_ModInterrMRegen / 5.0f);
+        setFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen / 5.0f);
 #endif
     }
 
@@ -8209,17 +8222,22 @@ void Player::RegenerateEnergy()
     amt *= wrate * 20.0f;
 
     cur += float2int32(amt);
+
+#if VERSION_STRING > TBC
     //    Object::SetUInt32Value() will (for players) call SendPowerUpdate(),
     //    which can be slightly out-of-sync with client regeneration [latency] (and wastes packets since client can handle this on its own)
     if (wrate != 1.0f) // our config has custom regen rate, so send new amount to player's client
     {
-        SetPower(getPowerType(), (cur >= mh) ? mh : cur);
+        SetPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
     }
     else // let player's own client handle normal regen rates.
     {
         m_uint32Values[UNIT_FIELD_POWER4] = (cur >= mh) ? mh : cur;
         SendPowerUpdate(false); // send update to other in-range players
     }
+#elif VERSION_STRING == TBC
+    SetPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
+#endif
 }
 
 uint32 Player::GeneratePetNumber()
