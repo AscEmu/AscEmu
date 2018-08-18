@@ -200,7 +200,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
+    if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
     {
         sQuestMgr.BuildQuestDetails(&data, qst, qst_giver, 1, language, _player);	 // 0 because we want goodbye to function
         SendPacket(&data);
@@ -209,7 +209,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
             _player->AcceptQuest(qst_giver->getGuid(), qst->id);
     }
-    else if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_FINISHED)
+    else if (status == QuestStatus::NotFinished || status == QuestStatus::Finished)
     {
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
         SendPacket(&data);
@@ -379,7 +379,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (status == QMGR_QUEST_FINISHED)
+    if (status == QuestStatus::Finished)
     {
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
@@ -458,7 +458,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
+    if (status == QuestStatus::NotFinished || status == QuestStatus::Repeatable)
     {
         WorldPacket data;
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
@@ -466,7 +466,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
-    if (status == QMGR_QUEST_FINISHED)
+    if (status == QuestStatus::Finished)
     {
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
@@ -620,7 +620,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                             response = QUEST_SHARE_MSG_FINISH_QUEST;
                         }
                         // Checks if the player is able to take the quest
-                        else if (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_CHAT)
+                        else if (status != QuestStatus::Available && status != QuestStatus::AvailableChat)
                         {
                             response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
                         }

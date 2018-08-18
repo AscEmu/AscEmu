@@ -134,19 +134,33 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
         {
             packet << itr->first->id;
             packet << uint32(itr->second);
+#if VERSION_STRING < WotLK
+            switch (itr->second)
+            {
+                case QuestStatus::NotFinished:
+                    packet << uint32_t(0);
+                    break;
+                case QuestStatus::Finished:
+                    packet << uint32_t(1);
+                    break;
+                case QuestStatus::AvailableChat:
+                    packet << uint32_t(0);
+                    break;
+                default:
+                    packet << uint32_t(0);
+                    break;
+            }
+#else
             packet << itr->first->min_level;
             packet << itr->first->quest_flags;
             packet << uint8(0);
+#endif
 
             MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
             if (lq != nullptr)
-            {
                 packet << lq->title;
-            }
             else
-            {
                 packet << itr->first->title;
-            }
         }
     }
     return packet;
@@ -170,18 +184,32 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
         {
             packet << itr->first->id;
             packet << uint32(itr->second);
+#if VERSION_STRING < WotLK
+            switch (itr->second)
+            {
+                case QuestStatus::NotFinished:
+                    packet << uint32_t(0);
+                    break;
+                case QuestStatus::Finished:
+                    packet << uint32_t(1);
+                    break;
+                case QuestStatus::AvailableChat:
+                    packet << uint32_t(0);
+                    break;
+                default:
+                    packet << uint32_t(0);
+                    break;
+            }
+#else
             packet << itr->first->min_level;
             packet << itr->first->quest_flags;
             packet << uint8(0);
+#endif
             MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
             if (lq != nullptr)
-            {
                 title = lq->title;
-            }
             else
-            {
                 title = itr->first->title;
-            }
             packet << title;
         }
     }

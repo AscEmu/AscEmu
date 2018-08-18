@@ -7755,9 +7755,9 @@ void Player::UpdateNearbyGameObjects()
                         QuestRelation* qr = (*itr2);
 
                         uint32 status = sQuestMgr.CalcQuestStatus(nullptr, this, qr->qst, qr->type, false);
-                        if (status == QMGR_QUEST_CHAT
-                            || (qr->type & QUESTGIVER_QUEST_START && (status == QMGR_QUEST_AVAILABLE || status == QMGR_QUEST_REPEATABLE))
-                            || (qr->type & QUESTGIVER_QUEST_END && status == QMGR_QUEST_FINISHED))
+                        if (status == QuestStatus::AvailableChat
+                            || (qr->type & QUESTGIVER_QUEST_START && (status == QuestStatus::Available || status == QuestStatus::Repeatable))
+                            || (qr->type & QUESTGIVER_QUEST_END && status == QuestStatus::Finished))
                         {
                             // Activate gameobject
                             EventActivateGameObject(go);
@@ -14595,7 +14595,8 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     // it isn't available.
     uint32 status = sQuestMgr.CalcQuestStatus(qst_giver, this, qst, 3, bSkipLevelCheck);
 
-    if ((!sQuestMgr.IsQuestRepeatable(qst) && HasFinishedQuest(qst->id)) || (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_REPEATABLE && status != QMGR_QUEST_CHAT)
+    if ((!sQuestMgr.IsQuestRepeatable(qst) && HasFinishedQuest(qst->id))
+        || (status != QuestStatus::Available && status != QuestStatus::Repeatable && status != QuestStatus::AvailableChat)
         || !hasquest)
     {
         // We've got a hacker. Disconnect them.

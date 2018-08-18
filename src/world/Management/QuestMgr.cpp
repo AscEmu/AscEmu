@@ -57,42 +57,42 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     uint32 status;
 
     if (!sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
-        status = QMGR_QUEST_AVAILABLE;
+        status = QuestStatus::Available;
     else
     {
-        status = QMGR_QUEST_REPEATABLE;
+        status = QuestStatus::Repeatable;
         if (qst->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY && plr->HasFinishedDaily(qst->id))
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
     }
 
     if (plr->getLevel() < qst->min_level && !skiplevelcheck)
-        return QMGR_QUEST_AVAILABLELOW_LEVEL;
+        return QuestStatus::AvailableButLevelTooLow;
 
     if (qst->required_class)
         if (!(qst->required_class & plr->getClassMask()))
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
 
     if (qst->required_races)
     {
         if (!(qst->required_races & plr->getRaceMask()))
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
     }
 
     if (qst->required_tradeskill)
     {
         if (!plr->_HasSkillLine(qst->required_tradeskill))
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
         if (qst->required_tradeskill_value && plr->_GetSkillLineCurrent(qst->required_tradeskill) < qst->required_tradeskill_value)
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
     }
 
     // Check reputation
     if (qst->required_rep_faction && qst->required_rep_value)
         if (plr->GetStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
 
     if (plr->HasFinishedQuest(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
-        return QMGR_QUEST_NOT_AVAILABLE;
+        return QuestStatus::NotAvailable;
 
     // Check One of Quest Prequest
     bool questscompleted = false;
@@ -112,20 +112,20 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
             }
         }
         if (!questscompleted)   // If none of listed quests is done, next part isn't available.
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
     }
 
     for (uint8 i = 0; i < 4; ++i)
     {
         if (qst->required_quests[i] > 0 && !plr->HasFinishedQuest(qst->required_quests[i]))
         {
-            return QMGR_QUEST_NOT_AVAILABLE;
+            return QuestStatus::NotAvailable;
         }
     }
 
     // check quest level
-    if (static_cast<int32>(plr->getLevel()) >= (qst->questlevel + 5) && (status != QMGR_QUEST_REPEATABLE))
-        return QMGR_QUEST_CHAT;
+    if (static_cast<int32>(plr->getLevel()) >= (qst->questlevel + 5) && (status != QuestStatus::Repeatable))
+        return QuestStatus::AvailableChat;
 
     return status;
 }
@@ -144,7 +144,7 @@ uint32 QuestMgr::CalcQuestStatus(Object* /*quest_giver*/, Player* plr, QuestProp
     else
     {
         if (quest_log_entry->HasFailed())
-            return QMGR_QUEST_NOT_FINISHED;
+            return QuestStatus::NotFinished;
 
         if (type & QUESTGIVER_QUEST_END)
         {
@@ -152,21 +152,21 @@ uint32 QuestMgr::CalcQuestStatus(Object* /*quest_giver*/, Player* plr, QuestProp
             {
                 if (qst->is_repeatable)
                 {
-                    return QMGR_QUEST_REPEATABLE;
+                    return QuestStatus::Repeatable;
                 }
                 else
                 {
-                    return QMGR_QUEST_NOT_FINISHED;
+                    return QuestStatus::NotFinished;
                 }
             }
             else
             {
-                return QMGR_QUEST_FINISHED;
+                return QuestStatus::Finished;
             }
         }
     }
 
-    return QMGR_QUEST_NOT_AVAILABLE;
+    return QuestStatus::NotAvailable;
 }
 
 uint32 QuestMgr::CalcQuestStatus(Player* plr, uint32 qst)
@@ -176,20 +176,20 @@ uint32 QuestMgr::CalcQuestStatus(Player* plr, uint32 qst)
     {
         if (!quest_log_entry->CanBeFinished())
         {
-            return QMGR_QUEST_NOT_FINISHED;
+            return QuestStatus::NotFinished;
         }
         else
         {
-            return QMGR_QUEST_FINISHED;
+            return QuestStatus::Finished;
         }
     }
 
-    return QMGR_QUEST_NOT_AVAILABLE;
+    return QuestStatus::NotAvailable;
 }
 
 uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 {
-    uint32 status = QMGR_QUEST_NOT_AVAILABLE;
+    uint32 status = QuestStatus::NotAvailable;
     std::list<QuestRelation*>::const_iterator itr;
     std::list<QuestRelation*>::const_iterator q_begin;
     std::list<QuestRelation*>::const_iterator q_end;
@@ -230,7 +230,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     //This will be handled at quest share so nothing important as status
     else if (quest_giver->isPlayer())
     {
-        status = QMGR_QUEST_AVAILABLE;
+        status = QuestStatus::Available;
     }
 
     if (!bValid)
@@ -312,7 +312,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     for (itr = q_begin; itr != q_end; ++itr)
     {
-        if (CalcQuestStatus(quest_giver, plr, *itr) >= QMGR_QUEST_CHAT)
+        if (CalcQuestStatus(quest_giver, plr, *itr) >= QuestStatus::AvailableChat)
         {
             if (tmp_map.find((*itr)->qst->id) == tmp_map.end())
             {
@@ -545,7 +545,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 
     *data << uint32(0);
 
-    if (status == QMGR_QUEST_NOT_FINISHED)
+    if (status == QuestStatus::NotFinished)
     {
         *data << qst->incompleteemote;
     }
@@ -581,7 +581,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     }
 
     // wtf is this?
-    if (status == QMGR_QUEST_NOT_FINISHED)
+    if (status == QuestStatus::NotFinished)
     {
         *data << uint32(0); //incomplete button
     }
@@ -709,7 +709,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     for (it = st; it != ed; ++it)
     {
         status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
-        if (status >= QMGR_QUEST_CHAT)
+        if (status >= QuestStatus::AvailableChat)
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
             {
@@ -722,16 +722,16 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 
                 switch (status)
                 {
-                    case QMGR_QUEST_NOT_FINISHED:
+                    case QuestStatus::NotFinished:
                         *data << uint32(4);
                         break;
 
-                    case QMGR_QUEST_FINISHED:
+                    case QuestStatus::Finished:
                         *data << uint32(4);
                         break;
 
-                    case QMGR_QUEST_CHAT:
-                        *data << uint32(QMGR_QUEST_AVAILABLE);
+                    case QuestStatus::AvailableChat:
+                        *data << uint32(QuestStatus::Available);
                         break;
 
                     default:
@@ -1835,17 +1835,17 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
 
         for (itr = q_begin; itr != q_end; ++itr)
-            if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_CHAT)
+            if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QuestStatus::AvailableChat)
                 break;
 
-        if (sQuestMgr.CalcStatus(qst_giver, plr) < QMGR_QUEST_CHAT)
+        if (sQuestMgr.CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
             return false;
 
         ARCEMU_ASSERT(itr != q_end);
 
         uint32 status = sQuestMgr.CalcStatus(qst_giver, plr);
 
-        if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
+        if ((status == QuestStatus::AvailableChat) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
             sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);		// 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
@@ -1854,14 +1854,14 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
                 plr->AcceptQuest(qst_giver->getGuid(), (*itr)->qst->id);
         }
-        else if (status == QMGR_QUEST_FINISHED)
+        else if (status == QuestStatus::Finished)
         {
             sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);
             plr->GetSession()->SendPacket(&data);
             //ss
             LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
-        else if (status == QMGR_QUEST_NOT_FINISHED)
+        else if (status == QuestStatus::NotFinished)
         {
             sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->GetSession()->language);
             plr->GetSession()->SendPacket(&data);
@@ -2494,20 +2494,28 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu 
         for (std::list<QuestRelation*>::iterator itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
         {
             status = sQuestMgr.CalcQuestStatus(giver, plr, *itr);
-            if (status >= QMGR_QUEST_CHAT)
+            if (status >= QuestStatus::AvailableChat)
             {
                 switch (status)
                 {
-                    case QMGR_QUEST_NOT_FINISHED:
-                        icon = QMGR_QUEST_REPEATABLE_LOWLEVEL;
+                    case QuestStatus::NotFinished:
+#if VERSION_STRING < WotLK
+                        icon = QuestStatus::RepeatableFinished;
+#else
+                        icon = QuestStatus::RepeatableLowLevel;
+#endif
                         break;
 
-                    case QMGR_QUEST_FINISHED:
-                        icon = QMGR_QUEST_REPEATABLE_LOWLEVEL;
+                    case QuestStatus::Finished:
+#if VERSION_STRING < WotLK
+                        icon = QuestStatus::RepeatableFinished;
+#else
+                        icon = QuestStatus::RepeatableLowLevel;
+#endif
                         break;
 
-                    case QMGR_QUEST_CHAT:
-                        icon = QMGR_QUEST_AVAILABLE;
+                    case QuestStatus::AvailableChat:
+                        icon = QuestStatus::Available;
                         break;
 
                     default:

@@ -1,41 +1,41 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef QUEST_DEFINES_HPP
-#define QUEST_DEFINES_HPP
+#pragma once
+
+#include "WorldConf.h"
 
 #define MAX_QUEST_LOG_SIZE 25
 
-enum QUEST_STATUS
+namespace QuestStatus
 {
-    QMGR_QUEST_NOT_AVAILABLE                = 0x00,     /// There aren't any quests available.              | "No Mark"
-    QMGR_QUEST_AVAILABLELOW_LEVEL           = 0x01,     /// Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
-    QMGR_QUEST_CHAT                         = 0x02,     /// Quest available it shows a talk balloon.        | "No Mark"
-    /// On 3.1.2 0x03 and 0x04 is some new status, so the old ones are now shifted by 2 (0x03->0x05 and so on).
-    QMGR_QUEST_REPEATABLE_FINISHED_LOWLEVEL = 0x03,
-    QMGR_QUEST_REPEATABLE_LOWLEVEL          = 0x04,
-    QMGR_QUEST_NOT_FINISHED                 = 0x05,     /// Quest isn't finished yet.                       | "Gray Question ? Mark"
-    QMGR_QUEST_REPEATABLE_FINISHED          = 0x06,
-    QMGR_QUEST_REPEATABLE                   = 0x07,     /// Quest repeatable                                | "Blue Question ? Mark"
-    QMGR_QUEST_AVAILABLE                    = 0x08,     /// Quest available, and your level is enough       | "Yellow Quotation ! Mark"
-    QMGR_QUEST_FINISHED                     = 0x0A,     /// Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
-    //QUEST_ITEM_UPDATE                     = 0x06      // Yellow Question "?" Mark. //Unknown
-};
+    enum
+    {
+        NotAvailable = 0x00,                // There aren't any quests available.              | "No Mark"
+        AvailableButLevelTooLow = 0x01,     // Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
+        AvailableChat = 0x02,               // Quest available it shows a talk balloon.        | "No Mark"
+
+#if VERSION_STRING < WotLK
+        NotFinished = 0x03,                 // Quest isn't finished yet.                       | "Gray Question ? Mark"
+        RepeatableFinished = 0x04,
+        Repeatable = 0x05,                  // Quest repeatable                                | "Blue Question ? Mark"
+        Available = 0x06,                   // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
+        Finished = 0x07,                    // Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
+#else
+        // On 3.1.2 0x03 and 0x04 is some new status, so the old ones are now shifted by 2 (0x03->0x05 and so on).
+        RepeatableFinishedLowLevel = 0x03,
+        RepeatableLowLevel = 0x04,
+        NotFinished = 0x05,                 // Quest isn't finished yet.                       | "Gray Question ? Mark"
+        RepeatableFinished = 0x06,
+        Repeatable = 0x07,                  // Quest repeatable                                | "Blue Question ? Mark"
+        Available = 0x08,                   // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
+        Finished = 0x0A,                    // Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
+#endif
+    };
+}
+
 
 enum QUESTGIVER_QUEST_TYPE
 {
@@ -127,5 +127,3 @@ enum QuestCompletionStatus
 	QUEST_COMPLETE   = 1,
 	QUEST_FAILED     = 2
 };
-
-#endif // QUEST_DEFINES_HPP
