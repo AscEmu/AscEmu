@@ -286,7 +286,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 
     *data << uint32_t(0);
 
-    if (status == QMGR_QUEST_NOT_FINISHED)
+    if (status == QuestStatus::NotFinished)
     {
         *data << qst->incompleteemote;
     }
@@ -327,7 +327,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32_t(0);      // required currency count
 
 
-    if (status == QMGR_QUEST_NOT_FINISHED)
+    if (status == QuestStatus::NotFinished)
     {
         *data << uint32_t(0); //incomplete button
     }
