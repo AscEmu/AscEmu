@@ -505,3 +505,71 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
 
     return true;
 }
+
+//.debug setweather
+bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t type;
+    float_t Density;
+    if (sscanf(args, "%u %f", &type, &Density) != 2)
+    {
+        RedSystemMessage(m_session, "Command must be in format <type> <density>.");
+        return true;
+    }
+
+
+    if (Density < 0.30f || Density > 2.0f)
+        return 0;
+
+    uint32_t sound;
+    if (Density <= 0.30f)
+        sound = 0;
+
+    switch (type)
+    {
+        case 0: //sunny
+        case 1: //fog
+            Density = 0;
+            sound = 0;
+            break;
+        case 2: //rain
+        case 4: //heavy rain
+            if (Density < 0.40f)
+                sound = 8533;
+            else if (Density < 0.70f)
+                sound = 8534;
+            else
+                sound = 8535;
+            break;
+        case 8: //snow
+            if (Density < 0.40f)
+                sound = 8536;
+            else if (Density < 0.70f)
+                sound = 8537;
+            else
+                sound = 8538;
+            break;
+        case 16: //storm
+            if (Density < 0.40f)
+                sound = 8556;
+            else if (Density < 0.70f)
+                sound = 8557;
+            else
+                sound = 8558;
+            break;
+        default: //no valid type
+            return 0;
+    }
+    WorldPacket data(SMSG_WEATHER, 9);
+    data.Initialize(SMSG_WEATHER);
+    data << type;
+    data << Density;
+    data << sound;
+    data << uint8(0);
+
+    sWorld.sendZoneMessage(&data, m_session->GetPlayer()->GetZoneId());
+
+    GreenSystemMessage(m_session, "Weather changed to %u with desity %f", type, Density);
+
+    return true;
+}

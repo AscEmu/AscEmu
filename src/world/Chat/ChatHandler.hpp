@@ -192,6 +192,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session);
         bool HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session);
         bool HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session);
 
         // old debugcmds.cpp
         //\todo Rewrite these commands

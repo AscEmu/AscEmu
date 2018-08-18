@@ -171,8 +171,7 @@ void WeatherMgr::LoadFromDB()
 
 void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has changed zone (WorldSession::handleZoneupdate)
 {
-    std::map<uint32, WeatherInfo*>::iterator itr;
-    itr = m_zoneWeathers.find(plr->GetZoneId());
+    std::map<uint32, WeatherInfo*>::iterator itr = m_zoneWeathers.find(plr->GetZoneId());
 
     if (itr == m_zoneWeathers.end())
     {
@@ -180,8 +179,6 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
         BuildWeatherPacket(&data, 0, 0);
         plr->GetSession()->SendPacket(&data);
         plr->m_lastSeenWeather = 0;
-
-        return;
     }
     else
     {

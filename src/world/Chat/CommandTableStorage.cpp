@@ -412,6 +412,7 @@ void CommandTableStorage::Init()
         { "setunitbyte",        'd', &ChatHandler::HandleDebugSetUnitByteCommand,   "Set value z for unit byte x with offset y.",               nullptr, 0, 0, 0 },
         { "setplayerflags",     'd', &ChatHandler::HandleDebugSetPlayerFlagsCommand,"Add player flags x to selected player",                    nullptr, 0, 0, 0 },
         { "getplayerflags",     'd', &ChatHandler::HandleDebugGetPlayerFlagsCommand,"Display current player flags of selected player x",        nullptr, 0, 0, 0 },
+        { "setweather",         'd', &ChatHandler::HandleDebugSetWeatherCommand,    "Change zone weather <type> <densitiy>",        nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                       "",                                                         nullptr, 0, 0, 0 }
     };
     dupe_command_table(debugCommandTable, _debugCommandTable);
