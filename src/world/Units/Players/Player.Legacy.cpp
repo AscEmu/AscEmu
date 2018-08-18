@@ -1802,48 +1802,6 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
 }
 
-#if VERSION_STRING <= TBC
-void Player::smsg_InitialSpells()
-{
-    const auto mstime = Util::getMSTime();
-
-    AscEmu::Packets::SmsgInitialSpells initial_spells_packet;
-    for (auto spell_id : mSpells)
-        initial_spells_packet.spell_ids.push_back(spell_id);
-
-    for (auto iter = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); iter != m_cooldownMap[COOLDOWN_TYPE_SPELL].end(); ++iter)
-    {
-        auto &cd = *iter;
-        const auto iter2 = iter++;
-        // Remove expired cooldowns
-        if (iter2->second.ExpireTime < mstime || iter2->second.ExpireTime - mstime < 10000)
-        {
-            m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(iter2);
-            continue;
-        }
-
-        initial_spells_packet.addSpellCooldown(cd.first, cd.second.ItemId, 0, cd.second.ExpireTime - mstime, 0);
-    }
-
-    for (auto iter = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); iter != m_cooldownMap[COOLDOWN_TYPE_SPELL].end(); ++iter)
-    {
-        auto &cd = *iter;
-        const auto iter2 = iter++;
-        // Remove expired cooldowns
-        if (iter2->second.ExpireTime < mstime || iter2->second.ExpireTime - mstime < 10000)
-        {
-            m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(iter2);
-            continue;
-        }
-
-        initial_spells_packet.addSpellCooldown(cd.second.SpellId, cd.second.ItemId, cd.first, 0, cd.second.ExpireTime - mstime);
-    }
-
-    GetSession()->SendPacket(initial_spells_packet.serialise().get());
-    uint32_t v = 0;
-    GetSession()->OutPacket(SMSG_SEND_UNLEARN_SPELLS, 4, &v);
-}
-#else
 void Player::smsg_InitialSpells()
 {
     PlayerCooldownMap::iterator itr, itr2;
@@ -1942,7 +1900,6 @@ void Player::smsg_InitialSpells()
 #endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
-#endif
 
 #if VERSION_STRING != Cata
 void Player::smsg_TalentsInfo(bool SendPetTalents)
