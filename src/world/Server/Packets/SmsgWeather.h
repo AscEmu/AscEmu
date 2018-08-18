@@ -12,7 +12,6 @@ namespace AscEmu { namespace Packets
 {
     class SmsgWeather : public ManagedPacket
     {
-#if VERSION_STRING != Cata
     public:
         uint32_t type;
         float_t density;
@@ -38,6 +37,5 @@ namespace AscEmu { namespace Packets
         }
 
         bool internalDeserialise(WorldPacket& packet) override { return false; }
-#endif
     };
 }}
