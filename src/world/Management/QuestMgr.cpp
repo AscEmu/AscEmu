@@ -433,7 +433,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
     *data << qst_giver->getGuid();			// npc guid
+#if VERSION_STRING > TBC
     *data << uint64(qst_giver->isPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
+#endif
     *data << qst->id;						// quest id
 
     if (lq != nullptr)
@@ -449,47 +451,58 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << qst->objectives;
     }
 
+#if VERSION_STRING > TBC
     *data << uint8(1);						// Activate accept
     *data << qst->quest_flags;
     *data << qst->suggestedplayers;			// "Suggested players"
     *data << uint8(0);						// MANGOS: IsFinished? value is sent back to server in quest accept packet
+#else
+    *data << uint32_t(1);   // active quest
+    *data << qst->suggestedplayers;
+#endif
 
     ItemProperties const* ip;
 
     *data << qst->count_reward_choiceitem;
+
     for (uint8 i = 0; i < 6; ++i)
     {
         if (!qst->reward_choiceitem[i])
-        {
             continue;
-        }
 
         *data << qst->reward_choiceitem[i];
         *data << qst->reward_choiceitemcount[i];
+
         ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
 
     }
 
     *data << qst->count_reward_item;
+
     for (uint8 i = 0; i < 4; ++i)
     {
         if (!qst->reward_item[i])
-        {
             continue;
-        }
 
         *data << qst->reward_item[i];
         *data << qst->reward_itemcount[i];
+
         ip = sMySQLStore.getItemProperties(qst->reward_item[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
     }
 
     *data << GenerateRewardMoney(plr, qst);	// Money reward
+
+#if VERSION_STRING > TBC
     *data << uint32(0); //New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
     *data << (qst->bonushonor * 10);					// Honor reward
     *data << float(0); //New 3.3
+#endif
+
     *data << qst->reward_spell;					// this is the spell (id) the quest finisher teaches you, or the icon of the spell if effect_on_player is not 0
+
+#if VERSION_STRING > TBC
     *data << qst->effect_on_player;				// this is the spell (id) the quest finisher casts on you as a reward
     *data << qst->rewardtitleid;				// Title reward (ID)
     *data << qst->rewardtalents;				// Talent reward
@@ -497,19 +510,13 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << GenerateQuestXP(plr, qst);         // new 3.3.0
 
     for (uint8 i = 0; i < 5; ++i)
-    {
         *data << uint32(0);
-    }
 
     for (uint8 i = 0; i < 5; ++i)
-    {
         *data << uint32(0);
-    }
 
     for (uint8 i = 0; i < 5; ++i)
-    {
         *data << uint32(0);
-    }
 
     *data << qst->detailemotecount;				// Amount of emotes (4?)
 
@@ -518,6 +525,14 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << qst->detailemote[i];			// Emote ID
         *data << qst->detailemotedelay[i];		// Emote Delay
     }
+#else
+    *data << uint32_t(0);   //unk
+    *data << uint32_t(0);   //unk
+    *data << uint32_t(0);   //reward pvp title
+    *data << uint32_t(1);   //emotecount
+    *data << uint32_t(EMOTE_ONESHOT_TALK);
+    *data << uint32_t(0);   // emote delay
+#endif
 }
 #endif
 

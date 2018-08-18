@@ -25,6 +25,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgQuestgiverQueryQuest.h"
 
 initialiseSingleton(QuestMgr);
 
@@ -112,33 +113,27 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
-    WorldPacket data;
-    uint64 guid;
-    uint32 quest_id;
-    uint32 status = 0;
-    uint8 unk;
-
-    recv_data >> guid;
-    recv_data >> quest_id;
-    recv_data >> unk;
+    AscEmu::Packets::CmsgQuestgiverQueryQuest recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     Object* qst_giver = nullptr;
 
     bool bValid = false;
 
-    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(recv_packet.questId);
     if (!qst)
     {
-        LOG_DEBUG("WORLD: Invalid quest ID.");
+        LOG_DEBUG("WORLD: Invalid quest with id %u", recv_packet.questId);
         return;
     }
 
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 status = QuestStatus::NotAvailable;
+
+    const uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.guid.GetOldGuid());
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
-        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -146,12 +141,12 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, static_cast<uint8>(quest_giver->GetQuestRelation(qst->id)), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
-        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -160,21 +155,20 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
-            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
+            auto go_quest_giver = dynamic_cast<GameObject_QuestGiver*>(quest_giver);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, static_cast<uint8>(go_quest_giver->GetQuestRelation(qst->id)), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
-        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(recv_packet.guid.GetOldGuid());
         //added it for script engine
         if (quest_giver)
             qst_giver = quest_giver;
         else
             return;
 
-        ItemProperties const* itemProto = quest_giver->getItemProperties();
-
+        const auto itemProto = quest_giver->getItemProperties();
         if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->isSoulbound())     // SoulBind item will be used after SoulBind()
         {
             if (sScriptMgr.CallScriptedItem(quest_giver, GetPlayer()))
@@ -199,6 +193,8 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         LOG_DEBUG("WORLD: object is not a questgiver.");
         return;
     }
+
+    WorldPacket data;
 
     if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
     {
