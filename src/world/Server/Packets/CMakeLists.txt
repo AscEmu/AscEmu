@@ -125,6 +125,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgPlayerLogin.h
    ${PATH_PREFIX}/CmsgPlayerVehicleEnter.h
    ${PATH_PREFIX}/CmsgQueryTime.h
+   ${PATH_PREFIX}/CmsgQuestgiverAcceptQuest.h
    ${PATH_PREFIX}/CmsgQuestgiverQueryQuest.h
    ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h

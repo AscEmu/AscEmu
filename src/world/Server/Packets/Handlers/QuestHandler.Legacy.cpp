@@ -26,6 +26,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgQuestgiverQueryQuest.h"
+#include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
 
 initialiseSingleton(QuestMgr);
 
@@ -215,15 +216,11 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    AscEmu::Packets::CmsgQuestgiverAcceptQuest recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    uint64 guid;
-    uint32 quest_id;
-
-    recv_data >> guid;
-    recv_data >> quest_id;
-
-    _player->AcceptQuest(guid, quest_id);
+    _player->AcceptQuest(recv_packet.guid, recv_packet.questId);
 }
 
 void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
