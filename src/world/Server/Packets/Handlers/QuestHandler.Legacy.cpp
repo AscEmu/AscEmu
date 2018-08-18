@@ -30,6 +30,37 @@
 
 initialiseSingleton(QuestMgr);
 
+#if VERSION_STRING == TBC
+void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
+{
+    uint32_t inrangeCount = 0;
+    //\brief: maximum inrangeCount * guid(uint64_t) status(uint8_t)
+    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000); // guessed size
+
+    data << inrangeCount;
+
+    for (auto inrangeObject : GetPlayer()->getInRangeObjectsSet())
+    {
+        // gobj can be questgiver too!
+        if (!inrangeObject->isCreature())
+            continue;
+
+        const auto creature = dynamic_cast<Creature*>(inrangeObject);
+        if (creature->isQuestGiver())
+        {
+            data << creature->getGuid();
+            data << uint8_t(sQuestMgr.CalcStatus(creature, GetPlayer()));
+            ++inrangeCount;
+        }
+    }
+
+    *(uint32_t*)data.contents() = inrangeCount;
+
+    SendPacket(&data);
+}
+
+#endif
+
 void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN

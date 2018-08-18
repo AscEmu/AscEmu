@@ -523,7 +523,10 @@ class SERVER_DECL WorldSession
         void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
         void HandleUnlearnTalents(WorldPacket& recv_data);
 
-        /// Quest opcodes (QuestHandler.cpp)
+        // Quest opcodes (QuestHandler.cpp)
+#if VERSION_STRING == TBC
+        void HandleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
+#endif
         void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
