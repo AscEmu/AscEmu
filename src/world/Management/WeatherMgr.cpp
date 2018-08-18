@@ -27,6 +27,7 @@
 #include "Server/World.Legacy.h"
 #include "WorldPacket.h"
 #include "Units/Players/Player.h"
+#include "Server/Packets/SmsgWeather.h"
 
 /// Weather defines
 enum WeatherTypes
@@ -54,37 +55,6 @@ enum WeatherSounds
 };
 
 initialiseSingleton(WeatherMgr);
-
-void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density)
-{
-#if VERSION_STRING != Cata
-    data->Initialize(SMSG_WEATHER);
-    if (Effect == 0)    // set all parameter to 0 for sunny.
-    {
-        *data << uint32(0);
-        *data << float(0);
-        *data << uint32(0);
-        *data << uint8(0);
-    }
-    else if (Effect == 1)   // No sound/density for fog
-    {
-        *data << Effect;
-        *data << float(0);
-        *data << uint32(0);
-        *data << uint8(0);
-    }
-    else
-    {
-        *data << Effect;
-        *data << Density;
-        *data << GetSound(Effect, Density);
-        *data << uint8(0);
-    }
-    //    LOG_DEBUG("Send Weather Update %d, Density %f, Sound %d, unint8(0)", Effect,Density,GetSound(Effect,Density));
-#else
-    if (Effect == 0 || Density == 0 || data->isEmpty()) { return; }
-#endif
-}
 
 uint32 GetSound(uint32 Effect, float Density)
 {
@@ -175,14 +145,28 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
 
     if (itr == m_zoneWeathers.end())
     {
-        WorldPacket data(SMSG_WEATHER, 9);
-        BuildWeatherPacket(&data, 0, 0);
-        plr->GetSession()->SendPacket(&data);
+        plr->GetSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());
         plr->m_lastSeenWeather = 0;
     }
     else
     {
         itr->second->SendUpdate(plr);
+    }
+}
+
+//MIT
+void WeatherMgr::sendWeatherForZone(uint32_t type, float_t density, uint32_t zoneId)
+{
+    const uint32_t sound = GetSound(type, density);
+    sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get(), zoneId);
+}
+
+void WeatherMgr::sendWeatherForPlayer(uint32_t type, float_t density, Player* player)
+{
+    if (player != nullptr)
+    {
+        const uint32_t sound = GetSound(type, density);
+        player->SendPacket(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get());
     }
 }
 
@@ -281,9 +265,8 @@ void WeatherInfo::Update()
 
 void WeatherInfo::SendUpdate()
 {
-    WorldPacket data(SMSG_WEATHER, 9);
-    BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
-    sWorld.sendZoneMessage(&data, m_zoneId);
+    const uint32_t sound = GetSound(m_currentEffect, m_currentDensity);
+    sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get(), m_zoneId);
 }
 
 void WeatherInfo::SendUpdate(Player* plr) //Updates weather for player's zone-change only if new zone weather differs
@@ -293,7 +276,6 @@ void WeatherInfo::SendUpdate(Player* plr) //Updates weather for player's zone-ch
 
     plr->m_lastSeenWeather = m_currentEffect;
 
-    WorldPacket data(SMSG_WEATHER, 9);
-    BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
-    plr->GetSession()->SendPacket(&data);
+    const uint32_t sound = GetSound(m_currentEffect, m_currentDensity);
+    plr->GetSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
 }

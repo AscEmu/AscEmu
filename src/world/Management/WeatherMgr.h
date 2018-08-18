@@ -18,21 +18,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHERMGR_H
-#define WEATHERMGR_H
+#pragma once
 
 #define WEATHER_DENSITY_UPDATE 0.05f
+
 #include "Singleton.h"
 #include "Server/EventableObject.h"
+#include "Server/Packets/SmsgWeather.h"
 
 class WorldPacket;
 class WeatherInfo;
-class WeatherMgr;
 
-void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density);
 uint32 GetSound(uint32 Effect, float Density);
 
-class WeatherMgr :  public Singleton< WeatherMgr >
+class SERVER_DECL WeatherMgr : public Singleton<WeatherMgr>
 {
     public:
 
@@ -41,6 +40,9 @@ class WeatherMgr :  public Singleton< WeatherMgr >
 
         void LoadFromDB();
         void SendWeather(Player* plr);
+
+        void sendWeatherForZone(uint32_t type, float_t density, uint32_t zoneId);
+        void sendWeatherForPlayer(uint32_t type, float_t density, Player* player);
 
     private:
 
@@ -78,5 +80,3 @@ class WeatherInfo : public EventableObject
 };
 
 #define sWeatherMgr WeatherMgr::getSingleton()
-
-#endif      // WEATHERMGR_H
