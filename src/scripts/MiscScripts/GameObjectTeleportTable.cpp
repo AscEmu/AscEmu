@@ -29,7 +29,7 @@
 #include "Setup.h"
 #include "Server/MainServerDefines.h"
 
-struct GameobjectTeleport
+/*struct GameobjectTeleport
 {
     uint32 mapid;
     float x, y, z, o;
@@ -126,4 +126,4 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         } while (result->NextRow());
         delete result;
     }
-}
+}*/
