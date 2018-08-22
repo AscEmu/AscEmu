@@ -12,7 +12,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
     BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         pKiller->CastSpell(pKiller, 39477, true);
     }
@@ -188,10 +188,9 @@ public:
 
     void AIUpdate()
     {
-        time_t tiempo;
-        struct tm* tmPtr;
-        tiempo = UNIXTIME;
-        tmPtr = localtime(&tiempo);
+        auto _now = std::chrono::system_clock::now();
+        auto _time_now = std::chrono::system_clock::to_time_t(_now);
+        auto tmPtr = std::localtime(&_time_now);
         if (tmPtr->tm_min == 0 && (tmPtr->tm_hour % 4) == 0)   // All check for the time
         {
             mHeadlessHorseman = getNearestCreature(CN_SHADE_OF_THE_HORSEMAN);
