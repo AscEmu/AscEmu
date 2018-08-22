@@ -29,7 +29,7 @@
 #include "Setup.h"
 #include "Server/MainServerDefines.h"
 
-/*struct GameobjectTeleport
+struct GameobjectTeleport
 {
     uint32 mapid;
     float x, y, z, o;
@@ -104,7 +104,7 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         // Check if the SQL table is setup correctly
         if (result->GetFieldCount() < 9)
         {
-            LogError("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
+            DLLLogDetail("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
             delete result;
             return;
         }
@@ -126,4 +126,4 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         } while (result->NextRow());
         delete result;
     }
-}*/
+}

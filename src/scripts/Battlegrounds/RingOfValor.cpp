@@ -21,6 +21,7 @@
 #include "RingOfValor.h"
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
+#include "Server/Master.h"
 
 RingOfValor::RingOfValor(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
@@ -76,7 +77,7 @@ void RingOfValor::HookOnAreaTrigger(Player* /*plr*/, uint32 trigger)
         case 5474:
             break;
         default:
-            LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
+            DLLLogDetail("Encountered unhandled areatrigger id %u", trigger);
             break;
     }
 }
