@@ -1376,7 +1376,8 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
         else if (!a->GetTimeLeft())
         {
             // Creates a 15 minute pet, if player has the quest that goes with the spell and if target corresponds to quest
-            if (Rand(75.0f))    // 75% chance on success
+            //\todo you can't do that here. SpellHandler load will fail on *nix systemy
+            /*if (Rand(75.0f))    // 75% chance on success
             {
 
                 if (m_target->isCreature())
@@ -1406,7 +1407,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
             else
             {
                 p_caster->SendCastResult(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
-            }
+            }*/
         }
     }
 
