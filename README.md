@@ -48,8 +48,8 @@ Be patient with us and give us details.
 
 ## Install
 HowTo install (detailed guides on our wiki)
+* [Linux](https://ascemu.github.io/Wiki/docs/installation/linux/)
 * [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
-* [Ubuntu](https://ascemu.github.io/Wiki/docs/installation/ubuntu/)
 
 
 ## Links
