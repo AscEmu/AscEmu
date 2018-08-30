@@ -1018,11 +1018,11 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(m_template->m_initialSpawnId);
         if (cp == nullptr)
         {
-            LogDebug("AlteracValley : Invalid creature entry %u!", m_template->m_initialSpawnId);
+            DLLLogDetail("AlteracValley : Invalid creature entry %u!", m_template->m_initialSpawnId);
             return;
         }
         Creature* sp;
-        LogDebug("AlteracValley : spawning guards at bunker %s of %s (%u)", m_template->m_name, cp->Name.c_str(), cp->Id);
+        DLLLogDetail("AlteracValley : spawning guards at bunker %s of %s (%u)", m_template->m_name, cp->Name.c_str(), cp->Id);
 
         while (spi->x != 0.0f)
         {
@@ -1059,7 +1059,7 @@ void AlteracValley::AVNode::Assault(Player* plr)
 {
     // player assaulted the control point.
     // safety check
-    LogDebug("AlteracValley : AVNode::Assault(%s) : entering", m_template->m_name);
+    DLLLogDetail("AlteracValley : AVNode::Assault(%s) : entering", m_template->m_name);
     if (plr->IsTeamAlliance() && (m_state == AV_NODE_STATE_ALLIANCE_ASSAULTING || m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED))
         return;
 
@@ -1118,13 +1118,13 @@ void AlteracValley::AVNode::Assault(Player* plr)
 void AlteracValley::AVNode::Spawn()
 {
     // spawn control point (if we should have one)
-    LogDebug("AlteracValley : AVNode::Spawn for %s, state = %u %s, old_state = %u %s", m_template->m_name, m_state, g_stateNames[m_state], m_lastState, g_stateNames[m_lastState]);
+    DLLLogDetail("AlteracValley : AVNode::Spawn for %s, state = %u %s, old_state = %u %s", m_template->m_name, m_state, g_stateNames[m_state], m_lastState, g_stateNames[m_lastState]);
     if (m_template->m_flagLocation.id[m_state] == 0)
     {
         // no flag should be spawned, despawn if one exists
         if (m_flag != NULL)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : Despawning main flag", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning main flag", m_template->m_name);
             m_flag->Despawn(0, 0);
             m_flag = NULL;
         }
@@ -1133,7 +1133,7 @@ void AlteracValley::AVNode::Spawn()
     {
         // spawn the flag.
         const AVGameObject* g = &m_template->m_flagLocation;
-        LogDebug("AlteracValley : AVNode::Spawn(%s) : Spawning main flag", m_template->m_name);
+        DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning main flag", m_template->m_name);
         if (m_flag == NULL)
         {
             // initial spawn
@@ -1169,7 +1169,7 @@ void AlteracValley::AVNode::Spawn()
         // no flag should be spawned, despawn if one exists
         if (m_aura != NULL)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : Despawning secondary flag", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning secondary flag", m_template->m_name);
             m_aura->Despawn(0, 0);
             m_aura = NULL;
         }
@@ -1178,7 +1178,7 @@ void AlteracValley::AVNode::Spawn()
     {
         // spawn the flag.
         const AVGameObject* g = &m_template->m_auraLocation;
-        LogDebug("AlteracValley : AVNode::Spawn(%s) : Spawning secondary flag", m_template->m_name);
+        DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning secondary flag", m_template->m_name);
         if (m_aura == NULL)
         {
             // initial spawn
@@ -1216,7 +1216,7 @@ void AlteracValley::AVNode::Spawn()
         // no flag should be spawned, despawn if one exists
         if (m_glow != NULL)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : Despawning glow", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning glow", m_template->m_name);
             m_glow->Despawn(0, 0);
             m_glow = NULL;
         }
@@ -1225,7 +1225,7 @@ void AlteracValley::AVNode::Spawn()
     {
         // spawn the flag.
         const AVGameObject* g = &m_template->m_glowLocation;
-        LogDebug("AlteracValley : AVNode::Spawn(%s) : Spawning glow", m_template->m_name);
+        DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning glow", m_template->m_name);
         if (m_glow == NULL)
         {
             // initial spawn
@@ -1276,7 +1276,7 @@ void AlteracValley::AVNode::Spawn()
     // despawn/spawn guards
     if (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED || m_state == AV_NODE_STATE_HORDE_CONTROLLED)
     {
-        LogDebug("AlteracValley : AVNode::Spawn(%s) : despawning guards", m_template->m_name);
+        DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : despawning guards", m_template->m_name);
         for (std::vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
             (*itr)->Despawn(0, 0);
 
@@ -1286,7 +1286,7 @@ void AlteracValley::AVNode::Spawn()
         uint32 t = g_stateToGuardType[m_state];
         if (t > 0 && m_template->m_guardId[t] != 0)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : spawning %u guards of %u", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning %u guards of %u", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);
             for (uint32 i = 0; i < m_template->m_guardCount; ++i)
             {
                 float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
@@ -1306,7 +1306,7 @@ void AlteracValley::AVNode::Spawn()
         // should one be spawned
         if (m_spiritGuide != NULL)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : despawning spirit guide", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : despawning spirit guide", m_template->m_name);
             // move everyone in the revive queue to a different node
             std::map<Creature*, std::set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
             if (itr != m_bg->m_resurrectMap.end())
@@ -1330,7 +1330,7 @@ void AlteracValley::AVNode::Spawn()
 
         if (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->SpawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
@@ -1341,7 +1341,7 @@ void AlteracValley::AVNode::Spawn()
         }
         else if (m_state == AV_NODE_STATE_HORDE_CONTROLLED)
         {
-            LogDebug("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
+            DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->SpawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
@@ -1351,17 +1351,17 @@ void AlteracValley::AVNode::Spawn()
             m_bg->AddSpiritGuide(m_spiritGuide);
         }
     }
-    LogDebug("AlteracValley : AVNode::Spawn(%s) : completed for state %u %s", m_template->m_name, m_state, g_stateNames[m_state]);
+    DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : completed for state %u %s", m_template->m_name, m_state, g_stateNames[m_state]);
 }
 
 void AlteracValley::AVNode::SpawnGuards(uint32 /*x*/)
 {
-    LogDebug("AlteracValley : AVNode::SpawnGuards(%s) : spawning %u guards", m_template->m_name, m_template->m_guardCount);
+    DLLLogDetail("AlteracValley : AVNode::SpawnGuards(%s) : spawning %u guards", m_template->m_name, m_template->m_guardCount);
 }
 
 void AlteracValley::AVNode::ChangeState(uint32 new_state)
 {
-    LogDebug("AlteracValley : AVNode::ChangeState(%s) : changing to state %u %s, old state was %u %s", m_template->m_name, new_state, g_stateNames[new_state], m_state, g_stateNames[m_state]);
+    DLLLogDetail("AlteracValley : AVNode::ChangeState(%s) : changing to state %u %s, old state was %u %s", m_template->m_name, new_state, g_stateNames[new_state], m_state, g_stateNames[m_state]);
     m_lastState = m_state;
     m_state = new_state;
 
@@ -1374,7 +1374,7 @@ void AlteracValley::AVNode::Capture()
     if (m_destroyed)
         return;
 
-    LogDebug("AlteracValley : AVNode::Capture(%s) : entering", m_template->m_name);
+    DLLLogDetail("AlteracValley : AVNode::Capture(%s) : entering", m_template->m_name);
 
     // sooo easy
     sEventMgr.RemoveEvents(m_bg, EVENT_AV_CAPTURE_CP_0 + m_nodeId);
@@ -1392,7 +1392,7 @@ void AlteracValley::AVNode::Capture()
             const AVSpawnLocation* spi = g_fireLocations[m_nodeId];
             GameObject* go;
 
-            LogDebug("AlteracValley : spawning fires at bunker %s", m_template->m_name);
+            DLLLogDetail("AlteracValley : spawning fires at bunker %s", m_template->m_name);
             while (spi->x != 0.0f)
             {
                 go = m_bg->SpawnGameObject(AV_GAMEOBJECT_FIRE, m_bg->GetMapMgr()->GetMapId(), spi->x, spi->y, spi->z, spi->o, 0, 35, 1.0f);
@@ -1557,7 +1557,7 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
             //unmount
             break;
         default:
-            LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
+            DLLLogDetail("Encountered unhandled areatrigger id %u", trigger);
             break;
     }
 }

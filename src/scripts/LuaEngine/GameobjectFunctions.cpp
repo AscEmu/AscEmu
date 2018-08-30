@@ -55,7 +55,7 @@ int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* /*ptr*/)
 
     if (LuaGlobal::instance()->m_menu == NULL)
     {
-        LOG_ERROR("There is no menu to add items to!");
+        DLLLogDetail("There is no menu to add items to!");
         return 0;
     }
 
@@ -71,7 +71,7 @@ int LuaGameObject::GossipSendMenu(lua_State* L, GameObject* /*ptr*/)
 
     if (LuaGlobal::instance()->m_menu == NULL)
     {
-        LOG_ERROR("There is no menu to send!");
+        DLLLogDetail("There is no menu to send!");
         return 0;
     }
 
@@ -88,7 +88,7 @@ int LuaGameObject::GossipComplete(lua_State* L, GameObject* /*ptr*/)
 
     if (LuaGlobal::instance()->m_menu == NULL)
     {
-        LOG_ERROR("There is no menu to complete!");
+        DLLLogDetail("There is no menu to complete!");
         return 0;
     }
 
@@ -867,7 +867,7 @@ int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
         uint32_t group_id = pInstance->m_creatorGroup;
         if (group_id == 0)
         {
-            LOG_ERROR("Instance is not not owned by a group or a guid!");
+            DLLLogDetail("Instance is not not owned by a group or a guid!");
             return 0;
         }
 

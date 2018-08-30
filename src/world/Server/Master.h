@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/DatabaseEnv.h"
 #include "MainServerDefines.h"
 #include "../shared/AscemuServerDefines.hpp"
+#include <iostream>
 
 class Master : public Singleton<Master>
 {
@@ -34,6 +35,19 @@ class Master : public Singleton<Master>
         static volatile bool m_stopEvent;
         bool m_restartEvent;
 
+        //lib Log
+        void libLog(const char* format, ...)
+        {
+            char message_buffer[32768];
+            va_list ap;
+
+            va_start(ap, format);
+            vsnprintf(message_buffer, 32768, format, ap);
+            va_end(ap);
+
+            std::cout << message_buffer << std::endl;
+        }
+
     private:
 
         bool _StartDB();
@@ -47,3 +61,5 @@ class Master : public Singleton<Master>
 };
 
 #define sMaster Master::getSingleton()
+
+#define DLLLogDetail(msg, ...) sMaster.libLog(msg, ##__VA_ARGS__)

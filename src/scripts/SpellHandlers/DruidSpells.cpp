@@ -138,13 +138,15 @@ bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
         }
     }
 
-    if (expired)
+    // you can't do this here! Breaks unix lib load.
+    /*if (expired)
     {
+        
         Spell* spell = sSpellFactoryMgr.NewSpell(pCaster, a->GetSpellInfo(), true, NULL);
         spell->SetUnitTarget(m_target);
         spell->Heal(a->GetModAmount(effectIndex));
         delete spell;
-    }
+    }*/
 
     return true;
 }

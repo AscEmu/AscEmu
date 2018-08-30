@@ -485,7 +485,7 @@ bool TeleportToCoordinates(uint8_t /*effectIndex*/, Spell* s)
     TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->getId());
     if (teleport_coord == nullptr)
     {
-        LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->getName().c_str());
+        DLLLogDetail("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->getName().c_str());
         return true;
     }
 

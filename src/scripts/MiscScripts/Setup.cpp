@@ -35,7 +35,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupGoHandlers(mgr);
     SetupRandomScripts(mgr);
     SetupMiscCreatures(mgr);
-    InitializeGameObjectTeleportTable(mgr);
+    //InitializeGameObjectTeleportTable(mgr);
     SetupCityDalaran(mgr);
 }
 

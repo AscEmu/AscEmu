@@ -100,7 +100,7 @@ class LuaUnit
         uint32 boxmoney = static_cast<uint32>(luaL_optinteger(L, 6, 0));
 
         if (LuaGlobal::instance()->m_menu == NULL){
-            LOG_ERROR("There is no menu to add items to!");
+            DLLLogDetail("There is no menu to add items to!");
             return 0;
         }
 
@@ -114,7 +114,7 @@ class LuaUnit
         Player* plr = CHECK_PLAYER(L, 1);
 
         if (LuaGlobal::instance()->m_menu == NULL){
-            LOG_ERROR("There is no menu to send!");
+            DLLLogDetail("There is no menu to send!");
             return 0;
         }
 
@@ -164,7 +164,7 @@ class LuaUnit
         TEST_UNIT()
 
             if (LuaGlobal::instance()->m_menu == NULL){
-                LOG_ERROR("There's no menu to fill quests into.");
+                DLLLogDetail("There's no menu to fill quests into.");
                 return 0;
             }
 
@@ -183,7 +183,7 @@ class LuaUnit
 
         if (LuaGlobal::instance()->m_menu == nullptr)
         {
-            LOG_ERROR("There is no menu to complete!");
+            DLLLogDetail("There is no menu to complete!");
             return 0;
         }
 
@@ -615,7 +615,7 @@ class LuaUnit
             GameObjectProperties const* info = sMySQLStore.getGameObjectProperties(entry_id);
             if (info == nullptr)
             {
-                LOG_ERROR("Lua script tried to spawn a gameobject that doesn't exist ( %u ). Aborting.", entry_id);
+                DLLLogDetail("Lua script tried to spawn a gameobject that doesn't exist ( %u ). Aborting.", entry_id);
                 lua_pushnil(L);
                 return 1;
             }
@@ -868,7 +868,7 @@ class LuaUnit
             pCreature->m_custom_waypoint_map->push_back(wp);
         else
         {
-            LogDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
+            DLLLogDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
             delete wp;
         }
         return 0;
@@ -1703,7 +1703,7 @@ class LuaUnit
         {
             if (mapId)
             {
-                LogNotice("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%u", mapId, " X", posX, " Y", posY, " Z", posZ);
+                DLLLogDetail("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%u", mapId, " X", posX, " Y", posY, " Z", posZ);
                 return 0;
             }
             else
@@ -4022,7 +4022,7 @@ class LuaUnit
 
     static int GetTarget(lua_State* L, Unit* ptr)
     {
-        LogNotice("LuaEngine : GetTarget is outdated. Please use GetPrimaryCombatTarget.");
+        DLLLogDetail("LuaEngine : GetTarget is outdated. Please use GetPrimaryCombatTarget.");
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
         Unit* target = plr->GetMapMgr()->GetUnit(plr->GetTarget());

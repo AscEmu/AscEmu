@@ -82,7 +82,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+                DLLLogDetail("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
                 return true;
             }
         }
@@ -115,7 +115,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+                DLLLogDetail("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
                 return true;
             }
         }
@@ -270,7 +270,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
         default:
         {
-            LOG_ERROR("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+            DLLLogDetail("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
             return true;
         }
     }
@@ -301,7 +301,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
         default:
         {
-            LOG_ERROR("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->getId());
+            DLLLogDetail("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->getId());
             return true;
         }
     }

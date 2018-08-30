@@ -104,7 +104,7 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         // Check if the SQL table is setup correctly
         if (result->GetFieldCount() < 9)
         {
-            LogError("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
+            DLLLogDetail("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
             delete result;
             return;
         }

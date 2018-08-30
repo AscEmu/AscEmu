@@ -497,7 +497,7 @@ void StrandOfTheAncient::OnStart()
 
 void StrandOfTheAncient::HookGenerateLoot(Player* /*plr*/, Object* /*pOCorpse*/)
 {
-    LOG_DEBUG("StrandOfTheAncient::HookGenerateLoot");
+    DLLLogDetail("StrandOfTheAncient::HookGenerateLoot");
 }
 
 void StrandOfTheAncient::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
@@ -544,7 +544,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 
 void StrandOfTheAncient::SetIsWeekend(bool isweekend)
 {
-    LOG_DEBUG("*** StrandOfTheAncient::SetIsWeekend");
+    DLLLogDetail("*** StrandOfTheAncient::SetIsWeekend");
     m_isWeekend = isweekend;
 }
 
@@ -574,7 +574,7 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Sp
         }
         default:
         {
-            LOG_DEBUG("HookSlowLockOpen called for invalid go entry: %u", goentry);
+            DLLLogDetail("HookSlowLockOpen called for invalid go entry: %u", goentry);
             return true;
         }
     }

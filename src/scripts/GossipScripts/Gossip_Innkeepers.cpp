@@ -56,7 +56,9 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     Arcemu::Gossip::Menu menu(pCreature->getGuid(), TextID, 0);
 
     // Halow's End started?
-    tm * ct = localtime(&UNIXTIME);
+    auto _now = std::chrono::system_clock::now();
+    auto _time_now = std::chrono::system_clock::to_time_t(_now);
+    tm * ct = std::localtime(&_time_now);
     if (ct->tm_mon == 9 && (ct->tm_mday > 17 && ct->tm_mday <= 31))
     {
         if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))

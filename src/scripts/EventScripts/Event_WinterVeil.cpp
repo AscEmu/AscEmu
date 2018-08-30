@@ -94,7 +94,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {
-                LOG_ERROR("Error while adding item %u to player %s", item->getEntry(), pPlayer->getName().c_str());
+                DLLLogDetail("Error while adding item %u to player %s", item->getEntry(), pPlayer->getName().c_str());
                 item->DeleteMe();
             }
             else

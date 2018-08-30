@@ -31,6 +31,7 @@
 #include <ctime>
 
 #include "Util.hpp"
+#include "Server/Master.h"
 
 struct AI_Spell;
 
@@ -167,7 +168,7 @@ struct CreatureProperties
         if (!models[0] && !models[1] && !models[2] && !models[3])
         {
             // All models are invalid.
-            LogNotice("CreatureSpawn : All model IDs are invalid for creature %u", Id);
+            DLLLogDetail("CreatureSpawn : All model IDs are invalid for creature %u", Id);
             return 0;
         }
 
@@ -199,7 +200,7 @@ struct CreatureProperties
         if (counter > 0)
             return model_ids[Util::getRandomUInt(0, counter - 1)];
 
-        LogError("CreatureProperties : No random display_id found for entry %u", Id);
+        DLLLogDetail("CreatureProperties : No random display_id found for entry %u", Id);
         return 0;
     }
 

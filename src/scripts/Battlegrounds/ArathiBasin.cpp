@@ -630,7 +630,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 4021:            // Defiler's Den
             return;
         default:
-            LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
+            DLLLogDetail("Encountered unhandled areatrigger id %u", trigger);
             return;
     }
 

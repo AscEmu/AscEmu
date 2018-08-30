@@ -312,7 +312,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         case 5866:
             break;
         default:
-            LOG_ERROR("Encountered unhandled areatrigger id %u", id);
+            DLLLogDetail("Encountered unhandled areatrigger id %u", id);
             return;
             break;
     }
@@ -558,7 +558,7 @@ void EyeOfTheStorm::OnCreate()
         gameobject_info = sMySQLStore.getGameObjectProperties(EOTSTowerIds[i]);
         if (gameobject_info == nullptr)
         {
-            AscLog.ConsoleLogMajorError("EOTS is being created and you are missing gameobjects. Terminating.", "", "", "");
+            DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");
             abort();
             return;
         }
@@ -570,7 +570,7 @@ void EyeOfTheStorm::OnCreate()
         gameobject_info = sMySQLStore.getGameObjectProperties(EOTS_BANNER_NEUTRAL);
         if (gameobject_info == nullptr)
         {
-            AscLog.ConsoleLogMajorError("EOTS is being created and you are missing gameobjects. Terminating.", "", "", "");
+            DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");
             abort();
             return;
         }
@@ -597,7 +597,7 @@ void EyeOfTheStorm::OnCreate()
         m_bubbles[i] = m_mapMgr->CreateGameObject((uint32)EOTSBubbleLocations[i][0]);
         if (!m_bubbles[i]->CreateFromProto((uint32)EOTSBubbleLocations[i][0], m_mapMgr->GetMapId(), EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]))
         {
-            AscLog.ConsoleLogMajorError("EOTS is being created and you are missing gameobjects. Terminating.", "", "", "");
+            DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");
             abort();
             return;
         }

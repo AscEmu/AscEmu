@@ -67,7 +67,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 
 extern "C" SCRIPT_DECL void _exp_engine_unload()
 {
-    LOG_BASIC("exp_engine_unload was called");
+    DLLLogDetail("exp_engine_unload was called");
 }
 
 extern "C" SCRIPT_DECL void _export_engine_reload()
@@ -82,7 +82,7 @@ void report(lua_State* L)
     while (count > 0)
     {
         const char* msg = lua_tostring(L, -1);
-        LOG_ERROR(msg);
+        DLLLogDetail(msg);
         lua_pop(L, 1);
         count--;
     }
@@ -95,7 +95,7 @@ LuaEngine::LuaEngine() :
 void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 {
 #ifdef WIN32
-    LogNotice("LuaEngine : Scanning Directory %s", Dirname);
+    DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname);
     HANDLE hFile;
     WIN32_FIND_DATA FindData;
     memset(&FindData, 0, sizeof(FindData));
@@ -201,14 +201,14 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 void LuaEngine::LoadScripts()
 {
     LUALoadScripts rtn;
-    LogNotice("LuaEngine : Scanning Script-Directories...");
+    DLLLogDetail("LuaEngine : Scanning Script-Directories...");
     ScriptLoadDir((char*)"scripts", &rtn);
 
     unsigned int cnt_uncomp = 0;
 
     luaL_openlibs(lu);
     RegisterCoreFunctions();
-    LogNotice("LuaEngine : Loading Scripts...");
+    DLLLogDetail("LuaEngine : Loading Scripts...");
 
     char filename[MAX_FILENAME_LENGTH];
 
@@ -219,24 +219,24 @@ void LuaEngine::LoadScripts()
         int errorCode = luaL_loadfile(lu, filename);
         if (errorCode)
         {
-            LOG_ERROR("loading %s failed.(could not load). Error code %i", itr->c_str(), errorCode);
+            DLLLogDetail("loading %s failed.(could not load). Error code %i", itr->c_str(), errorCode);
             report(lu);
         }
         else
         {
             if (errorCode != lua_pcall(lu, 0, 0, 0))
             {
-                LOG_ERROR("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
+                DLLLogDetail("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
                 report(lu);
             }
             else
             {
-                LogDebug("LuaEngine : loaded %s.", itr->c_str());
+                DLLLogDetail("LuaEngine : loaded %s.", itr->c_str());
             }
         }
         cnt_uncomp++;
     }
-    LogNotice("LuaEngine : Loaded %u Lua scripts.", cnt_uncomp);
+    DLLLogDetail("LuaEngine : Loaded %u Lua scripts.", cnt_uncomp);
 }
 
 
@@ -2688,7 +2688,7 @@ Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 
 void LuaEngine::Startup()
 {
-    LogNotice("LuaEngineMgr : AscEmu Lua Engine ( ALE ) %s: Loaded", ARCH);
+    DLLLogDetail("LuaEngineMgr : AscEmu Lua Engine ( ALE ) %s: Loaded", ARCH);
     //Create a new global state that will server as the lua universe.
     lu = luaL_newstate();
 
@@ -3091,7 +3091,7 @@ void LuaEngine::Unload()
 }
 void LuaEngine::Restart()
 {
-    LogNotice("LuaEngineMgr : Restarting Engine.");
+    DLLLogDetail("LuaEngineMgr : Restarting Engine.");
     GET_LOCK
     getcoLock().Acquire();
     Unload();
@@ -3325,7 +3325,7 @@ void LuaEngine::Restart()
     }
     temp.clear();
 
-    LogNotice("LuaEngineMgr : Done restarting engine.");
+    DLLLogDetail("LuaEngineMgr : Done restarting engine.");
 }
 
 void LuaEngine::ResumeLuaThread(int ref)

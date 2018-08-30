@@ -60,7 +60,7 @@ namespace luaItem
 
         if (LuaGlobal::instance()->m_menu == NULL)
         {
-            LOG_ERROR("There is no menu to add items to!");
+            DLLLogDetail("There is no menu to add items to!");
             return 0;
         }
 
@@ -75,7 +75,7 @@ namespace luaItem
 
         if (LuaGlobal::instance()->m_menu == NULL)
         {
-            LOG_ERROR("There is no menu to send!");
+            DLLLogDetail("There is no menu to send!");
             return 0;
         }
 
@@ -90,7 +90,7 @@ namespace luaItem
 
         if (LuaGlobal::instance()->m_menu == NULL)
         {
-            LOG_ERROR("There is no menu to complete!");
+            DLLLogDetail("There is no menu to complete!");
             return 0;
         }
 
