@@ -1258,7 +1258,7 @@ class LuaUnit
     {
         const uint32_t zoneId = CHECK_ULONG(L, 1);
         const uint32_t type = CHECK_ULONG(L, 2);
-        const float_t density = CHECK_FLOAT(L, 3);
+        const float density = CHECK_FLOAT(L, 3);
         if (!zoneId)
             return 0;
 
@@ -1273,7 +1273,7 @@ class LuaUnit
 
         const auto player = dynamic_cast<Player*>(ptr);
         const uint32_t type = CHECK_ULONG(L, 1);
-        const float_t density = CHECK_FLOAT(L, 2);
+        const float density = CHECK_FLOAT(L, 2);
 
         sWeatherMgr.sendWeatherForPlayer(type, density, player);
 

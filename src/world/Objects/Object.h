@@ -300,7 +300,7 @@ public:
 
     bool write(const uint8_t& member, uint8_t val);
     bool write(const uint16_t& member, uint16_t val);
-    bool write(const float_t& member, float_t val);
+    bool write(const float& member, float val);
     bool write(const int32_t& member, int32_t val);
     bool write(const uint32_t& member, uint32_t val);
     bool write(const uint64_t& member, uint64_t val);
@@ -328,8 +328,8 @@ public:
     void setEntry(uint32_t entry);
     uint32_t getEntry() const;
 
-    float_t getScale() const;
-    void setScale(float_t scaleX);
+    float getScale() const;
+    void setScale(float scaleX);
 
     // old update data handling
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);

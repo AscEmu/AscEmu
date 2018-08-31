@@ -33,11 +33,11 @@ struct WoWDynamicObject : WoWObject
     uint64_t caster_guid;
     dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
-    float_t radius;
-    float_t x;
-    float_t y;
-    float_t z;
-    float_t o;
+    float radius;
+    float x;
+    float y;
+    float z;
+    float o;
     uint32_t padding;
 };
 #endif
@@ -48,11 +48,11 @@ struct WoWDynamicObject : WoWObject
     uint64_t caster_guid;
     dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
-    float_t radius;
-    float_t x;
-    float_t y;
-    float_t z;
-    float_t o;
+    float radius;
+    float x;
+    float y;
+    float z;
+    float o;
     uint32_t cast_time;
 };
 #endif
@@ -63,7 +63,7 @@ struct WoWDynamicObject : WoWObject
     uint64_t caster_guid;
     dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
-    float_t radius;
+    float radius;
     uint32_t cast_time;
 };
 #endif
@@ -74,7 +74,7 @@ struct WoWDynamicObject : WoWObject
     uint64_t caster_guid;
     dynamic_bytes_union dynamicobject_bytes;
     uint32_t spell_id;
-    float_t radius;
+    float radius;
     uint32_t cast_time;
 };
 #endif

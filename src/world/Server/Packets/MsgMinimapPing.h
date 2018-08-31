@@ -14,14 +14,14 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint64_t guid;
-        float_t posX;
-        float_t posY;
+        float posX;
+        float posY;
 
         MsgMinimapPing() : MsgMinimapPing(0, 0, 0)
         {
         }
 
-        MsgMinimapPing(uint64_t guid, float_t posX, float_t posY) :
+        MsgMinimapPing(uint64_t guid, float posX, float posY) :
             ManagedPacket(MSG_MINIMAP_PING, 8),
             guid(guid),
             posX(posX),

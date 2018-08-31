@@ -37,7 +37,7 @@ struct WoWObject
 
     uint32_t type;
     uint32_t entry;
-    float_t scale_x;
+    float scale_x;
     uint32_t padding_object;
 
     void setLowGuid(uint32_t val)

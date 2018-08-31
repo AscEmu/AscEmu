@@ -589,10 +589,10 @@ void Player::setLoginPosition()
         startOnGMIsland = true;
 
     uint32_t mapId = 1;
-    float_t orientation = 0;
-    float_t position_x = 16222.6f;
-    float_t position_y = 16265.9f;
-    float_t position_z = 14.2085f;
+    float orientation = 0;
+    float position_x = 16222.6f;
+    float position_y = 16265.9f;
+    float position_z = 14.2085f;
 
     if (startOnGMIsland)
     {
