@@ -47,10 +47,10 @@ struct WoWCorpse : WoWObject
 {
     uint64_t owner_guid;
     uint64_t party_guid;
-    float_t o;
-    float_t x;
-    float_t y;
-    float_t z;
+    float o;
+    float x;
+    float y;
+    float z;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
     corpse_bytes_1_union corpse_bytes_1;
@@ -70,10 +70,10 @@ struct WoWCorpse : WoWObject
 {
     uint64_t owner_guid;
     uint64_t party_guid;
-    float_t o;
-    float_t x;
-    float_t y;
-    float_t z;
+    float o;
+    float x;
+    float y;
+    float z;
     uint32_t display_id;
     uint32_t item[WOWCORPSE_ITEM_COUNT];
     corpse_bytes_1_union corpse_bytes_1;

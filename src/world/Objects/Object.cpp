@@ -92,12 +92,12 @@ bool Object::write(const uint16_t& member, uint16_t val)
     return true;
 }
 
-bool Object::write(const float_t& member, float_t val)
+bool Object::write(const float& member, float val)
 {
     if (member == val)
         return false;
 
-    const auto nonconst_member = const_cast<float_t*>(&member);
+    const auto nonconst_member = const_cast<float*>(&member);
     *nonconst_member = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
@@ -292,8 +292,8 @@ void Object::setObjectType(uint32_t objectTypeId)
 uint32_t Object::getEntry() const { return objectData()->entry; }
 void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
 
-float_t Object::getScale() const { return objectData()->scale_x; }
-void Object::setScale(float_t scaleX) { write(objectData()->scale_x, scaleX); }
+float Object::getScale() const { return objectData()->scale_x; }
+void Object::setScale(float scaleX) { write(objectData()->scale_x, scaleX); }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

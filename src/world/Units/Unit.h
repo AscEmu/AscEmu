@@ -320,11 +320,11 @@ public:
     void setBaseAttackTime(uint8_t slot, uint32_t time);
     void modBaseAttackTime(uint8_t slot, int32_t modTime);
 
-    float_t getBoundingRadius() const;
-    void setBoundingRadius(float_t radius);
+    float getBoundingRadius() const;
+    void setBoundingRadius(float radius);
 
-    float_t getCombatReach() const;
-    void setCombatReach(float_t radius);
+    float getCombatReach() const;
+    void setCombatReach(float radius);
 
     uint32_t getDisplayId() const;
     void setDisplayId(uint32_t id);
@@ -335,17 +335,17 @@ public:
     uint32_t getMountDisplayId() const;
     void setMountDisplayId(uint32_t id);
 
-    float_t getMinDamage() const;
-    void setMinDamage(float_t damage);
+    float getMinDamage() const;
+    void setMinDamage(float damage);
 
-    float_t getMaxDamage() const;
-    void setMaxDamage(float_t damage);
+    float getMaxDamage() const;
+    void setMaxDamage(float damage);
 
-    float_t getMinOffhandDamage() const;
-    void setMinOffhandDamage(float_t damage);
+    float getMinOffhandDamage() const;
+    void setMinOffhandDamage(float damage);
 
-    float_t getMaxOffhandDamage() const;
-    void setMaxOffhandDamage(float_t damage);
+    float getMaxOffhandDamage() const;
+    void setMaxOffhandDamage(float damage);
 
     //bytes_1 begin
     uint8_t getStandState() const;
@@ -366,9 +366,9 @@ public:
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
 
-    float_t getModCastSpeed() const;
-    void setModCastSpeed(float_t modifier);
-    void modModCastSpeed(float_t modifier);
+    float getModCastSpeed() const;
+    void setModCastSpeed(float modifier);
+    void modModCastSpeed(float modifier);
 
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
@@ -419,15 +419,15 @@ public:
     uint32_t getAttackPower() const;
     void setAttackPower(uint32_t value);
 
-    float_t getMinRangedDamage() const;
-    void setMinRangedDamage(float_t damage);
+    float getMinRangedDamage() const;
+    void setMinRangedDamage(float damage);
 
-    float_t getMaxRangedDamage() const;
-    void setMaxRangedDamage(float_t damage);
+    float getMaxRangedDamage() const;
+    void setMaxRangedDamage(float damage);
 
-    float_t getPowerCostMultiplier(uint16_t school) const;
-    void setPowerCostMultiplier(uint16_t school, float_t multiplier);
-    void modPowerCostMultiplier(uint16_t school, float_t multiplier);
+    float getPowerCostMultiplier(uint16_t school) const;
+    void setPowerCostMultiplier(uint16_t school, float multiplier);
+    void modPowerCostMultiplier(uint16_t school, float multiplier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement

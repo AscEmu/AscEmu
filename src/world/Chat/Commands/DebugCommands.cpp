@@ -510,7 +510,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
 bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session)
 {
     uint32_t type;
-    float_t density;
+    float density;
 
     if (sscanf(args, "%u %f", &type, &density) != 2)
     {
