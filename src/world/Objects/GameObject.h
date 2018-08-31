@@ -398,8 +398,8 @@ public:
     void removeFlags(uint32_t flags);
     bool hasFlags(uint32_t flags) const;
 
-    float_t getParentRotation(uint8_t type) const;
-    void setParentRotation(uint8_t type, float_t rotation);
+    float getParentRotation(uint8_t type) const;
+    void setParentRotation(uint8_t type, float rotation);
 
     uint32_t getDynamic() const;
     void setDynamic(uint32_t dynamic);

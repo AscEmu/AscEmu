@@ -47,12 +47,12 @@ void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dy
 uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }
 void DynamicObject::setSpellId(uint32_t id) { write(dynamicObjectData()->spell_id, id); }
 
-float_t DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
-void DynamicObject::setRadius(float_t radius) { write(dynamicObjectData()->radius, radius); }
+float DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
+void DynamicObject::setRadius(float radius) { write(dynamicObjectData()->radius, radius); }
 
 // Position set for classic and TBC
-float_t DynamicObject::getDynamicX() const { return m_position.x; }
-void DynamicObject::setDynamicX(float_t x)
+float DynamicObject::getDynamicX() const { return m_position.x; }
+void DynamicObject::setDynamicX(float x)
 {
     m_position.x = x;
 #if VERSION_STRING <= TBC
@@ -60,8 +60,8 @@ void DynamicObject::setDynamicX(float_t x)
 #endif
 }
 
-float_t DynamicObject::getDynamicY() const { return m_position.y; }
-void DynamicObject::setDynamicY(float_t y)
+float DynamicObject::getDynamicY() const { return m_position.y; }
+void DynamicObject::setDynamicY(float y)
 {
     m_position.y = y;
 #if VERSION_STRING <= TBC
@@ -69,8 +69,8 @@ void DynamicObject::setDynamicY(float_t y)
 #endif
 }
 
-float_t DynamicObject::getDynamicZ() const { return m_position.z; }
-void DynamicObject::setDynamicZ(float_t z)
+float DynamicObject::getDynamicZ() const { return m_position.z; }
+void DynamicObject::setDynamicZ(float z)
 {
     m_position.z = z;
 #if VERSION_STRING <= TBC
@@ -78,8 +78,8 @@ void DynamicObject::setDynamicZ(float_t z)
 #endif
 }
 
-float_t DynamicObject::getDynamicO() const { return m_position.x; }
-void DynamicObject::setDynamicO(float_t o)
+float DynamicObject::getDynamicO() const { return m_position.x; }
+void DynamicObject::setDynamicO(float o)
 {
     m_position.o = o;
 #if VERSION_STRING <= TBC

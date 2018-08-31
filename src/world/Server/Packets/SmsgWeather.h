@@ -14,14 +14,14 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint32_t type;
-        float_t density;
+        float density;
         uint32_t sound;
 
         SmsgWeather() : SmsgWeather(0, 0, 0)
         {
         }
 
-        SmsgWeather(uint32_t type, float_t density, uint32_t sound) :
+        SmsgWeather(uint32_t type, float density, uint32_t sound) :
             ManagedPacket(SMSG_WEATHER, 13),
             type(type),
             density(density),
