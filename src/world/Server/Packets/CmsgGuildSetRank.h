@@ -20,8 +20,8 @@ namespace AscEmu { namespace Packets
         uint32_t moneyPerDay;
 
         // cata specific
-        uint32_t oldRankId;
-        uint32_t oldRights;
+        uint32_t oldRankId = 0;
+        uint32_t oldRights = 0;
 
         GuildBankRightsAndSlotsVec _rightsAndSlots;
 
