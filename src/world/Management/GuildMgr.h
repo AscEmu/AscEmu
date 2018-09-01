@@ -40,8 +40,8 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         std::vector<GuildReward> const& getGuildRewards() const { return GuildRewards; }
 
         void resetTimes(bool week);
-        uint32_t lastSave;
-        bool firstSave;
+        uint32_t lastSave = 0;
+        bool firstSave = false;
 
     protected:
 

@@ -13,7 +13,7 @@ namespace AscEmu { namespace Packets
     class MsgPetitionDecline : public ManagedPacket
     {
     public:
-        uint64_t itemGuid;
+        uint64_t itemGuid = 0;
         uint64_t playerGuid;
 
         MsgPetitionDecline() : MsgPetitionDecline(0)

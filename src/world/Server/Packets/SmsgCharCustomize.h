@@ -15,8 +15,8 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING > TBC
     public:
         uint8_t result;
-        uint64_t guid;
-        CharCreate charStruct;
+        uint64_t guid = 0;
+        CharCreate charStruct = CharCreate();
 
         SmsgCharCustomize() : SmsgCharCustomize(0)
         {
