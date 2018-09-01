@@ -15,7 +15,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint64_t guid;
-        uint8_t slot;
+        uint8_t slot = 0;
         std::string tabName;
         std::string tabIcon;
 

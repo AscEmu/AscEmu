@@ -15,7 +15,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         WoWGuid guid;
-        uint32_t trainerId;
+        uint32_t trainerId = 0;
         uint32_t spellId;
 
         CmsgTrainerBuySpell() : CmsgTrainerBuySpell(0, 0)

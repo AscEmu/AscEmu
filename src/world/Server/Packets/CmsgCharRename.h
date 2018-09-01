@@ -17,7 +17,7 @@ namespace AscEmu { namespace Packets
         WoWGuid guid;
         std::string name;
 
-        size_t size;
+        size_t size = 0;
 
         CmsgCharRename() : CmsgCharRename(0, "")
         {

@@ -16,8 +16,8 @@ namespace AscEmu { namespace Packets
     public:
         WoWGuid creatureGuid;
         std::string name;
-        uint32_t signerCount;
-        uint32_t arenaIndex;
+        uint32_t signerCount = 0;
+        uint32_t arenaIndex = 0;
 
         CmsgPetitionBuy() : CmsgPetitionBuy("")
         {
