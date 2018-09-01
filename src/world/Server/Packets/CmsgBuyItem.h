@@ -20,7 +20,7 @@ namespace AscEmu { namespace Packets
         uint8_t amount;
 
         //cata specific
-        uint8_t itemType;
+        uint8_t itemType = 0;
 
         CmsgBuyItem() : CmsgBuyItem(0, 0, 0, 0)
         {

@@ -22,14 +22,14 @@ namespace AscEmu { namespace Packets
         uint32_t splitedAmount = 0;
 
         //banktobank specific
-        uint8_t destTabId;
-        uint8_t destSlotId;
+        uint8_t destTabId = 0;
+        uint8_t destSlotId = 0;
 
         //banktoplayer specific
         uint8_t playerBag = 0;
         uint8_t playerSlotId = 255;
         uint8_t toCharNum = 1;
-        uint8_t autoStore;
+        uint8_t autoStore = 0;
 
         bool toChar = false;
 

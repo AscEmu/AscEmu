@@ -17,11 +17,11 @@ namespace AscEmu { namespace Packets
         uint64_t itemGuid;
 
         //arena fields
-        uint32_t iconColor;
-        uint32_t icon;
-        uint32_t borderColor;
-        uint32_t border;
-        uint32_t background;
+        uint32_t iconColor = 0;
+        uint32_t icon = 0;
+        uint32_t borderColor = 0;
+        uint32_t border = 0;
+        uint32_t background = 0;
 
         CmsgTurnInPetition() : CmsgTurnInPetition(0)
         {
