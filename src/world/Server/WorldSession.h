@@ -62,7 +62,6 @@ struct AddonEntry;
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 
-
 // Does nothing on release builds
 #ifdef _DEBUG
 #define CHECK_INWORLD_ASSERT ARCEMU_ASSERT(_player != NULL && _player->IsInWorld())
@@ -138,7 +137,7 @@ class SERVER_DECL WorldSession
     friend class WorldSocket;
 
     public:
-        WorldSession(uint32 id, std::string Name, WorldSocket* sock);
+        WorldSession(uint32 id, std::string name, WorldSocket* sock);
         ~WorldSession();
 
         Player* m_loggingInPlayer;
@@ -176,7 +175,7 @@ class SERVER_DECL WorldSession
             if (!permissioncount)
                 return false;
 
-            return (strchr(permissions, 'a') != NULL) ? true : false;
+            return (strchr(permissions, 'a') != nullptr) ? true : false;
         }
 
         bool CanUseCommand(char cmdstr);
@@ -198,7 +197,7 @@ class SERVER_DECL WorldSession
             sAccountData[index].data = data;
             sAccountData[index].sz = sz;
 
-            if (initial == false && sAccountData[index].bIsDirty == false)      // Mark as "changed" or "dirty"
+            if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
             {
                 sAccountData[index].bIsDirty = true;
             }
@@ -936,7 +935,7 @@ class SERVER_DECL WorldSession
 
         // Preallocated buffers for movement handlers
         MovementInfo movement_info;
-        uint8 movement_packet[90];
+        uint8 movement_packet[90]{};
 
         uint32 _accountId;
         uint32 _accountFlags;
@@ -953,7 +952,7 @@ class SERVER_DECL WorldSession
 
         uint32 _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 
-        AccountDataEntry sAccountData[8];
+        AccountDataEntry sAccountData[8]{};
 
         FastQueue<WorldPacket*, Mutex> _recvQueue;
         char* permissions;
