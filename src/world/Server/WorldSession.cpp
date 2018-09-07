@@ -45,37 +45,38 @@ using namespace AscEmu::Packets;
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
-WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
-    m_loggingInPlayer(NULL),
+WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
+    m_loggingInPlayer(nullptr),
     m_currMsTime(Util::getMSTime()),
+    m_lastPing(0),
     bDeleted(false),
     m_moveDelayTime(0),
     m_clientTimeDelay(0),
+    m_wLevel(0),
     m_bIsWLevelSet(false),
-    _player(NULL),
+    _player(nullptr),
     _socket(sock),
     _accountId(id),
-    _accountName(Name),
+    _accountFlags(0),
+    _accountName(name),
     has_level_55_char(false),
+    has_dk(false),
     _side(-1),
+    m_MoverGuid(0),
     _logoutTime(0),
-    permissions(NULL),
+    permissions(nullptr),
     permissioncount(0),
     _loggingOut(false),
     LoggingOut(false),
+    _latency(0),
+    client_build(0),
     instanceId(0),
     _updatecount(0),
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
-    m_lastPing(0),
-    m_wLevel(0),
-    _accountFlags(0),
-    has_dk(false),
-    _latency(0),
-    client_build(0),
-    m_MoverGuid(0),
-    m_muted(0)
+    m_muted(0),
+    isAddonMessageFiltered(false)
 {
     memset(movement_packet, 0, sizeof(movement_packet));
 
@@ -84,7 +85,7 @@ WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
 #endif
 
     for (uint8 x = 0; x < 8; x++)
-        sAccountData[x].data = NULL;
+        sAccountData[x].data = nullptr;
 }
 
 WorldSession::~WorldSession()
@@ -97,25 +98,23 @@ WorldSession::~WorldSession()
         LogoutPlayer(true);
     }
 
-    if (permissions)
-        delete[]permissions;
+    delete[]permissions;
 
     WorldPacket* packet;
 
-    while ((packet = _recvQueue.Pop()) != 0)
+    while ((packet = _recvQueue.Pop()) != nullptr)
         delete packet;
 
     for (uint32 x = 0; x < 8; x++)
     {
-        if (sAccountData[x].data)
-            delete[]sAccountData[x].data;
+        delete[]sAccountData[x].data;
     }
 
     if (_socket)
-        _socket->SetSession(0);
+        _socket->SetSession(nullptr);
 
     if (m_loggingInPlayer)
-        m_loggingInPlayer->SetSession(NULL);
+        m_loggingInPlayer->SetSession(nullptr);
 
     deleteMutex.Release();
 }
@@ -128,7 +127,6 @@ uint8 WorldSession::Update(uint32 InstanceID)
         _socket->UpdateQueuedPackets();
 
     WorldPacket* packet;
-    OpcodeHandler* Handler;
 
     if (InstanceID != instanceId)
     {
@@ -161,7 +159,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
     }
 
-    while ((packet = _recvQueue.Pop()) != 0)
+    while ((packet = _recvQueue.Pop()) != nullptr)
     {
         ARCEMU_ASSERT(packet != NULL);
 
@@ -171,21 +169,21 @@ uint8 WorldSession::Update(uint32 InstanceID)
         }
         else
         {
-            Handler = &WorldPacketHandlers[packet->GetOpcode()];
-            if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0)
+            OpcodeHandler* handler = &WorldPacketHandlers[packet->GetOpcode()];
+            if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
             {
                 LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
             }
             else
             {
                 // Valid Packet :>
-                if (Handler->handler == 0)
+                if (handler->handler == 0)
                 {
                     LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {
-                    (this->*Handler->handler)(*packet);
+                    (this->*handler->handler)(*packet);
                 }
             }
         }
@@ -221,7 +219,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
             return 0;
         }
 
-        if (_socket == NULL)
+        if (_socket == nullptr)
         {
             bDeleted = true;
             LogoutPlayer(true);
@@ -231,7 +229,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
             LogoutPlayer(true);
     }
 
-    if (m_lastPing + WORLDSOCKET_TIMEOUT < (uint32)UNIXTIME)
+    if (m_lastPing + WORLDSOCKET_TIMEOUT < static_cast<uint32>(UNIXTIME))
     {
         // Check if the player is in the process of being moved. We can't
         // delete him
@@ -243,13 +241,13 @@ uint8 WorldSession::Update(uint32 InstanceID)
         }
 
         // ping timeout!
-        if (_socket != NULL)
+        if (_socket != nullptr)
         {
             Disconnect();
-            _socket = NULL;
+            _socket = nullptr;
         }
 
-        m_lastPing = (uint32)UNIXTIME;	// Prevent calling this code over and
+        m_lastPing = static_cast<uint32>(UNIXTIME);	// Prevent calling this code over and
         // over.
         if (!_logoutTime)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
@@ -267,7 +265,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
     _loggingOut = true;
 
-    if (_player != NULL)
+    if (_player != nullptr)
     {
         _player->SetFaction(_player->GetInitialFactionId());
 
@@ -281,20 +279,20 @@ void WorldSession::LogoutPlayer(bool Save)
         if (_player->m_currentLoot && _player->IsInWorld())
         {
             Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
-            if (obj != NULL)
+            if (obj != nullptr)
             {
                 switch (obj->getObjectTypeId())
                 {
                     case TYPEID_UNIT:
-                        static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
+                        dynamic_cast<Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
                         break;
                     case TYPEID_GAMEOBJECT:
-                        GameObject* go = static_cast<GameObject*>(obj);
+                        GameObject* go = dynamic_cast<GameObject*>(obj);
 
                         if (!go->IsLootable())
                             break;
 
-                        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
+                        GameObject_Lootable* pLGO = dynamic_cast<GameObject_Lootable*>(go);
                         pLGO->loot.looters.erase(_player->getGuidLow());
 
                         break;
@@ -387,9 +385,9 @@ void WorldSession::LogoutPlayer(bool Save)
         if (_player->IsInWorld())
             _player->RemoveFromWorld();
 
-        _player->m_playerInfo->m_loggedInPlayer = NULL;
+        _player->m_playerInfo->m_loggedInPlayer = nullptr;
 
-        if (_player->m_playerInfo->m_Group != NULL)
+        if (_player->m_playerInfo->m_Group != nullptr)
             _player->m_playerInfo->m_Group->Update();
 
         // Remove the "player locked" flag, to allow movement on next login
@@ -431,9 +429,9 @@ void WorldSession::LogoutPlayer(bool Save)
         }
 
         delete _player;
-        _player = NULL;
+        _player = nullptr;
 
-        OutPacket(SMSG_LOGOUT_COMPLETE, 0, NULL);
+        OutPacket(SMSG_LOGOUT_COMPLETE, 0, nullptr);
         LOG_DEBUG("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }
     _loggingOut = false;
@@ -472,7 +470,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
     for (uint32 i = 0; i < securitystring.length(); ++i)
     {
         char c = securitystring.at(i);
-        c = (char)tolower(c);
+        c = static_cast<char>(tolower(c));
         if (c == '4' || c == '3')
             c = 'a';			// for the lazy people
 
@@ -492,7 +490,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
 
     permissions = new char[tmp.size() + 1];
     memset(permissions, 0, tmp.size() + 1);
-    permissioncount = (uint32)tmp.size();
+    permissioncount = static_cast<uint32>(tmp.size());
     int k = 0;
 
     for (std::list <char>::iterator itr = tmp.begin(); itr != tmp.end(); ++itr)
@@ -548,7 +546,7 @@ void WorldSession::InitPacketHandlerTable()
     for (uint32 i = 0; i < NUM_MSG_TYPES; ++i)
     {
         WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
-        WorldPacketHandlers[i].handler = 0;
+        WorldPacketHandlers[i].handler = nullptr;
     }
 
     loadSpecificHandlers();
@@ -567,7 +565,7 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
         size_t lenght = strlen(out);
 
         snprintf(&out[lenght], 32768 - lenght, "Account %u [%s], IP %s, Player %s :: ",
-            (unsigned int)session->GetAccountId(),
+            static_cast<unsigned int>(session->GetAccountId()),
             session->GetAccountName().c_str(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
             session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");
@@ -583,14 +581,13 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
 
 void WorldSession::SystemMessage(const char* format, ...)
 {
-    WorldPacket* data;
     char buffer[1024];
     va_list ap;
     va_start(ap, format);
     vsnprintf(buffer, 1024, format, ap);
     va_end(ap);
 
-    data = sChatHandler.FillSystemMessageData(buffer);
+    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
     SendPacket(data);
     delete data;
 }
@@ -598,13 +595,13 @@ void WorldSession::SystemMessage(const char* format, ...)
 void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)
 {
     if (lang == -1)
-        *(uint32*)& data->contents()[langpos] = lang;
+        *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
     else
     {
         if (CanUseCommand('c') || (originator && originator->CanUseCommand('c')))
-            *(uint32*)& data->contents()[langpos] = LANG_UNIVERSAL;
+            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
         else
-            *(uint32*)& data->contents()[langpos] = lang;
+            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
     }
 
     SendPacket(data);
@@ -952,9 +949,9 @@ void WorldSession::SendMOTD()
     data << uint32(0);
     uint32 linecount = 0;
     std::string str_motd = worldConfig.getMessageOfTheDay();
-    std::string::size_type pos, nextpos;
+    std::string::size_type nextpos;
 
-    pos = 0;
+    std::string::size_type pos = 0;
     while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
     {
         if (nextpos != pos)
@@ -988,15 +985,13 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
 
     for (int8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
-        uint64 ItemGUID = 0;
-
         GUID.Clear();
 
         data >> GUID;
         data >> SrcBagID;
         data >> SrcSlotID;
 
-        ItemGUID = GUID.GetOldGuid();
+        uint64 ItemGUID = GUID.GetOldGuid();
 
         // Let's see if we even have this item
         auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
@@ -1019,13 +1014,11 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
 
         if (dstslotitem == nullptr)
         {
-            // we have no item equipped in the slot, so let's equip
-            AddItemResult additemresult;
             int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->getItemProperties(), false, false);
             if (EquipError == INV_ERR_OK)
             {
                 dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
-                additemresult = _player->GetItemInterface()->SafeAddItem(item, dstbag, dstslot);
+                AddItemResult additemresult = _player->GetItemInterface()->SafeAddItem(item, dstbag, dstslot);
 
                 if (additemresult != ADD_ITEM_RESULT_OK)
                 {
@@ -1063,11 +1056,10 @@ void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
     CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_SAVE");
 
     WoWGuid GUID;
-    uint32 setGUID;
 
     data >> GUID;
 
-    setGUID = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
+    uint32 setGUID = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
 
     if (setGUID == 0)
         setGUID = objmgr.GenerateEquipmentSetID();
@@ -1087,8 +1079,7 @@ void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
         set->ItemGUID[i] = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
     }
 
-    bool success;
-    success = _player->GetItemInterface()->m_EquipmentSets.AddEquipmentSet(set->SetGUID, set);
+    bool success = _player->GetItemInterface()->m_EquipmentSets.AddEquipmentSet(set->SetGUID, set);
 
     if (success)
     {
@@ -1106,13 +1097,12 @@ void WorldSession::HandleEquipmentSetDelete(WorldPacket& data)
     CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_DELETE");
 
     WoWGuid setGUID;
-    bool success;
 
     data >> setGUID;
 
     uint32 GUID = Arcemu::Util::GUID_LOPART(setGUID.GetOldGuid());
 
-    success = _player->GetItemInterface()->m_EquipmentSets.DeleteEquipmentSet(GUID);
+    bool success = _player->GetItemInterface()->m_EquipmentSets.DeleteEquipmentSet(GUID);
 
     if (success)
     {
@@ -1172,7 +1162,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     recv_data >> GUID;
 
     Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
-    if (Image == NULL)
+    if (Image == nullptr)
         return;					// ups no unit found with that GUID on the map. Spoofed packet?
 
     if (Image->getCreatedByGuid() == 0)
@@ -1181,7 +1171,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     uint64 CasterGUID = Image->getCreatedByGuid();
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
-    if (Caster == NULL)
+    if (Caster == nullptr)
         return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
 
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
@@ -1192,7 +1182,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     if (Caster->isPlayer())
     {
-        Player* pcaster = static_cast <Player*>(Caster);
+        Player* pcaster = dynamic_cast<Player*>(Caster);
 
         data << uint8(pcaster->getGender());
         data << uint8(pcaster->getClass());
@@ -1263,7 +1253,7 @@ void WorldSession::Unhandled(WorldPacket& recv_data)
 
 void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
-    if (recv_data.isEmpty() == false)
+    if (!recv_data.isEmpty())
     {
         LogDebugFlag(LF_OPCODE, "Opcode %s (0x%.4X) received. Apply nothingToHandle handler but size is %u!", getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode(), recv_data.size());
     }
@@ -1310,7 +1300,7 @@ void WorldSession::OutPacket(uint16 opcode)
 {
     if (_socket && _socket->IsConnected())
     {
-        _socket->OutPacket(opcode, 0, NULL);
+        _socket->OutPacket(opcode, 0, nullptr);
     }
 }
 
@@ -1324,7 +1314,7 @@ void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
 
 void WorldSession::QueuePacket(WorldPacket* packet)
 {
-    m_lastPing = (uint32)UNIXTIME;
+    m_lastPing = static_cast<uint32>(UNIXTIME);
     _recvQueue.Push(packet);
 }
 
