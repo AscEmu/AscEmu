@@ -7,8 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "EventableObject.h"
 #include "IUpdatable.h"
-#include "Definitions.h"
-#include "Storage/DBC/DBCStores.h"
+//#include "Definitions.h"
+//#include "Storage/DBC/DBCStores.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
 #include "World.Legacy.h"
@@ -24,12 +24,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         World();
         ~World();
 
-    private:
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // WorldConfig
-    public:
-
         WorldConfig settings;
 
         void loadWorldConfigValues(bool reload = false);
@@ -106,7 +102,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void addSession(WorldSession* worldSession);
 
         WorldSession* getSessionByAccountId(uint32_t accountId);
-        WorldSession* getSessionByAccountName(std::string accountName);
+        WorldSession* getSessionByAccountName(const std::string& accountName);
 
         void sendCharacterEnumToAccountSession(QueryResultVector& results, uint32_t accountId);
         void loadAccountDataProcForId(QueryResultVector& results, uint32_t accountId);
@@ -116,9 +112,9 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void deleteSession(WorldSession* worldSession);
         void deleteSessions(std::list<WorldSession*> &slist);
 
-        void disconnectSessionByAccountName(std::string accountName, WorldSession* worldSession);
-        void disconnectSessionByIp(std::string ipString, WorldSession* worldSession);
-        void disconnectSessionByPlayerName(std::string playerName, WorldSession* worldSession);
+        void disconnectSessionByAccountName(const std::string& accountName, WorldSession* worldSession);
+        void disconnectSessionByIp(const std::string& ipString, WorldSession* worldSession);
+        void disconnectSessionByPlayerName(const std::string& playerName, WorldSession* worldSession);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // GlobalSession functions
@@ -146,10 +142,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
     public:
 
         void updateQueuedSessions(uint32_t diff);
-        uint32_t getQueuedSessions() { return (uint32_t)mQueuedSessions.size(); };
+        uint32_t getQueuedSessions() { return static_cast<uint32_t>(mQueuedSessions.size()); };
 
-        uint32_t addQueuedSocket(WorldSocket* Socket);
-        void removeQueuedSocket(WorldSocket* Socket);
+        uint32_t addQueuedSocket(WorldSocket* socket);
+        void removeQueuedSocket(WorldSocket* socket);
 
         uint32_t getQueueUpdateTimer() { return mQueueUpdateTimer; }
 
@@ -157,17 +153,17 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
     // Send Messages
     public:
 
-        void sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf = nullptr);
+        void sendMessageToOnlineGms(const std::string& message, WorldSession* sendToSelf = nullptr);
 
-        void sendMessageToAll(std::string message, WorldSession* sendToSelf = nullptr);
-        void sendAreaTriggerMessage(std::string message, WorldSession* sendToSelf = nullptr);
+        void sendMessageToAll(const std::string& message, WorldSession* sendToSelf = nullptr);
+        void sendAreaTriggerMessage(const std::string& message, WorldSession* sendToSelf = nullptr);
         void sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf = nullptr);
 
         void sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSession* sendToSelf = nullptr);
         void sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, WorldSession* sendToSelf = nullptr);
         void sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId);
 
-        void sendBroadcastMessageById(uint32_t id);
+        void sendBroadcastMessageById(uint32_t broadcastId);
         
     //////////////////////////////////////////////////////////////////////////////////////////
     // General Functions
@@ -187,7 +183,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void loadMySQLTablesByTask();
         void logEntitySize();
 
-        void Update(unsigned long time_passed);
+        void Update(unsigned long timePassed);
 
         void saveAllPlayersToDb();
         void playSoundToAllPlayers(uint32_t soundId);
