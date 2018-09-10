@@ -224,7 +224,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectNULL,                    // 152 Summon Refer-a-Friend
     &Spell::SpellEffectCreatePet,               // 153 Create tamed pet
     &Spell::SpellEffectTeachTaxiPath,           // 154 "Teach" a taxi path
-    &Spell::SpellEffectDualWield2H,             // 155 DualWield2H (ex: Titan's Grip)
+    &Spell::SpellEffectDualWield2H,             // 155 SPELL_EFFECT_DUAL_WIELD_2H
     &Spell::SpellEffectEnchantItemPrismatic,    // 156 Add a socket to an armor/a weapon
     &Spell::SpellEffectCreateItem2,             // 157 SPELL_EFFECT_CREATE_ITEM_2
     &Spell::SpellEffectMilling,                 // 158 Milling
@@ -4017,14 +4017,10 @@ void Spell::SpellEffectLanguage(uint8_t effectIndex)
 
 void Spell::SpellEffectDualWield(uint8_t /*effectIndex*/)
 {
-    if (p_caster == nullptr)
+    if (u_caster == nullptr)
         return;
 
-    if (!p_caster->_HasSkillLine(SKILL_DUAL_WIELD))
-        p_caster->_AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
-
-    // Increase it by one
-    //dual wield is 1/1 , it never increases it's not even displayed in skills tab
+    u_caster->setDualWield(true);
 }
 
 void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
@@ -4674,14 +4670,14 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
     }
 
     // Get target's current spell (either channeled or generic spell with cast time)
-    if (unitTarget->isCastingNonMeleeSpell(true, false, true))
+    if (unitTarget->isCastingSpell(false, true))
     {
         Spell* TargetSpell = nullptr;
         if (unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
             TargetSpell = unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL);
         }
-        // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+        // No need to check cast time for generic spells, checked already in Object::isCastingSpell()
         else if (unitTarget->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
         {
             TargetSpell = unitTarget->getCurrentSpell(CURRENT_GENERIC_SPELL);
@@ -6233,7 +6229,7 @@ void Spell::SpellEffectDualWield2H(uint8_t /*effectIndex*/)
     if (!playerTarget)
         return;
 
-    playerTarget->DualWield2H = true;
+    playerTarget->setDualWield2H(true);
 }
 
 void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
@@ -6355,6 +6351,9 @@ void Spell::SpellEffectLearnSpec(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
 {
+#ifndef FT_DUAL_SPEC
+    return;
+#else
     if (p_caster == nullptr)
         return;
 
@@ -6380,31 +6379,9 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         }
     }
 
-    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
-
-    data << uint8(1); // Force the client to reset the actionbar and use new values
-
-#ifdef FT_DUAL_SPEC
     uint8 NewSpec = p_caster->m_talentActiveSpec == SPEC_PRIMARY ? SPEC_SECONDARY : SPEC_PRIMARY; // Check if primary spec is on or not
-    p_caster->ActivateSpec(NewSpec);
-    for (uint32 j = 0; j < PLAYER_ACTION_BUTTON_COUNT; ++j)
-    {
-        data << p_caster->m_specs[NewSpec].mActions[j].Action;
-        data << p_caster->m_specs[NewSpec].mActions[j].Type;
-        data << p_caster->m_specs[NewSpec].mActions[j].Misc;
-    }
-#else
-    for (uint32 j = 0; j < PLAYER_ACTION_BUTTON_COUNT; ++j)
-    {
-        data << p_caster->getActiveSpec().mActions[j].Action;
-        data << p_caster->getActiveSpec().mActions[j].Type;
-        data << p_caster->getActiveSpec().mActions[j].Misc;
-    }
+    p_caster->activateTalentSpec(NewSpec);
 #endif
-
-    p_caster->GetSession()->SendPacket(&data);
-    p_caster->SetPower(p_caster->getPowerType(), 0);
-    p_caster->SendPowerUpdate(false);
 }
 
 void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)

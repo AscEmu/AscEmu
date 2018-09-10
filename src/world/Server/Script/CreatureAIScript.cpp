@@ -508,7 +508,7 @@ bool CreatureAIScript::_isInCombat()
 
 void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
 {
-    _creature->setAttackTimer(milliseconds, false);
+    _creature->setAttackTimer(MELEE, milliseconds);
 }
 
 void CreatureAIScript::_setMeleeDisabled(bool disable)
@@ -579,7 +579,7 @@ void CreatureAIScript::_regenerateHealth()
 
 bool CreatureAIScript::_isCasting()
 {
-    return _creature->isCastingNonMeleeSpell();
+    return _creature->isCastingSpell();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1015,7 +1015,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
         if (!_isTimerFinished(mSpellWaitTimerId))
         {
             // spell has a min/max range
-            if (!getCreature()->isCastingNonMeleeSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
+            if (!getCreature()->isCastingSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
             {
                 // if we have a current target and spell is not triggered
                 if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
@@ -1038,7 +1038,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
 
             // override attack stop timer if needed
             if (mLastCastedSpell->getAttackStopTimer() != 0)
-                getCreature()->setAttackTimer(mLastCastedSpell->getAttackStopTimer(), false);
+                getCreature()->setAttackTimer(MELEE, mLastCastedSpell->getAttackStopTimer());
 
             mLastCastedSpell = nullptr;
         }
@@ -1163,7 +1163,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
     bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
 
     // if we already cast a spell, do not set/cast another one!
-    if (!getCreature()->isCastingNonMeleeSpell()
+    if (!getCreature()->isCastingSpell()
         && getCreature()->GetAIInterface()->getNextTarget())
     {
         // set up targets in range by position, relation and hp range

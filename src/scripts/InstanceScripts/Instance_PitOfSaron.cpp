@@ -207,7 +207,7 @@ class IckAI : public CreatureAIScript
     void AIUpdate() override
     {
         if (Phase == BATTLE)
-            if (!getCreature()->isCastingNonMeleeSpell())
+            if (!getCreature()->isCastingSpell())
                 CastSpells();
     }
 

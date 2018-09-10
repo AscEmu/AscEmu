@@ -319,7 +319,7 @@ class VHCreatureAI : public CreatureAIScript
     
         /*void SpellCast(float randomValue)
         {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;

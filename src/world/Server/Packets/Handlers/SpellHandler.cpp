@@ -442,7 +442,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // TODO: move this check to new Spell::prepare() and clean it
-    if (_player->isCastingNonMeleeSpell(false, true, true, spellInfo->getId() == 75))
+    if (_player->isCastingSpell(true, true, spellInfo->getId() == 75))
     {
         _player->SendCastResult(spellPacket.spell_id, SPELL_FAILED_SPELL_IN_PROGRESS, spellPacket.cast_count, 0);
         return;
@@ -501,9 +501,9 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 #endif
     recvPacket >> spellId;
 
-    if (_player->isCastingNonMeleeSpell(false))
+    if (_player->isCastingSpell())
     {
-        _player->interruptSpell(spellId, false, false);
+        _player->interruptSpell(spellId, false);
     }
 }
 #endif

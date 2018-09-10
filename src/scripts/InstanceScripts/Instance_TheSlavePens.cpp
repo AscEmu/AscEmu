@@ -130,7 +130,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (getScriptPhase() == 1 && TotemCounter != 0 && !getCreature()->isCastingNonMeleeSpell())
+            if (getScriptPhase() == 1 && TotemCounter != 0 && !getCreature()->isCastingSpell())
             {
                 TotemSpawning();
             }
@@ -139,7 +139,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
         // Random totem spawning
         void TotemSpawning()
         {
-            getCreature()->setAttackTimer(1500, false);
+            getCreature()->setAttackTimer(MELEE, 1500);
 
             bool Spawned = false;
             uint32 Counter = 0;

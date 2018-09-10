@@ -316,8 +316,6 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET && slot == EQUIPMENT_SLOT_OFFHAND && item->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
-        m_pOwner->SetDualWield(true);
-
         /////////////////////////////////////////// Titan's grip stuff ////////////////////////////////////////////////////////////
 
         uint32 subclass = item->getItemProperties()->SubClass;
@@ -407,9 +405,6 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);
-
-            if (slot == EQUIPMENT_SLOT_OFFHAND)
-                m_pOwner->SetDualWield(false);
 
             if (destroy)
             {
@@ -574,9 +569,6 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);  //watch containers that give attackspeed and stuff ;)
-
-            if (slot == EQUIPMENT_SLOT_OFFHAND)
-                m_pOwner->SetDualWield(false);
 
             if (pItem->IsInWorld())
             {
@@ -2132,14 +2124,14 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
         case EQUIPMENT_SLOT_MAINHAND:
         {
             if (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONMAINHAND ||
-                (type == INVTYPE_2HWEAPON && (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND) || skip_2h_check || m_pOwner->DualWield2H)))
+                (type == INVTYPE_2HWEAPON && (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND) || skip_2h_check || m_pOwner->canDualWield2H())))
                 return 0;
             else
                 return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_OFFHAND:
         {
-            if ((type == INVTYPE_2HWEAPON || type == INVTYPE_SHIELD) && m_pOwner->DualWield2H)
+            if ((type == INVTYPE_2HWEAPON || type == INVTYPE_SHIELD) && m_pOwner->canDualWield2H())
             {
                 return 0;
             }
@@ -3240,8 +3232,6 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     {
         if (m_pItems[EQUIPMENT_SLOT_OFFHAND] != nullptr && m_pItems[EQUIPMENT_SLOT_OFFHAND]->getItemProperties()->Class == ITEM_CLASS_WEAPON)
         {
-            m_pOwner->SetDualWield(true);
-
             /////////////////////////////////////////// Titan's grip stuff ////////////////////////////////////////////////////////////
             uint32 subclass = m_pItems[EQUIPMENT_SLOT_OFFHAND]->getItemProperties()->SubClass;
             if (subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_AXE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_MACE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD)
@@ -3250,8 +3240,6 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        else
-            m_pOwner->SetDualWield(false);
     }
 
     //src item is equipped now

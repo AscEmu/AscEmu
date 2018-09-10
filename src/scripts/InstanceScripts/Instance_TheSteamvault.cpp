@@ -186,13 +186,13 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
                     if (getCreature()->GetDistance2dSq(Gnome) > 250.0f)
                     {
-                        if (Gnome->isCastingNonMeleeSpell())
+                        if (Gnome->isCastingSpell())
                             Gnome->interruptSpell();
 
                         continue;
                     }
 
-                    if (!Gnome->isCastingNonMeleeSpell())
+                    if (!Gnome->isCastingSpell())
                     {
                         Gnome->GetAIInterface()->StopMovement(1);
                         Gnome->CastSpell(getCreature(), REPAIR, false);    // core problem? casted on self (and effect is applied on caster instead of _unit)

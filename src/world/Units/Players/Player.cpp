@@ -397,21 +397,11 @@ void Player::toggleDnd()
 void Player::updateAutoRepeatSpell()
 {
     // Get the autorepeat spell
-    Spell* autoRepeatSpell = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
-
-    // Check is target valid
-    // Note for self: remove this check when new Spell::canCast() is ready -Appled
-    Unit* target = GetMapMgr()->GetUnit(autoRepeatSpell->m_targets.m_unitTarget);
-    if (target == nullptr)
-    {
-        m_AutoShotAttackTimer = 0;
-        interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
-        return;
-    }
+    const auto autoRepeatSpell = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
 
     // If player is moving or casting a spell, interrupt wand casting and delay auto shot
-    const bool isAutoShot = autoRepeatSpell->GetSpellInfo()->getId() == 75;
-    if (m_isMoving || isCastingNonMeleeSpell(true, false, true, isAutoShot))
+    const auto isAutoShot = autoRepeatSpell->GetSpellInfo()->getId() == 75;
+    if (m_isMoving || isCastingSpell(false, true, isAutoShot))
     {
         if (!isAutoShot)
         {
@@ -422,33 +412,46 @@ void Player::updateAutoRepeatSpell()
     }
 
     // Apply delay to wand shooting
-    if (m_FirstCastAutoRepeat && m_AutoShotAttackTimer < 500 && !isAutoShot)
+    if (m_FirstCastAutoRepeat && (getAttackTimer(RANGED) - Util::getMSTime() < 500) && !isAutoShot)
     {
-        m_AutoShotAttackTimer = 500;
+        setAttackTimer(RANGED, 500);
     }
     m_FirstCastAutoRepeat = false;
 
-    if (m_AutoShotAttackTimer == 0)
+    if (isAttackReady(RANGED))
     {
         // TODO: implement ::CanShootRangedWeapon() into new Spell::canCast()
         // also currently if target gets too far away, your autorepeat spell will get interrupted
         // it's related most likely to ::CanShootRangedWeapon()
-        const int32_t canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->GetSpellInfo()->getId(), target, isAutoShot);
+        const auto target = GetMapMgr()->GetUnit(autoRepeatSpell->m_targets.m_unitTarget);
+        const auto canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->GetSpellInfo()->getId(), target, isAutoShot);
         if (canCastAutoRepeatSpell != SPELL_CANCAST_OK)
         {
             if (!isAutoShot)
             {
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
+            else if (isPlayer())
+                autoRepeatSpell->SendCastResult(canCastAutoRepeatSpell);
             return;
         }
 
-        m_AutoShotAttackTimer = getUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
-
         // Cast the spell with triggered flag
-        Spell* newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->GetSpellInfo(), true, nullptr);
-        newAutoRepeatSpell->prepare(&(autoRepeatSpell->m_targets));
+        const auto newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->GetSpellInfo(), true, nullptr);
+        newAutoRepeatSpell->prepare(&autoRepeatSpell->m_targets);
+
+        setAttackTimer(RANGED, getBaseAttackTime(RANGED));
     }
+}
+
+bool Player::canDualWield2H() const
+{
+    return m_canDualWield2H;
+}
+
+void Player::setDualWield2H(bool enable)
+{
+    m_canDualWield2H = enable;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -579,15 +582,14 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (spellInfo == nullptr)
         return;
 
-    // Add to player's spellmap
-    addSpell(spellId);
-
     if (talentRank > 0)
     {
         // Remove the current rank
         if (talentInfo->RankID[talentRank - 1] != 0)
             removeTalent(talentInfo->RankID[talentRank - 1]);
     }
+
+    addTalent(spellInfo);
 
 #if VERSION_STRING == Cata
     // Set primary talent tree and lock others
@@ -599,26 +601,33 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     }
 #endif
 
-    if (spellInfo->hasEffect(SPELL_EFFECT_LEARN_SPELL))
-        CastSpell(getGuid(), spellInfo, true);
-    else if (spellInfo->isPassive())
-    {
-        if (spellInfo->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (spellInfo->getRequiredShapeShift() & getShapeShiftMask())) ||
-           (getShapeShiftMask() == 0 && (spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
-        {
-            if (spellInfo->getCasterAuraState() == 0 || hasAuraState(AuraState(spellInfo->getCasterAuraState()), spellInfo, this))
-                // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
-                if (((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
-                    CastSpell(getGuid(), spellInfo, true);
-        }
-    }
-
-    // Add the new talent to player
+    // Add the new talent to player talent map
     getActiveSpec().AddTalent(talentId, talentRank);
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 }
 
-void Player::removeTalent(uint32_t spellId)
+void Player::addTalent(SpellInfo* sp)
+{
+    // Add to player's spellmap
+    addSpell(sp->getId());
+
+    // Cast passive spells and spells with learn effect
+    if (sp->hasEffect(SPELL_EFFECT_LEARN_SPELL))
+        CastSpell(getGuid(), sp, true);
+    else if (sp->isPassive())
+    {
+        if (sp->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (sp->getRequiredShapeShift() & getShapeShiftMask())) ||
+            (getShapeShiftMask() == 0 && (sp->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
+        {
+            if (sp->getCasterAuraState() == 0 || hasAuraState(AuraState(sp->getCasterAuraState()), sp, this))
+                // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
+                if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
+                    CastSpell(getGuid(), sp, true);
+        }
+    }
+}
+
+void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
 {
     SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
     if (spellInfo != nullptr)
@@ -652,7 +661,7 @@ void Player::removeTalent(uint32_t spellId)
                 RemoveAura(spellInfo->getEffectTriggerSpell(i), getGuid());
         }
     }
-    removeSpell(spellId, false, false, 0);
+    removeSpell(spellId, onSpecChange, false, 0);
     RemoveAura(spellId);
 }
 
@@ -673,9 +682,8 @@ void Player::resetTalents()
     if (GetSummon() != nullptr)
         GetSummon()->Dismiss();
 
-    // TODO: also need to check for 1h offhand weapon in case dual wield was from talents
-    if (DualWield2H)
-        ResetDualWield2H();
+    // Check offhand
+    unEquipOffHandIfRequired();
 
     // Clear talents
     getActiveSpec().talents.clear();
@@ -870,6 +878,82 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         }
     }
     GetSession()->SendPacket(&data);
+#endif
+}
+
+void Player::activateTalentSpec(uint8_t specId)
+{
+#ifndef FT_DUAL_SPEC
+    return;
+#else
+    if (specId >= MAX_SPEC_COUNT || m_talentActiveSpec >= MAX_SPEC_COUNT || m_talentActiveSpec == specId)
+        return;
+
+    const auto oldSpec = m_talentActiveSpec;
+    m_talentActiveSpec = specId;
+
+    // Dismiss pet
+    if (GetSummon() != nullptr)
+        GetSummon()->Dismiss();
+
+    // Remove old glyphs
+    for (auto i = 0; i < GLYPHS_COUNT; ++i)
+    {
+        auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[oldSpec].glyphs[i]);
+        if (glyphProperties != nullptr)
+            RemoveAura(glyphProperties->SpellID);
+    }
+
+    // Remove old talents and move them to deleted spells
+    for (const auto itr : m_specs[oldSpec].talents)
+    {
+        auto talentInfo = sTalentStore.LookupEntry(itr.first);
+        if (talentInfo != nullptr)
+            removeTalent(talentInfo->RankID[itr.second], true);
+    }
+
+    // Add new glyphs
+    for (auto i = 0; i < GLYPHS_COUNT; ++i)
+    {
+        auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
+        if (glyphProperties != nullptr)
+            CastSpell(this, glyphProperties->SpellID, true);
+    }
+
+    // Add new talents
+    for (const auto itr : m_specs[m_talentActiveSpec].talents)
+    {
+        auto talentInfo = sTalentStore.LookupEntry(itr.first);
+        if (talentInfo == nullptr)
+            continue;
+        auto spellInfo = sSpellCustomizations.GetSpellInfo(talentInfo->RankID[itr.second]);
+        if (spellInfo == nullptr)
+            continue;
+        addTalent(spellInfo);
+    }
+
+    // Set action buttons from new spec
+    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
+    // Clears action bars clientside
+    data << uint8_t(1);
+    // Load buttons
+    for (auto i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        data << m_specs[m_talentActiveSpec].mActions[i].Action;
+        data << m_specs[m_talentActiveSpec].mActions[i].Type;
+        data << m_specs[m_talentActiveSpec].mActions[i].Misc;
+    }
+    GetSession()->SendPacket(&data);
+
+    // Reset power
+    SetPower(getPowerType(), 0);
+    SendPowerUpdate(false);
+
+    // Check offhand
+    unEquipOffHandIfRequired();
+
+    // Send talent points
+    setInitialTalentPoints();
 #endif
 }
 
@@ -1113,4 +1197,73 @@ void Player::sendCinematicOnFirstLogin()
             OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
 #endif
     }
+}
+
+void Player::unEquipOffHandIfRequired()
+{
+    auto offHandWeapon = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    if (offHandWeapon == nullptr)
+        return;
+
+    auto needToRemove = true;
+    // Check if player has a two-handed weapon in offhand
+    if (offHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+        needToRemove = !canDualWield2H();
+    else
+    {
+        // Player has something in offhand, check if main hand is a two-handed weapon
+        const auto mainHandWeapon = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+            needToRemove = !canDualWield2H();
+        else
+        {
+            // Main hand nor offhand is a two-handed weapon, check if player can dual wield one-handed weapons
+            if (offHandWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
+                needToRemove = !canDualWield();
+            else
+                // Offhand is not a weapon
+                needToRemove = false;
+        }
+    }
+
+    if (!needToRemove)
+        return;
+
+    // Unequip offhand and find a bag slot for it
+    offHandWeapon = GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
+    auto result = GetItemInterface()->FindFreeInventorySlot(offHandWeapon->getItemProperties());
+    if (!result.Result)
+    {
+        // Player has no free slots in inventory, send it by mail
+        offHandWeapon->RemoveFromWorld();
+        offHandWeapon->setOwner(nullptr);
+        offHandWeapon->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
+        offHandWeapon->DeleteMe();
+        offHandWeapon = nullptr;
+    }
+    else if (!GetItemInterface()->SafeAddItem(offHandWeapon, result.ContainerSlot, result.Slot) && !GetItemInterface()->AddItemToFreeSlot(offHandWeapon))
+    {
+        // shouldn't happen
+        offHandWeapon->DeleteMe();
+        offHandWeapon = nullptr;
+    }
+}
+
+bool Player::hasOffHandWeapon()
+{
+    if (!canDualWield())
+        return false;
+
+    const auto offHandItem = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    if (offHandItem == nullptr)
+        return false;
+
+    return offHandItem->getItemProperties()->Class == ITEM_CLASS_WEAPON;
+}
+
+void Player::delayMeleeAttackTimer(int32_t delay)
+{
+    setAttackTimer(MELEE, getAttackTimer(MELEE) + delay);
+    setAttackTimer(OFFHAND, getAttackTimer(OFFHAND) + delay);
 }
