@@ -26,22 +26,20 @@
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
-#include "Server/LogonCommClient/LogonCommHandler.h"
+//#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Auth/MD5.h"
+//#include "Auth/MD5.h"
 #include "Packets/SmsgBuyFailed.h"
-#include "Packets/SmsgGuildCommandResult.h"
-#include "Packets/SmsgGuildInvite.h"
-#include "Management/Guild.h"
+//#include "Packets/SmsgGuildCommandResult.h"
+//#include "Packets/SmsgGuildInvite.h"
+//#include "Management/Guild.h"
 #include "CharacterErrors.h"
 
-
 using namespace AscEmu::Packets;
-
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -75,9 +73,12 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
-    m_muted(0),
-    isAddonMessageFiltered(false)
+    m_muted(0)
 {
+#if VERSION_STRING >= Cata
+    isAddonMessageFiltered = false;
+#endif
+
     memset(movement_packet, 0, sizeof(movement_packet));
 
 #if VERSION_STRING != Cata
@@ -721,9 +722,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
 
     if (item->IsEligibleForRefund())
     {
-        std::pair <time_t, uint32> RefundEntry;
-
-        RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
+        std::pair<time_t, uint32> RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
 
         if (RefundEntry.first == 0 || RefundEntry.second == 0)
             return;
