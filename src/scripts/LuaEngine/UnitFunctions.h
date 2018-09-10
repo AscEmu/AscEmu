@@ -2785,7 +2785,7 @@ class LuaUnit
         bool offhand = CHECK_BOOL(L, 2);
         if (!timer)
             return 0;
-        ptr->setAttackTimer(timer, offhand);
+        ptr->setAttackTimer(offhand == true ? OFFHAND : MELEE, timer);
         return 0;
     }
 

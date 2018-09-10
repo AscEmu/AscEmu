@@ -235,7 +235,7 @@ public:
     void AIUpdate() override
     {
         Unit* curtarget = getCreature()->GetAIInterface()->getNextTarget();
-        if (!getCreature()->isCastingNonMeleeSpell() && curtarget)
+        if (!getCreature()->isCastingSpell() && curtarget)
         {
             switch (dpsCycle)
             {

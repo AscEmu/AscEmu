@@ -436,7 +436,6 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         if (created_by_spell != NULL)
         {
             if (created_by_spell->hasEffect(SPELL_EFFECT_SUMMON_PET) ||
-                created_by_spell->hasEffect(SPELL_EFFECT_TAME_CREATURE) ||
                 created_by_spell->hasEffect(SPELL_EFFECT_TAMECREATURE))
                 SetNameForEntry(entry);
 
@@ -2417,7 +2416,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     for (const auto& itr : getInRangePlayersSet())
     {
         Unit* attacker = static_cast<Unit*>(itr);
-        if (attacker && attacker->isCastingNonMeleeSpell())
+        if (attacker && attacker->isCastingSpell())
         {
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {

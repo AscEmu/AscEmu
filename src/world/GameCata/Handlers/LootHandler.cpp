@@ -67,7 +67,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     uint8_t lootSlot;
     recv_data >> lootSlot;
 
-    if (_player->isCastingNonMeleeSpell())
+    if (_player->isCastingSpell())
         _player->interruptSpell();
 
     GameObject* pLootableGameObject = nullptr;
@@ -244,7 +244,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
     if (lootguid == 0)
         return;
 
-    if (_player->isCastingNonMeleeSpell())
+    if (_player->isCastingSpell())
         _player->interruptSpell();
 
     Unit* pt = nullptr;
@@ -352,7 +352,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (_player->IsStealth())
         _player->RemoveStealth();
 
-    if (_player->isCastingNonMeleeSpell())
+    if (_player->isCastingSpell())
         _player->interruptSpell();
 
     if (_player->IsInvisible())

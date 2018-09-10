@@ -544,12 +544,20 @@ public:
     bool isSpellFitByClassAndRace(uint32_t spell_id);
     void updateAutoRepeatSpell();
 
+    bool canDualWield2H() const;
+    void setDualWield2H(bool enable);
+
     bool m_FirstCastAutoRepeat;
 
+private:
+    bool m_canDualWield2H;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
     void learnTalent(uint32_t talentId, uint32_t talentRank);
-    void removeTalent(uint32_t spellId);
+    void addTalent(SpellInfo* sp);
+    void removeTalent(uint32_t spellId, bool onSpecChange = false);
     void resetTalents();
     void setTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
     void addTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
@@ -558,6 +566,8 @@ public:
     uint32_t getTalentPointsFromQuests() const;
     void setTalentPointsFromQuests(uint32_t talentPoints);
     void smsg_TalentsInfo(bool SendPetTalents); // TODO: classic and tbc
+
+    void activateTalentSpec(uint8_t specId);
 
 private:
     uint32_t m_talentPointsFromQuests;
@@ -611,6 +621,12 @@ public:
     void setPlayerInfoIfNeeded();
     void setGuildAndGroupInfo();
     void sendCinematicOnFirstLogin();
+
+    void unEquipOffHandIfRequired();
+    bool hasOffHandWeapon();
+    void delayMeleeAttackTimer(int32_t delay);
+
+public:
     //MIT End
     //AGPL Start
 
@@ -976,7 +992,6 @@ public:
         bool HasSpell(uint32 spell);
         bool HasDeletedSpell(uint32 spell);
         void smsg_InitialSpells();
-        void ActivateSpec(uint8 spec);
         void addSpell(uint32 spell_idy);
         void removeSpellByHashName(uint32 hash);
         bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
@@ -1338,15 +1353,6 @@ public:
         const uint32 & GetBindMapId() const { return m_bind_mapid; }
         const uint32 & GetBindZoneId() const { return m_bind_zoneid; }
 
-        void delayAttackTimer(int32 delay)
-        {
-            if (!delay)
-                return;
-
-            m_attackTimer += delay;
-            m_attackTimer_1 += delay;
-        }
-
         void SetShapeShift(uint8 ss);
 
         uint32 m_furorChance;
@@ -1422,7 +1428,6 @@ public:
         void SetHasWonRbgToday(bool value);
 
         int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
-        uint32 m_AutoShotAttackTimer;
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
@@ -1619,10 +1624,6 @@ public:
         void SetPersistentInstanceId(Instance* pInstance);
         //Use this method carefully..
         void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
-
-        // DualWield2H (ex: Titan's grip)
-        bool DualWield2H;
-        void ResetDualWield2H();
 
     public:
 

@@ -983,7 +983,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         if (i_caster == nullptr)
         {
             if (p_caster != nullptr && m_timer > 0 && !m_triggeredSpell)
-                p_caster->delayAttackTimer(m_timer + 1000);
+                p_caster->delayMeleeAttackTimer(m_timer + 1000);
             //p_caster->setAttackTimer(m_timer + 1000, false);
         }
 
@@ -1066,7 +1066,7 @@ void Spell::cancel()
 
                 if (m_timer > 0)
                 {
-                    p_caster->delayAttackTimer(-m_timer);
+                    p_caster->delayMeleeAttackTimer(-m_timer);
                     RemoveItems();
                 }
                 //				p_caster->setAttackTimer(1000, false);
@@ -1246,8 +1246,8 @@ void Spell::castMe(bool check)
                 case 52026:
                 case 67028:
                 {
-                    p_caster->setAttackTimer(0, true);
-                    p_caster->setAttackTimer(0, false);
+                    p_caster->setAttackTimer(OFFHAND, p_caster->getBaseAttackTime(OFFHAND));
+                    p_caster->setAttackTimer(MELEE, p_caster->getBaseAttackTime(MELEE));
                 } break;
 
                 //SPELL_HASH_VICTORY_RUSH
@@ -1775,7 +1775,7 @@ void Spell::AddTime(uint32 type)
             {
                 //				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,attackTimeoutInterval,true);
                 // also add a new delay to offhand and main hand attacks to avoid cutting the cast short
-                p_caster->delayAttackTimer(delay);
+                p_caster->delayMeleeAttackTimer(delay);
             }
         }
         else if (GetSpellInfo()->getChannelInterruptFlags() != 48140)
@@ -1786,7 +1786,7 @@ void Spell::AddTime(uint32 type)
             if (m_timer < 0)
                 m_timer = 0;
             else if (p_caster != nullptr)
-                p_caster->delayAttackTimer(-delay);
+                p_caster->delayMeleeAttackTimer(-delay);
 
             m_Delayed = true;
             if (m_timer > 0)

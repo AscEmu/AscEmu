@@ -64,7 +64,7 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
         if (getCreature()->GetHealthPct() <= 20 && !_retaliation)
         {
             _retaliation = true;
-            getCreature()->setAttackTimer(1500, false);
+            getCreature()->setAttackTimer(MELEE, 1500);
             _castAISpell(mRetaliation);
         }
     }

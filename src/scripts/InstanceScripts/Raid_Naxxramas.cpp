@@ -387,7 +387,7 @@ void MaexxnaAI::AIUpdate()
 //        WebWrap->RegisterAIUpdateEvent(5000);
 //        WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->getGuid();
 //
-//        if (pTarget->isCastingNonMeleeSpell())
+//        if (pTarget->isCastingSpell())
 //            pTarget->interruptSpell();
 //
 //        // Somewhy root does not apply at all
