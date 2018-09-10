@@ -3105,7 +3105,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
         if (pNewCreature != nullptr)
         {
             pNewCreature->GetAIInterface()->StopMovement(500);
-            pNewCreature->setAttackTimer(1000, false);
+            pNewCreature->setAttackTimer(MELEE, 1000);
             pNewCreature->m_noRespawn = true;
         }
     }

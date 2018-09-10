@@ -283,7 +283,7 @@ class MrSmiteAI : public CreatureAIScript
             }
 
             // Wait at the chest for 4.5seconds -- Still needs work
-            getCreature()->setAttackTimer(4500, false);
+            getCreature()->setAttackTimer(MELEE, 4500);
             mWaitAtChest = _addTimer(4500);
             setScriptPhase(getScriptPhase() + 1);
         }

@@ -388,9 +388,11 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     int i;
 
-    m_attackTimer = 0;
-    m_attackTimer_1 = 0;
-    m_dualWield = false;
+    m_canDualWield = false;
+    for (auto i = 0; i < 3; ++i)
+    {
+        m_attackTimer[i] = 0;
+    }
 
     m_ignoreArmorPctMaceSpec = 0;
     m_ignoreArmorPct = 0;
@@ -8198,7 +8200,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             //pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
             //		HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
-            if (pVictim->isCastingNonMeleeSpell())
+            if (pVictim->isCastingSpell())
             {
                 if (pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
                     pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(0);
@@ -13176,31 +13178,6 @@ void Unit::RemoveAllMovementImpairing()
     }
 }
 
-//\todo no attacktimer for ranged?
-void Unit::setAttackTimer(int32 time, bool offhand)
-{
-    if (!time)
-        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
-
-    time = std::max(1000, float2int32(time * getModCastSpeed()));
-    if (time> 300000)		// just in case.. shouldn't happen though
-        time = offhand ? getBaseAttackTime(OFFHAND) : getBaseAttackTime(MELEE);
-
-    if (offhand)
-        m_attackTimer_1 = Util::getMSTime() + time;
-    else
-        m_attackTimer = Util::getMSTime() + time;
-}
-
-//\todo no attacktimer for ranged?
-bool Unit::isAttackReady(bool offhand)
-{
-    if (offhand)
-        return (Util::getMSTime() >= m_attackTimer_1) ? true : false;
-    else
-        return (Util::getMSTime() >= m_attackTimer) ? true : false;
-}
-
 void Unit::ReplaceAIInterface(AIInterface* new_interface)
 {
     delete m_aiInterface;	//be careful when you do this. Might screw unit states !
@@ -13568,15 +13545,6 @@ void Unit::UpdatePowerAmm()
     data << getUInt32Value(UNIT_FIELD_POWER1 + getPowerType());
     SendMessageToSet(&data, true);
 #endif
-}
-
-void Unit::SetDualWield(bool enabled)
-{
-    m_dualWield = enabled;
-
-    // Titan's grip
-    if (!enabled && isPlayer())
-        removeAllAurasById(49152);
 }
 
 void Unit::AddGarbageAura(Aura* aur)

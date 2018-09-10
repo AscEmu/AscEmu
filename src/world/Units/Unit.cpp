@@ -1112,6 +1112,33 @@ void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
     }
 }
 
+bool Unit::canDualWield() const
+{
+    return m_canDualWield;
+}
+
+void Unit::setDualWield(bool enable)
+{
+    m_canDualWield = enable;
+
+    if (!isPlayer())
+        return;
+
+    auto plrUnit = static_cast<Player*>(this);
+    if (enable)
+    {
+        if (!plrUnit->_HasSkillLine(SKILL_DUAL_WIELD))
+            plrUnit->_AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
+    }
+    else
+    {
+        if (plrUnit->canDualWield2H())
+            plrUnit->setDualWield2H(false);
+
+        plrUnit->_RemoveSkillLine(SKILL_DUAL_WIELD);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
 
@@ -1409,4 +1436,21 @@ void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
 
     if (itr != m_singleTargetAura.end())
         m_singleTargetAura.erase(itr);
+}
+
+void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
+{
+    // TODO: getModCastSpeed() is no longer used here, is it required?
+    // it was used in the old function but isnt it about spell casttime only.. - Appled
+    m_attackTimer[type] = Util::getMSTime() + time;
+}
+
+uint32_t Unit::getAttackTimer(WeaponDamageType type) const
+{
+    return m_attackTimer[type];
+}
+
+bool Unit::isAttackReady(WeaponDamageType type) const
+{
+    return Util::getMSTime() >= m_attackTimer[type];
 }

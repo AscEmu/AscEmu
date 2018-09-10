@@ -118,13 +118,13 @@ bool Strangulate(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     Unit* unitTarget = pAura->GetTarget();
 
     // Interrupt target's current casted spell (either channeled or generic spell with cast time)
-    if (unitTarget->isCastingNonMeleeSpell(true, false, true))
+    if (unitTarget->isCastingSpell(false, true))
     {
         if (unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
             unitTarget->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
-        // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+        // No need to check cast time for generic spells, checked already in Object::isCastingSpell()
         else if (unitTarget->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
         {
             unitTarget->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
@@ -243,8 +243,8 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);
         unitTarget->addUnitStateFlag(UNIT_STATE_ATTACKING);
         unitTarget->smsg_AttackStart(unitTarget);
-        unitTarget->setAttackTimer(time, false);
-        unitTarget->setAttackTimer(time, true);
+        unitTarget->setAttackTimer(MELEE, time);
+        unitTarget->setAttackTimer(OFFHAND, time);
         unitTarget->GetAIInterface()->taunt(s->u_caster, true);
     }
 

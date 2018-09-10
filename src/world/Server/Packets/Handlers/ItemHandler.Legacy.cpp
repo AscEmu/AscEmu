@@ -481,7 +481,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
     }
 
     // handle equipping of 2h when we have two items equipped! :) special case.
-    if ((Slot == EQUIPMENT_SLOT_MAINHAND || Slot == EQUIPMENT_SLOT_OFFHAND) && !_player->DualWield2H)
+    if ((Slot == EQUIPMENT_SLOT_MAINHAND || Slot == EQUIPMENT_SLOT_OFFHAND) && !_player->canDualWield2H())
     {
         Item* mainhandweapon = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
         if (mainhandweapon != nullptr && mainhandweapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
@@ -659,7 +659,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     if (srcSlot == destSlot)
         return;
 
-    if (_player->DualWield2H && (slotType == EQUIPMENT_SLOT_OFFHAND || slotType == EQUIPMENT_SLOT_MAINHAND))
+    if (_player->canDualWield2H() && (slotType == EQUIPMENT_SLOT_OFFHAND || slotType == EQUIPMENT_SLOT_MAINHAND))
         hasDualWield2H = true;
 
     // Need to check if the item even goes into that slot
@@ -681,7 +681,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
             Item* mainHand = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
             Item* offHand = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
 
-            if (mainHand != nullptr && offHand != nullptr && !_player->DualWield2H)
+            if (mainHand != nullptr && offHand != nullptr && !_player->canDualWield2H())
             {
                 // No DualWield2H like Titan's grip. Unequip offhand.
                 SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(offHand->getItemProperties());

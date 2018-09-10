@@ -887,7 +887,7 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
                 if (pAI != NULL)
                 {
                     pAI->GetAIInterface()->StopMovement(2500);
-                    pAI->setAttackTimer(2500, false);
+                    pAI->setAttackTimer(MELEE, 2500);
                 }
 
                 getCreature()->Despawn(3000, 0);
@@ -1342,7 +1342,7 @@ class SupremusAI : public CreatureAIScript
 
             uint32 val = Util::getRandomUInt(1000);
 
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 if (m_MoltenFlame)
                 {
@@ -1360,13 +1360,13 @@ class SupremusAI : public CreatureAIScript
 
                 if (val <= 500)
                 {
-                    getCreature()->setAttackTimer(6000, false);//6000
+                    getCreature()->setAttackTimer(MELEE, 6000);//6000
                     m_MoltenFlame = true;
                 }
 
                 else
                 {
-                    getCreature()->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(MELEE, 4000);//2000
                     m_HurtfulStrike = true;
                 }
             }
@@ -1385,7 +1385,7 @@ class SupremusAI : public CreatureAIScript
 
             uint32 val = Util::getRandomUInt(1000);
 
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 if (m_MoltenPunch)
                 {
@@ -1405,13 +1405,13 @@ class SupremusAI : public CreatureAIScript
 
                 if (val <= 500)
                 {
-                    getCreature()->setAttackTimer(6000, false);//6000
+                    getCreature()->setAttackTimer(MELEE, 6000);//6000
                     m_MoltenPunch = true;
                 }
 
                 else
                 {
-                    getCreature()->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(MELEE, 4000);//2000
                     m_VolcanicGazer = true;
                 }
             }
@@ -2936,7 +2936,7 @@ class AkamaAI : public CreatureAIScript
             }
 
             getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            getCreature()->SetDualWield(true);
+            getCreature()->setDualWield(true);
 
             mUdaloAI = mOlumAI = NULL;
             mIllidanAI = NULL;
@@ -3689,7 +3689,7 @@ class MaievAI : public CreatureAIScript
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11496, "Ah, it is finished. You are beaten.");
 
                         mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06);
-                        if (mIllidanAI->getCreature()->isCastingNonMeleeSpell())
+                        if (mIllidanAI->getCreature()->isCastingSpell())
                             mIllidanAI->getCreature()->interruptSpell();
                         break;
                     case 2:
@@ -3909,7 +3909,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
             getCreature()->setBaseAttackTime(RANGED, 1800);
             getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
-            getCreature()->SetDualWield(true);
+            getCreature()->setDualWield(true);
 
             mFoA1 = mFoA2 = NULL;
             mAllow = true;

@@ -509,6 +509,13 @@ public:
     void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell);
     void removeDiminishingReturnTimer(SpellInfo* spell);
 
+    bool canDualWield() const;
+    void setDualWield(bool enable);
+
+private:
+    bool m_canDualWield;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
     Aura* getAuraWithId(uint32_t spell_id);
@@ -544,9 +551,16 @@ public:
     void setAuraSlotLevel(uint32_t slot, bool positive);
 #endif
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    void setAttackTimer(WeaponDamageType type, int32_t time);
+    uint32_t getAttackTimer(WeaponDamageType type) const;
+    bool isAttackReady(WeaponDamageType type) const;
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
+    uint32_t m_attackTimer[3];
     // MIT End
     // AGPL Start
 public:
@@ -578,12 +592,6 @@ public:
     virtual bool IsSanctuaryFlagged() = 0;
     virtual void SetSanctuaryFlag() = 0;
     virtual void RemoveSanctuaryFlag() = 0;
-
-
-    void setAttackTimer(int32 time, bool offhand);
-    bool isAttackReady(bool offhand);
-
-    void SetDualWield(bool enabled);
 
     bool  canReachWithAttack(Unit* pVictim);
 
@@ -1335,10 +1343,6 @@ protected:
     uint16 m_H_regenTimer;
     uint16 m_P_regenTimer;
     uint32 m_interruptedRegenTime;  //PowerInterruptedegenTimer.
-
-    uint32 m_attackTimer;           // timer for attack
-    uint32 m_attackTimer_1;
-    bool m_dualWield;
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Spell*> m_GarbageSpells;

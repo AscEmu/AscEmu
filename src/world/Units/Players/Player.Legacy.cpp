@@ -185,7 +185,6 @@ Player::Player(uint32 guid)
     m_bgQueueInstanceId(0),
     m_bgIsRbg(false),
     m_bgIsRbgWon(false),
-    m_AutoShotAttackTimer(0),
     DetectedRange(0),
     PctIgnoreRegenModifier(0.0f),
     m_retainedrage(0),
@@ -419,7 +418,7 @@ Player::Player(uint32 guid)
     flying_aura = 0;
     resend_speed = false;
     login_flags = LOGIN_NO_FLAG;
-    DualWield2H = false;
+    m_canDualWield2H = false;
     iInstanceType = 0;
     m_RaidDifficulty = 0;
     m_XpGain = true;
@@ -1125,19 +1124,11 @@ void Player::Update(unsigned long time_passed)
     if (m_attacking)
     {
         // Check attack timer.
-        if (mstime >= m_attackTimer)
+        if (isAttackReady(MELEE))
             _EventAttack(false);
 
-        if (m_dualWield && mstime >= m_attackTimer_1)
+        if (hasOffHandWeapon() && isAttackReady(OFFHAND))
             _EventAttack(true);
-    }
-
-    if (m_AutoShotAttackTimer > 0)
-    {
-        if (m_AutoShotAttackTimer > time_passed)
-            m_AutoShotAttackTimer -= time_passed;
-        else
-            m_AutoShotAttackTimer = 0;
     }
 
     // Breathing
@@ -1296,13 +1287,12 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 
 void Player::_EventAttack(bool offhand)
 {
-    if (isCastingNonMeleeSpell())
+    if (isCastingSpell())
     {
-        // Non-channeled
         if (getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr) // this is a channeled spell - ignore the attack event
             return;
         interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
-        setAttackTimer(500, offhand);
+        setAttackTimer(offhand == true ? OFFHAND : MELEE, 500);
         return;
     }
 
@@ -1336,7 +1326,7 @@ void Player::_EventAttack(bool offhand)
             m_session->OutPacket(SMSG_ATTACKSWING_NOTINRANGE);
             m_AttackMsgTimer = 1;
         }
-        setAttackTimer(300, offhand);
+        setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
     }
     else if (!isInFront(pVictim))
     {
@@ -1346,14 +1336,17 @@ void Player::_EventAttack(bool offhand)
             m_session->OutPacket(SMSG_ATTACKSWING_BADFACING);
             m_AttackMsgTimer = 2;
         }
-        setAttackTimer(300, offhand);
+        setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
     }
     else
     {
         m_AttackMsgTimer = 0;
 
         // Set to weapon time.
-        setAttackTimer(0, offhand);
+        if (offhand)
+            setAttackTimer(OFFHAND, getBaseAttackTime(OFFHAND));
+        else
+            setAttackTimer(MELEE, getBaseAttackTime(MELEE));
 
         //pvp timeout reset
         if (pVictim->isPlayer())
@@ -1888,65 +1881,6 @@ void Player::smsg_InitialSpells()
     GetSession()->OutPacket(0x041d, 4, &v);
 #endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
-}
-
-void Player::ActivateSpec(uint8 spec)
-{
-#ifndef FT_DUAL_SPEC
-    return;
-#else
-    if (spec >= MAX_SPEC_COUNT || m_talentActiveSpec >= MAX_SPEC_COUNT)
-        return;
-
-    uint8 OldSpec = m_talentActiveSpec;
-    m_talentActiveSpec = spec;
-
-#if VERSION_STRING > TBC
-    // remove old glyphs
-    for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
-    {
-        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[OldSpec].glyphs[i]);
-        if (glyph_properties == nullptr)
-            continue;
-
-        RemoveAura(glyph_properties->SpellID);
-    }
-#endif
-
-    // remove old talents
-    for (std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
-    {
-        auto talent_info = sTalentStore.LookupEntry(itr->first);
-        if (talent_info == nullptr)
-            continue;
-
-        removeSpell(talent_info->RankID[itr->second], true, false, 0);
-    }
-
-#if VERSION_STRING > TBC
-    // add new glyphs
-    for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
-    {
-        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
-        if (glyph_properties == nullptr)
-            continue;
-
-        CastSpell(this, glyph_properties->SpellID, true);
-    }
-#endif
-
-    //add talents from new spec
-    for (std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
-    {
-        auto talent_info = sTalentStore.LookupEntry(itr->first);
-        if (talent_info == nullptr)
-            continue;
-
-        addSpell(talent_info->RankID[itr->second]);
-    }
-
-    setInitialTalentPoints();
-#endif
 }
 
 void PlayerSpec::AddTalent(uint32 talentid, uint8 rankid)
@@ -6895,7 +6829,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
             return;
 
         UnPossess();
-        if (isCastingNonMeleeSpell())
+        if (isCastingSpell())
             interruptSpell();       // cancel the spell
         m_CurrentCharm = 0;
 
@@ -7110,7 +7044,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     }
 
     // Check if we aren't casting another spell already
-    if (isCastingNonMeleeSpell(true, false, true, autoshot))
+    if (isCastingSpell(false, true, autoshot))
         return -1;
 
     // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
@@ -7295,6 +7229,15 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
     if (!IsInWorld())
         return true;
 
+    // Dual Wield skills
+    // these must be set false here instead because this function is called from many different places
+    // and player can end up being without dual wield but still able to dual wield
+    const auto spellInfo = sSpellCustomizations.GetSpellInfo(SpellID);
+    if (spellInfo->hasEffect(SPELL_EFFECT_DUAL_WIELD))
+        setDualWield(false);
+    if (spellInfo->hasEffect(SPELL_EFFECT_DUAL_WIELD_2H))
+        setDualWield2H(false);
+
     if (SupercededSpell)
     {
         WorldPacket data(SMSG_SUPERCEDED_SPELL, 8);
@@ -7376,48 +7319,18 @@ void Player::Reset_Spells()
     mDeletedSpells.clear();
 }
 
-void Player::ResetDualWield2H()
-{
-    DualWield2H = false;
-
-    Item* mainhand = GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
-    Item* offhand = GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
-    if (offhand && (offhand->getItemProperties()->InventoryType == INVTYPE_2HWEAPON ||
-        (mainhand && mainhand->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)))
-    {
-        // we need to de-equip this
-        offhand = GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
-        SlotResult result = GetItemInterface()->FindFreeInventorySlot(offhand->getItemProperties());
-        if (!result.Result)
-        {
-            // no free slots for this item, try to send it by mail
-            offhand->RemoveFromWorld();
-            offhand->setOwner(nullptr);
-            offhand->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "Your offhand item", "", 0, 0, offhand->getGuidLow(), MAIL_STATIONERY_GM);
-            offhand->DeleteMe();
-            offhand = nullptr;
-        }
-        else if (!GetItemInterface()->SafeAddItem(offhand, result.ContainerSlot, result.Slot) && !GetItemInterface()->AddItemToFreeSlot(offhand))      // shouldn't happen either.
-        {
-            offhand->DeleteMe();
-            offhand = nullptr;
-        }
-    }
-}
-
 void Player::Reset_AllTalents()
 {
     uint8 originalspec = m_talentActiveSpec;
     resetTalents();
 
     if (originalspec == SPEC_PRIMARY)
-        ActivateSpec(SPEC_SECONDARY);
+        activateTalentSpec(SPEC_SECONDARY);
     else
-        ActivateSpec(SPEC_PRIMARY);
+        activateTalentSpec(SPEC_PRIMARY);
 
     resetTalents();
-    ActivateSpec(originalspec);
+    activateTalentSpec(originalspec);
 }
 
 void Player::CalcResistance(uint8_t type)
@@ -8810,7 +8723,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
             smsg_AttackStop(pUnit);
         }
 
-        if (isCastingNonMeleeSpell())
+        if (isCastingSpell())
         {
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
@@ -13655,7 +13568,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     for (const auto& itr : getInRangePlayersSet())
     {
         Unit* attacker = static_cast<Unit*>(itr);
-        if (attacker && attacker->isCastingNonMeleeSpell())
+        if (attacker && attacker->isCastingSpell())
         {
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
