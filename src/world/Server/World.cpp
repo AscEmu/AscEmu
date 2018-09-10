@@ -21,8 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
-#include "Map/MapCell.h"
+//#include "Config/Config.h"
+//#include "Map/MapCell.h"
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
@@ -190,12 +190,12 @@ uint32_t World::getWorldStartTime()
 
 uint32_t World::getWorldUptime()
 {
-    return (uint32_t)UNIXTIME - mStartTime;
+    return static_cast<uint32_t>(UNIXTIME) - mStartTime;
 }
 
 std::string World::getWorldUptimeString()
 {
-    time_t pTime = (time_t)UNIXTIME - mStartTime;
+    time_t pTime = static_cast<time_t>(UNIXTIME) - mStartTime;
     tm* tmv = gmtime(&pTime);
 
     std::stringstream uptimeStream;
@@ -211,8 +211,8 @@ void World::updateAllTrafficTotals()
     unsigned long sent = 0;
     unsigned long recieved = 0;
 
-    double TrafficIn = 0;
-    double TrafficOut = 0;
+    double trafficIn = 0;
+    double trafficOut = 0;
 
     mLastTrafficQuery = UNIXTIME;
     mLastTotalTrafficInKB = mTotalTrafficInKB;
@@ -228,12 +228,12 @@ void World::updateAllTrafficTotals()
 
         socket->PollTraffic(&sent, &recieved);
 
-        TrafficIn += (static_cast<double>(recieved));
-        TrafficOut += (static_cast<double>(sent));
+        trafficIn += (static_cast<double>(recieved));
+        trafficOut += (static_cast<double>(sent));
     }
 
-    mTotalTrafficInKB += (TrafficIn / 1024.0);
-    mTotalTrafficOutKB += (TrafficOut / 1024.0);
+    mTotalTrafficInKB += (trafficIn / 1024.0);
+    mTotalTrafficOutKB += (trafficOut / 1024.0);
 
     objmgr._playerslock.ReleaseReadLock();
 }
@@ -274,8 +274,8 @@ void World::addSession(WorldSession* worldSession)
 
     mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
 
-    if ((uint32_t)mActiveSessionMapStore.size() > getPeakSessionCount())
-        setNewPeakSessionCount((uint32_t)mActiveSessionMapStore.size());
+    if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
+        setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
 
 #ifndef AE_TBC
     worldSession->SendAccountDataTimes(GLOBAL_CACHE_MASK);
@@ -299,7 +299,7 @@ WorldSession* World::getSessionByAccountId(uint32_t accountId)
     return worldSession;
 }
 
-WorldSession* World::getSessionByAccountName(std::string accountName)
+WorldSession* World::getSessionByAccountName(const std::string& accountName)
 {
     mSessionLock.AcquireReadLock();
 
@@ -307,7 +307,7 @@ WorldSession* World::getSessionByAccountName(std::string accountName)
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (accountName.compare(activeSessions->second->GetAccountName()) == 0)
+        if (accountName == activeSessions->second->GetAccountName())
         {
             worldSession = activeSessions->second;
             break;
@@ -369,7 +369,7 @@ void World::deleteSessions(std::list<WorldSession*>& slist)
     }
 }
 
-void World::disconnectSessionByAccountName(std::string accountName, WorldSession* worldSession)
+void World::disconnectSessionByAccountName(const std::string& accountName, WorldSession* worldSession)
 {
     bool isUserFound = false;
 
@@ -378,7 +378,7 @@ void World::disconnectSessionByAccountName(std::string accountName, WorldSession
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
         WorldSession* session = activeSessions->second;
-        if (accountName.compare(session->GetAccountName()) == 0)
+        if (accountName == session->GetAccountName())
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
@@ -390,11 +390,11 @@ void World::disconnectSessionByAccountName(std::string accountName, WorldSession
 
     mSessionLock.ReleaseReadLock();
 
-    if (isUserFound == false)
+    if (!isUserFound)
         worldSession->SystemMessage("There is nobody online with account [%s]", accountName.c_str());
 }
 
-void World::disconnectSessionByIp(std::string ipString, WorldSession* worldSession)
+void World::disconnectSessionByIp(const std::string& ipString, WorldSession* worldSession)
 {
     bool isUserFound = false;
 
@@ -406,8 +406,8 @@ void World::disconnectSessionByIp(std::string ipString, WorldSession* worldSessi
         if (!session->GetSocket())
             continue;
 
-        std::string ip2 = session->GetSocket()->GetRemoteIP().c_str();
-        if (ipString.compare(ip2) == 0)
+        std::string ip2 = session->GetSocket()->GetRemoteIP();
+        if (ipString == ip2)
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
@@ -419,11 +419,11 @@ void World::disconnectSessionByIp(std::string ipString, WorldSession* worldSessi
 
     mSessionLock.ReleaseReadLock();
 
-    if (isUserFound == false)
+    if (!isUserFound)
         worldSession->SystemMessage("There is nobody online with ip [%s]", ipString.c_str());
 }
 
-void World::disconnectSessionByPlayerName(std::string playerName, WorldSession* worldSession)
+void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSession* worldSession)
 {
     bool isUserFound = false;
 
@@ -435,7 +435,7 @@ void World::disconnectSessionByPlayerName(std::string playerName, WorldSession* 
         if (!session->GetPlayer())
             continue;
 
-        if (playerName.compare(session->GetPlayer()->getName().c_str()) == 0)
+        if (playerName == session->GetPlayer()->getName())
         {
             isUserFound = true;
             worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
@@ -447,7 +447,7 @@ void World::disconnectSessionByPlayerName(std::string playerName, WorldSession* 
 
     mSessionLock.ReleaseReadLock();
 
-    if (isUserFound == false)
+    if (!isUserFound)
         worldSession->SystemMessage("There is no body online with the name [%s]", playerName.c_str());
 }
 
@@ -547,22 +547,22 @@ void World::updateQueuedSessions(uint32_t diff)
     }
 }
 
-uint32_t World::addQueuedSocket(WorldSocket* Socket)
+uint32_t World::addQueuedSocket(WorldSocket* socket)
 {
     queueMutex.Acquire();
-    mQueuedSessions.push_back(Socket);
+    mQueuedSessions.push_back(socket);
     queueMutex.Release();
 
     return getQueuedSessions();
 }
 
-void World::removeQueuedSocket(WorldSocket* Socket)
+void World::removeQueuedSocket(WorldSocket* socket)
 {
     queueMutex.Acquire();
 
     for (QueuedWorldSocketList::iterator iter = mQueuedSessions.begin(); iter != mQueuedSessions.end(); ++iter)
     {
-        if ((*iter) == Socket)
+        if ((*iter) == socket)
         {
             mQueuedSessions.erase(iter);
             queueMutex.Release();
@@ -575,9 +575,9 @@ void World::removeQueuedSocket(WorldSocket* Socket)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Send Messages
-void World::sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf /*nullptr*/)
+void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    uint32_t textLength = (uint32_t)message.size() + 1;
+    uint32_t textLength = static_cast<uint32_t>(message.size()) + 1;
 
     WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
     data << uint8_t(CHAT_MSG_SYSTEM);
@@ -602,9 +602,9 @@ void World::sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf
     mSessionLock.ReleaseReadLock();
 }
 
-void World::sendMessageToAll(std::string message, WorldSession* sendToSelf /*nullptr*/)
+void World::sendMessageToAll(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    uint32_t textLength = (uint32_t)message.size() + 1;
+    uint32_t textLength = static_cast<uint32_t>(message.size()) + 1;
 
     WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
     data << uint8_t(CHAT_MSG_SYSTEM);
@@ -624,7 +624,7 @@ void World::sendMessageToAll(std::string message, WorldSession* sendToSelf /*nul
     }
 }
 
-void World::sendAreaTriggerMessage(std::string message, WorldSession* sendToSelf /*nullptr*/)
+void World::sendAreaTriggerMessage(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
     WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 256);
     data << uint32_t(0);
@@ -671,7 +671,7 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (activeSessions->second->GetPlayer()->GetInstanceID() == (int32)instanceId)
+            if (activeSessions->second->GetPlayer()->GetInstanceID() == static_cast<int32>(instanceId))
                 activeSessions->second->SendPacket(worldPacket);
         }
     }
@@ -708,7 +708,7 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld())
         {
             const char* text = activeSessions->second->LocalizedBroadCast(broadcastId);
-            uint32_t textLen = (uint32_t)strlen(text) + 1;
+            uint32_t textLen = static_cast<uint32_t>(strlen(text)) + 1;
 
             WorldPacket data(SMSG_MESSAGECHAT, textLen + 40);
             data << uint8_t(CHAT_MSG_SYSTEM);
@@ -1006,18 +1006,18 @@ void World::logEntitySize()
     LogNotice("World : GameObject size: %u bytes", sizeof(GameObject));
 }
 
-void World::Update(unsigned long time_passed)
+void World::Update(unsigned long timePassed)
 {
-    sLfgMgr.Update((uint32_t)time_passed);
-    mEventableObjectHolder->Update((uint32_t)time_passed);
+    sLfgMgr.Update(static_cast<uint32_t>(timePassed));
+    mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
     sAuctionMgr.Update();
-    updateQueuedSessions((uint32_t)time_passed);
+    updateQueuedSessions(static_cast<uint32_t>(timePassed));
 #ifdef SESSION_CAP
     if (GetSessionCount() >= SESSION_CAP)
         TerminateProcess(GetCurrentProcess(), 0);
 #endif
 
-    sGuildMgr.update((uint32)time_passed);
+    sGuildMgr.update(static_cast<uint32>(timePassed));
 }
 
 void World::saveAllPlayersToDb()
