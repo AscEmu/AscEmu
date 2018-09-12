@@ -804,9 +804,9 @@ UnitSpeedType Unit::getFastestSpeedType() const
     auto fastest_speed_type = TYPE_WALK;
     for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
     {
-        const auto speed_type = static_cast<UnitSpeedType>(i + 1);
+        const auto speedType = static_cast<UnitSpeedType>(i + 1);
 
-        switch(speed_type)
+        switch(speedType)
         {
         case TYPE_TURN_RATE:
         case TYPE_PITCH_RATE:
@@ -815,10 +815,10 @@ UnitSpeedType Unit::getFastestSpeedType() const
             break;
         }
 
-        const auto speed = getSpeedForType(speed_type);
+        const auto speed = getSpeedForType(speedType);
 
         fastest_speed = speed > fastest_speed ? speed : fastest_speed;
-        fastest_speed_type = speed == fastest_speed ? speed_type : fastest_speed_type;
+        fastest_speed_type = speed == fastest_speed ? speedType : fastest_speed_type;
     }
     return fastest_speed_type;
 }
@@ -903,7 +903,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
     if (player_mover == nullptr)
     {
         if (isPlayer())
-            player_mover = static_cast<Player*>(this);
+            player_mover = dynamic_cast<Player*>(this);
     }
 
     if (player_mover != nullptr)
@@ -933,11 +933,11 @@ void Unit::resetCurrentSpeed()
     m_currentPitchRate = m_basicPitchRate;
 }
 
-void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
+void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
 {
     WorldPacket data(12);
 
-    switch (speed_type)
+    switch (speedType)
     {
         case TYPE_WALK:
             data.Initialize(SMSG_SPLINE_SET_WALK_SPEED);
@@ -971,7 +971,7 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
     }
 
     data << GetNewGUID();
-    data << float(getSpeedForType(speed_type));
+    data << float(getSpeedForType(speedType));
 
     SendMessageToSet(&data, false);
 }
