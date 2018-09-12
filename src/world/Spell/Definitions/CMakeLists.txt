@@ -19,7 +19,6 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/SpellCastTargetFlags.h
     ${PATH_PREFIX}/SpellClickSpell.h
     ${PATH_PREFIX}/SpellCoefficientsFlags.h
-    ${PATH_PREFIX}/SpellCustomFlags.h
     ${PATH_PREFIX}/SpellDamageType.h
     ${PATH_PREFIX}/SpellDidHitResult.h
     ${PATH_PREFIX}/SpellEffectTarget.h
