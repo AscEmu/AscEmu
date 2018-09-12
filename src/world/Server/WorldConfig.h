@@ -74,8 +74,8 @@ class SERVER_DECL WorldConfig
             std::string user;
             std::string password;
             std::string dbName;
-            int port;
-            int connections;
+            int port{};
+            int connections{};
         } worldDb;
 
         struct CharacterDatabaseSettings
@@ -84,68 +84,68 @@ class SERVER_DECL WorldConfig
             std::string user;
             std::string password;
             std::string dbName;
-            int port;
-            int connections;
+            int port{};
+            int connections{};
         } charDb;
 
         // world.conf - Listen Config
         struct ListenSettings
         {
             std::string listenHost;
-            int listenPort;
+            int listenPort{};
         } listen;
 
         // world.conf - Log Settings
         struct LogSettings
         {
-            int worldFileLogLevel;
-            int worldDebugFlags;
-            bool enableWorldPacketLog;
-            bool disableCrashdump;
+            int worldFileLogLevel{};
+            int worldDebugFlags{};
+            bool enableWorldPacketLog{};
+            bool disableCrashdump{};
             std::string extendedLogsDir;
-            bool enableCheaterLog;
-            bool enableGmCommandLog;
-            bool enablePlayerLog;
-            bool enableTimeStamp;
-            bool enableSqlBanLog;
+            bool enableCheaterLog{};
+            bool enableGmCommandLog{};
+            bool enablePlayerLog{};
+            bool enableTimeStamp{};
+            bool enableSqlBanLog{};
         } log;
 
         // world.conf - LogonServer Settings
         struct LogonServerSettings
         {
             std::string address;
-            int port;
+            int port{};
             std::string name;
-            int realmCount;
-            bool disablePings;
+            int realmCount{};
+            bool disablePings{};
             std::string remotePassword;
         } logonServer;
 
         // world.conf - Server Settings
         struct ServerSettings
         {
-            uint32_t playerLimit;
+            uint32_t playerLimit{};
             std::string messageOfTheDay;
-            bool sendStatsOnJoin;
-            bool enableBreathing;
-            bool seperateChatChannels;
-            uint32_t compressionThreshold;
-            uint32_t queueUpdateInterval;
-            uint32_t secondsBeforeKickAFKPlayers;
-            uint32_t secondsBeforeTimeOut;
-            uint32_t realmType;
-            bool enableAdjustPriority;
-            bool requireAllSignatures;
-            bool showGmInWhoList;
-            uint32_t mapUnloadTime;
-            uint8_t mapCellNumber;
-            bool enableLimitedNames;
-            bool useAccountData;
-            bool requireGmForCommands;
-            bool enableLfgJoinForNonLfg;
-            int gmtTimeZone;
-            bool disableFearMovement;
-            bool saveExtendedCharData;
+            bool sendStatsOnJoin{};
+            bool enableBreathing{};
+            bool seperateChatChannels{};
+            uint32_t compressionThreshold{};
+            uint32_t queueUpdateInterval{};
+            uint32_t secondsBeforeKickAFKPlayers{};
+            uint32_t secondsBeforeTimeOut{};
+            uint32_t realmType{};
+            bool enableAdjustPriority{};
+            bool requireAllSignatures{};
+            bool showGmInWhoList{};
+            uint32_t mapUnloadTime{};
+            uint8_t mapCellNumber{};
+            bool enableLimitedNames{};
+            bool useAccountData{};
+            bool requireGmForCommands{};
+            bool enableLfgJoinForNonLfg{};
+            int gmtTimeZone{};
+            bool disableFearMovement{};
+            bool saveExtendedCharData{};
             std::string dataDir;
         } server;
 
@@ -191,14 +191,14 @@ class SERVER_DECL WorldConfig
         struct AnnounceSettings
         {
             std::string announceTag;
-            bool enableGmAdminTag;
-            bool showNameInAnnounce;
-            bool showNameInWAnnounce;
-            bool showAnnounceInConsoleOutput;
-            int tagColor;
-            int tagGmColor;
-            int nameColor;
-            int msgColor;
+            bool enableGmAdminTag{};
+            bool showNameInAnnounce{};
+            bool showNameInWAnnounce{};
+            bool showAnnounceInConsoleOutput{};
+            int tagColor{};
+            int tagGmColor{};
+            int nameColor{};
+            int msgColor{};
         } announce;
 
         std::string getColorStringForNumber(int color);
@@ -206,11 +206,11 @@ class SERVER_DECL WorldConfig
         // world.conf - GameMaster Settings
         struct GameMasterSettings
         {
-            bool isStartOnGmIslandEnabled;
-            bool disableAchievements;
-            bool listOnlyActiveGms;
-            bool hidePermissions;
-            bool worldAnnounceOnKickPlayer;
+            bool isStartOnGmIslandEnabled{};
+            bool disableAchievements{};
+            bool listOnlyActiveGms{};
+            bool hidePermissions{};
+            bool worldAnnounceOnKickPlayer{};
             std::string gmClientChannelName;
         } gm;
 
@@ -262,8 +262,8 @@ class SERVER_DECL WorldConfig
         // world.conf - Startup Options
         struct StartupSettings
         {
-            bool enableMultithreadedLoading;
-            bool enableSpellIdDump;
+            bool enableMultithreadedLoading{};
+            bool enableSpellIdDump{};
             std::string additionalTableLoads;
         } startup;
 
@@ -290,17 +290,17 @@ class SERVER_DECL WorldConfig
         {
             std::string bannedChannels;
             std::string minimumTalkLevel;
-            uint32_t linesBeforeProtection;
-            uint32_t secondsBeforeProtectionReset;
-            bool enableSendFloodProtectionMessage;
+            uint32_t linesBeforeProtection{};
+            uint32_t secondsBeforeProtectionReset{};
+            bool enableSendFloodProtectionMessage{};
         } chat;
 
         // world.conf - Remote Console Setup
         struct RemoteConsoleSettings
         {
-            bool isEnabled;
+            bool isEnabled{};
             std::string host;
-            int port;
+            int port{};
         } remoteConsole;
 
         // world.conf - Movement Setup
