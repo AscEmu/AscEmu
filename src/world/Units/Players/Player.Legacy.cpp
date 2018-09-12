@@ -193,7 +193,6 @@ Player::Player(uint32 guid)
     SoulStoneReceiver(0),
     misdirectionTarget(0),
     bReincarnation(false),
-    ignoreShapeShiftChecks(false),
     m_GM_SelectedGO(0),
     m_ShapeShifted(0),
     m_MountSpellId(0),

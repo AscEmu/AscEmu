@@ -1489,7 +1489,6 @@ public:
         void SetMisdirectionTarget(uint64 PlayerGUID) { misdirectionTarget = PlayerGUID; }
 
         bool bReincarnation;
-        bool ignoreShapeShiftChecks;
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;

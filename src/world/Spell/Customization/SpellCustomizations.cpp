@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/SpellCustomFlags.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 
@@ -385,7 +384,6 @@ void SpellCustomizations::StartSpellCustomization()
 
             // Set custom values (spell based)
             SetMissingCIsFlags(spellentry);
-            SetCustomFlags(spellentry);
             SetOnShapeshiftChange(spellentry);
         }
     }
@@ -583,15 +581,6 @@ void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
     if (spell_entry->isRequireCooldownSpell())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
-}
-
-void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
-{
-    // Currently only set for 781 Disengage
-    if (spell_entry->getId() == 781)
-    {
-        spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
-    }
 }
 
 void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
