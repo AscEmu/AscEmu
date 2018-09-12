@@ -631,7 +631,6 @@ public:
     bool getCustom_is_melee_spell() const { return custom_is_melee_spell; }
     bool getCustom_is_ranged_spell() const { return custom_is_ranged_spell; }
     uint32_t getCustom_SchoolMask() const { return custom_SchoolMask; }
-    uint32_t getCustomFlags() const { return CustomFlags; }
 
     uint32_t getEffectCustomFlag(uint8_t idx) const
     {
@@ -869,9 +868,6 @@ public:
 
     // set in HackFixes.cpp for all spells, based on school
     uint32_t custom_SchoolMask;
-
-    // SpellCustomizations::SetCustomFlags - 1 spell (781)
-    uint32_t CustomFlags;
 
     // from MySQL table spell_effects_override - 374 spells
     uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];

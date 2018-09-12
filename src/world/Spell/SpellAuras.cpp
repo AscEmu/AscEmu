@@ -329,7 +329,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 272 Unknown
     &Aura::SpellAuraNULL,                                                   // 273 Some sort of dummy aura? (http://thottbot.com/s54844 + http://thottbot.com/s26659)
     &Aura::SpellAuraConsumeNoAmmo,                                          // 274 Consumes no ammo
-    &Aura::SpellAuraIgnoreShapeshift,                                       // 275 Ignore unit states
+    &Aura::SpellAuraNULL,                                                   // 275 Ignore shapeshift or stance
     &Aura::SpellAuraNULL,                                                   // 276 Mod Damage % Mechanic
     &Aura::SpellAuraNULL,                                                   // 277 SPELL_AURA_REDIRECT_THREAT or SPELL_AURA_MOD_MAX_AFFECTED_TARGETS ?
     &Aura::SpellAuraModDisarm,                                              // 278 SPELL_AURA_MOD_DISARM_RANGED
@@ -9148,21 +9148,6 @@ void Aura::SpellAuraConsumeNoAmmo(bool apply)
             other = true;
 
         p_target->m_requiresNoAmmo = other;
-    }
-}
-
-void Aura::SpellAuraIgnoreShapeshift(bool apply)
-{
-    if (!m_target->isPlayer())
-        return;
-
-    if (apply)
-    {
-        static_cast< Player* >(m_target)->ignoreShapeShiftChecks = true;
-    }
-    else
-    {
-        static_cast< Player* >(m_target)->ignoreShapeShiftChecks = false;
     }
 }
 

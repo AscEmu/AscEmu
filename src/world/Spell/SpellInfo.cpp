@@ -164,7 +164,6 @@ SpellInfo::SpellInfo()
     custom_is_melee_spell = false;
     custom_is_ranged_spell = false;
     custom_SchoolMask = 0;
-    CustomFlags = 0;
 
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
