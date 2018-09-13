@@ -20,24 +20,25 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "adt.h"
+#include <cstring>
 
-// Helper
-int holetab_h[4] = {0x1111, 0x2222, 0x4444, 0x8888};
-int holetab_v[4] = {0x000F, 0x00F0, 0x0F00, 0xF000};
+ // Helper
+int holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };
+int holetab_v[4] = { 0x000F, 0x00F0, 0x0F00, 0xF000 };
 
-u_map_fcc MHDRMagic = { {'R','D','H','M'} };
-u_map_fcc MCINMagic = { {'N','I','C','M'} };
-u_map_fcc MH2OMagic = { {'O','2','H','M'} };
-u_map_fcc MCNKMagic = { {'K','N','C','M'} };
-u_map_fcc MCVTMagic = { {'T','V','C','M'} };
-u_map_fcc MCLQMagic = { {'Q','L','C','M'} };
+u_map_fcc MHDRMagic = { { 'R', 'D', 'H', 'M' } };
+u_map_fcc MCINMagic = { { 'N', 'I', 'C', 'M' } };
+u_map_fcc MH2OMagic = { { 'O', '2', 'H', 'M' } };
+u_map_fcc MCNKMagic = { { 'K', 'N', 'C', 'M' } };
+u_map_fcc MCVTMagic = { { 'T', 'V', 'C', 'M' } };
+u_map_fcc MCLQMagic = { { 'Q', 'L', 'C', 'M' } };
 
 bool isHole(int holes, int i, int j)
 {
     int testi = i / 2;
     int testj = j / 4;
-    if(testi > 3) testi = 3;
-    if(testj > 3) testj = 3;
+    if (testi > 3) testi = 3;
+    if (testj > 3) testj = 3;
     return (holes & holetab_h[testi] & holetab_v[testj]) != 0;
 }
 
