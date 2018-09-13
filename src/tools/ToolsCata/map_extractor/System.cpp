@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
+
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <stdio.h>
@@ -30,7 +32,6 @@
 #else
 #include <sys/stat.h>
 #include <unistd.h>
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #include "StormLib.h"
@@ -41,7 +42,7 @@
 #include <fcntl.h>
 
 #if defined( __GNUC__ )
-    #define _open   open
+    #define _open open
     #define _close close
     #ifndef O_BINARY
         #define O_BINARY 0
@@ -68,8 +69,10 @@ typedef struct
 map_id *map_ids;
 uint16 *areas;
 uint16 *LiqType;
-char output_path[128] = ".";
-char input_path[128] = ".";
+
+#define MAX_PATH_LENGTH 128
+char output_path[MAX_PATH_LENGTH] = ".";
+char input_path[MAX_PATH_LENGTH] = ".";
 uint32 maxAreaId = 0;
 
 // **************************************************
@@ -97,7 +100,7 @@ float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - l
 
 uint32 CONF_TargetBuild = 15595;              // 4.3.4.15595
 
-                                              // List MPQ for extract maps from
+// List MPQ for extract from / Version 15595
 char const* CONF_mpq_list[] =
 {
     "world.MPQ",
@@ -140,12 +143,6 @@ TCHAR const* LocalesT[LOCALES_COUNT] =
 
 void CreateDir(std::string const& path)
 {
-    if (chdir(path.c_str()) == 0)
-    {
-        chdir("../");
-        return;
-    }
-
 #ifdef _WIN32
     _mkdir(path.c_str());
 #else
