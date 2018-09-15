@@ -26,7 +26,8 @@ namespace AscEmu { namespace Packets
             ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 12),
             auctionId(auctionId),
             command(command),
-            error(error)
+            error(error),
+            misc(0)
         {
         }
 

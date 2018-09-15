@@ -56,21 +56,21 @@ public:
     uint32_t getSpellId() const;
     void setSpellId(uint32_t id);
 
-    float_t getRadius() const;
-    void setRadius(float_t radius);
+    float getRadius() const;
+    void setRadius(float radius);
 
     // Position set for classic and TBC
-    float_t getDynamicX() const;
-    void setDynamicX(float_t x);
+    float getDynamicX() const;
+    void setDynamicX(float x);
 
-    float_t getDynamicY() const;
-    void setDynamicY(float_t y);
+    float getDynamicY() const;
+    void setDynamicY(float y);
 
-    float_t getDynamicZ() const;
-    void setDynamicZ(float_t z);
+    float getDynamicZ() const;
+    void setDynamicZ(float z);
 
-    float_t getDynamicO() const;
-    void setDynamicO(float_t o);
+    float getDynamicO() const;
+    void setDynamicO(float o);
 
     //\todo really not used on Classic?
 #if VERSION_STRING > Classic

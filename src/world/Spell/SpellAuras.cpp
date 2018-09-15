@@ -2621,7 +2621,7 @@ void Aura::SpellAuraModStun(bool apply)
             m_target->GetAIInterface()->resetNextTarget();
 
         // remove the current spell
-        if (m_target->isCastingNonMeleeSpell())
+        if (m_target->isCastingSpell())
         {
             m_target->interruptSpell();
         }
@@ -2961,7 +2961,7 @@ void Aura::SpellAuraModStealth(bool apply)
                         if (!_unit->isAlive())
                             continue;
 
-                        if (_unit->isCastingNonMeleeSpell())
+                        if (_unit->isCastingSpell())
                         {
                             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
                             {
@@ -3596,13 +3596,13 @@ void Aura::SpellAuraModSilence(bool apply)
         m_target->addUnitFlags(UNIT_FLAG_SILENCED);
 
         // Interrupt target's current casted spell (either channeled or generic spell with cast time)
-        if (m_target->isCastingNonMeleeSpell(true, false, true))
+        if (m_target->isCastingSpell(false, true))
         {
             if (m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
             {
                 m_target->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
             }
-            // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+            // No need to check cast time for generic spells, checked already in Object::isCastingSpell()
             else if (m_target->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
             {
                 m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
@@ -4274,7 +4274,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (shapeshift_form->id != FORM_STEALTH)
             m_target->RemoveAllAurasByRequiredShapeShift(ascemu::World::Spell::Helpers::decimalToMask(mod->m_miscValue));
 
-        if (m_target->isCastingNonMeleeSpell())
+        if (m_target->isCastingSpell())
         {
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
@@ -5094,7 +5094,7 @@ void Aura::SpellAuraTransform(bool apply)
                 m_target->setDisplayId(displayId);
 
                 // remove the current spell
-                if (m_target->isCastingNonMeleeSpell())
+                if (m_target->isCastingSpell())
                 {
                     m_target->interruptSpell();
                 }
@@ -5223,7 +5223,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
         m_target->addUnitStateFlag(UNIT_STATE_PACIFY | UNIT_STATE_SILENCE);
         m_target->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
 
-        if (m_target->isCastingNonMeleeSpell())
+        if (m_target->isCastingSpell())
         {
             m_target->interruptSpell();
         }
@@ -5402,7 +5402,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
                     if (u->isPlayer())
                     {
                         Player* plr = static_cast<Player*>(itr);
-                        if (plr->isCastingNonMeleeSpell())
+                        if (plr->isCastingSpell())
                             plr->interruptSpell(); // cancel current casting spell
 
                         plr->GetSession()->SendPacket(&data);

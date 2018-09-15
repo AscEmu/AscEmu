@@ -1194,7 +1194,7 @@ class ShadeofAranAI : public CreatureAIScript
                 sendDBChatMessage(2041);     // I'm not finished yet! No, I have a few more tricks up me sleeve.
                 summoned = true;
             }
-            else if (getCreature()->GetManaPct() <= 20 && !getCreature()->isCastingNonMeleeSpell())
+            else if (getCreature()->GetManaPct() <= 20 && !getCreature()->isCastingSpell())
             {
                 if (!m_time_pyroblast)
                 {
@@ -1202,11 +1202,11 @@ class ShadeofAranAI : public CreatureAIScript
                     sendDBChatMessage(2040);     // Surely you would not deny an old man a replenishing drink? No, no I thought not.
                     m_time_pyroblast = 10;
                     getCreature()->CastSpell(getCreature(), info_mass_polymorph, true);
-                    getCreature()->setAttackTimer(2000, false);
+                    getCreature()->setAttackTimer(MELEE, 2000);
                 }
                 else if (getCreature()->getStandState() != STANDSTATE_SIT)
                 {
-                    getCreature()->setAttackTimer(3000, false);
+                    getCreature()->setAttackTimer(MELEE, 3000);
                     getCreature()->CastSpell(getCreature(), info_conjure, false);
                     getCreature()->setStandState(STANDSTATE_SIT);
                     getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
@@ -1217,7 +1217,7 @@ class ShadeofAranAI : public CreatureAIScript
             else
                 SpellTrigger();
         }
-        else if (!getCreature()->isCastingNonMeleeSpell())
+        else if (!getCreature()->isCastingSpell())
         {
             m_time_pyroblast--;
             if (!m_time_pyroblast)
@@ -1433,7 +1433,7 @@ class WaterEleAI : public CreatureAIScript
         WaterBolt--;
         if (!WaterBolt)
         {
-            getCreature()->setAttackTimer(2000, false);
+            getCreature()->setAttackTimer(MELEE, 2000);
             Unit* target = getCreature()->GetAIInterface()->getNextTarget();
             if (target)
                 getCreature()->CastSpell(target, WATERBOLT, true);
@@ -1585,7 +1585,7 @@ class IllhoofAI : public CreatureAIScript
     void AIUpdate() override
     {
         uint32 t = (uint32)time(NULL);
-        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             if (t > ImpTimer)
             {
@@ -1752,7 +1752,7 @@ class FiendishImpAI : public CreatureAIScript
         /*if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 1225.0f)
         {
             setAIAgent(AGENT_SPELL);
-            if (!getCreature()->isCastingNonMeleeSpell() && Util::getRandomUInt(10) > 2)
+            if (!getCreature()->isCastingSpell() && Util::getRandomUInt(10) > 2)
             {
                 getCreature()->setAttackTimer(spells[0].attackstoptimer, false);
 
@@ -2037,7 +2037,7 @@ class MalchezaarAI : public CreatureAIScript
                 m_phase = 1;
                 break;
         }
-        /*if (t > spells[1].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingNonMeleeSpell())
+        /*if (t > spells[1].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingSpell())
         {
             Enfeebler();
             spells[1].casttime = t + spells[1].cooldown;
@@ -2049,7 +2049,7 @@ class MalchezaarAI : public CreatureAIScript
             m_spawn_infernal = 0;
             m_infernal = false;
         }
-        else if (t > spells[5].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingNonMeleeSpell())
+        else if (t > spells[5].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingSpell())
         {
             spells[5].casttime = 0;
             getCreature()->CastSpell(getCreature(), spells[5].info, spells[5].instant);
@@ -2616,7 +2616,7 @@ class NightbaneAI : public CreatureAIScript
         m_FlyPhaseTimer--;
         if (!m_FlyPhaseTimer)
         {
-            if (getCreature()->isCastingNonMeleeSpell())
+            if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
             getCreature()->GetAIInterface()->m_canMove = true;
@@ -2678,7 +2678,7 @@ class NightbaneAI : public CreatureAIScript
             || (m_phase == 2 && getCreature()->GetHealthPct() <= 50)
             || (m_phase == 4 && getCreature()->GetHealthPct() <= 25))
         {
-            if (getCreature()->isCastingNonMeleeSpell())
+            if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);

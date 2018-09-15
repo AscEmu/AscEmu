@@ -20,14 +20,14 @@ struct MovementInfo
     *  0       looking forward
     *  +1.55   looking up
     */
-    float_t pitch;
+    float pitch;
     uint32_t fall_time;
-    float_t redirect_velocity;
-    float_t redirect_sin;
-    float_t redirect_cos;
+    float redirect_velocity;
+    float redirect_sin;
+    float redirect_cos;
     // ReSharper disable once CppInconsistentNaming
-    float_t redirect_2d_speed;
-    float_t spline_elevation;
+    float redirect_2d_speed;
+    float spline_elevation;
     uint32_t unk_13;
 
     MovementInfo() :

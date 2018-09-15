@@ -117,11 +117,11 @@ void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
     setBaseAttackTime(slot, newAttackTime);
 }
 
-float_t Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
-void Unit::setBoundingRadius(float_t radius) { write(unitData()->bounding_radius, radius); }
+float Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
+void Unit::setBoundingRadius(float radius) { write(unitData()->bounding_radius, radius); }
 
-float_t Unit::getCombatReach() const { return unitData()->combat_reach; }
-void Unit::setCombatReach(float_t radius) { write(unitData()->combat_reach, radius); }
+float Unit::getCombatReach() const { return unitData()->combat_reach; }
+void Unit::setCombatReach(float radius) { write(unitData()->combat_reach, radius); }
 
 uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
 void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
@@ -132,17 +132,17 @@ void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id
 uint32_t Unit::getMountDisplayId() const { return unitData()->mount_display_id; }
 void Unit::setMountDisplayId(uint32_t id) { write(unitData()->mount_display_id, id); }
 
-float_t Unit::getMinDamage() const { return unitData()->minimum_damage; }
-void Unit::setMinDamage(float_t damage) { write(unitData()->minimum_damage, damage); }
+float Unit::getMinDamage() const { return unitData()->minimum_damage; }
+void Unit::setMinDamage(float damage) { write(unitData()->minimum_damage, damage); }
 
-float_t Unit::getMaxDamage() const { return unitData()->maximum_damage; }
-void Unit::setMaxDamage(float_t damage) { write(unitData()->maximum_damage, damage); }
+float Unit::getMaxDamage() const { return unitData()->maximum_damage; }
+void Unit::setMaxDamage(float damage) { write(unitData()->maximum_damage, damage); }
 
-float_t Unit::getMinOffhandDamage() const { return unitData()->minimum_offhand_damage; }
-void Unit::setMinOffhandDamage(float_t damage) { write(unitData()->minimum_offhand_damage, damage); }
+float Unit::getMinOffhandDamage() const { return unitData()->minimum_offhand_damage; }
+void Unit::setMinOffhandDamage(float damage) { write(unitData()->minimum_offhand_damage, damage); }
 
-float_t Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_damage; }
-void Unit::setMaxOffhandDamage(float_t damage) { write(unitData()->maximum_offhand_damage, damage); }
+float Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_damage; }
+void Unit::setMaxOffhandDamage(float damage) { write(unitData()->maximum_offhand_damage, damage); }
 
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
@@ -163,11 +163,11 @@ void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_fl
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 
-float_t Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
-void Unit::setModCastSpeed(float_t modifier) { write(unitData()->mod_cast_speed, modifier); }
-void Unit::modModCastSpeed(float_t modifier)
+float Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
+void Unit::setModCastSpeed(float modifier) { write(unitData()->mod_cast_speed, modifier); }
+void Unit::modModCastSpeed(float modifier)
 {
-    float_t currentMod = getModCastSpeed();
+    float currentMod = getModCastSpeed();
     currentMod += modifier;
     setModCastSpeed(currentMod);
 }
@@ -220,17 +220,17 @@ void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_b
 uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
 void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
 
-float_t Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
-void Unit::setMinRangedDamage(float_t damage) { write(unitData()->minimum_ranged_damage, damage); }
+float Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
+void Unit::setMinRangedDamage(float damage) { write(unitData()->minimum_ranged_damage, damage); }
 
-float_t Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
-void Unit::setMaxRangedDamage(float_t damage) { write(unitData()->maximum_ranged_ddamage, damage); }
+float Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
+void Unit::setMaxRangedDamage(float damage) { write(unitData()->maximum_ranged_ddamage, damage); }
 
-float_t Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
-void Unit::setPowerCostMultiplier(uint16_t school, float_t multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
-void Unit::modPowerCostMultiplier(uint16_t school, float_t multiplier)
+float Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
+void Unit::setPowerCostMultiplier(uint16_t school, float multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
+void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
 {
-    float_t currentMultiplier = getPowerCostMultiplier(school);
+    float currentMultiplier = getPowerCostMultiplier(school);
     currentMultiplier += multiplier;
     setPowerCostMultiplier(school, currentMultiplier);
 }
@@ -1112,6 +1112,33 @@ void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
     }
 }
 
+bool Unit::canDualWield() const
+{
+    return m_canDualWield;
+}
+
+void Unit::setDualWield(bool enable)
+{
+    m_canDualWield = enable;
+
+    if (!isPlayer())
+        return;
+
+    auto plrUnit = static_cast<Player*>(this);
+    if (enable)
+    {
+        if (!plrUnit->_HasSkillLine(SKILL_DUAL_WIELD))
+            plrUnit->_AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
+    }
+    else
+    {
+        if (plrUnit->canDualWield2H())
+            plrUnit->setDualWield2H(false);
+
+        plrUnit->_RemoveSkillLine(SKILL_DUAL_WIELD);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
 
@@ -1156,7 +1183,7 @@ bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
     return false;
 }
 
-bool Unit::hasAuraState(AuraState state, SpellInfo* spellInfo, Unit* caster) const
+bool Unit::hasAuraState(AuraState state, SpellInfo const* spellInfo, Unit const* caster) const
 {
     if (caster != nullptr && spellInfo != nullptr && caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
     {
@@ -1409,4 +1436,21 @@ void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
 
     if (itr != m_singleTargetAura.end())
         m_singleTargetAura.erase(itr);
+}
+
+void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
+{
+    // TODO: getModCastSpeed() is no longer used here, is it required?
+    // it was used in the old function but isnt it about spell casttime only.. - Appled
+    m_attackTimer[type] = Util::getMSTime() + time;
+}
+
+uint32_t Unit::getAttackTimer(WeaponDamageType type) const
+{
+    return m_attackTimer[type];
+}
+
+bool Unit::isAttackReady(WeaponDamageType type) const
+{
+    return Util::getMSTime() >= m_attackTimer[type];
 }

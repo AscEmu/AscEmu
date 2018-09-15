@@ -320,11 +320,11 @@ public:
     void setBaseAttackTime(uint8_t slot, uint32_t time);
     void modBaseAttackTime(uint8_t slot, int32_t modTime);
 
-    float_t getBoundingRadius() const;
-    void setBoundingRadius(float_t radius);
+    float getBoundingRadius() const;
+    void setBoundingRadius(float radius);
 
-    float_t getCombatReach() const;
-    void setCombatReach(float_t radius);
+    float getCombatReach() const;
+    void setCombatReach(float radius);
 
     uint32_t getDisplayId() const;
     void setDisplayId(uint32_t id);
@@ -335,17 +335,17 @@ public:
     uint32_t getMountDisplayId() const;
     void setMountDisplayId(uint32_t id);
 
-    float_t getMinDamage() const;
-    void setMinDamage(float_t damage);
+    float getMinDamage() const;
+    void setMinDamage(float damage);
 
-    float_t getMaxDamage() const;
-    void setMaxDamage(float_t damage);
+    float getMaxDamage() const;
+    void setMaxDamage(float damage);
 
-    float_t getMinOffhandDamage() const;
-    void setMinOffhandDamage(float_t damage);
+    float getMinOffhandDamage() const;
+    void setMinOffhandDamage(float damage);
 
-    float_t getMaxOffhandDamage() const;
-    void setMaxOffhandDamage(float_t damage);
+    float getMaxOffhandDamage() const;
+    void setMaxOffhandDamage(float damage);
 
     //bytes_1 begin
     uint8_t getStandState() const;
@@ -366,9 +366,9 @@ public:
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
 
-    float_t getModCastSpeed() const;
-    void setModCastSpeed(float_t modifier);
-    void modModCastSpeed(float_t modifier);
+    float getModCastSpeed() const;
+    void setModCastSpeed(float modifier);
+    void modModCastSpeed(float modifier);
 
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
@@ -419,15 +419,15 @@ public:
     uint32_t getAttackPower() const;
     void setAttackPower(uint32_t value);
 
-    float_t getMinRangedDamage() const;
-    void setMinRangedDamage(float_t damage);
+    float getMinRangedDamage() const;
+    void setMinRangedDamage(float damage);
 
-    float_t getMaxRangedDamage() const;
-    void setMaxRangedDamage(float_t damage);
+    float getMaxRangedDamage() const;
+    void setMaxRangedDamage(float damage);
 
-    float_t getPowerCostMultiplier(uint16_t school) const;
-    void setPowerCostMultiplier(uint16_t school, float_t multiplier);
-    void modPowerCostMultiplier(uint16_t school, float_t multiplier);
+    float getPowerCostMultiplier(uint16_t school) const;
+    void setPowerCostMultiplier(uint16_t school, float multiplier);
+    void modPowerCostMultiplier(uint16_t school, float multiplier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -509,6 +509,13 @@ public:
     void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell);
     void removeDiminishingReturnTimer(SpellInfo* spell);
 
+    bool canDualWield() const;
+    void setDualWield(bool enable);
+
+private:
+    bool m_canDualWield;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
     Aura* getAuraWithId(uint32_t spell_id);
@@ -520,7 +527,7 @@ public:
     bool hasAurasWithId(uint32_t auraId);
     bool hasAurasWithId(uint32_t* auraId);
     bool hasAuraWithAuraEffect(AuraEffect type) const;
-    bool hasAuraState(AuraState state, SpellInfo *spellInfo = nullptr, Unit* caster = nullptr) const;
+    bool hasAuraState(AuraState state, SpellInfo const* spellInfo = nullptr, Unit const* caster = nullptr) const;
 
     void addAuraStateAndAuras(AuraState state);
     void removeAuraStateAndAuras(AuraState state);
@@ -544,9 +551,16 @@ public:
     void setAuraSlotLevel(uint32_t slot, bool positive);
 #endif
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    void setAttackTimer(WeaponDamageType type, int32_t time);
+    uint32_t getAttackTimer(WeaponDamageType type) const;
+    bool isAttackReady(WeaponDamageType type) const;
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
+    uint32_t m_attackTimer[3];
     // MIT End
     // AGPL Start
 public:
@@ -578,12 +592,6 @@ public:
     virtual bool IsSanctuaryFlagged() = 0;
     virtual void SetSanctuaryFlag() = 0;
     virtual void RemoveSanctuaryFlag() = 0;
-
-
-    void setAttackTimer(int32 time, bool offhand);
-    bool isAttackReady(bool offhand);
-
-    void SetDualWield(bool enabled);
 
     bool  canReachWithAttack(Unit* pVictim);
 
@@ -1335,10 +1343,6 @@ protected:
     uint16 m_H_regenTimer;
     uint16 m_P_regenTimer;
     uint32 m_interruptedRegenTime;  //PowerInterruptedegenTimer.
-
-    uint32 m_attackTimer;           // timer for attack
-    uint32 m_attackTimer_1;
-    bool m_dualWield;
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Spell*> m_GarbageSpells;

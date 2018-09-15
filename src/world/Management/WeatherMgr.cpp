@@ -155,13 +155,13 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
 }
 
 //MIT
-void WeatherMgr::sendWeatherForZone(uint32_t type, float_t density, uint32_t zoneId)
+void WeatherMgr::sendWeatherForZone(uint32_t type, float density, uint32_t zoneId)
 {
     const uint32_t sound = GetSound(type, density);
     sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get(), zoneId);
 }
 
-void WeatherMgr::sendWeatherForPlayer(uint32_t type, float_t density, Player* player)
+void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* player)
 {
     if (player != nullptr)
     {

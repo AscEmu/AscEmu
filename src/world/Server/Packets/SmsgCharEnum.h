@@ -132,11 +132,11 @@ namespace AscEmu { namespace Packets
                     buffer.WriteByteSeq(guid[4]);
                     buffer << uint32_t(data.mapId);
                     buffer.WriteByteSeq(guildGuid[5]);
-                    buffer << float_t(data.z);
+                    buffer << float(data.z);
                     buffer.WriteByteSeq(guildGuid[6]);
                     buffer << uint32_t(data.pet_data.level);
                     buffer.WriteByteSeq(guid[3]);
-                    buffer << float_t(data.y);
+                    buffer << float(data.y);
 
                     switch (data.loginFlags)
                     {
@@ -162,7 +162,7 @@ namespace AscEmu { namespace Packets
                     buffer.WriteByteSeq(guid[2]);
                     buffer.WriteByteSeq(guildGuid[1]);
                     buffer.WriteByteSeq(guildGuid[7]);
-                    buffer << float_t(data.x);
+                    buffer << float(data.x);
                     buffer << uint8_t(skin);
                     buffer << uint8_t(data.race);
                     buffer << uint8_t(data.level);

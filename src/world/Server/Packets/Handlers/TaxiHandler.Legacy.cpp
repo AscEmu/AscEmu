@@ -243,7 +243,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     //! Check if the player is casting, obviously they should not be able to cast on a taxi
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        _player->interruptSpellWithSpellType(CurrentSpellType(i), false);
+        _player->interruptSpellWithSpellType(CurrentSpellType(i));
     }
 
     _player->taxi_model_id = modelid;

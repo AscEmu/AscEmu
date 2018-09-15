@@ -92,12 +92,12 @@ bool Object::write(const uint16_t& member, uint16_t val)
     return true;
 }
 
-bool Object::write(const float_t& member, float_t val)
+bool Object::write(const float& member, float val)
 {
     if (member == val)
         return false;
 
-    const auto nonconst_member = const_cast<float_t*>(&member);
+    const auto nonconst_member = const_cast<float*>(&member);
     *nonconst_member = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
@@ -292,8 +292,8 @@ void Object::setObjectType(uint32_t objectTypeId)
 uint32_t Object::getEntry() const { return objectData()->entry; }
 void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
 
-float_t Object::getScale() const { return objectData()->scale_x; }
-void Object::setScale(float_t scaleX) { write(objectData()->scale_x, scaleX); }
+float Object::getScale() const { return objectData()->scale_x; }
+void Object::setScale(float scaleX) { write(objectData()->scale_x, scaleX); }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -680,56 +680,56 @@ void Object::setCurrentSpell(Spell* curSpell)
     if (curSpell == m_currentSpell[spellType])
         return;
 
-    // Interrupt spell with same spell type, but ignore delayed spells
-    interruptSpellWithSpellType(spellType, false);
+    // Interrupt spell with same spell type
+    interruptSpellWithSpellType(spellType);
 
     // Handle spelltype specific cases
     switch (spellType)
     {
-    case CURRENT_GENERIC_SPELL:
-    {
-        // Generic spells break channeled spells, but ignore delayed spells
-        interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL, false);
-
-        if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
+        case CURRENT_GENERIC_SPELL:
         {
-            // Generic spells do not break Auto Shot
-            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+            // Generic spells break channeled spells
+            interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+
+            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
+            {
+                // Generic spells do not break Auto Shot
+                if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+                    interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            }
+            break;
+        }
+        case CURRENT_CHANNELED_SPELL:
+        {
+            // Channeled spells break generic spells
+            interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+            // as well break channeled spells too
+            interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+
+            // Also break autorepeat spells, unless it's Auto Shot
+            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+            {
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            }
+            break;
         }
-        break;
-    }
-    case CURRENT_CHANNELED_SPELL:
-    {
-        // Channeled spells break generic spells, but ignore delayed spells
-        interruptSpellWithSpellType(CURRENT_GENERIC_SPELL, false);
-        // as well break delayed channeled spells too
-        interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+        case CURRENT_AUTOREPEAT_SPELL:
+        {
+            // Other autorepeats than Auto Shot break non-delayed generic and channeled spells
+            if (curSpell->GetSpellInfo()->getId() != 75)
+            {
+                interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+                interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+            }
 
-        // Also break autorepeat spells, unless it's Auto Shot
-        if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
-        {
-            interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            if (isPlayer())
+            {
+                static_cast<Player*>(this)->m_FirstCastAutoRepeat = true;
+            }
+            break;
         }
-        break;
-    }
-    case CURRENT_AUTOREPEAT_SPELL:
-    {
-        // Other autorepeats than Auto Shot break non-delayed generic and channeled spells
-        if (curSpell->GetSpellInfo()->getId() != 75)
-        {
-            interruptSpellWithSpellType(CURRENT_GENERIC_SPELL, false);
-            interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL, false);
-        }
-
-        if (isPlayer())
-        {
-            static_cast<Player*>(this)->m_FirstCastAutoRepeat = true;
-        }
-        break;
-    }
-    default:
-        break;
+        default:
+            break;
     }
 
     // If spell is not yet cancelled, force it
@@ -742,7 +742,7 @@ void Object::setCurrentSpell(Spell* curSpell)
     m_currentSpell[spellType] = curSpell;
 }
 
-void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell, bool checkDelayed)
+void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell)
 {
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
@@ -752,12 +752,12 @@ void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell, bool checkDe
         if (m_currentSpell[i] != nullptr &&
             (spellId == 0 || m_currentSpell[i]->GetSpellInfo()->getId() == spellId))
         {
-            interruptSpellWithSpellType(CurrentSpellType(i), checkDelayed);
+            interruptSpellWithSpellType(CurrentSpellType(i));
         }
     }
 }
 
-void Object::interruptSpellWithSpellType(CurrentSpellType spellType, bool /*checkDelayed*/)
+void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
 {
     Spell* curSpell = m_currentSpell[spellType];
     if (curSpell != nullptr)
@@ -767,7 +767,8 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType, bool /*chec
             if (isPlayer() && IsInWorld())
             {
                 // Send server-side cancel message
-                static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+                auto spellId = curSpell->GetSpellInfo()->getId();
+                static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
             }
         }
 
@@ -777,7 +778,7 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType, bool /*chec
     }
 }
 
-bool Object::isCastingNonMeleeSpell(bool /*checkDelayed = true*/, bool skipChanneled /*= false*/, bool skipAutorepeat /*= false*/, bool isAutoshoot /*= false*/) const
+bool Object::isCastingSpell(bool skipChanneled /*= false*/, bool skipAutorepeat /*= false*/, bool isAutoshoot /*= false*/) const
 {
     // Check from generic spells, ignore finished spells
     if (m_currentSpell[CURRENT_GENERIC_SPELL] != nullptr && m_currentSpell[CURRENT_GENERIC_SPELL]->getState() != SPELL_STATE_FINISHED && m_currentSpell[CURRENT_GENERIC_SPELL]->getCastTimeLeft() > 0 &&

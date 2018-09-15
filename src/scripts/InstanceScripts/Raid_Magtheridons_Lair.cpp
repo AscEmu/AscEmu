@@ -571,9 +571,9 @@ class ManticronCubeGO : public GameObjectAIScript
             {
                 Magtheridon->CastSpell(Magtheridon, sSpellCustomizations.GetSpellInfo(BANISH), true);
                 Magtheridon->GetAIInterface()->StopMovement(3000);
-                Magtheridon->setAttackTimer(3000, false);
+                Magtheridon->setAttackTimer(MELEE, 3000);
 
-                if (Magtheridon->isCastingNonMeleeSpell())
+                if (Magtheridon->isCastingSpell())
                     Magtheridon->interruptSpell();
 
                 // We add channeling player aura that does not allow that go to be used again in 1.3 min
@@ -879,10 +879,10 @@ class MagtheridonAI : public CreatureAIScript
             {
                 getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_EMOTE, LANG_UNIVERSAL, " begins to cast Blast Nova!");
             }
-            if (timer_blastNova > 33 && !getCreature()->isCastingNonMeleeSpell() && !aura)
+            if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
             {
                 getCreature()->GetAIInterface()->StopMovement(3000);
-                getCreature()->setAttackTimer(3000, false);
+                getCreature()->setAttackTimer(MELEE, 3000);
 
                 getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BLAST_NOVA), false);
 
@@ -891,7 +891,7 @@ class MagtheridonAI : public CreatureAIScript
                 return;
             }
 
-            if (timer_enrage > 667 && !getCreature()->isCastingNonMeleeSpell() && !aura)
+            if (timer_enrage > 667 && !getCreature()->isCastingSpell() && !aura)
             {
                 getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(ENRAGE), true);
 
@@ -931,10 +931,10 @@ class MagtheridonAI : public CreatureAIScript
             {
                 getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, " begins to cast Blast Nova!");
             }
-            if (timer_blastNova > 33 && !getCreature()->isCastingNonMeleeSpell() && !aura)
+            if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
             {
                 getCreature()->GetAIInterface()->StopMovement(3000);
-                getCreature()->setAttackTimer(3000, false);
+                getCreature()->setAttackTimer(MELEE, 3000);
 
                 getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BLAST_NOVA), false);
 
@@ -943,7 +943,7 @@ class MagtheridonAI : public CreatureAIScript
                 return;
             }
 
-            if (timer_caveIn && (timer_caveIn != 1 || (!getCreature()->isCastingNonMeleeSpell() && timer_caveIn == 1 && !aura)))
+            if (timer_caveIn && (timer_caveIn != 1 || (!getCreature()->isCastingSpell() && timer_caveIn == 1 && !aura)))
             {
                 timer_caveIn++;
                 if (timer_caveIn == 2)
@@ -951,7 +951,7 @@ class MagtheridonAI : public CreatureAIScript
                     sendDBChatMessage(8752);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
 
                     getCreature()->GetAIInterface()->StopMovement(2000);
-                    getCreature()->setAttackTimer(2000, false);
+                    getCreature()->setAttackTimer(MELEE, 2000);
 
                     getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CAMERA_SHAKE), true);
                     return;
@@ -987,7 +987,7 @@ class MagtheridonAI : public CreatureAIScript
                 }
             }
 
-            if (timer_enrage > 667 && !getCreature()->isCastingNonMeleeSpell() && !aura)
+            if (timer_enrage > 667 && !getCreature()->isCastingSpell() && !aura)
             {
                 getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(ENRAGE), true);
 

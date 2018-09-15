@@ -2079,7 +2079,7 @@ class SapphironAI : public CreatureAIScript
             uint32 t = (uint32)time(NULL);
             if (t > PhaseTimer)
             {
-                if (getCreature()->isCastingNonMeleeSpell())
+                if (getCreature()->isCastingSpell())
                     getCreature()->interruptSpell();
 
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -2121,7 +2121,7 @@ class SapphironAI : public CreatureAIScript
 
         if (FlightActions < 5)
         {
-            if (!getCreature()->isCastingNonMeleeSpell())
+            if (!getCreature()->isCastingSpell())
             {
                 if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
                 {

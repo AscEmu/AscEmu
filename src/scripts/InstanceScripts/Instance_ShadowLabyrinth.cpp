@@ -258,7 +258,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (_isTimerFinished(aoeFearTimerId) && !getCreature()->isCastingNonMeleeSpell())
+            if (_isTimerFinished(aoeFearTimerId) && !getCreature()->isCastingSpell())
             {
                 getCreature()->CastSpell(getCreature(), aoeFear->mSpellInfo, true);
 
@@ -311,7 +311,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (_isTimerFinished(chaosTimerId) && !getCreature()->isCastingNonMeleeSpell())
+            if (_isTimerFinished(chaosTimerId) && !getCreature()->isCastingSpell())
             {
                 getCreature()->CastSpell(getCreature(), chaos->mSpellInfo, true);
                 _resetTimer(chaosTimerId, chaos->mCooldown);

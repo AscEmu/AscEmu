@@ -1258,7 +1258,7 @@ class LuaUnit
     {
         const uint32_t zoneId = CHECK_ULONG(L, 1);
         const uint32_t type = CHECK_ULONG(L, 2);
-        const float_t density = CHECK_FLOAT(L, 3);
+        const float density = CHECK_FLOAT(L, 3);
         if (!zoneId)
             return 0;
 
@@ -1273,7 +1273,7 @@ class LuaUnit
 
         const auto player = dynamic_cast<Player*>(ptr);
         const uint32_t type = CHECK_ULONG(L, 1);
-        const float_t density = CHECK_FLOAT(L, 2);
+        const float density = CHECK_FLOAT(L, 2);
 
         sWeatherMgr.sendWeatherForPlayer(type, density, player);
 
@@ -2785,7 +2785,7 @@ class LuaUnit
         bool offhand = CHECK_BOOL(L, 2);
         if (!timer)
             return 0;
-        ptr->setAttackTimer(timer, offhand);
+        ptr->setAttackTimer(offhand == true ? OFFHAND : MELEE, timer);
         return 0;
     }
 
@@ -4235,7 +4235,7 @@ class LuaUnit
     static int ResetAllTalents(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-            static_cast<Player*>(ptr)->Reset_Talents();
+            static_cast<Player*>(ptr)->Reset_AllTalents();
         return 0;
     }
 
@@ -5410,31 +5410,16 @@ class LuaUnit
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        plr->Reset_Talents();
+        plr->resetTalents();
         return 0;
     }
 
     static int SetTalentPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-#if VERSION_STRING != Cata
-#ifdef FT_DUAL_SPEC
-        uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
-        uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
-        static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
-        if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
-            static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-#else
-        uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
-        uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
-        static_cast<Player*>(ptr)->getActiveSpec().SetTP(points);
-        static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-#endif
-
-        static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
-#else
-            if (L != nullptr && ptr != nullptr) { return 0; }
-#endif
+        const auto forBothSpecs = CHECK_BOOL(L, 1);
+        const auto points = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        static_cast<Player*>(ptr)->setTalentPoints(points, forBothSpecs);
         return 0;
     }
 

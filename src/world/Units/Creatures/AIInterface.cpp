@@ -1687,7 +1687,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
         }
     }
 
-    if (cansee && getNextTarget() && getNextTarget()->isAlive() && !isAiState(AI_STATE_EVADE) && !m_Unit->isCastingNonMeleeSpell())
+    if (cansee && getNextTarget() && getNextTarget()->isAlive() && !isAiState(AI_STATE_EVADE) && !m_Unit->isCastingSpell())
     {
         if (agent == AGENT_NULL || (isAiScriptType(AI_SCRIPT_PET) && !m_nextSpell))     // allow pets autocast
         {
@@ -1764,7 +1764,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 if (distance <= combatReach[1] + minWalkDistance) // Target is in Range -> Attack
                 {
                     //FIX ME: offhand shit
-                    if (m_Unit->isAttackReady(false) && !m_fleeTimer)
+                    if (m_Unit->isAttackReady(MELEE) && !m_fleeTimer)
                     {
                         setCreatureState(ATTACKING);
                         bool infront = m_Unit->isInFront(getNextTarget());
@@ -1780,7 +1780,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                         }
                         if (infront)
                         {
-                            m_Unit->setAttackTimer(0, false);
+                            m_Unit->setAttackTimer(MELEE, m_Unit->getBaseAttackTime(MELEE));
 #ifdef ENABLE_CREATURE_DAZE
                             //we require to know if strike was successful. If there was no dmg then target cannot be dazed by it
                             Unit* t_unit = getNextTarget();
@@ -1843,7 +1843,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 if (distance >= combatReach[0] && distance <= combatReach[1]) // Target is in Range -> Attack
                 {
                     //FIX ME: offhand shit
-                    if (m_Unit->isAttackReady(false) && !m_fleeTimer)
+                    if (m_Unit->isAttackReady(MELEE) && !m_fleeTimer)
                     {
                         setCreatureState(ATTACKING);
                         bool infront = m_Unit->isInFront(getNextTarget());
@@ -1860,7 +1860,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
 
                         if (infront)
                         {
-                            m_Unit->setAttackTimer(0, false);
+                            m_Unit->setAttackTimer(MELEE, m_Unit->getBaseAttackTime(MELEE));
                             SpellInfo* info = sSpellCustomizations.GetSpellInfo(SPELL_RANGED_GENERAL);
                             if (info)
                             {
@@ -2655,7 +2655,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
     bool isMining = false;
     if (target->isPlayer())
     {
-        if (target->isCastingNonMeleeSpell())
+        if (target->isCastingSpell())
         {
             // If nearby miners weren't spotted already we'll give them a little surprise.
             Spell* sp = target->getCurrentSpell(CURRENT_GENERIC_SPELL);
@@ -2973,7 +2973,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
 
     //move after finishing our current spell
-    if (m_Unit->isCastingNonMeleeSpell())
+    if (m_Unit->isCastingSpell())
         return;
 
     uint32 timediff = 0;

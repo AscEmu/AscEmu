@@ -136,7 +136,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             {
                 sendDBChatMessage(SAY_MALADAAR_07);
 
-                getCreature()->setAttackTimer(3500, false);
+                getCreature()->setAttackTimer(MELEE, 3500);
                 getCreature()->GetAIInterface()->StopMovement(2000);
 
                 getCreature()->CastSpell(getCreature(), summonAvatar->mSpellInfo, summonAvatar->mIsTriggered);

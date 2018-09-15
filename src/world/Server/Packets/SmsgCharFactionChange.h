@@ -24,7 +24,9 @@ namespace AscEmu { namespace Packets
 
         SmsgCharFactionChange(uint8_t result) :
             ManagedPacket(SMSG_CHAR_FACTION_CHANGE, 1),
-            result(result)
+            result(result),
+            guid(0),
+            charCreate(CharCreate())
         {
         }
 

@@ -482,8 +482,16 @@ public:
     uint32_t getXp() const;
     void setXp(uint32_t xp);
 
-    uint32_t getNextLevelXp();
+    uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
+
+    uint32_t getFreeTalentPoints() const;
+#if VERSION_STRING != Cata
+    void setFreeTalentPoints(uint32_t points);
+#endif
+
+    uint32_t getFreePrimaryProfessionPoints() const;
+    void setFreePrimaryProfessionPoints(uint32_t points);
 
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
@@ -527,18 +535,44 @@ public:
 
     void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Spells
-    bool isSpellFitByClassAndRace(uint32_t spell_id);
-#if VERSION_STRING == Cata
-    uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
-#endif
-    void updateAutoRepeatSpell();
     bool isTransferPending() const;
     void toggleAfk();
     void toggleDnd();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spells
+    bool isSpellFitByClassAndRace(uint32_t spell_id);
+    void updateAutoRepeatSpell();
+
+    bool canDualWield2H() const;
+    void setDualWield2H(bool enable);
+
     bool m_FirstCastAutoRepeat;
 
+private:
+    bool m_canDualWield2H;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Talents
+    void learnTalent(uint32_t talentId, uint32_t talentRank);
+    void addTalent(SpellInfo* sp);
+    void removeTalent(uint32_t spellId, bool onSpecChange = false);
+    void resetTalents();
+    void setTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
+    void addTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
+    void setInitialTalentPoints(bool talentsResetted = false);
+
+    uint32_t getTalentPointsFromQuests() const;
+    void setTalentPointsFromQuests(uint32_t talentPoints);
+    void smsg_TalentsInfo(bool SendPetTalents); // TODO: classic and tbc
+
+    void activateTalentSpec(uint8_t specId);
+
+private:
+    uint32_t m_talentPointsFromQuests;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Auction
     void sendAuctionCommandResult(Auction* auction, uint32_t Action, uint32_t ErrorCode, uint32_t bidError = 0);
@@ -587,6 +621,12 @@ public:
     void setPlayerInfoIfNeeded();
     void setGuildAndGroupInfo();
     void sendCinematicOnFirstLogin();
+
+    void unEquipOffHandIfRequired();
+    bool hasOffHandWeapon();
+    void delayMeleeAttackTimer(int32_t delay);
+
+public:
     //MIT End
     //AGPL Start
 
@@ -952,8 +992,6 @@ public:
         bool HasSpell(uint32 spell);
         bool HasDeletedSpell(uint32 spell);
         void smsg_InitialSpells();
-        void smsg_TalentsInfo(bool SendPetTalents);
-        void ActivateSpec(uint8 spec);
         void addSpell(uint32 spell_idy);
         void removeSpellByHashName(uint32 hash);
         bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
@@ -1315,15 +1353,6 @@ public:
         const uint32 & GetBindMapId() const { return m_bind_mapid; }
         const uint32 & GetBindZoneId() const { return m_bind_zoneid; }
 
-        void delayAttackTimer(int32 delay)
-        {
-            if (!delay)
-                return;
-
-            m_attackTimer += delay;
-            m_attackTimer_1 += delay;
-        }
-
         void SetShapeShift(uint8 ss);
 
         uint32 m_furorChance;
@@ -1369,7 +1398,6 @@ public:
         uint32 m_modblockvaluefromspells;
         void SendInitialLogonPackets();
         void Reset_Spells();
-        void Reset_Talents();
         void Reset_AllTalents();
         // Battlegrounds xD
         CBattleground* m_bg;
@@ -1400,7 +1428,6 @@ public:
         void SetHasWonRbgToday(bool value);
 
         int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
-        uint32 m_AutoShotAttackTimer;
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
@@ -1598,10 +1625,6 @@ public:
         //Use this method carefully..
         void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
 
-        // DualWield2H (ex: Titan's grip)
-        bool DualWield2H;
-        void ResetDualWield2H();
-
     public:
 
         bool m_Autojoin;
@@ -1720,85 +1743,12 @@ public:
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
         //\todo fix this
-        void SetTalentPointsForAllSpec(uint32 amt)
-        {
-#ifdef FT_DUAL_SPEC
-            m_specs[0].SetTP(amt);
-            m_specs[1].SetTP(amt);
-#else
-            m_spec.SetTP(amt);
-#endif
-
-#if VERSION_STRING != Cata
-            setUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
-#else
-            setUInt32Value(PLAYER_CHARACTER_POINTS, amt);
-#endif
-            smsg_TalentsInfo(false);
-        }
-
-        void AddTalentPointsToAllSpec(uint32 amt)
-        {
-#ifdef FT_DUAL_SPEC
-            m_specs[0].SetTP(m_specs[0].GetTP() + amt);
-            m_specs[1].SetTP(m_specs[1].GetTP() + amt);
-#else
-            m_spec.SetTP(m_spec.GetTP() + amt);
-#endif
-#if VERSION_STRING != Cata
-            setUInt32Value(PLAYER_CHARACTER_POINTS1, getUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
-#else
-            setUInt32Value(PLAYER_CHARACTER_POINTS, getUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
-#endif
-            smsg_TalentsInfo(false);
-        }
-
-        void SetCurrentTalentPoints(uint32 points)
-        {
-            getActiveSpec().SetTP(points);
-#if VERSION_STRING != Cata
-            setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-#else
-            setUInt32Value(PLAYER_CHARACTER_POINTS, points);
-#endif
-            smsg_TalentsInfo(false);
-        }
-
-        uint32 GetCurrentTalentPoints()
-        {
-#if VERSION_STRING != Cata
-            uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS1);
-#else
-            uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
-#endif
-            Arcemu::Util::ArcemuAssert(points == getActiveSpec().GetTP());
-            return points;
-        }
-
-        //\todo fix this
-        void SetPrimaryProfessionPoints(uint32 amt)
-        {
-#if VERSION_STRING != Cata
-            setUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
-#else
-            if (amt == 0) { return; }
-#endif
-        }
-        //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)
         {
 #if VERSION_STRING != Cata
             modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
-#endif
-        }
-        uint32 GetPrimaryProfessionPoints()
-        {
-#if VERSION_STRING != Cata
-            return getUInt32Value(PLAYER_CHARACTER_POINTS2);
-#else
-            return 0;
 #endif
         }
 
@@ -1934,21 +1884,6 @@ public:
         //
         //////////////////////////////////////////////////////////////////////////////////////////
         void HandleSpellLoot(uint32 itemid);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // void LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
-        // Teaches a talentspell to the Player and decreases the available talent points
-        //
-        // \param uint32 talentid     -   unique numeric identifier of the talent (index of talent.dbc)
-        // \param uint32 rank         -   rank of the talent
-        // \param bool isPreviewed     -   true if called from the preview system
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
-        void LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed = false);
-
 
         void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
         void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
@@ -2298,7 +2233,6 @@ public:
         uint8 m_talentActiveSpec;
 #if VERSION_STRING == Cata
         uint32 m_FirstTalentTreeLock;
-        uint32 CalcTalentPointsHaveSpent(uint32 spec);
 #endif
 
 #ifdef FT_DUAL_SPEC

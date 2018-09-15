@@ -300,7 +300,7 @@ public:
 
     bool write(const uint8_t& member, uint8_t val);
     bool write(const uint16_t& member, uint16_t val);
-    bool write(const float_t& member, float_t val);
+    bool write(const float& member, float val);
     bool write(const int32_t& member, int32_t val);
     bool write(const uint32_t& member, uint32_t val);
     bool write(const uint64_t& member, uint64_t val);
@@ -328,8 +328,8 @@ public:
     void setEntry(uint32_t entry);
     uint32_t getEntry() const;
 
-    float_t getScale() const;
-    void setScale(float_t scaleX);
+    float getScale() const;
+    void setScale(float scaleX);
 
     // old update data handling
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
@@ -412,13 +412,11 @@ public:
     void setCurrentSpell(Spell* curSpell);
 
     // If spellid is set to 0, function will interrupt any current spell
-    // TODO: implement delayed spells
-    void interruptSpell(uint32_t spellId = 0, bool checkMeleeSpell = true, bool checkDelayed = true);
-    void interruptSpellWithSpellType(CurrentSpellType spellType, bool checkDelayed = true);
+    void interruptSpell(uint32_t spellId = 0, bool checkMeleeSpell = true);
+    void interruptSpellWithSpellType(CurrentSpellType spellType);
 
-    // Searches for current casted spell, but skips melee spells
-    // TODO: implement delayed spells
-    bool isCastingNonMeleeSpell(bool checkDelayed = true, bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false) const;
+    // Searches for current casted spell, but skips 'on next melee' spells
+    bool isCastingSpell(bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false) const;
     Spell* findCurrentCastedSpellBySpellId(uint32_t spellId);
 
     void _UpdateSpells(uint32_t time); // moved here from Unit class since GameObject can be caster as well

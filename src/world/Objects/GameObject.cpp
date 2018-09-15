@@ -49,8 +49,8 @@ void GameObject::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
-float_t GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
-void GameObject::setParentRotation(uint8_t type, float_t rotation) { write(gameObjectData()->rotation[type], rotation); }
+float GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
+void GameObject::setParentRotation(uint8_t type, float rotation) { write(gameObjectData()->rotation[type], rotation); }
 
 uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }

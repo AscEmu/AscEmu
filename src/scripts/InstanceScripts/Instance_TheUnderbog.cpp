@@ -57,7 +57,7 @@ class HungarfenAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 20 && !FourSpores)
             {
                 getCreature()->GetAIInterface()->StopMovement(11000);
-                getCreature()->setAttackTimer(1200, false);
+                getCreature()->setAttackTimer(MELEE, 1200);
 
                 getCreature()->CastSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
 
@@ -103,7 +103,7 @@ class GhazanAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingNonMeleeSpell())
+            if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingSpell())
             {
                 getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
 
@@ -181,20 +181,20 @@ class SwamplordMuselekAI : public CreatureAIScript
                 if (getCreature()->GetDistance2dSq(target) >= 100.0f && getCreature()->getDistanceSq(target) <= 900.0f && Util::getRandomUInt(3) != 1)
                 {
                     getCreature()->GetAIInterface()->StopMovement(2000);
-                    if (!getCreature()->isCastingNonMeleeSpell())
+                    if (!getCreature()->isCastingSpell())
                     {
                         uint32 RangedSpell = Util::getRandomUInt(100);
                         if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
                         {
                             getCreature()->CastSpell(target, aimedShot->mSpellInfo, true);
-                            getCreature()->setAttackTimer(aimedShot->getAttackStopTimer(), false);
+                            getCreature()->setAttackTimer(MELEE, aimedShot->getAttackStopTimer());
                             _resetTimer(aimedShot->mCooldownTimerId, aimedShot->mCooldown);
                         }
 
                         if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimerId))
                         {
                             getCreature()->CastSpell(target, multiShot->mSpellInfo, true);
-                            getCreature()->setAttackTimer(multiShot->getAttackStopTimer(), false);
+                            getCreature()->setAttackTimer(MELEE, multiShot->getAttackStopTimer());
                             _resetTimer(multiShot->mCooldownTimerId, multiShot->mCooldown);
                         }
                         else
@@ -202,7 +202,7 @@ class SwamplordMuselekAI : public CreatureAIScript
                             if (_isTimerFinished(shot->mCooldownTimerId))
                             {
                                 getCreature()->CastSpell(target, shot->mSpellInfo, true);
-                                getCreature()->setAttackTimer(shot->getAttackStopTimer(), false);
+                                getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
                                 _resetTimer(shot->mCooldownTimerId, shot->mCooldown);
                             }
                         }

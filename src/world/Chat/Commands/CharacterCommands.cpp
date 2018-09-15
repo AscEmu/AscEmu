@@ -1103,7 +1103,7 @@ bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSessi
     if (selected_player == nullptr)
         return true;
 
-    selected_player->Reset_Talents();
+    selected_player->resetTalents();
 
     if (selected_player != m_session->GetPlayer())
     {

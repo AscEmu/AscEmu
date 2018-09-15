@@ -41,8 +41,8 @@ class SERVER_DECL WeatherMgr : public Singleton<WeatherMgr>
         void LoadFromDB();
         void SendWeather(Player* plr);
 
-        void sendWeatherForZone(uint32_t type, float_t density, uint32_t zoneId);
-        void sendWeatherForPlayer(uint32_t type, float_t density, Player* player);
+        void sendWeatherForZone(uint32_t type, float density, uint32_t zoneId);
+        void sendWeatherForPlayer(uint32_t type, float density, Player* player);
 
     private:
 

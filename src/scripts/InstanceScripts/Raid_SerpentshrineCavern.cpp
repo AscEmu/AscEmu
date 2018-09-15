@@ -559,7 +559,7 @@ class LeotherasAI : public CreatureAIScript
                         if (!mInWhirlwind)
                         {
                             getCreature()->CastSpell(getCreature(), info_whirlwind, true);
-                            getCreature()->setAttackTimer(15000, false);
+                            getCreature()->setAttackTimer(MELEE, 15000);
                             getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
                             WhirlwindTimer = 15;
                             mInWhirlwind = true;
@@ -599,7 +599,7 @@ class LeotherasAI : public CreatureAIScript
                     {
                         case 0:
                             IsMorphing = true;
-                            getCreature()->setAttackTimer(15000, false);
+                            getCreature()->setAttackTimer(MELEE, 15000);
                             getCreature()->setStandState(STANDSTATE_KNEEL);
                             getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -657,7 +657,7 @@ class LeotherasAI : public CreatureAIScript
                 //Chaos Blast
                 if (getCreature()->GetAIInterface()->getNextTarget())
                 {
-                    if (!getCreature()->isCastingNonMeleeSpell())
+                    if (!getCreature()->isCastingSpell())
                     {
                         if (Util::getRandomUInt(1))
                         {
@@ -798,7 +798,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             //Chaos Blast
             if (getCreature()->GetAIInterface()->getNextTarget())
             {
-                if (!getCreature()->isCastingNonMeleeSpell())
+                if (!getCreature()->isCastingSpell())
                 {
                     if (Util::getRandomUInt(1))
                     {
@@ -1397,7 +1397,7 @@ class VashjAI : public CreatureAIScript
         void PhaseTwo()
         {
             //WORKAROUND
-            getCreature()->setAttackTimer(2000, false);
+            getCreature()->setAttackTimer(MELEE, 2000);
 
             //Forked Lightning
             ForkedLightningTimer--;
@@ -1639,7 +1639,7 @@ class TaintedElementalAI : public CreatureAIScript
         void AIUpdate() override
         {
             ///\todo  Despawn after 15 secs
-            if (!getCreature()->isCastingNonMeleeSpell())
+            if (!getCreature()->isCastingSpell())
                 getCreature()->GetAIInterface()->SetNextSpell(spell_poison_spit);
         }
 

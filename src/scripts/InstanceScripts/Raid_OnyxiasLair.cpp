@@ -200,7 +200,7 @@ class OnyxiaAI : public CreatureAIScript
             {
                 m_phase = 2;
                 getCreature()->setModCastSpeed(0.01f);
-                if (getCreature()->isCastingNonMeleeSpell())
+                if (getCreature()->isCastingSpell())
                     getCreature()->interruptSpell();
 
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -222,7 +222,7 @@ class OnyxiaAI : public CreatureAIScript
             {
                 m_phase = 3;
                 getCreature()->setModCastSpeed(1.0f);
-                if (getCreature()->isCastingNonMeleeSpell())
+                if (getCreature()->isCastingSpell())
                     getCreature()->interruptSpell();
                 getCreature()->GetAIInterface()->m_canMove = true;
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -362,7 +362,7 @@ class OnyxiaAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 if (m_fBreath)
                 {
@@ -391,25 +391,25 @@ class OnyxiaAI : public CreatureAIScript
 
                 if (val >= 100 && val <= 225)
                 {
-                    getCreature()->setAttackTimer(6000, false);//6000
+                    getCreature()->setAttackTimer(MELEE, 6000);//6000
                     m_fBreath = true;
                     //_unit->CastSpell(_unit, infoFBreath, false);
                 }
                 else if (val > 225 && val <= 300)
                 {
-                    getCreature()->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(MELEE, 4000);//2000
                     m_kAway = true;
                     //_unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoKAway, false);
                 }
                 else if (val > 300 && val <= 375)
                 {
-                    getCreature()->setAttackTimer(4000, false);//3000
+                    getCreature()->setAttackTimer(MELEE, 4000);//3000
                     m_wBuffet = true;
                     //_unit->CastSpell(_unit, infoWBuffet, false);
                 }
                 else if (val > 375 && val < 450)
                 {
-                    getCreature()->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(MELEE, 4000);//2000
                     m_Cleave = true;
                     // _unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoCleave, false);
                 }
