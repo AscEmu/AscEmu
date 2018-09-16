@@ -31,17 +31,17 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
 {
     LogNotice("Loading guild finder guild-related settings...");
 
-    CharacterDatabase.Execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guild g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
+    CharacterDatabase.Execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guilds g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
 
     //                                                          0                1               2                 3             4           5             6         7
     QueryResult* result = CharacterDatabase.Query("SELECT gfgs.guildId, gfgs.availability, gfgs.classRoles, gfgs.interests, gfgs.level, gfgs.listed, gfgs.comment, c.race "
                                                  "FROM guild_finder_guild_settings gfgs "
-                                                 "LEFT JOIN guild_member gm ON gm.guildId = gfgs.guildId "
-                                                 "LEFT JOIN characters c ON c.guid = gm.playerGuid LIMIT 1");
+                                                 "LEFT JOIN guild_members gm ON gm.guildId = gfgs.guildId "
+                                                 "LEFT JOIN characters c ON c.guid = gm.playerid LIMIT 1");
 
     if (result == nullptr)
     {
-        LogError("Loaded 0 guild finder guild-related settings. Table `guild_finder_guild_settings` is empty.");
+        LogNotice("Loaded 0 guild finder guild-related settings. Table `guild_finder_guild_settings` is empty.");
         return;
     }
 
@@ -80,12 +80,12 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
 {
     LogNotice("Loading guild finder membership requests...");
 
-    CharacterDatabase.Execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guild g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
+    CharacterDatabase.Execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guilds g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
     //                                                       0         1           2            3           4         5         6
     QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid, availability, classRole, interests, comment, submitTime FROM guild_finder_applicant");
     if (result == nullptr)
     {
-        LogError("Loaded 0 guild finder membership requests. Table `guild_finder_applicant` is empty.");
+        LogNotice("Loaded 0 guild finder membership requests. Table `guild_finder_applicant` is empty.");
         return;
     }
 

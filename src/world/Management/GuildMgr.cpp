@@ -372,7 +372,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LogError("Loaded 0 guild bank tab items. DB table `guild_bank_items` is empty.");
+            LogNotice("Loaded 0 guild bank tab items. DB table `guild_bank_items` is empty.");
         }
         else
         {
