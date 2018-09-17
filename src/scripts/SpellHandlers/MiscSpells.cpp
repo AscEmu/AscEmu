@@ -30,6 +30,14 @@
 #include "Spell/SpellAuras.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
+enum
+{
+	// Crystal Spikes
+	CN_CRYSTAL_SPIKE = 27099,
+	CRYSTAL_SPIKES = 47958,
+	CRYSTAL_SPIKES_H = 57082
+};
+
 bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
@@ -369,6 +377,7 @@ bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 //Chaos blast dummy effect
 bool ChaosBlast(uint8_t /*effectIndex*/, Spell* pSpell)
 {
@@ -409,10 +418,6 @@ bool PreparationForBattle(uint8_t /*effectIndex*/, Spell* pSpell)
 
     return true;
 };
-
-#define CN_CRYSTAL_SPIKE    27099
-#define CRYSTAL_SPIKES      47958
-#define CRYSTAL_SPIKES_H    57082
 
 bool CrystalSpikes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
@@ -586,6 +591,7 @@ const float sotaTransDest[5][4] =
     { 1193.857f, 69.9f, 58.046f, 5.7245f },
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // 54640
 bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
 {
@@ -613,6 +619,7 @@ bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // 51892 - Eye of Acherus Visual
 bool EyeOfAcherusVisual(uint8_t /*effectIndex*/, Spell* spell)
 {
@@ -625,6 +632,7 @@ bool EyeOfAcherusVisual(uint8_t /*effectIndex*/, Spell* spell)
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // 52694 - Recall Eye of Acherus
 bool RecallEyeOfAcherus(uint8_t /*effectIndex*/, Spell* spell)
 {

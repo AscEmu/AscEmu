@@ -26,10 +26,8 @@
 #include <Spell/Definitions/PowerType.h>
 #include <Spell/Customization/SpellCustomizations.hpp>
 
- /************************************************************************/
- /* Spell Defs                                                           */
- /************************************************************************/
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell Defs
 bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();

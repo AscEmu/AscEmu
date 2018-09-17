@@ -344,15 +344,11 @@ bool PurifyBoarMeat(uint8_t /*effectIndex*/, Spell* pSpell)
     switch (bormeat)
     {
         case 0:
-        {
             pSpell->p_caster->CastSpell(pSpell->p_caster, 29277, true);
-        }
-        break;
+            break;
         case 1:
-        {
             pSpell->p_caster->CastSpell(pSpell->p_caster, 29278, true);
-        }
-        break;
+            break;
     }
 
     return true;
@@ -600,7 +596,7 @@ bool RequiresNoAmmo(uint8_t /*effectIndex*/, Aura* a, bool apply)
     return true;
 }
 
-/////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Nitro Boosts dummy effect handler
 //
 //Precondition(s)
@@ -610,7 +606,7 @@ bool RequiresNoAmmo(uint8_t /*effectIndex*/, Aura* a, bool apply)
 //Effect(s)
 //  Casts another spell that increases run speed for 5 seconds
 //
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == NULL)
@@ -625,7 +621,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
 }
 
 
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Gnomish Shrink Ray dummy effect handler
 //
 //Preconditions
@@ -639,7 +635,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
 //  the caster's party, all enemies, or enlarges the target
 //
 //
-//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == NULL)
@@ -737,7 +733,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 }
 
 
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Championing Tabards' dummy aura handler
 //
 //Precondition(s)
@@ -747,7 +743,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 //  We will get reputation for the faction the tabard represents,
 //  in lvl80 dungeons, heroics and raids.
 //
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Player* p_caster = a->GetPlayerCaster();
@@ -766,7 +762,7 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 }
 
 
-///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Spinning dummy effect handler
 //
 //Precondition(s)
@@ -776,7 +772,7 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 //  Spins the target around, setting a random orientation
 //
 //
-///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool Spinning(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
@@ -797,7 +793,8 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////
 //Listening to Music periodically triggered dummy aura
 //( SpellId 50493 )
 //
@@ -808,7 +805,7 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
 //  Makes the player dance
 //
 //
-/////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
@@ -832,7 +829,7 @@ bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 }
 
 
-///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Periodic Drink Dummy Aura handler
 //
 //
@@ -843,7 +840,7 @@ bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 //  Restores x Mana Points every second
 //
 //
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 bool DrinkDummyAura(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     if (!apply)
@@ -901,42 +898,39 @@ bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-// ADD NEW FUNCTIONS ABOVE THIS LINE
-// *****************************************************************************
-
 void SetupItemSpells_1(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(59317, &SchoolsOfArcaneMagicMastery); // The Schools of Arcane Magic - Mastery
-    mgr->register_dummy_spell(29403, &BreathOfFire);            // Fiery Festival Brew
-    mgr->register_dummy_spell(23453, &GnomishTransporter);      // Gnomish Transporter
-    mgr->register_dummy_spell(16589, &NoggenFoggerElixr);       // Noggenfogger
-    mgr->register_dummy_spell(24930, &HallowsEndCandy);         // Hallows End Candy
-    mgr->register_dummy_spell(8063, &DeviateFish);              // Deviate Fish
-    mgr->register_dummy_spell(8213, &CookedDeviateFish);        // Savory Deviate Delight
-    mgr->register_dummy_spell(26074, &HolidayCheer);            // Holiday Cheer
-    mgr->register_dummy_spell(13120, &NetOMatic);               // Net-o-Matic
+    mgr->register_dummy_spell(29403, &BreathOfFire);                // Fiery Festival Brew
+    mgr->register_dummy_spell(23453, &GnomishTransporter);          // Gnomish Transporter
+    mgr->register_dummy_spell(16589, &NoggenFoggerElixr);           // Noggenfogger
+    mgr->register_dummy_spell(24930, &HallowsEndCandy);             // Hallows End Candy
+    mgr->register_dummy_spell(8063, &DeviateFish);                  // Deviate Fish
+    mgr->register_dummy_spell(8213, &CookedDeviateFish);            // Savory Deviate Delight
+    mgr->register_dummy_spell(26074, &HolidayCheer);                // Holiday Cheer
+    mgr->register_dummy_spell(13120, &NetOMatic);                   // Net-o-Matic
     uint32 BanishExileIds[] = { 4130, 4131, 4132, 0 };
-    mgr->register_dummy_spell(BanishExileIds, &BanishExile);    // Essence of the Exile Quest
-    mgr->register_dummy_spell(19938, &ForemansBlackjack);       // Lazy Peons Quest
-    mgr->register_dummy_spell(39105, &NetherWraithBeacon);      // Spellfire Tailor Quest
-    mgr->register_dummy_spell(30458, &NighInvulnBelt);          // Nigh Invulnerability Belt
+    mgr->register_dummy_spell(BanishExileIds, &BanishExile);        // Essence of the Exile Quest
+    mgr->register_dummy_spell(19938, &ForemansBlackjack);           // Lazy Peons Quest
+    mgr->register_dummy_spell(39105, &NetherWraithBeacon);          // Spellfire Tailor Quest
+    mgr->register_dummy_spell(30458, &NighInvulnBelt);              // Nigh Invulnerability Belt
 
-    mgr->register_dummy_spell(25860, &ReindeerTransformation);  // Fresh Holly & Preserved Holly
+    mgr->register_dummy_spell(25860, &ReindeerTransformation);      // Fresh Holly & Preserved Holly
 
-    mgr->register_script_effect(26275, &WinterWondervolt);      // PX-238 Winter Wondervolt Trap
+    mgr->register_script_effect(26275, &WinterWondervolt);          // PX-238 Winter Wondervolt Trap
 
-    mgr->register_dummy_spell(32042, &ScryingCrystal);          // Violet Scrying Crystal (Quest)
-    mgr->register_dummy_spell(32001, &MinionsOfGurok);          // Minions of gurok
-    mgr->register_dummy_spell(29200, &PurifyBoarMeat);          // Purify Boar meat spell
-    mgr->register_script_effect(35036, &WarpRiftGenerator);     // Summon a Warp Rift in Void Ridge
-    mgr->register_dummy_aura(46354, &OrbOfTheSindorei);         // Orb of the Sin'dorei
+    mgr->register_dummy_spell(32042, &ScryingCrystal);              // Violet Scrying Crystal (Quest)
+    mgr->register_dummy_spell(32001, &MinionsOfGurok);              // Minions of gurok
+    mgr->register_dummy_spell(29200, &PurifyBoarMeat);              // Purify Boar meat spell
+    mgr->register_script_effect(35036, &WarpRiftGenerator);         // Summon a Warp Rift in Void Ridge
+    mgr->register_dummy_aura(46354, &OrbOfTheSindorei);             // Orb of the Sin'dorei
 
-    mgr->register_dummy_spell(65917, &MagicRoosterMount);       // Magic Rooster Mount
-    mgr->register_dummy_spell(58983, &BigBlizzardBear);         // Big Blizzard Bear mount
-    mgr->register_dummy_spell(54729, &WingedSteed);             // DK flying mount
-    mgr->register_dummy_spell(48025, &HeadlessHorsemanMount);   // Headless Horseman Mount
-    mgr->register_dummy_spell(47977, &MagicBroomMount);         // Magic Broom Mount
-    mgr->register_dummy_spell(72286, &Invincible);              // Invincible
+    mgr->register_dummy_spell(65917, &MagicRoosterMount);           // Magic Rooster Mount
+    mgr->register_dummy_spell(58983, &BigBlizzardBear);             // Big Blizzard Bear mount
+    mgr->register_dummy_spell(54729, &WingedSteed);                 // DK flying mount
+    mgr->register_dummy_spell(48025, &HeadlessHorsemanMount);       // Headless Horseman Mount
+    mgr->register_dummy_spell(47977, &MagicBroomMount);             // Magic Broom Mount
+    mgr->register_dummy_spell(72286, &Invincible);                  // Invincible
 
     mgr->register_dummy_spell(30507, &Poultryizer);
     mgr->register_dummy_spell(14537, &SixDemonBag);

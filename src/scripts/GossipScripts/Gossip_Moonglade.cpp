@@ -78,5 +78,4 @@ void SetupMoongladeGossip(ScriptMgr* mgr)
 {
     mgr->register_creature_gossip(11800, new SilvaFilnaveth_Gossip); // Silva Fil'naveth
     mgr->register_creature_gossip(11798, new BunthenPlainswind_Gossip); // Bunthen Plainswind
-
 }
