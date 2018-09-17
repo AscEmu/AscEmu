@@ -7,13 +7,13 @@
 
 enum
 {
-    SPELL_MANABURN = 26046,
-    SPELL_SLEEP = 24664,
+    //SPELL_MANABURN = 26046,
+    //SPELL_SLEEP = 24664,
 
-    SPELL_SUMMON_NIGHTMARE_ILLUSIONS = 24728,
+    //SPELL_SUMMON_NIGHTMARE_ILLUSIONS = 24728,
 
-    SPELL_THOUSANDBLADES = 34799,
-    SPELL_AMBUSH = 34794,
+    //SPELL_THOUSANDBLADES = 34799,
+    //SPELL_AMBUSH = 34794,
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -50,7 +50,7 @@ set(sources
     Instance_TheVioletHold.cpp 
     Instance_Uldaman.cpp 
     Instance_UtgardeKeep.cpp
-    Instance_UtgardePinnacle.cpp	
+    Instance_UtgardePinnacle.cpp
     Instance_WailingCaverns.cpp 
     Instance_TheStockade.cpp 
     Instance_ZulFarrak.cpp 
@@ -121,7 +121,7 @@ set(headers
     Instance_TheVioletHold.h 
     Instance_Uldaman.h 
     Instance_UtgardeKeep.h
-    Instance_UtgardePinnacle.h	
+    Instance_UtgardePinnacle.h
     Instance_WailingCaverns.h 
     Instance_TheStockade.h 
     Instance_ZulFarrak.h

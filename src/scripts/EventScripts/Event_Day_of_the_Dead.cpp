@@ -9,7 +9,7 @@ enum
 {
     // Catrina
     SPELL_HONOR_THE_DEAD = 65386,
-    NPC_CATRINA = 34383,
+    //NPC_CATRINA = 34383,
     ACHIEVEMRNT_DEAD_MANS_PARTY = 3456,
 };
 
