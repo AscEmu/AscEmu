@@ -22,10 +22,18 @@
 
 enum 
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Hunt Is On (Quest: 11794)
+    QUEST_HUNT_IS_ON = 11794,
+
     NPC_SURRISTRASZ = 24795,
     GI_SURRISTRASZ = 191,   // "May I use a drake to fly elsewhere?"   
 
     //SPELL_ABMER_TO_COLDARRA = 46064
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Neutralizing the Cauldrons
+    CN_PURIFYING_TOTEM = 25494
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -96,10 +104,6 @@ public:
         pPlayer->AddQuestKill(11900, 3, 0);
     }
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Neutralizing the Cauldrons
-const uint32 CN_PURIFYING_TOTEM = 25494;
 
 class PurifyingTotemAI : public CreatureAIScript
 {
@@ -546,15 +550,13 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Hunt Is On (Quest: 11794)
-const uint32 questHuntIsOn = 11794;
-
 class SaltyJohnGossip : public Arcemu::Gossip::Script
 {
 public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);

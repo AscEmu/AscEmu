@@ -5,5 +5,5 @@
 
 enum GameObjectEntry
 {
-    GO_DALARAN_LAMPS    = 192086
+    // GO_DALARAN_LAMPS    = 192086
 };
