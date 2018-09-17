@@ -9,12 +9,12 @@ enum
 {
     // Headless HorsemanAI
     CN_HEADLESS_HORSEMAN = 23682,
-    HEADLESS_HORSEMAN_CLEAVE = 42587,
-    HEADLESS_HORSEMAN_CONFLAGRATION = 42380,
+    //HEADLESS_HORSEMAN_CLEAVE = 42587,
+    //HEADLESS_HORSEMAN_CONFLAGRATION = 42380,
 
     // Shade of the HorsemanAI
     CN_SHADE_OF_THE_HORSEMAN = 23543,
-    SHADE_OF_THE_HORSEMAN_SUMMON = 42394,  //Don't think this one is the correct spell
+    //SHADE_OF_THE_HORSEMAN_SUMMON = 42394,  // Don't think this one is the correct spell
 
     // Headless Horseman - Wisp Invis
     CN_HEADLESS_HORSEMAN_WISP_INVIS = 24034, // 42394

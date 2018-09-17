@@ -6,12 +6,24 @@
 
 #include "StdAfx.h"
 
-// Some customizable defines.
-// Maybe move these to config?
+enum
+{
+    // Some customizable defines.
+    // Maybe move these to config?
 
-#define BANNER_RANGE 900
-#define UPDATE_PERIOD 5000
-#define CAPTURE_RATE 20
+    BANNER_RANGE = 900,
+    UPDATE_PERIOD = 5000,
+    CAPTURE_RATE = 20,
+
+    // Tower GameObject Ids
+    TOWER_WEST = 182173,
+    TOWER_NORTH = 182174,
+    TOWER_SOUTH = 182175,
+
+    // Buff Ids
+    HELLFIRE_SUPERORITY_ALLIANCE = 32071,
+    HELLFIRE_SUPERORITY_HORDE = 32049,
+};
 
 // Towers
 enum Towers
@@ -21,15 +33,6 @@ enum Towers
     TOWER_BROKENHILL,
     TOWER_COUNT,
 };
-
-// Tower GameObject Ids
-#define TOWER_WEST 182173
-#define TOWER_NORTH 182174
-#define TOWER_SOUTH 182175
-
-// Buff Ids
-#define HELLFIRE_SUPERORITY_ALLIANCE 32071
-#define HELLFIRE_SUPERORITY_HORDE 32049
 
 // Owners of the towers, used for save/restore
 int32 g_towerOwners[TOWER_COUNT] = { -1, -1, -1 };
@@ -45,7 +48,7 @@ static const uint32 g_allianceStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_ALL
 static const uint32 g_neutralStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_NEUTRAL, WORLDSTATE_HELLFIRE_OVERLOOK_NEUTRAL, WORLDSTATE_HELLFIRE_BROKENHILL_NEUTRAL };
 
 // updates clients visual counter, and adds the buffs to players if needed
-HEARTHSTONE_INLINE void UpdateTowerCount(shared_ptr<MapMgr> mgr)
+inline void UpdateTowerCount(shared_ptr<MapMgr> mgr)
 {
     if(!mgr)
         return;
@@ -87,307 +90,301 @@ enum BannerStatus
 
 class HellfirePeninsulaBannerAI : public GameObjectAIScript
 {
-        map<uint32, uint32> StoredPlayers;
-        uint32 Status;
-        const char* ControlPointName;
-        uint32 towerid;
-        uint32 m_bannerStatus;
 
-    public:
-        GameObjectPointer  pBanner;
+public:
 
-        HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+    GameObjectPointer  pBanner;
+    map<uint32, uint32> StoredPlayers;
+    uint32 Status;
+    const char* ControlPointName;
+    uint32 towerid;
+    uint32 m_bannerStatus;
+
+    HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+    {
+        m_bannerStatus = BANNER_STATUS_NEUTRAL;
+        Status = 50;
+
+        switch(go->GetEntry())
         {
-            m_bannerStatus = BANNER_STATUS_NEUTRAL;
-            Status = 50;
-
-            switch(go->GetEntry())
-            {
-                case TOWER_WEST:
-                    ControlPointName = "The Stadium";
-                    towerid = TOWER_STADIUM;
-                    break;
-
-                case TOWER_NORTH:
-                    ControlPointName = "The Overlook";
-                    towerid = TOWER_OVERLOOK;
-                    break;
-
-                case TOWER_SOUTH:
-                    ControlPointName = "Broken Hill";
-                    towerid = TOWER_BROKENHILL;
-                    break;
-
-                default:
-                    ControlPointName = "Unknown";
-                    break;
-            }
+            case TOWER_WEST:
+                ControlPointName = "The Stadium";
+                towerid = TOWER_STADIUM;
+                break;
+            case TOWER_NORTH:
+                ControlPointName = "The Overlook";
+                towerid = TOWER_OVERLOOK;
+                break;
+            case TOWER_SOUTH:
+                ControlPointName = "Broken Hill";
+                towerid = TOWER_BROKENHILL;
+                break;
+            default:
+                ControlPointName = "Unknown";
+                break;
         }
+    }
 
-        void AIUpdate()
+    void AIUpdate()
+    {
+        uint32 plrcounts[2] = { 0, 0 };
+
+        // details:
+        //   loop through inrange players, for new ones, send the enable CP worldstate.
+        //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
+        //   doing lookups of objects that have already been updated
+
+        unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
+        unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
+        map<uint32, uint32>::iterator it2, it3;
+        uint32 timeptr = (uint32)UNIXTIME;
+        bool in_range;
+        bool is_valid;
+        PlayerPointer plr = nullptr;
+
+        for(; itr != itrend; ++itr)
         {
-            uint32 plrcounts[2] = { 0, 0 };
-
-            // details:
-            //   loop through inrange players, for new ones, send the enable CP worldstate.
-            //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
-            //   doing lookups of objects that have already been updated
-
-            unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
-            unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-            map<uint32, uint32>::iterator it2, it3;
-            uint32 timeptr = (uint32)UNIXTIME;
-            bool in_range;
-            bool is_valid;
-            PlayerPointer plr = nullptr;
-
-            for(; itr != itrend; ++itr)
-            {
-                if(!(*itr)->IsPvPFlagged() || (*itr)->InStealth())
-                    is_valid = false;
-                else
-                    is_valid = true;
-
-                in_range = (_gameobject->GetDistance2dSq((*itr)) <= BANNER_RANGE) ? true : false;
-
-                it2 = StoredPlayers.find((*itr)->GetLowGUID());
-                if(it2 == StoredPlayers.end())
-                {
-                    // new player :)
-                    if(in_range)
-                    {
-                        (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 1);
-                        (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_VALUE, Status);
-                        StoredPlayers.insert(make_pair((*itr)->GetLowGUID(), timeptr));
-
-                        if(is_valid)
-                            plrcounts[(*itr)->GetTeam()]++;
-                    }
-                }
-                else
-                {
-                    // oldie
-                    if(!in_range)
-                    {
-                        (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 0);
-                        StoredPlayers.erase(it2);
-                    }
-                    else
-                    {
-                        (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_VALUE, Status);
-                        it2->second = timeptr;
-                        if(is_valid)
-                            plrcounts[(*itr)->GetTeam()]++;
-                    }
-                }
-            }
-
-            // handle stuff for the last tick
-            if(Status == 100 && m_bannerStatus != BANNER_STATUS_ALLIANCE)
-            {
-                m_bannerStatus = BANNER_STATUS_ALLIANCE;
-                SetArtKit();
-
-                // send message to everyone in the zone, has been captured by the Alliance
-                _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00%s has been taken by the Alliance!|r", ControlPointName);
-
-                // tower update
-                g_allianceTowers++;
-                UpdateTowerCount(_gameobject->GetMapMgr());
-
-                // state update
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 1);
-
-                // woot
-                g_towerOwners[towerid] = 1;
-                UpdateInDB();
-            }
-            else if(Status == 0 && m_bannerStatus != BANNER_STATUS_HORDE)
-            {
-                m_bannerStatus = BANNER_STATUS_HORDE;
-                SetArtKit();
-
-                // send message to everyone in the zone, has been captured by the Horde
-                _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00%s has been taken by the Horde!|r", ControlPointName);
-
-                // tower update
-                g_hordeTowers++;
-                UpdateTowerCount(_gameobject->GetMapMgr());
-
-                // state update
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 1);
-
-                // woot
-                g_towerOwners[towerid] = 0;
-                UpdateInDB();
-            }
-            else if(m_bannerStatus != BANNER_STATUS_NEUTRAL)
-            {
-                // if the difference for the faction is >50, change to neutral
-                if(m_bannerStatus == BANNER_STATUS_ALLIANCE && Status <= 50)
-                {
-                    // send message: The Alliance has lost control of point xxx
-                    m_bannerStatus = BANNER_STATUS_NEUTRAL;
-                    SetArtKit();
-
-                    g_allianceTowers--;
-                    UpdateTowerCount(_gameobject->GetMapMgr());
-
-                    _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00The Alliance have lost control of %s!|r", ControlPointName);
-
-                    // state update
-                    _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 0);
-                    _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 1);
-
-                    // woot
-                    g_towerOwners[towerid] = -1;
-                    UpdateInDB();
-                }
-                else if(m_bannerStatus == BANNER_STATUS_HORDE && Status >= 50)
-                {
-                    // send message: The Alliance has lost control of point xxx
-                    m_bannerStatus = BANNER_STATUS_NEUTRAL;
-                    SetArtKit();
-
-                    g_hordeTowers--;
-                    UpdateTowerCount(_gameobject->GetMapMgr());
-
-                    _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00The Horde have lost control of %s!|r", ControlPointName);
-
-                    // state update
-                    _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 0);
-                    _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 1);
-
-                    // woot
-                    g_towerOwners[towerid] = -1;
-                    UpdateInDB();
-                }
-            }
-
-            // send any out of range players the disable flag
-            for(it2 = StoredPlayers.begin(); it2 != StoredPlayers.end();)
-            {
-                it3 = it2;
-                ++it2;
-
-                if(it3->second != timeptr)
-                {
-                    plr = _gameobject->GetMapMgr()->GetPlayer(it3->first);
-
-                    // they WILL be out of range at this point. this is guaranteed. means they left the set rly quickly.
-                    if(plr != NULL)
-                        plr->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 0);
-
-                    StoredPlayers.erase(it3);
-                }
-            }
-
-            // work out current status for next tick
-            uint32 delta;
-            if(plrcounts[0] > plrcounts[1])
-            {
-                delta = plrcounts[0] - plrcounts[1];
-                delta *= CAPTURE_RATE;
-
-                // cap it at 25 so the banner always gets removed.
-                if(delta > 25)
-                    delta = 25;
-
-                Status += delta;
-                if(Status >= 100)
-                    Status = 100;
-            }
-            else if(plrcounts[1] > plrcounts[0])
-            {
-                delta = plrcounts[1] - plrcounts[0];
-                delta *= CAPTURE_RATE;
-
-                // cap it at 25 so the banner always gets removed.
-                if(delta > 25)
-                    delta = 25;
-
-                if(delta > Status)
-                    Status = 0;
-                else
-                    Status -= delta;
-            }
-        }
-
-        void SetArtKit()
-        {
-            // big towers
-            static const uint32 artkits_towers[3][3] =
-            {
-                { 69, 67, 68 }, { 63, 62, 61 }, { 66, 65, 64 },
-            };
-
-            // flag poles
-            static const uint32 artkits_flagpole[3] = { 3, 2, 1 };
-
-            // set away - we don't know the artkits anymore :(((
-            //_gameobject->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_flagpole[m_bannerStatus]);
-            //pBanner->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_towers[towerid][m_bannerStatus]);
-        }
-
-        void OnSpawn()
-        {
-            m_bannerStatus = BANNER_STATUS_NEUTRAL;
-
-            // preloaded data, do we have any?
-            if(g_towerOwners[towerid] == 1)
-            {
-                m_bannerStatus = BANNER_STATUS_HORDE;
-                Status = 0;
-
-                // state update
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 1);
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
-
-                // countz
-                g_hordeTowers++;
-                UpdateTowerCount(_gameobject->GetMapMgr());
-                SetArtKit();
-            }
-            else if(g_towerOwners[towerid] == 0)
-            {
-                m_bannerStatus = BANNER_STATUS_ALLIANCE;
-                Status = 100;
-
-                // state update
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 1);
-                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
-
-                // countz
-                g_allianceTowers++;
-                UpdateTowerCount(_gameobject->GetMapMgr());
-                SetArtKit();
-            }
-
-            // start the event timer
-            RegisterAIUpdateEvent(UPDATE_PERIOD);
-        }
-
-        //////////////////////////////////////////////////////////////////////////
-        // Save Data To DB
-        //////////////////////////////////////////////////////////////////////////
-        void UpdateInDB()
-        {
-            static const char* fieldnames[TOWER_COUNT] = { "hellfire-stadium-status", "hellfire-overlook-status", "hellfire-brokenhill-status" };
-            const char* msg = "-1";
-            if(Status == 100)
-                msg = "0";
+            if(!(*itr)->IsPvPFlagged() || (*itr)->InStealth())
+                is_valid = false;
             else
-                msg = "1";
+                is_valid = true;
 
-            WorldStateManager::SetPersistantSetting(fieldnames[towerid], msg);
+            in_range = (_gameobject->GetDistance2dSq((*itr)) <= BANNER_RANGE) ? true : false;
+
+            it2 = StoredPlayers.find((*itr)->GetLowGUID());
+            if(it2 == StoredPlayers.end())
+            {
+                // new player :)
+                if(in_range)
+                {
+                    (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 1);
+                    (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_VALUE, Status);
+                    StoredPlayers.insert(make_pair((*itr)->GetLowGUID(), timeptr));
+
+                    if(is_valid)
+                        plrcounts[(*itr)->GetTeam()]++;
+                }
+            }
+            else
+            {
+                // oldie
+                if(!in_range)
+                {
+                    (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 0);
+                    StoredPlayers.erase(it2);
+                }
+                else
+                {
+                    (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_VALUE, Status);
+                    it2->second = timeptr;
+                    if(is_valid)
+                        plrcounts[(*itr)->GetTeam()]++;
+                }
+            }
         }
+
+        // handle stuff for the last tick
+        if(Status == 100 && m_bannerStatus != BANNER_STATUS_ALLIANCE)
+        {
+            m_bannerStatus = BANNER_STATUS_ALLIANCE;
+            SetArtKit();
+
+            // send message to everyone in the zone, has been captured by the Alliance
+            _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00%s has been taken by the Alliance!|r", ControlPointName);
+
+            // tower update
+            g_allianceTowers++;
+            UpdateTowerCount(_gameobject->GetMapMgr());
+
+            // state update
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 1);
+
+            // woot
+            g_towerOwners[towerid] = 1;
+            UpdateInDB();
+        }
+        else if(Status == 0 && m_bannerStatus != BANNER_STATUS_HORDE)
+        {
+            m_bannerStatus = BANNER_STATUS_HORDE;
+            SetArtKit();
+
+            // send message to everyone in the zone, has been captured by the Horde
+            _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00%s has been taken by the Horde!|r", ControlPointName);
+
+            // tower update
+            g_hordeTowers++;
+            UpdateTowerCount(_gameobject->GetMapMgr());
+
+            // state update
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 1);
+
+            // woot
+            g_towerOwners[towerid] = 0;
+            UpdateInDB();
+        }
+        else if(m_bannerStatus != BANNER_STATUS_NEUTRAL)
+        {
+            // if the difference for the faction is >50, change to neutral
+            if(m_bannerStatus == BANNER_STATUS_ALLIANCE && Status <= 50)
+            {
+                // send message: The Alliance has lost control of point xxx
+                m_bannerStatus = BANNER_STATUS_NEUTRAL;
+                SetArtKit();
+
+                g_allianceTowers--;
+                UpdateTowerCount(_gameobject->GetMapMgr());
+
+                _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00The Alliance have lost control of %s!|r", ControlPointName);
+
+                // state update
+                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 0);
+                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 1);
+
+                // woot
+                g_towerOwners[towerid] = -1;
+                UpdateInDB();
+            }
+            else if(m_bannerStatus == BANNER_STATUS_HORDE && Status >= 50)
+            {
+                // send message: The Alliance has lost control of point xxx
+                m_bannerStatus = BANNER_STATUS_NEUTRAL;
+                SetArtKit();
+
+                g_hordeTowers--;
+                UpdateTowerCount(_gameobject->GetMapMgr());
+
+                _gameobject->GetMapMgr()->SendPvPCaptureMessage(ZONE_HELLFIRE_PENINSULA, ZONE_HELLFIRE_PENINSULA, "|cffffff00The Horde have lost control of %s!|r", ControlPointName);
+
+                // state update
+                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 0);
+                _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 1);
+
+                // woot
+                g_towerOwners[towerid] = -1;
+                UpdateInDB();
+            }
+        }
+
+        // send any out of range players the disable flag
+        for(it2 = StoredPlayers.begin(); it2 != StoredPlayers.end();)
+        {
+            it3 = it2;
+            ++it2;
+
+            if(it3->second != timeptr)
+            {
+                plr = _gameobject->GetMapMgr()->GetPlayer(it3->first);
+
+                // they WILL be out of range at this point. this is guaranteed. means they left the set rly quickly.
+                if(plr != NULL)
+                    plr->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 0);
+
+                StoredPlayers.erase(it3);
+            }
+        }
+
+        // work out current status for next tick
+        uint32 delta;
+        if(plrcounts[0] > plrcounts[1])
+        {
+            delta = plrcounts[0] - plrcounts[1];
+            delta *= CAPTURE_RATE;
+
+            // cap it at 25 so the banner always gets removed.
+            if(delta > 25)
+                delta = 25;
+
+            Status += delta;
+            if(Status >= 100)
+                Status = 100;
+        }
+        else if(plrcounts[1] > plrcounts[0])
+        {
+            delta = plrcounts[1] - plrcounts[0];
+            delta *= CAPTURE_RATE;
+
+            // cap it at 25 so the banner always gets removed.
+            if(delta > 25)
+                delta = 25;
+
+            if(delta > Status)
+                Status = 0;
+            else
+                Status -= delta;
+        }
+    }
+
+    void SetArtKit()
+    {
+        // big towers
+        static const uint32 artkits_towers[3][3] = { { 69, 67, 68 }, { 63, 62, 61 }, { 66, 65, 64 }, };
+
+        // flag poles
+        static const uint32 artkits_flagpole[3] = { 3, 2, 1 };
+
+        // set away - we don't know the artkits anymore :(((
+        //_gameobject->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_flagpole[m_bannerStatus]);
+        //pBanner->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_towers[towerid][m_bannerStatus]);
+    }
+
+    void OnSpawn()
+    {
+        m_bannerStatus = BANNER_STATUS_NEUTRAL;
+
+        // preloaded data, do we have any?
+        if(g_towerOwners[towerid] == 1)
+        {
+            m_bannerStatus = BANNER_STATUS_HORDE;
+            Status = 0;
+
+            // state update
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_hordeStateFields[towerid], 1);
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
+
+            // countz
+            g_hordeTowers++;
+            UpdateTowerCount(_gameobject->GetMapMgr());
+            SetArtKit();
+        }
+        else if(g_towerOwners[towerid] == 0)
+        {
+            m_bannerStatus = BANNER_STATUS_ALLIANCE;
+            Status = 100;
+
+            // state update
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_allianceStateFields[towerid], 1);
+            _gameobject->GetMapMgr()->GetStateManager().UpdateWorldState(g_neutralStateFields[towerid], 0);
+
+            // countz
+            g_allianceTowers++;
+            UpdateTowerCount(_gameobject->GetMapMgr());
+            SetArtKit();
+        }
+
+        // start the event timer
+        RegisterAIUpdateEvent(UPDATE_PERIOD);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Save Data To DB
+
+    void UpdateInDB()
+    {
+        static const char* fieldnames[TOWER_COUNT] = { "hellfire-stadium-status", "hellfire-overlook-status", "hellfire-brokenhill-status" };
+        const char* msg = "-1";
+        if(Status == 100)
+            msg = "0";
+        else
+            msg = "1";
+
+        WorldStateManager::SetPersistantSetting(fieldnames[towerid], msg);
+    }
 };
 
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Zone Hook
-//////////////////////////////////////////////////////////////////////////
 
 void ZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
 {
@@ -404,9 +401,8 @@ void ZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Object Spawn Data
-//////////////////////////////////////////////////////////////////////////
 
 struct sgodata
 {
@@ -430,23 +426,22 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
 
     const static sgodata godata[] =
     {
-        { 182173, -290.016f, 3702.42f, 56.6729f, 0.0349066f, 0, 0, 0.0174524f, 0.999848f, 1, 32, 0, 1 },            // stadium
-        { 182174, -184.889f, 3476.93f, 38.205f, -0.0174535f, 0, 0, 0.00872664f, -0.999962f, 1, 32, 0, 1 },            // overlook
-        { 182175, -471.462f, 3451.09f, 34.6432f, 0.174533f, 0, 0, 0.0871557f, 0.996195f, 1, 32, 0, 1 },                // brokenhill
+        { 182173, -290.016f, 3702.42f, 56.6729f, 0.0349066f, 0, 0, 0.0174524f, 0.999848f, 1, 32, 0, 1 },                 // stadium
+        { 182174, -184.889f, 3476.93f, 38.205f, -0.0174535f, 0, 0, 0.00872664f, -0.999962f, 1, 32, 0, 1 },               // overlook
+        { 182175, -471.462f, 3451.09f, 34.6432f, 0.174533f, 0, 0, 0.0871557f, 0.996195f, 1, 32, 0, 1 },                  // brokenhill
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     };
 
     const static sgodata godata_banner[] =
     {
-        { 183515, -289.61f, 3696.83f, 75.9447f, 3.12414f, 0, 0, 0.999962f, 0.00872656f, 1, 32, 1375, 1 },                    // stadium
-        { 182525, -187.887f, 3459.38f, 60.0403f, -3.12414f, 0, 0, 0.999962f, -0.00872653f, 1, 32, 1375, 1 },                // overlook
-        { 183514, -467.078f, 3528.17f, 64.7121f, 3.14159f, 0, 0, 1, -4.37114E-8f, 1, 32, 1375, 1 },                        // brokenhill
+        { 183515, -289.61f, 3696.83f, 75.9447f, 3.12414f, 0, 0, 0.999962f, 0.00872656f, 1, 32, 1375, 1 },                // stadium
+        { 182525, -187.887f, 3459.38f, 60.0403f, -3.12414f, 0, 0, 0.999962f, -0.00872653f, 1, 32, 1375, 1 },             // overlook
+        { 183514, -467.078f, 3528.17f, 64.7121f, 3.14159f, 0, 0, 1, -4.37114E-8f, 1, 32, 1375, 1 },                      // brokenhill
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     };
 
-    uint32 i;
     const sgodata* p, *p2;
-    for(i = 0; i < 3; ++i)
+    for(uint32 i = 0; i < 3; ++i)
     {
         p = &godata[i];
         p2 = &godata_banner[i];
@@ -484,7 +479,6 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
     }
 }
 
-
 void SetupPvPHellfirePeninsula(ScriptMgr* mgr)
 {
     // register instance hooker
@@ -500,5 +494,3 @@ void SetupPvPHellfirePeninsula(ScriptMgr* mgr)
     g_towerOwners[TOWER_OVERLOOK] = atoi(toverlook.c_str());
     g_towerOwners[TOWER_BROKENHILL] = atoi(tbrokenhill.c_str());
 }
-
-
