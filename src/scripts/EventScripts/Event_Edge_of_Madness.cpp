@@ -14,7 +14,7 @@ enum
 
     SPELL_THOUSANDBLADES = 34799,
     SPELL_AMBUSH = 34794,
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Edge of Madness, Gri'lek</b>\n
