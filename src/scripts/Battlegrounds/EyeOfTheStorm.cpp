@@ -80,10 +80,10 @@ const float EOTSCPLocations3[EOTS_TOWER_COUNT][4] =
 
 const float EOTSTCLocations[EOTS_TOWER_COUNT][3] =
 {
-    { 2050.49f, 1372.23f, 1194.56f },            // BE Tower
-    { 2024.24f, 1742.48f, 1195.15f },            // Fel Reaver Ruins
-    { 2282.12f, 1755.00f, 1189.70f },            // Mage Tower
-    { 2301.01f, 1386.93f, 1197.18f },            // Draenei Ruins
+    { 2050.49f, 1372.23f, 1194.56f },                  // BE Tower
+    { 2024.24f, 1742.48f, 1195.15f },                  // Fel Reaver Ruins
+    { 2282.12f, 1755.00f, 1189.70f },                  // Mage Tower
+    { 2301.01f, 1386.93f, 1197.18f },                  // Draenei Ruins
 };
 
 const float EOTSFlagLocation[3] = { 2174.718750f, 1568.766113f, 1159.958740f };
