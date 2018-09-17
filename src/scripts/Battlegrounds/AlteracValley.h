@@ -1,21 +1,6 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #pragma once
@@ -146,120 +131,121 @@ enum CreatureEntry
 
 class AlteracValley : public CBattleground
 {
-    protected:
+protected:
 
-        std::list<GameObject*> m_gates;
-        uint32 m_reinforcements[2];
-        bool m_nearingVictory[2];
-        inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
-    public:
+    std::list<GameObject*> m_gates;
+    uint32 m_reinforcements[2];
+    bool m_nearingVictory[2];
+    inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
+public:
 
-        AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
-        ~AlteracValley();
+    AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    ~AlteracValley();
 
-        void EventAssaultControlPoint(uint32 x);
+    void EventAssaultControlPoint(uint32 x);
 
-        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr) override;
-        void HookFlagDrop(Player* plr, GameObject* obj) override;
-        void HookFlagStand(Player* plr, GameObject* obj) override;
-        void HookOnMount(Player* plr) override;
-        void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
-        bool HookHandleRepop(Player* plr) override;
-        void OnAddPlayer(Player* plr) override;
-        void OnRemovePlayer(Player* plr) override;
-        void OnCreate() override;
-        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
-        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
-        void HookOnHK(Player* plr) override;
-        LocationVector GetStartingCoords(uint32 Team) override;
-        void DropFlag(Player* plr);
+    bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
+    void HookOnPlayerDeath(Player* plr) override;
+    void HookFlagDrop(Player* plr, GameObject* obj) override;
+    void HookFlagStand(Player* plr, GameObject* obj) override;
+    void HookOnMount(Player* plr) override;
+    void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+    bool HookHandleRepop(Player* plr) override;
+    void OnAddPlayer(Player* plr) override;
+    void OnRemovePlayer(Player* plr) override;
+    void OnCreate() override;
+    void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+    void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+    void HookOnHK(Player* plr) override;
+    LocationVector GetStartingCoords(uint32 Team) override;
+    void DropFlag(Player* plr);
 
-        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
+    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
 
-        const char* GetName() { return "Alterac Valley"; }
-        void OnStart() override;
+    const char* GetName() { return "Alterac Valley"; }
+    void OnStart() override;
 
-        void EventUpdateResources();
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
+    void EventUpdateResources();
+    bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
-        // AV Functions
-        void AddReinforcements(uint32 teamId, uint32 amt);
-        void RemoveReinforcements(uint32 teamId, uint32 amt);
-        void Finish(uint32 losingTeam);
+    // AV Functions
+    void AddReinforcements(uint32 teamId, uint32 amt);
+    void RemoveReinforcements(uint32 teamId, uint32 amt);
+    void Finish(uint32 losingTeam);
 
-        // loot
-        bool SupportsPlayerLoot() { return true; }
-        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
+    // loot
+    bool SupportsPlayerLoot() { return true; }
+    void HookGenerateLoot(Player* plr, Object* pCorpse) override;
 
-        // herald
-        void Herald(const char* format, ...);
+    // herald
+    void Herald(const char* format, ...);
 
-        void HookOnFlagDrop(Player* plr) override;
-        void HookOnShadowSight() override;
+    void HookOnFlagDrop(Player* plr) override;
+    void HookOnShadowSight() override;
 
-        class AVNode
-        {
-            AlteracValley* m_bg;
-            AVNodeTemplate* m_template;
+    class AVNode
+    {
+        AlteracValley* m_bg;
+        AVNodeTemplate* m_template;
 
-            // boss, changes ownership upon death?
-            Creature* m_boss;
+        // boss, changes ownership upon death?
+        Creature* m_boss;
 
-            // guards, need to be respawned when changes ownership
-            std::vector<Creature*> m_guards;
+        // guards, need to be respawned when changes ownership
+        std::vector<Creature*> m_guards;
 
-            ///\todo  peon locations, used in mines
-            std::vector<Creature*> m_peonLocations;
+        ///\todo  peon locations, used in mines
+        std::vector<Creature*> m_peonLocations;
 
-            // control point (capturable)
-            GameObject* m_flag;
+        // control point (capturable)
+        GameObject* m_flag;
 
-            // aura (light-shiny stuff)
-            GameObject* m_aura;
-            GameObject* m_glow;
+        // aura (light-shiny stuff)
+        GameObject* m_aura;
+        GameObject* m_glow;
 
-            // home NPc
-            Creature* m_homeNPC;
+        // home NPc
+        Creature* m_homeNPC;
 
-            // destroyed flag (prevent all actions)
-            bool m_destroyed;
+        // destroyed flag (prevent all actions)
+        bool m_destroyed;
 
-            // state
-            uint32 m_state;
-            uint32 m_lastState;
-            uint32 m_nodeId;
+        // state
+        uint32 m_state;
+        uint32 m_lastState;
+        uint32 m_nodeId;
 
-            // spirit guides
-            Creature* m_spiritGuide;
+        // spirit guides
+        Creature* m_spiritGuide;
 
-            public:
+public:
 
-                friend class AlteracValley;
+        friend class AlteracValley;
 
-                // constructor
-                AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
-                ~AVNode();
+        // constructor
+        AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
+        ~AVNode();
 
-                // initial spawn
-                void Spawn();
+        // initial spawn
+        void Spawn();
 
-                // assault
-                void Assault(Player* plr);
+        // assault
+        void Assault(Player* plr);
 
-                // capture event
-                void Capture();
+        // capture event
+        void Capture();
 
-                // spawn guards
-                void SpawnGuards(uint32 x);
+        // spawn guards
+        void SpawnGuards(uint32 x);
 
-                // state change
-                void ChangeState(uint32 new_state);
+        // state change
+        void ChangeState(uint32 new_state);
 
-                // spawn home buff guard
-                void SpawnHomeGuard();
-            };
-        protected:
+        // spawn home buff guard
+        void SpawnHomeGuard();
+    };
+	
+protected:
 
-            AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
+    AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };
