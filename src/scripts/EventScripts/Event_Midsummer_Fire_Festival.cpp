@@ -60,8 +60,8 @@ enum MidsummerSpells
 };
 
 // Text
-#define TEXT_AHUNE_SUBMERGE "Ahune Retreats. His defenses diminish."
-#define TEXT_AHUNE_EMERGE_W "Ahune will soon resurface."
+//#define TEXT_AHUNE_SUBMERGE "Ahune Retreats. His defenses diminish."
+//#define TEXT_AHUNE_EMERGE_W "Ahune will soon resurface."
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bonfire

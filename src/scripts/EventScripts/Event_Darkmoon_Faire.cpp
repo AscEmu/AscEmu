@@ -220,7 +220,6 @@ public:
     }
 };
 
-
 // Flik's Frog
 class FliksFrog_Gossip : public Arcemu::Gossip::Script
 {
@@ -246,7 +245,6 @@ public:
     }
 };
 
-
 class GelvasGrimegate_Bark : public CreatureAIScript
 {
 public:
@@ -265,7 +263,6 @@ public:
         setRandomIdleEmoteTime(180000, 300000);
     }
 };
-
 
 class Lhara_Bark : public CreatureAIScript
 {
@@ -286,7 +283,6 @@ public:
     }
 };
 
-
 class MaximaBlastenheimer_Gossip : public Arcemu::Gossip::Script
 {
 public:
@@ -304,7 +300,6 @@ public:
         menu.Send(plr);
     }
 };
-
 
 class Morja_Bark : public CreatureAIScript
 {
@@ -326,6 +321,7 @@ public:
 class ProfessorThaddeusPaleo_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
@@ -389,7 +385,6 @@ public:
     }
 };
 
-
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
 public:
@@ -408,7 +403,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 // Sayge
 /// \todo find correct text in npc_text.
@@ -569,7 +563,6 @@ public:
             }break;
             case 30:
             {
-
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60033, plr->GetSession()->language);
                 menu.Send(plr);
                 // Cast the fortune into the player's inventory - Not working?
@@ -625,7 +618,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 // Selina Dourman
 /// \ todo find right gossip text in npc_text.
@@ -683,7 +675,6 @@ public:
     }
 };
 
-
 class SilasDarkmoon_Gossip : public Arcemu::Gossip::Script
 {
 public:
@@ -700,7 +691,6 @@ public:
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7336, plr);
     }
 };
-
 
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
@@ -723,7 +713,6 @@ public:
     }
 };
 
-
 class StampThunderhorn_Bark : public CreatureAIScript
 {
 public:
@@ -744,7 +733,6 @@ public:
     }
 };
 
-
 class Sylannia_Bark : public CreatureAIScript
 {
 public:
@@ -763,7 +751,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 void SetupDarkmoonFaire(ScriptMgr* mgr)
 {
