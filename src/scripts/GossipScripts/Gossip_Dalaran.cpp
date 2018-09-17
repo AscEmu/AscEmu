@@ -43,7 +43,6 @@ public:
     }
 };
 
-
 void SetupDalaranGossip(ScriptMgr* mgr)
 {
     mgr->register_gameobject_script(GO_DEDICATION_OF_HONOR, &DedicationOfHonorAI::Create);
