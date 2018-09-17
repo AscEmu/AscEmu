@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/Gossip.h"
 #include "Objects/ObjectMgr.h"
 
-
 class StormwindGuard : public Arcemu::Gossip::Script
 {
 public:
@@ -428,99 +427,118 @@ public:
 
 void SetupGuardGossip(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* goldshireGuard = new GoldshireGuard();
-    mgr->register_creature_gossip(1423, goldshireGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // GoldshireGuard
+    mgr->register_creature_gossip(1423, new GoldshireGuard());
 
-    Arcemu::Gossip::Script* stormwindGuard = new StormwindGuard();
-    mgr->register_creature_gossip(68, stormwindGuard);
-    mgr->register_creature_gossip(1976, stormwindGuard);
-    mgr->register_creature_gossip(29712, stormwindGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // StormwindGuard
+    mgr->register_creature_gossip(68, new StormwindGuard());
+    mgr->register_creature_gossip(1976, new StormwindGuard());
+    mgr->register_creature_gossip(29712, new StormwindGuard());
 
-    Arcemu::Gossip::Script* darnassusGuard = new DarnassusGuard();
-    mgr->register_creature_gossip(4262, darnassusGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // DarnassusGuard
+    mgr->register_creature_gossip(4262, new DarnassusGuard());
 
-    Arcemu::Gossip::Script* undercityGuard = new UndercityGuard();
-    mgr->register_creature_gossip(5624, undercityGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // UndercityGuard
+    mgr->register_creature_gossip(5624, new UndercityGuard());
 
-    Arcemu::Gossip::Script* undercityGuardOverseer = new UndercityGuardOverseer();
-    mgr->register_creature_gossip(36213, undercityGuardOverseer);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // UndercityGuardOverseer
+    mgr->register_creature_gossip(36213, new UndercityGuardOverseer());
 
-    Arcemu::Gossip::Script* teldrassilGuard = new TeldrassilGuard();
-    mgr->register_creature_gossip(3571, teldrassilGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // TeldrassilGuard
+    mgr->register_creature_gossip(3571, new TeldrassilGuard());
 
-    Arcemu::Gossip::Script* silvermoonGuard = new SilvermoonGuard();
-    mgr->register_creature_gossip(16222, silvermoonGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // SilvermoonGuard
+    mgr->register_creature_gossip(16222, new SilvermoonGuard());
 
-    Arcemu::Gossip::Script* exodarGuard = new ExodarGuard();
-    mgr->register_creature_gossip(16733, exodarGuard);
-    mgr->register_creature_gossip(20674, exodarGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ExodarGuard
+    mgr->register_creature_gossip(16733, new ExodarGuard());
+    mgr->register_creature_gossip(20674, new ExodarGuard());
 
-    Arcemu::Gossip::Script* orgrimmarGuard = new OrgrimmarGuard();
-    mgr->register_creature_gossip(3296, orgrimmarGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // OrgrimmarGuard
+    mgr->register_creature_gossip(3296, new OrgrimmarGuard());
 
-    Arcemu::Gossip::Script* thunderbluffGuard = new ThunderbluffGuard();
-    mgr->register_creature_gossip(3084, thunderbluffGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ThunderbluffGuard
+    mgr->register_creature_gossip(3084, new ThunderbluffGuard());
 
-    Arcemu::Gossip::Script* bloodhoofGuard = new BloodhoofGuard();
-    mgr->register_creature_gossip(3222, bloodhoofGuard);
-    mgr->register_creature_gossip(3224, bloodhoofGuard);
-    mgr->register_creature_gossip(3220, bloodhoofGuard);
-    mgr->register_creature_gossip(3219, bloodhoofGuard);
-    mgr->register_creature_gossip(3217, bloodhoofGuard);
-    mgr->register_creature_gossip(3215, bloodhoofGuard);
-    mgr->register_creature_gossip(3218, bloodhoofGuard);
-    mgr->register_creature_gossip(3221, bloodhoofGuard);
-    mgr->register_creature_gossip(3223, bloodhoofGuard);
-    mgr->register_creature_gossip(3212, bloodhoofGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // BloodhoofGuard
+    mgr->register_creature_gossip(3222, new BloodhoofGuard());
+    mgr->register_creature_gossip(3224, new BloodhoofGuard());
+    mgr->register_creature_gossip(3220, new BloodhoofGuard());
+    mgr->register_creature_gossip(3219, new BloodhoofGuard());
+    mgr->register_creature_gossip(3217, new BloodhoofGuard());
+    mgr->register_creature_gossip(3215, new BloodhoofGuard());
+    mgr->register_creature_gossip(3218, new BloodhoofGuard());
+    mgr->register_creature_gossip(3221, new BloodhoofGuard());
+    mgr->register_creature_gossip(3223, new BloodhoofGuard());
+    mgr->register_creature_gossip(3212, new BloodhoofGuard());
 
-    Arcemu::Gossip::Script* razorHillGuard = new RazorHillGuard();
-    mgr->register_creature_gossip(5953, razorHillGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // RazorHillGuard
+    mgr->register_creature_gossip(5953, new RazorHillGuard());
 
-    Arcemu::Gossip::Script* brillGuard = new BrillGuard();
-    mgr->register_creature_gossip(5725, brillGuard);
-    mgr->register_creature_gossip(1738, brillGuard);
-    mgr->register_creature_gossip(1652, brillGuard);
-    mgr->register_creature_gossip(1746, brillGuard);
-    mgr->register_creature_gossip(1745, brillGuard);
-    mgr->register_creature_gossip(1743, brillGuard);
-    mgr->register_creature_gossip(1744, brillGuard);
-    mgr->register_creature_gossip(1496, brillGuard);
-    mgr->register_creature_gossip(1742, brillGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // BrillGuard
+    mgr->register_creature_gossip(5725, new BrillGuard());
+    mgr->register_creature_gossip(1738, new BrillGuard());
+    mgr->register_creature_gossip(1652, new BrillGuard());
+    mgr->register_creature_gossip(1746, new BrillGuard());
+    mgr->register_creature_gossip(1745, new BrillGuard());
+    mgr->register_creature_gossip(1743, new BrillGuard());
+    mgr->register_creature_gossip(1744, new BrillGuard());
+    mgr->register_creature_gossip(1496, new BrillGuard());
+    mgr->register_creature_gossip(1742, new BrillGuard());
 
-    Arcemu::Gossip::Script* ironforgeGuard = new IronforgeGuard();
-    mgr->register_creature_gossip(5595, ironforgeGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // IronforgeGuard
+    mgr->register_creature_gossip(5595, new IronforgeGuard());
 
-    Arcemu::Gossip::Script* kharanosGuard = new KharanosGuard();
-    mgr->register_creature_gossip(727, kharanosGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // KharanosGuard
+    mgr->register_creature_gossip(727, new KharanosGuard());
 
-    Arcemu::Gossip::Script* falconwingGuard = new FalconwingGuard();
-    mgr->register_creature_gossip(16221, falconwingGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // FalconwingGuard
+    mgr->register_creature_gossip(16221, new FalconwingGuard());
 
-    Arcemu::Gossip::Script* azureWatchGuard = new AzureWatchGuard();
-    mgr->register_creature_gossip(18038, azureWatchGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AzureWatchGuard
+    mgr->register_creature_gossip(18038, new AzureWatchGuard());
 
-    Arcemu::Gossip::Script* shattrathGuard = new ShattrathGuard();
-    mgr->register_creature_gossip(19687, shattrathGuard);
-    mgr->register_creature_gossip(18568, shattrathGuard);
-    mgr->register_creature_gossip(18549, shattrathGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ShattrathGuard
+    mgr->register_creature_gossip(19687, new ShattrathGuard());
+    mgr->register_creature_gossip(18568, new ShattrathGuard());
+    mgr->register_creature_gossip(18549, new ShattrathGuard());
 
-    Arcemu::Gossip::Script* dalaranGuard = new DalaranGuard();
-    mgr->register_creature_gossip(32675, dalaranGuard);
-    mgr->register_creature_gossip(32676, dalaranGuard);
-    mgr->register_creature_gossip(32677, dalaranGuard);
-    mgr->register_creature_gossip(32678, dalaranGuard);
-    mgr->register_creature_gossip(32679, dalaranGuard);
-    mgr->register_creature_gossip(32680, dalaranGuard);
-    mgr->register_creature_gossip(32681, dalaranGuard);
-    mgr->register_creature_gossip(32683, dalaranGuard);
-    mgr->register_creature_gossip(32684, dalaranGuard);
-    mgr->register_creature_gossip(32685, dalaranGuard);
-    mgr->register_creature_gossip(32686, dalaranGuard);
-    mgr->register_creature_gossip(32687, dalaranGuard);
-    mgr->register_creature_gossip(32688, dalaranGuard);
-    mgr->register_creature_gossip(32689, dalaranGuard);
-    mgr->register_creature_gossip(32690, dalaranGuard);
-    mgr->register_creature_gossip(32691, dalaranGuard);
-    mgr->register_creature_gossip(32692, dalaranGuard);
-    mgr->register_creature_gossip(32693, dalaranGuard);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // DalaranGuard
+    mgr->register_creature_gossip(32675, new DalaranGuard());
+    mgr->register_creature_gossip(32676, new DalaranGuard());
+    mgr->register_creature_gossip(32677, new DalaranGuard());
+    mgr->register_creature_gossip(32678, new DalaranGuard());
+    mgr->register_creature_gossip(32679, new DalaranGuard());
+    mgr->register_creature_gossip(32680, new DalaranGuard());
+    mgr->register_creature_gossip(32681, new DalaranGuard());
+    mgr->register_creature_gossip(32683, new DalaranGuard());
+    mgr->register_creature_gossip(32684, new DalaranGuard());
+    mgr->register_creature_gossip(32685, new DalaranGuard());
+    mgr->register_creature_gossip(32686, new DalaranGuard());
+    mgr->register_creature_gossip(32687, new DalaranGuard());
+    mgr->register_creature_gossip(32688, new DalaranGuard());
+    mgr->register_creature_gossip(32689, new DalaranGuard());
+    mgr->register_creature_gossip(32690, new DalaranGuard());
+    mgr->register_creature_gossip(32691, new DalaranGuard());
+    mgr->register_creature_gossip(32692, new DalaranGuard());
+    mgr->register_creature_gossip(32693, new DalaranGuard());
 }
