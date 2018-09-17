@@ -20,9 +20,17 @@
 
 #include "Setup.h"
 
+enum
+{
+    GO_MEAT = 181291,
+    GO_BOTTLE = 2687,
+    GO_BREAD = 2562
+};
+
 class StrFever : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -53,6 +61,7 @@ public:
 class Beka : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Beka);
     Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -89,6 +98,7 @@ public:
 class Beka1 : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Beka1);
     Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -125,6 +135,7 @@ public:
 class Beka2 : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Beka2);
     Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -218,11 +229,6 @@ public:
     }
 };
 
-#define GO_MEAT 181291
-#define GO_BOTTLE 2687
-#define GO_BREAD 2562
-
-
 static Movement::Location MeatSpawnPoints[] =
 {
     { -14655.1f, 148.229f, 3.01744f, 3.45635f},
@@ -288,6 +294,7 @@ class FacingNegolash : public QuestScript
 class NegolashAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
 
     NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -300,11 +307,9 @@ public:
     }
 };
 
-
 void SetupStranglethornVale(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* gossip1 = new StrFever();
-    mgr->register_creature_gossip(1449, gossip1);
+    mgr->register_creature_gossip(1449, new StrFever());
 
     mgr->register_creature_script(1511, &Beka::Create);
     mgr->register_creature_script(1516, &Beka1::Create);

@@ -38,7 +38,6 @@ public:
     }
 };
 
-
 void SetupAzuremystIsle(ScriptMgr* mgr)
 {
     mgr->register_creature_script(17189, &ChieftainOomoorooQAI::Create);

@@ -14,10 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Customization/SpellCustomizations.hpp>
 
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Quest: Rite of Vision
 //
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Plain Visions Encounter
 static Movement::Location WaypointPlainVision[] =
 {
@@ -74,7 +75,6 @@ public:
 
     uint8 WPCount;
 };
-
 
 void SetupMulgore(ScriptMgr* mgr)
 {

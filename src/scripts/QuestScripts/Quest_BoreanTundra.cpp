@@ -20,7 +20,16 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
- // Call to Arms!
+enum 
+{
+    NPC_SURRISTRASZ = 24795,
+    GI_SURRISTRASZ = 191,   // "May I use a drake to fly elsewhere?"   
+
+    //SPELL_ABMER_TO_COLDARRA = 46064
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Call to Arms!
 class BellRope : public GameObjectAIScript
 {
 public:
@@ -34,6 +43,7 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Reading the Meters
 class ColdarraGeoMonitorNexus : public GameObjectAIScript
 {
@@ -87,6 +97,7 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Neutralizing the Cauldrons
 const uint32 CN_PURIFYING_TOTEM = 25494;
 
@@ -101,7 +112,7 @@ class PurifyingTotemAI : public CreatureAIScript
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Cutting Off the Source
 class NerubarEggSac : public GameObjectAIScript
 {
@@ -120,7 +131,7 @@ public:
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Bury Those Cockroaches!
 class SeaforiumDepthCharge : public CreatureAIScript
 {
@@ -179,7 +190,7 @@ class SeaforiumDepthCharge : public CreatureAIScript
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Hatching a Plan
 class BlueDragonEgg : public GameObjectAIScript
 {
@@ -199,7 +210,7 @@ public:
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Quest: The Machagnomes
 enum eFizzcrank
 {
@@ -220,7 +231,6 @@ enum eFizzcrank
 
     QUEST_THE_MECHAGNOMES = 11708
 };
-
 
 class FizzcrankGossip : public Arcemu::Gossip::Script
 {
@@ -295,16 +305,7 @@ public:
     }
 };
 
-
-//GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield." this is not blizzlike...
-enum eSurristrasz
-{
-    NPC_SURRISTRASZ = 24795,
-    GI_SURRISTRASZ = 191,   // "May I use a drake to fly elsewhere?"   
-
-    SPELL_ABMER_TO_COLDARRA = 46064
-};
-
+///\todo: GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield." this is not blizzlike...
 class SurristraszGossip : public Arcemu::Gossip::Script
 {
 public:
@@ -361,6 +362,7 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // North Point Station Valve
 class NorthPointStationValve : public GameObjectAIScript
 {
@@ -389,6 +391,7 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Fizzcrank Pumping Station Valve
 class FizzcrankPumpingStationValve : public GameObjectAIScript
 {
@@ -417,6 +420,7 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // South Point Station Valve
 class SouthPointStationValve : public GameObjectAIScript
 {
@@ -540,6 +544,7 @@ protected:
     uint32 phase;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Hunt Is On (Quest: 11794)
 const uint32 questHuntIsOn = 11794;
 
@@ -650,6 +655,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 class Worm : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Worm);
     Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -660,7 +666,6 @@ public:
         getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
     }
 };
-
 
 void SetupBoreanTundra(ScriptMgr* mgr)
 {

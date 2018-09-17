@@ -24,6 +24,7 @@
 class BeatenCorpse : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(4921))
@@ -54,6 +55,7 @@ public:
 class Wizzlecranks_Shredder : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder);
     Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -80,6 +82,7 @@ public:
 class Gilthares_Firebough : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough);
     Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -107,6 +110,7 @@ int kolkarskilled = 0;
 class VerogtheDervish : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish);
     VerogtheDervish(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
@@ -129,8 +133,7 @@ public:
 
 void SetupBarrens(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* gos = new BeatenCorpse();
-    mgr->register_creature_gossip(10668, gos);
+    mgr->register_creature_gossip(10668, new BeatenCorpse());
 
     mgr->register_creature_script(3439, &Wizzlecranks_Shredder::Create);
     mgr->register_creature_script(3465, &Gilthares_Firebough::Create);

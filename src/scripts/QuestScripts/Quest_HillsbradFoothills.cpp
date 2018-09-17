@@ -54,6 +54,7 @@ public:
 class Baron_Vardus : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Baron_Vardus);
     Baron_Vardus(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -62,7 +63,6 @@ public:
         BaronVardusAllowSpawn = true;
     }
 };
-
 
 void SetupHillsbradFoothills(ScriptMgr* mgr)
 {

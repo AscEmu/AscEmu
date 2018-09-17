@@ -32,7 +32,6 @@ public:
     }
 };
 
-
 void SetupBurningSteppes(ScriptMgr* mgr)
 {
     mgr->register_quest_script(4296, new TabletOfTheSeven);

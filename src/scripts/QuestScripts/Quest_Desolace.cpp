@@ -23,6 +23,7 @@
 class Dalinda_Malem : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Dalinda_Malem);
     Dalinda_Malem(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -45,7 +46,6 @@ public:
         }
     }
 };
-
 
 void SetupDesolace(ScriptMgr* mgr)
 {

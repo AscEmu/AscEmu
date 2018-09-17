@@ -49,7 +49,6 @@ public:
     }
 };
 
-
 void SetupArathiHighlands(ScriptMgr* mgr)
 {
     mgr->register_creature_script(2768, &Professor_Phizzlethorpe::Create);

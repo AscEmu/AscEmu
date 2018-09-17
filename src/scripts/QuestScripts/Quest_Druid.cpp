@@ -19,15 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- /**********************
- Edits by : FenixGman
- **********************/
+
 #include "Setup.h"
 
+enum 
+{
+    // Lunaclaw ghost gossip
+    //GOSSIP_GHOST_MOONKIN "You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart."
+};
 
 class Lunaclaw : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw);
 
     Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -44,9 +48,6 @@ public:
             ct->Despawn(1 * 60 * 1000, 0);
     }
 };
-
-// Lunaclaw ghost gossip
-#define GOSSIP_GHOST_MOONKIN    "You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart."
 
 class MoonkinGhost_Gossip : public Arcemu::Gossip::Script
 {
@@ -113,10 +114,10 @@ public:
     }
 };
 
-
 class SCRIPT_DECL BearGhost_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
@@ -213,13 +214,13 @@ public:
 class MoongladeQuest : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget->HasSpell(19027))
             mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);
     }
 };
-
 
 void SetupDruid(ScriptMgr* mgr)
 {
@@ -228,10 +229,6 @@ void SetupDruid(ScriptMgr* mgr)
     mgr->register_quest_script(5922, Moonglade);
     mgr->register_creature_script(12138, &Lunaclaw::Create);
 
-    //Register gossip scripts
-    Arcemu::Gossip::Script* MoonkinGhostGossip = new MoonkinGhost_Gossip();
-    Arcemu::Gossip::Script* BearGhostGossip = new BearGhost_Gossip();
-
-    mgr->register_creature_gossip(12144, MoonkinGhostGossip); // Ghost of Lunaclaw
-    mgr->register_creature_gossip(11956, BearGhostGossip); // Great Bear Spirit
+    mgr->register_creature_gossip(12144, new MoonkinGhost_Gossip()); // Ghost of Lunaclaw
+    mgr->register_creature_gossip(11956, new BearGhost_Gossip()); // Great Bear Spirit
 }

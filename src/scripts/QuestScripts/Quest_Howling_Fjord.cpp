@@ -23,6 +23,7 @@
 class NorthFleet : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
     NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -37,6 +38,7 @@ public:
 class ChillmereScourge : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
     ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -51,6 +53,7 @@ public:
 class Baleheim : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
     Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -66,13 +69,14 @@ public:
 class Plaguethis_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
-        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
+        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2); // Where would you like to fly too ?
 
         if (plr->HasQuest(11332))
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1);     // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1); // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
 
         menu.Send(plr);
     }
@@ -120,11 +124,9 @@ public:
     }
 };
 
-
 void SetupHowlingFjord(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* Plague = new Plaguethis_Gossip();
-    mgr->register_creature_gossip(23859, Plague);
+    mgr->register_creature_gossip(23859, new Plaguethis_Gossip());
 
     mgr->register_creature_script(23643, &ChillmereScourge::Create);
     mgr->register_creature_script(23645, &ChillmereScourge::Create);

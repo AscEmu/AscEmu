@@ -203,7 +203,6 @@ public:
     }
 };
 
-
 void SetupBloodmystIsle(ScriptMgr* mgr)
 {
     mgr->register_quest_script(9663, new TheKesselRun());
