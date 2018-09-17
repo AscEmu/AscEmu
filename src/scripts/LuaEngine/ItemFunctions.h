@@ -28,7 +28,8 @@
 
 namespace luaItem
 {
-    ///////GOSSIP///////
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // GOSSIP
     int GossipCreateMenu(lua_State* L, Item* ptr)
     {
         uint32 text_id = static_cast<uint32>(luaL_checkinteger(L, 1));

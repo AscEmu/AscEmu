@@ -954,7 +954,6 @@ public:
     }
 };
 
-
 void SetupGoHandlers(ScriptMgr* mgr)
 {
     mgr->register_gameobject_script(179879, &OrbOfCommand::Create);
