@@ -24,6 +24,7 @@
 class PaladinDeadNPC : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(PaladinDeadNPC);
     PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -38,6 +39,7 @@ public:
 class GildedBrazier : public GameObjectAIScript
 {
 public:
+
     GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GildedBrazier(GO); }
 
@@ -67,6 +69,7 @@ public:
 class stillbladeQAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(stillbladeQAI);
     stillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -85,7 +88,6 @@ public:
         }
     }
 };
-
 
 void SetupPaladin(ScriptMgr* mgr)
 {

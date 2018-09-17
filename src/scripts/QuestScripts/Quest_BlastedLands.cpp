@@ -23,6 +23,7 @@
 class HeroesofOld : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* spawncheckcr = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
@@ -48,6 +49,7 @@ public:
 class HeroesofOld1 : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (!plr)
@@ -96,7 +98,6 @@ public:
     }
 
 };
-
 
 void SetupBlastedLands(ScriptMgr* mgr)
 {

@@ -97,6 +97,7 @@ public:
 class PrisonersatDeatholme : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme);
     PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -110,6 +111,7 @@ public:
 class VanquishingAquantion : public GameObjectAIScript
 {
 public:
+
     VanquishingAquantion(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VanquishingAquantion(GO); }
 
@@ -124,7 +126,6 @@ public:
         naga->Despawn(6 * 60 * 1000, 0);
     }
 };
-
 
 void SetupGhostlands(ScriptMgr* mgr)
 {

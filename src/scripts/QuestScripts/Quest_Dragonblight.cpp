@@ -22,6 +22,7 @@
 class WoodlandWalker : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker);
     WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -32,6 +33,7 @@ public:
 class WoodlandWalkerGossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
@@ -55,6 +57,7 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
+
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
 #if VERSION_STRING > TBC
@@ -65,15 +68,12 @@ public:
     }
 };
 
-
 void SetupDragonblight(ScriptMgr* mgr)
 {
     mgr->register_creature_script(26421, &WoodlandWalker::Create);
 
-    Arcemu::Gossip::Script* WW = new WoodlandWalkerGossip();
-    mgr->register_creature_gossip(26421, WW);
+    mgr->register_creature_gossip(26421, new WoodlandWalkerGossip());
 
-    QuestScript* WrathGateCinema = new WrathGateQuestCinema();
-    mgr->register_quest_script(12499, WrathGateCinema);
-    mgr->register_quest_script(12500, WrathGateCinema);
+    mgr->register_quest_script(12499, new WrathGateQuestCinema());
+    mgr->register_quest_script(12500, new WrathGateQuestCinema());
 }

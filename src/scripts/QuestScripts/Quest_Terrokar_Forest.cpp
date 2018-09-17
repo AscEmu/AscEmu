@@ -24,6 +24,7 @@
 class ThreatFromAboveQAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI);
     ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -95,6 +96,7 @@ private:
 class TakenInTheNight : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight);
 
     TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -157,6 +159,7 @@ public:
 class AnImproperBurial : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial);
 
     AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -172,6 +175,7 @@ public:
 class TheMomentofTruth : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -189,7 +193,6 @@ public:
     }
 };
 
-
 void SetupTerrokarForest(ScriptMgr* mgr)
 {
     mgr->register_creature_script(22144, &ThreatFromAboveQAI::Create);
@@ -201,6 +204,5 @@ void SetupTerrokarForest(ScriptMgr* mgr)
     mgr->register_creature_script(22307, &TheInfestedProtectorsQAI::Create);
     mgr->register_creature_script(22095, &TheInfestedProtectorsQAI::Create);
 
-    Arcemu::Gossip::Script* gossip1 = new TheMomentofTruth();
-    mgr->register_creature_gossip(19606, gossip1);
+    mgr->register_creature_gossip(19606, new TheMomentofTruth());
 }

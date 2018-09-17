@@ -79,7 +79,6 @@ public:
     }
 };
 
-
 void SetupStonetalonMountains(ScriptMgr* mgr)
 {
     mgr->register_quest_script(6523, new ProtectKaya());

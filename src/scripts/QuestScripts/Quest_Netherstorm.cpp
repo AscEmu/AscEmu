@@ -23,6 +23,7 @@
 class Veronia : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10652))
@@ -39,7 +40,6 @@ public:
         creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
     }
 };
-
 
 void SetupNetherstorm(ScriptMgr* mgr)
 {

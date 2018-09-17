@@ -21,9 +21,25 @@
 
 #include "Setup.h"
 
+enum
+{
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Deathbringer Jovaan
+    CN_DEATHBRINGER_JOVAAN = 21633,
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Warbringer Razuun
+    CN_WARBRINGER_RAZUUN = 21502,
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Warbringer Razuun
+    CN_ENSLAVED_NETHERWING_DRAKE = 21722,
+};
+
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
     InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -39,6 +55,7 @@ public:
 class KneepadsQAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
     KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -52,11 +69,7 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Deathbringer Jovaan
-const uint32 CN_DEATHBRINGER_JOVAAN = 21633;
-
-//WP Coords Wait Times
+// WP Coords Wait Times
 struct WPWaitTimes
 {
     Movement::Location mCoords;
@@ -75,6 +88,7 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 class DeathbringerJovaanAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
     DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -175,13 +189,10 @@ public:
     int32    mJovaanPhase;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Warbringer Razuun
-#define CN_WARBRINGER_RAZUUN    21502
-
 class WarbringerRazuunAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
     WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -244,10 +255,10 @@ public:
     int32 mRazuunPhase;
 };
 
-
 class NeltharakusTale_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10814))
@@ -290,13 +301,10 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Warbringer Razuun
-const uint32 CN_ENSLAVED_NETHERWING_DRAKE = 21722;
-
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
     EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -315,10 +323,10 @@ public:
     }
 };
 
-
 class KarynakuChains : public GameObjectAIScript
 {
 public:
+
     KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
@@ -335,11 +343,12 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Flanis Swiftwing
+//////////////////////////////////////////////////////////////////////////////////////////
+// Flanis Swiftwing
 class FlanisSwiftwing_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override;
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
 };
@@ -373,7 +382,6 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     }
 };
 
-
 void SetupShadowmoon(ScriptMgr* mgr)
 {
     mgr->register_creature_script(11980, &InfiltratingDragonmawFortressQAI::Create);
@@ -394,9 +402,6 @@ void SetupShadowmoon(ScriptMgr* mgr)
 
     mgr->register_gameobject_script(185156, &KarynakuChains::Create);
 
-    Arcemu::Gossip::Script* NeltharakusTaleGossip = new NeltharakusTale_Gossip();
-    mgr->register_creature_gossip(21657, NeltharakusTaleGossip);
-
-    Arcemu::Gossip::Script* FlanisSwiftwingGossip = new FlanisSwiftwing_Gossip();
-    mgr->register_creature_gossip(21727, FlanisSwiftwingGossip); //Add Flanis' Pack
+    mgr->register_creature_gossip(21657, new NeltharakusTale_Gossip());
+    mgr->register_creature_gossip(21727, new FlanisSwiftwing_Gossip()); // Add Flanis' Pack
 }

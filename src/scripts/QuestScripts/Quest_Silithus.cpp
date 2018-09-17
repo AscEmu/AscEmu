@@ -20,10 +20,12 @@
 
 #include "Setup.h"
 
- // quest #8304 - Dearest Natalia
+//////////////////////////////////////////////////////////////////////////////////////////
+// quest #8304 - Dearest Natalia
 class DearestNatalia1 : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override
     {
         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
@@ -31,7 +33,7 @@ public:
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7736, Plr->GetSession()->language);
 
         if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(477), 3);     // Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(477), 3);         // Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.
 
         menu.Send(Plr);
     }
@@ -93,13 +95,14 @@ public:
 class DearestNatalia2 : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override
     {
         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
         if (en && (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0]) && (en->GetMobCount(1) == 1))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 7735, Plr->GetSession()->language);
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(485), 3);   // Hello, Frankal. I've heard that you might have some information as to the whe
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(485), 3);          // Hello, Frankal. I've heard that you might have some information as to the whe
             menu.Send(Plr);
         }
     }
@@ -162,6 +165,7 @@ public:
 class highlord_demitrianGossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* pPlayer) override
     {
         //Send quests and gossip menu.
@@ -229,19 +233,17 @@ public:
 class Thunderan : public QuestScript
 {
 public:
+
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         mTarget->GetMapMgr()->CreateAndSpawnCreature(14435, -6241.0f, 1715.0f, 4.8f, 0.605017f);
     }
 };
 
-
 void SetupSilithus(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* dearestNatalia1 = new DearestNatalia1();
-    Arcemu::Gossip::Script* dearestNatalia2 = new DearestNatalia2();
-    mgr->register_creature_gossip(15170, dearestNatalia1);
-    mgr->register_creature_gossip(15171, dearestNatalia2);
+    mgr->register_creature_gossip(15170, new DearestNatalia1());
+    mgr->register_creature_gossip(15171, new DearestNatalia2());
     mgr->register_creature_gossip(14347, new highlord_demitrianGossip);
 
     mgr->register_quest_script(7786, new Thunderan);

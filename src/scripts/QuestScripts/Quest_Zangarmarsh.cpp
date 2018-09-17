@@ -24,6 +24,7 @@
 class AncientMarks : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         uint32 entry = pObject->getEntry();
@@ -89,6 +90,7 @@ public:
 class ElderKuruti : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (!plr->GetItemInterface()->GetItemCount(24573, true))
@@ -106,13 +108,13 @@ public:
             case 1:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 9227, plr->GetSession()->language);
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2); // I'm a messenger for Draenei
                 menu.Send(plr);
             }break;
             case 2:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 9229, plr->GetSession()->language);
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3); // Get message
                 menu.Send(plr);
             }break;
             case 3:
@@ -127,12 +129,9 @@ public:
     }
 };
 
-
 void SetupZangarmarsh(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* AMark = new AncientMarks();
-    mgr->register_creature_gossip(17900, AMark);    // Ashyen Ancient of Lore
-    mgr->register_creature_gossip(17901, AMark);    // Keleth Ancient of War
-
-    mgr->register_creature_gossip(18197, new ElderKuruti());
+    mgr->register_creature_gossip(17900, new AncientMarks()); // Ashyen Ancient of Lore
+    mgr->register_creature_gossip(17901, new AncientMarks()); // Keleth Ancient of War
+    mgr->register_creature_gossip(18197, new ElderKuruti());  //
 }

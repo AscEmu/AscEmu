@@ -24,6 +24,7 @@
 class RingoDeadNPC : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
     RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -39,6 +40,7 @@ public:
 class NorthernPylon : public GameObjectAIScript
 {
 public:
+
     NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
@@ -59,6 +61,7 @@ public:
 class EasternPylon : public GameObjectAIScript
 {
 public:
+
     EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
@@ -79,6 +82,7 @@ public:
 class WesternPylon : public GameObjectAIScript
 {
 public:
+
     WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
@@ -99,6 +103,7 @@ public:
 class A_Me01 : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
     A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -121,7 +126,6 @@ public:
         }
     }
 };
-
 
 void SetupUnGoro(ScriptMgr* mgr)
 {

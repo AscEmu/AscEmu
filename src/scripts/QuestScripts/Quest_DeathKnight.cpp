@@ -21,6 +21,27 @@
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
 
+enum 
+{
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 
+    CN_INITIATE_1 = 29519,
+    CN_INITIATE_2 = 29565,
+    CN_INITIATE_3 = 29567,
+    CN_INITIATE_4 = 29520,
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // QuestID for Praparation for the Battle
+    QUEST_PREPARATION = 12842,
+
+    SPELL_RUNE_I = 53341, // Spell Rune of Cinderglacier
+    SPELL_RUNE_II = 53343, // Spell Rune of Razorice
+    SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
+
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////
+};
+
 class GossipScourgeGryphon : public Arcemu::Gossip::Script
 {
 public:
@@ -34,11 +55,6 @@ public:
         }
     }
 };
-
-const uint32 CN_INITIATE_1 = 29519;
-const uint32 CN_INITIATE_2 = 29565;
-const uint32 CN_INITIATE_3 = 29567;
-const uint32 CN_INITIATE_4 = 29520;
 
 class AcherusSoulPrison : GameObjectAIScript
 {
@@ -102,16 +118,6 @@ public:
     }
 };
 
-// QuestID for Praparation for the Battle
-enum QUEST_12842_ENUM
-{
-    QUEST_PREPARATION = 12842,
-
-    SPELL_RUNE_I = 53341, // Spell Rune of Cinderglacier
-    SPELL_RUNE_II = 53343, // Spell Rune of Razorice
-    SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
-};
-
 bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pCaster = pSpell->p_caster;
@@ -125,10 +131,12 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-//Quest Death Comes From On High
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quest Death Comes From On High
 class EyeofAcherusControl : public GameObjectAIScript
 {
 public:
+
     EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
     static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 
@@ -146,12 +154,10 @@ public:
     }
 };
 
-
 void SetupDeathKnight(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* scourgeGryphon = new GossipScourgeGryphon();
-    mgr->register_creature_gossip(29488, scourgeGryphon);
-    mgr->register_creature_gossip(29501, scourgeGryphon);
+    mgr->register_creature_gossip(29488, new GossipScourgeGryphon());
+    mgr->register_creature_gossip(29501, new GossipScourgeGryphon());
 
     mgr->register_dummy_spell(SPELL_RUNE_I, &PreparationForBattleEffect);
     mgr->register_dummy_spell(SPELL_RUNE_II, &PreparationForBattleEffect);

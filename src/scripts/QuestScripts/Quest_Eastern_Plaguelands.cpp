@@ -24,6 +24,7 @@
 class Flayer : public CreatureAIScript
 {
 public:
+
     Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
     static CreatureAIScript* Create(Creature* c) { return new Flayer(c); }
 
@@ -59,6 +60,7 @@ public:
 class ArajTheSummoner : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
     ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
@@ -72,7 +74,6 @@ public:
             go->Despawn(60 * 1000, 0);
     }
 };
-
 
 void SetupEasternPlaguelands(ScriptMgr* mgr)
 {

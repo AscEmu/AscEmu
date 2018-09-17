@@ -19,14 +19,18 @@
 
 #include "Setup.h"
 
-const uint32 CN_ELIZA = 314;
-const uint32 ELIZA_FROST_NOVA = 11831;
-const uint32 ELIZA_FROSTBOLT = 20819;
-const uint32 ELIZA_SUMMON_GUARD = 3107;
+enum
+{
+    CN_ELIZA = 314,
+    ELIZA_FROST_NOVA = 11831,
+    ELIZA_FROSTBOLT = 20819,
+    ELIZA_SUMMON_GUARD = 3107,
+};
 
 class ElizaAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(ElizaAI);
     ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -72,6 +76,7 @@ public:
 class SummonElizaQuest : public QuestScript
 {
 public:
+
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* Eliza = mTarget->GetMapMgr()->CreateAndSpawnCreature(314, -10271.127f, 53.784f, 42.711f, 1.72f);
@@ -80,10 +85,8 @@ public:
     }
 };
 
-
 void SetupDuskwood(ScriptMgr* mgr)
 {
-    QuestScript* SummonEliza = new SummonElizaQuest();
-    mgr->register_quest_script(254, SummonEliza);
+    mgr->register_quest_script(254, new SummonElizaQuest());
     mgr->register_creature_script(CN_ELIZA, &ElizaAI::Create);
 }
