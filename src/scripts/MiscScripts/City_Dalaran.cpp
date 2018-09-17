@@ -9,94 +9,94 @@
 // Cast spell 54028 on horde player if he is in the alliance area
 class SilverCovenantMageGuard : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
-        SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
+    SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        RegisterAIUpdateEvent(1500);
+    }
+
+    void StartDefense()
+    {
+        Player* player = getNearestPlayer();
+        if (player == nullptr)
+        return;
+
+        //Don't do anything with alliance players
+        if (player->IsTeamAlliance())
+            return;
+
+        float player_x = player->GetPositionX();
+        float player_y = player->GetPositionY();
+        float player_z = player->GetPositionZ();
+
+        //hardcoded values...
+        // the guards should cast the spell if someone is behind them...
+        if (player_x < 5761.9f && player_x >5738.68f && player_y < 732.12f && player_y >712.09f && player_z > 635.0f)
         {
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-            RegisterAIUpdateEvent(1500);
+            getCreature()->setTargetGuid(player->getGuid());
+            getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54028));
         }
-
-        void StartDefense()
+        else
         {
-            Player* player = getNearestPlayer();
-            if (player == nullptr)
-                return;
-
-            //Don't do anything with alliance players
-            if (player->IsTeamAlliance())
-                return;
-
-            float player_x = player->GetPositionX();
-            float player_y = player->GetPositionY();
-            float player_z = player->GetPositionZ();
-
-            //hardcoded values...
-            // the guards should cast the spell if someone is behind them...
-            if (player_x < 5761.9f && player_x >5738.68f && player_y < 732.12f && player_y >712.09f && player_z > 635.0f)
-            {
-                getCreature()->setTargetGuid(player->getGuid());
-                getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54028));
-            }
-            else
-            {
-                getCreature()->setTargetGuid(0); //Reset target... ugly
-            }
+            getCreature()->setTargetGuid(0); //Reset target... ugly
         }
+    }
 
-        void AIUpdate()
-        {
-            if (getCreature()->getInRangePlayersCount() > 0)
-                StartDefense();
-        }
+    void AIUpdate()
+    {
+        if (getCreature()->getInRangePlayersCount() > 0)
+            StartDefense();
+    }
 };
 
 // Horde guard
 // Cast spell 54029 on alliance player if he is in the horde area
 class SunreaversMageGuard : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
-        SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
+    SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        RegisterAIUpdateEvent(1500);
+    }
+
+    void StartDefense()
+    {
+        Player* player = getNearestPlayer();
+        if (player == nullptr)
+            return;
+
+        //Don't do anything with horde players
+        if (player->IsTeamHorde())
+            return;
+
+        float player_x = player->GetPositionX();
+        float player_y = player->GetPositionY();
+        float player_z = player->GetPositionZ();
+
+        //hardcoded values...
+        // the guards should cast the spell if someone is behind them...
+        if (player_x < 5891.88f && player_x >5858.89f && player_y < 594.99f && player_y >565.51f && player_z > 635.0f)
         {
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-            RegisterAIUpdateEvent(1500);
+            getCreature()->setTargetGuid(player->getGuid());
+            getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54029));
         }
-
-        void StartDefense()
+        else
         {
-            Player* player = getNearestPlayer();
-            if (player == nullptr)
-                return;
-
-            //Don't do anything with horde players
-            if (player->IsTeamHorde())
-                return;
-
-            float player_x = player->GetPositionX();
-            float player_y = player->GetPositionY();
-            float player_z = player->GetPositionZ();
-
-            //hardcoded values...
-            // the guards should cast the spell if someone is behind them...
-            if (player_x < 5891.88f && player_x >5858.89f && player_y < 594.99f && player_y >565.51f && player_z > 635.0f)
-            {
-                getCreature()->setTargetGuid(player->getGuid());
-                getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54029));
-            }
-            else
-            {
-                getCreature()->setTargetGuid(0); //Reset target... ugly
-            }
+        getCreature()->setTargetGuid(0); //Reset target... ugly
         }
+    }
 
-        void AIUpdate()
-        {
-            if (getCreature()->getInRangePlayersCount() > 0)
-                StartDefense();
-        }
+    void AIUpdate()
+    {
+        if (getCreature()->getInRangePlayersCount() > 0)
+            StartDefense();
+    }
 };
 
 class FactionInvisible : public CreatureAIScript

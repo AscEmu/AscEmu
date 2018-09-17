@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUA_SPELL_H
-#define LUA_SPELL_H
+#pragma once
 
 #include "Management/ItemInterface.h"
 
@@ -496,5 +495,3 @@ namespace LuaSpell
         return 1;
     }
 }
-
-#endif      // LUA_SPELL_H

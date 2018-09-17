@@ -1,21 +1,6 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #include "StdAfx.h"
@@ -1547,612 +1532,612 @@ bool LuaOnDummySpell(uint8_t effectIndex, Spell* pSpell)
 
 class LuaCreature : public CreatureAIScript
 {
-    public:
+public:
 
-        LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
-        ~LuaCreature()
-        {}
+    LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
+    ~LuaCreature()
+    {}
 
-        void OnCombatStart(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+    void OnCombatStart(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-
-            RELEASE_LOCK
-        }
-
-        void OnCombatStop(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
-        }
+    }
 
-        void OnTargetDied(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+
+    void OnTargetDied(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+
+    void OnDied(Unit* mKiller)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DIED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mKiller);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnTargetParried(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnTargetDodged(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnTargetBlocked(Unit* mTarget, int32 iAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+
+        RELEASE_LOCK
+    }
+    void OnTargetCritHit(Unit* mTarget, int32 fAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    void OnParried(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_PARRY);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnDodged(Unit* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DODGED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+    void OnBlocked(Unit* mTarget, int32 iAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    void OnCritHit(Unit* mTarget, int32 fAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    void OnHit(Unit* mTarget, float fAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_HIT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_FLOAT(fAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+
+        RELEASE_LOCK
+    }
+    void OnAssistTargetDied(Unit* mAssistTarget)
+    {
+
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mAssistTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnFear(Unit* mFeared, uint32 iSpellId)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FEAR);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mFeared);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(iSpellId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+
+        RELEASE_LOCK
+    }
+    void OnFlee(Unit* mFlee)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FLEE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mFlee);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+
+        RELEASE_LOCK
+    }
+    void OnCallForHelp()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+
+        RELEASE_LOCK
+    }
+    void OnLoad()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOAD);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+
+        RELEASE_LOCK
+        uint32 iid = getCreature()->GetInstanceID();
+        if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
         {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-
-            RELEASE_LOCK
+            iid = 0;
         }
+        LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
+        LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
+        LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->getGuid()));
+    }
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-        void OnDied(Unit* mKiller)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(iWaypointId);
+        LuaGlobal::instance()->luaEngine()->PUSH_BOOL(bForwards);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DIED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mKiller);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+    void OnLootTaken(Player* pPlayer, ItemProperties const* pItemPrototype)
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-            RELEASE_LOCK
-        }
-        void OnTargetParried(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemPrototype->ItemId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    void AIUpdate()
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
-            RELEASE_LOCK
-        }
-        void OnTargetDodged(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        RELEASE_LOCK
+    }
+    void OnEmote(Player* pPlayer, EmoteType Emote)
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_EMOTE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT((int32)Emote);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
-            RELEASE_LOCK
-        }
-        void OnTargetBlocked(Unit* mTarget, int32 iAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        RELEASE_LOCK
+    }
+    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    {
+        CHECK_BINDING_ACQUIRELOCK
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mAttacker);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(fAmount);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
 
-            RELEASE_LOCK
-        }
-        void OnTargetCritHit(Unit* mTarget, int32 fAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+    void OnEnterVehicle()
+    {
+        CHECK_BINDING_ACQUIRELOCK;
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        void OnParried(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_PARRY);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK;
+    }
 
-            RELEASE_LOCK
-        }
-        void OnDodged(Unit* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+    void OnExitVehicle()
+    {
+        CHECK_BINDING_ACQUIRELOCK;
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DODGED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        }
-        void OnBlocked(Unit* mTarget, int32 iAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        void OnCritHit(Unit* mTarget, int32 fAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+        RELEASE_LOCK;
+    }
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        void OnHit(Unit* mTarget, float fAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
+    void OnFirstPassengerEntered(Unit* passenger)
+    {
+        CHECK_BINDING_ACQUIRELOCK;
 
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_HIT);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_FLOAT(fAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-
-            RELEASE_LOCK
-        }
-        void OnAssistTargetDied(Unit* mAssistTarget)
-        {
-
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mAssistTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-
-            RELEASE_LOCK
-        }
-        void OnFear(Unit* mFeared, uint32 iSpellId)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FEAR);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mFeared);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(iSpellId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-
-            RELEASE_LOCK
-        }
-        void OnFlee(Unit* mFlee)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FLEE);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mFlee);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-
-            RELEASE_LOCK
-        }
-        void OnCallForHelp()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
-            RELEASE_LOCK
-        }
-        void OnLoad()
+        RELEASE_LOCK;
+    }
+
+    void OnVehicleFull()
+    {
+        CHECK_BINDING_ACQUIRELOCK;
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+
+        RELEASE_LOCK;
+    }
+
+    void OnLastPassengerLeft(Unit* passenger)
+    {
+        CHECK_BINDING_ACQUIRELOCK;
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        
+        RELEASE_LOCK;
+    }
+
+    void StringFunctionCall(int fRef)
+    {
+
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(static_cast<uint16_t>(fRef));
+        LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
+    }
+    void Destroy()
+    {
         {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOAD);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-
-            RELEASE_LOCK
-                uint32 iid = getCreature()->GetInstanceID();
-            if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
-            {
-                iid = 0;
-            }
-            LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
-            LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->getGuid()));
-        }
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(iWaypointId);
-            LuaGlobal::instance()->luaEngine()->PUSH_BOOL(bForwards);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-
-            RELEASE_LOCK
-        }
-        void OnLootTaken(Player* pPlayer, ItemProperties const* pItemPrototype)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemPrototype->ItemId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        void AIUpdate()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-
-            RELEASE_LOCK
-        }
-        void OnEmote(Player* pPlayer, EmoteType Emote)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_EMOTE);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->PUSH_INT((int32)Emote);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-
-            RELEASE_LOCK
-        }
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mAttacker);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(fAmount);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-
-        void OnEnterVehicle()
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-
-            RELEASE_LOCK;
-        }
-
-        void OnExitVehicle()
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-
-            RELEASE_LOCK;
-        }
-
-        void OnFirstPassengerEntered(Unit* passenger)
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-
-            RELEASE_LOCK;
-        }
-
-        void OnVehicleFull()
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-
-            RELEASE_LOCK;
-        }
-
-        void OnLastPassengerLeft(Unit* passenger)
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-
-            RELEASE_LOCK;
-        }
-
-        void StringFunctionCall(int fRef)
-        {
-
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(static_cast<uint16_t>(fRef));
-            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
-        }
-        void Destroy()
-        {
-            {
-                typedef std::multimap<uint32, LuaCreature*> CMAP;
-                CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
-                CMAP::iterator itr = cMap.find(getCreature()->getEntry());
-                CMAP::iterator itend = cMap.upper_bound(getCreature()->getEntry());
-                CMAP::iterator it;
-                for (; itr != cMap.end() && itr != itend;)
-                {
-                    it = itr++;
-                    if (it->second != nullptr && it->second == this)
-                    {
-                        cMap.erase(it);
-                    }
-                }
-            }
-            {
-                //Function Ref clean up
-                std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->getGuid());
-                if (itr != objRefs.end())
-                {
-                    std::set<int>& refs = itr->second;
-                    for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
-                    {
-                        luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it));
-                        sEventMgr.RemoveEvents(getCreature(), (*it) + EVENT_LUA_CREATURE_EVENTS);
-                    }
-                    refs.clear();
-                }
-            }
-            delete this;
-        }
-        LuaObjectBinding* m_binding;
-};
-
-class LuaGameObjectScript : public GameObjectAIScript
-{
-    public:
-
-        LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
-        ~LuaGameObjectScript() {}
-        inline GameObject* getGO()
-        {
-            return _gameobject;
-        }
-        void OnCreate()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_CREATE]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-
-            RELEASE_LOCK
-        }
-        void OnSpawn()
-        {
-
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_SPAWN]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-
-            RELEASE_LOCK
-        }
-        void OnDespawn()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESPAWN]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
-        }
-        void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
-        {
-
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_LOOT_TAKEN]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pLooter);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemInfo->ItemId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        void OnActivate(Player* pPlayer)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_USE]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        }
-
-        void AIUpdate()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_AIUPDATE]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
-        }
-
-        void OnDamaged(uint32 damage)
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(damage);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK;
-        }
-
-        void OnDestroyed()
-        {
-            CHECK_BINDING_ACQUIRELOCK;
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
-            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK;
-        }
-
-        void Destroy()
-        {
-            typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
-            GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
-            GMAP::iterator itr = gMap.find(_gameobject->getEntry());
-            GMAP::iterator itend = gMap.upper_bound(_gameobject->getEntry());
-            GMAP::iterator it;
-            //uint64 guid = _gameobject->getGuid(); Unused?
-            for (; itr != itend;)
+            typedef std::multimap<uint32, LuaCreature*> CMAP;
+            CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
+            CMAP::iterator itr = cMap.find(getCreature()->getEntry());
+            CMAP::iterator itend = cMap.upper_bound(getCreature()->getEntry());
+            CMAP::iterator it;
+            for (; itr != cMap.end() && itr != itend;)
             {
                 it = itr++;
                 if (it->second != nullptr && it->second == this)
                 {
-                    gMap.erase(it);
+                    cMap.erase(it);
                 }
             }
-
+        }
+        {
+            //Function Ref clean up
             std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->getGuid());
-            std::set<int>::iterator it2;
-            if (itr2 != objRefs.end())
+            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->getGuid());
+            if (itr != objRefs.end())
             {
-                std::set<int>& refs = itr2->second;
-                for (it2 = refs.begin(); it2 != refs.end(); ++it2)
+                std::set<int>& refs = itr->second;
+                for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
                 {
-                    luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it2));
+                    luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it));
+                    sEventMgr.RemoveEvents(getCreature(), (*it) + EVENT_LUA_CREATURE_EVENTS);
                 }
                 refs.clear();
             }
-            delete this;
         }
-        LuaObjectBinding* m_binding;
+        delete this;
+    }
+    LuaObjectBinding* m_binding;
+};
+
+class LuaGameObjectScript : public GameObjectAIScript
+{
+public:
+
+    LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
+    ~LuaGameObjectScript() {}
+    inline GameObject* getGO()
+    {
+        return _gameobject;
+    }
+    void OnCreate()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_CREATE]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+
+            RELEASE_LOCK
+    }
+    void OnSpawn()
+    {
+
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_SPAWN]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+
+            RELEASE_LOCK
+    }
+    void OnDespawn()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESPAWN]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
+    }
+    void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
+    {
+
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_LOOT_TAKEN]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pLooter);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemInfo->ItemId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    void OnActivate(Player* pPlayer)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_USE]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+
+    void AIUpdate()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_AIUPDATE]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
+    }
+
+    void OnDamaged(uint32 damage)
+    {
+        CHECK_BINDING_ACQUIRELOCK;
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(damage);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK;
+    }
+
+    void OnDestroyed()
+    {
+        CHECK_BINDING_ACQUIRELOCK;
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
+        LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK;
+    }
+
+    void Destroy()
+    {
+        typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
+        GMAP::iterator itr = gMap.find(_gameobject->getEntry());
+        GMAP::iterator itend = gMap.upper_bound(_gameobject->getEntry());
+        GMAP::iterator it;
+        //uint64 guid = _gameobject->getGuid(); Unused?
+        for (; itr != itend;)
+        {
+            it = itr++;
+            if (it->second != nullptr && it->second == this)
+            {
+                gMap.erase(it);
+            }
+        }
+
+        std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+        std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->getGuid());
+        std::set<int>::iterator it2;
+        if (itr2 != objRefs.end())
+        {
+            std::set<int>& refs = itr2->second;
+            for (it2 = refs.begin(); it2 != refs.end(); ++it2)
+            {
+                luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it2));
+            }
+            refs.clear();
+        }
+        delete this;
+    }
+    LuaObjectBinding* m_binding;
 };
 
 class LuaGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        LuaGossip() : Arcemu::Gossip::Script(), m_unit_gossip_binding(nullptr), m_item_gossip_binding(nullptr), m_go_gossip_binding(nullptr) {}
-        ~LuaGossip()
+    LuaGossip() : Arcemu::Gossip::Script(), m_unit_gossip_binding(nullptr), m_item_gossip_binding(nullptr), m_go_gossip_binding(nullptr) {}
+    ~LuaGossip()
+    {
+        typedef std::unordered_map<uint32, LuaGossip*> MapType;
+        MapType gMap;
+        if (this->m_go_gossip_binding != nullptr)
         {
-            typedef std::unordered_map<uint32, LuaGossip*> MapType;
-            MapType gMap;
-            if (this->m_go_gossip_binding != nullptr)
+            gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
+            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
             {
-                gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
-                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
+                if (itr->second == this)
                 {
-                    if (itr->second == this)
-                    {
-                        gMap.erase(itr);
-                        break;
-                    }
-                }
-            }
-            else if (this->m_unit_gossip_binding != nullptr)
-            {
-                gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
-                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
-                {
-                    if (itr->second == this)
-                    {
-                        gMap.erase(itr);
-                        break;
-                    }
-                }
-            }
-            else if (this->m_item_gossip_binding != nullptr)
-            {
-                gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
-                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
-                {
-                    if (itr->second == this)
-                    {
-                        gMap.erase(itr);
-                        break;
-                    }
+                    gMap.erase(itr);
+                    break;
                 }
             }
         }
-
-        void OnHello(Object* pObject, Player* plr) override
+        else if (this->m_unit_gossip_binding != nullptr)
         {
-            GET_LOCK
-            if (pObject->isCreature())
+            gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
+            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
             {
-                if (m_unit_gossip_binding == nullptr)
+                if (itr->second == this)
                 {
-                    RELEASE_LOCK;
-                    return;
+                    gMap.erase(itr);
+                    break;
                 }
-
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
-                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
-                LuaGlobal::instance()->luaEngine()->PushUnit(plr);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->isItem())
+        }
+        else if (this->m_item_gossip_binding != nullptr)
+        {
+            gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
+            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
             {
-                if (m_item_gossip_binding == nullptr)
+                if (itr->second == this)
                 {
-                    RELEASE_LOCK;
-                    return;
+                    gMap.erase(itr);
+                    break;
                 }
-
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
-                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
-                LuaGlobal::instance()->luaEngine()->PushUnit(plr);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
-            else if (pObject->isGameObject())
+        }
+    }
+
+    void OnHello(Object* pObject, Player* plr) override
+    {
+        GET_LOCK
+        if (pObject->isCreature())
+        {
+            if (m_unit_gossip_binding == nullptr)
             {
+                RELEASE_LOCK;
+                return;
+            }
+
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
+            LuaGlobal::instance()->luaEngine()->PushUnit(plr);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        }
+        else if (pObject->isItem())
+        {
+            if (m_item_gossip_binding == nullptr)
+            {
+                RELEASE_LOCK;
+                return;
+            }
+
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
+            LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
+            LuaGlobal::instance()->luaEngine()->PushUnit(plr);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        }
+        else if (pObject->isGameObject())
+        {
                 if (m_go_gossip_binding == nullptr)
                 {
                     RELEASE_LOCK;
@@ -2164,337 +2149,337 @@ class LuaGossip : public Arcemu::Gossip::Script
                 LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
                 LuaGlobal::instance()->luaEngine()->PushUnit(plr);
                 LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            }
-            RELEASE_LOCK
         }
+        RELEASE_LOCK
+    }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t /*gossipId*/) override
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t /*gossipId*/) override
+    {
+        GET_LOCK
+        if (pObject->isCreature())
         {
-            GET_LOCK
-            if (pObject->isCreature())
+            if (m_unit_gossip_binding == nullptr)
             {
-                if (m_unit_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
+                RELEASE_LOCK;
+                return;
+            }
 
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
-                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
-            }
-            else if (pObject->isItem())
-            {
-                if (m_item_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
-                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
-            }
-            else if (pObject->isGameObject())
-            {
-                if (m_go_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                LuaGlobal::instance()->luaEngine()->PushGo(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
-                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
-            }
-            RELEASE_LOCK
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+            LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
         }
-
-        void OnEnd(Object* pObject, Player* Plr) override
+        else if (pObject->isItem())
         {
-            GET_LOCK
-            if (pObject->isCreature())
+            if (m_item_gossip_binding == nullptr)
             {
-                if (m_unit_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+                RELEASE_LOCK;
+                return;
             }
-            else if (pObject->isItem())
-            {
-                if (m_item_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            }
-            else if (pObject->isGameObject())
-            {
-                if (m_go_gossip_binding == nullptr)
-                {
-                    RELEASE_LOCK;
-                    return;
-                }
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                LuaGlobal::instance()->luaEngine()->PushGo(pObject);
-                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
-                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
-                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            }
-            RELEASE_LOCK
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+            LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+            LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
         }
+        else if (pObject->isGameObject())
+        {
+            if (m_go_gossip_binding == nullptr)
+            {
+                RELEASE_LOCK;
+                return;
+            }
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+            LuaGlobal::instance()->luaEngine()->PushGo(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+            LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
+        }
+        RELEASE_LOCK
+    }
 
-        LuaObjectBinding* m_unit_gossip_binding;
-        LuaObjectBinding* m_item_gossip_binding;
-        LuaObjectBinding* m_go_gossip_binding;
+    void OnEnd(Object* pObject, Player* Plr) override
+    {
+        GET_LOCK
+        if (pObject->isCreature())
+        {
+            if (m_unit_gossip_binding == nullptr)
+            {
+                RELEASE_LOCK;
+                return;
+            }
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        }
+        else if (pObject->isItem())
+        {
+            if (m_item_gossip_binding == nullptr)
+            {
+                RELEASE_LOCK;
+                return;
+            }
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+            LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        }
+        else if (pObject->isGameObject())
+        {
+            if (m_go_gossip_binding == nullptr)
+            {
+                RELEASE_LOCK;
+                return;
+            }
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+            LuaGlobal::instance()->luaEngine()->PushGo(pObject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+            LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        }
+        RELEASE_LOCK
+    }
+
+    LuaObjectBinding* m_unit_gossip_binding;
+    LuaObjectBinding* m_item_gossip_binding;
+    LuaObjectBinding* m_go_gossip_binding;
 };
 
 class LuaQuest : public QuestScript
 {
-    public:
+public:
 
-        LuaQuest() : QuestScript()
+    LuaQuest() : QuestScript()
+    {
+        m_binding = nullptr;
+    }
+    ~LuaQuest()
+    {
+        typedef std::unordered_map<uint32, LuaQuest*> QuestType;
+        QuestType qMap = LuaGlobal::instance()->luaEngine()->getLuQuestMap();
+        for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
         {
-            m_binding = nullptr;
-        }
-        ~LuaQuest()
-        {
-            typedef std::unordered_map<uint32, LuaQuest*> QuestType;
-            QuestType qMap = LuaGlobal::instance()->luaEngine()->getLuQuestMap();
-            for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
+            if (itr->second == this)
             {
-                if (itr->second == this)
-                {
-                    qMap.erase(itr);
-                    break;
-                }
+                qMap.erase(itr);
+                break;
             }
         }
+    }
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
 
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK
-        }
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK
+    }
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
 
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK
-        }
-        void OnQuestCancel(Player* mTarget)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CANCEL]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
-        }
-        void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        }
-        void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        }
-        void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(areaId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        }
-        void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_PLAYER_ITEMPICKUP]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(itemId);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(totalCount);
-            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        }
-        LuaObjectBinding* m_binding;
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK
+    }
+    void OnQuestCancel(Player* mTarget)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CANCEL]);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
+    }
+    void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+    void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+    void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(areaId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    }
+    void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_PLAYER_ITEMPICKUP]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(itemId);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(totalCount);
+        LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    }
+    LuaObjectBinding* m_binding;
 };
 
 class LuaInstance : public InstanceScript
 {
-    public:
+public:
 
-        LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
-        ~LuaInstance() {}
+    LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
+    ~LuaInstance() {}
 
-        // Player
-        void OnPlayerDeath(Player* pVictim, Unit* pKiller)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        };
+    // Player
+    void OnPlayerDeath(Player* pVictim, Unit* pKiller)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    };
 
-        // Area and AreaTrigger
-        void OnPlayerEnter(Player* pPlayer)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK
-        };
-        void OnAreaTrigger(Player* pPlayer, uint32 uAreaId)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uAreaId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        };
-        void OnZoneChange(Player* pPlayer, uint32 uNewZone, uint32 uOldZone)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_ZONE_CHANGE]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uNewZone);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uOldZone);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
-            RELEASE_LOCK
-        };
+    // Area and AreaTrigger
+    void OnPlayerEnter(Player* pPlayer)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK
+    };
+    void OnAreaTrigger(Player* pPlayer, uint32 uAreaId)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(uAreaId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    };
+    void OnZoneChange(Player* pPlayer, uint32 uNewZone, uint32 uOldZone)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_ZONE_CHANGE]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(uNewZone);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(uOldZone);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
+        RELEASE_LOCK
+    };
 
-        // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_DEATH]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        };
+    // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
+    void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_DEATH]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    };
 
-        void OnCreaturePushToWorld(Creature* pCreature)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_PUSH]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pCreature);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK
-        };
+    void OnCreaturePushToWorld(Creature* pCreature)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_PUSH]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pCreature);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK
+    };
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_ACTIVATE]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
-            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
-            RELEASE_LOCK
-        };
+    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_ACTIVATE]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
+        RELEASE_LOCK
+    };
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_PUSH]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-            RELEASE_LOCK
-        };
+    void OnGameObjectPushToWorld(GameObject* pGameObject)
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_PUSH]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
+        RELEASE_LOCK
+    };
 
-        // Standard virtual methods
-        void OnLoad()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ONLOAD]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
-        };
+    // Standard virtual methods
+    void OnLoad()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ONLOAD]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
+    };
 
-        void Destroy()
-        {
-            CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_DESTROY]);
-            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
-            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
-            RELEASE_LOCK
+    void Destroy()
+    {
+        CHECK_BINDING_ACQUIRELOCK
+        LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_DESTROY]);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
+        RELEASE_LOCK
 
-            typedef std::unordered_map<uint32, LuaInstance*> IMAP;
-            IMAP& iMap = LuaGlobal::instance()->luaEngine()->getLuInstanceMap();
-            for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
+        typedef std::unordered_map<uint32, LuaInstance*> IMAP;
+        IMAP& iMap = LuaGlobal::instance()->luaEngine()->getLuInstanceMap();
+        for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
+        {
+            if (itr->second == this)
             {
-                if (itr->second == this)
-                {
-                    iMap.erase(itr);
-                    break;
-                }
+                iMap.erase(itr);
+                break;
             }
-            delete this;
-        };
+        }
+        delete this;
+    };
 
-        uint32 m_instanceId;
-        LuaObjectBinding* m_binding;
+    uint32 m_instanceId;
+    LuaObjectBinding* m_binding;
 };
 
 CreatureAIScript* CreateLuaCreature(Creature* src)
@@ -2656,6 +2641,7 @@ Arcemu::Gossip::Script* CreateLuaItemGossipScript(uint32 id)
     }
     return pLua;
 }
+
 Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 {
     LuaGossip* pLua = nullptr;

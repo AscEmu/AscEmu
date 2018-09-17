@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNITFUNCTIONS_H
-#define UNITFUNCTIONS_H
+#pragma once
 
 #include "Units/Unit.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
@@ -49,7 +48,8 @@
 
 class LuaUnit
 {
-    public:
+public:
+
     static int GetDisplay(lua_State* L, Unit* ptr)
     {
         if (ptr == NULL)
@@ -4702,9 +4702,9 @@ class LuaUnit
         return 0;
     }
 
-    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     // WORLDSTATES/WORLD PVP NOT SUPPORTED
-    //////////////////////////////////////////////////////////////////////////
+
     /*
     static int SetWorldState(lua_State * L, Unit * ptr)
     {
@@ -6237,4 +6237,3 @@ class LuaUnit
         return 0;
     }
 };
-#endif
