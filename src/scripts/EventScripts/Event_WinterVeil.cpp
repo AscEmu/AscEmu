@@ -13,27 +13,27 @@
 
 class PX238WinterWondervolt : public GameObjectAIScript
 {
-    public:
+public:
 
-        PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
+    PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 
-        void OnSpawn()
+    void OnSpawn()
+    {
+        RegisterAIUpdateEvent(1);
+    }
+
+    void AIUpdate()
+    {
+        Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
+        if (!plr)
+            return;
+
+        if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
         {
-            RegisterAIUpdateEvent(1);
+            plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
         }
-
-        void AIUpdate()
-        {
-            Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
-            if (!plr)
-                return;
-
-            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
-            {
-                plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
-            }
-        }
+    }
 };
 
 void WinterReveler(Player* pPlayer, Unit* pUnit)

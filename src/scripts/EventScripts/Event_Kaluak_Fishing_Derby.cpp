@@ -20,8 +20,7 @@
 // If someone already finish the quest you get quest 24806 (Better Luck Next Time) \n
 //\todo Create Kalu'ak Gossip checks \n
 
-#define YELL_CLEARWATER "$N has won the Kalu'ak Fishing Derby!"
-
+//#define YELL_CLEARWATER "$N has won the Kalu'ak Fishing Derby!"
 
 void SetupKalualFishingDerby(ScriptMgr* /*mgr*/)
 { }
