@@ -578,7 +578,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
@@ -600,7 +600,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
