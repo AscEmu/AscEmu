@@ -30,12 +30,7 @@
 #include "Spell/SpellMgr.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-const uint32 BASE_RESOURCES_GAIN = 10;
-const uint32 RESOURCES_WARNING_THRESHOLD = 1400;
-const uint32 RESOURCES_WINVAL = 1600;
-
 uint32 buffentries[3] = { 180380, 180362, 180146 };
-
 
 static float GraveyardLocations[AB_NUM_CONTROL_POINTS][3] =
 {
@@ -154,10 +149,11 @@ static uint32 PointBonusPerUpdate[6] =
     30,
 };
 
+// End BG Data
+//////////////////////////////////////////////////////////////////////////////////////////
+
 static uint32 resourcesToGainBH = 260;
 static uint32 resourcesToGainBR = 160;
-
-// End BG Data
 
 void ArathiBasin::SpawnBuff(uint32 x)
 {
@@ -619,7 +615,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
             else
                 RemovePlayer(plr, false);
         }break;
-        case 3949:          // horde exits
+        case 3949:           // horde exits
         {
             if (plr->GetTeam() != TEAM_HORDE)
                 plr->SendAreaTriggerMessage("Only The Horde can use that portal");
