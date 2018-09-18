@@ -27,6 +27,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBinderActivate.h
    ${PATH_PREFIX}/CmsgBuyBankSlot.h
    ${PATH_PREFIX}/CmsgBuyItem.h
+   ${PATH_PREFIX}/CmsgBuybackItem.h
    ${PATH_PREFIX}/CmsgCastSpell.h
    ${PATH_PREFIX}/CmsgChangeSeatsOnControlledVehicle.h
    ${PATH_PREFIX}/CmsgChannelAnnouncements.h

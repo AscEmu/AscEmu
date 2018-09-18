@@ -38,6 +38,7 @@
 #include "Server/Packets/CmsgDestroyItem.h"
 #include "Server/Packets/CmsgAutoequipItem.h"
 #include "Server/Packets/CmsgAutoequipItemSlot.h"
+#include "Server/Packets/CmsgBuybackItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -950,18 +951,15 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 8);
-    uint64 guid;
-    int32 stuff;
-    uint8 error;
+    CmsgBuybackItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
     LOG_DETAIL("WORLD: Received CMSG_BUYBACK_ITEM");
 
-    recvData >> guid;
-    recvData >> stuff;
-    stuff -= 74;
+    recv_packet.buybackSlot -= 74;
 
-    Item* it = _player->GetItemInterface()->GetBuyBack(stuff);
+    Item* it = _player->GetItemInterface()->GetBuyBack(recv_packet.buybackSlot);
     if (it)
     {
         // Find free slot and break if inv full
@@ -978,12 +976,15 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         }
 
         // Check for gold
-        uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff));
+        uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + recv_packet.buybackSlot));
         if (!_player->HasGold(cost))
         {
-            SendBuyFailed(guid, itemid, 2);
+            SendBuyFailed(recv_packet.buybackSlot, itemid, 2);
             return;
         }
+
+        uint8 error;
+
         // Check for item uniqueness
         if ((error = _player->GetItemInterface()->CanReceiveItem(it->getItemProperties(), amount)) != 0)
         {
@@ -992,7 +993,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         }
         int32_t coins = cost * -1;
         _player->ModGold(coins);
-        _player->GetItemInterface()->RemoveBuyBackItem(stuff);
+        _player->GetItemInterface()->RemoveBuyBackItem(recv_packet.buybackSlot);
 
         if (!add)
         {
@@ -1017,14 +1018,14 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
 #if VERSION_STRING != Cata
         WorldPacket data(16);
         data.Initialize(SMSG_BUY_ITEM);
-        data << uint64(guid);
+        data << uint64(recv_packet.itemGuid);
         data <<Util::getMSTime(); //VLack: seen is Aspire code
         data << uint32(itemid);
         data << uint32(amount);
 #else
         WorldPacket data(SMSG_BUY_ITEM, 8 + 4 + 4 + 4);
-        data << uint64(guid);
-        data << uint32(stuff + 1);      // numbered from 1 at client
+        data << uint64(recv_packet.itemGuid);
+        data << uint32(recv_packet.buybackSlot + 1);      // numbered from 1 at client
         data << int32(amount);
         data << uint32(amount);
         data << uint32(amount);
