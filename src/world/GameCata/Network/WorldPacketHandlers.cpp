@@ -269,7 +269,7 @@ void WorldSession::loadSpecificHandlers()
 
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::HandleSwapInvItemOpcode;
-    WorldPacketHandlers[CMSG_SWAP_ITEM].handler = &WorldSession::HandleSwapItemOpcode;
+    WorldPacketHandlers[CMSG_SWAP_ITEM].handler = &WorldSession::handleSwapItemOpcode;
     WorldPacketHandlers[CMSG_DESTROYITEM].handler = &WorldSession::HandleDestroyItemOpcode;
     WorldPacketHandlers[CMSG_AUTOEQUIP_ITEM].handler = &WorldSession::HandleAutoEquipItemOpcode;
     WorldPacketHandlers[CMSG_AUTOEQUIP_ITEM_SLOT].handler = &WorldSession::HandleAutoEquipItemSlotOpcode;

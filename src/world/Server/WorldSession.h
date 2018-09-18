@@ -465,9 +465,9 @@ class SERVER_DECL WorldSession
         void HandleMailTime(WorldPacket& recv_data);
         void HandleMailCreateTextItem(WorldPacket& recv_data);
 
-        /// Item opcodes (ItemHandler.cpp)
+        // Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
-        void HandleSwapItemOpcode(WorldPacket& recvPacket);
+        void handleSwapItemOpcode(WorldPacket& recvPacket);
         void HandleDestroyItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
