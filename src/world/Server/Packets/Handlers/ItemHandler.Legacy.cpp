@@ -33,6 +33,7 @@
 #include "Server/Packets/SmsgBuyItem.h"
 #include "Server/Packets/CmsgSellItem.h"
 #include "Server/Packets/SmsgSellItem.h"
+#include "Server/Packets/CmsgSplitItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -52,39 +53,30 @@ bool VerifyBagSlots(int8_t containerSlot, int8_t slot)
 
 void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 8);
-
-    int8 DstInvSlot = 0;
-    int8 DstSlot = 0;
-    int8 SrcInvSlot = 0;
-    int8 SrcSlot = 0;
-    int32 count = 0;
-
-    recvData >> SrcInvSlot;
-    recvData >> SrcSlot;
-    recvData >> DstInvSlot;
-    recvData >> DstSlot;
-    recvData >> count;
+    CmsgSplitItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
     /* exploit fix */
-    if (count <= 0 || (SrcInvSlot <= 0 && SrcSlot < INVENTORY_SLOT_ITEM_START))
+    if (recv_packet.itemCount <= 0 || (recv_packet.srcInventorySlot <= 0 && recv_packet.srcSlot < INVENTORY_SLOT_ITEM_START))
     {
-        sCheatLog.writefromsession(this, "tried to split item: SrcInvSlot %d, SrcSlot %d, DstInvSlot %d, DstSlot %d, count %l", SrcInvSlot, SrcSlot, DstInvSlot, DstSlot, count);
+        sCheatLog.writefromsession(this, "tried to split item: srcInventorySlot %d, srcSlot %d, destInventorySlot %d, destSlot %d, itemCount %l",
+            recv_packet.srcInventorySlot, recv_packet.srcSlot, recv_packet.destInventorySlot, recv_packet.destSlot, recv_packet.itemCount);
         return;
     }
 
-    if (!VerifyBagSlots(SrcInvSlot, SrcSlot))
+    if (!VerifyBagSlots(recv_packet.srcInventorySlot, recv_packet.srcSlot))
         return;
 
-    if (!VerifyBagSlots(DstInvSlot, DstSlot))
+    if (!VerifyBagSlots(recv_packet.destInventorySlot, recv_packet.destSlot))
         return;
 
-    uint32 c = count;
+    uint32 c = recv_packet.itemCount;
 
-    auto i1 = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+    auto i1 = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcInventorySlot, recv_packet.srcSlot);
     if (!i1)
         return;
-    auto i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
+    auto i2 = _player->GetItemInterface()->GetInventoryItem(recv_packet.destInventorySlot, recv_packet.destSlot);
 
     uint32 itemMaxStack1 = (i1->getOwner()->ItemStackCheat) ? 0x7fffffff : i1->getItemProperties()->MaxCount;
     uint32 itemMaxStack2 = (i2) ? ((i2->getOwner()->ItemStackCheat) ? 0x7fffffff : i2->getItemProperties()->MaxCount) : 0;
@@ -106,7 +98,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
                 //check if there is room on the other item.
                 if (((c + i2->getStackCount()) <= itemMaxStack2))
                 {
-                    i1->modStackCount(-count);
+                    i1->modStackCount(-recv_packet.itemCount);
                     i2->modStackCount(c);
                     i1->m_isDirty = true;
                     i2->m_isDirty = true;
@@ -131,7 +123,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
     {
         if (c < i1->getStackCount())
         {
-            i1->modStackCount(-count);
+            i1->modStackCount(-recv_packet.itemCount);
 
             i2 = objmgr.CreateItem(i1->getEntry(), _player);
             if (i2 == nullptr)
@@ -141,11 +133,14 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
             i1->m_isDirty = true;
             i2->m_isDirty = true;
 
-            if (DstSlot == ITEM_NO_SLOT_AVAILABLE)
+            int8_t DstSlot = recv_packet.destSlot;
+            int8_t DstInvSlot = recv_packet.destInventorySlot;
+
+            if (recv_packet.destSlot == ITEM_NO_SLOT_AVAILABLE)
             {
-                if (DstInvSlot != ITEM_NO_SLOT_AVAILABLE)
+                if (recv_packet.destInventorySlot != ITEM_NO_SLOT_AVAILABLE)
                 {
-                    Container *container = _player->GetItemInterface()->GetContainer(DstInvSlot);
+                    Container *container = _player->GetItemInterface()->GetContainer(recv_packet.destInventorySlot);
                     if (container != nullptr)
                         DstSlot = container->FindFreeSlot();
                 }
