@@ -37,6 +37,7 @@
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgDestroyItem.h"
 #include "Server/Packets/CmsgAutoequipItem.h"
+#include "Server/Packets/CmsgAutoequipItemSlot.h"
 
 using namespace AscEmu::Packets;
 
@@ -604,18 +605,14 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
 {
+    CmsgAutoequipItemSlot recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
+
     LOG_DETAIL("WORLD: Received CMSG_AUTOEQUIP_ITEM_SLOT");
-    CHECK_PACKET_SIZE(recvData, 8 + 1);
 
-    uint64 itemguid;
-    int8 destSlot;
-    //int8 error = 0; // useless?
-
-    recvData >> itemguid;
-    recvData >> destSlot;
-
-    int8 srcSlot = (int8)_player->GetItemInterface()->GetInventorySlotByGuid(itemguid);
-    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+    int8 srcSlot = (int8)_player->GetItemInterface()->GetInventorySlotByGuid(recv_packet.itemGuid);
+    Item* item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
 
     if (item == nullptr)
         return;
@@ -623,9 +620,9 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     int8 slotType = _player->GetItemInterface()->GetItemSlotByType(item->getItemProperties()->InventoryType);
     bool hasDualWield2H = false;
 
-    LOG_DEBUG("ITEM: AutoEquipItemSlot, ItemGUID: %u, SrcSlot: %i, DestSlot: %i, SlotType: %i", itemguid, srcSlot, destSlot, slotType);
+    LOG_DEBUG("ITEM: AutoEquipItemSlot, ItemGUID: %u, SrcSlot: %i, DestSlot: %i, SlotType: %i", recv_packet.itemGuid, srcSlot, recv_packet.destSlot, slotType);
 
-    if (srcSlot == destSlot)
+    if (srcSlot == recv_packet.destSlot)
         return;
 
     if (_player->canDualWield2H() && (slotType == EQUIPMENT_SLOT_OFFHAND || slotType == EQUIPMENT_SLOT_MAINHAND))
@@ -633,7 +630,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
 
     // Need to check if the item even goes into that slot
     // Item system is a mess too, so it needs rewrite, but hopefully this will do for now
-    int8 error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, destSlot, item);
+    int8 error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, recv_packet.destSlot, item);
     if (error)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(item, nullptr, error);
@@ -641,7 +638,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     }
 
     // Handle destination slot checking.
-    if (destSlot == slotType || hasDualWield2H)
+    if (recv_packet.destSlot == slotType || hasDualWield2H)
     {
         uint32 invType = item->getItemProperties()->InventoryType;
         if (invType == INVTYPE_WEAPON || invType == INVTYPE_WEAPONMAINHAND ||
@@ -662,25 +659,24 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
                 }
                 mainHand = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
                 _player->GetItemInterface()->AddItemToFreeSlot(offHand);
-                _player->GetItemInterface()->SwapItemSlots(srcSlot, destSlot);   // Now swap Main hand with 2H weapon.
+                _player->GetItemInterface()->SwapItemSlots(srcSlot, recv_packet.destSlot);   // Now swap Main hand with 2H weapon.
             }
             else
             {
                 // Swap 2H with 2H or 2H with 1H if player has DualWield2H (ex: Titans Grip).
-                _player->GetItemInterface()->SwapItemSlots(srcSlot, destSlot);
+                _player->GetItemInterface()->SwapItemSlots(srcSlot, recv_packet.destSlot);
             }
         }
-        else if (destSlot == slotType)
+        else if (recv_packet.destSlot == slotType)
         {
             // If item slot types match, swap.
-            _player->GetItemInterface()->SwapItemSlots(srcSlot, destSlot);
+            _player->GetItemInterface()->SwapItemSlots(srcSlot, recv_packet.destSlot);
         }
         else
         {
             // Item slots do not match. We get here only for players who have DualWield2H (ex: Titans Grip).
             _player->GetItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
         }
-        return;
     }
     else
     {
