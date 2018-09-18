@@ -150,6 +150,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
    ${PATH_PREFIX}/CmsgStableSwapPet.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
+   ${PATH_PREFIX}/CmsgSwapItem.h
    ${PATH_PREFIX}/CmsgTextEmote.h
    ${PATH_PREFIX}/CmsgTrainerBuySpell.h
    ${PATH_PREFIX}/CmsgTrainerList.h

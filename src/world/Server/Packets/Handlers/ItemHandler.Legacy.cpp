@@ -188,25 +188,6 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleSwapItemOpcode(WorldPacket& recvData)
-{
-    CHECK_PACKET_SIZE(recvData, 4);
-
-    int8 DstInvSlot = 0;
-    int8 DstSlot = 0;
-    int8 SrcInvSlot = 0;
-    int8 SrcSlot = 0;
-
-    recvData >> DstInvSlot;
-    recvData >> DstSlot;
-    recvData >> SrcInvSlot;
-    recvData >> SrcSlot;
-
-    LOG_DETAIL("ITEM: swap, DstInvSlot %i DstSlot %i SrcInvSlot %i SrcSlot %i", DstInvSlot, DstSlot, SrcInvSlot, SrcSlot);
-
-    _player->GetItemInterface()->SwapItems(DstInvSlot, DstSlot, SrcInvSlot, SrcSlot);
-}
-
 void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 2);
