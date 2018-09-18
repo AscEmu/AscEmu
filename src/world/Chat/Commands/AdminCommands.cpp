@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Spell/SpellAuras.h"
 
 //.admin castall

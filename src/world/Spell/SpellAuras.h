@@ -23,7 +23,7 @@
 
 #include "SpellMgr.h"
 #include "Spell.h"
-#include "SpellEffects.h"
+#include "Definitions/SpellEffects.h"
 
 /// 4-bit flag
 enum AURA_FLAGS

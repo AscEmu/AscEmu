@@ -24,7 +24,7 @@
 #include "SpellCastTargets.h"
 #include "Definitions/SpellTargetMod.h"
 #include "Spell/SpellInfo.hpp"
-#include "SpellFailure.h"
+#include "Definitions/SpellFailure.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"
 #include "Units/Unit.h"
