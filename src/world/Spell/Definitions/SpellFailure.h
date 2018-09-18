@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef SPELLFAILURE_H
-#define SPELLFAILURE_H
+#pragma once
 
 enum SpellCastResult
 {
@@ -215,7 +199,7 @@ enum SpellCastResult
 
 #define SPELL_CANCAST_OK SPELL_FAILED_SUCCESS
 
-// Extra errormsg... Just to keep it in mind
+// Extra error messages
 enum SpellExtraError
 {
     SPELL_EXTRA_ERROR_NONE = 0,     // none
@@ -337,7 +321,7 @@ enum PetTameFailure
     PETTAME_UNKNOWNERROR                                         = 13
 };
 
-enum MOUNT_FAILURE
+enum MountFailure
 {
     ERR_MOUNT_NOTMOUNTABLE                                       = 0,
     ERR_MOUNT_TOOFARAWAY                                         = 1,
@@ -351,11 +335,9 @@ enum MOUNT_FAILURE
     ERR_MOUNT_FORCEDDISMOUNT                                     = 9
 };
 
-enum DISMOUNT_FAILURE
+enum DismountFailure
 {
     ERR_DISMOUNT_NOPET                                           = 0,
     ERR_DISMOUNT_NOTMOUNTED                                      = 1,
     ERR_DISMOUNT_NOTYOURPET                                      = 2
 };
-
-#endif //SPELLFAILURE_H

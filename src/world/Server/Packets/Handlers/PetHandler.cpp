@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellFailure.h"
+#include "Spell/Definitions/SpellFailure.h"
 
 using namespace AscEmu::Packets;
 

@@ -35,7 +35,7 @@
 #include "Map/WorldCreatorDefines.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Management/GuildMgr.h"
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
