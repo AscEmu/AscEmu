@@ -34,6 +34,7 @@
 #include "Server/Packets/CmsgSellItem.h"
 #include "Server/Packets/SmsgSellItem.h"
 #include "Server/Packets/CmsgSplitItem.h"
+#include "Server/Packets/CmsgSwapInvItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -185,33 +186,28 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 2);
-    WorldPacket data;
-    int8 srcslot = 0;
-    int8 dstslot = 0;
-    int8 error = 0;
+    CmsgSwapInvItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
-    recvData >> dstslot;
-    recvData >> srcslot;
+    LOG_DETAIL("ITEM: swap, src slot: %u dst slot: %u", (uint32)recv_packet.srcSlot, (uint32)recv_packet.destSlot);
 
-    LOG_DETAIL("ITEM: swap, src slot: %u dst slot: %u", (uint32)srcslot, (uint32)dstslot);
-
-    if (dstslot == srcslot) // player trying to add item to the same slot
+    if (recv_packet.destSlot == recv_packet.srcSlot) // player trying to add item to the same slot
     {
         GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
         return;
     }
 
-    Item* dstitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
-    Item* srcitem = _player->GetItemInterface()->GetInventoryItem(srcslot);
+    Item* dstitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.destSlot);
+    Item* srcitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcSlot);
 
     // allow weapon switching in combat
     bool skip_combat = false;
-    if (srcslot < EQUIPMENT_SLOT_END || dstslot < EQUIPMENT_SLOT_END)        // We're doing an equip swap.
+    if (recv_packet.srcSlot < EQUIPMENT_SLOT_END || recv_packet.destSlot < EQUIPMENT_SLOT_END)        // We're doing an equip swap.
     {
         if (_player->CombatStatus.IsInCombat())
         {
-            if (srcslot < EQUIPMENT_SLOT_MAINHAND || dstslot < EQUIPMENT_SLOT_MAINHAND)    // These can't be swapped
+            if (recv_packet.srcSlot < EQUIPMENT_SLOT_MAINHAND || recv_packet.destSlot < EQUIPMENT_SLOT_MAINHAND)    // These can't be swapped
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_CANT_DO_IN_COMBAT);
                 return;
@@ -226,15 +222,17 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (srcslot == dstslot)
+    if (recv_packet.srcSlot == recv_packet.destSlot)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
         return;
     }
 
-    if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, dstslot, srcitem, skip_combat, false)) != 0)
+    int8 error = 0;
+
+    if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, recv_packet.destSlot, srcitem, skip_combat, false)) != 0)
     {
-        if (dstslot < INVENTORY_KEYRING_END)
+        if (recv_packet.destSlot < INVENTORY_KEYRING_END)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, error);
             return;
@@ -243,10 +241,11 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 
     if (dstitem != nullptr)
     {
-        if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, srcslot, dstitem, skip_combat)) != 0)
+        if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, recv_packet.srcSlot, dstitem, skip_combat)) != 0)
         {
-            if (srcslot < INVENTORY_KEYRING_END)
+            if (recv_packet.srcSlot < INVENTORY_KEYRING_END)
             {
+                WorldPacket data;
                 data.Initialize(SMSG_INVENTORY_CHANGE_FAILURE);
                 data << error;
                 data << srcitem->getGuid();
@@ -268,7 +267,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
     {
         //source has items and dst is a backpack or bank
         if (static_cast< Container* >(srcitem)->HasItems())
-            if (!_player->GetItemInterface()->IsBagSlot(dstslot))
+            if (!_player->GetItemInterface()->IsBagSlot(recv_packet.destSlot))
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                 return;
@@ -279,7 +278,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
             //source is a bag and dst slot is a bag inventory and has items
             if (dstitem->isContainer())
             {
-                if (static_cast< Container* >(dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(srcslot))
+                if (static_cast< Container* >(dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(recv_packet.srcSlot))
                 {
                     _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return;
@@ -294,7 +293,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         }
 
         //dst is bag inventory
-        if (dstslot < INVENTORY_SLOT_BAG_END)
+        if (recv_packet.destSlot < INVENTORY_SLOT_BAG_END)
         {
             if (srcitem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
                 srcitem->addFlags(ITEM_FLAG_SOULBOUND);
@@ -309,10 +308,10 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
     }
 
 #if VERSION_STRING > TBC
-    if (dstitem && srcslot < INVENTORY_SLOT_BAG_END)
+    if (dstitem && recv_packet.srcSlot < INVENTORY_SLOT_BAG_END)
     {
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->getItemProperties()->ItemId, 0, 0);
-        if (srcslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
+        if (recv_packet.srcSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
@@ -320,13 +319,13 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
             if ((dstitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstitem->getItemProperties()->ItemLevel >= 187) ||
                 (dstitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstitem->getItemProperties()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srcslot, dstitem->getItemProperties()->Quality, 0);
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, recv_packet.srcSlot, dstitem->getItemProperties()->Quality, 0);
         }
     }
-    if (srcitem && dstslot < INVENTORY_SLOT_BAG_END)
+    if (srcitem && recv_packet.destSlot < INVENTORY_SLOT_BAG_END)
     {
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcitem->getItemProperties()->ItemId, 0, 0);
-        if (dstslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
+        if (recv_packet.destSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
@@ -334,12 +333,12 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
             if ((srcitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcitem->getItemProperties()->ItemLevel >= 187) ||
                 (srcitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcitem->getItemProperties()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->getItemProperties()->Quality, 0);
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, recv_packet.destSlot, srcitem->getItemProperties()->Quality, 0);
         }
     }
 #endif
 
-    _player->GetItemInterface()->SwapItemSlots(srcslot, dstslot);
+    _player->GetItemInterface()->SwapItemSlots(recv_packet.srcSlot, recv_packet.destSlot);
 }
 
 void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
