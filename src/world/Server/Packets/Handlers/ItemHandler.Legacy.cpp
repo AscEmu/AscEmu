@@ -36,6 +36,7 @@
 #include "Server/Packets/CmsgSplitItem.h"
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgDestroyItem.h"
+#include "Server/Packets/CmsgAutoequipItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -425,19 +426,13 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 2);
-    WorldPacket data;
+    CmsgAutoequipItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
-    int8 SrcInvSlot;
-    int8 SrcSlot;
-    int8 error = 0;
+    LOG_DETAIL("ITEM: autoequip, Inventory slot: %i Source Slot: %i", recv_packet.srcInventorySlot, recv_packet.srcSlot);
 
-    recvData >> SrcInvSlot;
-    recvData >> SrcSlot;
-
-    LOG_DETAIL("ITEM: autoequip, Inventory slot: %i Source Slot: %i", SrcInvSlot, SrcSlot);
-
-    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+    Item* eitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcInventorySlot, recv_packet.srcSlot);
 
     if (eitem == nullptr)
     {
@@ -451,6 +446,8 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
         _player->GetItemInterface()->BuildInventoryChangeError(eitem, nullptr, INV_ERR_ITEM_CANT_BE_EQUIPPED);
         return;
     }
+
+    int8 error = 0;
 
     // handle equipping of 2h when we have two items equipped! :) special case.
     if ((Slot == EQUIPMENT_SLOT_MAINHAND || Slot == EQUIPMENT_SLOT_OFFHAND) && !_player->canDualWield2H())
@@ -553,18 +550,18 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
 
     Item* oitem = nullptr;
 
-    if (SrcInvSlot == INVENTORY_SLOT_NOT_SET)
+    if (recv_packet.srcInventorySlot == INVENTORY_SLOT_NOT_SET)
     {
-        _player->GetItemInterface()->SwapItemSlots(SrcSlot, Slot);
+        _player->GetItemInterface()->SwapItemSlots(recv_packet.srcSlot, Slot);
     }
     else
     {
-        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(recv_packet.srcInventorySlot, recv_packet.srcSlot, false);
         oitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
         AddItemResult result;
         if (oitem != nullptr)
         {
-            result = _player->GetItemInterface()->SafeAddItem(oitem, SrcInvSlot, SrcSlot);
+            result = _player->GetItemInterface()->SafeAddItem(oitem, recv_packet.srcInventorySlot, recv_packet.srcSlot);
             if (!result)
             {
                 LOG_ERROR("HandleAutoEquip: Error while adding item to SrcSlot");
