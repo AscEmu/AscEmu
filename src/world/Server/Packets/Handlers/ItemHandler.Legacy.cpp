@@ -35,6 +35,7 @@
 #include "Server/Packets/SmsgSellItem.h"
 #include "Server/Packets/CmsgSplitItem.h"
 #include "Server/Packets/CmsgSwapInvItem.h"
+#include "Server/Packets/CmsgDestroyItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -343,16 +344,12 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
 {
-    CHECK_PACKET_SIZE(recvData, 2);
+    CmsgDestroyItem recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
-    int8 SrcInvSlot;
-    int8 SrcSlot;
-
-    recvData >> SrcInvSlot;
-    recvData >> SrcSlot;
-
-    LOG_DETAIL("ITEM: destroy, SrcInv Slot: %i Src slot: %i", SrcInvSlot, SrcSlot);
-    Item* it = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+    LOG_DETAIL("ITEM: destroy, SrcInv Slot: %i Src slot: %i", recv_packet.srcInventorySlot, recv_packet.srcSlot);
+    Item* it = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcInventorySlot, recv_packet.srcSlot);
 
     if (it)
     {
@@ -408,7 +405,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recvData)
             _player->m_charters[CHARTER_TYPE_ARENA_3V3] = nullptr;
         }
 
-        Item* pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+        Item* pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(recv_packet.srcInventorySlot, recv_packet.srcSlot, false);
         if (!pItem)
             return;
 

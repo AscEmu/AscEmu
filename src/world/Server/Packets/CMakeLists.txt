@@ -54,6 +54,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgCreatureQuery.h
    ${PATH_PREFIX}/CmsgDelFriend.h
    ${PATH_PREFIX}/CmsgDelIgnore.h
+   ${PATH_PREFIX}/CmsgDestroyItem.h
    ${PATH_PREFIX}/CmsgDismissCritter.h
    ${PATH_PREFIX}/CmsgEjectPassenger.h
    ${PATH_PREFIX}/CmsgEmote.h
