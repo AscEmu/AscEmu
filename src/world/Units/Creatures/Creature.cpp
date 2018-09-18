@@ -38,7 +38,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
 #include "Pet.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
 

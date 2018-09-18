@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 
 //.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)

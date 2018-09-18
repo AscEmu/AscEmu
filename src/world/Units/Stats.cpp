@@ -28,7 +28,7 @@
 #include "Server/World.Legacy.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
 #include "WorldConf.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {

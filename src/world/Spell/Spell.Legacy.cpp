@@ -4603,10 +4603,6 @@ uint8 Spell::CanCast(bool tolerate)
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
 
-            /* Target OOC check */
-            if (hasAttributeEx(ATTRIBUTESEX_REQ_OOC_TARGET) && target->CombatStatus.IsInCombat())
-                return SPELL_FAILED_TARGET_IN_COMBAT;
-
             if (p_caster != nullptr)
             {
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
@@ -4620,26 +4616,6 @@ uint8 Spell::CanCast(bool tolerate)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;
-                }
-
-                // check aurastate
-                if (GetSpellInfo()->getTargetAuraState() && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-                if (GetSpellInfo()->getTargetAuraStateNot() && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraStateNot()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-
-                // check aura
-                if (GetSpellInfo()->getTargetAuraSpell() && !target->HasAura(GetSpellInfo()->getTargetAuraSpell()))
-                {
-                    return SPELL_FAILED_NOT_READY;
-                }
-                if (GetSpellInfo()->getTargetAuraSpellNot() && target->HasAura(GetSpellInfo()->getTargetAuraSpellNot()))
-                {
-                    return SPELL_FAILED_NOT_READY;
                 }
 
                 if (target->isPlayer())

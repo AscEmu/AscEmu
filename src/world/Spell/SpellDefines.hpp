@@ -84,7 +84,7 @@ enum SpellAttributesEx
     ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE        = 0x00010000,   // 17 unaffected by school immunity - something like "grant immunity" too
     ATTRIBUTESEX_REMAIN_OOC                         = 0x00020000,   // 18
     ATTRIBUTESEX_UNK20                              = 0x00040000,   // 19
-    ATTRIBUTESEX_UNK21                              = 0x00080000,   // 20
+    ATTRIBUTESEX_CANT_TARGET_SELF                   = 0x00080000,   // 20
     ATTRIBUTESEX_REQ_COMBO_POINTS1                  = 0x00100000,   // 21 related to "Finishing move" and "Instantly overpowers"
     ATTRIBUTESEX_UNK23                              = 0x00200000,   // 22
     ATTRIBUTESEX_REQ_COMBO_POINTS2                  = 0x00400000,   // 23 only related to "Finishing move"
