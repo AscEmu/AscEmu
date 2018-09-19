@@ -103,6 +103,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
    ${PATH_PREFIX}/CmsgItemQuerySingle.h
+   ${PATH_PREFIX}/CmsgItemrefundinfo.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
    ${PATH_PREFIX}/CmsgLeaveChannel.h
    ${PATH_PREFIX}/CmsgListInventory.h
