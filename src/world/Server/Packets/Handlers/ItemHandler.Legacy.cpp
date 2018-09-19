@@ -40,6 +40,7 @@
 #include "Server/Packets/CmsgAutoequipItemSlot.h"
 #include "Server/Packets/CmsgBuybackItem.h"
 #include "Server/Packets/CmsgAutostoreBagItem.h"
+#include "Server/Packets/CmsgReadItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1755,19 +1756,16 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgReadItem recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 2);
-    int8 uslot = 0, slot = 0;
-    recvPacket >> uslot >> slot;
+    LOG_DEBUG("Received CMSG_READ_ITEM %d", recv_packet.srcSlot);
 
-    Item* item = _player->GetItemInterface()->GetInventoryItem(uslot, slot);
-    LOG_DEBUG("Received CMSG_READ_ITEM %d", slot);
-
+    Item* item = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcContainerSlot, recv_packet.srcSlot);
     if (item)
     {
         // Check if it has pagetext
-
         if (item->getItemProperties()->PageId)
         {
             WorldPacket data(SMSG_READ_ITEM_OK, 4);
