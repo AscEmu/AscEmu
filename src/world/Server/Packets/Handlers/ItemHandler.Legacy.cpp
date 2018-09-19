@@ -47,6 +47,7 @@
 #include "Server/Packets/CmsgCancelTempEnchantment.h"
 #include "Server/Packets/CmsgSocketGems.h"
 #include "Server/Packets/CmsgWrapItem.h"
+#include "Server/Packets/CmsgItemrefundinfo.h"
 
 using namespace AscEmu::Packets;
 
@@ -2240,26 +2241,13 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
+    CmsgItemrefundinfo recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
     LOG_DEBUG("Recieved CMSG_ITEMREFUNDINFO.");
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.2.0a the client sends this packet to request refund info on an item
-    //
-    //    {CLIENT} Packet: (0x04B3) UNKNOWN PacketSize = 8 TimeStamp = 265984125
-    //    E6 EE 09 18 02 00 00 42
-    //
-    //
-    //
-    //  Structure:
-    //  uint64 GUID
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-    uint64 GUID;
-    recvPacket >> GUID;
-
-    this->SendRefundInfo(GUID);
-
+    this->SendRefundInfo(recv_packet.itemGuid);
 }
 #endif
 
