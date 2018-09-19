@@ -45,6 +45,7 @@
 #include "Server/Packets/CmsgAutobankItem.h"
 #include "Server/Packets/CmsgAutostoreBankItem.h"
 #include "Server/Packets/CmsgCancelTempEnchantment.h"
+#include "Server/Packets/CmsgSocketGems.h"
 
 using namespace AscEmu::Packets;
 
@@ -1951,33 +1952,34 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 itemguid;
-    uint64 gemguid[3];
-    ItemInterface* itemi = _player->GetItemInterface();
-    DBC::Structures::GemPropertiesEntry const* gem_properties;
-    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
-    recvPacket >> itemguid;
+    CmsgSocketGems recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    Item* TargetItem = itemi->GetItemByGUID(itemguid);
+    ItemInterface* itemi = _player->GetItemInterface();
+    Item* TargetItem = itemi->GetItemByGUID(recv_packet.itemGuid);
     if (!TargetItem)
         return;
 
     ItemProperties const* TargetProto = TargetItem->getItemProperties();
-    int slot = itemi->GetInventorySlotByGuid(itemguid);
+    int slot = itemi->GetInventorySlotByGuid(recv_packet.itemGuid);
 
     bool apply = (slot >= 0 && slot < 19);
     uint32 FilledSlots = 0;
 
     //cheat -> tried to socket same gem multiple times
-    for (uint8 i = 0; i < 3; ++i)
-        recvPacket >> gemguid[i];
-
-    if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
+    if ((recv_packet.gemGuid[0] &&
+        (recv_packet.gemGuid[0] == recv_packet.gemGuid[1]
+        || recv_packet.gemGuid[0] == recv_packet.gemGuid[2]))
+        || (recv_packet.gemGuid[1] && (recv_packet.gemGuid[1] == recv_packet.gemGuid[2])))
     {
         return;
     }
 
     bool ColorMatch = true;
+    DBC::Structures::GemPropertiesEntry const* gem_properties;
+    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
+
     for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
     {
         EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
@@ -1994,7 +1996,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
                 ColorMatch = false;
         }
 
-        if (gemguid[i])  //add or replace gem
+        if (recv_packet.gemGuid[i])  //add or replace gem
         {
             Item* it = nullptr;
             ItemProperties const* ip = nullptr;
@@ -2016,7 +2018,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 
             if (apply)
             {
-                it = itemi->GetItemByGUID(gemguid[i]);
+                it = itemi->GetItemByGUID(recv_packet.gemGuid[i]);
                 if (!it)
                     continue;
 
@@ -2048,7 +2050,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 #endif
             }
 
-            it = itemi->SafeRemoveAndRetreiveItemByGuid(gemguid[i], true);
+            it = itemi->SafeRemoveAndRetreiveItemByGuid(recv_packet.gemGuid[i], true);
             if (!it)
                 return; //someone sending hacked packets to crash server
 
