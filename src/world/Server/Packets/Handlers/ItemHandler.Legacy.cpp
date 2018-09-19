@@ -39,6 +39,7 @@
 #include "Server/Packets/CmsgAutoequipItem.h"
 #include "Server/Packets/CmsgAutoequipItemSlot.h"
 #include "Server/Packets/CmsgBuybackItem.h"
+#include "Server/Packets/CmsgAutostoreBagItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1646,28 +1647,18 @@ void WorldSession::SendInventoryList(Creature* unit)
 
 void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
+    CmsgAutostoreBagItem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    CHECK_PACKET_SIZE(recv_data, 3);
     LOG_DETAIL("WORLD: Recvd CMSG_AUTO_STORE_BAG_ITEM");
 
-    //WorldPacket data;
-    WorldPacket packet;
-    int8 SrcInv = 0, Slot = 0, DstInv = 0;
-    //    Item *item= NULL;
-    Item* srcitem = nullptr;
-    Item* dstitem = nullptr;
-    int8 NewSlot = 0;
-    int8 error;
-    AddItemResult result;
-
-    recv_data >> SrcInv;
-    recv_data >> Slot;
-    recv_data >> DstInv;
-
-    srcitem = _player->GetItemInterface()->GetInventoryItem(SrcInv, Slot);
+    Item* srcitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcContainerSlot, recv_packet.srcSlot);
 
     //source item exists
+    int8 NewSlot = 0;
+    AddItemResult result;
+
     if (srcitem)
     {
         //src containers cant be moved if they have items inside
@@ -1678,7 +1669,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
         }
         //check for destination now before swaping.
         //destination is backpack
-        if (DstInv == INVENTORY_SLOT_NOT_SET)
+        if (recv_packet.dstContainerSlot == INVENTORY_SLOT_NOT_SET)
         {
             //check for space
             NewSlot = _player->GetItemInterface()->FindFreeBackPackSlot();
@@ -1690,7 +1681,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
             else
             {
                 //free space found, remove item and add it to the destination
-                srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInv, Slot, false);
+                srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(recv_packet.srcContainerSlot, recv_packet.srcSlot, false);
                 if (srcitem)
                 {
                     result = _player->GetItemInterface()->SafeAddItem(srcitem, INVENTORY_SLOT_NOT_SET, NewSlot);
@@ -1705,18 +1696,18 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
         }
         else
         {
-            if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(DstInv, DstInv, srcitem)) != 0)
+            const int8 error = _player->GetItemInterface()->CanEquipItemInSlot2(recv_packet.dstContainerSlot, recv_packet.dstContainerSlot, srcitem);
+            if (error != 0)
             {
-                if (DstInv < INVENTORY_KEYRING_END)
+                if (recv_packet.dstContainerSlot < INVENTORY_KEYRING_END)
                 {
-                    _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, error);
+                    _player->GetItemInterface()->BuildInventoryChangeError(srcitem, nullptr, error);
                     return;
                 }
             }
 
             //destination is a bag
-            dstitem = _player->GetItemInterface()->GetInventoryItem(DstInv);
-            if (dstitem)
+            if (Item* dstitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.dstContainerSlot))
             {
                 //dstitem exists, detect if its a container
                 if (dstitem->isContainer())
@@ -1729,10 +1720,10 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
                     }
                     else
                     {
-                        srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInv, Slot, false);
+                        srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(recv_packet.srcContainerSlot, recv_packet.srcSlot, false);
                         if (srcitem != nullptr)
                         {
-                            result = _player->GetItemInterface()->SafeAddItem(srcitem, DstInv, NewSlot);
+                            result = _player->GetItemInterface()->SafeAddItem(srcitem, recv_packet.dstContainerSlot, NewSlot);
                             if (!result)
                             {
                                 LOG_ERROR("HandleBuyItemInSlot: Error while adding item to newslot");
