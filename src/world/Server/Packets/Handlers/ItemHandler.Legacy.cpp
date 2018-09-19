@@ -41,6 +41,7 @@
 #include "Server/Packets/CmsgBuybackItem.h"
 #include "Server/Packets/CmsgAutostoreBagItem.h"
 #include "Server/Packets/CmsgReadItem.h"
+#include "Server/Packets/CmsgRepairItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1786,20 +1787,11 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgRepairItem recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 17);//8+8+1
-
-    uint64 npcguid;
-    uint64 itemguid;
-    Item* pItem;
-    Container* pContainer;
-    uint32 j, i;
-    bool guildmoney;
-
-    recvPacket >> npcguid >> itemguid >> guildmoney;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(npcguid));
+    Creature* pCreature = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLowPart());
     if (pCreature == nullptr)
         return;
 
@@ -1810,32 +1802,32 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
     if (_player->getDistanceSq(pCreature) > 100)
         return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
 
-    if (!itemguid)
+    if (!recv_packet.itemGuid)
     {
         int32 totalcost = 0;
-        for (i = 0; i < MAX_INVENTORY_SLOT; i++)
+        for (uint32 i = 0; i < MAX_INVENTORY_SLOT; i++)
         {
-            pItem = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(i));
+            Item* pItem = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(i));
             if (pItem != nullptr)
             {
                 if (pItem->isContainer())
                 {
-                    pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
+                    Container* pContainer = static_cast<Container*>(pItem);
+                    for (uint32 j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(static_cast<int16>(j));
                         if (pItem != nullptr)
-                            pItem->RepairItem(_player, guildmoney, &totalcost);
+                            pItem->RepairItem(_player, recv_packet.isInGuild, &totalcost);
                     }
                 }
                 else
                 {
                     if (i < INVENTORY_SLOT_BAG_END)
                     {
-                        if (pItem->getDurability() == 0 && pItem->RepairItem(_player, guildmoney, &totalcost))
+                        if (pItem->getDurability() == 0 && pItem->RepairItem(_player, recv_packet.isInGuild, &totalcost))
                             _player->ApplyItemMods(pItem, static_cast<int16>(i), true);
                         else
-                            pItem->RepairItem(_player, guildmoney, &totalcost);
+                            pItem->RepairItem(_player, recv_packet.isInGuild, &totalcost);
                     }
                 }
             }
@@ -1843,7 +1835,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+        Item* item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
         if (item)
         {
             SlotResult* searchres = _player->GetItemInterface()->LastSearchResult(); //this never gets null since we get a pointer to the inteface internal var
@@ -1858,7 +1850,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", itemguid);
+    LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", recv_packet.itemGuid);
 }
 
 void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
