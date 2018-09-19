@@ -158,6 +158,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetTradeGold.h
    ${PATH_PREFIX}/CmsgSetTradeItem.h
    ${PATH_PREFIX}/CmsgSetWatchedFaction.h
+   ${PATH_PREFIX}/CmsgSocketGems.h
    ${PATH_PREFIX}/CmsgSplitItem.h
    ${PATH_PREFIX}/CmsgStableSwapPet.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
