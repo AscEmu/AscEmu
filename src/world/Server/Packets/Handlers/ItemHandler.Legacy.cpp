@@ -44,6 +44,7 @@
 #include "Server/Packets/CmsgRepairItem.h"
 #include "Server/Packets/CmsgAutobankItem.h"
 #include "Server/Packets/CmsgAutostoreBankItem.h"
+#include "Server/Packets/CmsgCancelTempEnchantment.h"
 
 using namespace AscEmu::Packets;
 
@@ -1935,11 +1936,13 @@ void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
 {
     CHECK_INWORLD_RETURN
 
-    uint32 inventory_slot;
-    recvPacket >> inventory_slot;
+    CmsgCancelTempEnchantment recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(inventory_slot));
-    if (!item) return;
+    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(recv_packet.inventorySlot));
+    if (!item)
+        return;
 
     item->RemoveAllEnchantments(true);
 }
