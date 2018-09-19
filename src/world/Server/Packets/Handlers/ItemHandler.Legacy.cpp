@@ -48,6 +48,7 @@
 #include "Server/Packets/CmsgSocketGems.h"
 #include "Server/Packets/CmsgWrapItem.h"
 #include "Server/Packets/CmsgItemrefundinfo.h"
+#include "Server/Packets/CmsgItemrefundrequest.h"
 
 using namespace AscEmu::Packets;
 
@@ -2255,9 +2256,12 @@ void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
+    CmsgItemrefundrequest recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
     LOG_DEBUG("Recieved CMSG_ITEMREFUNDREQUEST.");
 
-    uint64 GUID;
     uint32 error = 1;
 
     std::pair<time_t, uint32> RefundEntry;
@@ -2268,9 +2272,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 #endif
     ItemProperties const* item_proto = nullptr;
 
-    recvPacket >> GUID;
-
-    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+    auto item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
 
     if (item != nullptr)
     {
@@ -2279,7 +2281,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
             RefundEntry.first = 0;
             RefundEntry.second = 0;
 
-            RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
+            RefundEntry = _player->GetItemInterface()->LookupRefundable(recv_packet.itemGuid);
 
             // If the item is refundable we look up the extendedcost
             if (RefundEntry.first != 0 && RefundEntry.second != 0)
@@ -2304,9 +2306,9 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
                 _player->GetItemInterface()->AddItemById(43307, item_extended_cost->arena_points, 0);
                 _player->ModGold(item_proto->BuyPrice);
 
-                _player->GetItemInterface()->RemoveItemAmtByGuid(GUID, 1);
+                _player->GetItemInterface()->RemoveItemAmtByGuid(recv_packet.itemGuid, 1);
 
-                _player->GetItemInterface()->RemoveRefundable(GUID);
+                _player->GetItemInterface()->RemoveRefundable(recv_packet.itemGuid);
 
                 // we were successful!
                 error = 0;
@@ -2316,7 +2318,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
     }
 
     WorldPacket packet(SMSG_ITEMREFUNDREQUEST, 60);
-    packet << uint64(GUID);
+    packet << uint64(recv_packet.itemGuid);
     packet << uint32(error);
 
     if (error == 0)
