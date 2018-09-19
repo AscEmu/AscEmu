@@ -34,13 +34,13 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << button << misc << type << action;
+            packet << button << action << misc << type;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> button >> misc >> type >> action;
+            packet >> button >> action >> misc >> type;
             return true;
         }
     };
