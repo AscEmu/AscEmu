@@ -16,6 +16,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAuctionPlaceBid.h
    ${PATH_PREFIX}/CmsgAuctionRemoveItem.h
    ${PATH_PREFIX}/CmsgAuctionSellItem.h
+   ${PATH_PREFIX}/CmsgAutobankItem.h
    ${PATH_PREFIX}/CmsgAutoequipItem.h
    ${PATH_PREFIX}/CmsgAutoequipItemSlot.h
    ${PATH_PREFIX}/CmsgAutostoreBagItem.h

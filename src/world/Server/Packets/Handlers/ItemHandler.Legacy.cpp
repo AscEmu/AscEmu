@@ -42,6 +42,7 @@
 #include "Server/Packets/CmsgAutostoreBagItem.h"
 #include "Server/Packets/CmsgReadItem.h"
 #include "Server/Packets/CmsgRepairItem.h"
+#include "Server/Packets/CmsgAutobankItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -1855,30 +1856,23 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
+    CmsgAutobankItem recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    CHECK_PACKET_SIZE(recvPacket, 2);
     LOG_DEBUG("WORLD: CMSG_AUTO_BANK_ITEM");
 
-    //WorldPacket data;
 
-    SlotResult slotresult;
-    int8 SrcInvSlot, SrcSlot;//, error= 0;
+    LOG_DETAIL("ITEM: Auto Bank, Inventory slot: %u Source Slot: %u", (uint32)recv_packet.srcInventorySlot, (uint32)recv_packet.srcSlot);
 
-    recvPacket >> SrcInvSlot >> SrcSlot;
-
-    LOG_DETAIL("ITEM: Auto Bank, Inventory slot: %u Source Slot: %u", (uint32)SrcInvSlot, (uint32)SrcSlot);
-
-    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
-
+    Item* eitem = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcInventorySlot, recv_packet.srcSlot);
     if (!eitem)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(eitem, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;
     }
 
-    slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->getItemProperties());
-
+    const SlotResult slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->getItemProperties());
     if (!slotresult.Result)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(eitem, nullptr, INV_ERR_BANK_FULL);
@@ -1886,14 +1880,14 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(recv_packet.srcInventorySlot, recv_packet.srcSlot, false);
         if (eitem == nullptr)
             return;
 
         if (!_player->GetItemInterface()->SafeAddItem(eitem, slotresult.ContainerSlot, slotresult.Slot))
         {
             LOG_DEBUG("[ERROR]AutoBankItem: Error while adding item to bank bag!");
-            if (!_player->GetItemInterface()->SafeAddItem(eitem, SrcInvSlot, SrcSlot))
+            if (!_player->GetItemInterface()->SafeAddItem(eitem, recv_packet.srcInventorySlot, recv_packet.srcSlot))
                 eitem->DeleteMe();
         }
     }
