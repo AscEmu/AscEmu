@@ -46,6 +46,7 @@
 #include "Server/Packets/CmsgAutostoreBankItem.h"
 #include "Server/Packets/CmsgCancelTempEnchantment.h"
 #include "Server/Packets/CmsgSocketGems.h"
+#include "Server/Packets/CmsgWrapItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -2114,21 +2115,12 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    int8 sourceitem_bagslot;
-    int8 sourceitem_slot;
-    int8 destitem_bagslot;
-    int8 destitem_slot;
-    uint32 source_entry;
-    uint32 itemid;
-    Item* src, *dst;
+    CmsgWrapItem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    recv_data >> sourceitem_bagslot;
-    recv_data >> sourceitem_slot;
-    recv_data >> destitem_bagslot;
-    recv_data >> destitem_slot;
-
-    src = _player->GetItemInterface()->GetInventoryItem(sourceitem_bagslot, sourceitem_slot);
-    dst = _player->GetItemInterface()->GetInventoryItem(destitem_bagslot, destitem_slot);
+    Item* src = _player->GetItemInterface()->GetInventoryItem(recv_packet.srcBagSlot, recv_packet.srcSlot);
+    Item* dst = _player->GetItemInterface()->GetInventoryItem(recv_packet.destBagSlot, recv_packet.destSlot);
 
     if (!src || !dst)
         return;
@@ -2181,45 +2173,38 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_ITEM_LOCKED);
         return;
     }
-    if (destitem_bagslot == -1 && (destitem_slot >= int8(EQUIPMENT_SLOT_START) && destitem_slot <= int8(INVENTORY_SLOT_BAG_END)))
+    if (recv_packet.destBagSlot == -1 && (recv_packet.destSlot >= int8(EQUIPMENT_SLOT_START) && recv_packet.destSlot <= int8(INVENTORY_SLOT_BAG_END)))
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_EQUIPPED_CANT_BE_WRAPPED);
         return;
     }
 
     // all checks passed ok
-    source_entry = src->getEntry();
-    itemid = source_entry;
+    uint32 source_entry = src->getEntry();
+    uint32 itemid = source_entry;
     switch (source_entry)
     {
         case 5042:
             itemid = 5043;
             break;
-
         case 5048:
             itemid = 5044;
             break;
-
         case 17303:
             itemid = 17302;
             break;
-
         case 17304:
             itemid = 17305;
             break;
-
         case 17307:
             itemid = 17308;
             break;
-
         case 21830:
             itemid = 21831;
             break;
-
         default:
             _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
             return;
-            break;
     }
 
     dst->setItemProperties(src->getItemProperties());
@@ -2248,7 +2233,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 
     // save it
     dst->m_isDirty = true;
-    dst->SaveToDB(destitem_bagslot, destitem_slot, false, nullptr);
+    dst->SaveToDB(recv_packet.destBagSlot, recv_packet.destSlot, false, nullptr);
 }
 
 #if VERSION_STRING == WotLK
