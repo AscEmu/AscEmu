@@ -32,29 +32,6 @@
 
 using namespace AscEmu::Packets;
 
-void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CmsgTaxinodeStatusQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
-
-    uint32 curloc = sTaxiMgr.getNearestNodeForPlayer(_player);
-
-    uint8 field = (uint8)((curloc - 1) / 32);
-    uint32 submask = 1 << ((curloc - 1) % 32);
-
-    // Check for known nodes
-    uint8_t status = 1;
-    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
-        status = 0;
-
-    SendPacket(SmsgTaxinodeStatus(recv_packet.guid, status).serialise().get());
-}
-
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
     uint32 TaxiMask[12];
