@@ -27,6 +27,9 @@
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgQuestgiverQueryQuest.h"
 #include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
+#include "Server/Packets/CmsgQuestgiverStatusQuery.h"
+
+using namespace AscEmu::Packets;
 
 initialiseSingleton(QuestMgr);
 
@@ -65,18 +68,20 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgQuestgiverStatusQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     if (_player->IsInBg())
         return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
 
-    uint64 guid;
     WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
     Object* qst_giver = nullptr;
 
-    recv_data >> guid;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questGiverGuid.GetOldGuid());
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
-        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questGiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -90,7 +95,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
-        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(recv_packet.questGiverGuid.GetOldGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -98,7 +103,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
-        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questGiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -107,11 +112,11 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 
     if (!qst_giver)
     {
-        LOG_DEBUG("WORLD: Invalid questgiver GUID " I64FMT ".", guid);
+        LOG_DEBUG("WORLD: Invalid questgiver GUID " I64FMT ".", recv_packet.questGiverGuid.GetOldGuid());
         return;
     }
 
-    data << guid;
+    data << recv_packet.questGiverGuid.GetOldGuid();
     data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
     SendPacket(&data);
 }
