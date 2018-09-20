@@ -125,10 +125,11 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    recv_data >> guid;
+    CmsgQuestgiverHello recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* qst_giver = _player->GetMapMgr()->GetCreature(recv_packet.questGiverGuid.getGuidLowPart());
     if (!qst_giver)
     {
         LOG_DEBUG("WORLD: Invalid questgiver GUID.");
