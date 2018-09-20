@@ -28,6 +28,8 @@
 #include "Server/Packets/CmsgQuestgiverQueryQuest.h"
 #include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
 #include "Server/Packets/CmsgQuestgiverStatusQuery.h"
+#include "Server/Packets/CmsgQuestgiverHello.h"
+#include "Server/Packets/CmsgQuestlogRemoveQuest.h"
 
 using namespace AscEmu::Packets;
 
@@ -151,7 +153,7 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 {
-    AscEmu::Packets::CmsgQuestgiverQueryQuest recv_packet;
+    CmsgQuestgiverQueryQuest recv_packet;
     if (!recv_packet.deserialise(recv_data))
         return;
 
@@ -253,7 +255,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket& recv_data)
 {
-    AscEmu::Packets::CmsgQuestgiverAcceptQuest recv_packet;
+    CmsgQuestgiverAcceptQuest recv_packet;
     if (!recv_packet.deserialise(recv_data))
         return;
 
@@ -273,15 +275,17 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint8 quest_slot;
-    recvPacket >> quest_slot;
-    if (quest_slot >= 25)
+    CmsgQuestlogRemoveQuest recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    QuestLogEntry* qEntry = GetPlayer()->GetQuestLogInSlot(quest_slot);
+    if (recv_packet.questLogSlot >= 25)
+        return;
+
+    QuestLogEntry* qEntry = GetPlayer()->GetQuestLogInSlot(recv_packet.questLogSlot);
     if (!qEntry)
     {
-        LOG_DEBUG("WORLD: No quest in slot %d.", quest_slot);
+        LOG_DEBUG("WORLD: No quest in slot %d.", recv_packet.questLogSlot);
         return;
     }
     QuestProperties const* qPtr = qEntry->GetQuest();
