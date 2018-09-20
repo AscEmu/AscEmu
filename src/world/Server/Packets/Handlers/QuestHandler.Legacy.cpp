@@ -30,6 +30,7 @@
 #include "Server/Packets/CmsgQuestgiverStatusQuery.h"
 #include "Server/Packets/CmsgQuestgiverHello.h"
 #include "Server/Packets/CmsgQuestlogRemoveQuest.h"
+#include "Server/Packets/CmsgQuestQuery.h"
 
 using namespace AscEmu::Packets;
 
@@ -326,10 +327,11 @@ void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 quest_id;
-    recv_data >> quest_id;
+    CmsgQuestQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(recv_packet.questId);
     if (!qst)
     {
         LOG_DEBUG("WORLD: Invalid quest ID.");

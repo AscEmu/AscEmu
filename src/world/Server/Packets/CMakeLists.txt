@@ -140,6 +140,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgQuestgiverQueryQuest.h
    ${PATH_PREFIX}/CmsgQuestgiverStatusQuery.h
    ${PATH_PREFIX}/CmsgQuestlogRemoveQuest.h
+   ${PATH_PREFIX}/CmsgQuestQuery.h
    ${PATH_PREFIX}/CmsgReadItem.h
    ${PATH_PREFIX}/CmsgRealmSplit.h
    ${PATH_PREFIX}/CmsgRepairItem.h
