@@ -67,6 +67,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgDismissCritter.h
    ${PATH_PREFIX}/CmsgEjectPassenger.h
    ${PATH_PREFIX}/CmsgEmote.h
+   ${PATH_PREFIX}/CmsgEnabletaxi.h
    ${PATH_PREFIX}/CmsgGameobjectQuery.h
    ${PATH_PREFIX}/CmsgGameobjReportUse.h
    ${PATH_PREFIX}/CmsgGameobjUse.h
