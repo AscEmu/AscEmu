@@ -27,6 +27,7 @@
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Server/Packets/SmsgActivatetaxireply.h"
+#include "Server/Packets/CmsgActivatetaxiexpress.h"
 
 using namespace AscEmu::Packets;
 
@@ -227,35 +228,18 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgActivatetaxiexpress recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
     LogDebugFlag(LF_OPCODE, "HandleMultipleActivateTaxiOpcode : Received CMSG_ACTIVATETAXI");
-
-    uint64 guid;
-    uint32 nodecount;
-    std::vector<uint32> pathes;
-    int32 newmoney;
-    uint32 curloc;
-    uint8 field;
-    uint32 submask;
-
-    recvPacket >> guid >> nodecount;
-    if (nodecount < 2)
-        return;
-
-    if (nodecount > 10)
-    {
-        Disconnect();
-        return;
-    }
-
-    for (uint32 i = 0; i < nodecount; ++i)
-        pathes.push_back(recvPacket.read<uint32>());
 
     if (GetPlayer()->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
 
     // get first trip
-    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(pathes[0], pathes[1]);
-    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(pathes[0]);
+    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(recv_packet.pathParts[0], recv_packet.pathParts[1]);
+    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(recv_packet.pathParts[0]);
 
     // Check for valid node
     if (taxinode == NULL)
@@ -270,9 +254,9 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    curloc = taxinode->id;
-    field = (uint8)((curloc - 1) / 32);
-    submask = 1 << ((curloc - 1) % 32);
+    uint32 curloc = taxinode->id;
+    uint8 field = (uint8)((curloc - 1) / 32);
+    uint32 submask = 1 << ((curloc - 1) % 32);
 
     // Check for known nodes
     if ((_player->GetTaximask(field) & submask) != submask)
@@ -288,15 +272,16 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     }
 
     uint32 totalcost = taxipath->GetPrice();
-    for (uint32 i = 2; i < nodecount; ++i)
+    for (uint32 i = 2; i < recv_packet.nodeCount; ++i)
     {
-        TaxiPath* np = sTaxiMgr.GetTaxiPath(pathes[i - 1], pathes[i]);
-        if (!np) return;
+        TaxiPath* np = sTaxiMgr.GetTaxiPath(recv_packet.pathParts[i - 1], recv_packet.pathParts[i]);
+        if (!np)
+            return;
         totalcost += np->GetPrice();
     }
 
     // Check for gold
-    newmoney = (GetPlayer()->GetGold() - totalcost);
+    int32 newmoney = (GetPlayer()->GetGold() - totalcost);
     if (newmoney < 0)
     {
         SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
@@ -324,6 +309,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
         if (!ci)
             return;
+
         modelid = ci->Male_DisplayID;
         if (!modelid)
             return;
@@ -343,10 +329,11 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     _player->taxi_model_id = modelid;
 
     // build the rest of the path list
-    for (uint32 i = 2; i < nodecount; ++i)
+    for (uint32 i = 2; i < recv_packet.nodeCount; ++i)
     {
-        TaxiPath* np = sTaxiMgr.GetTaxiPath(pathes[i - 1], pathes[i]);
-        if (!np) return;
+        TaxiPath* np = sTaxiMgr.GetTaxiPath(recv_packet.pathParts[i - 1], recv_packet.pathParts[i]);
+        if (!np)
+            return;
 
         // add to the list.. :)
         _player->m_taxiPaths.push_back(np);
