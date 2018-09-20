@@ -49,6 +49,7 @@
 #include "Server/Packets/CmsgWrapItem.h"
 #include "Server/Packets/CmsgItemrefundinfo.h"
 #include "Server/Packets/CmsgItemrefundrequest.h"
+#include "Server/Packets/SmsgInventoryChangeFailure.h"
 
 using namespace AscEmu::Packets;
 
@@ -259,19 +260,8 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
         {
             if (recv_packet.srcSlot < INVENTORY_KEYRING_END)
             {
-                WorldPacket data;
-                data.Initialize(SMSG_INVENTORY_CHANGE_FAILURE);
-                data << error;
-                data << srcitem->getGuid();
-                data << dstitem->getGuid();
-                data << uint8(0);
-
-                if (error == INV_ERR_YOU_MUST_REACH_LEVEL_N)
-                {
-                    data << dstitem->getItemProperties()->RequiredLevel;
-                }
-
-                SendPacket(&data);
+                uint32_t reqLevel = dstitem->getItemProperties()->RequiredLevel;
+                SendPacket(SmsgInventoryChangeFailure(error, srcitem->getGuid(), dstitem->getGuid(), reqLevel, true).serialise().get());
                 return;
             }
         }
