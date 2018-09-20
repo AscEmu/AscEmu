@@ -177,6 +177,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSwapInvItem.h
    ${PATH_PREFIX}/CmsgSwapItem.h
    ${PATH_PREFIX}/CmsgTaxinodeStatusQuery.h
+   ${PATH_PREFIX}/CmsgTaxiQueryAvailableNodes.h
    ${PATH_PREFIX}/CmsgTextEmote.h
    ${PATH_PREFIX}/CmsgTrainerBuySpell.h
    ${PATH_PREFIX}/CmsgTrainerList.h

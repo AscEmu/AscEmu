@@ -28,6 +28,7 @@
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Server/Packets/SmsgActivatetaxireply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
+#include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
 
 using namespace AscEmu::Packets;
 
@@ -59,10 +60,13 @@ void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgTaxiQueryAvailableNodes recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     LOG_DEBUG("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
-    uint64 guid;
-    recv_data >> guid;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+
+    Creature* pCreature = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLowPart());
     if (!pCreature)
         return;
 
