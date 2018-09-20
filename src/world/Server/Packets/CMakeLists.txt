@@ -138,6 +138,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgQuestgiverHello.h
    ${PATH_PREFIX}/CmsgQuestgiverAcceptQuest.h
    ${PATH_PREFIX}/CmsgQuestgiverQueryQuest.h
+   ${PATH_PREFIX}/CmsgQuestgiverRequestReward.h
    ${PATH_PREFIX}/CmsgQuestgiverStatusQuery.h
    ${PATH_PREFIX}/CmsgQuestlogRemoveQuest.h
    ${PATH_PREFIX}/CmsgQuestQuery.h
