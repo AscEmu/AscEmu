@@ -25,6 +25,7 @@
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgTaxinodeStatusQuery.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
+#include "Server/Packets/CmsgActivatetaxi.h"
 
 using namespace AscEmu::Packets;
 
@@ -120,32 +121,24 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgActivatetaxi recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     LOG_DEBUG("WORLD: Received CMSG_ACTIVATETAXI");
-
-    uint64 guid;
-    uint32 sourcenode;
-    uint32 destinationnode;
-    int32 newmoney;
-    uint32 curloc;
-    uint8 field;
-    uint32 submask;
-
-    recv_data >> guid;
-    recv_data >> sourcenode;
-    recv_data >> destinationnode;
 
     if (GetPlayer()->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
 
-    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(sourcenode, destinationnode);
-    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(sourcenode);
+    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(recv_packet.srcNode, recv_packet.destNode);
+    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(recv_packet.srcNode);
 
     if (!taxinode || !taxipath)
         return;
 
-    curloc = taxinode->id;
-    field = (uint8)((curloc - 1) / 32);
-    submask = 1 << ((curloc - 1) % 32);
+    uint32 curloc = taxinode->id;
+    uint8 field = (uint8)((curloc - 1) / 32);
+    uint32 submask = 1 << ((curloc - 1) % 32);
 
     WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
 
@@ -166,7 +159,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     }
 
     // Check for gold
-    newmoney = (GetPlayer()->GetGold() - taxipath->GetPrice());
+    int32 newmoney = (GetPlayer()->GetGold() - taxipath->GetPrice());
     if (newmoney < 0)
     {
         data << uint32(3);

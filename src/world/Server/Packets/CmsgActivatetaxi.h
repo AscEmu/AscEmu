@@ -12,18 +12,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgTaxinodeStatusQuery : public ManagedPacket
+    class CmsgActivatetaxi : public ManagedPacket
     {
     public:
         uint64_t guid;
+        uint32_t srcNode;
+        uint32_t destNode;
 
-        CmsgTaxinodeStatusQuery() : CmsgTaxinodeStatusQuery(0)
+        CmsgActivatetaxi() : CmsgActivatetaxi(0, 0, 0)
         {
         }
 
-        CmsgTaxinodeStatusQuery(uint64_t guid) :
-            ManagedPacket(CMSG_TAXINODE_STATUS_QUERY, 8),
-            guid(guid)
+        CmsgActivatetaxi(uint64_t guid, uint32_t srcNode, uint32_t destNode) :
+            ManagedPacket(CMSG_ACTIVATETAXI, 8 + 4 + 4),
+            guid(guid),
+            srcNode(srcNode),
+            destNode(destNode)
         {
         }
 
@@ -35,7 +39,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid;
+            packet >> guid >> srcNode >> destNode;
             return true;
         }
     };

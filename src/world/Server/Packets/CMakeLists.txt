@@ -3,6 +3,7 @@
 set(PATH_PREFIX Server/Packets)
 
 set(SRC_PACKET_FILES
+   ${PATH_PREFIX}/CmsgActivatetaxi.h
    ${PATH_PREFIX}/CmsgAddFriend.h
    ${PATH_PREFIX}/CmsgAddIgnore.h
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQuery.h
