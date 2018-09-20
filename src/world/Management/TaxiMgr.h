@@ -137,6 +137,9 @@ class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
         TaxiPath* GetTaxiPath(uint32 from, uint32 to);
         TaxiNode* GetTaxiNode(uint32 node);
 
+        //MIT
+        uint32_t getNearestNodeForPlayer(Player* player);
+
         uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid);
         bool GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask);
 
