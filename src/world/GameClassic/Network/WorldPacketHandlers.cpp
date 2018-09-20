@@ -212,9 +212,9 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_LFD_PARTY_LOCK_INFO_REQUEST].handler = &WorldSession::HandleLfgPartyLockInfoRequestOpcode;
 
     // Taxi / NPC Interaction
-    //WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
+    //WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::handleEnabletaxiOpcode;
     WorldPacketHandlers[CMSG_TAXINODE_STATUS_QUERY].handler = &WorldSession::HandleTaxiNodeStatusQueryOpcode;
-    WorldPacketHandlers[CMSG_TAXIQUERYAVAILABLENODES].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
+    WorldPacketHandlers[CMSG_TAXIQUERYAVAILABLENODES].handler = &WorldSession::handleTaxiQueryAvaibleNodesOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXI].handler = &WorldSession::HandleActivateTaxiOpcode;
     WorldPacketHandlers[MSG_TABARDVENDOR_ACTIVATE].handler = &WorldSession::handleTabardVendorActivateOpcode;
     WorldPacketHandlers[CMSG_BANKER_ACTIVATE].handler = &WorldSession::handleBankerActivateOpcode;

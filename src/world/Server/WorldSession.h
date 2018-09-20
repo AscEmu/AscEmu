@@ -424,9 +424,10 @@ class SERVER_DECL WorldSession
         void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data);
 #endif
 
-        /// Taxi opcodes (TaxiHandler.cpp)
+        // Taxi opcodes (TaxiHandler.cpp)
         void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
-        void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
+        void handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
+        void handleEnabletaxiOpcode(WorldPacket& recvPacket);
         void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
