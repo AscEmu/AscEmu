@@ -425,7 +425,7 @@ class SERVER_DECL WorldSession
 #endif
 
         // Taxi opcodes (TaxiHandler.cpp)
-        void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
+        void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
         void handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
         void handleEnabletaxiOpcode(WorldPacket& recvPacket);
         void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
