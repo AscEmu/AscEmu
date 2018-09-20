@@ -199,6 +199,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgPetitionDecline.h
    ${PATH_PREFIX}/MsgPetitionRename.h
    ${PATH_PREFIX}/MsgQueryGuildBankText.h
+   ${PATH_PREFIX}/MsgQuestPushResult.h
    ${PATH_PREFIX}/MsgRaidReadyCheck.h
    ${PATH_PREFIX}/MsgRaidTargetUpdate.h
    ${PATH_PREFIX}/MsgRandomRoll.h
