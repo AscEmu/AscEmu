@@ -635,10 +635,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                     Player* pPlayer = (*itr)->m_loggedInPlayer;
                     if (pPlayer && pPlayer->getGuid() != pguid)
                     {
-                        WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-                        data << uint64(pPlayer->getGuid());
-                        data << uint8(QUEST_SHARE_MSG_SHARING_QUEST);
-                        _player->GetSession()->SendPacket(&data);
+                        _player->GetSession()->SendPacket(MsgQuestPushResult(pPlayer->getGuid(), 0, QUEST_SHARE_MSG_SHARING_QUEST).serialise().get());
 
                         uint8 response = QUEST_SHARE_MSG_SHARING_QUEST;
                         uint32 status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
@@ -685,7 +682,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                             continue;
                         }
 
-                        data.clear();
+                        WorldPacket data;
                         sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
                         pPlayer->SetQuestSharer(pguid); //VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
                         pPlayer->GetSession()->SendPacket(&data);
