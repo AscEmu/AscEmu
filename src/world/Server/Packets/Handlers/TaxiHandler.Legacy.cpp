@@ -23,19 +23,23 @@
 #include "Management/TaxiMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgTaxinodeStatusQuery.h"
+
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgTaxinodeStatusQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
-    uint64 guid;
     uint32 curloc;
     uint8 field;
     uint32 submask;
-
-    recv_data >> guid;
 
     curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
 
@@ -44,7 +48,7 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 
     WorldPacket data(9);
     data.Initialize(SMSG_TAXINODE_STATUS);
-    data << guid;
+    data << recv_packet.guid;
 
     // Check for known nodes
     if ((GetPlayer()->GetTaximask(field) & submask) != submask)
