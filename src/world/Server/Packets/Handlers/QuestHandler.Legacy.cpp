@@ -34,6 +34,7 @@
 #include "Server/Packets/CmsgQuestgiverRequestReward.h"
 #include "Server/Packets/CmsgQuestgiverCompleteQuest.h"
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
+#include "Server/Packets/CmsgPushquesttoparty.h"
 
 using namespace AscEmu::Packets;
 
@@ -611,10 +612,11 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 questid;
-    recv_data >> questid;
+    CmsgPushquesttoparty recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    QuestProperties const* pQuest = sMySQLStore.getQuestProperties(questid);
+    QuestProperties const* pQuest = sMySQLStore.getQuestProperties(recv_packet.questId);
     if (pQuest)
     {
         Group* pGroup = _player->GetGroup();
@@ -642,12 +644,12 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                         uint32 status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
 
                         // Checks if the player has the quest
-                        if (pPlayer->HasQuest(questid))
+                        if (pPlayer->HasQuest(recv_packet.questId))
                         {
                             response = QUEST_SHARE_MSG_HAVE_QUEST;
                         }
                         // Checks if the player has finished the quest
-                        else if (pPlayer->HasFinishedQuest(questid))
+                        else if (pPlayer->HasFinishedQuest(recv_packet.questId))
                         {
                             response = QUEST_SHARE_MSG_FINISH_QUEST;
                         }
