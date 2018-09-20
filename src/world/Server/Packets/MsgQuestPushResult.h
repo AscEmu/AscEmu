@@ -24,7 +24,7 @@ namespace AscEmu { namespace Packets
         }
 
         MsgQuestPushResult(uint64_t giverGuid, uint32_t questId, uint8_t pushResult) :
-            ManagedPacket(CMSG_QUESTGIVER_CHOOSE_REWARD, 9),
+            ManagedPacket(MSG_QUEST_PUSH_RESULT, 9),
             giverGuid(giverGuid),
             questId(questId),
             pushResult(pushResult)
