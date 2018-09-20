@@ -24,6 +24,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgTaxinodeStatusQuery.h"
+#include "Server/Packets/SmsgTaxinodeStatus.h"
 
 using namespace AscEmu::Packets;
 
@@ -37,31 +38,18 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 
     LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
-    uint32 curloc;
-    uint8 field;
-    uint32 submask;
+    uint32 curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(),
+                                                GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
 
-    curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
-
-    field = (uint8)((curloc - 1) / 32);
-    submask = 1 << ((curloc - 1) % 32);
-
-    WorldPacket data(9);
-    data.Initialize(SMSG_TAXINODE_STATUS);
-    data << recv_packet.guid;
+    uint8 field = (uint8)((curloc - 1) / 32);
+    uint32 submask = 1 << ((curloc - 1) % 32);
 
     // Check for known nodes
+    uint8_t status = 1;
     if ((GetPlayer()->GetTaximask(field) & submask) != submask)
-    {
-        data << uint8(0);
-    }
-    else
-    {
-        data << uint8(1);
-    }
+        status = 0;
 
-    SendPacket(&data);
-    LOG_DEBUG("WORLD: Sent SMSG_TAXINODE_STATUS");
+    SendPacket(SmsgTaxinodeStatus(recv_packet.guid, status).serialise().get());
 }
 
 void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
@@ -79,18 +67,16 @@ void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
 
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
-    uint32 curloc;
-    uint8 field;
     uint32 TaxiMask[12];
-    uint32 submask;
     uint64 guid = pCreature->getGuid();
 
-    curloc = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+    uint32 curloc = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(),
+                                                _player->GetPositionZ(), _player->GetMapId());
     if (curloc == 0)
         return;
 
-    field = (uint8)((curloc - 1) / 32);
-    submask = 1 << ((curloc - 1) % 32);
+    uint8 field = (uint8)((curloc - 1) / 32);
+    uint32 submask = 1 << ((curloc - 1) % 32);
 
     // Check for known nodes
     if (!(GetPlayer()->GetTaximask(field) & submask) && !GetPlayer()->TaxiCheat)
@@ -100,9 +86,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
         OutPacket(SMSG_NEW_TAXI_PATH);
 
         //Send packet
-        WorldPacket update(SMSG_TAXINODE_STATUS, 9);
-        update << guid << uint8(1);
-        SendPacket(&update);
+        SendPacket(SmsgTaxinodeStatus(guid, 1).serialise().get());
     }
 
     //Set Mask
