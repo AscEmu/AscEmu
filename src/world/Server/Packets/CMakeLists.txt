@@ -210,6 +210,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/MsgTabardvendorActivate.h
    ${PATH_PREFIX}/Opcode.h
+   ${PATH_PREFIX}/SmsgActivatetaxireply.h
    ${PATH_PREFIX}/SmsgAreaSpiritHealerTime.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
    ${PATH_PREFIX}/SmsgArenaError.h

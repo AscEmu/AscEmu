@@ -22,6 +22,19 @@
 #ifndef TAXIMGR_H
 #define TAXIMGR_H
 
+//MIT
+
+namespace TaxiNodeError
+{
+    enum
+    {
+        Ok = 0,
+        UnspecificError = 1,
+        NoDirectPath = 2,
+        NotEnoughMoney = 3
+    };
+};
+
 #include <map>
 
 #define TAXI_TRAVEL_SPEED 32

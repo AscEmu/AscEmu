@@ -26,6 +26,7 @@
 #include "Server/Packets/CmsgTaxinodeStatusQuery.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
+#include "Server/Packets/SmsgActivatetaxireply.h"
 
 using namespace AscEmu::Packets;
 
@@ -140,21 +141,17 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     uint8 field = (uint8)((curloc - 1) / 32);
     uint32 submask = 1 << ((curloc - 1) % 32);
 
-    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
-
     // Check for known nodes
     if ((GetPlayer()->GetTaximask(field) & submask) != submask)
     {
-        data << uint32(1);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
     }
 
     // Check for valid node
     if (!taxipath->GetNodeCount())
     {
-        data << uint32(2);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
         return;
     }
 
@@ -162,8 +159,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     int32 newmoney = (GetPlayer()->GetGold() - taxipath->GetPrice());
     if (newmoney < 0)
     {
-        data << uint32(3);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
         return;
     }
 
@@ -178,7 +174,6 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     if (_player->IsTeamHorde())
     {
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
-
         if (ci == nullptr)
             ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
 
@@ -193,7 +188,6 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     else
     {
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
-
         if (ci == nullptr)
             ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
 
@@ -208,12 +202,8 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
 
     //GetPlayer()->setDismountCost(newmoney);
 
-    data << uint32(0);
-    // 0 Ok
-    // 1 Unspecified Server Taxi Error
-    // 2.There is no direct path to that direction
-    // 3 Not enough Money
-    SendPacket(&data);
+    SendPacket(SmsgActivatetaxireply(TaxiNodeError::Ok).serialise().get());
+
     LogDebugFlag(LF_OPCODE, "HandleActivateTaxiOpcode : Sent SMSG_ACTIVATETAXIREPLY");
 
     // 0x001000 seems to make a mount visible
@@ -246,7 +236,6 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     uint32 curloc;
     uint8 field;
     uint32 submask;
-    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
 
     recvPacket >> guid >> nodecount;
     if (nodecount < 2)
@@ -271,15 +260,13 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     // Check for valid node
     if (taxinode == NULL)
     {
-        data << uint32(1);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
     }
 
     if (taxipath == NULL || !taxipath->GetNodeCount())
     {
-        data << uint32(2);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
         return;
     }
 
@@ -290,15 +277,13 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     // Check for known nodes
     if ((_player->GetTaximask(field) & submask) != submask)
     {
-        data << uint32(1);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
     }
 
     if (taxipath->GetID() == 766 || taxipath->GetID() == 767 || taxipath->GetID() == 771 || taxipath->GetID() == 772)
     {
-        data << uint32(2);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
         return;
     }
 
@@ -314,8 +299,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     newmoney = (GetPlayer()->GetGold() - totalcost);
     if (newmoney < 0)
     {
-        data << uint32(3);
-        SendPacket(&data);
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
         return;
     }
 
@@ -347,12 +331,8 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     //GetPlayer()->setDismountCost(newmoney);
 
-    data << uint32(0);
-    // 0 Ok
-    // 1 Unspecified Server Taxi Error
-    // 2.There is no direct path to that direction
-    // 3 Not enough Money
-    SendPacket(&data);
+    SendPacket(SmsgActivatetaxireply(TaxiNodeError::Ok).serialise().get());
+
     LogDebugFlag(LF_OPCODE, "HandleMultipleActivateTaxiOpcode : Sent SMSG_ACTIVATETAXIREPLY");
 
     // 0x001000 seems to make a mount visible
