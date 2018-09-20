@@ -27,6 +27,9 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWItem.h"
 #include "Data/WoWPlayer.h"
+#include "Server/Packets/SmsgInventoryChangeFailure.h"
+
+using namespace AscEmu::Packets;
 
 ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->getGuidLow())
 {
@@ -2719,34 +2722,30 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
     return nullptr;
 }
 
-/// Inventory Error report
+// Inventory Error report
 void ItemInterface::BuildInventoryChangeError(Item* SrcItem, Item* DstItem, uint8 Error)
 {
-    WorldPacket data(SMSG_INVENTORY_CHANGE_FAILURE, 22);
-
-    data << uint8(Error);
+    uint64_t srcGuid = 0;
+    uint64_t destGuid = 0;
+    uint32_t reqLevel = 0;
+    bool sendExtraData = false;
 
     if (SrcItem != nullptr)
-        data << uint64(SrcItem->getGuid());
-    else
-        data << uint64(0);
+        srcGuid = SrcItem->getGuid();
 
     if (DstItem != nullptr)
-        data << uint64(DstItem->getGuid());
-    else
-        data << uint64(0);
+        destGuid = DstItem->getGuid();
 
-    data << uint8(0);
-
-    if ((Error == INV_ERR_YOU_MUST_REACH_LEVEL_N) || (Error == INV_ERR_PURCHASE_LEVEL_TOO_LOW))
+    if (Error == INV_ERR_YOU_MUST_REACH_LEVEL_N || Error == INV_ERR_PURCHASE_LEVEL_TOO_LOW)
     {
         if (SrcItem)
         {
-            data << uint32(SrcItem->getItemProperties()->RequiredLevel);
+            sendExtraData = true;
+            reqLevel = SrcItem->getItemProperties()->RequiredLevel;
         }
     }
 
-    m_pOwner->SendPacket(&data);
+    m_pOwner->SendPacket(SmsgInventoryChangeFailure(Error, srcGuid, destGuid, reqLevel, sendExtraData).serialise().get());
 }
 
 void ItemInterface::EmptyBuyBack()
