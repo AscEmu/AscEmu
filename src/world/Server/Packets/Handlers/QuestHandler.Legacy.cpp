@@ -31,6 +31,7 @@
 #include "Server/Packets/CmsgQuestgiverHello.h"
 #include "Server/Packets/CmsgQuestlogRemoveQuest.h"
 #include "Server/Packets/CmsgQuestQuery.h"
+#include "Server/Packets/CmsgQuestgiverRequestReward.h""
 
 using namespace AscEmu::Packets;
 
@@ -347,21 +348,19 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    uint32 quest_id;
-
-    recv_data >> guid;
-    recv_data >> quest_id;
+    CmsgQuestgiverRequestReward recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     bool bValid = false;
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
     uint32 status = 0;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questgiverGuid.GetOldGuid());
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
-        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -369,13 +368,13 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            qst = quest_giver->FindQuest(recv_packet.questId, QUESTGIVER_QUEST_END);
             if (!qst)
-                qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_START);
+                qst = quest_giver->FindQuest(recv_packet.questId, QUESTGIVER_QUEST_START);
 
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->getEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", recv_packet.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
@@ -383,7 +382,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
-        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -393,10 +392,10 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         {
             bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
-            qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            qst = go_quest_giver->FindQuest(recv_packet.questId, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->getEntry());
+                LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", recv_packet.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
