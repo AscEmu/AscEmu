@@ -33,6 +33,7 @@
 #include "Server/Packets/CmsgQuestQuery.h"
 #include "Server/Packets/CmsgQuestgiverRequestReward.h"
 #include "Server/Packets/CmsgQuestgiverCompleteQuest.h"
+#include "Server/Packets/CmsgQuestgiverChooseReward.h"
 
 using namespace AscEmu::Packets;
 
@@ -516,25 +517,21 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    uint32 quest_id;
-    uint32 reward_slot;
+    CmsgQuestgiverChooseReward recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    recvPacket >> guid;
-    recvPacket >> quest_id;
-    recvPacket >> reward_slot;
-
-    if (reward_slot >= 6)
+    if (recv_packet.rewardSlot >= 6)
         return;
 
     bool bValid = false;
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questgiverGuid.GetOldGuid());
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
-        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -542,19 +539,19 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.getQuestProperties(quest_id);
+            qst = sMySQLStore.getQuestProperties(recv_packet.questId);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
-        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
             return;
 
         bValid = true;
-        qst = sMySQLStore.getQuestProperties(quest_id);
+        qst = sMySQLStore.getQuestProperties(recv_packet.questId);
     }
 
     if (!qst_giver)
@@ -571,7 +568,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     //FIX ME: Some Quest givers talk in the end of the quest.
     //   qst_giver->SendChatMessage(CHAT_MSG_MONSTER_SAY,LANG_UNIVERSAL,qst->GetQuestEndMessage().c_str());
-    QuestLogEntry* qle = _player->GetQuestLogForEntry(quest_id);
+    QuestLogEntry* qle = _player->GetQuestLogForEntry(recv_packet.questId);
     if (!qle && !qst->is_repeatable)
     {
         LOG_DEBUG("WORLD: QuestLogEntry not found.");
@@ -591,20 +588,20 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }*/
 
     //check for room in inventory for all items
-    if (!sQuestMgr.CanStoreReward(GetPlayer(), qst, reward_slot))
+    if (!sQuestMgr.CanStoreReward(GetPlayer(), qst, recv_packet.rewardSlot))
     {
         sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, GetPlayer());
         return;
     }
 
-    sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
+    sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, recv_packet.rewardSlot);
     //if (qst_giver->getObjectTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
     if (qst->next_quest_id)
     {
         WorldPacket data(12);
         data.Initialize(CMSG_QUESTGIVER_QUERY_QUEST);
-        data << guid;
+        data << recv_packet.questgiverGuid.GetOldGuid();
         data << qst->next_quest_id;
         HandleQuestGiverQueryQuestOpcode(data);
     }
