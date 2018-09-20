@@ -36,6 +36,7 @@
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
 #include "Server/Packets/CmsgPushquesttoparty.h"
 #include "Server/Packets/MsgQuestPushResult.h"
+#include "Server/Packets/SmsgQuestgiverStatus.h"
 
 using namespace AscEmu::Packets;
 
@@ -83,7 +84,6 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
     if (_player->IsInBg())
         return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
 
-    WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
     Object* qst_giver = nullptr;
 
     uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questGiverGuid.GetOldGuid());
@@ -124,9 +124,8 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         return;
     }
 
-    data << recv_packet.questGiverGuid.GetOldGuid();
-    data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
-    SendPacket(&data);
+    const uint32_t questStatus = sQuestMgr.CalcStatus(qst_giver, GetPlayer());
+    SendPacket(SmsgQuestgiverStatus(recv_packet.questGiverGuid.GetOldGuid(), questStatus).serialise().get());
 }
 
 void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
