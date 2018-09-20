@@ -351,6 +351,12 @@ TaxiNode* TaxiMgr::GetTaxiNode(uint32 node)
         return itr->second;
 }
 
+//MIT
+uint32_t TaxiMgr::getNearestNodeForPlayer(Player* player)
+{
+    return GetNearestTaxiNode(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
+}
+
 uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
 {
     uint32 nearest = 0;

@@ -42,8 +42,7 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 
     LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
-    uint32 curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(),
-                                                GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
+    uint32 curloc = sTaxiMgr.getNearestNodeForPlayer(_player);
 
     uint8 field = (uint8)((curloc - 1) / 32);
     uint32 submask = 1 << ((curloc - 1) % 32);
@@ -61,8 +60,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     uint32 TaxiMask[12];
     uint64 guid = pCreature->getGuid();
 
-    uint32 nearestNode = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(),
-                                                _player->GetPositionZ(), _player->GetMapId());
+    uint32 nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
     if (nearestNode == 0)
         return;
 
