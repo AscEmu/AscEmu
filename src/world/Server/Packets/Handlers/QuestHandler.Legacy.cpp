@@ -35,6 +35,7 @@
 #include "Server/Packets/CmsgQuestgiverCompleteQuest.h"
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
 #include "Server/Packets/CmsgPushquesttoparty.h"
+#include "Server/Packets/MsgQuestPushResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -701,28 +702,19 @@ void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    uint8 msg;
-    recvPacket >> guid;
-    uint32 questid = 0;
-    if (recvPacket.size() >= 13)  //VLack: The client can send a 13 byte packet, where the result message is the 13th byte, and we have some data before it... Usually it is the quest id, but I have seen this as uint32(0) too.
-        recvPacket >> questid;
-    recvPacket >> msg;
+    MsgQuestPushResult recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
 
-    //LOG_DETAIL("WORLD: Received MSG_QUEST_PUSH_RESULT");
+    LOG_DETAIL("WORLD: Received MSG_QUEST_PUSH_RESULT");
 
     if (GetPlayer()->GetQuestSharer())
     {
         Player* pPlayer = objmgr.GetPlayer(GetPlayer()->GetQuestSharer());
         if (pPlayer)
         {
-            WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-            if (recvPacket.size() >= 13)  //VLack: In case the packet was the longer one, its guid is the quest giver player, thus in the response we have to tell him that _this_ player reported the particular state. I think this type of response could also eliminate our SetQuestSharer/GetQuestSharer mess and its possible lock up conditions...
-                data << uint64(_player->getGuid());
-            else
-                data << uint64(guid);
-            data << uint8(msg);
-            pPlayer->GetSession()->SendPacket(&data);
+            uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : recv_packet.giverGuid;
+            pPlayer->GetSession()->SendPacket(MsgQuestPushResult(guid, 0, recv_packet.pushResult).serialise().get());
             GetPlayer()->SetQuestSharer(0);
         }
     }
