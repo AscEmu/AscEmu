@@ -56,23 +56,6 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
     SendPacket(SmsgTaxinodeStatus(recv_packet.guid, status).serialise().get());
 }
 
-void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CmsgTaxiQueryAvailableNodes recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    LOG_DEBUG("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLowPart());
-    if (!pCreature)
-        return;
-
-    SendTaxiList(pCreature);
-}
-
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
     uint32 TaxiMask[12];
