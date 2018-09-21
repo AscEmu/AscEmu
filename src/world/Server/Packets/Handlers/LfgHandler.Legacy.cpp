@@ -22,6 +22,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgSetLfgComment.h"
 #include "Server/Packets/CmsgLfgProposalResult.h"
+#include "Server/Packets/CmsgLfgSetRoles.h"
 
 using namespace AscEmu::Packets;
 
@@ -134,19 +135,18 @@ void WorldSession::HandleLfgProposalResultOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleLfgSetRolesOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES");
-    uint8 roles;
-    recv_data >> roles;                                    // Player Group Roles
-    uint64 guid = GetPlayer()->getGuid();
-    Group* grp = GetPlayer()->GetGroup();
+    CmsgLfgSetRoles recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+    
+    Group* grp = _player->GetGroup();
     if (!grp)
     {
-        LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES %u Not in group", guid);
+        LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES %lld Not in group", _player->getGuid());
         return;
     }
-    uint64 gguid = grp->GetGUID();// NEED TO ADD Bind group to guids
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES: Group %u, Player %u, Roles: %u", gguid, guid, roles);
-    sLfgMgr.UpdateRoleCheck(gguid, guid, roles);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES: Group %lld, Player %lld, Roles: %u", grp->GetGUID(), _player->getGuid(), recv_packet.roles);
+    sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), recv_packet.roles);
 }
 
 void WorldSession::HandleLfgSetBootVoteOpcode(WorldPacket& recv_data)

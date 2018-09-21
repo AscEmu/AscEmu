@@ -111,6 +111,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgItemTextQuery.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
    ${PATH_PREFIX}/CmsgLeaveChannel.h
+   ${PATH_PREFIX}/CmsgLfgSetRoles.h
    ${PATH_PREFIX}/CmsgLfgProposalResult.h
    ${PATH_PREFIX}/CmsgListInventory.h
    ${PATH_PREFIX}/CmsgLootMasterGive.h
