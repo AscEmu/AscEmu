@@ -12,18 +12,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgMailMarkAsRead : public ManagedPacket
+    class CmsgMailDelete : public ManagedPacket
     {
     public:
         uint64_t gobjGuid;
         uint32_t messageId;
 
-        CmsgMailMarkAsRead() : CmsgMailMarkAsRead(0, 0)
+        CmsgMailDelete() : CmsgMailDelete(0, 0)
         {
         }
 
-        CmsgMailMarkAsRead(uint64_t gobjGuid, uint32_t messageId) :
-            ManagedPacket(CMSG_MAIL_MARK_AS_READ, 12),
+        CmsgMailDelete(uint64_t gobjGuid, uint32_t messageId) :
+            ManagedPacket(CMSG_MAIL_DELETE, 12),
             gobjGuid(gobjGuid),
             messageId(messageId)
         {
