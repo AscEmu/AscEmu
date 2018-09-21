@@ -21,6 +21,9 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Server/Packets/CmsgMailMarkAsRead.h"
+
+using namespace  AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 /// \todo refactoring
@@ -288,12 +291,11 @@ void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    CmsgMailMarkAsRead recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr)
         return;
 
