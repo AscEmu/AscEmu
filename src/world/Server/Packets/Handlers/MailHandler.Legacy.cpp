@@ -27,6 +27,7 @@
 #include "Server/Packets/CmsgMailTakeItem.h"
 #include "Server/Packets/CmsgMailTakeMoney.h"
 #include "Server/Packets/CmsgMailReturnToSender.h"
+#include "Server/Packets/CmsgMailCreateTextItem.h"
 
 using namespace  AscEmu::Packets;
 
@@ -520,23 +521,22 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    CmsgMailCreateTextItem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     ItemProperties const* proto = sMySQLStore.getItemProperties(8383);
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr || !proto)
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(proto);
     if (result.Result == 0)
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -548,7 +548,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
     else
         pItem->DeleteMe();
 }
