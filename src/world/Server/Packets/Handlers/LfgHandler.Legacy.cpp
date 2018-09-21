@@ -47,20 +47,6 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 }
 
 
-void WorldSession::HandleLfgSetCommentOpcode(WorldPacket& recv_data)
-{
-    CmsgSetLfgComment recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    LogDebugFlag(LF_OPCODE, "CMSG_SET_LFG_COMMENT");
-
-    uint64 guid = GetPlayer()->getGuid();
-    LogDebugFlag(LF_OPCODE, "LfgHandler CMSG_SET_LFG_COMMENT %u, comment: %s", guid, recv_packet.comment.c_str());
-
-    sLfgMgr.SetComment(guid, recv_packet.comment);
-}
-
 #if VERSION_STRING > TBC
 void WorldSession::HandleLfgJoinOpcode(WorldPacket& recv_data)
 {
