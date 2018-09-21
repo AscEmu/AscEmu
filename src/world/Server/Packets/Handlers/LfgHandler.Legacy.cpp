@@ -21,6 +21,7 @@
 #include "Common.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgSetLfgComment.h"
+#include "Server/Packets/CmsgLfgProposalResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -123,14 +124,12 @@ void WorldSession::HandleLfrLeaveOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleLfgProposalResultOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT");
-    uint32 lfgGroupID;                                     // Internal lfgGroupID
-    bool accept;                                           // Accept to join?
-    recv_data >> lfgGroupID;
-    recv_data >> accept;
+    CmsgLfgProposalResult recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT %u proposal: %u accept: %u", GetPlayer()->getGuid(), lfgGroupID, accept ? 1 : 0);
-    sLfgMgr.UpdateProposal(lfgGroupID, GetPlayer()->getGuid(), accept);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT %u proposal: %u accept: %u", GetPlayer()->getGuid(), recv_packet.lfgGroupId, recv_packet.accept ? 1 : 0);
+    sLfgMgr.UpdateProposal(recv_packet.lfgGroupId, GetPlayer()->getGuid(), recv_packet.accept);
 }
 
 void WorldSession::HandleLfgSetRolesOpcode(WorldPacket& recv_data)
