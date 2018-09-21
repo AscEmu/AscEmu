@@ -114,6 +114,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgLootMasterGive.h
    ${PATH_PREFIX}/CmsgLootMethod.h
    ${PATH_PREFIX}/CmsgLootRoll.h
+   ${PATH_PREFIX}/CmsgMailDelete.h
    ${PATH_PREFIX}/CmsgMailMarkAsRead.h
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h

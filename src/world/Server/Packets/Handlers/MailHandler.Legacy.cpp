@@ -22,6 +22,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/Packets/CmsgMailMarkAsRead.h"
+#include "Server/Packets/CmsgMailDelete.h"
 
 using namespace  AscEmu::Packets;
 
@@ -315,16 +316,15 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    CmsgMailDelete recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << recv_packet.messageId;
     data << uint32(MAIL_RES_DELETED);
 
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
@@ -332,7 +332,7 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
         return;
     }
 
-    _player->m_mailBox.DeleteMessage(message_id, true);
+    _player->m_mailBox.DeleteMessage(recv_packet.messageId, true);
 
     data << uint32(MAIL_OK);
     SendPacket(&data);
