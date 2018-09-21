@@ -23,6 +23,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/Packets/CmsgMailMarkAsRead.h"
 #include "Server/Packets/CmsgMailDelete.h"
+#include "Server/Packets/SmsgSendMailResult.h"
 
 using namespace  AscEmu::Packets;
 
@@ -140,7 +141,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     if (itemcount > MAIL_MAX_ITEM_SLOT || msg.body.find("%") != std::string::npos || msg.subject.find("%") != std::string::npos)
     {
-        SendMailError(MAIL_ERR_INTERNAL_ERROR);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -148,7 +149,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     PlayerInfo* player = ObjectMgr::getSingleton().GetPlayerInfoByName(recepient.c_str());
     if (player == nullptr)
     {
-        SendMailError(MAIL_ERR_RECIPIENT_NOT_FOUND);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());
         return;
     }
 
@@ -160,7 +161,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         pItem = _player->GetItemInterface()->GetItemByGUID(itemguid);
         if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
-            SendMailError(MAIL_ERR_INTERNAL_ERROR);
+            SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
             return;
         }
         if (pItem->isAccountbound() && GetAccountId() != player->acct) // don't mail account-bound items to another account
@@ -193,20 +194,20 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Check we're sending to the same faction (disable this for testing)
     if (player->team != _player->GetTeam() && !interfaction)
     {
-        SendMailError(MAIL_ERR_NOT_YOUR_ALLIANCE);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_YOUR_ALLIANCE).serialise().get());
         return;
     }
 
     // Check if we're sending mail to ourselves
     if (strcmp(player->name, _player->getName().c_str()) == 0 && !GetPermissionCount())
     {
-        SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF).serialise().get());
         return;
     }
 
     if (msg.stationery == MAIL_STATIONERY_GM && !HasGMPermissions())
     {
-        SendMailError(MAIL_ERR_INTERNAL_ERROR);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -229,7 +230,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // check that we have enough in our backpack
     if (!_player->HasGold(cost))
     {
-        SendMailError(MAIL_ERR_NOT_ENOUGH_MONEY);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
         return;
     }
 
@@ -284,8 +285,8 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     sMailSystem.DeliverMessage(player->guid, &msg);
     // Save/Update character's gold if they've received gold that is. This prevents a rollback.
     CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->GetGold(), _player->m_playerInfo->guid);
-    // Success packet :)
-    SendMailError(MAIL_OK);
+
+    SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
@@ -320,22 +321,16 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
     if (!recv_packet.deserialise(recv_data))
         return;
 
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << recv_packet.messageId;
-    data << uint32(MAIL_RES_DELETED);
-
     MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr)
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_DELETED, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
     _player->m_mailBox.DeleteMessage(recv_packet.messageId, true);
 
-    data << uint32(MAIL_OK);
-    SendPacket(&data);
+    SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_DELETED, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleTakeItem(WorldPacket& recv_data)
@@ -351,15 +346,10 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     recv_data >> message_id;
     recv_data >> lowguid;
 
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
-    data << uint32(MAIL_RES_ITEM_TAKEN);
-
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == nullptr || message->items.empty())
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -371,8 +361,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     if (itr == message->items.end())
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -380,8 +369,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     {
         if (!_player->HasGold(message->cod))
         {
-            data << uint32(MAIL_ERR_NOT_ENOUGH_MONEY);
-            SendPacket(&data);
+            SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
             return;
         }
     }
@@ -390,9 +378,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     Item* item = objmgr.LoadItem(*itr);
     if (item == nullptr)  // doesn't exist
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
-
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -400,8 +386,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == 0) //End of slots
     {
-        data << uint32(MAIL_ERR_BAG_FULL);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
 
         item->DeleteMe();
         return;
@@ -412,8 +397,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     {
         if (!_player->GetItemInterface()->AddItemToFreeSlot(item))   //End of slots
         {
-            data << uint32(MAIL_ERR_BAG_FULL);
-            SendPacket(&data);
+            SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
             item->DeleteMe();
             return;
         }
@@ -422,6 +406,9 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
         item->SaveToDB(result.ContainerSlot, result.Slot, true, nullptr);
 
     // send complete packet
+    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
+    data << message_id;
+    data << uint32(MAIL_RES_ITEM_TAKEN);
     data << uint32(MAIL_OK);
     data << item->getGuidLow();
     data << item->getStackCount();
@@ -460,15 +447,10 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     recv_data >> mailbox;
     recv_data >> message_id;
 
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
-    data << uint32(MAIL_RES_MONEY_TAKEN);
-
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == nullptr || !message->money)
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -491,9 +473,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     // update in sql!
     CharacterDatabase.WaitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", message->message_id);
 
-    // send result
-    data << uint32(MAIL_OK);
-    SendPacket(&data);
+    SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MONEY_TAKEN, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
@@ -505,15 +485,10 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     recv_data >> mailbox;
     recv_data >> message_id;
 
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
-    data << uint32(MAIL_RES_RETURNED_TO_SENDER);
-
     MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
     if (msg == nullptr)
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -540,9 +515,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     // add to the senders mailbox
     sMailSystem.DeliverMessage(message.player_guid, &message);
 
-    // finish the packet
-    data << uint32(MAIL_OK);
-    SendPacket(&data);
+    SendPacket(SmsgSendMailResult(message_id, MAIL_RES_RETURNED_TO_SENDER, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
@@ -554,24 +527,18 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     recv_data >> mailbox;
     recv_data >> message_id;
 
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
-    data << uint32(MAIL_RES_MADE_PERMANENT);
-
     ItemProperties const* proto = sMySQLStore.getItemProperties(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == nullptr || !proto)
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(proto);
     if (result.Result == 0)
     {
-        data << uint32(MAIL_ERR_INTERNAL_ERROR);
-        SendPacket(&data);
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -583,14 +550,9 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     pItem->SetText(message->body);
 
     if (_player->GetItemInterface()->AddItemToFreeSlot(pItem))
-    {
-        data << uint32(MAIL_OK);
-        SendPacket(&data);
-    }
+        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
     else
-    {
         pItem->DeleteMe();
-    }
 }
 
 void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
@@ -703,12 +665,4 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
     return data;
 }
 
-void WorldSession::SendMailError(uint32 error)
-{
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << uint32(0);
-    data << uint32(MAIL_RES_MAIL_SENT);
-    data << error;
-    SendPacket(&data);
-}
 #endif

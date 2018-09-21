@@ -278,6 +278,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSellItem.h
+   ${PATH_PREFIX}/SmsgSendMailResult.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetPlayerDeclinedNamesResult.h
    ${PATH_PREFIX}/SmsgSetProficiency.h

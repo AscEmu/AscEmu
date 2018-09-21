@@ -794,8 +794,6 @@ class SERVER_DECL WorldSession
 #else
         TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #endif
-        void SendMailError(uint32 error);
-
         // At Login
         void handleCharRenameOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
