@@ -13,6 +13,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+uint8_t isTaximaskKnown(Player* player, uint32_t nearestNode)
+{
+    const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
+    const uint32_t submask = 1 << ((nearestNode - 1) % 32);
+
+    if ((player->GetTaximask(field) & submask) != submask)
+        return 0;
+
+    return 1;
+}
+
 void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -24,15 +35,10 @@ void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
     LogDebugFlag(LF_OPCODE, "WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
     const auto nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
+    if (!nearestNode)
+        return;
 
-    const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
-    const uint32_t submask = 1 << ((nearestNode - 1) % 32);
-
-    // Check known nodes
-    uint8_t status = 1;
-    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
-        status = 0;
-
+    uint8_t status = isTaximaskKnown(_player, nearestNode);
     SendPacket(SmsgTaxinodeStatus(recv_packet.guid, status).serialise().get());
 }
 
