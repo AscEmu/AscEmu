@@ -23,6 +23,7 @@
 #include "Server/Packets/CmsgSetLfgComment.h"
 #include "Server/Packets/CmsgLfgProposalResult.h"
 #include "Server/Packets/CmsgLfgSetRoles.h"
+#include "Server/Packets/CmsgLfgSetBootVote.h"
 
 using namespace AscEmu::Packets;
 
@@ -151,12 +152,12 @@ void WorldSession::HandleLfgSetRolesOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleLfgSetBootVoteOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE");
-    bool agree;                                            // Agree to kick player
-    recv_data >> agree;
+    CmsgLfgSetBootVote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE %u agree: %u", GetPlayer()->getGuid(), agree ? 1 : 0);
-    sLfgMgr.UpdateBoot(GetPlayer(), agree);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE %u agree: %u", GetPlayer()->getGuid(), recv_packet.voteFor ? 1 : 0);
+    sLfgMgr.UpdateBoot(GetPlayer(), recv_packet.voteFor);
 }
 
 void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvData*/)
