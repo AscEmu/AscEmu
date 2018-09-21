@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Server/Packets/SmsgSendMailResult.h"
+
+using namespace  AscEmu::Packets;
 
 void WorldSession::HandleSendMail(WorldPacket& recvData)
 {
@@ -32,7 +35,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
 
     if (items_count > MAIL_MAX_ITEM_SLOT)
     {
-        SendMailError(MAIL_ERR_TOO_MANY_ATTACHMENTS);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_TOO_MANY_ATTACHMENTS).serialise().get());
         return;
     }
 
@@ -95,7 +98,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     PlayerInfo* player_info = ObjectMgr::getSingleton().GetPlayerInfoByName(receiver.c_str());
     if (!player_info)
     {
-        SendMailError(MAIL_ERR_RECIPIENT_NOT_FOUND);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());
         return;
     }
 
@@ -104,7 +107,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
         pItem = _player->GetItemInterface()->GetItemByGUID(itemGUIDs[i]);
         if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
-            SendMailError(MAIL_ERR_INTERNAL_ERROR);
+            SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
             return;
         }
         if (pItem->isAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
@@ -133,20 +136,20 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     // Check we're sending to the same faction (disable this for testing)
     if (player_info->team != _player->GetTeam() && !interfaction)
     {
-        SendMailError(MAIL_ERR_NOT_YOUR_ALLIANCE);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_YOUR_ALLIANCE).serialise().get());
         return;
     }
 
     // Check if we're sending mail to ourselves
     if (strcmp(player_info->name, _player->getName().c_str()) == 0 && !GetPermissionCount())
     {
-        SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF).serialise().get());
         return;
     }
 
     if (msg.stationery == MAIL_STATIONERY_GM && !HasGMPermissions())
     {
-        SendMailError(MAIL_ERR_INTERNAL_ERROR);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -164,7 +167,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     // check that we have enough in our backpack
     if (!_player->HasGold(cost))
     {
-        SendMailError(MAIL_ERR_NOT_ENOUGH_MONEY);
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
         return;
     }
 
@@ -223,8 +226,8 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     sMailSystem.DeliverMessage(player_info->guid, &msg);
     // Save/Update character's gold if they've received gold that is. This prevents a rollback.
     CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->GetGold(), _player->m_playerInfo->guid);
-    // Success packet :)
-    SendMailError(MAIL_OK);
+
+    SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleMarkAsRead(WorldPacket& recvData)
