@@ -24,6 +24,7 @@
 #include "Server/Packets/CmsgLfgProposalResult.h"
 #include "Server/Packets/CmsgLfgSetRoles.h"
 #include "Server/Packets/CmsgLfgSetBootVote.h"
+#include "Server/Packets/CmsgLfgTeleport.h"
 
 using namespace AscEmu::Packets;
 
@@ -242,12 +243,12 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvData*
 
 void WorldSession::HandleLfgTeleportOpcode(WorldPacket& recvData)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT");
-    bool out;
-    recvData >> out;
+    CmsgLfgTeleport recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT %u out: %u", GetPlayer()->getGuid(), out ? 1 : 0);
-    sLfgMgr.TeleportPlayer(GetPlayer(), out, true);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT %u out: %u", GetPlayer()->getGuid(), recv_packet.teleportOut ? 1 : 0);
+    sLfgMgr.TeleportPlayer(GetPlayer(), recv_packet.teleportOut, true);
 }
 
 void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvData*/)
