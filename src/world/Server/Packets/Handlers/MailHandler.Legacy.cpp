@@ -24,6 +24,7 @@
 #include "Server/Packets/CmsgMailMarkAsRead.h"
 #include "Server/Packets/CmsgMailDelete.h"
 #include "Server/Packets/SmsgSendMailResult.h"
+#include "Server/Packets/CmsgMailTakeItem.h"
 
 using namespace  AscEmu::Packets;
 
@@ -337,31 +338,28 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    uint32 lowguid;
+    CmsgMailTakeItem recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     std::vector< uint32 >::iterator itr;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
-    recv_data >> lowguid;
-
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr || message->items.empty())
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
     for (itr = message->items.begin(); itr != message->items.end(); ++itr)
     {
-        if ((*itr) == lowguid)
+        if ((*itr) == recv_packet.lowGuid)
             break;
     }
 
     if (itr == message->items.end())
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -369,7 +367,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     {
         if (!_player->HasGold(message->cod))
         {
-            SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
+            SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
             return;
         }
     }
@@ -378,7 +376,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     Item* item = objmgr.LoadItem(*itr);
     if (item == nullptr)  // doesn't exist
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -386,7 +384,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == 0) //End of slots
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
 
         item->DeleteMe();
         return;
@@ -397,7 +395,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     {
         if (!_player->GetItemInterface()->AddItemToFreeSlot(item))   //End of slots
         {
-            SendPacket(SmsgSendMailResult(message_id, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
+            SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL).serialise().get());
             item->DeleteMe();
             return;
         }
@@ -407,7 +405,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // send complete packet
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << recv_packet.messageId;
     data << uint32(MAIL_RES_ITEM_TAKEN);
     data << uint32(MAIL_OK);
     data << item->getGuidLow();
