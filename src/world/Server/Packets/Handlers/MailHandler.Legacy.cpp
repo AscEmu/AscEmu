@@ -26,6 +26,7 @@
 #include "Server/Packets/SmsgSendMailResult.h"
 #include "Server/Packets/CmsgMailTakeItem.h"
 #include "Server/Packets/CmsgMailTakeMoney.h"
+#include "Server/Packets/CmsgMailReturnToSender.h"
 
 using namespace  AscEmu::Packets;
 
@@ -478,15 +479,14 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    CmsgMailReturnToSender recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* msg = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (msg == nullptr)
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -494,7 +494,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     MailMessage message = *msg;
 
     // remove the old message
-    _player->m_mailBox.DeleteMessage(message_id, true);
+    _player->m_mailBox.DeleteMessage(recv_packet.messageId, true);
 
     // re-assign the owner/sender
     message.player_guid = message.sender_guid;
@@ -513,7 +513,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     // add to the senders mailbox
     sMailSystem.DeliverMessage(message.player_guid, &message);
 
-    SendPacket(SmsgSendMailResult(message_id, MAIL_RES_RETURNED_TO_SENDER, MAIL_OK).serialise().get());
+    SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
