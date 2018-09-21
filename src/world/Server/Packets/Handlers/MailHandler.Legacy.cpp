@@ -25,6 +25,7 @@
 #include "Server/Packets/CmsgMailDelete.h"
 #include "Server/Packets/SmsgSendMailResult.h"
 #include "Server/Packets/CmsgMailTakeItem.h"
+#include "Server/Packets/CmsgMailTakeMoney.h"
 
 using namespace  AscEmu::Packets;
 
@@ -440,15 +441,14 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 mailbox;
-    uint32 message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    CmsgMailTakeMoney recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(recv_packet.messageId);
     if (message == nullptr || !message->money)
     {
-        SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
@@ -471,7 +471,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     // update in sql!
     CharacterDatabase.WaitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", message->message_id);
 
-    SendPacket(SmsgSendMailResult(message_id, MAIL_RES_MONEY_TAKEN, MAIL_OK).serialise().get());
+    SendPacket(SmsgSendMailResult(recv_packet.messageId, MAIL_RES_MONEY_TAKEN, MAIL_OK).serialise().get());
 }
 
 void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
