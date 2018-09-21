@@ -28,6 +28,7 @@
 #include "Server/Packets/CmsgMailTakeMoney.h"
 #include "Server/Packets/CmsgMailReturnToSender.h"
 #include "Server/Packets/CmsgMailCreateTextItem.h"
+#include "Server/Packets/CmsgItemTextQuery.h"
 
 using namespace  AscEmu::Packets;
 
@@ -557,17 +558,18 @@ void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 itemGuid;
-    recv_data >> itemGuid;
+    CmsgItemTextQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    Item* pItem = _player->GetItemInterface()->GetItemByGUID(itemGuid);
+    Item* pItem = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, pItem->GetText().size() + 9);
     if (!pItem)
         data << uint8(1);
     else
     {
         data << uint8(0);
-        data << uint64(itemGuid);
+        data << uint64(recv_packet.itemGuid);
         data << pItem->GetText();
     }
 
