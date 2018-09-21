@@ -406,7 +406,7 @@ class SERVER_DECL WorldSession
 #endif
 
         //LFG
-        void HandleLfgSetCommentOpcode(WorldPacket& recv_data);
+        void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void HandleLfgLockInfoOpcode(WorldPacket& recv_data);
 #endif
