@@ -163,6 +163,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetFactionAtWar.h
    ${PATH_PREFIX}/CmsgSetFactionInactive.h
    ${PATH_PREFIX}/CmsgSetGuildBankText.h
+   ${PATH_PREFIX}/CmsgSetLfgComment.h
    ${PATH_PREFIX}/CmsgSetPlayerDeclinedNames.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgSetSheathed.h

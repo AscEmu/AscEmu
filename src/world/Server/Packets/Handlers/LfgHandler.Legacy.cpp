@@ -20,6 +20,9 @@
 #include "Management/LFG/LFGMgr.h"
 #include "Common.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/CmsgSetLfgComment.h"
+
+using namespace AscEmu::Packets;
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {
@@ -46,14 +49,16 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 
 void WorldSession::HandleLfgSetCommentOpcode(WorldPacket& recv_data)
 {
+    CmsgSetLfgComment recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
     LogDebugFlag(LF_OPCODE, "CMSG_SET_LFG_COMMENT");
 
-    std::string comment;
-    recv_data >> comment;
     uint64 guid = GetPlayer()->getGuid();
-    LogDebugFlag(LF_OPCODE, "LfgHandler CMSG_SET_LFG_COMMENT %u, comment: %s", guid, comment.c_str());
+    LogDebugFlag(LF_OPCODE, "LfgHandler CMSG_SET_LFG_COMMENT %u, comment: %s", guid, recv_packet.comment.c_str());
 
-    sLfgMgr.SetComment(guid, comment);
+    sLfgMgr.SetComment(guid, recv_packet.comment);
 }
 
 #if VERSION_STRING > TBC
