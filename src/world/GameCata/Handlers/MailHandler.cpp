@@ -687,12 +687,3 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
     CleanupExpiredMessages();
     return data;
 }
-
-void WorldSession::SendMailError(uint32_t error)
-{
-    WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << uint32_t(0);
-    data << uint32_t(MAIL_RES_MAIL_SENT);
-    data << uint32_t(error);
-    SendPacket(&data);
-}
