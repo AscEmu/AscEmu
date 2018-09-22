@@ -185,7 +185,121 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    WorldPacket* data = _player->m_mailBox.BuildMailboxListingPacket();
-    SendPacket(data);
-    delete data;
+    WorldPacket data(SMSG_MAIL_LIST_RESULT, 200);
+    uint32_t realCount = 0;
+    uint8_t count = 0;
+
+    data << uint32_t(0);
+    data << uint8_t(0);
+
+    for (auto& message : _player->m_mailBox.Messages)
+    {
+        if (message.second.expire_time && static_cast<uint32_t>(UNIXTIME) > message.second.expire_time)
+            continue;
+
+        if (static_cast<uint32_t>(UNIXTIME) < message.second.delivery_time)
+            continue;
+
+        if (count >= 50)
+        {
+            ++realCount;
+            continue;
+        }
+
+        uint8_t guidSize;
+        if (message.second.message_type == 0)
+            guidSize = 8;
+        else
+            guidSize = 4;
+
+#if VERSION_STRING != Cata
+        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
+            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
+#else
+        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
+            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
+#endif
+
+        data << uint16_t(messageSize);
+        data << uint32_t(message.second.message_id);
+        data << uint8_t(message.second.message_type);
+
+        switch (message.second.message_type)
+        {
+            case MAIL_TYPE_NORMAL:
+                data << uint64_t(message.second.sender_guid);
+                break;
+            case MAIL_TYPE_COD:
+            case MAIL_TYPE_AUCTION:
+            case MAIL_TYPE_ITEM:
+                data << uint32_t(Arcemu::Util::GUID_LOPART(message.second.sender_guid));
+                break;
+            case MAIL_TYPE_GAMEOBJECT:
+            case MAIL_TYPE_CREATURE:
+                data << uint32_t(static_cast<uint32_t>(message.second.sender_guid));
+                break;
+        }
+
+#if VERSION_STRING != Cata
+        data << uint32_t(message.second.cod);
+#else
+        data << uint64_t(message.second.cod);
+#endif
+        data << uint32_t(0);
+        data << uint32_t(message.second.stationery);
+#if VERSION_STRING != Cata
+        data << uint32_t(message.second.money);
+#else
+        data << uint64_t(message.second.money);
+#endif
+        data << uint32_t(message.second.checked_flag);
+        data << float(float((message.second.expire_time - uint32(UNIXTIME)) / DAY));
+        data << uint32_t(0);
+        data << message.second.subject;
+        data << message.second.body;
+
+        data << uint8_t(message.second.items.size());
+
+        uint8_t i = 0;
+        if (!message.second.items.empty())
+        {
+            for (auto itemEntry : message.second.items)
+            {
+                const auto item = objmgr.LoadItem(itemEntry);
+                if (item == nullptr)
+                    continue;
+
+                data << uint8_t(i++);
+                data << uint32_t(item->getGuidLow());
+                data << uint32_t(item->getEntry());
+
+                for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
+                {
+                    data << uint32_t(item->getEnchantmentId(j));
+                    data << uint32_t(item->getEnchantmentDuration(j));
+                    data << uint32_t(item->getEnchantmentCharges(j));
+                }
+
+                data << uint32_t(item->getRandomPropertiesId());
+                data << uint32_t(item->getPropertySeed());
+                data << uint32_t(item->getStackCount());
+                data << uint32_t(item->GetChargesLeft());
+                data << uint32_t(item->getMaxDurability());
+                data << uint32_t(item->getDurability());
+                data << uint8_t(item->locked ? 1 : 0);
+
+                delete item;
+            }
+        }
+        ++count;
+        ++realCount;
+    }
+
+    data.put<uint32_t>(0, realCount);
+    data.put<uint8_t>(4, count);
+
+    SendPacket(&data);
+
+    // do cleanup on request mail
+    _player->m_mailBox.CleanupExpiredMessages();
 }

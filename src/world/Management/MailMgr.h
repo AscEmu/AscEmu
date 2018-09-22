@@ -120,9 +120,10 @@ class Mailbox
     protected:
 
         uint64 owner;
-        MessageMap Messages;
+        
 
     public:
+        MessageMap Messages;
 
         Mailbox(uint64 owner_) : owner(owner_) {}
 
@@ -136,7 +137,6 @@ class Mailbox
             return &(iter->second);
         }
 
-        WorldPacket* BuildMailboxListingPacket();
         void CleanupExpiredMessages();
         inline size_t MessageCount() { return Messages.size(); }
         void FillTimePacket(WorldPacket & data);
