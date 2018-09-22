@@ -176,8 +176,34 @@ void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 100);
-    _player->m_mailBox.FillTimePacket(data);
+    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 32);
+    {
+        uint32_t unreadMessageCount = 0;
+        data << uint32_t(0);
+        data << uint32_t(0);
+
+        for (auto& message : _player->m_mailBox.Messages)
+        {
+            if (message.second.checked_flag & MAIL_CHECK_MASK_READ)
+                continue;
+
+            if (message.second.deleted_flag == 0 && static_cast<uint32_t>(UNIXTIME) >= message.second.delivery_time)
+            {
+                ++unreadMessageCount;
+                data << uint64_t(message.second.sender_guid);
+                data << uint32_t(message.second.message_type != MAIL_TYPE_NORMAL ? message.second.sender_guid : 0);
+                data << uint32_t(message.second.message_type);
+                data << uint32_t(message.second.stationery);
+                data << float(message.second.delivery_time - static_cast<uint32_t>(UNIXTIME));
+            }
+        }
+
+        if (unreadMessageCount == 0)
+            data.put<uint32_t>(0, 0xc7a8c000);
+        else
+            data.put<uint32_t>(4, unreadMessageCount);
+    }
+
     SendPacket(&data);
 }
 

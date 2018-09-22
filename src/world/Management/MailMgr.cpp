@@ -169,38 +169,6 @@ void MailSystem::SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 r
     SendAutomatedMessage(type, sender, receiver, subject, body, money, cod, item_guids, stationery, checked, deliverdelay);
 }
 
-void Mailbox::FillTimePacket(WorldPacket& data)
-{
-    uint32 c = 0;
-    MessageMap::iterator iter = Messages.begin();
-    data << uint32(0);
-    data << uint32(0);
-
-    for (; iter != Messages.end(); ++iter)
-    {
-        if (iter->second.checked_flag & MAIL_CHECK_MASK_READ)
-            continue;
-
-        if (iter->second.deleted_flag == 0 && (uint32)UNIXTIME >= iter->second.delivery_time)
-        {
-            // unread message, w00t.
-            ++c;
-            data << uint64(iter->second.sender_guid);
-            data << uint32(0);
-            data << uint32(0);// money or something?
-            data << uint32(iter->second.stationery);
-            //data << float(UNIXTIME-iter->second.delivery_time);
-            data << float(-9.0f);    // maybe the above?
-        }
-    }
-
-    if (c == 0)
-        *(uint32*)(&data.contents()[0]) = 0xc7a8c000;
-    else
-        *(uint32*)(&data.contents()[4]) = c;
-
-}
-
 void Mailbox::Load(QueryResult* result)
 {
     if (!result)

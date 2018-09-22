@@ -139,7 +139,6 @@ class Mailbox
 
         void CleanupExpiredMessages();
         inline size_t MessageCount() { return Messages.size(); }
-        void FillTimePacket(WorldPacket & data);
         inline uint64 GetOwner() { return owner; }
         void Load(QueryResult* result);
 };
