@@ -1,22 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #include "Setup.h"
@@ -24,15 +8,15 @@
 #include <Spell/Definitions/PowerType.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//Magister's Terrace
+// Magister's Terrace
 class InstanceMagistersTerraceScript : public InstanceScript
 {
-    public:
+public:
 
-        InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-        {}
+    InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {}
 
-        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
 };
 
 // Fel Crystal Spawn Locations
@@ -267,10 +251,10 @@ class Priestess_DelrissaAI : public CreatureAIScript
         }
     }
 
-    protected:
+protected:
 
-        uint8 mKilledPlayers;
-        int32 mClearHateList;
+    uint8 mKilledPlayers;
+    int32 mClearHateList;
 };
 
 class KaganiNightstrikeAI : public CreatureAIScript
@@ -405,7 +389,7 @@ class ZelfanAI : public CreatureAIScript
     }
 };
 
-//Trash mobs
+// Trash mobs
 
 class CoilskarWitchAI : public CreatureAIScript
 {
@@ -482,14 +466,18 @@ class SunbladeMagisterAI : public CreatureAIScript
 
 void SetupMagistersTerrace(ScriptMgr* mgr)
 {
-    //Instance
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Instance
     mgr->register_instance_script(MAP_MAGISTERS_TERRACE, &InstanceMagistersTerraceScript::Create);
 
-    //Bosses
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Bosses
     mgr->register_creature_script(BOSS_SELIN_FIREHEART, &SelinFireheartAI::Create);
     mgr->register_creature_script(BOSS_VEXALLUS, &VexallusAI::Create);
     mgr->register_creature_script(BOSS_PRIEST_DELRISSA, &Priestess_DelrissaAI::Create);
-    //Priestess Delrissa Encounter Creature AI
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Priestess Delrissa Encounter Creature AI
     mgr->register_creature_script(CN_KAGANI_NIGHTSTRIKE, &KaganiNightstrikeAI::Create);
     mgr->register_creature_script(CN_ELLRYS_DUSKHALLOW, &EllrysDuskhallowAI::Create);
     mgr->register_creature_script(CN_ERAMAS_BRIGHTBLAZE, &EramasBrightblazeAI::Create);
@@ -498,7 +486,9 @@ void SetupMagistersTerrace(ScriptMgr* mgr)
     mgr->register_creature_script(CN_GARAXXAS, &GaraxxasAI::Create);
     mgr->register_creature_script(CN_APOKO, &ApokoAI::Create);
     mgr->register_creature_script(CN_ZELFAN, &ZelfanAI::Create);
-    //Trash Mobs
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //  Trash Mobs
     mgr->register_creature_script(CN_COILSKAR_WITCH, &CoilskarWitchAI::Create);
     mgr->register_creature_script(CN_SISTER_OF_TORMENT, &SisterOfTormentAI::Create);
     mgr->register_creature_script(CN_SB_IMP, &SunbladeImpAI::Create);
