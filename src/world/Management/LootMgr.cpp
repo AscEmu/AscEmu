@@ -701,17 +701,20 @@ void LootRoll::Finalize()
             */
         }
     }
+
     Loot* pLoot = 0;
-    uint32 guidtype = GET_TYPE_FROM_GUID(_guid);
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    WoWGuid wowGuid;
+    wowGuid.Init(_guid);
+
+    if (wowGuid.isUnit())
     {
-        Creature* pc = _mgr->GetCreature(GET_LOWGUID_PART(_guid));
+        Creature* pc = _mgr->GetCreature(wowGuid.getGuidLowPart());
         if (pc)
             pLoot = &pc->loot;
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
-        GameObject* go = _mgr->GetGameObject(GET_LOWGUID_PART(_guid));
+        GameObject* go = _mgr->GetGameObject(wowGuid.getGuidLowPart());
         if (go != nullptr)
         {
             if (go->IsLootable())
