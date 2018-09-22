@@ -29,57 +29,42 @@
 #include "Server/Packets/CmsgMailReturnToSender.h"
 #include "Server/Packets/CmsgMailCreateTextItem.h"
 #include "Server/Packets/CmsgItemTextQuery.h"
+#include "Server/Packets/CmsgSendMail.h"
 
 using namespace  AscEmu::Packets;
 
-#if VERSION_STRING != Cata
 // \todo refactoring
-
-void WorldSession::HandleSendMail(WorldPacket& recv_data)
+void WorldSession::handleSendMailOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    MailMessage msg;
-    uint64 gameobject;
-    uint32 unk2;
-    uint8 itemcount;
-    uint8 itemslot;
-    uint8 i;
-    uint64 itemguid;
-    std::vector< Item* > items;
-    std::vector< Item* >::iterator itr;
-    std::string recepient;
-    Item* pItem;
-    //uint32 err = MAIL_OK;
-
-    recv_data >> gameobject;
-    recv_data >> recepient;
-    recv_data >> msg.subject;
-    recv_data >> msg.body;
-    recv_data >> msg.stationery;
-    recv_data >> unk2;
-    recv_data >> itemcount;
-
-    if (itemcount > MAIL_MAX_ITEM_SLOT || msg.body.find("%") != std::string::npos || msg.subject.find("%") != std::string::npos)
+    CmsgSendMail srlPacket;
+    if (!srlPacket.deserialise(recv_data))
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
+    Item* pItem;
+
+    if (srlPacket.itemCount > MAIL_MAX_ITEM_SLOT)
+    {
+        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_TOO_MANY_ATTACHMENTS).serialise().get());
+        return;
+    }
+
     // Search for the recipient
-    PlayerInfo* player = ObjectMgr::getSingleton().GetPlayerInfoByName(recepient.c_str());
+    PlayerInfo* player = objmgr.GetPlayerInfoByName(srlPacket.receiverName.c_str());
     if (player == nullptr)
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());
         return;
     }
 
-    for (i = 0; i < itemcount; ++i)
+    std::vector<Item*> items;
+    for (uint8 i = 0; i < srlPacket.itemCount; ++i)
     {
-        recv_data >> itemslot;
-        recv_data >> itemguid;
-
-        pItem = _player->GetItemInterface()->GetItemByGUID(itemguid);
+        pItem = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuid[i]);
         if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
             SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -98,13 +83,6 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
         items.push_back(pItem);
     }
-
-    recv_data >> msg.money;
-    recv_data >> msg.cod;
-    ///\todo left over: (TODO- FIX ME BURLEX!)
-    // uint32
-    // uint32
-    // uint8
 
     bool interfaction = false;
     if (sMailSystem.MailOption(MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION) || (HasGMPermissions() && sMailSystem.MailOption(MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM)))
@@ -126,22 +104,14 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         return;
     }
 
-    if (msg.stationery == MAIL_STATIONERY_GM && !HasGMPermissions())
+    if (srlPacket.stationery == MAIL_STATIONERY_GM && !HasGMPermissions())
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
-    // Instant delivery time by default.
-    msg.delivery_time = (uint32)UNIXTIME;
-
     // Set up the cost
-    int32 cost = 0;
-
-    // Check for attached money
-    if (msg.money > 0)
-        cost += msg.money;
-
+    uint32_t cost = srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;  // price hardcoded in client
 
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
     {
@@ -155,12 +125,13 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         return;
     }
 
+    MailMessage msg;
     // Check for the item, and required item.
     if (!items.empty())
     {
-        for (itr = items.begin(); itr != items.end(); ++itr)
+        for (auto& item : items)
         {
-            pItem = *itr;
+            pItem = item;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->getGuid(), false) != pItem)
                 continue;        // should never be hit.
 
@@ -172,29 +143,37 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
             if (GetPermissionCount() > 0)
             {
                 /* log the message */
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->getEntry(), player->name, msg.money);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->getEntry(), player->name, srlPacket.money);
             }
 
             pItem->DeleteMe();
         }
     }
 
-    if (msg.money != 0 || msg.cod != 0 || (!msg.items.size() && player->acct != _player->GetSession()->GetAccountId()))
+    // Instant delivery time by default.
+    msg.delivery_time = static_cast<uint32>(UNIXTIME);
+
+    if (srlPacket.money != 0 || srlPacket.cod != 0 || items.empty() && player->acct != _player->GetSession()->GetAccountId())
     {
         if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
             msg.delivery_time += 3600;  // 1hr
     }
 
     // take the money
-    _player->ModGold(-cost);
+    _player->ModGold(-static_cast<int32_t>(cost));
 
     // Fill in the rest of the info
     msg.player_guid = player->guid;
     msg.sender_guid = _player->getGuid();
+    msg.stationery = srlPacket.stationery;
+    msg.money = static_cast<uint32_t>(srlPacket.money);
+    msg.cod = static_cast<uint32_t>(srlPacket.cod);
+    msg.subject = srlPacket.subject;
+    msg.body = srlPacket.body;
 
     // 30 day expiry time for unread mail
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
-        msg.expire_time = (uint32)UNIXTIME + (TIME_DAY * MAIL_DEFAULT_EXPIRATION_TIME);
+        msg.expire_time = static_cast<uint32>(UNIXTIME) + (TIME_DAY * MAIL_DEFAULT_EXPIRATION_TIME);
     else
         msg.expire_time = 0;
 
@@ -209,7 +188,6 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }
-#endif
 
 void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 {

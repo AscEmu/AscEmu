@@ -162,12 +162,12 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    CmsgItemTextQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgItemTextQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
   
-    if (const auto item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid))
-        SendPacket(SmsgItemTextQueryResponse(0, recv_packet.itemGuid, item->GetText()).serialise().get());
+    if (const auto item = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuid))
+        SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->GetText()).serialise().get());
     else
         SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
 }
