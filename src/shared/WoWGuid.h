@@ -133,7 +133,7 @@ class SERVER_DECL WoWGuid
 
         WoWGuid(uint64_t guid)
         {
-            Init(static_cast<uint64>(guid));
+            Init(static_cast<uint64_t>(guid));
         }
 
         WoWGuid(uint8_t mask)
