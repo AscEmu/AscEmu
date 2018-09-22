@@ -457,14 +457,14 @@ class SERVER_DECL WorldSession
         // Mail opcodes
         void HandleGetMail(WorldPacket& recvPacket);
         void HandleSendMail(WorldPacket& recvPacket);
-        void HandleTakeMoney(WorldPacket& recvPacket);
+        void handleTakeMoneyOpcode(WorldPacket& recvPacket);
         void HandleTakeItem(WorldPacket& recvPacket);
-        void HandleMarkAsRead(WorldPacket& recvPacket);
-        void HandleReturnToSender(WorldPacket& recvPacket);
-        void HandleMailDelete(WorldPacket& recvPacket);
+        void handleMarkAsReadOpcode(WorldPacket& recvPacket);
+        void handleReturnToSenderOpcode(WorldPacket& recvPacket);
+        void handleMailDeleteOpcode(WorldPacket& recvPacket);
         void HandleItemTextQuery(WorldPacket& recvPacket);
         void HandleMailTime(WorldPacket& recvPacket);
-        void HandleMailCreateTextItem(WorldPacket& recvPacket);
+        void handleMailCreateTextItemOpcode(WorldPacket& recvPacket);
 
         // Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
