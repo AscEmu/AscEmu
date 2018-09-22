@@ -320,7 +320,7 @@ void WorldSession::loadSpecificHandlers()
 
     // Mail System
     WorldPacketHandlers[CMSG_GET_MAIL_LIST].handler = &WorldSession::HandleGetMail;
-    WorldPacketHandlers[CMSG_ITEM_TEXT_QUERY].handler = &WorldSession::HandleItemTextQuery;
+    WorldPacketHandlers[CMSG_ITEM_TEXT_QUERY].handler = &WorldSession::handleItemTextQueryOpcode;
     WorldPacketHandlers[CMSG_SEND_MAIL].handler = &WorldSession::HandleSendMail;
     WorldPacketHandlers[CMSG_MAIL_TAKE_MONEY].handler = &WorldSession::handleTakeMoneyOpcode;
     WorldPacketHandlers[CMSG_MAIL_TAKE_ITEM].handler = &WorldSession::HandleTakeItem;

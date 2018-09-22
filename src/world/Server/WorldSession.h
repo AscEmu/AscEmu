@@ -462,7 +462,7 @@ class SERVER_DECL WorldSession
         void handleMarkAsReadOpcode(WorldPacket& recvPacket);
         void handleReturnToSenderOpcode(WorldPacket& recvPacket);
         void handleMailDeleteOpcode(WorldPacket& recvPacket);
-        void HandleItemTextQuery(WorldPacket& recvPacket);
+        void handleItemTextQueryOpcode(WorldPacket& recvPacket);
         void HandleMailTime(WorldPacket& recvPacket);
         void handleMailCreateTextItemOpcode(WorldPacket& recvPacket);
 

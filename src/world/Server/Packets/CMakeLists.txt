@@ -271,6 +271,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgMessageChat.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
+   ${PATH_PREFIX}/SmsgItemTextQueryResponse.h
    ${PATH_PREFIX}/SmsgNewWorld.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h

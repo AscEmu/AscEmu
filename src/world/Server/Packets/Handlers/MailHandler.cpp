@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgMailTakeMoney.h"
 #include "Server/Packets/CmsgMailCreateTextItem.h"
 #include "Server/Packets/CmsgMailReturnToSender.h"
+#include "Server/Packets/CmsgItemTextQuery.h"
+#include "Server/Packets/SmsgItemTextQueryResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -154,4 +156,18 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
     else
         item->DeleteMe();
+}
+
+void WorldSession::handleItemTextQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgItemTextQuery recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+  
+    if (const auto item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid))
+        SendPacket(SmsgItemTextQueryResponse(0, recv_packet.itemGuid, item->GetText()).serialise().get());
+    else
+        SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
 }

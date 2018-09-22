@@ -396,60 +396,6 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     // probably need to send an item push here
 }
 
-void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CmsgItemTextQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    Item* pItem = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid);
-    WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, pItem->GetText().size() + 9);
-    if (!pItem)
-        data << uint8(1);
-    else
-    {
-        data << uint8(0);
-        data << uint64(recv_packet.itemGuid);
-        data << pItem->GetText();
-    }
-
-    SendPacket(&data);
-}
-
-void Mailbox::FillTimePacket(WorldPacket& data)
-{
-    uint32 c = 0;
-    MessageMap::iterator iter = Messages.begin();
-    data << uint32(0);
-    data << uint32(0);
-
-    for (; iter != Messages.end(); ++iter)
-    {
-        if (iter->second.checked_flag & MAIL_CHECK_MASK_READ)
-            continue;
-
-        if (iter->second.deleted_flag == 0 && (uint32)UNIXTIME >= iter->second.delivery_time)
-        {
-            // unread message, w00t.
-            ++c;
-            data << uint64(iter->second.sender_guid);
-            data << uint32(0);
-            data << uint32(0);// money or something?
-            data << uint32(iter->second.stationery);
-            //data << float(UNIXTIME-iter->second.delivery_time);
-            data << float(-9.0f);    // maybe the above?
-        }
-    }
-
-    if (c == 0)
-        *(uint32*)(&data.contents()[0]) = 0xc7a8c000;
-    else
-        *(uint32*)(&data.contents()[4]) = c;
-
-}
-
 void WorldSession::HandleMailTime(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
@@ -466,45 +412,6 @@ void WorldSession::HandleGetMail(WorldPacket& /*recv_data*/)
     WorldPacket* data = _player->m_mailBox.BuildMailboxListingPacket();
     SendPacket(data);
     delete data;
-}
-
-WorldPacket* Mailbox::BuildMailboxListingPacket()
-{
-    WorldPacket* data = new WorldPacket(SMSG_MAIL_LIST_RESULT, 500);
-    MessageMap::iterator itr;
-    uint32 realcount = 0;
-    uint32 count = 0;
-    uint32 t = (uint32)UNIXTIME;
-    *data << uint32(0);     // realcount - this can be used to tell the client we have more mail than that fits into this packet
-    *data << uint8(0);     // size placeholder
-
-    for (itr = Messages.begin(); itr != Messages.end(); ++itr)
-    {
-        if (itr->second.expire_time && t > itr->second.expire_time)
-            continue;       // expired mail -> skip it
-
-        if ((uint32)UNIXTIME < itr->second.delivery_time)
-            continue;        // undelivered
-
-        if (count >= 50) //VLack: We could calculate message sizes instead of this, but the original code did a break at 50, so I won't fix this up if no one felt the need to do so before ;-)
-        {
-            ++realcount;
-            continue;
-        }
-
-        if (itr->second.AddMessageDataToPacket(*data))
-        {
-            ++count;
-            ++realcount;
-        }
-    }
-
-    data->put<uint32>(0, realcount);
-    data->put<uint8>(4, static_cast<uint8>(count));
-
-    // do cleanup on request mail
-    CleanupExpiredMessages();
-    return data;
 }
 
 #endif
