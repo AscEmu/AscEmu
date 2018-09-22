@@ -111,8 +111,6 @@ struct MailMessage
     uint32 delivery_time;
     uint32 checked_flag;
     bool deleted_flag;
-
-    bool AddMessageDataToPacket(WorldPacket & data);
 };
 
 typedef std::map<uint32, MailMessage> MessageMap;

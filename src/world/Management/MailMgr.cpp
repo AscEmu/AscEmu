@@ -169,91 +169,6 @@ void MailSystem::SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 r
     SendAutomatedMessage(type, sender, receiver, subject, body, money, cod, item_guids, stationery, checked, deliverdelay);
 }
 
-bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
-{
-    uint8 i = 0;
-    std::vector<uint32>::iterator itr;
-    Item* pItem;
-
-    // add stuff
-    if (deleted_flag)
-        return false;
-
-    uint8 guidsize;
-    if (message_type == 0)
-        guidsize = 8;
-    else
-        guidsize = 4;
-
-    size_t msize = 2 + 4 + 1 + guidsize + 4 * 8 + (subject.size() + 1) + (body.size() + 1) + 1 + (items.size() * (1 + 2 * 4 + 7 * (3 * 4) + 6 * 4 + 1));
-
-    data << uint16(msize);     // message size
-    data << uint32(message_id);
-    data << uint8(message_type);
-
-    switch (message_type)
-    {
-        case MAIL_TYPE_NORMAL:
-            data << uint64(sender_guid);
-            break;
-        case MAIL_TYPE_COD:
-        case MAIL_TYPE_AUCTION:
-        case MAIL_TYPE_ITEM:
-            data << uint32(Arcemu::Util::GUID_LOPART(sender_guid));
-            break;
-        case MAIL_TYPE_GAMEOBJECT:
-        case MAIL_TYPE_CREATURE:
-            data << uint32(static_cast<uint32>(sender_guid));
-            break;
-    }
-
-    data << uint32(cod);            // cod
-    data << uint32(0);
-    data << uint32(stationery);
-    data << uint32(money);        // money
-    data << uint32(checked_flag);           // "checked" flag
-    data << float((expire_time - uint32(UNIXTIME)) / 86400.0f);
-    data << uint32(0);    // mail template
-    data << subject;
-    data << body;
-
-    data << uint8(items.size());        // item count
-
-    if (!items.empty())
-    {
-        for (itr = items.begin(); itr != items.end(); ++itr)
-        {
-            pItem = objmgr.LoadItem(*itr);
-            if (pItem == nullptr)
-                continue;
-
-            data << uint8(i++);
-            data << uint32(pItem->getGuidLow());
-            data << uint32(pItem->getEntry());
-
-            for (uint8_t j = 0; j < MAX_ENCHANTMENT_SLOT; ++j)
-            {
-                data << uint32(pItem->getEnchantmentId(j));
-                data << uint32(pItem->getEnchantmentDuration(j));
-                data << uint32(0);
-            }
-
-            data << uint32(pItem->getRandomPropertiesId());
-            data << uint32(pItem->getPropertySeed());
-            data << uint32(pItem->getStackCount());
-            data << uint32(pItem->GetChargesLeft());
-            data << uint32(pItem->getMaxDurability());
-            data << uint32(pItem->getDurability());
-            data << uint8(0);   // unknown
-
-            delete pItem;
-        }
-
-    }
-
-    return true;
-}
-
 #if VERSION_STRING != Cata
 WorldPacket* Mailbox::BuildMailboxListingPacket()
 {
@@ -279,8 +194,80 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
             continue;
         }
 
-        if (itr->second.AddMessageDataToPacket(*data))
+        //if (itr->second.AddMessageDataToPacket(*data))
         {
+            uint8 guidsize;
+            if (itr->second.message_type == 0)
+                guidsize = 8;
+            else
+                guidsize = 4;
+
+            size_t msize = 2 + 4 + 1 + guidsize + 4 * 8 + (itr->second.subject.size() + 1) + (itr->second.body.size() + 1) + 1 + (itr->second.items.size() * (1 + 2 * 4 + 7 * (3 * 4) + 6 * 4 + 1));
+
+            *data << uint16(msize);     // message size
+            *data << uint32(itr->second.message_id);
+            *data << uint8(itr->second.message_type);
+
+            switch (itr->second.message_type)
+            {
+                case MAIL_TYPE_NORMAL:
+                    *data << uint64(itr->second.sender_guid);
+                    break;
+                case MAIL_TYPE_COD:
+                case MAIL_TYPE_AUCTION:
+                case MAIL_TYPE_ITEM:
+                    *data << uint32(Arcemu::Util::GUID_LOPART(itr->second.sender_guid));
+                    break;
+                case MAIL_TYPE_GAMEOBJECT:
+                case MAIL_TYPE_CREATURE:
+                    *data << uint32(static_cast<uint32>(itr->second.sender_guid));
+                    break;
+            }
+
+            *data << uint32(itr->second.cod);            // cod
+            *data << uint32(0);
+            *data << uint32(itr->second.stationery);
+            *data << uint32(itr->second.money);        // money
+            *data << uint32(itr->second.checked_flag);           // "checked" flag
+            *data << float((itr->second.expire_time - uint32(UNIXTIME)) / 86400.0f);
+            *data << uint32(0);    // mail template
+            *data << itr->second.subject;
+            *data << itr->second.body;
+
+            *data << uint8(itr->second.items.size());        // item count
+
+            uint8 i = 0;
+            if (!itr->second.items.empty())
+            {
+                for (std::vector<uint32>::iterator itr2 = itr->second.items.begin(); itr2 != itr->second.items.end(); ++itr2)
+                {
+                    Item* pItem = objmgr.LoadItem(*itr2);
+                    if (pItem == nullptr)
+                        continue;
+
+                    *data << uint8(i++);
+                    *data << uint32(pItem->getGuidLow());
+                    *data << uint32(pItem->getEntry());
+
+                    for (uint8_t j = 0; j < MAX_ENCHANTMENT_SLOT; ++j)
+                    {
+                        *data << uint32(pItem->getEnchantmentId(j));
+                        *data << uint32(pItem->getEnchantmentDuration(j));
+                        *data << uint32(0);
+                    }
+
+                    *data << uint32(pItem->getRandomPropertiesId());
+                    *data << uint32(pItem->getPropertySeed());
+                    *data << uint32(pItem->getStackCount());
+                    *data << uint32(pItem->GetChargesLeft());
+                    *data << uint32(pItem->getMaxDurability());
+                    *data << uint32(pItem->getDurability());
+                    *data << uint8(0);   // unknown
+
+                    delete pItem;
+                }
+            }
+
             ++count;
             ++realcount;
         }

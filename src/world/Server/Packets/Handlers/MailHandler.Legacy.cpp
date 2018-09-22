@@ -209,6 +209,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }
+#endif
 
 void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 {
@@ -311,5 +312,3 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // probably need to send an item push here
 }
-
-#endif
