@@ -33,7 +33,7 @@ void main()
     else printf("Opened DBC with %u fields and %u rows\n", (int)dbc.getFieldCount(), (int)dbc.getRecordCount());
 
     dump_as_sql();
-    //	getch();
+    // getch();
 }
 
 void main2();
@@ -144,7 +144,7 @@ void main2()
     else printf("Opened DBC with %u fields and %u rows\n", (int)dbc.getFieldCount(), (int)dbc.getRecordCount());
 
     dump_as_sql2();
-    //	getch();
+    // getch();
 }
 
 void dump_as_sql2()
