@@ -171,3 +171,21 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
     else
         SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
 }
+
+void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 100);
+    _player->m_mailBox.FillTimePacket(data);
+    SendPacket(&data);
+}
+
+void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    WorldPacket* data = _player->m_mailBox.BuildMailboxListingPacket();
+    SendPacket(data);
+    delete data;
+}

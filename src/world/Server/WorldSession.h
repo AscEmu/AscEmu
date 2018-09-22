@@ -455,7 +455,7 @@ class SERVER_DECL WorldSession
         void handleAuctionListPendingSales(WorldPacket& recvPacket);
 
         // Mail opcodes
-        void HandleGetMail(WorldPacket& recvPacket);
+        void handleGetMailOpcode(WorldPacket& /*recvPacket*/);
         void HandleSendMail(WorldPacket& recvPacket);
         void handleTakeMoneyOpcode(WorldPacket& recvPacket);
         void HandleTakeItem(WorldPacket& recvPacket);
@@ -463,7 +463,7 @@ class SERVER_DECL WorldSession
         void handleReturnToSenderOpcode(WorldPacket& recvPacket);
         void handleMailDeleteOpcode(WorldPacket& recvPacket);
         void handleItemTextQueryOpcode(WorldPacket& recvPacket);
-        void HandleMailTime(WorldPacket& recvPacket);
+        void handleMailTimeOpcode(WorldPacket& /*recvPacket*/);
         void handleMailCreateTextItemOpcode(WorldPacket& recvPacket);
 
         // Item opcodes (ItemHandler.cpp)
