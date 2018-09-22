@@ -74,23 +74,24 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     Creature* pLootableCreature = nullptr;
     Item* pLootableSourceItem = nullptr;
 
-    uint32_t guidtype = GET_TYPE_FROM_GUID(_player->GetLootGUID());
-    Loot* pLoot = getLootFromHighGuidType(guidtype);
+    WoWGuid wowGuid;
+    wowGuid.Init(_player->GetLootGUID());
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidLowPart());
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (wowGuid.isUnit())
     {
         pLootableCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
         if (pLootableCreature == nullptr)
             return;
 
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
         pLootableGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
         if (pLootableGameObject == nullptr || !pLootableGameObject->IsLootable())
             return;
     }
-    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    else if (wowGuid.isItem())
     {
         Item* pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
         if (pItem == nullptr)
@@ -248,12 +249,13 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
         _player->interruptSpell();
 
     Unit* pt = nullptr;
-    uint32_t guidtype = GET_TYPE_FROM_GUID(lootguid);
-    Loot* pLoot = getLootFromHighGuidType(guidtype);
+    WoWGuid wowGuid;
+    wowGuid.Init(lootguid);
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidLowPart());
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (wowGuid.isUnit())
     {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(lootguid));
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (pCreature == nullptr)
             return;
 
@@ -410,9 +412,12 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     _player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
-    if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_UNIT)
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    if (wowGuid.isUnit())
     {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (pCreature == nullptr)
             return;
 
@@ -442,7 +447,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             }
         }
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
         GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32_t)guid);
         if (pGO == nullptr)
@@ -540,13 +545,13 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 break;
         }
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_CORPSE)
+    else if (wowGuid.isCorpse())
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32_t)guid);
         if (pCorpse)
             pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PLAYER)
+    else if (wowGuid.isPlayer())
     {
         Player* plr = objmgr.GetPlayer((uint32_t)guid);
         if (plr)
@@ -556,7 +561,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
         }
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)
+    else if (wowGuid.isItem())
     {
         Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
         if (item == nullptr)
@@ -610,16 +615,18 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (_player->GetLootGUID() != creatureguid)
         return;
 
-    uint32_t guidtype = GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID());
-    Loot* pLoot = getLootFromHighGuidType(guidtype);
-    if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_UNIT)
+    WoWGuid wowGuid;
+    wowGuid.Init(GetPlayer()->GetLootGUID());
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidHighPart());
+    
+    if (wowGuid.isUnit())
     {
         pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
         if (pCreature == nullptr)
             return;
 
     }
-    else if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
         pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
         if (pGameObject == nullptr || !pGameObject->IsLootable())

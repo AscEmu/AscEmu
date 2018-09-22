@@ -1442,15 +1442,18 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
     if (guid == 0)
         return nullptr;
 
-    switch (GET_TYPE_FROM_GUID(guid))
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    switch (wowGuid.getHigh())
     {
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
-            return GetCreature(GET_LOWGUID_PART(guid));
-        case HIGHGUID_TYPE_PLAYER:
-            return GetPlayer(Arcemu::Util::GUID_LOPART(guid));
-        case HIGHGUID_TYPE_PET:
-            return GetPet(GET_LOWGUID_PART(guid));
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            return GetCreature(wowGuid.getGuidLowPart());
+        case HighGuid::Player:
+            return GetPlayer(wowGuid.getGuidLowPart());
+        case HighGuid::Pet:
+            return GetPet(wowGuid.getGuidLowPart());
     }
 
     return nullptr;
@@ -1461,17 +1464,20 @@ Object* MapMgr::_GetObject(const uint64 & guid)
     if (!guid)
         return nullptr;
 
-    switch (GET_TYPE_FROM_GUID(guid))
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    switch (wowGuid.getHigh())
     {
-        case HIGHGUID_TYPE_GAMEOBJECT:
-            return GetGameObject(GET_LOWGUID_PART(guid));
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
-            return GetCreature(GET_LOWGUID_PART(guid));
-        case HIGHGUID_TYPE_DYNAMICOBJECT:
-            return GetDynamicObject((uint32)guid);
-        case HIGHGUID_TYPE_TRANSPORTER:
-            return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(guid));
+        case HighGuid::GameObject:
+            return GetGameObject(wowGuid.getGuidLowPart());
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            return GetCreature(wowGuid.getGuidLowPart());
+        case HighGuid::DynamicObject:
+            return GetDynamicObject(wowGuid.getGuidLowPart());
+        case HighGuid::Transporter:
+            return objmgr.GetTransporter(wowGuid.getGuidLowPart());
         default:
             return GetUnit(guid);
     }

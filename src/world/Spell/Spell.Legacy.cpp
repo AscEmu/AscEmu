@@ -3225,30 +3225,34 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             gameObjTarget = nullptr;
             playerTarget = nullptr;
             itemTarget = nullptr;
-            switch (GET_TYPE_FROM_GUID(guid))
+
+            WoWGuid wowGuid;
+            wowGuid.Init(guid);
+
+            switch (wowGuid.getHigh())
             {
-                case HIGHGUID_TYPE_UNIT:
-                case HIGHGUID_TYPE_VEHICLE:
+                case HighGuid::Unit:
+                case HighGuid::Vehicle:
                     unitTarget = m_caster->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
                     break;
-                case HIGHGUID_TYPE_PET:
+                case HighGuid::Pet:
                     unitTarget = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
                     break;
-                case HIGHGUID_TYPE_PLAYER:
+                case HighGuid::Player:
                 {
                     unitTarget = m_caster->GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
                     playerTarget = static_cast<Player*>(unitTarget);
                 }
                 break;
-                case HIGHGUID_TYPE_ITEM:
+                case HighGuid::Item:
                     if (p_caster != nullptr)
                         itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
 
                     break;
-                case HIGHGUID_TYPE_GAMEOBJECT:
+                case HighGuid::GameObject:
                     gameObjTarget = m_caster->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
                     break;
-                case HIGHGUID_TYPE_CORPSE:
+                case HighGuid::Corpse:
                     corpseTarget = objmgr.GetCorpse(GET_LOWGUID_PART(guid));
                     break;
                 default:

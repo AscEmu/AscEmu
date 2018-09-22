@@ -145,10 +145,11 @@ void Spell::FillTargetMap(uint32 i)
         AddTarget(i, TargetType, p_caster->GetSummon());
     if (TargetType & SPELL_TARGET_OBJECT_PETOWNER)
     {
-        uint64 guid = m_targets.m_unitTarget;
-        if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PET)
+        WoWGuid wowGuid;
+        wowGuid.Init(m_targets.m_unitTarget);
+        if (wowGuid.isPet())
         {
-            Pet* p = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+            Pet* p = m_caster->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
             if (p != nullptr)
                 AddTarget(i, TargetType, p->GetPetOwner());
         }
