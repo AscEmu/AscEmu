@@ -111,11 +111,17 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recv_data)
     }
 
     // Set up the cost
-    uint32_t cost = srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;  // price hardcoded in client
+    uint32_t cost = 0;
+
+    MailMessage msg;
+
+    // Check for attached money	
+    if (srlPacket.money > 0)
+        cost += srlPacket.money;
 
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
     {
-        cost += 30;
+        cost += srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;;
     }
 
     // check that we have enough in our backpack
@@ -125,7 +131,6 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recv_data)
         return;
     }
 
-    MailMessage msg;
     // Check for the item, and required item.
     if (!items.empty())
     {
