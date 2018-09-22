@@ -86,8 +86,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 
     Object* qst_giver = nullptr;
 
-    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questGiverGuid.GetOldGuid());
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.questGiverGuid.isUnit())
     {
         Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questGiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -101,7 +100,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
             return;
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    else if (recv_packet.questGiverGuid.isItem())
     {
         Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(recv_packet.questGiverGuid.GetOldGuid());
         if (quest_giver)
@@ -109,7 +108,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         else
             return;
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (recv_packet.questGiverGuid.isGameObject())
     {
         GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questGiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -175,8 +174,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
     uint32 status = QuestStatus::NotAvailable;
 
-    const uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.guid.GetOldGuid());
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.guid.isUnit())
     {
         Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
         if (quest_giver)
@@ -189,7 +187,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, static_cast<uint8>(quest_giver->GetQuestRelation(qst->id)), false);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (recv_packet.guid.isGameObject())
     {
         GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLowPart());
         if (quest_giver)
@@ -204,7 +202,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, static_cast<uint8>(go_quest_giver->GetQuestRelation(qst->id)), false);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    else if (recv_packet.guid.isItem())
     {
         Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(recv_packet.guid.GetOldGuid());
         //added it for script engine
@@ -359,9 +357,8 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
     uint32 status = 0;
-    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questgiverGuid.GetOldGuid());
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.questgiverGuid.isUnit())
     {
         Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -383,7 +380,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (recv_packet.questgiverGuid.isGameObject())
     {
         GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -440,9 +437,8 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
     uint32 status = 0;
-    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questgiverGuid.GetOldGuid());
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.questgiverGuid.isUnit())
     {
         Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -461,7 +457,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (recv_packet.questgiverGuid.isGameObject())
     {
         GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -528,9 +524,8 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     bool bValid = false;
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(recv_packet.questgiverGuid.GetOldGuid());
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.questgiverGuid.isUnit())
     {
         Creature* quest_giver = _player->GetMapMgr()->GetCreature(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
@@ -543,7 +538,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
             qst = sMySQLStore.getQuestProperties(recv_packet.questId);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (recv_packet.questgiverGuid.isGameObject())
     {
         GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(recv_packet.questgiverGuid.getGuidLowPart());
         if (quest_giver)
