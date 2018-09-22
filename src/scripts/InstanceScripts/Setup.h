@@ -59,7 +59,8 @@ void SetupTheVioletHold(ScriptMgr* mgr);
 void SetupWailingCaverns(ScriptMgr* mgr);
 void SetupMagistersTerrace(ScriptMgr* mgr);
 
-//Raids
+//////////////////////////////////////////////////////////////////////////////////////////
+// Raids
 void SetupBlackTemple(ScriptMgr* mgr);
 void SetupBlackwingLair(ScriptMgr* mgr);
 void SetupBattleOfMountHyjal(ScriptMgr* mgr);
@@ -147,55 +148,55 @@ enum InstanceMaps
     MAP_HALLSOFREFLECTION   = 668,  // Halls of Reflection
 
     /*
-    30	Alterac Valley
-    44	<unused> Monastery
-    47	Razorfen Kraul
-    90	Gnomeregan
+     30 - Alterac Valley
+     44 - <unused> Monastery
+     47 - Razorfen Kraul
+     90 - Gnomeregan
 
-    109	Sunken Temple
-    169	Emerald Dream
+    109 - Sunken Temple
+    169 - Emerald Dream
 
-    249	Onyxia's Lair
+    249 - Onyxia's Lair
 
-    309	Zul'Gurub
-    329	Stratholme
+    309 - Zul'Gurub
+    329 - Stratholme
 
-    409	Molten Core
-    469	Blackwing Lair
-    489	Warsong Gulch
+    409 - Molten Core
+    469 - Blackwing Lair
+    489 - Warsong Gulch
 
-    509	Ruins of Ahn'Qiraj
-    529	Arathi Basin
-    531	Ahn'Qiraj Temple
-    532	Karazhan
-    544	Magtheridon's Lair
-    548	Coilfang: Serpentshrine Cavern
-    550	Tempest Keep
-    552	Tempest Keep: The Arcatraz
-    559	Nagrand Arena
-    560	The Escape From Durnholde
-    562	Blade's Edge Arena
-    565	Gruul's Lair
-    566	Eye of the Storm
-    568	Zul'Aman
-    572	Ruins of Lordaeron
+    509 - Ruins of Ahn'Qiraj
+    529 - Arathi Basin
+    531 - Ahn'Qiraj Temple
+    532 - Karazhan
+    544 - Magtheridon's Lair
+    548 - Coilfang: Serpentshrine Cavern
+    550 - Tempest Keep
+    552 - Tempest Keep: The Arcatraz
+    559 - Nagrand Arena
+    560 - The Escape From Durnholde
+    562 - Blade's Edge Arena
+    565 - Gruul's Lair
+    566 - Eye of the Storm
+    568 - Zul'Aman
+    572 - Ruins of Lordaeron
 
-    578	The Oculus
-    580	The Sunwell
-    595	The Culling of Stratholme
-    598	Sunwell Fix (Unused)
+    578 - The Oculus
+    580 - The Sunwell
+    595 - The Culling of Stratholme
+    598 - Sunwell Fix (Unused)
 
-    607	Strand of the Ancients
-    615	The Obsidian Sanctum
-    616	The Eye of Eternity
-    617	Dalaran Sewers
-    618	The Ring of Valor
-    619	Ahn'kahet: The Old Kingdom
-    624	Vault of Archavon
-    628	Isle of Conquest
-    649	Trial of the Crusader
-    650	Trial of the Champion
-    724	The Ruby Sanctum*/
+    607 - Strand of the Ancients
+    615 - The Obsidian Sanctum
+    616 - The Eye of Eternity
+    617 - Dalaran Sewers
+    618 - The Ring of Valor
+    619 - Ahn'kahet: The Old Kingdom
+    624 - Vault of Archavon
+    628 - Isle of Conquest
+    649 - Trial of the Crusader
+    650 - Trial of the Champion
+    724 - The Ruby Sanctum*/
 };
 
 enum InstanceAreas
