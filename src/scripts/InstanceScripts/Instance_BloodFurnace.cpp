@@ -1,27 +1,10 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #include "Setup.h"
 #include "Instance_BloodFurnace.h"
-
 
 class KelidanTheBreakerAI : public CreatureAIScript
 {
@@ -82,58 +65,56 @@ class KelidanTheBreakerAI : public CreatureAIScript
     uint32_t mBurningNovaTimerId;
 };
 
-
 class BroggokAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
-        BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
-            addAISpell(SLIME_SPRAY, 10.0f, TARGET_SELF, 0, 25);
+    ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
+    BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
+        addAISpell(SLIME_SPRAY, 10.0f, TARGET_SELF, 0, 25);
 
-            auto poisonCloud = addAISpell(POISON_CLOUD, 8.0f, TARGET_RANDOM_DESTINATION, 0, 40);
-            poisonCloud->setMinMaxDistance(0.0f, 40.0f);
-        }
+        auto poisonCloud = addAISpell(POISON_CLOUD, 8.0f, TARGET_RANDOM_DESTINATION, 0, 40);
+        poisonCloud->setMinMaxDistance(0.0f, 40.0f);
+    }
 
-        void OnDied(Unit* /*pKiller*/) override
-        {
-            GameObject* pDoor = getNearestGameObject(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
-            if (pDoor)
-                pDoor->setState(GO_STATE_OPEN);
-        }
+    void OnDied(Unit* /*pKiller*/) override
+    {
+        GameObject* pDoor = getNearestGameObject(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
+        if (pDoor)
+            pDoor->setState(GO_STATE_OPEN);
+    }
 };
-
 
 class TheMakerAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
-        TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);
-            addAISpell(ACID_SPRAY, 10.0f, TARGET_SELF);
+    ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
+    TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);
+        addAISpell(ACID_SPRAY, 10.0f, TARGET_SELF);
 
-            auto throwBreaker = addAISpell(THROW_BEAKER, 20.0f, TARGET_RANDOM_DESTINATION);
-            throwBreaker->setMinMaxDistance(0.0f, 40.0f);
+        auto throwBreaker = addAISpell(THROW_BEAKER, 20.0f, TARGET_RANDOM_DESTINATION);
+        throwBreaker->setMinMaxDistance(0.0f, 40.0f);
 
-            addEmoteForEvent(Event_OnCombatStart, 4849);    // My work must not be interrupted!
-            addEmoteForEvent(Event_OnCombatStart, 4850);    // Perhaps I can find a use for you...
-            addEmoteForEvent(Event_OnCombatStart, 4851);    // Anger...hate... These are tools I can use.
+        addEmoteForEvent(Event_OnCombatStart, 4849);    // My work must not be interrupted!
+        addEmoteForEvent(Event_OnCombatStart, 4850);    // Perhaps I can find a use for you...
+        addEmoteForEvent(Event_OnCombatStart, 4851);    // Anger...hate... These are tools I can use.
 
-            addEmoteForEvent(Event_OnTargetDied, 4852);     // Let's see what I can make of you!
-            addEmoteForEvent(Event_OnTargetDied, 4853);     // It is pointless to resist.
-            addEmoteForEvent(Event_OnDied, 4854);           // Stay away from... Me!
-        }
+        addEmoteForEvent(Event_OnTargetDied, 4852);     // Let's see what I can make of you!
+        addEmoteForEvent(Event_OnTargetDied, 4853);     // It is pointless to resist.
+        addEmoteForEvent(Event_OnDied, 4854);           // Stay away from... Me!
+    }
 
-        void OnDied(Unit* /*pKiller*/) override
-        {
-            GameObject* pDoor = getNearestGameObject(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
-            if (pDoor)
-                pDoor->setState(GO_STATE_OPEN);
-        }
+    void OnDied(Unit* /*pKiller*/) override
+    {
+        GameObject* pDoor = getNearestGameObject(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
+        if (pDoor)
+            pDoor->setState(GO_STATE_OPEN);
+    }
 };
 
 void SetupBloodFurnace(ScriptMgr* mgr)

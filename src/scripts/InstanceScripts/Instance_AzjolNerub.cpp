@@ -24,7 +24,7 @@
 #include "Setup.h"
 #include "Instance_AzjolNerub.h"
 
-//Krikthir The Gatewatcher
+// Krikthir The Gatewatcher
 class KrikthirAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI);
@@ -72,7 +72,7 @@ class KrikthirAI : public CreatureAIScript
     bool mEnraged;
 };
 
-//Hadronox
+// Hadronox
 class HadronoxAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI);
@@ -103,7 +103,7 @@ class HadronoxAI : public CreatureAIScript
     }
 };
 
-//Watcher Gashra
+// Watcher Gashra
 class GashraAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GashraAI);
@@ -114,7 +114,7 @@ class GashraAI : public CreatureAIScript
     }
 };
 
-//Watcher Narjil
+// Watcher Narjil
 class NarjilAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NarjilAI);
@@ -126,7 +126,7 @@ class NarjilAI : public CreatureAIScript
     }
 };
 
-//Watcher Silthik
+// Watcher Silthik
 class SilthikAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SilthikAI);
@@ -138,7 +138,7 @@ class SilthikAI : public CreatureAIScript
     }
 };
 
-//Anub'ar Shadowcaster (anub shadowcaster)
+// Anub'ar Shadowcaster (anub shadowcaster)
 class AnubShadowcasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI);
@@ -151,7 +151,7 @@ class AnubShadowcasterAI : public CreatureAIScript
 
 void SetupAzjolNerub(ScriptMgr* mgr)
 {
-    //Bosses
+    // Bosses
     mgr->register_creature_script(BOSS_KRIKTHIR, &KrikthirAI::Create);
     mgr->register_creature_script(BOSS_HADRONOX, &HadronoxAI::Create);
 
