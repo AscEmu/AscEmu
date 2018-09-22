@@ -158,12 +158,12 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         item->DeleteMe();
 }
 
-void WorldSession::handleItemTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
     CmsgItemTextQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
+    if (!recv_packet.deserialise(recvPacket))
         return;
   
     if (const auto item = _player->GetItemInterface()->GetItemByGUID(recv_packet.itemGuid))
