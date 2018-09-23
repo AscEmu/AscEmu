@@ -327,7 +327,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
+        pPlayer->GetSession()->sendTaxiList(static_cast<Creature*>(pObject));
     }
 };
 

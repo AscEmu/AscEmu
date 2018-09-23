@@ -33,51 +33,6 @@
 
 using namespace AscEmu::Packets;
 
-void WorldSession::SendTaxiList(Creature* pCreature)
-{
-    uint32 TaxiMask[12];
-    uint64 guid = pCreature->getGuid();
-
-    uint32 nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
-    if (nearestNode == 0)
-        return;
-
-    uint8 field = (uint8)((nearestNode - 1) / 32);
-    uint32 submask = 1 << ((nearestNode - 1) % 32);
-
-    // Check for known nodes
-    if (!(GetPlayer()->GetTaximask(field) & submask) && !GetPlayer()->TaxiCheat)
-    {
-        GetPlayer()->SetTaximask(field, (submask | GetPlayer()->GetTaximask(field)));
-
-        OutPacket(SMSG_NEW_TAXI_PATH);
-
-        //Send packet
-        SendPacket(SmsgTaxinodeStatus(guid, 1).serialise().get());
-    }
-
-    //Set Mask
-    memset(TaxiMask, 0, sizeof(TaxiMask));
-    sTaxiMgr.GetGlobalTaxiNodeMask(nearestNode, TaxiMask);
-    TaxiMask[field] |= 1 << ((nearestNode - 1) % 32);
-
-    //Remove nodes unknown to player
-    if (!GetPlayer()->TaxiCheat)
-    {
-        for (uint8 i = 0; i < 12; i++)
-        {
-            TaxiMask[i] &= GetPlayer()->GetTaximask(i);
-        }
-    }
-
-    std::array<uint32_t, 12> taxiMask{};
-    std::copy(std::begin(TaxiMask), std::end(TaxiMask), std::begin(taxiMask));
-
-    SendPacket(SmsgShowTaxiNodes(guid, nearestNode, taxiMask).serialise().get());
-
-    LOG_DEBUG("WORLD: Sent SMSG_SHOWTAXINODES");
-}
-
 //MIT
 uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
 {

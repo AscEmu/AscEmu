@@ -424,7 +424,12 @@ class SERVER_DECL WorldSession
         void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
 #endif
 
-        // Taxi opcodes (TaxiHandler.cpp)
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Taxi helper and handlers (TaxiHandler.cpp)
+    public:
+        void sendTaxiList(Creature* creature);
+
+    protected:
         void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
         void handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
         void handleEnabletaxiOpcode(WorldPacket& recvPacket);
@@ -897,7 +902,7 @@ class SERVER_DECL WorldSession
         void sendStabledPetList(uint64 npcguid);
 
         void SendInventoryList(Creature* pCreature);
-        void SendTaxiList(Creature* pCreature);
+        
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendAccountDataTimes(uint32 mask);
         void initGMMyMaster();
