@@ -542,7 +542,7 @@ class SERVER_DECL WorldSession
         void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-        void HandleQuestPushResult(WorldPacket& recvPacket);
+        void handleQuestPushResultOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void HandleQuestPOIQueryOpcode(WorldPacket& recvPacket);
 #endif
