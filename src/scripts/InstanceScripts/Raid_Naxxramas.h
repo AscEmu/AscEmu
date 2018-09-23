@@ -34,12 +34,11 @@ class PortalOfShadowsAI;
 class DeathKnightUnderstudyAI;
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Arachnid Quarter
 
-/////////////////////////////////////////////////////////////////////////////////
-////// The Arachnid Quarter
-
-/////////////////////////////////////////////////////////////////////////////////
-////// Carrion Spinner
+//////////////////////////////////////////////////////////////////////////////////////////
+// Carrion Spinner
 const uint32 CN_CARRION_SPINNER = 15975;
 const uint32 CARRION_SPINNER_POISON_BOLT_NORMAL = 30043;
 const uint32 CARRION_SPINNER_POISON_BOLT_HEROIC = 56032;
@@ -51,8 +50,8 @@ class CarrionSpinnerAI : public CreatureAIScript
     CarrionSpinnerAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Dread Creeper
+//////////////////////////////////////////////////////////////////////////////////////////
+// Dread Creeper
 const uint32 CN_DREAD_CREEPER = 15974;
 const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_NORMAL = 53803;
 const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC = 28440;
@@ -63,8 +62,8 @@ class DreadCreeperAI : public CreatureAIScript
     DreadCreeperAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Naxxramas Cultist
+//////////////////////////////////////////////////////////////////////////////////////////
+// Naxxramas Cultist
 const uint32 CN_NAXXRAMAS_CULTIST = 15980;
 const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_NORMAL = 53850;
 const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC = 53851;
@@ -74,9 +73,11 @@ class NaxxramasCultistAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(NaxxramasCultistAI);
     NaxxramasCultistAI(Creature* pCreature);
 };
-//Necro Stalker AI - was it removed ?
-/////////////////////////////////////////////////////////////////////////////////
-////// Venom Stalker
+
+// Necro Stalker AI - was it removed ?
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Venom Stalker
 const uint32 CN_VENOM_STALKER = 15976;
 const uint32 VENOM_STALKER_POISON_CHARGE_NORMAL = 28431;
 const uint32 VENOM_STALKER_POISON_CHARGE_HEROIC = 53809;
@@ -87,8 +88,8 @@ class VenomStalkerAI : public CreatureAIScript
     VenomStalkerAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Tomb Horror
+//////////////////////////////////////////////////////////////////////////////////////////
+// Tomb Horror
 const uint32 CN_TOMB_HORROR = 15979;
 const uint32 TOMB_HORROR_SPIKE_VOLLEY = 28615;
 const uint32 TOMB_HORROR_CRYPT_SCARAB_SWARM_NORMAL = 54313;
@@ -102,8 +103,8 @@ class TombHorrorAI : public CreatureAIScript
     TombHorrorAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Naxxramas Acolyte
+//////////////////////////////////////////////////////////////////////////////////////////
+// Naxxramas Acolyte
 const uint32 CN_NAXXRAMAS_ACOLYTE = 16368;
 const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL = 56064;
 const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_HEROIC = 56065;
@@ -116,8 +117,8 @@ class NaxxramasAcolyteAI : public CreatureAIScript
     NaxxramasAcolyteAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Vigilant Shade
+//////////////////////////////////////////////////////////////////////////////////////////
+// Vigilant Shade
 const uint32 CN_VIGILANT_SHADE = 30085;
 const uint32 VIGILANT_SHADE_INVISIBILITY = 55848;
 const uint32 VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_NORMAL = 55850;
@@ -132,8 +133,8 @@ class VigilantShadeAI : public CreatureAIScript
     void OnCombatStop(Unit* pTarget) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Crypt Reaver
+//////////////////////////////////////////////////////////////////////////////////////////
+// Crypt Reaver
 const uint32 CN_CRYPT_REAVER = 15978;
 const uint32 CRYPT_REAVER_CLEAVE = 40504;
 const uint32 CRYPT_REAVER_FRENZY = 56625;
@@ -144,8 +145,8 @@ class CryptReaverAI : public CreatureAIScript
     CryptReaverAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Web Wrap
+//////////////////////////////////////////////////////////////////////////////////////////
+// Web Wrap
 const uint32 CN_WEB_WRAP = 16486;
 
 class WebWrapAI : public CreatureAIScript
@@ -162,8 +163,8 @@ class WebWrapAI : public CreatureAIScript
     uint64    mPlayerGuid;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Maexxna Spiderling
+//////////////////////////////////////////////////////////////////////////////////////////
+// Maexxna Spiderling
 const uint32 CN_MAEXXNA_SPIDERLING = 17055;
 const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_NORMAL = 54121;
 const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC = 28776;
@@ -174,8 +175,8 @@ class MaexxnaSpiderlingAI : public CreatureAIScript
     MaexxnaSpiderlingAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Maexxna
+//////////////////////////////////////////////////////////////////////////////////////////
+// Maexxna
 const uint32 CN_MAEXXNA = 15952;
 const uint32 MAEXXNA_WEB_WRAP = 28622;
 const uint32 MAEXXNA_WEB_SPRAY_NORMAL = 29484;
@@ -217,8 +218,8 @@ class MaexxnaAI : public CreatureAIScript
     uint32 mWebWrapTimer;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Naxxramas Worshipper
+//////////////////////////////////////////////////////////////////////////////////////////
+// Naxxramas Worshipper
 const uint32 CN_NAXXRAMAS_WORSHIPPER = 16506;
 const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_NORMAL = 54095;
 const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_HEROIC = 54096;
@@ -240,8 +241,8 @@ class NaxxramasWorshipperAI : public CreatureAIScript
     bool mPossessed;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Naxxramas Follower
+//////////////////////////////////////////////////////////////////////////////////////////
+// Naxxramas Follower
 const uint32 CN_NAXXRAMAS_FOLLOWER = 16505;
 const uint32 NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC = 56107;
 const uint32 NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
@@ -259,8 +260,8 @@ class NaxxramasFollowerAI : public CreatureAIScript
     GrandWidowFaerlinaAI* mGrandWidow;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Grand Widow Faerlina
+//////////////////////////////////////////////////////////////////////////////////////////
+// Grand Widow Faerlina
 const uint32 CN_GRAND_WIDOW_FAERLINA = 15953;
 const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_NORMAL = 28796;
 const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_HEROIC = 54098;
@@ -301,8 +302,8 @@ class GrandWidowFaerlinaAI : public CreatureAIScript
     int32 mPoisonVolleyBoltTimer;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Crypt Guard
+//////////////////////////////////////////////////////////////////////////////////////////
+// Crypt Guard
 const uint32 CN_CRYPT_GUARD = 16573;
 const uint32 CRYPT_GUARD_ACID_SPLIT_NORMAL = 28969;
 const uint32 CRYPT_GUARD_ACID_SPLIT_HEROIC = 56098;
@@ -323,8 +324,8 @@ class CryptGuardAI : public CreatureAIScript
     bool mEnraged;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Corpse Scarab
+//////////////////////////////////////////////////////////////////////////////////////////
+// Corpse Scarab
 const uint32 CN_CORPSE_SCARAB = 16698;
 
 class CorpseScarabAI : public CreatureAIScript
@@ -338,8 +339,8 @@ class CorpseScarabAI : public CreatureAIScript
     AnubRekhanAI* mAnubRekhanAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Anub'Rekhan
+//////////////////////////////////////////////////////////////////////////////////////////
+// Anub'Rekhan
 const uint32 CN_ANUBREKHAN = 15956;
 const uint32 ANUBREKHAN_IMPALE_NORMAL = 28783;
 const uint32 ANUBREKHAN_IMPALE_HEROIC = 56090;
@@ -380,11 +381,11 @@ class AnubRekhanAI : public CreatureAIScript
     uint32_t mLocaleEnrageTimerId;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// The Plague Quarter
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Plague Quarter
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Infectious Ghoul
+//////////////////////////////////////////////////////////////////////////////////////////
+// Infectious Ghoul
 const uint32 CN_INFECTIOUS_GHOUL = 16244;
 const uint32 INFECTIOUS_GHOUL_FLESH_ROT = 54709;
 const uint32 INFECTIOUS_GHOUL_REND_NORMAL = 54703;
@@ -403,8 +404,8 @@ class InfectiousGhoulAI : public CreatureAIScript
     bool    mEnraged;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Stoneskin Gargoyle
+//////////////////////////////////////////////////////////////////////////////////////////
+// Stoneskin Gargoyle
 const uint32 CN_STONESKIN_GARGOYLE = 16168;
 const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_NORMAL = 29325;
 const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_HEROIC = 54714;
@@ -422,8 +423,8 @@ class StoneskinGargoyleAI : public CreatureAIScript
     CreatureAISpells* mStoneskin;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Frenzied Bat
+//////////////////////////////////////////////////////////////////////////////////////////
+// Frenzied Bat
 const uint32 CN_FRENZIED_BAT = 16036;
 const uint32 FRENZIED_BAT_FRENZIED_DIVE = 54781;
 
@@ -433,8 +434,8 @@ class FrenziedBatAI : public CreatureAIScript
     FrenziedBatAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Plague Beast
+//////////////////////////////////////////////////////////////////////////////////////////
+// Plague Beast
 const uint32 CN_PLAGUE_BEAST = 16034;
 const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL = 54780;
 const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_HEROIC = 56538;
@@ -450,8 +451,8 @@ class PlagueBeastAI : public CreatureAIScript
     void OnCombatStop(Unit* pTarget) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Eye Stalker
+//////////////////////////////////////////////////////////////////////////////////////////
+// Eye Stalker
 const uint32 CN_EYE_STALKER = 16236;
 const uint32 EYE_STALKER_MIND_FLAY_NORMAL = 29407;
 const uint32 EYE_STALKER_MIND_FLAY_HEROIC = 54805;
@@ -465,8 +466,8 @@ class EyeStalkerAI : public CreatureAIScript
     void AIUpdate() override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Noth the Plaguebringer
+//////////////////////////////////////////////////////////////////////////////////////////
+// Noth the Plaguebringer
 const uint32 CN_NOTH_THE_PLAGUEBRINGER = 15954;
 const uint32 NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC = 29208;
 const uint32 NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC = 29212;
@@ -518,8 +519,8 @@ class NothThePlaguebringerAI : public CreatureAIScript
     uint32 mPhaseCounter;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Plagued Warrior
+//////////////////////////////////////////////////////////////////////////////////////////
+// Plagued Warrior
 const uint32 CN_PLAGUED_WARRIOR = 16984;
 const uint32 PLAGUED_WARRIOR_STRIKE = 12057;
 const uint32 PLAGUED_WARRIOR_CLEAVE = 15496;
@@ -534,8 +535,8 @@ class PlaguedWarriorAI : public CreatureAIScript
     NothThePlaguebringerAI* mNothAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Plagued Champion
+//////////////////////////////////////////////////////////////////////////////////////////
+// Plagued Champion
 const uint32 CN_PLAGUED_CHAMPION = 16983;
 const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL = 32736;
 const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_HEROIC = 13737;
@@ -552,8 +553,8 @@ class PlaguedChampionAI : public CreatureAIScript
     NothThePlaguebringerAI* mNothAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Plagued Guardian
+//////////////////////////////////////////////////////////////////////////////////////////
+// Plagued Guardian
 const uint32 CN_PLAGUED_GUARDIAN = 16981;
 const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL = 54890;
 const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC = 54891;
@@ -569,8 +570,8 @@ class PlaguedGuardianAI : public CreatureAIScript
     NothThePlaguebringerAI* mNothAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Heigan the Unclean
+//////////////////////////////////////////////////////////////////////////////////////////
+// Heigan the Unclean
 const uint32 CN_HEIGAN_THE_UNCLEAN = 15936;
 const uint32 HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION = 29310;
 const uint32 HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_NORMAL = 29998;
@@ -608,13 +609,13 @@ class HeiganTheUncleanAI : public CreatureAIScript
     bool mClockWiseEruption;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Plague Fissure
+//////////////////////////////////////////////////////////////////////////////////////////
+// Plague Fissure
 const uint32 GO_PLAGUE_FISSURE = 181533;
 
 class PlagueFissureGO : public GameObjectAIScript
 {
-    public:
+public:
 
     static GameObjectAIScript* Create(GameObject* pGameObject);
     PlagueFissureGO(GameObject* pGameObject);
@@ -628,8 +629,8 @@ class PlagueFissureGO : public GameObjectAIScript
     HeiganTheUncleanAI* mHeiganAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Loatheb
+//////////////////////////////////////////////////////////////////////////////////////////
+// Loatheb
 const uint32 CN_LOATHEB = 16011;
 const uint32 LOATHEB_NECROTIC_AURA = 55593;
 const uint32 LOATHEB_SUMMON_SPORE = 29234;
@@ -668,8 +669,8 @@ class LoathebAI : public CreatureAIScript
     bool mDeathbloomDamagePhase;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Spore
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spore
 const uint32 CN_SPORE = 16286;
 const uint32 SPORE_FUNGAL_CREEP = 29232;
 
@@ -684,11 +685,11 @@ class SporeAI : public CreatureAIScript
     LoathebAI* mLoathebAI;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// The Military Quarter
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Military Quarter
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Death Knight
+//////////////////////////////////////////////////////////////////////////////////////////
+// Death Knight
 const uint32 CN_DEATH_KNIGHT = 16146;
 const uint32 DEATH_KNIGHT_BLOOD_PRESENCE = 55212;
 const uint32 DEATH_KNIGHT_DEATH_COIL_NORMAL = 55209;
@@ -704,8 +705,8 @@ class DeathKnightAI : public CreatureAIScript
     void OnCombatStart(Unit* /*pTarget*/) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Death Knight Captain
+//////////////////////////////////////////////////////////////////////////////////////////
+// Death Knight Captain
 const uint32 CN_DEATH_KNIGHT_CAPTAIN = 16145;
 const uint32 DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE = 55222;
 const uint32 DEATH_KNIGHT_CAPTAIN_RAISE_DEAD = 28353;
@@ -721,11 +722,11 @@ class DeathKnightCaptainAI : public CreatureAIScript
     void OnCombatStart(Unit* /*pTarget*/) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Skeletal Construct - wiki says he's in Naxx, but WoWHead claims him to be in Icecrown only
+//////////////////////////////////////////////////////////////////////////////////////////
+// Skeletal Construct - wiki says he's in Naxx, but WoWHead claims him to be in Icecrown only
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Ghost of Naxxramas
+//////////////////////////////////////////////////////////////////////////////////////////
+// Ghost of Naxxramas
 const uint32 CN_GHOST_OF_NAXXRAMAS = 16419;
 
 class GhostOfNaxxramasAI : public CreatureAIScript
@@ -734,8 +735,8 @@ class GhostOfNaxxramasAI : public CreatureAIScript
     GhostOfNaxxramasAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Shade of Naxxramas
+//////////////////////////////////////////////////////////////////////////////////////////
+// Shade of Naxxramas
 const uint32 CN_SHADE_OF_NAXXRAMAS = 16164;
 const uint32 SHADE_OF_NAXXRAMAS_PORTAL_OF_SHADOWS = 28383;
 const uint32 SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_NORMAL = 28407;
@@ -753,8 +754,8 @@ class ShadeOfNaxxramasAI : public CreatureAIScript
     std::set< PortalOfShadowsAI* >    mPortals;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Portal of Shadows
+//////////////////////////////////////////////////////////////////////////////////////////
+// Portal of Shadows
 const uint32 CN_PORTAL_OF_SHADOWS = 16420;
 
 class PortalOfShadowsAI : public CreatureAIScript
@@ -771,8 +772,8 @@ class PortalOfShadowsAI : public CreatureAIScript
     int32 mSpawnTimer;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Necro Knight
+//////////////////////////////////////////////////////////////////////////////////////////
+// Necro Knight
 const uint32 CN_NECRO_KNIGHT = 16165;
 const uint32 NECRO_KNIGHT_ARCANE_EXPLOSION = 15453;
 const uint32 NECRO_KNIGHT_BLAST_WAVE = 30092;
@@ -789,8 +790,8 @@ class NecroKnightAI : public CreatureAIScript
     NecroKnightAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Skeletal Smith
+//////////////////////////////////////////////////////////////////////////////////////////
+// Skeletal Smith
 const uint32 CN_SKELETAL_SMITH = 16193;
 const uint32 SKELETAL_SMITH_CRUSH_ARMOR = 33661;
 const uint32 SKELETAL_SMITH_DISARM = 6713;
@@ -803,8 +804,8 @@ class SkeletalSmithAI : public CreatureAIScript
     SkeletalSmithAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Death Knight Cavalier
+//////////////////////////////////////////////////////////////////////////////////////////
+// Death Knight Cavalier
 const uint32 CN_DEATH_KNIGHT_CAVALIER = 16163;
 const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_NORMAL = 55315;
 const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_HEROIC = 55336;
@@ -831,8 +832,8 @@ class DeathKnightCavalierAI : public CreatureAIScript
     bool mIsMounted;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Deathcharger Steed
+//////////////////////////////////////////////////////////////////////////////////////////
+// Deathcharger Steed
 const uint32 CN_DEATHCHARGER_STEED = 29818;
 const uint32 DEATHCHARGER_STEED_CHARGE = 55317;
 
@@ -851,8 +852,8 @@ class DeathchargerSteedAI : public CreatureAIScript
     CreatureAISpells* mCharge;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Dark Touched Warrior
+//////////////////////////////////////////////////////////////////////////////////////////
+// Dark Touched Warrior
 const uint32 CN_DARK_TOUCHED_WARRIOR = 16156;
 const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55267;
 //const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55266;    // This one disables mob's melee
@@ -868,8 +869,8 @@ class DarkTouchedWarriorAI : public CreatureAIScript
     int32    mResetHateTimer;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Risen Squire
+//////////////////////////////////////////////////////////////////////////////////////////
+// Risen Squire
 const uint32 CN_RISEN_SQUIRE = 16154;
 const uint32 RISEN_SQUIRE_PIERCE_ARMOR = 55318;
 
@@ -879,8 +880,8 @@ class RisenSquireAI : public CreatureAIScript
     RisenSquireAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Unholy Axe
+//////////////////////////////////////////////////////////////////////////////////////////
+// Unholy Axe
 const uint32 CN_UNHOLY_AXE = 16194;
 const uint32 UNHOLY_AXE_MORTAL_STRIKE_NORMAL = 16856;
 const uint32 UNHOLY_AXE_MORTAL_STRIKE_HEROIC = 15708;
@@ -893,8 +894,8 @@ class UnholyAxeAI : public CreatureAIScript
     UnholyAxeAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Unholy Sword
+//////////////////////////////////////////////////////////////////////////////////////////
+// Unholy Sword
 const uint32 CN_UNHOLY_SWORD = 16216;
 const uint32 UNHOLY_SWORD_CLEAVE_NORMAL = 15284;
 const uint32 UNHOLY_SWORD_CLEAVE_HEROIC = 19632;
@@ -905,8 +906,8 @@ class UnholySwordAI : public CreatureAIScript
     UnholySwordAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Unholy Staff
+//////////////////////////////////////////////////////////////////////////////////////////
+// Unholy Staff
 const uint32 CN_UNHOLY_STAFF = 16215;
 const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_NORMAL = 28450;
 const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_HEROIC = 55467;
@@ -919,8 +920,8 @@ class UnholyStaffAI : public CreatureAIScript
     UnholyStaffAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Instructor Razuvious
+//////////////////////////////////////////////////////////////////////////////////////////
+// Instructor Razuvious
 const uint32 CN_INSTRUCTOR_RAZUVIOUS = 16061;
 const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_NORMAL = 55543;
 const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_HEROIC = 29107;
@@ -941,8 +942,8 @@ InstructorRazuviousAI::InstructorRazuviousAI(Creature* pCreature) : CreatureAISc
 {
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Death Knight Understudy
+//////////////////////////////////////////////////////////////////////////////////////////
+// Death Knight Understudy
 const uint32 CN_DEATH_KNIGHT_UNDERSTUDY = 16803;
 const uint32 DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE = 61696;
 const uint32 DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER = 29061;
@@ -961,8 +962,6 @@ class DeathKnightUnderstudyAI : public CreatureAIScript
 
 DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    
-
     auto bloodStrike = addAISpell(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE, 10.0f, TARGET_ATTACKING, 0, 4);
     bloodStrike->setMinMaxDistance(0.0f, 8.0f);
 
@@ -1046,11 +1045,11 @@ void DeathKnightUnderstudyAI::Destroy()
     delete this;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// The Construct Quarter
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Construct Quarter
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Patchwork Golem
+//////////////////////////////////////////////////////////////////////////////////////////
+// Patchwork Golem
 const uint32 CN_PATCHWORK_GOLEM = 16017;
 const uint32 PATCHWORK_GOLEM_CLEAVE = 27794;
 const uint32 PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL = 27793;
@@ -1069,8 +1068,8 @@ class PatchworkGolemAI : public CreatureAIScript
     void OnCombatStop(Unit* pTarget) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Bile Retcher
+//////////////////////////////////////////////////////////////////////////////////////////
+// Bile Retcher
 const uint32 CN_BILE_RETCHER = 16018;
 const uint32 BILE_RETCHER_BILE_VOMIT_NORMAL = 27807;
 const uint32 BILE_RETCHER_BILE_VOMIT_HEROIC = 54326;
@@ -1082,8 +1081,8 @@ class BileRetcherAI : public CreatureAIScript
     BileRetcherAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Sewage Slime
+//////////////////////////////////////////////////////////////////////////////////////////
+// Sewage Slime
 const uint32 CN_SEWAGE_SLIME = 16375;
 const uint32 SEWAGE_SLIME_DISEASE_CLOUD = 28156;
 
@@ -1096,8 +1095,8 @@ class SewageSlimeAI : public CreatureAIScript
     void OnCombatStop(Unit* pTarget) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Embalming Slime
+//////////////////////////////////////////////////////////////////////////////////////////
+// Embalming Slime
 const uint32 CN_EMBALMING_SLIME = 16024;
 const uint32 EMBALMING_SLIME_EMBALMING_CLOUD = 28322;
 
@@ -1110,8 +1109,8 @@ class EmbalmingSlimeAI : public CreatureAIScript
     void OnCombatStop(Unit* pTarget) override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Mad Scientist
+//////////////////////////////////////////////////////////////////////////////////////////
+// Mad Scientist
 const uint32 CN_MAD_SCIENTIST = 16020;
 const uint32 MAD_SCIENTIST_GREAT_HEAL_NORMAL = 28306;
 const uint32 MAD_SCIENTIST_GREAT_HEAL_HEROIC = 54337;
@@ -1124,8 +1123,8 @@ class MadScientistAI : public CreatureAIScript
     MadScientistAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Living Monstrosity
+//////////////////////////////////////////////////////////////////////////////////////////
+// Living Monstrosity
 const uint32 CN_LIVING_MONSTROSITY = 16021;
 const uint32 LIVING_MONSTROSITY_FEAR = 27990;
 const uint32 LIVING_MONSTROSITY_LIGHTNING_TOTEM = 28294;
@@ -1138,8 +1137,8 @@ class LivingMonstrosityAI : public CreatureAIScript
     LivingMonstrosityAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Lightning Totem
+//////////////////////////////////////////////////////////////////////////////////////////
+// Lightning Totem
 const uint32 CN_LIGHTNING_TOTEM = 16385;
 const uint32 LIGHTNING_TOTEM_SHOCK_NORMAL = 28297;
 const uint32 LIGHTNING_TOTEM_SHOCK_HEROIC = 54333;
@@ -1153,8 +1152,8 @@ class LightningTotemAI : public CreatureAIScript
     void AIUpdate() override;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Stitched Colossus
+//////////////////////////////////////////////////////////////////////////////////////////
+// Stitched Colossus
 const uint32 CN_STITCHED_COLOSSUS = 30071;
 const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL = 55821;
 const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC = 55826;
@@ -1171,8 +1170,8 @@ class StitchedColossusAI : public CreatureAIScript
     bool    mEnraged;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Marauding Geist
+//////////////////////////////////////////////////////////////////////////////////////////
+// Marauding Geist
 const uint32 CN_MARAUDING_GEIST = 30083;
 const uint32 MARAUDING_GEIST_FRENZIED_LEAP = 56729;
 
@@ -1182,8 +1181,8 @@ class MaraudingGeistAI : public CreatureAIScript
     MaraudingGeistAI(Creature* pCreature);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-////// Patchwerk
+//////////////////////////////////////////////////////////////////////////////////////////
+// Patchwerk
 
 //void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -1214,7 +1213,8 @@ class PatchwerkAI : public CreatureAIScript
     uint32_t mLocaleEnrageTimerId;
 };
 
-// ---- Abomination Wing ----
+//////////////////////////////////////////////////////////////////////////////////////////
+// Abomination Wing 
 
 // Stitched Spewer AI
 const uint32 STICKED_SPEWER = 16025;
@@ -1227,8 +1227,6 @@ class StickedSpewerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(StickedSpewerAI);
     StickedSpewerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
         auto slimeBolt = addAISpell(CN_SLIME_BOLT, 10.0f, TARGET_VARIOUS, 0, 0, false, false);
         slimeBolt->setAttackStopTimer(2000);
@@ -1250,11 +1248,11 @@ class StickedSpewerAI : public CreatureAIScript
     }
 };
 
-
-//Surgical Assistant AI
+//////////////////////////////////////////////////////////////////////////////////////////
+// Surgical Assistant AI
 const uint32 CN_SURGICAL_ASSISTANT = 16022;
 
-const uint32 MIND_FLAY = 28310;
+const uint32 SURGICALASSISTANT_AI_MIND_FLAY = 28310;
 
 class SurgicalAssistantAI : public CreatureAIScript
 {
@@ -1262,7 +1260,7 @@ class SurgicalAssistantAI : public CreatureAIScript
     SurgicalAssistantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        auto mindFlay = addAISpell(MIND_FLAY, 20.0f, TARGET_ATTACKING, 0, 0, false, false);
+        auto mindFlay = addAISpell(SURGICALASSISTANT_AI_MIND_FLAY, 20.0f, TARGET_ATTACKING, 0, 0, false, false);
         mindFlay->setAttackStopTimer(6000);
     }
 
@@ -1279,7 +1277,7 @@ class SurgicalAssistantAI : public CreatureAIScript
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Sludge Belcher AI
 const uint32 CN_SLUDGE_BELCHER = 16029;
 
@@ -1316,7 +1314,7 @@ class SludgeBelcherAI : public CreatureAIScript
 
 // Patchwerk AI
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Grobbulus AI
 const uint32 CN_GROBBULUS = 15931;
 
@@ -1356,7 +1354,7 @@ private:
     CreatureAISpells* poisonCloudGrob;
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Gluth AI
 const uint32 CN_GLUTH = 15932;
 
@@ -1389,8 +1387,10 @@ class GluthAI : public CreatureAIScript
     }
 };
 
-// ---- Deathknight Wing ----
+//////////////////////////////////////////////////////////////////////////////////////////
+// Deathknight Wing
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Bony Construct AI
 const uint32 CN_BONY_CONSTRUCT = 16167;
 
@@ -1415,8 +1415,7 @@ class BonyConstructAI : public CreatureAIScript
     }
 };
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Death Lord AI
 const uint32 CN_DEATH_LORD = 16861;
 
@@ -1442,6 +1441,7 @@ class DeathLordAI : public CreatureAIScript
 
 // -- BOSS'S --
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Instructor Razuvious AI
 const uint32 UNBALANCING_STRIKE = 26613;
 const uint32 DISRUPTING_SHOUT = 29107;
@@ -1489,6 +1489,7 @@ class RazuviousAI : public CreatureAIScript
 
 // - The Four Horsemen: -
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Thane Korth'azz AI
 const uint32 CN_THANE_KORTHAZZ = 16064;
 
@@ -1654,7 +1655,7 @@ class BlaumeuxAI : public CreatureAIScript
         }
     }
 
-    protected:
+protected:
 
     uint32 tountcooldown, tountcont;
     CreatureAISpells* voidZone;
@@ -1747,7 +1748,7 @@ class ZeliekAI : public CreatureAIScript
         }
     }
 
-    protected:
+protected:
 
     uint32 tountcooldown, tountcont;
     CreatureAISpells* holyWrath;
@@ -1838,7 +1839,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
             getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
     }
 
-    protected:
+protected:
 
     int AICounter;
 };
@@ -1870,7 +1871,8 @@ class FrostBreathTrigger2AI : public CreatureAIScript
 
 class FrostBreathTrigger3AI : public CreatureAIScript
 {
-    public:
+public:
+
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI);
 
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -1898,7 +1900,8 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 
 class ChillTriggerAI : public CreatureAIScript
 {
-    public:
+public:
+
     ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI);
 
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -2300,15 +2303,15 @@ const uint32 CN_SOUL_WEAVER = 16429;
 const uint32 CN_GUARDIAN_OF_ICECROWN = 16441;
 
 /*
-  _____
-  /  K  \
+    _____
+   /  K  \
   /1     4\
   |       |
   |2     5|
   |       |
   \3     6/
-  \_ 7 _/
-  | |
+   \_ 7 _/
+     | |
 
   */
 
@@ -3089,8 +3092,6 @@ class SoulWeaverAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SoulWeaverAI);
     SoulWeaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto wailOfSouls = addAISpell(WAIL_OF_SOULS, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
         wailOfSouls->setAttackStopTimer(1000);
 
@@ -3184,8 +3185,6 @@ class GuardianOfIcecrownAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GuardianOfIcecrownAI);
     GuardianOfIcecrownAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         bloodTrap = addAISpell(BLOOD_TAP, 0.0f, TARGET_SELF, 0, 10, false, true);
         bloodTrap->setAttackStopTimer(1000);
 
