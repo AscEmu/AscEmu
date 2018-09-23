@@ -103,7 +103,7 @@ enum CreatureSpells
     CLEAVE_LEPER                = 5532,     // THOSE SPELLS MUST BE VERIFIED!
     HEAL_LEPER                  = 11642,
     SUNDER_ARMOR_LEPER          = 13444,
-    SHOOT                       = 15547,
+    //SHOOT                       = 15547,
 
     // CoilfangSlavemasterAI
     GEYSER                      = 10987,    //40089 // It don't have to be good spell id [can be: 10987, 37478, 40089, 37427] - no idea why it doesn't knock you out
