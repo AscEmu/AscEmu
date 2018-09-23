@@ -26,6 +26,7 @@
 #include "Server/Packets/CmsgLfgSetBootVote.h"
 #include "Server/Packets/CmsgLfgTeleport.h"
 #include "Server/Packets/SmsgLfgTeleportDenied.h"
+#include "Server/Packets/SmsgLfgOfferContinue.h"
 
 using namespace AscEmu::Packets;
 
@@ -698,12 +699,7 @@ void WorldSession::SendLfgDisabled()
 void WorldSession::SendLfgOfferContinue(uint32 dungeonEntry)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_OFFER_CONTINUE %u dungeon entry: %u", GetPlayer()->getGuid(), dungeonEntry);
-
-    WorldPacket data(SMSG_LFG_OFFER_CONTINUE, 4);
-
-    data << uint32(dungeonEntry);
-    SendPacket(&data);
+    SendPacket(SmsgLfgOfferContinue(dungeonEntry).serialise().get());
 #endif
 }
 
