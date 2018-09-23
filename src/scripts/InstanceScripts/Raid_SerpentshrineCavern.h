@@ -15,8 +15,8 @@ enum CreatureEntry
     CN_TOXIC_SPORE_BAT          = 22140,
     CN_SHIELD_GENERATOR_CHANNEL = 19870,
     CN_MOROGRIM_TIDEWALKER      = 21213,
-    CN_TIDEWALKER_LURKER        = 21920,    //Murlocks that he spawns after earthquake
-    //Fathom-Lord Karathress
+    CN_TIDEWALKER_LURKER        = 21920, // Murlocks that he spawns after earthquake
+    // Fathom-Lord Karathress
     CN_FATHOM_LORD_KARATHRESS   = 21214,
     CN_FATHOM_GUARD_SHARKKIS    = 21966,
     CN_FATHOM_GUARD_TIDALVESS   = 21965,
@@ -24,20 +24,20 @@ enum CreatureEntry
     CN_FATHOM_SPOREBAT          = 22120,
     CN_FATHOM_GUARD_CARIBDIS    = 21964,
     CN_SEER_OLUM                = 22820,
-    //Leotheras the Blind
+    // Leotheras the Blind
     CN_LEOTHERAS_THE_BLIND      = 21215,
     CN_INNER_DEMON              = 21857,
     CN_GREYHEART_SPELLBINDER    = 21806,
     CN_SHADOW_OF_LEOTHERAS      = 21875,
-    //The Lurker Below
+    // The Lurker Below
     CN_THE_LURKER_BELOW         = 21217,
     CN_CN_COILFANG_AMBUSHER     = 21865,
     CN_CN_COILFANG_GUARDIAN     = 21873,
-    //Hydross the Unstable
+    // Hydross the Unstable
     CN_HYDROSS_THE_UNSTABLE     = 21216,
     CN_TAINTED_SPAWN_OF_HYDROSS = 22036,
     CN_PURE_SPAWN_OF_HYDROSS    = 22035,
-    //Trash Mobs
+    // Trash Mobs
     CN_COILFANG_SHATTERER       = 21301,
     CN_COILFANG_SERPENTGUARD    = 21298,
     CN_COILFANG_PRIESTESS       = 21220,
