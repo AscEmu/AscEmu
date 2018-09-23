@@ -144,7 +144,7 @@ struct GameObjectProperties
             uint32 server_only;                 // parameter_8
             uint32 stealthed;                   // parameter_9
             uint32 large;                       // parameter_10
-            uint32 stealth_affected;            // parameter_11
+            uint32 invisible;                   // parameter_11 not same as parameter_9
             uint32 open_text_id;                // parameter_12
             uint32 close_text_id;               // parameter_13
             uint32 ignore_totems;               // parameter_14
@@ -428,6 +428,12 @@ public:
     bool isQuestGiver() const;
     bool isFishingNode() const;
 
+    // Trap objects
+    bool invisible;
+    bool inStealth;
+    uint8_t invisibilityFlag;
+    uint8_t stealthFlag;
+
     // MIT End
 
         GameObject(uint64 guid);
@@ -476,8 +482,6 @@ public:
 
         virtual void InitAI();
 
-        bool invisible;     // invisible
-        uint8 invisibilityFlag;
         Unit* m_summoner;
 
         void CallScriptUpdate();

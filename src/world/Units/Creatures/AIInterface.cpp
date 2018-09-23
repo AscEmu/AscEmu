@@ -1676,10 +1676,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
     {
         if (getNextTarget()->event_GetCurrentInstanceId() == m_Unit->event_GetCurrentInstanceId())
         {
-            if (m_Unit->isCreature())
-                cansee = static_cast< Creature* >(m_Unit)->CanSee(getNextTarget());
-            else
-                cansee = static_cast< Player* >(m_Unit)->CanSee(getNextTarget());
+            cansee = m_Unit->canSee(getNextTarget());
         }
         else
         {
@@ -2289,7 +2286,7 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 continue;
 
-            if (tmpPlr->m_invisible)
+            if (tmpPlr->hasAuraWithAuraEffect(SPELL_AURA_MOD_INVISIBILITY))
                 continue;
 
             if (!tmpPlr->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))    //PvP Guard Attackable.
@@ -2645,7 +2642,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
         lvlDiff = -8;
     }
 
-    if (!static_cast<Creature*>(m_Unit)->CanSee(target))
+    if (!static_cast<Creature*>(m_Unit)->canSee(target))
         return 0;
 
     // Retrieve aggrorange from table
@@ -5002,11 +4999,10 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->m_aiInterface->UpdateSpeeds(); // use speed from creature_proto_difficulty.
 
             //invisibility
-            m_Unit->m_invisFlag = static_cast<uint8>(properties_difficulty->invisibility_type);
-            if (m_Unit->m_invisFlag > 0)
-                m_Unit->m_invisible = true;
-            else
-                m_Unit->m_invisible = false;
+            if (properties_difficulty->invisibility_type > INVIS_FLAG_NORMAL)
+                // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
+                // these are always invisible to players
+                m_Unit->modInvisibilityLevel(InvisibilityFlag(properties_difficulty->invisibility_type), 1);
 
             if (m_Unit->isVehicle())
             {

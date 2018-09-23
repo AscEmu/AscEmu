@@ -1438,6 +1438,367 @@ void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
         m_singleTargetAura.erase(itr);
 }
 
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect)
+{
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] == nullptr)
+            continue;
+        if (m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(effect))
+            RemoveAura(m_auras[i]);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Visibility system
+bool Unit::canSee(Object* const obj)
+{
+    if (obj == nullptr)
+        return false;
+
+    if (this == obj)
+        return true;
+
+    if (!obj->IsInWorld() || GetMapId() != obj->GetMapId())
+        return false;
+
+    // Unit cannot see objects from different phases
+    if ((GetPhase() & obj->GetPhase()) == 0)
+        return false;
+
+    // Unit cannot see invisible Game Masters unless he/she has Game Master flag on
+    if (obj->isPlayer() && static_cast<Player*>(obj)->m_isGmInvisible)
+        return isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+
+    // Player is dead and has released spirit
+    if (isPlayer() && getDeathState() == CORPSE)
+    {
+        const float corpseViewDistance = 1600.0f; // 40*40 yards
+        const auto playerMe = static_cast<Player*>(this);
+        // If object is another player
+        if (obj->isPlayer())
+        {
+            // Dead player can see all players in arena regardless of range
+            if (playerMe->m_deathVision)
+                return true;
+
+            // Player can see all friendly and unfriendly players within 40 yards from his/her corpse
+            const auto playerObj = static_cast<Player*>(obj);
+            if (playerMe->getMyCorpseInstanceId() == playerMe->GetInstanceID() &&
+                playerObj->getDistanceSq(playerMe->getMyCorpseLocation()) <= corpseViewDistance)
+                return true;
+
+            // Otherwise player can only see other players who have released their spirits as well
+            return playerObj->getDeathState() == CORPSE;
+        }
+
+        // Dead player can also see all objects in arena regardless of range
+        if (playerMe->m_deathVision)
+            return true;
+
+        if (playerMe->getMyCorpseInstanceId() == GetInstanceID())
+        {
+            // Player can see his/her own corpse
+            if (obj->isCorpse() && static_cast<Corpse*>(obj)->getOwnerGuid() == getGuid())
+                return true;
+
+            // Player can see all objects within 40 yards from his/her own corpse
+            if (obj->getDistanceSq(playerMe->getMyCorpseLocation()) <= corpseViewDistance)
+                return true;
+        }
+
+        // Player can see Spirit Healers
+        if (obj->isCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
+            return true;
+
+        return false;
+    }
+
+    // Unit is alive or player hasn't released spirit yet
+    // Do checks based on object's type
+    switch (obj->getObjectTypeId())
+    {
+        case TYPEID_PLAYER:
+        {
+            const auto playerObj = static_cast<Player*>(obj);
+            if (playerObj->getDeathState() == CORPSE)
+            {
+                if (isPlayer())
+                {
+                    // If players are from same group, they can see each other normally
+                    const auto playerMe = static_cast<Player*>(this);
+                    if (playerMe->GetGroup() != nullptr && playerMe->GetGroup() == playerObj->GetGroup())
+                        return true;
+
+                    // Game Masters can see all dead players
+                    return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+                }
+                else
+                    // Non-player units cannot see dead players
+                    return false;
+            }
+            break;
+        }
+        case TYPEID_UNIT:
+        {
+            // Unit cannot see Spirit Healers when unit's alive
+            // unless unit is a Game Master
+            if (obj->isCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
+                return isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+
+            const auto unitObj = static_cast<Unit*>(obj);
+
+            uint64_t ownerGuid = 0;
+            if (unitObj->getCharmedByGuid() != 0)
+                ownerGuid = unitObj->getCharmedByGuid();
+            else
+                ownerGuid = unitObj->getSummonedByGuid();
+
+            // Unit can always see their own summoned units
+            if (getGuid() == ownerGuid)
+                return true;
+
+            if (isPlayer())
+            {
+                // Group members can see each other's summoned units
+                // unless they are dueling, then it's based on detection
+                const auto objectOwner = GetMapMgrPlayer(ownerGuid);
+                if (objectOwner != nullptr)
+                {
+                    if (objectOwner->GetGroup() != nullptr && objectOwner->GetGroup()->HasMember(static_cast<Player*>(this)))
+                    {
+                        if (objectOwner->DuelingWith != static_cast<Player*>(this))
+                            return true;
+                    }
+                }
+
+                // If object is only visible to either faction
+                if (unitObj->GetAIInterface()->faction_visibility == 1)
+                    return static_cast<Player*>(this)->IsTeamHorde() ? true : false;
+                if (unitObj->GetAIInterface()->faction_visibility == 2)
+                    return static_cast<Player*>(this)->IsTeamHorde() ? false : true;
+            }
+            break;
+        }
+        case TYPEID_GAMEOBJECT:
+        {
+            const auto gameObjectObj = static_cast<GameObject*>(obj);
+            // Stealthed / invisible gameobjects
+            if (gameObjectObj->invisible)
+            {
+                const auto ownerGuid = gameObjectObj->getCreatedByGuid();
+                // Unit can always see their own created gameobjects
+                if (getGuid() == ownerGuid)
+                    return true;
+
+                // Group members can see each other's created gameobjects
+                // unless they are dueling, then it's based on detection
+                const auto objectOwner = GetMapMgrPlayer(ownerGuid);
+                if (objectOwner != nullptr && isPlayer())
+                {
+                    if (objectOwner->GetGroup() != nullptr && objectOwner->GetGroup()->HasMember(static_cast<Player*>(this)))
+                    {
+                        if (objectOwner->DuelingWith != static_cast<Player*>(this))
+                            return true;
+                    }
+                }
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    // Game Masters can see invisible and stealthed objects
+    if (isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+        return true;
+
+    // Hunter Marked units are always visible to caster
+    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->stalkedby == getGuid())
+        return true;
+
+    // Pets and summoned units don't have detection, they rely on their master's detection
+    auto meUnit = this;
+    if (getCharmedByGuid() != 0)
+    {
+        const auto summoner = GetMapMgrUnit(getCharmedByGuid());
+        if (summoner != nullptr)
+            meUnit = summoner;
+    }
+    else if (getSummonedByGuid() != 0)
+    {
+        const auto summoner = GetMapMgrUnit(getSummonedByGuid());
+        if (summoner != nullptr)
+            meUnit = summoner;
+    }
+
+    const auto unitTarget = static_cast<Unit*>(obj);
+    const auto gobTarget = static_cast<GameObject*>(obj);
+
+    ////////////////////////////
+    // Invisibility detection
+
+    for (auto i = 0; i < INVIS_FLAG_TOTAL; ++i)
+    {
+        auto unitInvisibilityValue = meUnit->getInvisibilityLevel(InvisibilityFlag(i));
+        auto unitInvisibilityDetection = meUnit->getInvisibilityDetection(InvisibilityFlag(i));
+        auto objectInvisibilityValue = 0;
+        auto objectInvisibilityDetection = 0;
+
+        if (obj->isCreatureOrPlayer())
+        {
+            objectInvisibilityValue = unitTarget->getInvisibilityLevel(InvisibilityFlag(i));
+            objectInvisibilityDetection = unitTarget->getInvisibilityDetection(InvisibilityFlag(i));
+
+            // When unit is invisible, unit can only see those objects which have enough detection value
+            if ((unitInvisibilityValue > objectInvisibilityDetection) ||
+            // When object is invisible, unit can only see it if unit has enough detection value
+                (objectInvisibilityValue > unitInvisibilityDetection))
+                return false;
+        }
+        else if (obj->isGameObject() && gobTarget->invisible && i == INVIS_FLAG_TRAP)
+        {
+            // Base value for invisible traps seems to be 300 according to spell id 2836
+            objectInvisibilityValue = 300;
+            if (objectInvisibilityValue > unitInvisibilityDetection)
+                return false;
+        }
+    }
+
+    ////////////////////////////
+    // Stealth detection
+
+    if ((obj->isCreatureOrPlayer() && unitTarget->isStealthed()) || (obj->isGameObject() && gobTarget->inStealth))
+    {
+        // Get absolute distance
+        const auto distance = meUnit->CalcDistance(obj);
+        const auto combatReach = meUnit->getCombatReach();
+        if (obj->isCreatureOrPlayer())
+        {
+            // Shadow Sight buff in arena makes unit detect stealth regardless of distance and facing
+            if (meUnit->hasAuraWithAuraEffect(SPELL_AURA_DETECT_STEALTH))
+                return true;
+
+            // Normally units not in front cannot be detected
+            if (!meUnit->isInFront(obj))
+                return false;
+
+            // If object is closer than unit's combat reach
+            if (distance < combatReach)
+                return true;
+        }
+
+        // Objects outside of Line of Sight cannot be detected
+        if (worldConfig.terrainCollision.isCollisionEnabled)
+        {
+            if (!meUnit->IsWithinLOSInMap(obj))
+                return false;
+        }
+
+        // In unit cases base stealth level and base stealth detection increases by 5 points per unit's level
+        auto detectionValue = float_t(meUnit->getLevel() * 5);
+
+        // Apply modifiers which increases unit's stealth detection
+        if (obj->isCreatureOrPlayer())
+            detectionValue += float_t(meUnit->getStealthDetection(STEALTH_FLAG_NORMAL));
+        else if (obj->isGameObject())
+            detectionValue += float_t(meUnit->getStealthDetection(STEALTH_FLAG_TRAP));
+
+        // Subtract object's stealth level from detection value
+        if (obj->isCreatureOrPlayer())
+            detectionValue -= float_t(unitTarget->getStealthLevel(STEALTH_FLAG_NORMAL));
+        else if (obj->isGameObject())
+        {
+            // Base value for stealthed gameobjects seems to be 70 according to spell id 2836
+            detectionValue -= 70.f;
+            if (gobTarget->getCreatedByGuid() != 0)
+            {
+                // If trap has an owner, subtract owner's stealth level (unit level * 5) from detection value
+                const auto summoner = gobTarget->GetMapMgrUnit(gobTarget->getCreatedByGuid());
+                if (summoner != nullptr)
+                    detectionValue -= float_t(summoner->getLevel() * 5);
+            }
+            else
+                // If trap has no owner, subtract trap's level from detection value
+                detectionValue -= float_t(gobTarget->GetGameObjectProperties()->trap.level * 5);
+        }
+
+        auto visibilityRange = float_t(detectionValue * 0.3f + combatReach);
+        if (visibilityRange <= 0.0f)
+            return false;
+
+        // Players cannot see stealthed objects from further than 30 yards
+        if (meUnit->isPlayer() && visibilityRange > 30.0f)
+            visibilityRange = 30.0f;
+
+        // Object is further than unit's visibility range
+        if (distance > visibilityRange)
+            return false;
+    }
+    return true;
+}
+
+int32_t Unit::getStealthLevel(StealthFlag flag) const
+{
+    return m_stealthLevel[flag];
+}
+
+int32_t Unit::getStealthDetection(StealthFlag flag) const
+{
+    return m_stealthDetection[flag];
+}
+
+void Unit::modStealthLevel(StealthFlag flag, const int32_t amount)
+{
+    m_stealthLevel[flag] += amount;
+}
+
+void Unit::modStealthDetection(StealthFlag flag, const int32_t amount)
+{
+    m_stealthDetection[flag] += amount;
+}
+
+bool Unit::isStealthed() const
+{
+    return hasAuraWithAuraEffect(SPELL_AURA_MOD_STEALTH);
+}
+
+int32_t Unit::getInvisibilityLevel(InvisibilityFlag flag) const
+{
+    return m_invisibilityLevel[flag];
+}
+
+int32_t Unit::getInvisibilityDetection(InvisibilityFlag flag) const
+{
+    return m_invisibilityDetection[flag];
+}
+
+void Unit::modInvisibilityLevel(InvisibilityFlag flag, const int32_t amount)
+{
+    m_invisibilityLevel[flag] += amount;
+}
+
+void Unit::modInvisibilityDetection(InvisibilityFlag flag, const int32_t amount)
+{
+    m_invisibilityDetection[flag] += amount;
+}
+
+bool Unit::isInvisible() const
+{
+    return hasAuraWithAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
+}
+
+void Unit::setVisible(const bool visible)
+{
+    if (!visible)
+        modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, 1);
+    else
+        modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, -getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE));
+    UpdateVisibility();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {
     // TODO: getModCastSpeed() is no longer used here, is it required?

@@ -351,14 +351,14 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (_player->IsDead())
         return;
 
-    if (_player->IsStealth())
-        _player->RemoveStealth();
+    if (_player->isStealthed())
+        _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
     if (_player->isCastingSpell())
         _player->interruptSpell();
 
-    if (_player->IsInvisible())
-        _player->RemoveInvisibility();
+    if (_player->isInvisible())
+        _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
 
     if (_player->InGroup() && !_player->m_bg)

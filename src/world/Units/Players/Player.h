@@ -626,6 +626,8 @@ public:
     bool hasOffHandWeapon();
     void delayMeleeAttackTimer(int32_t delay);
 
+    int32_t getMyCorpseInstanceId() const;
+
 public:
     //MIT End
     //AGPL Start
@@ -1378,7 +1380,6 @@ public:
         uint32 m_UnderwaterTime;
         uint32 m_UnderwaterState;
         // Visible objects
-        bool CanSee(Object* obj);
         bool IsVisible(uint64 pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
         void addToInRangeObjects(Object* pObj);
         void onRemoveInRangeObject(Object* pObj);

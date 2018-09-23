@@ -960,14 +960,13 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     }
     else
     {
-        if (p_caster != nullptr && p_caster->IsStealth() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH) && m_spellInfo->getId() != 1)   // <-- baaaad, baaad hackfix - for some reason some spells were triggering Spell ID #1 and stuffing up the spell system.
+        if (p_caster != nullptr && p_caster->isStealthed() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH) && m_spellInfo->getId() != 1)   // <-- baaaad, baaad hackfix - for some reason some spells were triggering Spell ID #1 and stuffing up the spell system.
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
                 !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
             {
-                p_caster->RemoveAura(p_caster->m_stealth);
-                p_caster->m_stealth = 0;
+                p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
             }
         }
 
@@ -1338,14 +1337,13 @@ void Spell::castMe(bool check)
                 }
             }
 
-            if (p_caster->IsStealth() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH)
+            if (p_caster->isStealthed() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH)
                 && GetSpellInfo()->getId() != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
                 if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
                 {
-                    p_caster->RemoveAura(p_caster->m_stealth);
-                    p_caster->m_stealth = 0;
+                    p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
                 }
             }
 
@@ -1360,8 +1358,8 @@ void Spell::castMe(bool check)
                     case 21651:
                     {
                         // Arathi Basin opening spell, remove stealth, invisibility, etc.
-                        p_caster->RemoveStealth();
-                        p_caster->RemoveInvisibility();
+                        p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+                        p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
                         uint32 divineShield[] =
                         {
@@ -1399,8 +1397,8 @@ void Spell::castMe(bool check)
                     case 34976:
                     {
                         // if we're picking up the flag remove the buffs
-                        p_caster->RemoveStealth();
-                        p_caster->RemoveInvisibility();
+                        p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+                        p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
                         uint32 divineShield[] =
                         {
@@ -1879,7 +1877,7 @@ void Spell::finish(bool successful)
         if (!sEventMgr.HasEvent(u_caster, EVENT_CREATURE_RESPAWN))
         {
             // call script
-            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
+            Unit* target = u_caster->GetMapMgrUnit(u_caster->getTargetGuid());
             if (target != nullptr)
             {
                 if (target->isCreature())
@@ -4043,7 +4041,7 @@ uint8 Spell::CanCast(bool tolerate)
             // instance & stealth checks
             if (p_caster->GetMapMgr() && p_caster->GetMapMgr()->GetMapInfo() && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
                 return SPELL_FAILED_NO_DUELING;
-            if (p_caster->IsStealth())
+            if (p_caster->isStealthed())
                 return SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED;
         }
 

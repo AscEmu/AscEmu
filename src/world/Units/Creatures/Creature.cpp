@@ -1092,45 +1092,6 @@ void Creature::RegenerateMana()
         SetPower(POWER_TYPE_MANA, cur);
 }
 
-bool Creature::CanSee(Unit* obj)
-{
-    if (!obj)
-        return false;
-
-    if (obj->m_invisible)    /// Invisibility - Detection of Players and Units
-    {
-        if (obj->getDeathState() == CORPSE)  /// can't see dead players' spirits
-            return false;
-
-        if (m_invisDetect[obj->m_invisFlag] < 1)    /// can't see invisible without proper detection
-            return false;
-    }
-
-    if (obj->IsStealth())       /// Stealth Detection ( I Hate Rogues :P )
-    {
-        if (isInFront(obj))     /// stealthed player is in front of creature
-        {
-            // Detection Range = 5yds + (Detection Skill - Stealth Skill)/5
-            detectRange = 5.0f + getLevel() + (0.2f * (float)(GetStealthDetectBonus()) - obj->GetStealthLevel());
-
-            if (detectRange < 1.0f) detectRange = 1.0f;     /// Minimum Detection Range = 1yd
-        }
-        else /// stealthed player is behind creature
-        {
-            if (GetStealthDetectBonus() > 1000) return true;    /// immune to stealth
-            else detectRange = 0.0f;
-        }
-
-        detectRange += getBoundingRadius();         /// adjust range for size of creature
-        detectRange += obj->getBoundingRadius();    /// adjust range for size of stealthed player
-
-        if (GetDistance2dSq(obj) > detectRange * detectRange)
-            return false;
-    }
-
-    return true;
-}
-
 void Creature::RegenerateFocus()
 {
     if (m_interruptRegen)
@@ -1557,9 +1518,11 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         m_limbostate = true;
         setDeathState(CORPSE);
     }
-    m_invisFlag = static_cast<uint8>(creature_properties->invisibility_type);
-    if (m_invisFlag > 0)
-        m_invisible = true;
+
+    if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
+        // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
+        // these are always invisible to players
+        modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
     if (spawn->stand_state)
         setStandState((uint8)spawn->stand_state);
 
@@ -1743,9 +1706,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     m_aiInterface->UpdateSpeeds();
 
-    m_invisFlag = static_cast<uint8>(creature_properties->invisibility_type);
-    if (m_invisFlag > 0)
-        m_invisible = true;
+    if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
+        // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
+        // these are always invisible to players
+        modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
 
     if (isVehicle())
     {
