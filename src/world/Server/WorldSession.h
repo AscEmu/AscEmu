@@ -433,8 +433,8 @@ class SERVER_DECL WorldSession
         void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
         void handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
         void handleEnabletaxiOpcode(WorldPacket& recvPacket);
-        void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
-        void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void handleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
         // NPC opcodes (NPCHandler.cpp)
         void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);
