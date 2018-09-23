@@ -144,177 +144,177 @@ public:
 
 class SartharionAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(SartharionAI);
-	SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
+    ADD_CREATURE_FACTORY_FUNCTION(SartharionAI);
+    SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
-		addAISpell(SARTHARION_CLEAVE, 24.0f, TARGET_ATTACKING, 0, 8);
+        addAISpell(SARTHARION_CLEAVE, 24.0f, TARGET_ATTACKING, 0, 8);
 
-		CreatureAISpells* mFlame = nullptr;
-		if (_isHeroic())
-		{
-			mFlame = addAISpell(58956, 18.0f, TARGET_SELF, 2, 16);
-			addAISpell(58957, 40.0f, TARGET_SELF, 0, 12);
-		}
-		else
-		{
-			mFlame = addAISpell(56908, 18.0f, TARGET_SELF, 2, 16);
-			addAISpell(56910, 40.0f, TARGET_SELF, 0, 12);
-		}
+        CreatureAISpells* mFlame = nullptr;
+        if (_isHeroic())
+        {
+            mFlame = addAISpell(58956, 18.0f, TARGET_SELF, 2, 16);
+            addAISpell(58957, 40.0f, TARGET_SELF, 0, 12);
+        }
+        else
+        {
+            mFlame = addAISpell(56908, 18.0f, TARGET_SELF, 2, 16);
+            addAISpell(56910, 40.0f, TARGET_SELF, 0, 12);
+        }
 
-		if (mFlame != nullptr)
-			mFlame->addEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
-		
-	   /* mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, TARGET_SELF, 99, 0, 25);
-		mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, TARGET_RANDOM_SINGLE, 25, 0, 8);*/
+        if (mFlame != nullptr)
+            mFlame->addEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
+        
+       /* mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, TARGET_SELF, 99, 0, 25);
+        mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, TARGET_RANDOM_SINGLE, 25, 0, 8);*/
 
-		addEmoteForEvent(Event_OnTargetDied, 8851);
-		addEmoteForEvent(Event_OnTargetDied, 8852);
-		addEmoteForEvent(Event_OnTargetDied, 8853);
-		addEmoteForEvent(Event_OnCombatStart, 8854);
+        addEmoteForEvent(Event_OnTargetDied, 8851);
+        addEmoteForEvent(Event_OnTargetDied, 8852);
+        addEmoteForEvent(Event_OnTargetDied, 8853);
+        addEmoteForEvent(Event_OnCombatStart, 8854);
 
-		for (uint8 i = 0; i < OS_DATA_END - 1; i++)
-		{
-			m_bDrakes[i] = false;
-			m_cDrakes[i] = NULL;
-		}
+        for (uint8 i = 0; i < OS_DATA_END - 1; i++)
+        {
+            m_bDrakes[i] = false;
+            m_cDrakes[i] = NULL;
+        }
 
-		mDrakeTimer = 0;
-		m_bEnraged = false;
-		m_iDrakeCount = 0;
-	}
+        mDrakeTimer = 0;
+        m_bEnraged = false;
+        m_iDrakeCount = 0;
+    }
 
-	void OnCombatStart(Unit* /*pTarget*/) override
-	{
-		m_bEnraged = false;
-		/*mFlameTsunami->setTriggerCooldown();*/
-		CheckDrakes();
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+        m_bEnraged = false;
+        /*mFlameTsunami->setTriggerCooldown();*/
+        CheckDrakes();
 
-		if (m_iDrakeCount >= 1)   //HardMode!
-		{
-			mDrakeTimer = _addTimer(30000);
-			_applyAura(SARTHARION_AURA);
-			_removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
-			_regenerateHealth();// Lets heal him as aura increase his hp for 25%
-		}
-	}
+        if (m_iDrakeCount >= 1)   //HardMode!
+        {
+            mDrakeTimer = _addTimer(30000);
+            _applyAura(SARTHARION_AURA);
+            _removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
+            _regenerateHealth();// Lets heal him as aura increase his hp for 25%
+        }
+    }
 
-	void AIUpdate() override
-	{
-		if (m_iDrakeCount >= 1)
-		{
-			if (_isTimerFinished(mDrakeTimer))
-			{
-				if (m_bDrakes[DRAKE_TENEBRON] == true)
-					CallTenebron();
-				else if (m_bDrakes[DRAKE_SHADRON] == true)
-					CallShadron();
-				else if (m_bDrakes[DRAKE_VESPERON] == true)
-					CallVesperon();
+    void AIUpdate() override
+    {
+        if (m_iDrakeCount >= 1)
+        {
+            if (_isTimerFinished(mDrakeTimer))
+            {
+                if (m_bDrakes[DRAKE_TENEBRON] == true)
+                    CallTenebron();
+                else if (m_bDrakes[DRAKE_SHADRON] == true)
+                    CallShadron();
+                else if (m_bDrakes[DRAKE_VESPERON] == true)
+                    CallVesperon();
 
-				_resetTimer(mDrakeTimer, 45000);
-			}
-		}
+                _resetTimer(mDrakeTimer, 45000);
+            }
+        }
 
-		if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
-		{
-			/*for (uint8 i = 0; i < 3; ++i)
-				CastSpellNowNoScheduling(mSummonLava);*/
+        if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
+        {
+            /*for (uint8 i = 0; i < 3; ++i)
+                CastSpellNowNoScheduling(mSummonLava);*/
 
-			m_bEnraged = true;
-		}
-	}
+            m_bEnraged = true;
+        }
+    }
 
-	void CheckDrakes()
-	{
-		if (mInstance == NULL)
-			return;
+    void CheckDrakes()
+    {
+        if (mInstance == NULL)
+            return;
 
-		m_iDrakeCount = 0;
+        m_iDrakeCount = 0;
 
-		for (uint8 i = 0; i < (OS_DATA_END - 1); ++i)
-		{
-			m_cDrakes[i] = mInstance->GetCreature(i);
-			if (m_cDrakes[i] != NULL && m_cDrakes[i]->isAlive())
-			{
-				m_bDrakes[i] = true;
-				m_iDrakeCount++;
-				mInstance->DoDrakeAura(i);
-			}
-		}
-	}
+        for (uint8 i = 0; i < (OS_DATA_END - 1); ++i)
+        {
+            m_cDrakes[i] = mInstance->GetCreature(i);
+            if (m_cDrakes[i] != NULL && m_cDrakes[i]->isAlive())
+            {
+                m_bDrakes[i] = true;
+                m_iDrakeCount++;
+                mInstance->DoDrakeAura(i);
+            }
+        }
+    }
 
-	void CallTenebron()
-	{
-		if (m_cDrakes[DRAKE_TENEBRON] != NULL && m_cDrakes[DRAKE_TENEBRON]->isAlive())
-		{
-			sendDBChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
-			m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-			m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
-		}
-		m_bDrakes[DRAKE_TENEBRON] = false;
-	}
+    void CallTenebron()
+    {
+        if (m_cDrakes[DRAKE_TENEBRON] != NULL && m_cDrakes[DRAKE_TENEBRON]->isAlive())
+        {
+            sendDBChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
+            m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
+        }
+        m_bDrakes[DRAKE_TENEBRON] = false;
+    }
 
-	void CallShadron()
-	{
-		if (m_cDrakes[DRAKE_SHADRON] != NULL && m_cDrakes[DRAKE_SHADRON]->isAlive())
-		{
-			sendDBChatMessage(3981); // Shadron! Come to me! All is at risk!
-			m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-			m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
-		}
-		m_bDrakes[DRAKE_SHADRON] = false;
-	}
+    void CallShadron()
+    {
+        if (m_cDrakes[DRAKE_SHADRON] != NULL && m_cDrakes[DRAKE_SHADRON]->isAlive())
+        {
+            sendDBChatMessage(3981); // Shadron! Come to me! All is at risk!
+            m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
+        }
+        m_bDrakes[DRAKE_SHADRON] = false;
+    }
 
-	void CallVesperon()
-	{
-		if (m_cDrakes[DRAKE_VESPERON] != NULL && m_cDrakes[DRAKE_VESPERON]->isAlive())
-		{
-			sendDBChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
-			m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-			m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
-		}
-		m_bDrakes[DRAKE_VESPERON] = false;
-	}
+    void CallVesperon()
+    {
+        if (m_cDrakes[DRAKE_VESPERON] != NULL && m_cDrakes[DRAKE_VESPERON]->isAlive())
+        {
+            sendDBChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
+            m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
+        }
+        m_bDrakes[DRAKE_VESPERON] = false;
+    }
 
-	void OnDied(Unit* /*pKiller*/) override
-	{
-		sendDBChatMessage(3984); // Such is the price... of failure...
-	}
+    void OnDied(Unit* /*pKiller*/) override
+    {
+        sendDBChatMessage(3984); // Such is the price... of failure...
+    }
 
 private:
-	bool m_bDrakes[OS_DATA_END - 1];
-	int32 mDrakeTimer;
-	bool m_bEnraged;
-	int m_iDrakeCount;
+    bool m_bDrakes[OS_DATA_END - 1];
+    int32 mDrakeTimer;
+    bool m_bEnraged;
+    int m_iDrakeCount;
 
-	ObsidianSanctumScript* mInstance;
+    ObsidianSanctumScript* mInstance;
 
-	Creature* m_cDrakes[OS_DATA_END - 1]; // exclude boss
-	/*SpellDesc* mFlameTsunami, *mSummonLava;*/
+    Creature* m_cDrakes[OS_DATA_END - 1]; // exclude boss
+    /*SpellDesc* mFlameTsunami, *mSummonLava;*/
 };
 
 class TsunamiAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI);
-	TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
+    ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI);
+    TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-	void OnLoad() override
-	{
-		RegisterAIUpdateEvent(1000);
-		setFlyMode(true);
-		setCanEnterCombat(false);
-		getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-		despawn(11500, 0);
-	}
+    void OnLoad() override
+    {
+        RegisterAIUpdateEvent(1000);
+        setFlyMode(true);
+        setCanEnterCombat(false);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+        despawn(11500, 0);
+    }
 
-	void AIUpdate() override
-	{
-		_applyAura(TSUNAMI);
-		_applyAura(TSUNAMI_VISUAL);
-		RegisterAIUpdateEvent(11000);
-	}
+    void AIUpdate() override
+    {
+        _applyAura(TSUNAMI);
+        _applyAura(TSUNAMI_VISUAL);
+        RegisterAIUpdateEvent(11000);
+    }
 };
 
 class CyclonAI : public CreatureAIScript
