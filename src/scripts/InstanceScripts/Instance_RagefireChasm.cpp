@@ -1,28 +1,10 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
-
 
 #include "Setup.h"
 #include "Instance_RagefireChasm.h"
-
 
 class RagefireShamanAI : public CreatureAIScript
 {
@@ -90,32 +72,32 @@ class EarthborerAI : public CreatureAIScript
 
 class BloodFilledOrb : public GameObjectAIScript
 {
-    public:
+public:
 
-        BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
+    BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
 
-        void OnActivate(Player* pPlayer) override
+    void OnActivate(Player* pPlayer) override
+    {
+        // Make sure player has the quest and Zelemar isn't spawned yet
+        if (!pPlayer->HasQuest(9692)) // The Path of the Adept
         {
-            // Make sure player has the quest and Zelemar isn't spawned yet
-            if (!pPlayer->HasQuest(9692)) // The Path of the Adept
-            {
-                pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
-                return;
-            }
-            Creature* Zelemar = NULL;
-            Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, CN_ZELMAR);
-            if (Zelemar)
-                return;
-
-            // Spawn Zelemar the Wrathful
-            Zelemar = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
-            if (Zelemar)
-            {
-                Zelemar->m_noRespawn = true;
-                Zelemar = NULL;
-            }
+            pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
+            return;
         }
+        Creature* Zelemar = NULL;
+        Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, CN_ZELMAR);
+        if (Zelemar)
+            return;
+
+        // Spawn Zelemar the Wrathful
+        Zelemar = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
+        if (Zelemar)
+        {
+            Zelemar->m_noRespawn = true;
+            Zelemar = NULL;
+        }
+    }
 };
 
 // BOSSES
