@@ -24,220 +24,218 @@
 #include "Instance_TheUnderbog.h"
 #include "Objects/Faction.h"
 
-
-///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss AIs
 
 class HungarfenAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI);
-        HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI);
+    HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto mushroom = addAISpell(UNDERBOG_MUSHROOM, 0.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
+        mushroom->setAttackStopTimer(1000);
+
+        spores = addAISpell(FOUL_SPORES, 0.0f, TARGET_VARIOUS);
+        spores->setAttackStopTimer(1000);
+
+        FourSpores = false;
+    }
+
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        FourSpores = false;
+    }
+
+    void OnDied(Unit* /*mKiller*/) override
+    {
+        FourSpores = false;
+    }
+
+    void AIUpdate() override
+    {
+        if (getCreature()->GetHealthPct() <= 20 && !FourSpores)
         {
-            auto mushroom = addAISpell(UNDERBOG_MUSHROOM, 0.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
-            mushroom->setAttackStopTimer(1000);
+            getCreature()->GetAIInterface()->StopMovement(11000);
+            getCreature()->setAttackTimer(MELEE, 1200);
 
-            spores = addAISpell(FOUL_SPORES, 0.0f, TARGET_VARIOUS);
-            spores->setAttackStopTimer(1000);
+            getCreature()->CastSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
 
-            FourSpores = false;
+            FourSpores = true;
         }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
+        else if (!getCreature()->getAuraWithId(FOUL_SPORES))
         {
-            FourSpores = false;
+            // Not yet added
+            //CastSpellOnRandomTarget(0, 0.0f, 40.0f, 0, 100);
         }
+    }
 
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            FourSpores = false;
-        }
+protected:
 
-        void AIUpdate() override
-        {
-            if (getCreature()->GetHealthPct() <= 20 && !FourSpores)
-            {
-                getCreature()->GetAIInterface()->StopMovement(11000);
-                getCreature()->setAttackTimer(MELEE, 1200);
-
-                getCreature()->CastSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
-
-                FourSpores = true;
-            }
-            else if (!getCreature()->getAuraWithId(FOUL_SPORES))
-            {
-                // Not yet added
-                //CastSpellOnRandomTarget(0, 0.0f, 40.0f, 0, 100);
-            }
-        }
-
-    protected:
-
-        bool FourSpores;
-        CreatureAISpells* spores;
+    bool FourSpores;
+    CreatureAISpells* spores;
 };
 
 class GhazanAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(GhazanAI);
-        GhazanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(GhazanAI);
+    GhazanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto acidSpit = addAISpell(ACID_SPIT, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
+        acidSpit->setAttackStopTimer(1000);
+
+        auto tailSweep = addAISpell(TAIL_SWEEP, 7.0f, TARGET_VARIOUS, 0, 25, false, true);
+        tailSweep->setAttackStopTimer(1000);
+
+        auto acidBreath = addAISpell(ACID_BREATH, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
+        acidBreath->setAttackStopTimer(1000);
+
+        enrage = addAISpell(ENRAGE, 0.0f, TARGET_SELF, 0, 160, false, true);
+        enrage->setAttackStopTimer(1000);
+
+        Enraged = false;
+    }
+
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        Enraged = false;
+    }
+
+    void AIUpdate() override
+    {
+        if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingSpell())
         {
-            auto acidSpit = addAISpell(ACID_SPIT, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
-            acidSpit->setAttackStopTimer(1000);
+            getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
 
-            auto tailSweep = addAISpell(TAIL_SWEEP, 7.0f, TARGET_VARIOUS, 0, 25, false, true);
-            tailSweep->setAttackStopTimer(1000);
-
-            auto acidBreath = addAISpell(ACID_BREATH, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
-            acidBreath->setAttackStopTimer(1000);
-
-            enrage = addAISpell(ENRAGE, 0.0f, TARGET_SELF, 0, 160, false, true);
-            enrage->setAttackStopTimer(1000);
-
-            Enraged = false;
+            Enraged = true;
         }
+    }
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            Enraged = false;
-        }
+protected:
 
-        void AIUpdate() override
-        {
-            if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingSpell())
-            {
-                getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
-
-                Enraged = true;
-            }
-        }
-
-    protected:
-
-        bool Enraged;
-        CreatureAISpells* enrage;
+    bool Enraged;
+    CreatureAISpells* enrage;
 };
 
 class ClawAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(ClawAI);
-        ClawAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto maul = addAISpell(MAUL, 15.0f, TARGET_ATTACKING, 0, 15, false, true);
-            maul->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(ClawAI);
+    ClawAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto maul = addAISpell(MAUL, 15.0f, TARGET_ATTACKING, 0, 15, false, true);
+        maul->setAttackStopTimer(1000);
 
-            auto echoingRoar = addAISpell(CL_ECHOING_ROAR, 8.0f, TARGET_VARIOUS, 0, 30, false, true);
-            echoingRoar->setAttackStopTimer(1000);
+        auto echoingRoar = addAISpell(CL_ECHOING_ROAR, 8.0f, TARGET_VARIOUS, 0, 30, false, true);
+        echoingRoar->setAttackStopTimer(1000);
 
-            auto feralCharge = addAISpell(FERAL_CHARGE, 18.0f, TARGET_RANDOM_SINGLE, 0, 3, false, true);
-            feralCharge->setAttackStopTimer(1000);
-            feralCharge->setMinMaxDistance(0.0f, 40.0f);
+        auto feralCharge = addAISpell(FERAL_CHARGE, 18.0f, TARGET_RANDOM_SINGLE, 0, 3, false, true);
+        feralCharge->setAttackStopTimer(1000);
+        feralCharge->setMinMaxDistance(0.0f, 40.0f);
 
-            auto enrage = addAISpell(CL_ENRAGE, 15.0f, TARGET_SELF, 0, 240, false, true);
-            enrage->setAttackStopTimer(1000);
-        }
+        auto enrage = addAISpell(CL_ENRAGE, 15.0f, TARGET_SELF, 0, 240, false, true);
+        enrage->setAttackStopTimer(1000);
+    }
 };
 
 class SwamplordMuselekAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(SwamplordMuselekAI);
-        SwamplordMuselekAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(SwamplordMuselekAI);
+    SwamplordMuselekAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto freezingTrap = addAISpell(THROW_FREEZING_TRAP, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
+        freezingTrap->setAttackStopTimer(1000);
+        freezingTrap->setMinMaxDistance(0.0f, 40.0f);
+
+        auto knockAway = addAISpell(KNOCK_AWAY_MUSELEK, 12.0f, TARGET_ATTACKING, 0, 20, false, true);
+        knockAway->setAttackStopTimer(1000);
+
+        aimedShot = addAISpell(AIMED_SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        aimedShot->setAttackStopTimer(6500);
+
+        multiShot = addAISpell(MULTI_SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 15, false, true);
+        multiShot->setAttackStopTimer(1000);
+
+        shot = addAISpell(SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
+        shot->setAttackStopTimer(1000);
+
+        addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_02);
+        addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_03);
+        addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_04);
+        addEmoteForEvent(Event_OnTargetDied, SAY_SWAMPLORD_MUSEL_05);
+        addEmoteForEvent(Event_OnTargetDied, SAY_SWAMPLORD_MUSEL_06);
+        addEmoteForEvent(Event_OnDied, SAY_SWAMPLORD_MUSEL_07);
+    }
+
+    void OnCombatStart(Unit* mTarget) override
+    {
+        Unit* Bear = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 17827);
+        if (Bear && Bear->isAlive())
+            Bear->GetAIInterface()->AttackReaction(mTarget, 1, 0);
+    }
+
+    void AIUpdate() override
+    {
+        if (getCreature()->GetAIInterface()->getNextTarget())
         {
-            auto freezingTrap = addAISpell(THROW_FREEZING_TRAP, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
-            freezingTrap->setAttackStopTimer(1000);
-            freezingTrap->setMinMaxDistance(0.0f, 40.0f);
-
-            auto knockAway = addAISpell(KNOCK_AWAY_MUSELEK, 12.0f, TARGET_ATTACKING, 0, 20, false, true);
-            knockAway->setAttackStopTimer(1000);
-
-            aimedShot = addAISpell(AIMED_SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 20);
-            aimedShot->setAttackStopTimer(6500);
-
-            multiShot = addAISpell(MULTI_SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 15, false, true);
-            multiShot->setAttackStopTimer(1000);
-
-            shot = addAISpell(SHOT, 35.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
-            shot->setAttackStopTimer(1000);
-
-            addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_02);
-            addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_03);
-            addEmoteForEvent(Event_OnCombatStart, SAY_SWAMPLORD_MUSEL_04);
-            addEmoteForEvent(Event_OnTargetDied, SAY_SWAMPLORD_MUSEL_05);
-            addEmoteForEvent(Event_OnTargetDied, SAY_SWAMPLORD_MUSEL_06);
-            addEmoteForEvent(Event_OnDied, SAY_SWAMPLORD_MUSEL_07);
-        }
-
-        void OnCombatStart(Unit* mTarget) override
-        {
-            Unit* Bear = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 17827);
-            if (Bear && Bear->isAlive())
-                Bear->GetAIInterface()->AttackReaction(mTarget, 1, 0);
-        }
-
-        void AIUpdate() override
-        {
-            if (getCreature()->GetAIInterface()->getNextTarget())
+            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            if (getCreature()->GetDistance2dSq(target) >= 100.0f && getCreature()->getDistanceSq(target) <= 900.0f && Util::getRandomUInt(3) != 1)
             {
-                Unit* target = getCreature()->GetAIInterface()->getNextTarget();
-                if (getCreature()->GetDistance2dSq(target) >= 100.0f && getCreature()->getDistanceSq(target) <= 900.0f && Util::getRandomUInt(3) != 1)
+                getCreature()->GetAIInterface()->StopMovement(2000);
+                if (!getCreature()->isCastingSpell())
                 {
-                    getCreature()->GetAIInterface()->StopMovement(2000);
-                    if (!getCreature()->isCastingSpell())
+                    uint32 RangedSpell = Util::getRandomUInt(100);
+                    if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
                     {
-                        uint32 RangedSpell = Util::getRandomUInt(100);
-                        if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
-                        {
-                            getCreature()->CastSpell(target, aimedShot->mSpellInfo, true);
-                            getCreature()->setAttackTimer(MELEE, aimedShot->getAttackStopTimer());
-                            _resetTimer(aimedShot->mCooldownTimerId, aimedShot->mCooldown);
-                        }
+                        getCreature()->CastSpell(target, aimedShot->mSpellInfo, true);
+                        getCreature()->setAttackTimer(MELEE, aimedShot->getAttackStopTimer());
+                        _resetTimer(aimedShot->mCooldownTimerId, aimedShot->mCooldown);
+                    }
 
-                        if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimerId))
+                    if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimerId))
+                    {
+                        getCreature()->CastSpell(target, multiShot->mSpellInfo, true);
+                        getCreature()->setAttackTimer(MELEE, multiShot->getAttackStopTimer());
+                        _resetTimer(multiShot->mCooldownTimerId, multiShot->mCooldown);
+                    }
+                    else
+                    {
+                        if (_isTimerFinished(shot->mCooldownTimerId))
                         {
-                            getCreature()->CastSpell(target, multiShot->mSpellInfo, true);
-                            getCreature()->setAttackTimer(MELEE, multiShot->getAttackStopTimer());
-                            _resetTimer(multiShot->mCooldownTimerId, multiShot->mCooldown);
-                        }
-                        else
-                        {
-                            if (_isTimerFinished(shot->mCooldownTimerId))
-                            {
-                                getCreature()->CastSpell(target, shot->mSpellInfo, true);
-                                getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
-                                _resetTimer(shot->mCooldownTimerId, shot->mCooldown);
-                            }
+                            getCreature()->CastSpell(target, shot->mSpellInfo, true);
+                            getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
+                            _resetTimer(shot->mCooldownTimerId, shot->mCooldown);
                         }
                     }
                 }
             }
         }
+    }
 
-    private:
-        CreatureAISpells* aimedShot;
-        CreatureAISpells* multiShot;
-        CreatureAISpells* shot;
+private:
+    CreatureAISpells* aimedShot;
+    CreatureAISpells* multiShot;
+    CreatureAISpells* shot;
 };
-
 
 class TheBlackStalkerAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(TheBlackStalkerAI);
-        TheBlackStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto chainLighning = addAISpell(CHAIN_LIGHTNING, 12.0f, TARGET_RANDOM_SINGLE, 0, 15);
-            chainLighning->setAttackStopTimer(1000);
-            chainLighning->setMinMaxDistance(0.0f, 40.0f);
+    ADD_CREATURE_FACTORY_FUNCTION(TheBlackStalkerAI);
+    TheBlackStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto chainLighning = addAISpell(CHAIN_LIGHTNING, 12.0f, TARGET_RANDOM_SINGLE, 0, 15);
+        chainLighning->setAttackStopTimer(1000);
+        chainLighning->setMinMaxDistance(0.0f, 40.0f);
 
-            auto levitate = addAISpell(LEVITATE, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
-            levitate->setAttackStopTimer(1000);
-            levitate->setMinMaxDistance(0.0f, 40.0f);
+        auto levitate = addAISpell(LEVITATE, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
+        levitate->setAttackStopTimer(1000);
+        levitate->setMinMaxDistance(0.0f, 40.0f);
 
-            auto staticCharge = addAISpell(STATIC_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 0, 25, false, true);
-            staticCharge->setAttackStopTimer(1000);
-            staticCharge->setMinMaxDistance(0.0f, 40.0f);
+        auto staticCharge = addAISpell(STATIC_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 0, 25, false, true);
+        staticCharge->setAttackStopTimer(1000);
+        staticCharge->setMinMaxDistance(0.0f, 40.0f);
 
-            auto summonSporeStrider = addAISpell(SUMMON_SPORE_STRIDER, 0.0f, TARGET_SELF, 0, 10, false, true);
-            summonSporeStrider->setAttackStopTimer(1000);
-        }
+        auto summonSporeStrider = addAISpell(SUMMON_SPORE_STRIDER, 0.0f, TARGET_SELF, 0, 10, false, true);
+        summonSporeStrider->setAttackStopTimer(1000);
+    }
 };
 
 // \note Wasp/Stinger must be checked. Please check it (because for sure
