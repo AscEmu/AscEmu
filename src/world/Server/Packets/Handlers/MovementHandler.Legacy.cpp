@@ -30,6 +30,7 @@
 #include "Server/Packets/MovementPacket.h"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/CmsgWorldTeleport.h"
+#include "Server/Packets/SmsgMountspecialAnim.h"
 
 #if VERSION_STRING == Classic
 #include "GameClassic/Data/MovementInfoClassic.h"
@@ -815,7 +816,5 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
 {
     CHECK_INWORLD_RETURN
 
-    WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
-    data << _player->getGuid();
-    _player->SendMessageToSet(&data, true);
+    _player->SendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
 }
