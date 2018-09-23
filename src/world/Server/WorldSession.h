@@ -821,8 +821,6 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        void HandleTeleportCheatOpcode(WorldPacket& recvPacket);
-        void HandleTeleportToUnitOpcode(WorldPacket& recvPacket);
         void HandleWorldportOpcode(WorldPacket& recvPacket);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
