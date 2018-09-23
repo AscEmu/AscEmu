@@ -29,8 +29,6 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/Packets/SmsgNewWorld.h"
-#include "Server/Packets/CmsgWorldTeleport.h"
-#include "Server/Packets/SmsgMountspecialAnim.h"
 
 #if VERSION_STRING == Classic
 #include "GameClassic/Data/MovementInfoClassic.h"

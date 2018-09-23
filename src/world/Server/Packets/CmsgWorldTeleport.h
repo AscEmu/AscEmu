@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
-#include "LocationVector.h"
 
 namespace AscEmu { namespace Packets
 {
@@ -20,14 +19,15 @@ namespace AscEmu { namespace Packets
         uint32_t mapId;
         LocationVector location;
 
-        CmsgWorldTeleport() : CmsgWorldTeleport(0, 0)
+        CmsgWorldTeleport() : CmsgWorldTeleport(0, 0, { 0, 0, 0, 0 })
         {
         }
 
-        CmsgWorldTeleport(uint32_t time, uint32_t mapId) :
+        CmsgWorldTeleport(uint32_t time, uint32_t mapId, LocationVector location) :
             ManagedPacket(CMSG_WORLD_TELEPORT, 4 + 4 + 4 * 4),
             time(time),
-            mapId(mapId)
+            mapId(mapId),
+            location(location)
         {
         }
 
