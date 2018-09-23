@@ -25,6 +25,7 @@
 #include "Server/Packets/CmsgLfgSetRoles.h"
 #include "Server/Packets/CmsgLfgSetBootVote.h"
 #include "Server/Packets/CmsgLfgTeleport.h"
+#include "Server/Packets/SmsgLfgTeleportDenied.h"
 
 using namespace AscEmu::Packets;
 
@@ -709,11 +710,6 @@ void WorldSession::SendLfgOfferContinue(uint32 dungeonEntry)
 void WorldSession::SendLfgTeleportError(uint8 err)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_TELEPORT_DENIED %u reason: %u", GetPlayer()->getGuid(), err);
-
-    WorldPacket data(SMSG_LFG_TELEPORT_DENIED, 4);
-
-    data << uint32(err);                                   // Error
-    SendPacket(&data);
+    SendPacket(SmsgLfgTeleportDenied(err).serialise().get());
 #endif
 }
