@@ -44,9 +44,9 @@ class ArcLuna;
 //#endif
 
 #define RegisterHook(evt, _func) { \
-	if(LuaGlobal::instance()->EventAsToFuncName[(evt)].size() > 0 && !(LuaGlobal::instance()->luaEngine()->HookInfo.hooks[(evt)])) { \
-		LuaGlobal::instance()->luaEngine()->HookInfo.hooks[(evt)] = true; \
-		m_scriptMgr->register_hook( (ServerHookEvents)(evt), (_func) ); } }
+    if(LuaGlobal::instance()->EventAsToFuncName[(evt)].size() > 0 && !(LuaGlobal::instance()->luaEngine()->HookInfo.hooks[(evt)])) { \
+        LuaGlobal::instance()->luaEngine()->HookInfo.hooks[(evt)] = true; \
+        m_scriptMgr->register_hook( (ServerHookEvents)(evt), (_func) ); } }
 
 enum QuestEvents
 {

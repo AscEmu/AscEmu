@@ -54,7 +54,7 @@ public:
                 textid = 20007;
 
             else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65) 
-				  || (!plr->HasGold(1000000) && plr->getLevel() > 65))
+                  || (!plr->HasGold(1000000) && plr->getLevel() > 65))
                          textid = 20008;
 
             else

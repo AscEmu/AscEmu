@@ -173,10 +173,14 @@ namespace luaItem
         int slot = static_cast<int>(luaL_checkinteger(L, 1));
         bool temp = CHECK_BOOL(L, 2);
 
-        if (slot == -1)	ptr->RemoveAllEnchantments(temp);
-        else if (slot == -2) ptr->RemoveProfessionEnchant();
-        else if (slot == -3) ptr->RemoveSocketBonusEnchant();
-        else if (slot >= 0) ptr->RemoveEnchantment(slot);
+        if (slot == -1)
+            ptr->RemoveAllEnchantments(temp);
+        else if (slot == -2)
+            ptr->RemoveProfessionEnchant();
+        else if (slot == -3)
+            ptr->RemoveSocketBonusEnchant();
+        else if (slot >= 0)
+            ptr->RemoveEnchantment(slot);
 
         return 0;
     }
@@ -226,11 +230,11 @@ namespace luaItem
         ItemProperties const* proto = ptr->getItemProperties();
         lua_pushnumber(L, proto->Spells[index].Trigger);
         /*
-            USE				= 0,
-            ON_EQUIP		= 1,
-            CHANCE_ON_HIT	= 2,
-            SOULSTONE		= 4,
-            LEARNING		= 6,
+            USE                = 0,
+            ON_EQUIP           = 1,
+            CHANCE_ON_HIT      = 2,
+            SOULSTONE          = 4,
+            LEARNING           = 6,
             */
         return 1;
     }

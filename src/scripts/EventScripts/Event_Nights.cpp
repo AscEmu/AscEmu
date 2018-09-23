@@ -13,7 +13,7 @@
 
 class HandleNights : public EventScript
 {
-	
+
 };
 
 void SetupHandleNights(ScriptMgr* mgr)

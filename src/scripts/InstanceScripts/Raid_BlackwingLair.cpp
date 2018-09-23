@@ -48,15 +48,15 @@ enum
 
 class DTcaptainAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
-	DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
-		markOfFlames->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
+    DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
+        markOfFlames->setAttackStopTimer(1000);
 
-		auto markOfDetonation = addAISpell(MARK_OF_DETONATION, 4.0f, TARGET_ATTACKING);
-		markOfDetonation->setAttackStopTimer(2000);
-	}
+        auto markOfDetonation = addAISpell(MARK_OF_DETONATION, 4.0f, TARGET_ATTACKING);
+        markOfDetonation->setAttackStopTimer(2000);
+    }
 };
 
 
@@ -71,12 +71,12 @@ The Captain can also dispel any Hibernate effect cast on Death Talon Wyrmkin.
 
 class DTflamescaleAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
-	DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
-		flameShock->setAttackStopTimer(1000);
-	}
+    ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
+    DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
+        flameShock->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -101,12 +101,12 @@ As of patch 1.12 Seethers now have a Flame Buffet ability that deals roughly 1k 
 
 class DTwyrmkinAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
-	DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
-		fireballVolley->setAttackStopTimer(1000);
-	}
+    ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
+    DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
+        fireballVolley->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -121,27 +121,27 @@ They can be put to sleep by a druid's hibernate ability, but due to their high l
 
 class TechnicianAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
-	TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
-		granade->setAttackStopTimer(1000);
-	}
+    ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
+    TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
+        granade->setAttackStopTimer(1000);
+    }
 };
 
 //Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
 
 class BlackWarlockAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
-	BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
-		rainOfFire->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
+    BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
+        rainOfFire->setAttackStopTimer(1000);
 
-		auto shadowBolt = addAISpell(SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
-		shadowBolt->setAttackStopTimer(1000);
-	}
+        auto shadowBolt = addAISpell(SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
+        shadowBolt->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -177,56 +177,56 @@ It would appear more accurate to say that the polymorph is targetted at people w
 
 class LashlayerAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
-	LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
-		fireNovaLash->setAttackStopTimer(1000);
-	}
+    ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
+    LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
+        fireNovaLash->setAttackStopTimer(1000);
+    }
 
-	void OnCombatStart(Unit* /*mTarget*/) override
-	{
-		sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
-	}
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
+    }
 };
 
 class FiremawAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(FiremawAI);
-	FiremawAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-		wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(FiremawAI);
+    FiremawAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-		auto flameBuffet = addAISpell(FLAME_BUFFET, 15.0f, TARGET_VARIOUS);
-		flameBuffet->setAttackStopTimer(1000);
-	}
+        auto flameBuffet = addAISpell(FLAME_BUFFET, 15.0f, TARGET_VARIOUS);
+        flameBuffet->setAttackStopTimer(1000);
+    }
 };
 
 class EbonrocAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
-	EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-		wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
+    EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-		auto shadowOfEbonroc = addAISpell(SHADOW_OF_EBONROC, 15.0f, TARGET_ATTACKING);
-		shadowOfEbonroc->setAttackStopTimer(1000);
-	}
+        auto shadowOfEbonroc = addAISpell(SHADOW_OF_EBONROC, 15.0f, TARGET_ATTACKING);
+        shadowOfEbonroc->setAttackStopTimer(1000);
+    }
 };
 
 class FlamegorAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
-	FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-		wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
+    FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-		auto fireNova = addAISpell(FIRE_NOVA, 20.0f, TARGET_VARIOUS, 0, 0, false, true);
-		fireNova->setAttackStopTimer(1000);
-	}
+        auto fireNova = addAISpell(FIRE_NOVA, 20.0f, TARGET_VARIOUS, 0, 0, false, true);
+        fireNova->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -251,48 +251,48 @@ Over the course of this fight, he will do this repeatedly on all of your tanks.
 
 class VaelastraszAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
-	VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
-		essenceOfTheRed->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
+    VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
+        essenceOfTheRed->setAttackStopTimer(1000);
 
-		auto flameBreath = addAISpell(FLAME_BREATH, 15.0f, TARGET_VARIOUS);
-		flameBreath->setAttackStopTimer(3000);
+        auto flameBreath = addAISpell(FLAME_BREATH, 15.0f, TARGET_VARIOUS);
+        flameBreath->setAttackStopTimer(3000);
 
-		auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
-		burningAdrenaline->setAttackStopTimer(2000);
+        auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
+        burningAdrenaline->setAttackStopTimer(2000);
 
-		getCreature()->setHealth((uint32)(getCreature()->getMaxHealth() * 0.3f));
-	}
+        getCreature()->setHealth((uint32)(getCreature()->getMaxHealth() * 0.3f));
+    }
 
-	void OnCombatStart(Unit* /*mTarget*/) override
-	{
-		getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
-	}
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
+    }
 
-	void OnTargetDied(Unit* /*mTarget*/) override
-	{
-		sendDBChatMessage(2296);     // Forgive me, your death only adds to my failure.
-	}
+    void OnTargetDied(Unit* /*mTarget*/) override
+    {
+        sendDBChatMessage(2296);     // Forgive me, your death only adds to my failure.
+    }
 
-	void OnDied(Unit* /*mKiller*/) override
-	{
-		getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
-	}
+    void OnDied(Unit* /*mKiller*/) override
+    {
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
+    }
 
-	void AIUpdate() override
-	{
-		if (getCreature()->GetHealthPct() <= 15 && getScriptPhase() == 1)
-		{
-			sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
-			setScriptPhase(2);
-		}
-	}
+    void AIUpdate() override
+    {
+        if (getCreature()->GetHealthPct() <= 15 && getScriptPhase() == 1)
+        {
+            sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
+            setScriptPhase(2);
+        }
+    }
 
 protected:
 
-	CreatureAISpells* essenceOfTheRed;
+    CreatureAISpells* essenceOfTheRed;
 };
 
 class VaelastraszGossip : public Arcemu::Gossip::Script

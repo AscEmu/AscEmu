@@ -149,94 +149,94 @@ public:
 
 class Marwyn : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
-	Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		CreatureAISpells* spellWell = nullptr;
-		CreatureAISpells* corruptFlesh = nullptr;
-		if (_isHeroic() == false)
-		{
-			addAISpell(N_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
-			spellWell = addAISpell(N_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
-			corruptFlesh = addAISpell(N_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
-			addAISpell(N_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
-		}
-		else
-		{
-			addAISpell(H_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
-			spellWell = addAISpell(H_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
-			corruptFlesh = addAISpell(H_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
-			addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
-		}
+    ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
+    Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        CreatureAISpells* spellWell = nullptr;
+        CreatureAISpells* corruptFlesh = nullptr;
+        if (_isHeroic() == false)
+        {
+            addAISpell(N_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
+            spellWell = addAISpell(N_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
+            corruptFlesh = addAISpell(N_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
+            addAISpell(N_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        }
+        else
+        {
+            addAISpell(H_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
+            spellWell = addAISpell(H_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
+            corruptFlesh = addAISpell(H_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
+            addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        }
 
-		if (spellWell)
-			spellWell->addEmote("Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
+        if (spellWell)
+            spellWell->addEmote("Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
 
-		if (corruptFlesh)
-			corruptFlesh->addEmote("Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
+        if (corruptFlesh)
+            corruptFlesh->addEmote("Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
 
-		addEmoteForEvent(Event_OnCombatStart, 4105);    // Death is all that you will find here!
-		addEmoteForEvent(Event_OnTargetDied, 5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
-		addEmoteForEvent(Event_OnTargetDied, 5255);     // Choke on your suffering!
-		addEmoteForEvent(Event_OnDied, 5256);           // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
-	}
+        addEmoteForEvent(Event_OnCombatStart, 4105);    // Death is all that you will find here!
+        addEmoteForEvent(Event_OnTargetDied, 5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
+        addEmoteForEvent(Event_OnTargetDied, 5255);     // Choke on your suffering!
+        addEmoteForEvent(Event_OnDied, 5256);           // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
+    }
 
-	void OnLoad() override
-	{
-		if (_isHeroic() == true) // HEROIC MODE
-		{
-			getCreature()->setMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-			getCreature()->setHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-			_setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
-		}
-	}
+    void OnLoad() override
+    {
+        if (_isHeroic() == true) // HEROIC MODE
+        {
+            getCreature()->setMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+            getCreature()->setHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+            _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
+        }
+    }
 };
 
 class Falric : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(Falric);
-	Falric(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		if (_isHeroic() == false)
-		{
-			addAISpell(N_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
-			addAISpell(N_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
-			addAISpell(N_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
-		}
-		else
-		{
-			addAISpell(H_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
-			addAISpell(H_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
-			addAISpell(H_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
-			addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
-		}
+    ADD_CREATURE_FACTORY_FUNCTION(Falric);
+    Falric(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        if (_isHeroic() == false)
+        {
+            addAISpell(N_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
+            addAISpell(N_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
+            addAISpell(N_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
+        }
+        else
+        {
+            addAISpell(H_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
+            addAISpell(H_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
+            addAISpell(H_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
+            addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        }
 
-		addEmoteForEvent(Event_OnCombatStart, 4084);    // Men, women, and children... None were spared the master's wrath. Your death will be no different.
-		addEmoteForEvent(Event_OnTargetDied, 4086);     // The children of Stratholme fought with more ferocity!
-		addEmoteForEvent(Event_OnTargetDied, 4085);     // Sniveling maggot!
-		addEmoteForEvent(Event_OnDied, 4087);           // Marwyn, finish them...
-	}
+        addEmoteForEvent(Event_OnCombatStart, 4084);    // Men, women, and children... None were spared the master's wrath. Your death will be no different.
+        addEmoteForEvent(Event_OnTargetDied, 4086);     // The children of Stratholme fought with more ferocity!
+        addEmoteForEvent(Event_OnTargetDied, 4085);     // Sniveling maggot!
+        addEmoteForEvent(Event_OnDied, 4087);           // Marwyn, finish them...
+    }
 
-	void AIUpdate(Player* Plr)
-	{
-		if (isScriptPhase(1) && _getHealthPercent() <= 66)
-		{
-			getCreature()->CastSpell(Plr, 72395, true);
-			setScriptPhase(2);
-		}
+    void AIUpdate(Player* Plr)
+    {
+        if (isScriptPhase(1) && _getHealthPercent() <= 66)
+        {
+            getCreature()->CastSpell(Plr, 72395, true);
+            setScriptPhase(2);
+        }
 
-		if (isScriptPhase(2) && _getHealthPercent() <= 33)
-		{
-			getCreature()->CastSpell(Plr, 72396, true);
-			setScriptPhase(3);
-		}
+        if (isScriptPhase(2) && _getHealthPercent() <= 33)
+        {
+            getCreature()->CastSpell(Plr, 72396, true);
+            setScriptPhase(3);
+        }
 
-		if (isScriptPhase(3) && _getHealthPercent() <= 11)
-		{
-			getCreature()->CastSpell(Plr, 72397, true);
-			setScriptPhase(4);
-		}
-	}
+        if (isScriptPhase(3) && _getHealthPercent() <= 11)
+        {
+            getCreature()->CastSpell(Plr, 72397, true);
+            setScriptPhase(4);
+        }
+    }
 };
 
 void SetupHallsOfReflection(ScriptMgr* mgr)

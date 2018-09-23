@@ -256,7 +256,7 @@ public:
         // spawn home buff guard
         void SpawnHomeGuard();
     };
-	
+
 protected:
 
     AVNode* m_nodes[AV_NUM_CONTROL_POINTS];

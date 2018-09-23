@@ -159,7 +159,7 @@ public:
         }
         timer++;
     }
-		
+
 protected:
     uint32 timer;
 
@@ -352,7 +352,7 @@ public:
         }
         timer++;
     }
-	
+
 protected:
 
     uint32 timer;
@@ -488,6 +488,7 @@ public:
         }
         timer++;
     }
+
 protected:
 
     uint32 timer;
@@ -667,7 +668,7 @@ public:
         }
         timer++;
     }
-		
+
 protected:
 
     uint32 timer;
@@ -785,7 +786,7 @@ public:
         }
         timer++;
     }
-	
+
 protected:
 
     uint32 timer;
