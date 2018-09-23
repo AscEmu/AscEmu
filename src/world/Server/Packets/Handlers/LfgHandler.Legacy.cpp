@@ -27,6 +27,7 @@
 #include "Server/Packets/CmsgLfgTeleport.h"
 #include "Server/Packets/SmsgLfgTeleportDenied.h"
 #include "Server/Packets/SmsgLfgOfferContinue.h"
+#include "Server/Packets/SmsgLfgUpdateSearch.h"
 
 using namespace AscEmu::Packets;
 
@@ -678,12 +679,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
 void WorldSession::SendLfgUpdateSearch(bool update)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_UPDATE_SEARCH %u update: %u", GetPlayer()->getGuid(), update ? 1 : 0);
-
-    WorldPacket data(SMSG_LFG_UPDATE_SEARCH, 1);
-
-    data << uint8(update);                                 // In Lfg Queue?
-    SendPacket(&data);
+    SendPacket(SmsgLfgUpdateSearch(update).serialise().get());
 #endif
 }
 
@@ -692,7 +688,6 @@ void WorldSession::SendLfgDisabled()
     LogDebugFlag(LF_OPCODE, "SMSG_LFG_DISABLED %u", GetPlayer()->getGuid());
 
     WorldPacket data(SMSG_LFG_DISABLED, 0);
-
     SendPacket(&data);
 }
 

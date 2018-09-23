@@ -269,6 +269,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLearnedDanceMoves.h
    ${PATH_PREFIX}/SmsgLfgOfferContinue.h
    ${PATH_PREFIX}/SmsgLfgTeleportDenied.h
+   ${PATH_PREFIX}/SmsgLfgUpdateSearch.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
    ${PATH_PREFIX}/SmsgLootRemoved.h
    ${PATH_PREFIX}/SmsgMessageChat.h
