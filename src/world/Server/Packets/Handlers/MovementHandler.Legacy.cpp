@@ -47,8 +47,6 @@
 #pragma comment(lib, "winmm.lib")
 #define DELTA_EPOCH_IN_USEC 11644473600000000ULL
 
-using namespace AscEmu::Packets;
-
 uint32 TimeStamp()
 {
     //return timeGetTime();
@@ -114,7 +112,7 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recv_data*/)
         _player->SetMapId(pTrans->GetMapId());
         _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
 
-        SendPacket(SmsgNewWorld(pTrans->GetMapId(), positionOnTransport).serialise().get());
+        SendPacket(AscEmu::Packets::SmsgNewWorld(pTrans->GetMapId(), positionOnTransport).serialise().get());
     }
     else
     {
@@ -369,11 +367,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Read Movement Data Packet                                            */
     /************************************************************************/
-    /*MovementPacket packet(recv_data.GetOpcode(), 0);
+    /*AscEmu::Packets::MovementPacket packet(recv_data.GetOpcode(), 0);
     packet.guid = mover->getGuid();
     packet.info = movement_info;*/
 
-    MovementPacket packet;
+    AscEmu::Packets::MovementPacket packet;
     if (!packet.deserialise(recv_data))
         return;
 
