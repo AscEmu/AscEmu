@@ -22,8 +22,8 @@ enum
     CN_NAJENTUS = 22887,
 
     CRASHING_WAVE = 40100, // Crashing Wave (2313-2687 Nature damage)
-    NEEDLE_SPINE = 39835; // Needle Spine (3188-4312 Damage, AoE of 2375-2625 Aura): Fires a needle spine at an enemy target.
-    //NEEDLE_SPINE_EXPLOSION = 39968;
+    NEEDLE_SPINE = 39835, // Needle Spine (3188-4312 Damage, AoE of 2375-2625 Aura): Fires a needle spine at an enemy target.
+    //NEEDLE_SPINE_EXPLOSION = 39968,
     TIDAL_SHIELD = 39872, // Tidal Shield : Impervious to normal attack and spells. Regenerating health. Will deal 8500 frost damage to the raid when broken.
     IMPALING_SPINE = 39837,
     //NAJENTUS_SPINE_GO = 3264, // Campfire so it wont crash Real go is 185584 //Did not find it in any database (including drake's go's), tested with a chair, and it works
