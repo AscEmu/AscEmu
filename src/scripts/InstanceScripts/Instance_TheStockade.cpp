@@ -22,15 +22,14 @@
 #include "Setup.h"
 #include "Instance_TheStockade.h"
 
-
 class InstanceStormwindStockadeScript : public InstanceScript
 {
-    public:
+public:
 
-        InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-        {}
+    InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {}
 
-        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
 };
 
 class DeepfuryAI : public CreatureAIScript
