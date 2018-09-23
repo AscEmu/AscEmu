@@ -116,7 +116,7 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recv_data*/)
         _player->SetMapId(pTrans->GetMapId());
         _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
 
-        SendPacket(AscEmu::Packets::SmsgNewWorld(pTrans->GetMapId(), positionOnTransport).serialise().get());
+        SendPacket(SmsgNewWorld(pTrans->GetMapId(), positionOnTransport).serialise().get());
     }
     else
     {
@@ -371,11 +371,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Read Movement Data Packet                                            */
     /************************************************************************/
-    /*AscEmu::Packets::MovementPacket packet(recv_data.GetOpcode(), 0);
+    /*MovementPacket packet(recv_data.GetOpcode(), 0);
     packet.guid = mover->getGuid();
     packet.info = movement_info;*/
 
-    AscEmu::Packets::MovementPacket packet;
+    MovementPacket packet;
     if (!packet.deserialise(recv_data))
         return;
 
@@ -777,9 +777,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 #endif
 #endif
 
-void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& /*recvData*/)
-{}
-
 // TODO implement
 #ifndef AE_TBC
 void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
@@ -808,7 +805,4 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 #endif
 }
 #endif
-
-void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& /*recvPacket*/)
-{}
 

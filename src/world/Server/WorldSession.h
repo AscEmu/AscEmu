@@ -364,7 +364,6 @@ class SERVER_DECL WorldSession
         // Opcodes implemented in MovementHandler.cpp
         void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
         void HandleMovementOpcodes(WorldPacket& recvPacket);
-        void HandleMoveTimeSkippedOpcode(WorldPacket& recvPacket);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
         void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
@@ -561,7 +560,6 @@ class SERVER_DECL WorldSession
         void handleVehicleDismiss(WorldPacket& /*recvPacket*/);
 #endif
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
-        void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
         // Chat opcodes (Chat.cpp)
         bool isSessionMuted();
