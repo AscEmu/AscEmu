@@ -778,7 +778,7 @@ class SERVER_DECL WorldSession
 
         // Acknowledgements
         void HandleAcknowledgementOpcodes(WorldPacket& recvPacket);
-        void HandleMountSpecialAnimOpcode(WorldPacket& recvPacket);
+        void handleMountSpecialAnimOpcode(WorldPacket& recvPacket);
 
         void handleSelfResurrect(WorldPacket& /*recvPacket*/);
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);

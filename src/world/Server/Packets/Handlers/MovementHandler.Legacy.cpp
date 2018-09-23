@@ -812,9 +812,3 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& /*recvPacket*/)
 {}
 
-void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
-{
-    CHECK_INWORLD_RETURN
-
-    _player->SendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
-}
