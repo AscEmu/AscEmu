@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Warden/SpeedDetector.h"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/CmsgWorldTeleport.h"
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
@@ -500,3 +501,20 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 }
 #endif
+
+void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgWorldTeleport srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    if (!HasGMPermissions())
+    {
+        SendNotification("You do not have permission to use this function.");
+        return;
+    }
+
+    _player->SafeTeleport(srlPacket.mapId, 0, srlPacket.location);
+}

@@ -29,6 +29,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/Packets/SmsgNewWorld.h"
+#include "Server/Packets/CmsgWorldTeleport.h"
 
 #if VERSION_STRING == Classic
 #include "GameClassic/Data/MovementInfoClassic.h"
@@ -46,6 +47,8 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 #define DELTA_EPOCH_IN_USEC 11644473600000000ULL
+
+using namespace AscEmu::Packets;
 
 uint32 TimeStamp()
 {
@@ -815,32 +818,4 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
     WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
     data << _player->getGuid();
     _player->SendMessageToSet(&data, true);
-}
-
-void WorldSession::HandleWorldportOpcode(WorldPacket& recvData)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32_t time;
-    uint32_t mapid;
-    float target_position_x;
-    float target_position_y;
-    float target_position_z;
-    float target_position_o;
-
-    recvData >> time;
-    recvData >> mapid;
-    recvData >> target_position_x;
-    recvData >> target_position_y;
-    recvData >> target_position_z;
-    recvData >> target_position_o;
-
-    if (!HasGMPermissions())
-    {
-        SendNotification("You do not have permission to use this function.");
-        return;
-    }
-
-    LocationVector vec(target_position_x, target_position_y, target_position_z, target_position_o);
-    _player->SafeTeleport(mapid, 0, vec);
 }

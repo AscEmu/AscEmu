@@ -199,6 +199,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgWho.h
+   ${PATH_PREFIX}/CmsgWorldTeleport.h
    ${PATH_PREFIX}/CmsgWrapItem.h
    ${PATH_PREFIX}/CmsgZoneupdate.h
    ${PATH_PREFIX}/ManagedPacket.h
