@@ -54,18 +54,18 @@ enum CreatureSay
 {
     //SvalaSorrowgrave Say
     /*
-    635	The sensation is... beyond my imagining.I am yours to command, my king.
-    636	I will be happy to slaughter them in your name!Come, enemies of the Scourge!I will show you the might of the Lich King!
-    637	I will vanquish your soul!
-    638	You were a fool to challenge the power of the Lich King!
-    639	Your will is done, my king!
-    640	Another soul for my master!
-    641	Nooo!I did not come this far... to...
-    642	Your death approaches....
-    643	Go now to my master!
-    644	Your end is inevitable.
-    645	Yor - guul mak!
-    646	Any last words ?
+    635 - The sensation is... beyond my imagining.I am yours to command, my king.
+    636 - I will be happy to slaughter them in your name!Come, enemies of the Scourge!I will show you the might of the Lich King!
+    637 - I will vanquish your soul!
+    638 - You were a fool to challenge the power of the Lich King!
+    639 - Your will is done, my king!
+    640 - Another soul for my master!
+    641 - Nooo!I did not come this far... to...
+    642 - Your death approaches....
+    643 - Go now to my master!
+    644 - Your end is inevitable.
+    645 - Yor - guul mak!
+    646 - Any last words ?
     */
 
     //GortokPalehoof Say
