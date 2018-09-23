@@ -21,9 +21,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/ItemHandler.cpp
    ${PATH_PREFIX}/ItemHandler.Legacy.cpp
    
-   ${PATH_PREFIX}/MailHandler.cpp
-   ${PATH_PREFIX}/MailHandler.Legacy.cpp
-   
+   ${PATH_PREFIX}/MailHandler.cpp  
    ${PATH_PREFIX}/MiscHandler.cpp
    ${PATH_PREFIX}/MiscHandler.Legacy.cpp
    

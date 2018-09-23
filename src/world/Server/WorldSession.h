@@ -458,7 +458,7 @@ class SERVER_DECL WorldSession
         void handleGetMailOpcode(WorldPacket& /*recvPacket*/);
         void handleSendMailOpcode(WorldPacket& recvPacket);
         void handleTakeMoneyOpcode(WorldPacket& recvPacket);
-        void HandleTakeItem(WorldPacket& recvPacket);
+        void handleTakeItemOpcode(WorldPacket& recvPacket);
         void handleMarkAsReadOpcode(WorldPacket& recvPacket);
         void handleReturnToSenderOpcode(WorldPacket& recvPacket);
         void handleMailDeleteOpcode(WorldPacket& recvPacket);
