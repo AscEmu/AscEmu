@@ -1,22 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
  // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
@@ -28,6 +12,7 @@
 class Berthold : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
@@ -56,7 +41,7 @@ public:
 
 };
 
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Attumen the Huntsman (and Midnight)
 const uint32 CN_MIDNIGHT = 16151;
 const uint32 CN_ATTUMEN = 15550;
@@ -184,7 +169,7 @@ class MidnightAI : public CreatureAIScript
     }
 };
 
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Moroes
 const uint32 CN_MOROES = 15687;
 const uint32 MOROES_GOUGE = 28456;
@@ -286,7 +271,7 @@ class MoroesAI : public CreatureAIScript
     uint32 mGarroteTimer;
 };
 
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Maiden of Virtue
 const uint32 CN_MAIDENOFVIRTUE = 16457;
 const uint32 MAIDENOFVIRTUE_REPENTANCE = 29511;
@@ -323,7 +308,7 @@ class MaidenOfVirtueAI : public CreatureAIScript
     CreatureAISpells* mRepentance;
 };
 
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //The Big Bad Wolf
 const uint32 CN_BIGBADWOLF = 17521;
 
@@ -447,6 +432,7 @@ uint32 WayStartBBW[1000000];
 class BarnesGS : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
@@ -495,6 +481,7 @@ public:
 class GrandMother : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
@@ -786,6 +773,7 @@ protected:
 class StageLight : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(StageLight);
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -2450,9 +2438,8 @@ class VoidZoneAI : public CreatureAIScript
     }
 };
 
-//------------------------------------
-//    -= Nightbane =-
-//------------------------------------
+//////////////////////////////////////////////////////////////////////////////////////////
+// -= Nightbane =-
 
 /* \todo
  - Rain of Bones on one random player/pet
@@ -2996,6 +2983,7 @@ const uint32 CN_ROAR = 17546;
 class RoarAI : public CreatureAIScript
 {
 public:
+
     ADD_CREATURE_FACTORY_FUNCTION(RoarAI);
 
     RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
