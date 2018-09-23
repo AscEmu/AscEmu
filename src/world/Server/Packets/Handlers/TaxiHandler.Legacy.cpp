@@ -29,6 +29,7 @@
 #include "Server/Packets/SmsgActivatetaxireply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
+#include "Server/Packets/SmsgShowTaxiNodes.h"
 
 using namespace AscEmu::Packets;
 
@@ -69,15 +70,10 @@ void WorldSession::SendTaxiList(Creature* pCreature)
         }
     }
 
-    WorldPacket data(64);
-    data.Initialize(SMSG_SHOWTAXINODES);
-    data << uint32(1) << guid;
-    data << uint32(nearestNode);
-    for (uint8 i = 0; i < 12; i++)
-    {
-        data << TaxiMask[i];
-    }
-    SendPacket(&data);
+    std::array<uint32_t, 12> taxiMask{};
+    std::copy(std::begin(TaxiMask), std::end(TaxiMask), std::begin(taxiMask));
+
+    SendPacket(SmsgShowTaxiNodes(guid, nearestNode, taxiMask).serialise().get());
 
     LOG_DEBUG("WORLD: Sent SMSG_SHOWTAXINODES");
 }
