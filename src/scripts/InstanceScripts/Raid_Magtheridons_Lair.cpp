@@ -10,7 +10,6 @@
 
 enum QuestEvents
 {
-	
     CN_CUBE_TRIGGER = 17376,
 
     // Encounter Settings

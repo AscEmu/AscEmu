@@ -32,10 +32,10 @@
 
 enum
 {
-	// Crystal Spikes
-	CN_CRYSTAL_SPIKE = 27099,
-	CRYSTAL_SPIKES = 47958,
-	CRYSTAL_SPIKES_H = 57082
+    // Crystal Spikes
+    CN_CRYSTAL_SPIKE = 27099,
+    CRYSTAL_SPIKES = 47958,
+    CRYSTAL_SPIKES_H = 57082
 };
 
 bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)

@@ -94,126 +94,126 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
 class ChronoLordEpochAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
-	ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		if (_isHeroic())
-		{
-			// WoundingStrike
-			addAISpell(58830, 50.0f, TARGET_ATTACKING, 0, 3);
-			// TimeStop
-			addAISpell(58848, 20.0f, TARGET_ATTACKING, 0, 2);
-		}
-		else
-		{
-			// WoundingStrike
-			addAISpell(52771, 50.0f, TARGET_ATTACKING, 0, 3);
-		}
+    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
+    ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        if (_isHeroic())
+        {
+            // WoundingStrike
+            addAISpell(58830, 50.0f, TARGET_ATTACKING, 0, 3);
+            // TimeStop
+            addAISpell(58848, 20.0f, TARGET_ATTACKING, 0, 2);
+        }
+        else
+        {
+            // WoundingStrike
+            addAISpell(52771, 50.0f, TARGET_ATTACKING, 0, 3);
+        }
 
-		// CurseOfExertion
-		addAISpell(52772, 100.0f, TARGET_RANDOM_SINGLE, 0, 5);
-		// TimeWarp
-		addAISpell(52766, 50.0f, TARGET_ATTACKING, 0, 6);
+        // CurseOfExertion
+        addAISpell(52772, 100.0f, TARGET_RANDOM_SINGLE, 0, 5);
+        // TimeWarp
+        addAISpell(52766, 50.0f, TARGET_ATTACKING, 0, 6);
 
 
-		addEmoteForEvent(Event_OnCombatStart, SAY_CHRONOLORD_EPOCH_02);
-		addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_06);
-		addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_07);
-		addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
-	}
+        addEmoteForEvent(Event_OnCombatStart, SAY_CHRONOLORD_EPOCH_02);
+        addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_06);
+        addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_07);
+        addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
+    }
 
-	void OnCombatStop(Unit* /*mTarget*/) override
-	{
-		getCreature()->RemoveAllAuras();
-	}
+    void OnCombatStop(Unit* /*mTarget*/) override
+    {
+        getCreature()->RemoveAllAuras();
+    }
 };
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
-	InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		// VoidStrike
-		addAISpell(60590, 50.0f, TARGET_ATTACKING, 0, 1);
-		// CorruptingBlight
-		addAISpell(60588, 50.0f, TARGET_RANDOM_SINGLE, 0, 3);
+    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
+    InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // VoidStrike
+        addAISpell(60590, 50.0f, TARGET_ATTACKING, 0, 1);
+        // CorruptingBlight
+        addAISpell(60588, 50.0f, TARGET_RANDOM_SINGLE, 0, 3);
 
-		
-		addEmoteForEvent(Event_OnCombatStart, SAY_INFINITE_CORRUP_01);
-		addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
-	}
+        
+        addEmoteForEvent(Event_OnCombatStart, SAY_INFINITE_CORRUP_01);
+        addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
+    }
 
-	void OnCombatStop(Unit* /*mTarget*/) override
-	{
-		getCreature()->RemoveAllAuras();
-	}
+    void OnCombatStop(Unit* /*mTarget*/) override
+    {
+        getCreature()->RemoveAllAuras();
+    }
 };
 
 
 class MalganisAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
-	MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		if (_isHeroic())
-		{
-			// CarrionSwarm
-			addAISpell(58852, 60.0f, TARGET_ATTACKING, 0, 10);
-			// MindBlast
-			addAISpell(58850, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
-			// Sleep
-			addAISpell(58849, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
-		}
-		else
-		{
-			// CarrionSwarm
-			addAISpell(52720, 60.0f, TARGET_ATTACKING, 0, 10);
-			// MindBlast
-			addAISpell(52722, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
-			// Sleep
-			addAISpell(52721, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
-		}
+    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
+    MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        if (_isHeroic())
+        {
+            // CarrionSwarm
+            addAISpell(58852, 60.0f, TARGET_ATTACKING, 0, 10);
+            // MindBlast
+            addAISpell(58850, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+            // Sleep
+            addAISpell(58849, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
+        }
+        else
+        {
+            // CarrionSwarm
+            addAISpell(52720, 60.0f, TARGET_ATTACKING, 0, 10);
+            // MindBlast
+            addAISpell(52722, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+            // Sleep
+            addAISpell(52721, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
+        }
 
-		// VampiricTouch
-		addAISpell(52723, 90.0f, TARGET_SELF, 0, 30);
+        // VampiricTouch
+        addAISpell(52723, 90.0f, TARGET_SELF, 0, 30);
 
 
-		addEmoteForEvent(Event_OnCombatStart, SAY_MALGANIS_03);
-		addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_04);
-		addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_05);
-		addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_06);
-		addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
-	}
+        addEmoteForEvent(Event_OnCombatStart, SAY_MALGANIS_03);
+        addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_04);
+        addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_05);
+        addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_06);
+        addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
+    }
 
-	void OnCombatStop(Unit* /*mTarget*/) override
-	{
-		getCreature()->RemoveAllAuras();
-	}
+    void OnCombatStop(Unit* /*mTarget*/) override
+    {
+        getCreature()->RemoveAllAuras();
+    }
 
-	void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
-	{
-		if (getCreature()->HasAura(52723))    //handling a dummy :)
-		{
-			getCreature()->Heal(getCreature(), 52723, fAmount / 2);
-		}
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    {
+        if (getCreature()->HasAura(52723))    //handling a dummy :)
+        {
+            getCreature()->Heal(getCreature(), 52723, fAmount / 2);
+        }
 
-		if (getCreature()->GetHealthPct() < 2)
-		{
-			getCreature()->setMoveRoot(true);
-			getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-			for (uint8 i = 0; i < 7; ++i)
-				getCreature()->SchoolImmunityList[i] = 1;
+        if (getCreature()->GetHealthPct() < 2)
+        {
+            getCreature()->setMoveRoot(true);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+            for (uint8 i = 0; i < 7; ++i)
+                getCreature()->SchoolImmunityList[i] = 1;
 
-			RemoveAIUpdateEvent();
-			sendDBChatMessage(SAY_MALGANIS_17);
+            RemoveAIUpdateEvent();
+            sendDBChatMessage(SAY_MALGANIS_17);
 
-			//spawn a chest and go
-			GameObject* go = getCreature()->GetMapMgr()->CreateGameObject(190663);
-			go->CreateFromProto(190663, getCreature()->GetMapMgr()->GetMapId(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
-			go->PushToWorld(getCreature()->GetMapMgr());
-			getCreature()->Despawn(1, 0);
-		}
-	}
+            //spawn a chest and go
+            GameObject* go = getCreature()->GetMapMgr()->CreateGameObject(190663);
+            go->CreateFromProto(190663, getCreature()->GetMapMgr()->GetMapId(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
+            go->PushToWorld(getCreature()->GetMapMgr());
+            getCreature()->Despawn(1, 0);
+        }
+    }
 };
 
 
@@ -295,70 +295,70 @@ static Movement::Location walk[] =
 
 class UtherAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
-	UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, walk[1]));
-		AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, walk[2]));
-		AddWaypoint(CreateWaypoint(3, 90000, Movement::WP_MOVE_TYPE_RUN, walk[3]));
-		check = true;
-	}
+    ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
+    UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, walk[1]));
+        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, walk[2]));
+        AddWaypoint(CreateWaypoint(3, 90000, Movement::WP_MOVE_TYPE_RUN, walk[3]));
+        check = true;
+    }
 
-	void OnReachWP(uint32 i, bool /*usl*/) override
-	{
-		if (i == 3 && check)
-		{
-			check = false;
-			Creature* Arthas = getNearestCreature(CN_ARTHAS);
-			Creature* Jaina = getNearestCreature(CN_JAINA);
-			if (Arthas && Jaina)  //Show must go on!
-			{
-				//we add 0,5s per speech
-				//1 = 0s
-				Arthas->SendScriptTextChatMessage(SAY_ARTHAS_01);
-				//2 = 2,5s
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_01, 2500);
-				//3 = 9s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_02, 9000);
-				//4 = 14,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_03, 14500);
-				//5 = 25s
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_02, 25000);
-				//6 = 26,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_04, 26500);
-				//7 = 29s
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_03, 29000);
-				//8 = 33,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_05, 33500);
-				//9 = 38s
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_04, 38000);
-				//10 = 44,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_06, 44500);
-				//11 = 49s
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_05, 49000);
-				//12 = 53,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_07, 53500);
-				//13 = 65s
-				Jaina->SendTimedScriptTextChatMessage(SAY_JAINA_01, 65000);
-				//14 = 67,5s
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_08, 67500);
-				//15 = 77s
-				//here few knights should leave, after speech, Uther should leave also
-				getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_06, 77000);
-				//16 = 80,5s
-				//Jaina begins leaving
-				Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_09, 80500);
-				//17 = 82s
-				Jaina->SendTimedScriptTextChatMessage(SAY_JAINA_02, 82000);
-				//trigger Arthas actions = 86,5s
-				getCreature()->Despawn(100000, 0);
-			}
-		}
-	}
+    void OnReachWP(uint32 i, bool /*usl*/) override
+    {
+        if (i == 3 && check)
+        {
+            check = false;
+            Creature* Arthas = getNearestCreature(CN_ARTHAS);
+            Creature* Jaina = getNearestCreature(CN_JAINA);
+            if (Arthas && Jaina)  //Show must go on!
+            {
+                //we add 0,5s per speech
+                //1 = 0s
+                Arthas->SendScriptTextChatMessage(SAY_ARTHAS_01);
+                //2 = 2,5s
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_01, 2500);
+                //3 = 9s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_02, 9000);
+                //4 = 14,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_03, 14500);
+                //5 = 25s
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_02, 25000);
+                //6 = 26,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_04, 26500);
+                //7 = 29s
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_03, 29000);
+                //8 = 33,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_05, 33500);
+                //9 = 38s
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_04, 38000);
+                //10 = 44,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_06, 44500);
+                //11 = 49s
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_05, 49000);
+                //12 = 53,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_07, 53500);
+                //13 = 65s
+                Jaina->SendTimedScriptTextChatMessage(SAY_JAINA_01, 65000);
+                //14 = 67,5s
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_08, 67500);
+                //15 = 77s
+                //here few knights should leave, after speech, Uther should leave also
+                getCreature()->SendTimedScriptTextChatMessage(SAY_UTHER_06, 77000);
+                //16 = 80,5s
+                //Jaina begins leaving
+                Arthas->SendTimedScriptTextChatMessage(SAY_ARTHAS_09, 80500);
+                //17 = 82s
+                Jaina->SendTimedScriptTextChatMessage(SAY_JAINA_02, 82000);
+                //trigger Arthas actions = 86,5s
+                getCreature()->Despawn(100000, 0);
+            }
+        }
+    }
 
 private:
 
-	bool check;
+    bool check;
 };
 
 static Movement::Location ArthasWalk[] =
@@ -376,133 +376,133 @@ static Movement::Location ArthasWalk[] =
 
 class ArthasAI : public CreatureAIScript
 {
-	ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
-	ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
-	{
-		SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-		AddWaypoint(CreateWaypoint(1, 10500, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[1]));
-		AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[2]));
-		AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[3]));
-		AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[4]));
-		AddWaypoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[5]));
-		AddWaypoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[6]));
-		AddWaypoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[7]));
+    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
+    ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        AddWaypoint(CreateWaypoint(1, 10500, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[1]));
+        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[2]));
+        AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[3]));
+        AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[4]));
+        AddWaypoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[5]));
+        AddWaypoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[6]));
+        AddWaypoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[7]));
 
-		setAIAgent(AGENT_NULL);
-		getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-		phase = 0;
-	}
+        setAIAgent(AGENT_NULL);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+        phase = 0;
+    }
 
-	void OnReachWP(uint32 i, bool /*usl*/) override
-	{
-		switch (i)
-		{
-			case 1:
-			{
-				sendDBChatMessage(SAY_ARTHAS_10);
-				getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-				getCreature()->GetAIInterface()->setWayPointToMove(2);
-			}
-			break;
-			case 7:
-			{
-				getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-				getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-				getCreature()->GetAIInterface()->m_canMove = false;
-				getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-			}
-			break;
-			case 1000://haxxed ;)
-			{
-				sendDBChatMessage(SAY_ARTHAS_11);
-				phase++;
-			}
-			break;
-			default:
-			{
-				if (i > 1 && i < 7)
-				{
-					getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-					getCreature()->GetAIInterface()->setWayPointToMove(i + 1);
-				}
-			}
-			break;
-		}
-	}
+    void OnReachWP(uint32 i, bool /*usl*/) override
+    {
+        switch (i)
+        {
+            case 1:
+            {
+                sendDBChatMessage(SAY_ARTHAS_10);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(2);
+            }
+            break;
+            case 7:
+            {
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->GetAIInterface()->m_canMove = false;
+                getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            }
+            break;
+            case 1000://haxxed ;)
+            {
+                sendDBChatMessage(SAY_ARTHAS_11);
+                phase++;
+            }
+            break;
+            default:
+            {
+                if (i > 1 && i < 7)
+                {
+                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    getCreature()->GetAIInterface()->setWayPointToMove(i + 1);
+                }
+            }
+            break;
+        }
+    }
 
-	void AIUpdate() override
-	{
-		switch (phase)
-		{
-			case 0:
-			{
-				getCreature()->GetAIInterface()->StopMovement(0);
-				getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-				getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-				getCreature()->GetAIInterface()->setWayPointToMove(1);
-			}
-			break;
-			case 1:
-			{
-				getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_12, 300);
-				Creature* citizen = getNearestCreature(28167);
-				if (citizen)
-				{
-					getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-					getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
-				}
-				citizen = getNearestCreature(28169);
-				if (citizen)
-				{
-					getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-					getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
-				}
-				getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
-				phase++;
-			}
-			break;
-			case 2:
-			{
-				//we need that tricky animation here
-				//spawn Mal'Ganis
-				CreatureProperties const* cp = sMySQLStore.getCreatureProperties(26533);
-				Creature* c = nullptr;
-				if (cp)
-				{
-					c = getCreature()->GetMapMgr()->CreateCreature(26533);
-					if (c)
-					{
-						//position is guessed
-						c->Load(cp, 2113.52f, 1288.01f, 136.382f, 2.30383f);
-						c->PushToWorld(getCreature()->GetMapMgr());
-					}
-				}
-				if (c)
-				{
-					c->bInvincible = true;
-					c->GetAIInterface()->m_canMove = false;
-					c->GetAIInterface()->SetAllowedToEnterCombat(false);
-					for (uint8 i = 0; i < 7; i++)
-						c->SchoolImmunityList[i] = 1;
-					c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-					//1 = 0s
-					c->SendScriptTextChatMessage(SAY_MALGANIS_01);
-					//2 = 13s
-					//change all citizens to undeads...
-					c->SendTimedScriptTextChatMessage(SAY_MALGANIS_02, 13000);
-					//2 = 32s
-					getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_14, 32000);
-					c->Despawn(38500, 0);
-					//3 = 37s
-				}
-			}
-			break;
-		}
-	}
+    void AIUpdate() override
+    {
+        switch (phase)
+        {
+            case 0:
+            {
+                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(1);
+            }
+            break;
+            case 1:
+            {
+                getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_12, 300);
+                Creature* citizen = getNearestCreature(28167);
+                if (citizen)
+                {
+                    getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
+                }
+                citizen = getNearestCreature(28169);
+                if (citizen)
+                {
+                    getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
+                }
+                getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
+                phase++;
+            }
+            break;
+            case 2:
+            {
+                //we need that tricky animation here
+                //spawn Mal'Ganis
+                CreatureProperties const* cp = sMySQLStore.getCreatureProperties(26533);
+                Creature* c = nullptr;
+                if (cp)
+                {
+                    c = getCreature()->GetMapMgr()->CreateCreature(26533);
+                    if (c)
+                    {
+                        //position is guessed
+                        c->Load(cp, 2113.52f, 1288.01f, 136.382f, 2.30383f);
+                        c->PushToWorld(getCreature()->GetMapMgr());
+                    }
+                }
+                if (c)
+                {
+                    c->bInvincible = true;
+                    c->GetAIInterface()->m_canMove = false;
+                    c->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    for (uint8 i = 0; i < 7; i++)
+                        c->SchoolImmunityList[i] = 1;
+                    c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                    //1 = 0s
+                    c->SendScriptTextChatMessage(SAY_MALGANIS_01);
+                    //2 = 13s
+                    //change all citizens to undeads...
+                    c->SendTimedScriptTextChatMessage(SAY_MALGANIS_02, 13000);
+                    //2 = 32s
+                    getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_14, 32000);
+                    c->Despawn(38500, 0);
+                    //3 = 37s
+                }
+            }
+            break;
+        }
+    }
 
 protected:
 
-	uint32 phase;
+    uint32 phase;
 };
 
 

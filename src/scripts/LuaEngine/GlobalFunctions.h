@@ -234,7 +234,7 @@ namespace luaGlobalFunctions
         }
         else
         {
-            if (!stricmp(TableName, "command_overrides"))	// Command Overrides
+            if (!stricmp(TableName, "command_overrides"))    // Command Overrides
             {
                 CommandTableStorage::getSingleton().Dealloc();
                 CommandTableStorage::getSingleton().Init();
