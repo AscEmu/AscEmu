@@ -212,7 +212,7 @@ class WaterBarrel : public GameObjectAIScript
 {
 public:
 
-    WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 
     void OnActivate(Player* pPlayer)

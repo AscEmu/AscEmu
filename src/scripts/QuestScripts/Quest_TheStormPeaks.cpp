@@ -24,7 +24,7 @@ class LokensFury : public GameObjectAIScript
 {
 public:
 
-    LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFury(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -37,7 +37,7 @@ class LokensPower : public GameObjectAIScript
 {
 public:
 
-    LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensPower(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -50,7 +50,7 @@ class LokensFavor : public GameObjectAIScript
 {
 public:
 
-    LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFavor(GO); };
 
     void OnActivate(Player* pPlayer)

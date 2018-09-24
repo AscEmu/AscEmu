@@ -56,7 +56,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
 {
 public:
 
-    ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
     void OnActivate(Player* pPlayer)

@@ -102,7 +102,7 @@ class powerconv : public GameObjectAIScript
 {
 public:
 
-    powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new powerconv(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -125,7 +125,7 @@ class NetherEgg : public GameObjectAIScript
 {
 public:
 
-    NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NetherEgg(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -193,7 +193,7 @@ class LegionObelisk : public GameObjectAIScript
 {
 public:
 
-    LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new LegionObelisk(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -275,7 +275,7 @@ class Stasis_Chamber_Alpha : public GameObjectAIScript
 {
 public:
 
-    Stasis_Chamber_Alpha(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Stasis_Chamber_Alpha(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO)
     {
         return new Stasis_Chamber_Alpha(GO);

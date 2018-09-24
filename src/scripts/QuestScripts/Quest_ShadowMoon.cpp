@@ -317,7 +317,7 @@ class KarynakuChains : public GameObjectAIScript
 {
 public:
 
-    KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
     void OnActivate(Player* pPlayer) override

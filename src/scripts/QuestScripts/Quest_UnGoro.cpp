@@ -39,7 +39,7 @@ class NorthernPylon : public GameObjectAIScript
 {
 public:
 
-    NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -60,7 +60,7 @@ class EasternPylon : public GameObjectAIScript
 {
 public:
 
-    EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -81,7 +81,7 @@ class WesternPylon : public GameObjectAIScript
 {
 public:
 
-    WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
     void OnActivate(Player* pPlayer) override

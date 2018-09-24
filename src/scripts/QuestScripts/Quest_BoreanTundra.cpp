@@ -42,7 +42,7 @@ class BellRope : public GameObjectAIScript
 {
 public:
 
-    BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BellRope(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -57,7 +57,7 @@ class ColdarraGeoMonitorNexus : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNexus(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -70,7 +70,7 @@ class ColdarraGeoMonitorSouth : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorSouth(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -83,7 +83,7 @@ class ColdarraGeoMonitorNorth : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNorth(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -96,7 +96,7 @@ class ColdarraGeoMonitorWest : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorWest(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -122,7 +122,7 @@ class NerubarEggSac : public GameObjectAIScript
 {
 public:
 
-    NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NerubarEggSac(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -200,7 +200,7 @@ class BlueDragonEgg : public GameObjectAIScript
 {
 public:
 
-    BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BlueDragonEgg(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -343,7 +343,7 @@ class WestPointStationValve : public GameObjectAIScript
 {
 public:
 
-    WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new WestPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -372,7 +372,7 @@ class NorthPointStationValve : public GameObjectAIScript
 {
 public:
 
-    NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -401,7 +401,7 @@ class FizzcrankPumpingStationValve : public GameObjectAIScript
 {
 public:
 
-    FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new FizzcrankPumpingStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -430,7 +430,7 @@ class SouthPointStationValve : public GameObjectAIScript
 {
 public:
 
-    SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new SouthPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -460,7 +460,7 @@ class TheGearmastersManual : public GameObjectAIScript
 {
 public:
 
-    TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new TheGearmastersManual(GO); };
 
     void OnActivate(Player* pPlayer)

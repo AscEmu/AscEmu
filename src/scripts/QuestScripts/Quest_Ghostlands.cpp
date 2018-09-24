@@ -110,7 +110,7 @@ class VanquishingAquantion : public GameObjectAIScript
 {
 public:
 
-    VanquishingAquantion(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit VanquishingAquantion(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VanquishingAquantion(GO); }
 
     void OnActivate(Player* pPlayer) override

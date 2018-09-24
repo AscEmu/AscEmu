@@ -29,7 +29,7 @@ class CustomTeleport : public GameObjectAIScript // Custom Portals
 {
 public:
 
-    CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
+    explicit CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
     { }
 
     ~CustomTeleport()

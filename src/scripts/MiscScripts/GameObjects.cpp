@@ -9,7 +9,7 @@ class TyraliusPrison : public GameObjectAIScript
 {
 public:
 
-    TyraliusPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TyraliusPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TyraliusPrison(GO); }
 
     void OnActivate(Player* player)
@@ -25,7 +25,7 @@ class AndorhalTower1 : public GameObjectAIScript
 {
 public:
 
-    AndorhalTower1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AndorhalTower1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower1(GO); }
 
     void OnActivate(Player* player)
@@ -41,7 +41,7 @@ class AndorhalTower2 : public GameObjectAIScript
 {
 public:
 
-    AndorhalTower2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AndorhalTower2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower2(GO); }
 
     void OnActivate(Player* player)
@@ -57,7 +57,7 @@ class AndorhalTower3 : public GameObjectAIScript
 {
 public:
 
-    AndorhalTower3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AndorhalTower3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower3(GO); }
 
     void OnActivate(Player* player)
@@ -73,7 +73,7 @@ class AndorhalTower4 : public GameObjectAIScript
 {
 public:
 
-    AndorhalTower4(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AndorhalTower4(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower4(GO); }
 
     void OnActivate(Player* player)
@@ -89,7 +89,7 @@ class OrbOfCommand : public GameObjectAIScript
 {
 public:
 
-    OrbOfCommand(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit OrbOfCommand(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new OrbOfCommand(GO); }
 
     void OnActivate(Player* player)
@@ -113,7 +113,7 @@ class Blacksmithing_Plans_Use : public GameObjectAIScript
 {
 public:
 
-    Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Blacksmithing_Plans_Use(GO); }
 
     void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
@@ -129,7 +129,7 @@ class GongOfBethekk : public GameObjectAIScript
 {
 public:
 
-    GongOfBethekk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit GongOfBethekk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GongOfBethekk(GO); }
 
     void OnActivate(Player* player)
@@ -144,7 +144,7 @@ class TerokksDownfall : public GameObjectAIScript
 {
 public:
 
-    TerokksDownfall(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TerokksDownfall(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TerokksDownfall(GO); }
 
     void OnActivate(Player* player)
@@ -167,7 +167,7 @@ class VilebranchKidnapper : public GameObjectAIScript
 {
 public:
 
-    VilebranchKidnapper(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit VilebranchKidnapper(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VilebranchKidnapper(GO); }
 
     void OnActivate(Player* player)
@@ -191,7 +191,7 @@ class GongOfZulFarrak : public GameObjectAIScript
 {
 public:
 
-    GongOfZulFarrak(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit GongOfZulFarrak(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GongOfZulFarrak(GO); }
 
     void OnActivate(Player* player)
@@ -214,7 +214,7 @@ class Obsidias_Egg : public GameObjectAIScript
 {
 public:
 
-    Obsidias_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Obsidias_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Obsidias_Egg(GO); }
 
     void OnActivate(Player* player)
@@ -237,7 +237,7 @@ class Rivendarks_Egg : public GameObjectAIScript
 {
 public:
 
-    Rivendarks_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Rivendarks_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Rivendarks_Egg(GO); }
 
     void OnActivate(Player* player)
@@ -260,7 +260,7 @@ class Furywings_Egg : public GameObjectAIScript
 {
 public:
 
-    Furywings_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Furywings_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Furywings_Egg(GO); }
 
     void OnActivate(Player* player)
@@ -283,7 +283,7 @@ class Insidions_Egg : public GameObjectAIScript
 {
 public:
 
-    Insidions_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Insidions_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Insidions_Egg(GO); }
 
     void OnActivate(Player* player)
@@ -306,7 +306,7 @@ class Corrupt_Minor_Manifestation_Water_Object : public GameObjectAIScript
 {
 public:
 
-    Corrupt_Minor_Manifestation_Water_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Corrupt_Minor_Manifestation_Water_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Corrupt_Minor_Manifestation_Water_Object(GO); }
 
     void OnActivate(Player* player)
@@ -329,7 +329,7 @@ class Telathion_the_Impure_Object : public GameObjectAIScript
 {
 public:
 
-    Telathion_the_Impure_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Telathion_the_Impure_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Telathion_the_Impure_Object(GO); }
 
     void OnActivate(Player* player)
@@ -352,7 +352,7 @@ class UlagTheCleaver : public GameObjectAIScript
 {
 public:
 
-    UlagTheCleaver(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit UlagTheCleaver(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new UlagTheCleaver(GO); }
 
     void OnActivate(Player* player)
@@ -379,7 +379,7 @@ class DustySpellbooks : public GameObjectAIScript
 {
 public:
 
-    DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DustySpellbooks(GO); }
 
     void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
@@ -399,7 +399,7 @@ class CatFigurine : public GameObjectAIScript
 {
 public:
 
-    CatFigurine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit CatFigurine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new CatFigurine(GO); }
 
     void OnActivate(Player* player)
@@ -419,7 +419,7 @@ class EthereumTransponderZeta : public GameObjectAIScript
 {
 public:
 
-    EthereumTransponderZeta(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit EthereumTransponderZeta(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EthereumTransponderZeta(GO); }
 
     void OnActivate(Player* player)
@@ -445,7 +445,7 @@ class BringMetheEgg : public GameObjectAIScript
 {
 public:
 
-    BringMetheEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit BringMetheEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new BringMetheEgg(GO); }
 
     void OnActivate(Player* player)
@@ -463,7 +463,7 @@ class MysteriousEgg : public GameObjectAIScript
 {
 public:
 
-    MysteriousEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit MysteriousEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new MysteriousEgg(GO); }
 
     void OnActivate(Player* player)
@@ -485,7 +485,7 @@ class AlterofTidalMastery : public GameObjectAIScript
 {
 public:
 
-    AlterofTidalMastery(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AlterofTidalMastery(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AlterofTidalMastery(GO); }
 
     void OnActivate(Player* player)
@@ -498,7 +498,7 @@ class ShrineOfDathRemar : public GameObjectAIScript
 {
 public:
 
-    ShrineOfDathRemar(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit ShrineOfDathRemar(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ShrineOfDathRemar(GO); }
 
     void OnActivate(Player* player)
@@ -513,7 +513,7 @@ class APlagueUponThee : public GameObjectAIScript
 {
 public:
 
-    APlagueUponThee(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit APlagueUponThee(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new APlagueUponThee(GO); }
 
     void OnActivate(Player* player)
@@ -536,7 +536,7 @@ class SerpentStatue : public GameObjectAIScript
 {
 public:
 
-    SerpentStatue(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit SerpentStatue(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SerpentStatue(GO); }
 
     void OnActivate(Player* player)
@@ -555,7 +555,7 @@ class CuregosGold : public GameObjectAIScript
 {
 public:
 
-    CuregosGold(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit CuregosGold(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new CuregosGold(GO); }
 
     void OnActivate(Player* player)
@@ -596,7 +596,7 @@ class DreadmaulRock : public GameObjectAIScript
 {
 public:
 
-    DreadmaulRock(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit DreadmaulRock(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DreadmaulRock(GO); }
 
     void OnActivate(Player* player)
@@ -621,7 +621,7 @@ class HandofIruxos : public GameObjectAIScript
 {
 public:
 
-    HandofIruxos(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit HandofIruxos(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new HandofIruxos(GO); }
 
     void OnActivate(Player* player)
@@ -640,7 +640,7 @@ class LegionPortals : public GameObjectAIScript
 {
 public:
 
-    LegionPortals(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit LegionPortals(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new LegionPortals(GO); }
 
     void OnActivate(Player* player)
@@ -653,7 +653,7 @@ class ProphecyofAkida : public GameObjectAIScript
 {
 public:
 
-    ProphecyofAkida(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit ProphecyofAkida(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ProphecyofAkida(GO); }
 
     void OnActivate(Player* player)
@@ -672,7 +672,7 @@ class Razormaw : public GameObjectAIScript
 {
 public:
 
-    Razormaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit Razormaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Razormaw(GO); }
 
     void OnActivate(Player* player)
@@ -691,7 +691,7 @@ class TabletoftheSeven : public GameObjectAIScript
 {
 public:
 
-    TabletoftheSeven(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TabletoftheSeven(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TabletoftheSeven(GO); }
 
     void OnActivate(Player* player)
@@ -709,7 +709,7 @@ class TestofEndurance : public GameObjectAIScript
 {
 public:
 
-    TestofEndurance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TestofEndurance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TestofEndurance(GO); }
 
     void OnActivate(Player* player)
@@ -739,7 +739,7 @@ class TheFallenExarch : public GameObjectAIScript
 {
 public:
 
-    TheFallenExarch(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TheFallenExarch(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheFallenExarch(GO); }
 
     void OnActivate(Player* player)
@@ -758,7 +758,7 @@ class TheFinalCode : public GameObjectAIScript
 {
 public:
 
-    TheFinalCode(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TheFinalCode(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheFinalCode(GO); }
 
     void OnActivate(Player* player)
@@ -771,7 +771,7 @@ class TheRootofAllEvil : public GameObjectAIScript
 {
 public:
 
-    TheRootofAllEvil(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TheRootofAllEvil(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheRootofAllEvil(GO); }
 
     void OnActivate(Player* player)
@@ -791,7 +791,8 @@ public:
 class TheThunderspike : public GameObjectAIScript
 {
 public:
-    TheThunderspike(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit TheThunderspike(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheThunderspike(GO); }
 
     void OnActivate(Player* player)
@@ -816,7 +817,7 @@ class StrengthofOne : public GameObjectAIScript
 {
 public:
 
-    StrengthofOne(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit StrengthofOne(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new StrengthofOne(GO); }
 
     void OnActivate(Player* player)
@@ -845,7 +846,7 @@ class HealingTheLake : public GameObjectAIScript
 {
 public:
 
-    HealingTheLake(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit HealingTheLake(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new HealingTheLake(GO); }
 
     void OnActivate(Player* player)
@@ -858,7 +859,7 @@ class TheRavensClaw : public GameObjectAIScript
 {
 public:
 
-    TheRavensClaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit TheRavensClaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheRavensClaw(GO); }
 
     void OnActivate(Player* player)
@@ -872,7 +873,7 @@ class DeathGate1 : public GameObjectAIScript
 {
 public:
 
-    DeathGate1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit DeathGate1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate1(GO); }
 
     void OnSpawn()
@@ -897,7 +898,8 @@ public:
 class DeathGate2 : public GameObjectAIScript
 {
 public:
-    DeathGate2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit DeathGate2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate2(GO); }
 
     void OnSpawn()
@@ -923,7 +925,7 @@ class DeathGate3 : public GameObjectAIScript
 {
 public:
 
-    DeathGate3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit DeathGate3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate3(GO); }
 
     void OnActivate(Player* player)
@@ -942,7 +944,7 @@ class SacredFireofLife : public GameObjectAIScript
 {
 public:
 
-    SacredFireofLife(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit SacredFireofLife(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SacredFireofLife(GO); }
 
     void OnActivate(Player* player)

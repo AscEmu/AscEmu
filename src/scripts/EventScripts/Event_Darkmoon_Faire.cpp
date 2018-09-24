@@ -112,7 +112,7 @@ static uint32 TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 class TonkControlConsole : public GameObjectAIScript
 {
 public:
-TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+explicit TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
 static GameObjectAIScript *Create(GameObject* GO) { return new TonkControlConsole(GO); }
 
 // Click the Console

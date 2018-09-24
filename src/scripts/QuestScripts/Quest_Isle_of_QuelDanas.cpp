@@ -24,7 +24,7 @@ class ScryingOrb : public GameObjectAIScript
 {
 public:
 
-    ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
 
     void OnActivate(Player* pPlayer)

@@ -38,7 +38,7 @@ class GildedBrazier : public GameObjectAIScript
 {
 public:
 
-    GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GildedBrazier(GO); }
 
     void OnActivate(Player* pPlayer)
