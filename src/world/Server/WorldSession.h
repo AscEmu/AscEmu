@@ -290,8 +290,8 @@ class SERVER_DECL WorldSession
         void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
         void handleLootRollOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
-        Loot* getLootFromHighGuidType(uint32_t highGuid);
-        void HandleSuggestionOpcode(WorldPacket& recv_data);
+        Loot* getLootFromHighGuidType(HighGuid highGuid);
+        void HandleSuggestionOpcode(WorldPacket& recvPacket);
 #endif
         void handleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);

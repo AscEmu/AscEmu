@@ -302,20 +302,20 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
     CharacterDatabase.ExecuteNA(ss.str().c_str());
 }
 
-void WorldSession::HandleSuggestionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSuggestionOpcode(WorldPacket& recvPacket)
 {
     uint8_t unk1;
     uint8_t unk2;
 
-    recv_data >> unk1;
-    recv_data >> unk2;
+    recvPacket >> unk1;
+    recvPacket >> unk2;
 
     uint32_t lenght = 0;
     lenght = unk1 * 16;
     lenght += unk2 / 16;
 
     std::string suggestionMessage;
-    suggestionMessage = recv_data.ReadString(lenght);   // message
+    suggestionMessage = recvPacket.ReadString(lenght);   // message
 
     LOG_DEBUG("Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
 

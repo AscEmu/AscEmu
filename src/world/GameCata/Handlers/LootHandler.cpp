@@ -15,32 +15,35 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/LockTypes.h"
 
-Loot* WorldSession::getLootFromHighGuidType(uint32_t highGuid)
+Loot* WorldSession::getLootFromHighGuidType(HighGuid highGuid)
 {
     GameObject* pLootableGameObject = nullptr;
     Creature* pLootableCreature = nullptr;
     Item* pLootableSourceItem = nullptr;
 
+    WoWGuid lootGuid;
+    lootGuid.Init(GetPlayer()->GetLootGUID());
+
     switch (highGuid)
     {
-        case HIGHGUID_TYPE_UNIT:
+        case HighGuid::Unit:
         {
-            pLootableCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+            pLootableCreature = _player->GetMapMgr()->GetCreature(lootGuid.getGuidLowPart());
             if (pLootableCreature == nullptr)
                 return nullptr;
 
             return &pLootableCreature->loot;
         }
-        case HIGHGUID_TYPE_GAMEOBJECT:
+        case HighGuid::GameObject:
         {
-            pLootableGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+            pLootableGameObject = _player->GetMapMgr()->GetGameObject(lootGuid.getGuidLowPart());
             if (pLootableGameObject == nullptr || !pLootableGameObject->IsLootable())
                 return nullptr;
 
-            GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pLootableGameObject);
+            GameObject_Lootable* pLGO = dynamic_cast<GameObject_Lootable*>(pLootableGameObject);
             return &pLGO->loot;
         }
-        case HIGHGUID_TYPE_ITEM:
+        case HighGuid::Item:
         {
             Item* pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
             if (pItem == nullptr)
@@ -49,9 +52,9 @@ Loot* WorldSession::getLootFromHighGuidType(uint32_t highGuid)
             pLootableSourceItem = pItem;
             return pItem->loot;
         }
-        case HIGHGUID_TYPE_PLAYER:
+        case HighGuid::Player:
         {
-            Player* pl = _player->GetMapMgr()->GetPlayer((uint32_t)GetPlayer()->GetLootGUID());
+            Player* pl = _player->GetMapMgr()->GetPlayer(lootGuid.getGuidLowPart());
             if (pl == nullptr)
                 return nullptr;
 
@@ -62,10 +65,10 @@ Loot* WorldSession::getLootFromHighGuidType(uint32_t highGuid)
     }
 }
 
-void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 {
     uint8_t lootSlot;
-    recv_data >> lootSlot;
+    recvPacket >> lootSlot;
 
     if (_player->isCastingSpell())
         _player->interruptSpell();
@@ -76,24 +79,24 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     WoWGuid wowGuid;
     wowGuid.Init(_player->GetLootGUID());
-    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidLowPart());
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getHigh());
 
     if (wowGuid.isUnit())
     {
-        pLootableCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+        pLootableCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (pLootableCreature == nullptr)
             return;
 
     }
     else if (wowGuid.isGameObject())
     {
-        pLootableGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+        pLootableGameObject = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
         if (pLootableGameObject == nullptr || !pLootableGameObject->IsLootable())
             return;
     }
     else if (wowGuid.isItem())
     {
-        Item* pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
+        Item* pItem = _player->GetItemInterface()->GetItemByGUID(wowGuid.GetOldGuid());
         if (pItem == nullptr)
             return;
 
@@ -116,7 +119,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     uint32_t lootItemAmount = pLoot->items.at(lootSlot).iItemsCount;
-    if (pLoot->items.at(lootSlot).roll != NULL)
+    if (pLoot->items.at(lootSlot).roll != nullptr)
         return;
 
     if (!pLoot->items.at(lootSlot).ffa_loot)
@@ -251,7 +254,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
     Unit* pt = nullptr;
     WoWGuid wowGuid;
     wowGuid.Init(lootguid);
-    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidLowPart());
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getHigh());
 
     if (wowGuid.isUnit())
     {
@@ -586,12 +589,11 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
 }
 
-void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvPacket)
 {
     uint32_t itemid = 0;
     uint32_t amt = 1;
     uint8_t error = 0;
-    SlotResult slotresult;
 
     Creature* pCreature = nullptr;
     GameObject* pGameObject = nullptr;
@@ -601,14 +603,14 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     uint64_t target_playerguid;
     uint8_t slotid;
 
-    recv_data >> creatureguid;
-    recv_data >> slotid;
-    recv_data >> target_playerguid;
+    recvPacket >> creatureguid;
+    recvPacket >> slotid;
+    recvPacket >> target_playerguid;
 
     if (_player->GetGroup() == nullptr || _player->GetGroup()->GetLooter() != _player->m_playerInfo)
         return;
 
-    Player* player = _player->GetMapMgr()->GetPlayer((uint32_t)target_playerguid);
+    Player* player = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(target_playerguid));
     if (player == nullptr)
         return;
 
@@ -617,26 +619,25 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     WoWGuid wowGuid;
     wowGuid.Init(GetPlayer()->GetLootGUID());
-    Loot* pLoot = getLootFromHighGuidType(wowGuid.getGuidHighPart());
+    Loot* pLoot = getLootFromHighGuidType(wowGuid.getHigh());
     
     if (wowGuid.isUnit())
     {
-        pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
+        pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (pCreature == nullptr)
             return;
 
     }
     else if (wowGuid.isGameObject())
     {
-        pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
+        pGameObject = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
         if (pGameObject == nullptr || !pGameObject->IsLootable())
             return;
 
-        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGameObject);
+        GameObject_Lootable* pLGO = dynamic_cast<GameObject_Lootable*>(pGameObject);
         pGameObject->setState(GO_STATE_OPEN);
         pLoot = &pLGO->loot;
     }
-
 
     if (pLoot == nullptr)
         return;
@@ -686,7 +687,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
         CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(player, it);
 
 
-    slotresult = player->GetItemInterface()->FindFreeInventorySlot(it);
+    SlotResult slotresult = player->GetItemInterface()->FindFreeInventorySlot(it);
     if (!slotresult.Result)
     {
         GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
