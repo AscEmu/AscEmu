@@ -25,8 +25,6 @@
 // Fel Orc Scavengers
 class FelOrcScavengersQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI);
     FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -41,8 +39,6 @@ public:
 
 class Dreadtusk : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk);
     Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
@@ -221,8 +217,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 class PrisonersDreghoodElders : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders);
     PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -237,8 +231,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 class AncestralSpiritWolf : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf);
     AncestralSpiritWolf(Creature* c) : CreatureAIScript(c) {}
     void OnLoad() override
@@ -247,11 +239,8 @@ public:
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
 class HellfireDeadNPC : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC);
     HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

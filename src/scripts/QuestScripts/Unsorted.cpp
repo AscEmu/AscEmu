@@ -71,8 +71,6 @@ public:
 
 class Chicken : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Chicken);
     Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -92,8 +90,6 @@ public:
 
 class Kaliri : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Kaliri);
     Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

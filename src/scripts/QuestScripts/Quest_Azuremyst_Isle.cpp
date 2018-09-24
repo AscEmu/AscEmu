@@ -24,8 +24,6 @@
  // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ChieftainOomoorooQAI);
     ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

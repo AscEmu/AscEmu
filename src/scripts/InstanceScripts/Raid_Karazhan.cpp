@@ -772,8 +772,6 @@ protected:
 
 class StageLight : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(StageLight);
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -2982,8 +2980,6 @@ const uint32 CN_ROAR = 17546;
 
 class RoarAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(RoarAI);
 
     RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}

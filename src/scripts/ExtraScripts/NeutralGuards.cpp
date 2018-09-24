@@ -11,8 +11,6 @@
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner);
     ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

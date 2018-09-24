@@ -110,8 +110,6 @@ public:
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
     HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -141,8 +139,6 @@ private:
 
 class WebbedCreature : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
     WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
     {}

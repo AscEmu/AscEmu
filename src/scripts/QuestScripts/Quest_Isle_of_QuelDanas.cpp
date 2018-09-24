@@ -118,8 +118,6 @@ public:
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
     TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

@@ -24,8 +24,6 @@
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
     WyrmcultBlackwhelp(Creature* c) : CreatureAIScript(c) {}
 
@@ -63,8 +61,6 @@ public:
 // The Bladespire Threat Quest
 class BladespireQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
     BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -93,8 +89,6 @@ public:
 
 class MagnetoAura : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
     MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -152,8 +146,6 @@ public:
 
 class FunnyDragon : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
     FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -240,8 +232,6 @@ public:
 
 class BloodmaulQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
     BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -261,11 +251,9 @@ public:
 
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
-
     Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
     void OnLoad() override
     {
         getCreature()->setScale(0.4f);
@@ -328,8 +316,6 @@ enum CreatureEntry
 // Bloodmaul Brutebane Stout Trigger
 class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI);
     BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {

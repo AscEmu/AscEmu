@@ -491,8 +491,6 @@ public:
 ///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
 class GearmasterMechazodAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
     GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -656,8 +654,6 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
 class Worm : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Worm);
     Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

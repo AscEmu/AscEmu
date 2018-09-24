@@ -54,8 +54,6 @@ public:
 
 class Wizzlecranks_Shredder : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder);
     Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -81,8 +79,6 @@ public:
 
 class Gilthares_Firebough : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough);
     Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -109,8 +105,6 @@ public:
 int kolkarskilled = 0;
 class VerogtheDervish : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish);
     VerogtheDervish(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override

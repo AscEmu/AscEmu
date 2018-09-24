@@ -96,8 +96,6 @@ public:
 
 class PrisonersatDeatholme : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme);
     PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

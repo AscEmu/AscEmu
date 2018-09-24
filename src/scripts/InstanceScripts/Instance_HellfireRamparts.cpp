@@ -77,57 +77,57 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
 
 class OmorTheUnscarredAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
-        OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
+    OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);
+        pShield->setMinMaxPercentHp(0, 20);
+
+        auto pSummon = addAISpell(OMOR_SUMMON_FIENDISH_HOUND, 8.0f, TARGET_SELF, 1, 20);
+        pSummon->addEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
+
+        pWhip = addAISpell(OMOR_SHADOW_WHIP, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
+        pWhip->setMinMaxDistance(10.0f, 60.0f);
+
+        if (!_isHeroic())
         {
-            pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);
-            pShield->setMinMaxPercentHp(0, 20);
+            auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
+            shadowBolt->setMinMaxDistance(10.0f, 60.0f);
 
-            auto pSummon = addAISpell(OMOR_SUMMON_FIENDISH_HOUND, 8.0f, TARGET_SELF, 1, 20);
-            pSummon->addEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
-
-            pWhip = addAISpell(OMOR_SHADOW_WHIP, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
-            pWhip->setMinMaxDistance(10.0f, 60.0f);
-
-            if (!_isHeroic())
-            {
-                auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
-                shadowBolt->setMinMaxDistance(10.0f, 60.0f);
-
-                auto pAura = addAISpell(OMOR_TREACHEROUS_AURA, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
-                pAura->setMinMaxDistance(0.0f, 60.0f);
-                pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
-            }
-            else
-            {
-                auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT2, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
-                shadowBolt->setMinMaxDistance(10.0f, 60.0f);
-
-                auto pAura = addAISpell(OMOR_BANE_OF_TREACHERY, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
-                pAura->setMinMaxDistance(0.0f, 60.0f);
-                pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
-            }
-
-            addEmoteForEvent(Event_OnCombatStart, 4856);     // I will not be defeated!
-            addEmoteForEvent(Event_OnCombatStart, 4855);     // You dare stand against ME?
-            addEmoteForEvent(Event_OnCombatStart, 4857);     // Your insolence will be your death!
-            addEmoteForEvent(Event_OnTargetDied, 4860);      // Die, weakling!
-            addEmoteForEvent(Event_OnDied, 4861);            // It is... not over.
+            auto pAura = addAISpell(OMOR_TREACHEROUS_AURA, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
+            pAura->setMinMaxDistance(0.0f, 60.0f);
+            pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
         }
-
-        void OnCombatStart(Unit* /*pTarget*/) override
-        {           
-            setRooted(true);
-        }
-
-        void OnCombatStop(Unit* /*pTarget*/) override
+        else
         {
-            if (isAlive())
-                sendDBChatMessage(4862);     // I am victorious!
+            auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT2, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
+            shadowBolt->setMinMaxDistance(10.0f, 60.0f);
+
+            auto pAura = addAISpell(OMOR_BANE_OF_TREACHERY, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
+            pAura->setMinMaxDistance(0.0f, 60.0f);
+            pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
         }
 
-        CreatureAISpells* pShield;
-        CreatureAISpells* pWhip;
+        addEmoteForEvent(Event_OnCombatStart, 4856);     // I will not be defeated!
+        addEmoteForEvent(Event_OnCombatStart, 4855);     // You dare stand against ME?
+        addEmoteForEvent(Event_OnCombatStart, 4857);     // Your insolence will be your death!
+        addEmoteForEvent(Event_OnTargetDied, 4860);      // Die, weakling!
+        addEmoteForEvent(Event_OnDied, 4861);            // It is... not over.
+    }
+
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {           
+        setRooted(true);
+    }
+
+    void OnCombatStop(Unit* /*pTarget*/) override
+    {
+        if (isAlive())
+            sendDBChatMessage(4862);     // I am victorious!
+    }
+
+    CreatureAISpells* pShield;
+    CreatureAISpells* pWhip;
 };
 
 void SetupHellfireRamparts(ScriptMgr* mgr)

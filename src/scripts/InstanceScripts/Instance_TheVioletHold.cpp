@@ -233,22 +233,6 @@ public:
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
 {
-protected:
-
-    bool m_isIntroMob = false;
-    int m_spellCount = 0;
-
-    /* Warning
-     * Using vectors here is theoretically dangerous as they don't guarantee order
-     *   when elements are erased or moved, however it doesn't matter here as we
-     *   aren't modifying the number of elements in each vector
-     * 
-     * TODO: Write a proper spell manager to handle this stuff */
-    std::vector<bool> m_spellsEnabled;
-    //std::vector<SP_AI_Spell> m_spells;
-
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI);
     VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -368,14 +352,29 @@ public:
                 }
             }
         }*/
+protected:
+
+    bool m_isIntroMob = false;
+    int m_spellCount = 0;
+
+    /* Warning
+     * Using vectors here is theoretically dangerous as they don't guarantee order
+     *   when elements are erased or moved, however it doesn't matter here as we
+     *   aren't modifying the number of elements in each vector
+     * 
+     * TODO: Write a proper spell manager to handle this stuff */
+    std::vector<bool> m_spellsEnabled;
+    //std::vector<SP_AI_Spell> m_spells;
+
 };
 
 class VHIntroAzureBinder : VHCreatureAI
 {
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
+
     const int SPELL_ARCANE_BARRAGE = 58456;
     const int SPELL_ARCANE_EXPLOSION = 58455;
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
     VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
@@ -409,10 +408,12 @@ class VHIntroAzureBinder : VHCreatureAI
 
 class VHIntroAzureInvader : VHCreatureAI
 {
+
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
+
     const int SPELL_CLEAVE = 15496;
     const int SPELL_IMPALE = 58459;
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
     VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
@@ -446,9 +447,10 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
+
     const int SPELL_ARCANE_EMPOWERMENT = 58469;
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
     VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
@@ -472,10 +474,11 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
+
     const int SPELL_ARCANE_BLAST = 58462;
     const int SPELL_SLOW = 25603;
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
     VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;

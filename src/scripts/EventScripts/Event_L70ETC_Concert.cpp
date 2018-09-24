@@ -48,8 +48,6 @@ enum L80Spells
 
 class SamAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SamAI);
     SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -109,8 +107,6 @@ protected:
 
 class BerAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BerAI);
     BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -167,8 +163,6 @@ protected:
 
 class SigAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SigAI);
     SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -228,8 +222,6 @@ protected:
 
 class MaiAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(MaiAI);
     MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -288,8 +280,6 @@ protected:
 
 class ThuAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ThuAI);
     ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -360,8 +350,6 @@ protected:
 
 class UndeadAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(UndeadAI);
     UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -407,8 +395,6 @@ protected:
 
 class Undead2AI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Undead2AI);
     Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -455,8 +441,6 @@ protected:
 
 class Undead3AI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Undead3AI);
     Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -496,8 +480,6 @@ protected:
 
 class TriggerAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TriggerAI);
     TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -589,8 +571,6 @@ protected:
 
 class Trigger2AI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI);
     Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -676,8 +656,6 @@ protected:
 
 class Effectsground : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Effectsground);
     Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -794,8 +772,6 @@ protected:
 
 class Effectsair : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Effectsair);
     Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {

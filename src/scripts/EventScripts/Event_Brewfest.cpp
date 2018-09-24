@@ -65,7 +65,6 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
 
 class CorenDirebrew : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew);
     CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
     { }

@@ -41,8 +41,6 @@ public:
 // JainaAI
 class JainaAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(JainaAI);
     JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}

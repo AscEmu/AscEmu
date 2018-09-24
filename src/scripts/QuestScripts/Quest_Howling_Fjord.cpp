@@ -22,8 +22,6 @@
 
 class NorthFleet : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
     NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -37,8 +35,6 @@ public:
 };
 class ChillmereScourge : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
     ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -52,8 +48,6 @@ public:
 };
 class Baleheim : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
     Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

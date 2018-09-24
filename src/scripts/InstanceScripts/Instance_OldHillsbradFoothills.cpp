@@ -241,11 +241,10 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //class LieutenantDrakeAI : public CreatureAIScript
 //{
+//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
+//
 //    OldHilsbradInstance* pInstance;
 //
-//public:
-//
-//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
 //    LieutenantDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        pInstance = dynamic_cast<OldHilsbradInstance*>(GetInstanceScript());

@@ -105,10 +105,11 @@ class DextrenAI : public CreatureAIScript
 
 class TargorrTheDreadAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(TargorrTheDreadAI);
+
     bool Enrage;
     CreatureAISpells *Enraged;
 
-    ADD_CREATURE_FACTORY_FUNCTION(TargorrTheDreadAI);
     TargorrTheDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = addAISpell(ENRAGE, 0.0f, TARGET_SELF);

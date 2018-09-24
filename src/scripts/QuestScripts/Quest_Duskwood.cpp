@@ -29,8 +29,6 @@ enum
 
 class ElizaAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ElizaAI);
     ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {

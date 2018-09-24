@@ -22,8 +22,6 @@
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe);
     Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

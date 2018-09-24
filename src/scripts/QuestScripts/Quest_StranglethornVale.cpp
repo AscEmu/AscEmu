@@ -60,8 +60,6 @@ public:
 
 class Beka : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Beka);
     Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -97,8 +95,6 @@ public:
 
 class Beka1 : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Beka1);
     Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -134,8 +130,6 @@ public:
 
 class Beka2 : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Beka2);
     Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -293,8 +287,6 @@ class FacingNegolash : public QuestScript
 
 class NegolashAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
 
     NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)

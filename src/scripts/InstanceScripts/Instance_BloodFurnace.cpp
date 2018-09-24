@@ -67,8 +67,6 @@ class KelidanTheBreakerAI : public CreatureAIScript
 
 class BroggokAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
     BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -89,8 +87,6 @@ public:
 
 class TheMakerAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
     TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
