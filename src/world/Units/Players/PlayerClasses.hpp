@@ -43,7 +43,7 @@ protected:
 
 public:
 
-    DeathKnight(uint32 guid) : Player(guid)
+    explicit DeathKnight(uint32 guid) : Player(guid)
     {
         m_last_used_rune_slot = 0;
         for (uint8 i = 0; i < MAX_RUNES; ++i)
