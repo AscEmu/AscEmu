@@ -292,6 +292,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
+   ${PATH_PREFIX}/SmsgReadItemFailed.h
    ${PATH_PREFIX}/SmsgReadItemOk.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSellItem.h

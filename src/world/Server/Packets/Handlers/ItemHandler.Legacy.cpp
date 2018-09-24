@@ -1772,10 +1772,7 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            WorldPacket data(SMSG_READ_ITEM_FAILED, 5);
-            data << item->getGuid();
-            data << uint8(2);
-            SendPacket(&data);
+            SendPacket(SmsgReadItemFailed(item->getGuid(), 2).serialise().get());
             LOG_DEBUG("Sent SMSG_READ_ITEM_FAILED %d", item->getGuid());
         }
     }
