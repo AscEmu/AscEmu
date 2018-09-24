@@ -78,7 +78,7 @@ enum
     // Fathom-Guard Caribdis (Priest)
     HEAL = 33144,
     TIDAL_SURGE = 38358,
-    SUMMON_CYCLONE = 38337, ???
+    FATHOM_GUARD_CARIBDIS_AI_SUMMON_CYCLONE = 38337,
 
 
     //TIDAL_WAVE = 37730,
@@ -1090,7 +1090,7 @@ public:
     FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIDAL_SURGE, 20.0f, TARGET_SELF, 0, 10);
-        addAISpell(SUMMON_CYCLONE, 2.0f, TARGET_SELF, 0, 0);
+        addAISpell(FATHOM_GUARD_CARIBDIS_AI_SUMMON_CYCLONE, 2.0f, TARGET_SELF, 0, 0);
         HealingWaveTimer = 0;
     }
 
