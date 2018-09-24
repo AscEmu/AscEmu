@@ -73,7 +73,7 @@ enum
     //CN_SHADOWSWORD_BERSERKER = 25798,
     //CN_SHADOWSWORD_FURY_MAGE = 25799,
     //CN_VOID_SENTINEL = 25772,
-    MURU_NEGATIVE_ENERGY = 46008; // patch 2.4.2: this spell shouldn't cause casting pushback (to be fixed in core)
+    MURU_NEGATIVE_ENERGY = 46008, // patch 2.4.2: this spell shouldn't cause casting pushback (to be fixed in core)
     MURU_DARKNESS = 45996,
     //MURU_SUMMON_BERSERKER = 46037,
     //MURU_SUMMON_FURY_MAGE = 46038,
