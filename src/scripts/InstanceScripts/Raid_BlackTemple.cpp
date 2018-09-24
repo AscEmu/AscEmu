@@ -5158,7 +5158,7 @@ class CageTrapGO : public GameObjectAIScript
 {
 public:
 
-    CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
+    explicit CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     {
         _gameobject->setScale(3.0f);
     }
