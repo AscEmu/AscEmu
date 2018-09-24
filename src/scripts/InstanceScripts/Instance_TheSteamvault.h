@@ -96,7 +96,7 @@ enum CreatureSpells
     FROST_NOVA                  = 15063,    //29849 // also can be: 30094 or 32365
 
     // CoilfangLeperAI
-    SHADOW_BOLT                 = 9613,     //39025
+    //SHADOW_BOLT                 = 9613,     //39025
     FIRE_BLAST_LEPER            = 13339,    // not sure to those
     STRIKE                      = 13446,
     FROST_NOVA_LEPER            = 11831,
