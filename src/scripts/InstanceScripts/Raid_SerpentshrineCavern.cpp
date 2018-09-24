@@ -34,7 +34,6 @@ enum
     HYDROSS_ENRAGE = 13048,
     PURIFY_ELEMENTAL = 36461,
 
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // The Lurker Below
 
@@ -132,6 +131,10 @@ enum
 
 
     CSTRID_SCREAM = 10890,
+
+    COILFANGFATHOM_WITCH_AI_SHADOW_BOLT = 27209,
+    WHIRLWIND_KNOCKBACK = 34109,
+
 };
 
 class HydrossTheUnstableAI : public CreatureAIScript
@@ -2031,15 +2034,12 @@ class CoilfangAmbusherAI : public CreatureAIScript
     }
 };
 
-    SHADOW_BOLT = 27209;
-    WHIRLWIND_KNOCKBACK = 34109;
-
 class CoilfangFathomWitchAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI);
     CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(SHADOW_BOLT, 2.0f, TARGET_ATTACKING);
+        addAISpell(COILFANGFATHOM_WITCH_AI_SHADOW_BOLT, 2.0f, TARGET_ATTACKING);
         addAISpell(WHIRLWIND_KNOCKBACK, 2.0f, TARGET_SELF);
     }
 };

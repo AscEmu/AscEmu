@@ -19,7 +19,7 @@ enum
 
     CN_BLACK_WARLOCK = 12459,
     RAIN_OF_FIRE = 19717,
-    SHADOW_BOLT = 36986,
+    BLACK_WARLOCK_AI_SHADOW_BOLT = 36986,
 
     CN_LASHLAYER = 12017,
     FIRE_NOVA_LASH = 39001, // Blast wave
@@ -139,7 +139,7 @@ class BlackWarlockAI : public CreatureAIScript
         auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
         rainOfFire->setAttackStopTimer(1000);
 
-        auto shadowBolt = addAISpell(SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
+        auto shadowBolt = addAISpell(BLACK_WARLOCK_AI_SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
         shadowBolt->setAttackStopTimer(1000);
     }
 };

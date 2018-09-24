@@ -1472,7 +1472,7 @@ protected:
 // Terestian Illhoof
 const uint32 CN_ILLHOOF = 15688;
 
-const uint32 SHADOW_BOLT = 19729;
+//const uint32 SHADOW_BOLT = 19729;
 // const uint32 S_DEMONCHAINS = 30120;
 const uint32 S_KILREK = 30066;
 // const uint32 F_PORTAL1 = 30179;
