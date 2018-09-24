@@ -22,8 +22,6 @@
 
 class Paoka_Swiftmountain : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Paoka_Swiftmountain);
     Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

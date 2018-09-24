@@ -23,8 +23,6 @@
 
 class RingoDeadNPC : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
     RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -102,8 +100,6 @@ public:
 
 class A_Me01 : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
     A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

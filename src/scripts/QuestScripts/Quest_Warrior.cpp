@@ -60,8 +60,6 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Bartleby);
     Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

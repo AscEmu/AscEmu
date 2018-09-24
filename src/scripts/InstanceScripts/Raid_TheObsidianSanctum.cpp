@@ -319,8 +319,6 @@ class TsunamiAI : public CreatureAIScript
 
 class CyclonAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(CyclonAI);
     CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}

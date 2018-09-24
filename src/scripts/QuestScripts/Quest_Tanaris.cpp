@@ -45,8 +45,6 @@ public:
 
 class ScreecherSpirit : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit);
 
     ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}

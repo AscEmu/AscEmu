@@ -9,8 +9,6 @@
 // Cast spell 54028 on horde player if he is in the alliance area
 class SilverCovenantMageGuard : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
     SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -56,8 +54,6 @@ public:
 // Cast spell 54029 on alliance player if he is in the horde area
 class SunreaversMageGuard : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
     SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -101,8 +97,6 @@ public:
 
 class FactionInvisible : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible);
     FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {

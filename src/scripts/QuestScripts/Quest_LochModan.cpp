@@ -59,8 +59,6 @@ static Movement::Location WaypointsMiran[] =
 
 class Miran : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Miran);
     Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {

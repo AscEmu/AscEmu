@@ -38,8 +38,6 @@ enum
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
     InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -54,8 +52,6 @@ public:
 
 class KneepadsQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
     KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -87,8 +83,6 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
     DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -191,8 +185,6 @@ public:
 
 class WarbringerRazuunAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
     WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -303,8 +295,6 @@ public:
 
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
     EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {

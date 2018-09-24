@@ -137,8 +137,6 @@ class ChaoticRiftAI : public CreatureAIScript
 
 class CraziedManaWrathAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI);
     CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

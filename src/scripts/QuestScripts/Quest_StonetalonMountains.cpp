@@ -34,8 +34,6 @@ public:
 
 class KayaFlathoof : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof);
     KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {

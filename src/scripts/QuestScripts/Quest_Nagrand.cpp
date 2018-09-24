@@ -251,7 +251,6 @@ public:
 
 class mogorQAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
     mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -263,8 +262,6 @@ public:
 
 class NotOnMyWatch : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
     NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 

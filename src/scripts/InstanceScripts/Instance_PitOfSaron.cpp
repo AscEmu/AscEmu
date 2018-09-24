@@ -513,8 +513,6 @@ class KrickAI : public CreatureAIScript
 // Barrage Spell Creature
 class BarrageAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
     BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {

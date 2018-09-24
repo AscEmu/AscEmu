@@ -59,8 +59,6 @@ public:
 
 class ArajTheSummoner : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
     ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 

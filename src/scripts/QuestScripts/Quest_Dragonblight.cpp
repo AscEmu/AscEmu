@@ -21,8 +21,6 @@
 
 class WoodlandWalker : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker);
     WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {

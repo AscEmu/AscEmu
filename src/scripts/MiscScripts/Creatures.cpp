@@ -9,8 +9,6 @@
 // Explosive Sheep (Summoned by ItemID: 4384)
 class ExplosiveSheep : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ExplosiveSheep);
     ExplosiveSheep(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -31,8 +29,6 @@ public:
 // Crimson Hammersmith
 class CrimsonHammersmith : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(CrimsonHammersmith);
     CrimsonHammersmith(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -46,8 +42,6 @@ public:
 // Corrupt Minor Manifestation Water Dead
 class Corrupt_Minor_Manifestation_Water_Dead : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Corrupt_Minor_Manifestation_Water_Dead);
     Corrupt_Minor_Manifestation_Water_Dead(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -91,8 +85,6 @@ public:
 // Lazy Peons
 class PeonSleepingAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(PeonSleepingAI);
     PeonSleepingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -108,8 +100,6 @@ public:
 
 class KirithAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(KirithAI);
     KirithAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
 
@@ -126,8 +116,6 @@ public:
 
 class AllianceGryphon : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AllianceGryphon);
 
     AllianceGryphon(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -149,8 +137,6 @@ public:
 
 class AllianceHippogryph : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AllianceHippogryph);
 
     AllianceHippogryph(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -172,8 +158,6 @@ public:
 
 class HordeWyvern : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(HordeWyvern);
     HordeWyvern(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -194,8 +178,6 @@ public:
 
 class HordeBat : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(HordeBat);
     HordeBat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -216,8 +198,6 @@ public:
 
 class DragonhawkMasters : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(DragonhawkMasters)
     DragonhawkMasters(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -234,8 +214,6 @@ public:
 
 class NeutralMasters : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(NeutralMasters)
     NeutralMasters(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -252,8 +230,6 @@ public:
 
 class TyrandeWhisperwind : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TyrandeWhisperwind);
     TyrandeWhisperwind(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -265,8 +241,6 @@ public:
 
 class ProphetVelen : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ProphetVelen);
     ProphetVelen(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -278,8 +252,6 @@ public:
 
 class KingMagniBronzebeard : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(KingMagniBronzebeard);
     KingMagniBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -291,8 +263,6 @@ public:
 
 class Thrall : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Thrall);
     Thrall(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -304,8 +274,6 @@ public:
 
 class CairneBloodhoof : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(CairneBloodhoof);
     CairneBloodhoof(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -317,8 +285,6 @@ public:
 
 class LadySylvanasWindrunner : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(LadySylvanasWindrunner);
     LadySylvanasWindrunner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -330,8 +296,6 @@ public:
 
 class TrollRoofStalker : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TrollRoofStalker);
     TrollRoofStalker(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -354,8 +318,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 class DISCO : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(DISCO);
     DISCO(Creature* c) : CreatureAIScript(c) {}
 
@@ -370,8 +332,6 @@ public:
 //Silithid Creeper Egg
 class SilithidCreeperEgg : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SilithidCreeperEgg);
     SilithidCreeperEgg(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -393,8 +353,6 @@ public:
 
 class DraeneiSurvivor : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(DraeneiSurvivor);
     DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
@@ -407,8 +365,6 @@ public:
 
 class GuardRoberts : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(GuardRoberts);
     GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
@@ -426,8 +382,6 @@ public:
 
 class SotaAntiPersonnalCannon : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SotaAntiPersonnalCannon);
     SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
@@ -442,8 +396,6 @@ public:
 // Nestlewood Owlkin - Quest 9303
 class NestlewoodOwlkin : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(NestlewoodOwlkin);
     NestlewoodOwlkin(Creature* pCreature) : CreatureAIScript(pCreature)
     {

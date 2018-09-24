@@ -22,8 +22,6 @@
 
 class Corporal_Keeshan : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Corporal_Keeshan);
     Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

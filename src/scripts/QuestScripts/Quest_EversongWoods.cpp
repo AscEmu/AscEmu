@@ -82,8 +82,6 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward);
     ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {

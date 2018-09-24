@@ -22,8 +22,6 @@
 
 class DashelStonefist : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist);
     DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

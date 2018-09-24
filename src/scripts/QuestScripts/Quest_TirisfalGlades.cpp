@@ -34,8 +34,6 @@ public:
 
 class CalvinMontague : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague);
     CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -106,8 +104,6 @@ public:
 
 class Zealot : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Zealot);
     Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

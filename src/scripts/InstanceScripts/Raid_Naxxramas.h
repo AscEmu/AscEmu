@@ -1368,8 +1368,6 @@ class GluthAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GluthAI);
     GluthAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto mortalWound = addAISpell(MORTAL_WOUND, 15.0f, TARGET_ATTACKING);
         mortalWound->setAttackStopTimer(2000);
 
@@ -1402,8 +1400,6 @@ class BonyConstructAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BonyConstructAI);
     BonyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto sweepingSlam = addAISpell(SWEEPING_SLAM, 15.0f, TARGET_VARIOUS);
         sweepingSlam->setAttackStopTimer(2000);
     }
@@ -1426,8 +1422,6 @@ class DeathLordAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DeathLordAI);
     DeathLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto auraOfAgony = addAISpell(AURA_OF_AGONY, 15.0f, TARGET_VARIOUS);
         auraOfAgony->setAttackStopTimer(2000);
     }
@@ -1451,8 +1445,6 @@ class RazuviousAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(RazuviousAI);
     RazuviousAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto disruptingShout = addAISpell(DISRUPTING_SHOUT, 15.0f, TARGET_VARIOUS);
         disruptingShout->setAttackStopTimer(3000);
 
@@ -1503,8 +1495,6 @@ class KorthazzAI : public CreatureAIScript
     {
         tountcooldown = 6;
         tountcont = 0;
-
-        
 
         auto markOfKorthaz = addAISpell(MARK_OF_KORTHAZZ, 5.0f, TARGET_VARIOUS);
         markOfKorthaz->addDBEmote(4246);     // I like my meat extra crispy!
@@ -1601,8 +1591,6 @@ class BlaumeuxAI : public CreatureAIScript
         tountcooldown = 16;
         tountcont = 0;
 
-        
-
         auto markOfBlaumeux = addAISpell(MARK_OF_BLAUMEUX, 5.0f, TARGET_VARIOUS);
         markOfBlaumeux->addDBEmote(4253);     // Your life is mine!
         markOfBlaumeux->setAttackStopTimer(1000);
@@ -1692,8 +1680,6 @@ class ZeliekAI : public CreatureAIScript
     {
         tountcooldown = 13;
         tountcont = 0;
-
-        
 
         auto markOfZeliek = addAISpell(MARK_OF_ZELIEK, 5.0f, TARGET_VARIOUS);
         markOfZeliek->addDBEmote(4270);     // I have no choice but to obey!
@@ -1874,7 +1860,6 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 public:
 
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI);
-
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -1903,7 +1888,6 @@ class ChillTriggerAI : public CreatureAIScript
 public:
 
     ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI);
-
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
@@ -2461,6 +2445,7 @@ const uint32 KELTHUZAD_CHANNEL = 29423;
 class KelthuzadAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KelthuzadAI);
+
     bool FrozenWastes[7];
     bool Abominations[7];
     bool SoulWeavers[7];
@@ -2879,7 +2864,6 @@ class KelthuzadAI : public CreatureAIScript
 class TheLichKingAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TheLichKingAI);
-
     TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

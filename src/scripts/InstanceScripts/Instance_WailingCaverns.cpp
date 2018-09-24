@@ -404,8 +404,6 @@ class EctoplasmAI : public CreatureAIScript
 
 class Naralex : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Naralex);
     Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
     {

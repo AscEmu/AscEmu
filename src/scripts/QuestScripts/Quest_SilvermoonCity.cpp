@@ -41,8 +41,6 @@ public:
 
 class LordDawnstar : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar);
     LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
 

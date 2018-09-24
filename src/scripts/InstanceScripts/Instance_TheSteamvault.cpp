@@ -229,7 +229,6 @@ static Movement::Location DistillerMoveTo[] =
 class NagaDistillerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NagaDistillerAI);
-
     NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);

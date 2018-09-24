@@ -23,8 +23,6 @@
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI);
     ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -39,8 +37,6 @@ public:
 
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI);
     TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -95,8 +91,6 @@ private:
 
 class TakenInTheNight : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight);
 
     TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
@@ -158,8 +152,6 @@ public:
 
 class AnImproperBurial : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial);
 
     AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}

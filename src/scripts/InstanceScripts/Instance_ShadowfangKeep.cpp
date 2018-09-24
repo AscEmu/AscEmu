@@ -632,8 +632,6 @@ public:
 // Prisoner Sorcerer Ashcrombe (entry: 3850) gossip, escort event
 class AshcrombeAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AshcrombeAI);
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
@@ -804,6 +802,8 @@ public:
 // Creature entry: 4278
 class SpringvaleAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI);
+
     enum SpringvaleSpells
     {
         SPELL_DEVO_AURA            = 643,
@@ -812,7 +812,6 @@ class SpringvaleAI : public CreatureAIScript
         SPELL_DIVINE_PROT          = 13007
     };
 
-    ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI);
     SpringvaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         
@@ -859,9 +858,10 @@ protected:
 // Creature entry: 3914
 class RethilgoreAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
+
     const uint32 SPELL_SOUL_DRAIN = 7295;
 
-    ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
     RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_SOUL_DRAIN, 8.0f, TARGET_RANDOM_SINGLE, 2, 10);
@@ -871,6 +871,8 @@ class RethilgoreAI : public CreatureAIScript
 // Creature entry: 3927
 class NandosAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
+
     enum NandosAISpells : uint32
     {
         SPELL_CALL_BLEAK_WORG        = 7487,
@@ -878,7 +880,6 @@ class NandosAI : public CreatureAIScript
         SPELL_CALLLUPINE_HORROR      = 7489
     };
 
-    ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
     NandosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
@@ -965,9 +966,10 @@ protected:
 // Creature entry: 3887
 class BaronSilverlaineAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
+
     const uint32 SPELL_VEIL_OF_SHADOW = 7068;
 
-    ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
     BaronSilverlaineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_VEIL_OF_SHADOW, 10.0f, TARGET_ATTACKING, 0, 2);
@@ -977,6 +979,8 @@ class BaronSilverlaineAI : public CreatureAIScript
 // Creature entry: 4279
 class BlindWatcherAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
+
     enum ODO_THE_BLINDWATCHER_SPELLS : uint32
     {
         ODO_HOWLING_RAGE1 = 7481,
@@ -984,7 +988,6 @@ class BlindWatcherAI : public CreatureAIScript
         ODO_HOWLING_RAGE3 = 7484
     };
 
-    ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
     BlindWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         HowlingRage1 = addAISpell(ODO_HOWLING_RAGE1, 0.0f, TARGET_SELF);
@@ -1034,9 +1037,10 @@ protected:
 // Creature entry: 4274
 class FenrusAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
+
     const uint32 SPELL_TOXIC_SALIVA = 7125;
 
-    ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
     FenrusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_TOXIC_SALIVA, 12.0f, TARGET_ATTACKING, 2, 60);
@@ -1046,6 +1050,8 @@ class FenrusAI : public CreatureAIScript
 // Creature entry: 4275
 class ArugalBossAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI);
+
     enum Arugal_Boss_Spells : uint32
     {
         SPELL_VOID_BOLT                 = 7588,
@@ -1063,7 +1069,6 @@ class ArugalBossAI : public CreatureAIScript
         ARUGAL_LOC_STAIRS       = 2     // Stairs
     };
 
-    ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI);
     ArugalBossAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), arugalPosition(ARUGAL_LOC_LEDGE)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
@@ -1215,9 +1220,10 @@ protected:
 // Creature entry: 3886
 class RazorclawTheButcherAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
+
     const uint32 SPELL_BUTCHER_DRAIN = 7485;
 
-    ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
     RazorclawTheButcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BUTCHER_DRAIN, 5.0f, TARGET_RANDOM_SINGLE);
@@ -1340,9 +1346,10 @@ class ShadowfangGluttonAI : public CreatureAIScript
 // Creature entry: 3859
 class ShadowfangRagetoothAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI);
+
     const uint32 SPELL_WILD_RAGE = 7072;
 
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI);
     ShadowfangRagetoothAI(Creature* pCreature) : CreatureAIScript(pCreature), sWildRageCasted(false)
     {
     }
