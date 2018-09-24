@@ -1767,10 +1767,9 @@ void Creature::OnPushToWorld()
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    SpellInfo* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo((*itr));
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
