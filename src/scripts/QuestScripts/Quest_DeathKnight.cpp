@@ -60,7 +60,7 @@ class AcherusSoulPrison : GameObjectAIScript
 {
 public:
 
-    AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO)
     {
         return new AcherusSoulPrison(GO);

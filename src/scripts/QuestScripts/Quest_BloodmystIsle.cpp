@@ -95,7 +95,7 @@ class SavingPrincessStillpine : public GameObjectAIScript
 {
 public:
 
-    SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
 
     void OnActivate(Player* pPlayer) override

@@ -32,7 +32,7 @@ class FathomStone : public GameObjectAIScript
 {
 public:
 
-    FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
+    explicit FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
     {
         SpawnBaronAquanis = true;
     }

@@ -74,7 +74,7 @@ class BloodFilledOrb : public GameObjectAIScript
 {
 public:
 
-    BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
 
     void OnActivate(Player* pPlayer) override
