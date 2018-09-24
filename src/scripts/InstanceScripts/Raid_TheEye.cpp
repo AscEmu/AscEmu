@@ -115,7 +115,7 @@ enum
 class VoidReaverAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VoidReaverAI);
-    VoidReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VoidReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto pPounding = addAISpell(VOID_REAVER_POUNDING, 100.0f, TARGET_SELF, 0, 12);
         if (pPounding != nullptr)
@@ -203,7 +203,7 @@ protected:
 class HighAstromancerSolarianAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HighAstromancerSolarianAI);
-    HighAstromancerSolarianAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HighAstromancerSolarianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Initialize timers
         mSplitTimer = mAgentsTimer = mSolarianTimer = 0;
@@ -391,7 +391,7 @@ class SolariumAgentAI : public CreatureAIScript
 class SolariumPriestAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SolariumPriestAI);
-    SolariumPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SolariumPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto greaterHeal = addAISpell(SOLARIUMPRIEST_GREATER_HEAL, 20.0f, TARGET_RANDOM_FRIEND, 2, 0);
         greaterHeal->setMinMaxDistance(0.0f, 40.0f);
@@ -403,7 +403,7 @@ class SolariumPriestAI : public CreatureAIScript
 class SolariumSpotLight : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SolariumSpotLight);
-    SolariumSpotLight(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SolariumSpotLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
     }
@@ -412,7 +412,7 @@ class SolariumSpotLight : public CreatureAIScript
 class DarkenerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkenerAI);
-    DarkenerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DarkenerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DARKENER_PSYCHIC_BLOW, 10.0f, TARGET_ATTACKING, 0, 20);
         addAISpell(DARKENER_SILENCE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -484,7 +484,7 @@ class DarkenerAI : public CreatureAIScript
 class SanguinarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SanguinarAI);
-    SanguinarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SanguinarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SANGUINAR_BELLOWING, 100.0f, TARGET_SELF, 0, 30);
 
@@ -510,7 +510,7 @@ class SanguinarAI : public CreatureAIScript
 class CapernianAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CapernianAI);
-    CapernianAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CapernianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto conflagration = addAISpell(CAPERNIAN_CONFLAGRATION, 7.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
         conflagration->setMinMaxDistance(0.0f, 30.0f);
@@ -570,7 +570,7 @@ class CapernianAI : public CreatureAIScript
 class TelonicusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TelonicusAI);
-    TelonicusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TelonicusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bomb = addAISpell(TELONICUS_BOMB, 10.0f, TARGET_RANDOM_DESTINATION, 2, 15);
         bomb->setMinMaxDistance(0.0f, 30.0f);
@@ -600,7 +600,7 @@ class TelonicusAI : public CreatureAIScript
 class FlameStrikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FlameStrikeAI);
-    FlameStrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FlameStrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
         RegisterAIUpdateEvent(5000);
@@ -628,7 +628,7 @@ class FlameStrikeAI : public CreatureAIScript
 class PhoenixAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PhoenixAI);
-    PhoenixAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PhoenixAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
         Unit* pTarget = getBestPlayerTarget();
@@ -683,7 +683,7 @@ class PhoenixAI : public CreatureAIScript
 class PhoenixEggAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PhoenixEggAI);
-    PhoenixEggAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PhoenixEggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(15000);
         setCanEnterCombat(false);
@@ -706,7 +706,7 @@ class PhoenixEggAI : public CreatureAIScript
 class WeaponsAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WeaponsAI);
-    WeaponsAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WeaponsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->m_noRespawn = true;
 
@@ -783,7 +783,7 @@ enum AdvisorPhase
 class KaelThasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KaelThasAI);
-    KaelThasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KaelThasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         for (uint8 i = 1; i < 4; ++i)
         {

@@ -1225,7 +1225,7 @@ const uint32 CN_UPPERCUT = 26007;
 class StickedSpewerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(StickedSpewerAI);
-    StickedSpewerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit StickedSpewerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
         auto slimeBolt = addAISpell(CN_SLIME_BOLT, 10.0f, TARGET_VARIOUS, 0, 0, false, false);
@@ -1257,7 +1257,7 @@ const uint32 SURGICALASSISTANT_AI_MIND_FLAY = 28310;
 class SurgicalAssistantAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SurgicalAssistantAI);
-    SurgicalAssistantAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SurgicalAssistantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
         auto mindFlay = addAISpell(SURGICALASSISTANT_AI_MIND_FLAY, 20.0f, TARGET_ATTACKING, 0, 0, false, false);
@@ -1287,7 +1287,7 @@ const uint32 SUMMON_BILE_SLIMES = 27889; //\todo  GAWD :P
 class SludgeBelcherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SludgeBelcherAI);
-    SludgeBelcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SludgeBelcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
         auto diseiseBuffet = addAISpell(DISEISE_BUFFET, 20.0f, TARGET_ATTACKING, 0, 0, false, false);
@@ -1326,7 +1326,7 @@ const uint32 MUTATING_INJECTION = 28169; //\todo  DUMMY AURA
 class GrobbulusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GrobbulusAI);
-    GrobbulusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GrobbulusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
         poisonCloudGrob = addAISpell(POISON_CLOUD_GROB, 0.0f, TARGET_SELF, 0, 0, false, false);
@@ -1366,7 +1366,7 @@ const uint32 FRENZY = 38664; // self
 class GluthAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GluthAI);
-    GluthAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GluthAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mortalWound = addAISpell(MORTAL_WOUND, 15.0f, TARGET_ATTACKING);
         mortalWound->setAttackStopTimer(2000);
@@ -1398,7 +1398,7 @@ const uint32 SWEEPING_SLAM = 25322;
 class BonyConstructAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BonyConstructAI);
-    BonyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BonyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sweepingSlam = addAISpell(SWEEPING_SLAM, 15.0f, TARGET_VARIOUS);
         sweepingSlam->setAttackStopTimer(2000);
@@ -1420,7 +1420,7 @@ const uint32 AURA_OF_AGONY = 28413;
 class DeathLordAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DeathLordAI);
-    DeathLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DeathLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto auraOfAgony = addAISpell(AURA_OF_AGONY, 15.0f, TARGET_VARIOUS);
         auraOfAgony->setAttackStopTimer(2000);
@@ -1443,7 +1443,7 @@ const uint32 DISRUPTING_SHOUT = 29107;
 class RazuviousAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RazuviousAI);
-    RazuviousAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit RazuviousAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto disruptingShout = addAISpell(DISRUPTING_SHOUT, 15.0f, TARGET_VARIOUS);
         disruptingShout->setAttackStopTimer(3000);
@@ -1491,7 +1491,7 @@ const uint32 METEOR = 35181; // 1 target
 class KorthazzAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KorthazzAI);
-    KorthazzAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KorthazzAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 6;
         tountcont = 0;
@@ -1586,7 +1586,7 @@ const uint32 VOID_ZONE = 28863; //\todo  DUMMY PART
 class BlaumeuxAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BlaumeuxAI);
-    BlaumeuxAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BlaumeuxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 16;
         tountcont = 0;
@@ -1676,7 +1676,7 @@ const uint32 HOLY_WRATH = 32445; // 1target
 class ZeliekAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ZeliekAI);
-    ZeliekAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ZeliekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 13;
         tountcont = 0;
@@ -1795,7 +1795,7 @@ struct Movement::Location IceBlocks[] =    // Those are not blizzlike pos, becau
 class FrostBreathTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTriggerAI);
-    FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -1833,7 +1833,7 @@ protected:
 class FrostBreathTrigger2AI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger2AI);
-    FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -1860,7 +1860,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 public:
 
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI);
-    FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
@@ -1888,7 +1888,7 @@ class ChillTriggerAI : public CreatureAIScript
 public:
 
     ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI);
-    ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -1939,7 +1939,7 @@ const uint32 IMMUNITY_PHYSICAL = 34310;
 class SapphironAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SapphironAI);
-    SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         AddWaypoint(CreateWaypoint(1, 3000, Movement::WP_MOVE_TYPE_RUN, PhaseTwoWP[1]));
@@ -2450,7 +2450,7 @@ class KelthuzadAI : public CreatureAIScript
     bool Abominations[7];
     bool SoulWeavers[7];
 
-    KelthuzadAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KelthuzadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         for (uint8 i = 0; i < 7; i++)
         {
@@ -2864,7 +2864,7 @@ class KelthuzadAI : public CreatureAIScript
 class TheLichKingAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TheLichKingAI);
-    TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
@@ -2877,7 +2877,7 @@ const uint32 DARK_BLAST = 28457; // 28458
 class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SoldierOfTheFrozenWastesAI);
-    SoldierOfTheFrozenWastesAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SoldierOfTheFrozenWastesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->m_noRespawn = true;
 
@@ -2977,7 +2977,7 @@ const uint32 UA_MORTAL_WOUND = 25646;    // 36814
 class UnstoppableAbominationAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(UnstoppableAbominationAI);
-    UnstoppableAbominationAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit UnstoppableAbominationAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         
 
@@ -3074,7 +3074,7 @@ const uint32 WAIL_OF_SOULS = 28459;
 class SoulWeaverAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SoulWeaverAI);
-    SoulWeaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SoulWeaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wailOfSouls = addAISpell(WAIL_OF_SOULS, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
         wailOfSouls->setAttackStopTimer(1000);
@@ -3167,7 +3167,7 @@ const uint32 BLOOD_TAP = 28459;
 class GuardianOfIcecrownAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GuardianOfIcecrownAI);
-    GuardianOfIcecrownAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GuardianOfIcecrownAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         bloodTrap = addAISpell(BLOOD_TAP, 0.0f, TARGET_SELF, 0, 10, false, true);
         bloodTrap->setAttackStopTimer(1000);

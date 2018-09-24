@@ -111,7 +111,7 @@ public:
 class HighChiefBristlelimb : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
-    HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         fulborgskilled = 0;
     }
@@ -140,7 +140,7 @@ private:
 class WebbedCreature : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
-    WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
     void OnCombatStart(Unit* /*pTarget*/) override

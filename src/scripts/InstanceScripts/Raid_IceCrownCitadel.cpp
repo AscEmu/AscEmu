@@ -219,7 +219,7 @@ class LordMarrowgarAI : public CreatureAIScript
 public:
 
     static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
-    LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
@@ -336,7 +336,7 @@ const uint32 IMPALED = 69065;
 class BoneSpikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
-    BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
         getCreature()->Despawn(8000, 0);

@@ -122,7 +122,7 @@ public:
 class GeneralBjarngrimAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
-    GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Battle Stance
         auto mortalStrike = addAISpell(SPELL_MORTAL_STRIKE, 25.0f, TARGET_ATTACKING, 0, 5);
@@ -219,7 +219,7 @@ private:
 class Volkhan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
-    Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -340,7 +340,7 @@ class Volkhan : public CreatureAIScript
 class MoltenGolem : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
-    MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
 
@@ -360,7 +360,7 @@ class MoltenGolem : public CreatureAIScript
 class BrittleGolem : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem);
-    BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         setRooted(true);
@@ -370,7 +370,7 @@ class BrittleGolem : public CreatureAIScript
 class VolkhansAnvil : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil);
-    VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -383,7 +383,7 @@ class VolkhansAnvil : public CreatureAIScript
 class IonarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
-    IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -407,7 +407,7 @@ class IonarAI : public CreatureAIScript
 class LokenAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
-    LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             mNova = addAISpell(59835, 0.0f, TARGET_SELF, 4, 0);

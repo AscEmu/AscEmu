@@ -140,7 +140,7 @@ enum
 class HydrossTheUnstableAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI);
-    HydrossTheUnstableAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HydrossTheUnstableAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellCustomizations.GetSpellInfo(WATER_TOMB);
         spells[0].targettype = TARGET_RANDOM_SINGLE;
@@ -427,7 +427,7 @@ private:
 class LurkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LurkerAI);
-    LurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellCustomizations.GetSpellInfo(WHIRL);
         //spells[0].targettype = TARGET_ATTACKING;
@@ -475,7 +475,7 @@ uint32 LeotherasEventGreyheartToKill[1000000];
 class LeotherasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LeotherasAI);
-    LeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ////Insidious Whisper (inner demons)
         ////"We all have our demons..."
@@ -774,7 +774,7 @@ protected:
 class GreyheartSpellbinderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GreyheartSpellbinderAI);
-    GreyheartSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GreyheartSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellCustomizations.GetSpellInfo(MIND_BLAST);
         spells[0].targettype = TARGET_RANDOM_SINGLE;
@@ -839,7 +839,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
 class ShadowofLeotherasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowofLeotherasAI);
-    ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
 
@@ -894,7 +894,7 @@ protected:
 class KarathressAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KarathressAI);
-    KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_cataclysmic_bolt = sSpellCustomizations.GetSpellInfo(CATACLYSMIC_BOLT);
         AdvisorsLeft = 3;
@@ -1000,7 +1000,7 @@ private:
 class FathomGuardSharkissAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FathomGuardSharkissAI);
-    FathomGuardSharkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FathomGuardSharkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MULTI_SHOT, 10.0f, TARGET_ATTACKING);
         addAISpell(LEECHING_THROW, 10.0f, TARGET_ATTACKING);
@@ -1060,7 +1060,7 @@ private:
 class FathomGuardTidalvessAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FathomGuardTidalvessAI);
-    FathomGuardTidalvessAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FathomGuardTidalvessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //totems
         addAISpell(SPITFIRE_TOTEM, 10.0f, TARGET_SELF);
@@ -1090,7 +1090,7 @@ class FathomGuardCaribdisAI : public CreatureAIScript
 public:
 
     ADD_CREATURE_FACTORY_FUNCTION(FathomGuardCaribdisAI);
-    FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIDAL_SURGE, 20.0f, TARGET_SELF, 0, 10);
         addAISpell(FATHOM_GUARD_CARIBDIS_AI_SUMMON_CYCLONE, 2.0f, TARGET_SELF, 0, 0);
@@ -1123,7 +1123,7 @@ private:
 class MorogrimAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MorogrimAI);
-    MorogrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MorogrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 
@@ -1163,7 +1163,7 @@ class MorogrimAI : public CreatureAIScript
 class TidewalkerLurkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TidewalkerLurkerAI);
-    TidewalkerLurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TidewalkerLurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Unit* target = FindTargetForSpell();
         if (target)
@@ -1226,7 +1226,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 class EnchantedElementalAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EnchantedElementalAI);
-    EnchantedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EnchantedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
@@ -1269,7 +1269,7 @@ class EnchantedElementalAI : public CreatureAIScript
 class VashjAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VashjAI);
-    VashjAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VashjAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_multishot = sSpellCustomizations.GetSpellInfo(EEMULTI_SHOT);
         info_shot = sSpellCustomizations.GetSpellInfo(VASHJ_AI_SHOOT);
@@ -1619,7 +1619,7 @@ protected:
 class TaintedElementalAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TaintedElementalAI);
-    TaintedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TaintedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         spell_poison_spit = new AI_Spell();
         spell_poison_spit->agent = AGENT_SPELL;
@@ -1716,7 +1716,7 @@ public:
 class ToxicSporeBatAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ToxicSporeBatAI);
-    ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Waypoints
         m_entry = pCreature->getEntry();
@@ -2028,7 +2028,7 @@ protected:
 class CoilfangAmbusherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangAmbusherAI);
-    CoilfangAmbusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangAmbusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CA_MULTI_SHOT, 10.0f, TARGET_SELF);
     }
@@ -2037,7 +2037,7 @@ class CoilfangAmbusherAI : public CreatureAIScript
 class CoilfangFathomWitchAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI);
-    CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANGFATHOM_WITCH_AI_SHADOW_BOLT, 2.0f, TARGET_ATTACKING);
         addAISpell(WHIRLWIND_KNOCKBACK, 2.0f, TARGET_SELF);
@@ -2047,7 +2047,7 @@ class CoilfangFathomWitchAI : public CreatureAIScript
 class CoilfangGuardianAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangGuardianAI);
-    CoilfangGuardianAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangGuardianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANG_GUARDIAN_AI_CLEAVE, 3.0f, TARGET_RANDOM_DESTINATION);
     }
@@ -2056,7 +2056,7 @@ class CoilfangGuardianAI : public CreatureAIScript
 class CoilfangPriestessAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangPriestessAI);
-    CoilfangPriestessAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangPriestessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANG_PRIESTESS_AI_HOLY_NOVA, 2.0f, TARGET_SELF);
         addAISpell(SMITE, 1.0f, TARGET_ATTACKING);
@@ -2067,7 +2067,7 @@ class CoilfangPriestessAI : public CreatureAIScript
 class UnderbogColossusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(UnderbogColossusAI);
-    UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //these mobs pick from a random set of abilities
         switch (Util::getRandomUInt(2))
@@ -2112,7 +2112,7 @@ class UnderbogColossusAI : public CreatureAIScript
 class TidewalkerWarriorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TidewalkerWarriorAI);
-    TidewalkerWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TidewalkerWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TW_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
         addAISpell(TW_BLOODTHIRST, 1.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -2123,7 +2123,7 @@ class TidewalkerWarriorAI : public CreatureAIScript
 class CoilfangSerpentguardAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangSerpentguardAI);
-    CoilfangSerpentguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangSerpentguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSERP_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
         addAISpell(CSERP_REFLECTION, 0.5f, TARGET_SELF);
@@ -2134,7 +2134,7 @@ class CoilfangSerpentguardAI : public CreatureAIScript
 class CoilfangShattererAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangShattererAI);
-    CoilfangShattererAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangShattererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSHATT_ARMOR, 2.0f, TARGET_ATTACKING);
     }
@@ -2143,7 +2143,7 @@ class CoilfangShattererAI : public CreatureAIScript
 class CoilfangStriderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilfangStriderAI);
-    CoilfangStriderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilfangStriderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSTRID_SCREAM, 2.0f, TARGET_ATTACKING);
     }

@@ -27,7 +27,7 @@
 class AmbassadorFlamelash : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AmbassadorFlamelash);
-    AmbassadorFlamelash(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AmbassadorFlamelash(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(15573, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         fireBlast->setAttackStopTimer(1000);
@@ -38,7 +38,7 @@ class AmbassadorFlamelash : public CreatureAIScript
 class AnubShiah : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AnubShiah);
-    AnubShiah(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AnubShiah(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(11661, 20.0f, TARGET_ATTACKING, 0, 20, false, true);
         unknown->setAttackStopTimer(1000);
@@ -52,7 +52,7 @@ class AnubShiah : public CreatureAIScript
 class BaelGar : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BaelGar);
-    BaelGar(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BaelGar(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto magmaSplash = addAISpell(13879, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         magmaSplash->setAttackStopTimer(1000);
@@ -62,11 +62,10 @@ class BaelGar : public CreatureAIScript
     }
 };
 
-
 class EmperorDagranThaurissan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EmperorDagranThaurissan);
-    EmperorDagranThaurissan(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EmperorDagranThaurissan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto handOfThaurissan = addAISpell(17492, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         handOfThaurissan->setAttackStopTimer(1000);
@@ -79,11 +78,10 @@ class EmperorDagranThaurissan : public CreatureAIScript
     }
 };
 
-
 class Eviscerator : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Eviscerator);
-    Eviscerator(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Eviscerator(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto viciousRend = addAISpell(14331, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         viciousRend->setAttackStopTimer(1000);
@@ -97,7 +95,7 @@ class Eviscerator : public CreatureAIScript
 class FineousDarkvire : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FineousDarkvire);
-    FineousDarkvire(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FineousDarkvire(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto kick = addAISpell(15614, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         kick->setAttackStopTimer(1000);
@@ -111,7 +109,7 @@ class FineousDarkvire : public CreatureAIScript
 class GeneralAngerforge : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GeneralAngerforge);
-    GeneralAngerforge(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GeneralAngerforge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mightyBlow = addAISpell(14099, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         mightyBlow->setAttackStopTimer(1000);
@@ -128,7 +126,7 @@ class GeneralAngerforge : public CreatureAIScript
 class GolemLordArgelmach : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GolemLordArgelmach);
-    GolemLordArgelmach(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GolemLordArgelmach(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainLightning = addAISpell(16033, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         chainLightning->setAttackStopTimer(1000);
@@ -145,7 +143,7 @@ class GolemLordArgelmach : public CreatureAIScript
 class GoroshTheDervish : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GoroshTheDervish);
-    GoroshTheDervish(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GoroshTheDervish(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto whirlwind = addAISpell(15589, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         whirlwind->setAttackStopTimer(1000);
@@ -159,7 +157,7 @@ class GoroshTheDervish : public CreatureAIScript
 class Grizzle : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Grizzle);
-    Grizzle(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Grizzle(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto groundTremor = addAISpell(6524, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         groundTremor->setAttackStopTimer(1000);
@@ -173,7 +171,7 @@ class Grizzle : public CreatureAIScript
 class HedrumTheCreeper : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HedrumTheCreeper);
-    HedrumTheCreeper(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HedrumTheCreeper(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto banefulPoison = addAISpell(15475, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         banefulPoison->setAttackStopTimer(1000);
@@ -189,7 +187,7 @@ class HedrumTheCreeper : public CreatureAIScript
 class HighInterrogatorGerstahn : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HighInterrogatorGerstahn);
-    HighInterrogatorGerstahn(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HighInterrogatorGerstahn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10894, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         unknown->setAttackStopTimer(1000);
@@ -205,7 +203,7 @@ class HighInterrogatorGerstahn : public CreatureAIScript
 class HoundmasterGrebmar : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HoundmasterGrebmar);
-    HoundmasterGrebmar(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HoundmasterGrebmar(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto demoralizingShout = addAISpell(23511, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         demoralizingShout->setAttackStopTimer(1000);
@@ -215,11 +213,10 @@ class HoundmasterGrebmar : public CreatureAIScript
     }
 };
 
-
 class HurleyBlackbreath : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HurleyBlackbreath);
-    HurleyBlackbreath(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HurleyBlackbreath(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameBreath = addAISpell(17294, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         flameBreath->setAttackStopTimer(1000);
@@ -236,7 +233,7 @@ class HurleyBlackbreath : public CreatureAIScript
 class LordIncendius : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordIncendius);
-    LordIncendius(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordIncendius(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireStorm = addAISpell(13899, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         fireStorm->setAttackStopTimer(1000);
@@ -253,7 +250,7 @@ class LordIncendius : public CreatureAIScript
 class LordRoccor : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordRoccor);
-    LordRoccor(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordRoccor(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10448, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         unknown->setAttackStopTimer(1000);
@@ -270,7 +267,7 @@ class LordRoccor : public CreatureAIScript
 class Magmus : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Magmus);
-    Magmus(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Magmus(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fieryBurst = addAISpell(13900, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         fieryBurst->setAttackStopTimer(1000);
@@ -283,7 +280,7 @@ class Magmus : public CreatureAIScript
 class OkThorTheBreaker : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OkThorTheBreaker);
-    OkThorTheBreaker(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit OkThorTheBreaker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneExplosion = addAISpell(15453, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         arcaneExplosion->setAttackStopTimer(1000);
@@ -296,7 +293,7 @@ class OkThorTheBreaker : public CreatureAIScript
 class Phalanx : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Phalanx);
-    Phalanx(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Phalanx(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto thunderclap = addAISpell(8732, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         thunderclap->setAttackStopTimer(1000);
@@ -312,7 +309,7 @@ class Phalanx : public CreatureAIScript
 class PrincessMoiraBronzebeard : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PrincessMoiraBronzebeard);
-    PrincessMoiraBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PrincessMoiraBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10947, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         unknown->setAttackStopTimer(1000);
@@ -325,7 +322,7 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
 class PyromancerLoregrain : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PyromancerLoregrain);
-    PyromancerLoregrain(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PyromancerLoregrain(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10448, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         unknown->setAttackStopTimer(1000);

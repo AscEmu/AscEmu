@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TotemsAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TotemsAI);
-    TotemsAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TotemsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         uint32 Despawn = 30000;
         uint32 AIUpdate = 1000;
@@ -73,7 +73,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
     bool SummonedTotems[4];
 
-    MennuTheBetrayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MennuTheBetrayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         for (uint8 i = 0; i < 4; i++)
             SummonedTotems[i] = false;
@@ -194,7 +194,7 @@ protected:
 class RokmarTheCracklerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RokmarTheCracklerAI);
-    RokmarTheCracklerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit RokmarTheCracklerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto grievousWound = addAISpell(GRIEVOUS_WOUND, 8.0f, TARGET_ATTACKING, 0, 20, false, true);
         grievousWound->setAttackStopTimer(5000);
@@ -236,7 +236,7 @@ protected:
 class QuagmirranAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(QuagmirranAI);
-    QuagmirranAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit QuagmirranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto acidGeyser = addAISpell(ACID_GEYSER, 10.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
         acidGeyser->setAttackStopTimer(5000);

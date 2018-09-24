@@ -32,7 +32,7 @@ class SinclariAI : public CreatureAIScript
 {
 public:
 
-    SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 
@@ -141,7 +141,7 @@ class VHGuardsAI : public CreatureAIScript
 {
 public:
 
-    VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 

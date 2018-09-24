@@ -9,7 +9,7 @@
 class LadySarevessAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LadySarevessAI);
-    LadySarevessAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LadySarevessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(8435, 10.0f, TARGET_ATTACKING, 2, 0);    // Forked Lightning
         addAISpell(865, 15.0f, TARGET_SELF, 0, 25);         // Frost Nova
@@ -57,7 +57,7 @@ protected:
 class KelrisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KelrisAI);
-    KelrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KelrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sleep = addAISpell(8399, 12.0f, TARGET_RANDOM_SINGLE);
         sleep->addEmote("Sleep...", CHAT_MSG_MONSTER_YELL, 5804);
@@ -72,7 +72,7 @@ class KelrisAI : public CreatureAIScript
 class AkumaiAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AkumaiAI);
-    AkumaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AkumaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(3490, 12.0f, TARGET_SELF, 0, 0);     // Frenzied Rage
         addAISpell(3815, 16.0f, TARGET_SELF, 0, 45);    // Poison Cloud

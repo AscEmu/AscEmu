@@ -62,7 +62,7 @@ class WyrmcultBlackwhelp : public CreatureAIScript
 class BladespireQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
-    BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -90,7 +90,7 @@ public:
 class MagnetoAura : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
-    MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -147,7 +147,7 @@ public:
 class FunnyDragon : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
-    FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         i = 0;      // rename this....
     }
@@ -233,7 +233,7 @@ public:
 class BloodmaulQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
-    BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -252,7 +252,7 @@ class BloodmaulQAI : public CreatureAIScript
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
-    Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -317,7 +317,7 @@ enum CreatureEntry
 class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI);
-    BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->SetFaction(35);
 

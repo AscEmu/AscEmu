@@ -252,7 +252,7 @@ public:
 class mogorQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
-    mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -263,7 +263,7 @@ class mogorQAI : public CreatureAIScript
 class NotOnMyWatch : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
-    NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
+    explicit NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {

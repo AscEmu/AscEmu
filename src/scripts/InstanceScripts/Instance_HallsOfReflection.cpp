@@ -42,7 +42,7 @@ public:
 class JainaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(JainaAI);
-    JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
     void StartInstance()
@@ -148,7 +148,7 @@ public:
 class Marwyn : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
-    Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* spellWell = nullptr;
         CreatureAISpells* corruptFlesh = nullptr;
@@ -193,7 +193,7 @@ class Marwyn : public CreatureAIScript
 class Falric : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Falric);
-    Falric(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic() == false)
         {

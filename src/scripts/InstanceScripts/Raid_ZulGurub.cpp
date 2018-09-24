@@ -121,7 +121,7 @@ class JeklikAI : public CreatureAIScript
 class VenoxisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI);
-    VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellCustomizations.GetSpellInfo(TRANSFORM_SNAKE);
         //spells[0].targettype = TARGET_SELF;

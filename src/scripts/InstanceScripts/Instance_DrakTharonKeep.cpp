@@ -33,7 +33,7 @@ const uint32 INVADERS_PER_INVASION = 1;
 class TrollgoreAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI);
-    TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invastion_timer = 0;
 
@@ -109,7 +109,7 @@ const uint32 ELITE_CHANCE = 20; //how much chance for elite we've got each invas
 class NovosTheSummonerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
-    NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invasion_timer = 0;
         handler_timer = 0;
@@ -359,7 +359,7 @@ protected:
 class CrystalHandlerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
-    CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             addAISpell(59004, 50.0f, TARGET_ATTACKING, 0, 4);    //FlashofDarkness
@@ -393,7 +393,7 @@ class CrystalHandlerAI : public CreatureAIScript
 class KingDreadAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
-    KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -425,7 +425,7 @@ const uint32 PHASES_COUNT = 2;
 class TheProphetTaronjaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
-    TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         phase_timer = 0;
         phase_length = 0;

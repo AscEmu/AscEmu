@@ -167,7 +167,7 @@ class MirrorImageAI : public CreatureAIScript
 class DancingRuneWeaponAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI);
-    DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         dpsCycle = 0;
         dpsSpell = 0;

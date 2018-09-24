@@ -193,7 +193,7 @@ public:
 class DragonflayerForgeMasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerForgeMasterAI);
-    DragonflayerForgeMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerForgeMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pInstance = static_cast<UtgardeKeepScript*>(getCreature()->GetMapMgr()->GetScript());
 
@@ -212,7 +212,7 @@ class DragonflayerForgeMasterAI : public CreatureAIScript
 class DragonflayerHeartSplitterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerHeartSplitterAI);
-    DragonflayerHeartSplitterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerHeartSplitterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_HEARTSPLITTER_PIERCING_JAB, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_HEARTSPLITTER_THROW, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -223,7 +223,7 @@ class DragonflayerHeartSplitterAI : public CreatureAIScript
 class DragonflayerIronhelmAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerIronhelmAI);
-    DragonflayerIronhelmAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerIronhelmAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_IRONHELM_HEROIC_STRIKE, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_IRONHELM_RINGING_SLAP, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -233,7 +233,7 @@ class DragonflayerIronhelmAI : public CreatureAIScript
 class DragonflayerMetalworkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerMetalworkerAI);
-    DragonflayerMetalworkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerMetalworkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_METALWORKER_SUNDER_ARMOR, 8.0f, TARGET_ATTACKING, 0, 40);
         mDfEnrage = addAISpell(DRAGONFLAYER_METALWORKER_ENRAGE, 0.0f, TARGET_SELF);
@@ -256,7 +256,7 @@ class DragonflayerMetalworkerAI : public CreatureAIScript
 class DragonflayerOverseerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerOverseerAI);
-    DragonflayerOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_OVERSEER_BATTLE_SHOUT, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_OVERSEER_CHARGE, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -267,7 +267,7 @@ class DragonflayerOverseerAI : public CreatureAIScript
 class TunnelingGhoulAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TunnelingGhoulAI);
-    TunnelingGhoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TunnelingGhoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TUNNELING_GHOUL_DECREPIFY, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(TUNNELING_GHOUL_STRIKE, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -277,7 +277,7 @@ class TunnelingGhoulAI : public CreatureAIScript
 class DragonflayerRunecasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerRunecasterAI);
-    DragonflayerRunecasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerRunecasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_RUNECASTER_BOLTHORNS_RUNE_OF_FLAME, 100.0f, TARGET_SELF, 0, 60);
         addAISpell(DRAGONFLAYER_RUNECASTER_NJORDS_RUNE_OF_PROTECTION, 100.0f, TARGET_SELF, 0, 60);
@@ -287,7 +287,7 @@ class DragonflayerRunecasterAI : public CreatureAIScript
 class DragonflayerSpiritualistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerSpiritualistAI);
-    DragonflayerSpiritualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerSpiritualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_SPIRITUALIST_FLAME_SHOCK, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_SPIRITUALIST_LIGHTNING_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 40);
@@ -311,7 +311,7 @@ class DragonflayerSpiritualistAI : public CreatureAIScript
 class DragonflayerStrategistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerStrategistAI);
-    DragonflayerStrategistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerStrategistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_STRATEGIST_BLIND, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_STRATEGIST_HURL_DAGGER, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -322,7 +322,7 @@ class DragonflayerStrategistAI : public CreatureAIScript
 class ProtoDrake_HandlerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ProtoDrake_HandlerAI);
-    ProtoDrake_HandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProtoDrake_HandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PROTO_DRAKE_HANDLER_DEBILITATING_STRIKE, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(PROTO_DRAKE_HANDLER_THROW, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -333,7 +333,7 @@ class ProtoDrake_HandlerAI : public CreatureAIScript
 class FrenziedGeistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrenziedGeistAI);
-    FrenziedGeistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FrenziedGeistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(FRENZIED_GEIST_FIXATE, 8.0f, TARGET_ATTACKING, 0, 40);
     }
@@ -342,7 +342,7 @@ class FrenziedGeistAI : public CreatureAIScript
 class SavageWorgAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SavageWorgAI);
-    SavageWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SavageWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SAVAGE_WORG_ENRAGE, 8.0f, TARGET_SELF, 0, 40);
         addAISpell(SAVAGE_WORG_POUNCE, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -352,7 +352,7 @@ class SavageWorgAI : public CreatureAIScript
 class DragonflayerBonecrusherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DragonflayerBonecrusherAI);
-    DragonflayerBonecrusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DragonflayerBonecrusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONFLAYER_BONECRUSHER_HEAD_CRACK, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(DRAGONFLAYER_BONECRUSHER_KNOCKDOWNSPIN, 8.0f, TARGET_SELF, 0, 40);
@@ -362,7 +362,7 @@ class DragonflayerBonecrusherAI : public CreatureAIScript
 class ProtoDrake_RiderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ProtoDrake_RiderAI);
-    ProtoDrake_RiderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProtoDrake_RiderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PROTO_DRAKE_RIDER_PIERCING_JAB, 8.0f, TARGET_ATTACKING, 0, 40);
         addAISpell(PROTO_DRAKE_RIDER_THROW, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -373,7 +373,7 @@ class ProtoDrake_RiderAI : public CreatureAIScript
 class SkarvaldTheConstructorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SkarvaldTheConstructorAI);
-    SkarvaldTheConstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SkarvaldTheConstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SKARVALD_CHARGE, 35.0f, TARGET_RANDOM_SINGLE, 0, 8);
         addAISpell(STONE_STRIKE, 25.0f, TARGET_ATTACKING, 0, 10);
@@ -450,7 +450,7 @@ private:
 class DalronnTheControllerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DalronnTheControllerAI);
-    DalronnTheControllerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DalronnTheControllerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -533,7 +533,7 @@ private:
 class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SkarvaldTheConstructorGhostAI);
-    SkarvaldTheConstructorGhostAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SkarvaldTheConstructorGhostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SKARVALD_CHARGE, 35.0f, TARGET_RANDOM_SINGLE, 0, 8);
         addAISpell(STONE_STRIKE, 25.0f, TARGET_ATTACKING, 0, 10);
@@ -552,7 +552,7 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 class DalronnTheControllerGhostAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DalronnTheControllerGhostAI);
-    DalronnTheControllerGhostAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DalronnTheControllerGhostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -579,7 +579,7 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
 class PrinceKelesethAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PrinceKelesethAI);
-    PrinceKelesethAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PrinceKelesethAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             addAISpell(KELESETH_SHADOW_BOLT_HC, 100.0f, TARGET_ATTACKING, 2, 2);
@@ -594,7 +594,7 @@ class PrinceKelesethAI : public CreatureAIScript
 class FrostTombAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrostTombAI);
-    FrostTombAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FrostTombAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetAIUpdateFreq(1000);
         plr = nullptr;
@@ -629,7 +629,7 @@ private:
 class SkeletonAddAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SkeletonAddAI);
-    SkeletonAddAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SkeletonAddAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             addAISpell(DECREPIFY_HC, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -659,7 +659,7 @@ class SkeletonAddAI : public CreatureAIScript
 class IngvarThePlundererAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IngvarThePlundererAI);
-    IngvarThePlundererAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit IngvarThePlundererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(INGVAR_CLEAVE, 24.0f, TARGET_ATTACKING, 0, 6);
 
@@ -694,7 +694,7 @@ class IngvarThePlundererAI : public CreatureAIScript
 class IngvarUndeadAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IngvarUndeadAI);
-    IngvarUndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit IngvarUndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(INGVAR_DARK_SMASH, 12.0f, TARGET_SELF, 3, 16);
 

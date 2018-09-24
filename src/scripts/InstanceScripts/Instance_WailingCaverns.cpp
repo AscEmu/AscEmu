@@ -10,7 +10,7 @@
 class DevouringEctoplasmAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
-    DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Summon Evolving Ectoplasm
         addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
@@ -20,7 +20,7 @@ class DevouringEctoplasmAI : public CreatureAIScript
 class DruidFangAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
-    DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Serpent Form
         SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
@@ -47,7 +47,7 @@ class DruidFangAI : public CreatureAIScript
 class LadyAnacondraAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
-    LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
         addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
@@ -61,7 +61,7 @@ class LadyAnacondraAI : public CreatureAIScript
 class LordCobrahnAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
-    LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
         LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
@@ -99,7 +99,7 @@ class LordCobrahnAI : public CreatureAIScript
 class LordPythasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
-    LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
         addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
@@ -115,7 +115,7 @@ class LordPythasAI : public CreatureAIScript
 class LordSerpentisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
-    LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
         addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
@@ -129,7 +129,7 @@ class LordSerpentisAI : public CreatureAIScript
 class VerdanEverlivingAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
-    VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Grasping Vines
         addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
@@ -139,7 +139,7 @@ class VerdanEverlivingAI : public CreatureAIScript
 class SkumAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
-    SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Chained Bolt
         addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
@@ -162,7 +162,7 @@ class SkumAI : public CreatureAIScript
 class MutanusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
-    MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Thundercrack
         addAISpell(8150, 15.0f, TARGET_SELF);
@@ -275,7 +275,7 @@ public:
 class DofNaralexAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
-    DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Mutanus = nullptr;
 
@@ -389,7 +389,7 @@ class DofNaralexAI : public CreatureAIScript
 class DeviateMoccasinAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI);
-    DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 };
@@ -397,7 +397,7 @@ class DeviateMoccasinAI : public CreatureAIScript
 class EctoplasmAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI);
-    EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 };
@@ -405,7 +405,7 @@ class EctoplasmAI : public CreatureAIScript
 class Naralex : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Naralex);
-    Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->setStandState(STANDSTATE_SLEEP);

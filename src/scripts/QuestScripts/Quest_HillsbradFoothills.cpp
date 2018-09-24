@@ -54,7 +54,7 @@ public:
 class Baron_Vardus : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Baron_Vardus);
-    Baron_Vardus(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Baron_Vardus(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
     {

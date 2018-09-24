@@ -11,7 +11,7 @@ class WailingCaverns : public InstanceScript
 {
 public:
 
-    WailingCaverns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit WailingCaverns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

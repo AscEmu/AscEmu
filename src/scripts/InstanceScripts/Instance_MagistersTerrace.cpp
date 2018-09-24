@@ -32,7 +32,7 @@ static LocationExtra FelCrystals[] =
 class SelinFireheartAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SelinFireheartAI);
-    SelinFireheartAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SelinFireheartAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SF_DRAINLIFE, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
 
@@ -148,7 +148,7 @@ class SelinFireheartAI : public CreatureAIScript
 class VexallusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VexallusAI);
-    VexallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VexallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainLighning = addAISpell(VEXALLUS_CHAIN_LIGHTNING, 19.0f, TARGET_ATTACKING, 0, 8);
         chainLighning->setAvailableForScriptPhase({ 1 });
@@ -193,7 +193,7 @@ class VexallusAI : public CreatureAIScript
 class Priestess_DelrissaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Priestess_DelrissaAI);
-    Priestess_DelrissaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Priestess_DelrissaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto dispelMagic = addAISpell(PRIESTESS_DELRISSA_DISPEL_MAGIC, 35.0f, TARGET_RANDOM_FRIEND, 0, 5);
         dispelMagic->setMinMaxDistance(0.0f, 30.0f);
@@ -260,7 +260,7 @@ protected:
 class KaganiNightstrikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KaganiNightstrikeAI);
-    KaganiNightstrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KaganiNightstrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto kidneyShot = addAISpell(KAGANI_KIDNEY_SHOT, 80.0f, TARGET_ATTACKING, 0, 25);
         kidneyShot->setMinMaxDistance(0.0f, 30.0f);
@@ -276,7 +276,7 @@ class KaganiNightstrikeAI : public CreatureAIScript
 class EllrysDuskhallowAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EllrysDuskhallowAI);
-    EllrysDuskhallowAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EllrysDuskhallowAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ELLRYS_IMMOLATE, 75.0f, TARGET_ATTACKING, 2, 15);
 
@@ -294,7 +294,7 @@ class EllrysDuskhallowAI : public CreatureAIScript
 class EramasBrightblazeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EramasBrightblazeAI);
-    EramasBrightblazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EramasBrightblazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ERAMAS_KNOCKDOWN, 25.0f, TARGET_ATTACKING, 0, 5);
         addAISpell(ERAMAS_SNAP_KICK, 40.0f, TARGET_VARIOUS, 0, 2);
@@ -304,7 +304,7 @@ class EramasBrightblazeAI : public CreatureAIScript
 class YazzaiAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(YazzaiAI);
-    YazzaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit YazzaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto polymorph = addAISpell(YAZZAI_POLYMORPH, 30.0f, TARGET_RANDOM_SINGLE, 2, 16);
         polymorph->setMinMaxDistance(8.0f, 30.0f);
@@ -322,7 +322,7 @@ class YazzaiAI : public CreatureAIScript
 class WarlordSalarisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarlordSalarisAI);
-    WarlordSalarisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarlordSalarisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto intercept = addAISpell(SALARIS_INTERCEPT, 25.0f, TARGET_RANDOM_SINGLE, 0, 8);
         intercept->setMinMaxDistance(8.0f, 25.0f);
@@ -342,7 +342,7 @@ class WarlordSalarisAI : public CreatureAIScript
 class GaraxxasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GaraxxasAI);
-    GaraxxasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GaraxxasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto aimedShot = addAISpell(GARAXXAS_AIMED_SHOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 6);
         aimedShot->setMinMaxDistance(5.0f, 35.0f);
@@ -363,7 +363,7 @@ class GaraxxasAI : public CreatureAIScript
 class ApokoAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ApokoAI);
-    ApokoAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ApokoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostShock = addAISpell(APOKO_FROST_SHOCK, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
         frostShock->setMinMaxDistance(0.0f, 20.0f);
@@ -379,7 +379,7 @@ class ApokoAI : public CreatureAIScript
 class ZelfanAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ZelfanAI);
-    ZelfanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ZelfanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ZELFAN_GOBLIN_DRAGON_GUN, 90.0f, TARGET_ATTACKING, 0, 15);
         addAISpell(ZELFAN_HIGH_EXPLOSIV_SHEEP, 90.0f, TARGET_SELF, 2, 80);
@@ -394,7 +394,7 @@ class ZelfanAI : public CreatureAIScript
 class CoilskarWitchAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilskarWitchAI);
-    CoilskarWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CoilskarWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_WITCH_FORKED_LIGHTNING, 60.0f, TARGET_ATTACKING, 2, 12);
 
@@ -411,7 +411,7 @@ class CoilskarWitchAI : public CreatureAIScript
 class SisterOfTormentAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SisterOfTormentAI);
-    SisterOfTormentAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SisterOfTormentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_TORMENT_LASH_OF_PAIN, 60.0f, TARGET_ATTACKING, 0, 8);
 
@@ -423,7 +423,7 @@ class SisterOfTormentAI : public CreatureAIScript
 class SunbladeBloodKnightAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeBloodKnightAI);
-    SunbladeBloodKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunbladeBloodKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLOOD_KNIGHT_JUDGEMENT_OF_WRATH, 20.0f, TARGET_ATTACKING, 0, 30);
         addAISpell(BLOOD_KNIGHT_SEAL_OF_WRATH, 99.0f, TARGET_SELF, 0, 30);
@@ -436,7 +436,7 @@ class SunbladeBloodKnightAI : public CreatureAIScript
 class SunbladeImpAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeImpAI);
-    SunbladeImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunbladeImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMP_FIREBOLT, 100.0f, TARGET_ATTACKING, 2, 3);
     }
@@ -445,7 +445,7 @@ class SunbladeImpAI : public CreatureAIScript
 class SunbladeMageGuardAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeMageGuardAI);
-    SunbladeMageGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunbladeMageGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MAGE_GUARD_GLAVE_THROW, 60.0f, TARGET_ATTACKING, 0, 25);
 
@@ -457,7 +457,7 @@ class SunbladeMageGuardAI : public CreatureAIScript
 class SunbladeMagisterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeMagisterAI);
-    SunbladeMagisterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunbladeMagisterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MAGISTER_FROSTBOLT, 65.0f, TARGET_ATTACKING, 2, 4);
         addAISpell(MAGISTER_ARCANE_NOVA, 12.0f, TARGET_SELF, 2, 40);

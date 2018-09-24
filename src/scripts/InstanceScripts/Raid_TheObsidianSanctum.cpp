@@ -145,7 +145,7 @@ public:
 class SartharionAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SartharionAI);
-    SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
@@ -298,7 +298,7 @@ private:
 class TsunamiAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI);
-    TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
+    explicit TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnLoad() override
     {
@@ -320,7 +320,7 @@ class TsunamiAI : public CreatureAIScript
 class CyclonAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CyclonAI);
-    CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
     void OnLoad() override
@@ -336,7 +336,7 @@ class CyclonAI : public CreatureAIScript
 class LavaBlazeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LavaBlazeAI);
-    LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
     void OnCombatStop(Unit* /*pTarget*/) override
