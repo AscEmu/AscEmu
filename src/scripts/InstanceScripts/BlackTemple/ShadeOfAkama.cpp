@@ -3,7 +3,7 @@
  This file is released under the MIT license. See README-MIT for more information.
  */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include "../Setup.h"
 #include "../Base.h"
 
@@ -42,7 +42,7 @@ class ShadeofakamaAI : public CreatureAIScript
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
-    ShadeofakamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadeofakamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
         for(int i = 0; i < nrspells; i++)
@@ -274,7 +274,7 @@ class AshtonguedefenderAI : public CreatureAIScript
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
-    AshtonguedefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AshtonguedefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
         for(int i = 0; i < nrspells; i++)
@@ -376,7 +376,7 @@ class AshtongueelementalistAI : public CreatureAIScript
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
-    AshtongueelementalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AshtongueelementalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
         for(int i = 0; i < nrspells; i++)
@@ -481,7 +481,7 @@ class AshtonguerogueAI : public CreatureAIScript
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
-    AshtonguerogueAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AshtonguerogueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
         for(int i = 0; i < nrspells; i++)
@@ -584,7 +584,7 @@ class AshtonguespiritbinderAI : public CreatureAIScript
     SP_AI_Spell spells[2];
     bool m_spellcheck[2];
 
-    AshtonguespiritbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AshtonguespiritbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 2;
         for(int i = 0; i < nrspells; i++)
@@ -695,7 +695,7 @@ class AshtongueChannelerAI : public CreatureAIScript
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
-    AshtongueChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AshtongueChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->m_canMove = false;
         _unit->setAttackTimer(2000, false);

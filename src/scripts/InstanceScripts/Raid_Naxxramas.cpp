@@ -8,14 +8,13 @@
 #include "Raid_Naxxramas.h"
 #include "Spell/SpellMgr.h"
 
-
 //const uint32 CN_THADDIUS = 15928;
 
 class NaxxramasScript : public InstanceScript
 {
 public:
 
-    NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
+    explicit NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 

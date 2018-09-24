@@ -86,7 +86,7 @@ enum
 class SunbladeProtectorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeProtectorAI);
-    SunbladeProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunbladeProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto felLightning = addAISpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
         felLightning->setMinMaxDistance(0.0f, 60.0f);
@@ -96,7 +96,7 @@ class SunbladeProtectorAI : public CreatureAIScript
 class ShadowswordAssassinAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowswordAssassinAI);
-    ShadowswordAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadowswordAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto assaMark = addAISpell(SHADOWSWORD_ASSASSIN_ASSASSINS_MARK, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
         assaMark->setMinMaxDistance(0.0f, 100.0f);
@@ -114,7 +114,7 @@ class ShadowswordAssassinAI : public CreatureAIScript
 class ShadowswordCommanderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowswordCommanderAI);
-    ShadowswordCommanderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadowswordCommanderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWSWORD_COMMANDER_SHIELD_SLAM, 10.0f, TARGET_ATTACKING, 0, 10);
         addAISpell(SHADOWSWORD_COMMANDER_BATTLESHOUT, 20.0f, TARGET_SELF, 0, 25);
@@ -124,7 +124,7 @@ class ShadowswordCommanderAI : public CreatureAIScript
 class BrutallusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BrutallusAI);
-    BrutallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BrutallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BRUTALLUS_METEOR_SLASH, 100.0f, TARGET_SELF, 1, 12);
         addAISpell(BRUTALLUS_BURN, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
@@ -173,7 +173,7 @@ class BrutallusAI : public CreatureAIScript
 class FelmystAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FelmystAI);
-    FelmystAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FelmystAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Phase 1 spells
         auto cleave = addAISpell(FELMYST_CLEAVE, 6.0f, TARGET_ATTACKING, 0, 10);
@@ -239,7 +239,7 @@ class FelmystAI : public CreatureAIScript
 class LadySacrolashAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LadySacrolashAI);
-    LadySacrolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LadySacrolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto darkTouch = addAISpell(LADY_SACROLASH_DARK_TOUCHED, 50.0f, TARGET_RANDOM_SINGLE, 0, 10);
         darkTouch->setMinMaxDistance(0.0f, 50.0f);
@@ -299,7 +299,7 @@ class LadySacrolashAI : public CreatureAIScript
 class GrandWarlockAlythessAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockAlythessAI);
-    GrandWarlockAlythessAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GrandWarlockAlythessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto pyrogenetics = addAISpell(GRAND_WARLOCK_ALYTHESS_PYROGENICS, 100.0f, TARGET_SELF, 0, 10);
         pyrogenetics->setMinMaxDistance(0.0f, 50.0f);
@@ -363,7 +363,7 @@ class GrandWarlockAlythessAI : public CreatureAIScript
 class MuruAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MuruAI);
-    MuruAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MuruAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MURU_NEGATIVE_ENERGY, 25.0f, TARGET_SELF);
         addAISpell(MURU_DARKNESS, 20.0f, TARGET_SELF, 0, 45);

@@ -41,7 +41,7 @@ const uint32 hordeSoldierId[3] =
 class InjuredSoldier : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier);
-    InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
     {

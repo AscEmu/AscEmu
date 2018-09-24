@@ -10,7 +10,7 @@ class DraktharonKeep : public InstanceScript
 {
 public:
 
-    DraktharonKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit DraktharonKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

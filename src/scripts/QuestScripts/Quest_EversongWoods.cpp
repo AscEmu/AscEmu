@@ -83,7 +83,7 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
 class ProspectorAnvilward : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward);
-    ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }

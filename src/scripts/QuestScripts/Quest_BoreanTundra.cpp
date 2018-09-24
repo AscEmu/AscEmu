@@ -108,7 +108,7 @@ public:
 class PurifyingTotemAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI);
-    PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         setRooted(true);
@@ -140,7 +140,7 @@ public:
 class SeaforiumDepthCharge : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge);
-    SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
         setCanEnterCombat(false);
@@ -492,7 +492,7 @@ public:
 class GearmasterMechazodAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
-    GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
         getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
@@ -655,7 +655,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 class Worm : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Worm);
-    Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

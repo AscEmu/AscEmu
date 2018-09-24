@@ -13,7 +13,7 @@
 class ZerekethAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
-    ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto seedOfC = addAISpell(SEED_OF_C, 6.0f, TARGET_RANDOM_SINGLE, 2, 20);
         seedOfC->setMinMaxDistance(0.0f, 100.0f);
@@ -131,7 +131,7 @@ protected:
 class VoidZoneARC : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC);
-    VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
         setRooted(true);
@@ -157,7 +157,7 @@ class VoidZoneARC : public CreatureAIScript
 class DalliahTheDoomsayerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
-    DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GIFT_OF_THE_DOOMSAYER, 8.0f, TARGET_ATTACKING);
 
@@ -194,7 +194,7 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
 class WrathScryerSoccothratesAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
-    WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMMOLATION, 10.0f, TARGET_SELF);
         addAISpell(FELFIRE_SHOCK, 8.0f, TARGET_ATTACKING);
@@ -224,7 +224,7 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
 class HarbringerSkyrissAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
-    HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MIND_REND, 15.0f, TARGET_ATTACKING);
 
@@ -280,7 +280,7 @@ protected:
 class WardenMellicharAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI);
-    WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
         Phase_Timer = -1;

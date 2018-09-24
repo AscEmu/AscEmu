@@ -26,7 +26,7 @@
 class OnyxiaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI);
-    OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
         m_entry = pCreature->getEntry();

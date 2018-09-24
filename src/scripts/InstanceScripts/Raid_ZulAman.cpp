@@ -26,7 +26,7 @@
 class NalorakkAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI);
-    NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto brutalSwipe = addAISpell(NALORAKK_BRUTAL_SWIPE, 2.0f, TARGET_ATTACKING, 0, 35);
         brutalSwipe->setAvailableForScriptPhase({ 1 });
@@ -124,7 +124,7 @@ class NalorakkAI : public CreatureAIScript
 class AkilzonAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI);
-    AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AKILZON_STATIC_DISRUPTION, 2.0f, TARGET_SELF, 0, 60);
         addAISpell(AKILZON_CALL_LIGHTING, 2.0f, TARGET_ATTACKING);
@@ -167,7 +167,7 @@ class AkilzonAI : public CreatureAIScript
 class SoaringEagleAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI);
-    SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EAGLE_SWOOP, 5.0f, TARGET_DESTINATION, 0, 0);
         getCreature()->m_noRespawn = true;
@@ -177,7 +177,7 @@ class SoaringEagleAI : public CreatureAIScript
 class HalazziAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HalazziAI);
-    HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto saberLash = addAISpell(HALAZZI_SABER_LASH, 0.5f, TARGET_DESTINATION, 0, 0);
         saberLash->addEmote("Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023);
@@ -321,7 +321,7 @@ class HalazziAI : public CreatureAIScript
 class LynxSpiritAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LynxSpiritAI);
-    LynxSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LynxSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lynx Flurry
         addAISpell(43290, 15.0f, TARGET_SELF, 0, 8);

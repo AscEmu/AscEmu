@@ -23,7 +23,7 @@
 class Corporal_Keeshan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Corporal_Keeshan);
-    Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {

@@ -23,7 +23,7 @@
 class Paoka_Swiftmountain : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Paoka_Swiftmountain);
-    Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     // makes no sense... why do we check on wp 72 if player has this quest.... too late?
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override

@@ -11,7 +11,7 @@ class TheStockade : public InstanceScript
 {
 public:
 
-    TheStockade(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheStockade(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

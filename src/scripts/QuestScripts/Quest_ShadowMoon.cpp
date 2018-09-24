@@ -39,7 +39,7 @@ enum
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
-    InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {
@@ -53,7 +53,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 class KneepadsQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
-    KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {
@@ -84,7 +84,7 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 class DeathbringerJovaanAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
-    DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = 0;
         mJovaanPhase = -1;
@@ -186,7 +186,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
 class WarbringerRazuunAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
-    WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
         mRazuunTimer = _addTimer(800);
@@ -296,7 +296,7 @@ public:
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
-    EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
         setRooted(true);

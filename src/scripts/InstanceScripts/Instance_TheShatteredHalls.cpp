@@ -23,7 +23,7 @@ class FelOrcConvertAI : public CreatureAIScript
 {
     
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcConvertAI);
-    FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auto hemorrhage = addAISpell(SP_FEL_ORC_CONVERTER_HEMORRHAGE, 0.0f, TARGET_RANDOM_SINGLE, 0, 25, false, true);
@@ -34,7 +34,7 @@ class FelOrcConvertAI : public CreatureAIScript
 class ShatteredHandHeathenAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHeathenAI);
-    ShatteredHandHeathenAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandHeathenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auto bloodthirst = addAISpell(SP_HAND_HEATHEN_BLOODTHIRST, 0.0f, TARGET_ATTACKING, 0, 25, false, true);
@@ -57,7 +57,7 @@ protected:
 class ShatteredHandLegionnaireAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandLegionnaireAI);
-    ShatteredHandLegionnaireAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandLegionnaireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auraOfDiscipline = addAISpell(SP_HAND_LEGI_AURA_OF_DISCIPLINE, 0.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -83,7 +83,7 @@ protected:
 class ShatteredHandSavageAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSavageAI);
-    ShatteredHandSavageAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandSavageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auto sliceAndDice = addAISpell(SP_HAND_SAVAGE_SLICE_AND_DICE, 0.0f, TARGET_SELF, 0, 35, false, true);
@@ -109,7 +109,7 @@ protected:
 class ShadowmoonAcolyteAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonAcolyteAI);
-    ShadowmoonAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadowmoonAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto heal = addAISpell(SP_SHADOWMOON_ACOLYTE_HEAL, 5.0f, TARGET_SELF, 0, 35, false, true);
         heal->setAttackStopTimer(1000);
@@ -128,7 +128,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
 class ShatteredHandAssassinAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandAssassinAI);
-    ShatteredHandAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sap = addAISpell(SP_SHATT_HAND_ASSASSIN_SAP, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
         sap->setAttackStopTimer(1000);
@@ -155,7 +155,7 @@ protected:
 class ShatteredHandGladiatorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandGladiatorAI);
-    ShatteredHandGladiatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandGladiatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auto sap = addAISpell(SP_SHATT_HAND_GLADI_MORTAL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -167,7 +167,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
 class ShatteredHandHoundmasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHoundmasterAI);
-    ShatteredHandHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
         auto sap = addAISpell(SP_SHATT_HAND_HOUNDMASTER_VOLLEY, 0.0f, TARGET_DESTINATION, 0, 30);
@@ -178,7 +178,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
 class ShatteredHandReaverAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandReaverAI);
-    ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(SP_SHATT_HAND_REAVER_CLEAVE, 7.0f, TARGET_VARIOUS, 0, 10, false, true);
         cleave->setAttackStopTimer(1000);
@@ -194,7 +194,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
 class ShatteredHandSentryAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSentryAI);
-    ShatteredHandSentryAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandSentryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto hamstering = addAISpell(SP_SHATT_HAND_SENTRY_HAMSTERING, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
         hamstering->setAttackStopTimer(1000);
@@ -207,7 +207,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
 class ShatteredHandSharpshooterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSharpshooterAI);
-    ShatteredHandSharpshooterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandSharpshooterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto scatterShot = addAISpell(SP_SHATT_HAND_SHARP_SCATTER_SHOT, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
         scatterShot->setAttackStopTimer(1000);
@@ -227,7 +227,7 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
 class ShatteredHandBrawlerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandBrawlerAI);
-    ShatteredHandBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShatteredHandBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shatteredHand = addAISpell(SP_CURSE_OF_THE_SHATTERED_HAND, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
         shatteredHand->setAttackStopTimer(1000);
@@ -251,7 +251,7 @@ static Movement::Location Darkcasters[] =
 class ShadowmoonDarkcasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonDarkcasterAI);
-    ShadowmoonDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadowmoonDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Unit* GrandWarlock = NULL;
         GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
@@ -329,7 +329,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
 class GrandWarlockNethekurseAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockNethekurseAI);
-    GrandWarlockNethekurseAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GrandWarlockNethekurseAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto deathCoil = addAISpell(SP_GRAND_WARLOCK_NETH_DEATH_COIL, 10.0f, TARGET_ATTACKING, 0, 15, false, true);
         deathCoil->setAttackStopTimer(1000);
@@ -348,7 +348,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
 class BloodGuardPorungAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BloodGuardPorungAI);
-    BloodGuardPorungAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BloodGuardPorungAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(SP_BLOOD_GUARD_PORUNG_CLEAVE, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
         cleave->setAttackStopTimer(1000);
@@ -358,7 +358,7 @@ class BloodGuardPorungAI : public CreatureAIScript
 class WarbringerOmroggAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarbringerOmroggAI);
-    WarbringerOmroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarbringerOmroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_WARBRINGER_OMROGG_THUNDERCLAP, 25.0f, TARGET_SELF, 1, 12);
         addAISpell(SP_WARBRINGER_OMROGG_FEAR, 7.0f, TARGET_SELF, 0, 20);
@@ -570,7 +570,7 @@ class WarbringerOmroggAI : public CreatureAIScript
 class HeadAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HeadAI);
-    HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _setScale(4.0f);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -604,7 +604,7 @@ class HeadAI : public CreatureAIScript
 class WarchiefKargathBladefistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarchiefKargathBladefistAI);
-    WarchiefKargathBladefistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarchiefKargathBladefistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bladeDance = addAISpell(SP_WARCHIEF_LARAGATH_BLADE_DANCE, 10.0f, TARGET_VARIOUS, 0, 30, false, true);
         bladeDance->setAttackStopTimer(1500);

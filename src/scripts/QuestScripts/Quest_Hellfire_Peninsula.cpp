@@ -26,7 +26,7 @@
 class FelOrcScavengersQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI);
-    FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {
@@ -40,7 +40,7 @@ class FelOrcScavengersQAI : public CreatureAIScript
 class Dreadtusk : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk);
-    Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
+    explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
     {
         if (!mKiller->isPlayer())
@@ -218,7 +218,7 @@ public:
 class PrisonersDreghoodElders : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders);
-    PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -242,7 +242,7 @@ class AncestralSpiritWolf : public CreatureAIScript
 class HellfireDeadNPC : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC);
-    HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

@@ -10,7 +10,7 @@ class SerpentShrine : public InstanceScript
 {
 public:
 
-    SerpentShrine(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SerpentShrine(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

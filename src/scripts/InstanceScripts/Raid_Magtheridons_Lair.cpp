@@ -120,7 +120,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
     std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
     bool KilledChanneler[5];            // Bool that says if channeler died or not
 
-    MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // We set default value for KillerdChanneler array to avoid any unexpected situations
         for (uint8 i = 0; i < 5; i++)
@@ -634,7 +634,7 @@ protected:
 class CubeTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
-    CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -644,7 +644,7 @@ class CubeTriggerAI : public CreatureAIScript
 class HellfireWarderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI);
-    HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(HW_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 5, false, true);
         shadowBoltVolley->setAttackStopTimer(1000);
@@ -678,7 +678,7 @@ class HellfireWarderAI : public CreatureAIScript
 class HellfireChannelerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI);
-    HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 10.0f, TARGET_VARIOUS, 0, 5);
         shadowBoltVolley->setAttackStopTimer(1000);
@@ -742,7 +742,7 @@ class HellfireChannelerAI : public CreatureAIScript
 class BurningAbyssalAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI);
-    BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(FIRE_BLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
         fireBlast->setAttackStopTimer(1000);
@@ -755,7 +755,7 @@ class BurningAbyssalAI : public CreatureAIScript
 class MagtheridonAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI);
-    MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);
         cleave->setAttackStopTimer(1000);

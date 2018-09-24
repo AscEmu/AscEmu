@@ -41,7 +41,7 @@ public:
 class ForgemasterGarfrostAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ForgemasterGarfrostAI);
-    ForgemasterGarfrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ForgemasterGarfrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = getInstanceScript();
@@ -124,7 +124,7 @@ class ForgemasterGarfrostAI : public CreatureAIScript
 class IckAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IckAI);
-    IckAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit IckAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = getInstanceScript();
@@ -334,7 +334,7 @@ class IckAI : public CreatureAIScript
 class KrickAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KrickAI);
-    KrickAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KrickAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Get Instance Script
         mInstance = getInstanceScript();
@@ -514,7 +514,7 @@ class KrickAI : public CreatureAIScript
 class BarrageAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
-    BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->CastSpell(getCreature(), SPELL_EXPLODING_ORB, false);

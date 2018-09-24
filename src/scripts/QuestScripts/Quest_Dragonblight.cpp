@@ -22,7 +22,7 @@
 class WoodlandWalker : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker);
-    WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->SetFaction(35);
     }

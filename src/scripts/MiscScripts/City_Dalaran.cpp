@@ -10,7 +10,7 @@
 class SilverCovenantMageGuard : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
-    SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         RegisterAIUpdateEvent(1500);
@@ -55,7 +55,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
 class SunreaversMageGuard : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
-    SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         RegisterAIUpdateEvent(1500);
@@ -98,7 +98,7 @@ class SunreaversMageGuard : public CreatureAIScript
 class FactionInvisible : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible);
-    FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance
         switch (getCreature()->spawnid)

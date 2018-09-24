@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 class HydromancerThespiaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HydromancerThespiaAI);
-    HydromancerThespiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HydromancerThespiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto envelopingWinds = addAISpell(ENVELOPING_WINDS, 9.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
         envelopingWinds->setAttackStopTimer(1000);
@@ -47,7 +47,7 @@ static Movement::Location SpawnCoords[] =
 class SteamriggerMechanicAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SteamriggerMechanicAI);
-    SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
@@ -89,7 +89,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MekgineerSteamriggerAI);
     std::vector <Unit*> Gnomes;
 
-    MekgineerSteamriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MekgineerSteamriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shrinkRay = addAISpell(SUPER_SHRINK_RAY, 9.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
         shrinkRay->setAttackStopTimer(1000);
@@ -229,7 +229,7 @@ static Movement::Location DistillerMoveTo[] =
 class NagaDistillerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NagaDistillerAI);
-    NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -247,7 +247,7 @@ class NagaDistillerAI : public CreatureAIScript
 class WarlordKalitreshAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarlordKalitreshAI);
-    WarlordKalitreshAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarlordKalitreshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto impale = addAISpell(IMPALE, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
         impale->setAttackStopTimer(1000);

@@ -109,7 +109,7 @@ class MountHyjalScript : public InstanceScript
 {
 public:
 
-    MountHyjalScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MountHyjalScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
     }
@@ -141,7 +141,7 @@ private:
 class JainaProudmooreAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI);
-    JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
     }
@@ -193,7 +193,7 @@ public:
 class ThrallAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
-    ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
     }
@@ -241,7 +241,7 @@ public:
 class RageWinterchillAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI);
-    RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
         frostbold->setAttackStopTimer(1000);
@@ -271,7 +271,7 @@ class RageWinterchillAI : public CreatureAIScript
 class AnetheronAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI);
-    AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
         vampiricAura->setAttackStopTimer(1000);
@@ -300,7 +300,7 @@ class AnetheronAI : public CreatureAIScript
 class KazrogalAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI);
-    KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
         cleave->setAttackStopTimer(1000);
@@ -332,7 +332,7 @@ class KazrogalAI : public CreatureAIScript
 class AzgalorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI);
-    AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
         cleave->setAttackStopTimer(3000);
@@ -359,7 +359,7 @@ class AzgalorAI : public CreatureAIScript
 class ArchimondeTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
-    ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -377,7 +377,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
 class DoomfireAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
-    DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -501,7 +501,7 @@ protected:
 class ArchimondeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI);
-    ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);
         airBurst->setAttackStopTimer(1000);

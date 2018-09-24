@@ -29,7 +29,7 @@ const uint32 LAIR_BRUTE_CHARGE = 24193;
 class LairBruteAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI);
-    LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(LAIR_BRUTE_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
         addAISpell(LAIR_BRUTE_MORTALSTRIKE, 8.0f, TARGET_ATTACKING, 0, 20);
@@ -60,7 +60,7 @@ const uint32 GRONN_PRIEST_HEAL = 36678;
 class GronnPriestAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI);
-    GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GRONN_PRIEST_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
 
@@ -88,7 +88,7 @@ uint32 Adds[4] = { 18832, 18834, 18836, 18835 };
 class HighKingMaulgarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI);
-    HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
         charge->setAvailableForScriptPhase({ 2 });
@@ -227,7 +227,7 @@ const uint32 KIGGLER_THE_CRAZED_ARCANE_SHOCK = 33175;
 class KigglerTheCrazedAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI);
-    KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, 70.0f, TARGET_ATTACKING, 2, 0);
         addAISpell(KIGGLER_THE_CRAZED_GREATER_POLYMORPH, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -276,7 +276,7 @@ const uint32 BLINDEYE_THE_SEER_HEAL = 33144;
 class BlindeyeTheSeerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI);
-    BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, 5.0f, TARGET_SELF, 4, 30);
         addAISpell(BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD, 8.0f, TARGET_SELF, 0, 30);
@@ -302,7 +302,7 @@ const uint32 OLM_THE_SUMMONER_DARK_DECAY = 33129;
 class OlmTheSummonerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI);
-    OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(OLM_THE_SUMMONER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
         addAISpell(OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER, 7.0f, TARGET_SELF, 3, 15);
@@ -326,7 +326,7 @@ const uint32 WILD_FEL_STALKER_WILD_BITE = 33086;
 class WildFelStalkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI);
-    WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
     }
@@ -346,7 +346,7 @@ const uint32 SPELLSHIELD = 33054;
 class KroshFirehandAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI);
-    KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
         mBlastWave = addAISpell(BALST_WAVE, 0.0f, TARGET_SELF, 0, 15);
@@ -424,7 +424,7 @@ const uint32 GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be u
 class GruulTheDragonkillerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI);
-    GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHurtfulStrike = addAISpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 8);
 

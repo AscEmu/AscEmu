@@ -42,7 +42,7 @@ public:
 class LordDawnstar : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar);
-    LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

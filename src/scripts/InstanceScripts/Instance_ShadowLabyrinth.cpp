@@ -28,7 +28,7 @@
 class CabalAcolyteAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalAcolyteAI);
-    CabalAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowProtection = addAISpell(SP_CABAL_ACOLYTE_SHADOW_PROTECTION, 6.0f, TARGET_SELF, 0, 0, false, true);
         shadowProtection->setAttackStopTimer(1000);
@@ -41,7 +41,7 @@ class CabalAcolyteAI : public CreatureAIScript
 class CabalDeathswornAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalDeathswornAI);
-    CabalDeathswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalDeathswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowCleave = addAISpell(SP_CABAL_DEATHSWORN_SHADOW_CLEAVE, 9.0f, TARGET_VARIOUS, 0, 0, false, true);
         shadowCleave->setAttackStopTimer(1000);
@@ -57,7 +57,7 @@ class CabalDeathswornAI : public CreatureAIScript
 class CabalFanaticAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalFanaticAI);
-    CabalFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fanaticFixate = addAISpell(SP_CABAL_FANATIC_FIXATE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
         fanaticFixate->setAttackStopTimer(1000);
@@ -67,7 +67,7 @@ class CabalFanaticAI : public CreatureAIScript
 class CabalShadowPriestAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalShadowPriestAI);
-    CabalShadowPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalShadowPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mindFlay = addAISpell(SP_CABAL_SHADOW_PRIEST_MIND_FLAY, 7.0f, TARGET_ATTACKING);
         mindFlay->setAttackStopTimer(1000);
@@ -80,7 +80,7 @@ class CabalShadowPriestAI : public CreatureAIScript
 class CabalSpellbinderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalSpellbinderAI);
-    CabalSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mindControl = addAISpell(SP_CABAL_SPELLBINDER_MIND_CONTROL, 7.0f, TARGET_ATTACKING, 0, 0, false, true);
         mindControl->setAttackStopTimer(1000);
@@ -93,7 +93,7 @@ class CabalSpellbinderAI : public CreatureAIScript
 class CabalWarlockAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalWarlockAI);
-    CabalWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBolt = addAISpell(SP_CABAL_WARLOCK_SHADOW_BOLT, 13.0f, TARGET_ATTACKING);
         shadowBolt->setAttackStopTimer(1000);
@@ -106,7 +106,7 @@ class CabalWarlockAI : public CreatureAIScript
 class CabalZealotAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalZealotAI);
-    CabalZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBolt = addAISpell(SP_CABAL_ZEALOT_SHADOW_BOLT, 13.0f, TARGET_ATTACKING);
         shadowBolt->setAttackStopTimer(1000);
@@ -134,7 +134,7 @@ class CabalZealotAI : public CreatureAIScript
 class CabalRitualistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CabalRitualistAI);
-    CabalRitualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CabalRitualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto gouge = addAISpell(SP_CABAL_RITUALIST_GOUGE, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
         gouge->setAttackStopTimer(1000);
@@ -159,7 +159,7 @@ class CabalRitualistAI : public CreatureAIScript
 class FelOverseerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FelOverseerAI);
-    FelOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit FelOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shout = addAISpell(SP_FEL_OVERSEER_INTIMIDATING_SHOUT, 4.0f, TARGET_ATTACKING, 0, 0, false, true);
         shout->setAttackStopTimer(1000);
@@ -213,7 +213,7 @@ protected:
 class MaliciousInstructorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MaliciousInstructorAI);
-    MaliciousInstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MaliciousInstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowNova = addAISpell(SP_MILICIOUS_INSTRUCT_SHADOW_NOVA, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
         shadowNova->setAttackStopTimer(1000);
@@ -229,7 +229,7 @@ class MaliciousInstructorAI : public CreatureAIScript
 class AmbassadorHellmawAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AmbassadorHellmawAI);
-    AmbassadorHellmawAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AmbassadorHellmawAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto corrosiveAcide = addAISpell(SP_AMBASSADOR_HELMAW_CORROSIVE_ACID, 10.0f, TARGET_VARIOUS, 0, 15);
         corrosiveAcide->setAttackStopTimer(1000);
@@ -276,7 +276,7 @@ protected:
 class BlackheartTheInciterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BlackheartTheInciterAI);
-    BlackheartTheInciterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BlackheartTheInciterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(SP_BLACKHEART_INCITER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 15, false, true);
         charge->setAttackStopTimer(1000);
@@ -331,7 +331,7 @@ faster rate as the battle progresses.*/
 class GrandmasterVorpilAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GrandmasterVorpilAI);
-    GrandmasterVorpilAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GrandmasterVorpilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SP_GRDMASTER_VORPIL_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
         shadowBoltVolley->setAttackStopTimer(1000);
@@ -354,7 +354,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
 class MurmurAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MurmurAI);
-    MurmurAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MurmurAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto boom1 = addAISpell(SP_MURMUR_SONIC_BOOM1, 10.0f, TARGET_SELF, 0, 25);
         boom1->setAttackStopTimer(1000);

@@ -12,7 +12,7 @@
 class ShirrakTheDeadWatcherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShirrakTheDeadWatcherAI);
-    ShirrakTheDeadWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShirrakTheDeadWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto inhibitMagic = addAISpell(INHIBIT_MAGIC, 7.0f, TARGET_SELF, 0, 10, false, true);
         inhibitMagic->setAttackStopTimer(1000);
@@ -33,7 +33,7 @@ class ShirrakTheDeadWatcherAI : public CreatureAIScript
 class AvatarOfTheMartyredAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AvatarOfTheMartyredAI);
-    AvatarOfTheMartyredAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AvatarOfTheMartyredAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sunderArmor = addAISpell(SUNDER_ARMOR, 15.0f, TARGET_ATTACKING, 0, 10, false, true);
         sunderArmor->setAttackStopTimer(1000);
@@ -71,7 +71,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
 class EXARCH_MALADAAR_AI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EXARCH_MALADAAR_AI);
-    EXARCH_MALADAAR_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EXARCH_MALADAAR_AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto souldScream = addAISpell(SOUL_SCREAM, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
         souldScream->addEmote("Let your mind be clouded.", CHAT_MSG_MONSTER_YELL, 10510); // dunno for sure if it should be here, but still gives better effect of fight :)

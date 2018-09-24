@@ -4,7 +4,7 @@
  * See COPYING for license details.
  */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 
 //DELETE FROM gameobject_spawns WHERE `Map` = 530 AND `entry` in (182523, 182522);
 //DELETE FROM gameobject_spawns WHERE `Map` = 530 AND `entry` in (182529, 182527, 182528);

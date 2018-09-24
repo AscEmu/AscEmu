@@ -24,7 +24,7 @@
 class RingoDeadNPC : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
-    RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -101,7 +101,7 @@ public:
 class A_Me01 : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
-    A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {

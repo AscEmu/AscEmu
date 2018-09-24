@@ -49,7 +49,7 @@ enum L80Spells
 class SamAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SamAI);
-    SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -108,7 +108,7 @@ protected:
 class BerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BerAI);
-    BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -164,7 +164,7 @@ protected:
 class SigAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SigAI);
-    SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -223,7 +223,7 @@ protected:
 class MaiAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MaiAI);
-    MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -281,7 +281,7 @@ protected:
 class ThuAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ThuAI);
-    ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -351,7 +351,7 @@ protected:
 class UndeadAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(UndeadAI);
-    UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -396,7 +396,7 @@ protected:
 class Undead2AI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Undead2AI);
-    Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -442,7 +442,7 @@ protected:
 class Undead3AI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Undead3AI);
-    Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -481,7 +481,7 @@ protected:
 class TriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TriggerAI);
-    TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -572,7 +572,7 @@ protected:
 class Trigger2AI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI);
-    Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -657,7 +657,7 @@ protected:
 class Effectsground : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Effectsground);
-    Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -773,7 +773,7 @@ protected:
 class Effectsair : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Effectsair);
-    Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->m_canMove = false;

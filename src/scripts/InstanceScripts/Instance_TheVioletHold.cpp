@@ -234,7 +234,7 @@ public:
 class VHCreatureAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI);
-    VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
         //this->SetWaypointToMove(1);
@@ -522,7 +522,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 class MoraggAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MoraggAI);
-    MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //// Spells
         //if (_isHeroic())

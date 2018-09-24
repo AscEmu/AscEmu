@@ -10,7 +10,7 @@
 class AnomalusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
-    AnomalusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AnomalusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
 
@@ -106,7 +106,7 @@ private:
 class ChaoticRiftAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI);
-    ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         auto spell_mana_wrath = sSpellCustomizations.GetSpellInfo(SUMMON_MANA_WRAITH);
@@ -138,7 +138,7 @@ class ChaoticRiftAI : public CreatureAIScript
 class CraziedManaWrathAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI);
-    CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
@@ -161,7 +161,7 @@ static Movement::Location FormSpawns[] =
 class TelestraBossAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TelestraBossAI);
-    TelestraBossAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TelestraBossAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
 
@@ -289,7 +289,7 @@ private:
 class TelestraFireAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI);
-    TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -307,7 +307,7 @@ class TelestraFireAI : public CreatureAIScript
 class TelestraFrostAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI);
-    TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -325,7 +325,7 @@ class TelestraFrostAI : public CreatureAIScript
 class TelestraArcaneAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI);
-    TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIME_STOP, 30.0f, TARGET_SELF, 2, 30);
         addAISpell(CRITTER, 25.0f, TARGET_RANDOM_SINGLE, 0, 20);
@@ -335,7 +335,7 @@ class TelestraArcaneAI : public CreatureAIScript
 class OrmorokAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OrmorokAI);
-    OrmorokAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit OrmorokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
 
@@ -392,7 +392,7 @@ private:
 class CrystalSpikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CrystalSpikeAI);
-    CrystalSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CrystalSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_part = 0;
     }
@@ -437,7 +437,7 @@ private:
 class KeristraszaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KeristraszaAI);
-    KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             addAISpell(CRYSTALFIRE_BREATH_HC, 30.0f, TARGET_SELF, 1, 14);

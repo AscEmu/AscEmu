@@ -61,7 +61,7 @@ public:
 class Beka : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Beka);
-    Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -96,7 +96,7 @@ class Beka : public CreatureAIScript
 class Beka1 : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Beka1);
-    Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -131,7 +131,7 @@ class Beka1 : public CreatureAIScript
 class Beka2 : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Beka2);
-    Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -289,9 +289,8 @@ class NegolashAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
 
-    NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
+
     void OnDied(Unit* /*mKiller*/) override
     {
         getCreature()->Despawn(180000, 0);

@@ -26,7 +26,7 @@
 class ChronoLordAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ChronoLordAI);
-    ChronoLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ChronoLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneBlast = addAISpell(ARCANE_BLAST, 0.0f, TARGET_ATTACKING, 0, 10);
         arcaneBlast->setAttackStopTimer(1000);
@@ -46,7 +46,7 @@ class ChronoLordAI : public CreatureAIScript
 class TemporusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TemporusAI);
-    TemporusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TemporusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto haste = addAISpell(HASTEN, 0.0f, TARGET_SELF, 0, 10);
         haste->setAttackStopTimer(1000);
@@ -66,7 +66,7 @@ class TemporusAI : public CreatureAIScript
 class AenusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AenusAI);
-    AenusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AenusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sandBreath = addAISpell(SAND_BREATH, 0.0f, TARGET_DESTINATION, 0, 15, false, true);
         sandBreath->setAttackStopTimer(1000);

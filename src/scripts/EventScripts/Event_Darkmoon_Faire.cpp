@@ -204,7 +204,7 @@ public:
 class Flik_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark);
-    Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -246,7 +246,7 @@ public:
 class GelvasGrimegate_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark);
-    GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -263,7 +263,7 @@ class GelvasGrimegate_Bark : public CreatureAIScript
 class Lhara_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark);
-    Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -298,7 +298,7 @@ public:
 class Morja_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark);
-    Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -379,7 +379,7 @@ public:
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark);
-    ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -592,7 +592,7 @@ public:
 class Sayge_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark);
-    Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -682,7 +682,7 @@ public:
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark);
-    SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -701,7 +701,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 class StampThunderhorn_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark);
-    StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -719,7 +719,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
 class Sylannia_Bark : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark);
-    Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 

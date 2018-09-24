@@ -25,7 +25,7 @@ class BlackCat : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
-    BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
     {
@@ -72,7 +72,7 @@ class HeadlessHorsemanAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanAI(c); }
-    HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Scarlet Monastery Boss
     }
@@ -84,7 +84,7 @@ class HeadlessHorsemanFireAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanFireAI(c); }
-    HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), 42971, true);
     }
@@ -102,7 +102,7 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ShadeOfTheHorsemanAI(c); }
-    ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         getCreature()->setMountDisplayId(22653);
@@ -184,7 +184,7 @@ class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanWispInvisAI(c); }
-    HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;
     }

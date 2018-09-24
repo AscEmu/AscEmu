@@ -35,7 +35,7 @@ public:
 class CalvinMontague : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague);
-    CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -105,7 +105,7 @@ public:
 class Zealot : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Zealot);
-    Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {

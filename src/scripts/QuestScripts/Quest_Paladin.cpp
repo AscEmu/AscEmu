@@ -24,7 +24,7 @@
 class PaladinDeadNPC : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PaladinDeadNPC);
-    PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
     {
@@ -67,7 +67,7 @@ public:
 class stillbladeQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(stillbladeQAI);
-    stillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit stillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 

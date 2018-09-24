@@ -34,7 +34,7 @@ Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an add
 class ThekaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ThekaAI);
-    ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         morph = sSpellCustomizations.GetSpellInfo(SP_THEKA_TRANSFORM);
         plague = sSpellCustomizations.GetSpellInfo(SP_THEKA_FEVERED_PLAGUE);
@@ -114,7 +114,7 @@ he summons Servant of antu'sul 8156 25% with spell 11894 each 15 second
 class AntusulTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI);
-    AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override
     {
@@ -140,7 +140,7 @@ class AntusulTriggerAI : public CreatureAIScript
 class AntusulAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AntusulAI);
-    AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
         spawns = spawns2 = attack = firstspawn = secondspawn = false;

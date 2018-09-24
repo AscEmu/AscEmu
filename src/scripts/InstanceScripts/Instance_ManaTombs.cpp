@@ -27,7 +27,7 @@
 class EtherealDarkcasterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealDarkcasterAI);
-    EtherealDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto manaBurn = addAISpell(MANA_BURN, 10.0f, TARGET_DESTINATION, 0, 0, false, true);
         manaBurn->setAttackStopTimer(1000);
@@ -41,7 +41,7 @@ class EtherealDarkcasterAI : public CreatureAIScript
 class EtherealPriestAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealPriestAI);
-    EtherealPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto heal = addAISpell(HEAL, 7.0f, TARGET_SELF);
         heal->setAttackStopTimer(1000);
@@ -54,7 +54,7 @@ class EtherealPriestAI : public CreatureAIScript
 class EtherealTheurgistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealTheurgistAI);
-    EtherealTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto polymorph = addAISpell(POLYMORPH, 7.0f, TARGET_ATTACKING);
         polymorph->setAttackStopTimer(1000);
@@ -68,7 +68,7 @@ class EtherealTheurgistAI : public CreatureAIScript
 class EtherealSorcererAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealSorcererAI);
-    EtherealSorcererAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealSorcererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneMissiles = addAISpell(ARCANE_MISSILES, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
         arcaneMissiles->setAttackStopTimer(1000);
@@ -78,7 +78,7 @@ class EtherealSorcererAI : public CreatureAIScript
 class NexusStalkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NexusStalkerAI);
-    NexusStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NexusStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto couge = addAISpell(GOUGE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
         couge->setAttackStopTimer(1000);
@@ -94,7 +94,7 @@ class NexusStalkerAI : public CreatureAIScript
 class NexusTerrorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NexusTerrorAI);
-    NexusTerrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NexusTerrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto psychicScream = addAISpell(PSYCHIC_SCREAM, 3.0f, TARGET_VARIOUS, 0, 0, false, true);
         psychicScream->setAttackStopTimer(1000);
@@ -105,7 +105,7 @@ class NexusTerrorAI : public CreatureAIScript
 class ManaLeechAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ManaLeechAI);
-    ManaLeechAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ManaLeechAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         arcaneExplosion = addAISpell(ARCANE_EXPLOSION, 0.0f, TARGET_VARIOUS, 0, 0, false, true);
         arcaneExplosion->setAttackStopTimer(1000);
@@ -124,7 +124,7 @@ protected:
 class EtherealSpellbinderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealSpellbinderAI);
-    EtherealSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto corruption = addAISpell(CORRUPTION, 7.0f, TARGET_ATTACKING, 0, 0, false, true);
         corruption->setAttackStopTimer(1000);
@@ -144,7 +144,7 @@ class EtherealSpellbinderAI : public CreatureAIScript
 class EtherealWraithAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EtherealWraithAI);
-    EtherealWraithAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit EtherealWraithAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS);
         shadowBoltVolley->setAttackStopTimer(1000);
@@ -154,7 +154,7 @@ class EtherealWraithAI : public CreatureAIScript
 class PandemoniusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PandemoniusAI);
-    PandemoniusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PandemoniusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto darkShell = addAISpell(DARK_SHELL, 20.0f, TARGET_SELF, 0, 20);
         darkShell->setAttackStopTimer(2000);
@@ -176,7 +176,7 @@ class PandemoniusAI : public CreatureAIScript
 class TavarokAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TavarokAI);
-    TavarokAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TavarokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto earthquake = addAISpell(EARTHQUAKE, 8.0f, TARGET_VARIOUS, 0, 20);
         earthquake->setAttackStopTimer(2000);
@@ -195,7 +195,7 @@ class TavarokAI : public CreatureAIScript
 class NexusPrinceShaffarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NexusPrinceShaffarAI);
-    NexusPrinceShaffarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit NexusPrinceShaffarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireball = addAISpell(FIREBALL, 35.0f, TARGET_RANDOM_SINGLE, 0, 20);
         fireball->setAttackStopTimer(2000);
@@ -226,7 +226,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
 class YorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(YorAI);
-    YorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit YorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto doubleBreath = addAISpell(DOUBLE_BREATH, 20.0f, TARGET_VARIOUS, 0, 15, false, true);
         doubleBreath->setAttackStopTimer(2000);

@@ -72,7 +72,7 @@ public:
 class Chicken : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Chicken);
-    Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -91,7 +91,7 @@ class Chicken : public CreatureAIScript
 class Kaliri : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Kaliri);
-    Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

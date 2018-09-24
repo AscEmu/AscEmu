@@ -11,7 +11,7 @@ class CullingOfStratholm : public InstanceScript
 {
 public:
 
-    CullingOfStratholm(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit CullingOfStratholm(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

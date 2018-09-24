@@ -11,7 +11,7 @@ class Scholomance : public InstanceScript
 {
 public:
 
-    Scholomance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Scholomance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -154,7 +154,7 @@ class RhahkZorAI : public CreatureAIScript
     // Just for testing
     LazyTimer debugTimer;
 
-    RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
+    explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 0, 3);    // Rhahk'Zor Slam
 
@@ -166,7 +166,7 @@ class RhahkZorAI : public CreatureAIScript
 class MrSmiteAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
-    MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
         smiteSlam->setMinMaxDistance(0.0f, 8.0f);
@@ -295,16 +295,15 @@ protected:
     uint32 mWaitAtChest;
 };
 
-
 class VanCleefAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
-    VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(3391, 25.0f, TARGET_SELF);    //Thrash (Gives the caster 2 extra attacks.)
+        addAISpell(3391, 25.0f, TARGET_SELF); // Thrash (Gives the caster 2 extra attacks.)
 
-        addEmoteForEvent(Event_OnCombatStart, 7722);     // None may challenge the Brotherhood!
-        addEmoteForEvent(Event_OnDied, 7727);            // The Brotherhood shall prevail!
+        addEmoteForEvent(Event_OnCombatStart, 7722); // None may challenge the Brotherhood!
+        addEmoteForEvent(Event_OnDied, 7727); // The Brotherhood shall prevail!
     }
 
     void OnTargetDied(Unit* pTarget) override

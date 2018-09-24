@@ -9,7 +9,7 @@
 class KelidanTheBreakerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KelidanTheBreakerAI);
-    KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -68,7 +68,7 @@ class KelidanTheBreakerAI : public CreatureAIScript
 class BroggokAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
-    BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
         addAISpell(SLIME_SPRAY, 10.0f, TARGET_SELF, 0, 25);
@@ -88,7 +88,7 @@ class BroggokAI : public CreatureAIScript
 class TheMakerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
-    TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);
         addAISpell(ACID_SPRAY, 10.0f, TARGET_SELF);

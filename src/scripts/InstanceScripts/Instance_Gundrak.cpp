@@ -228,7 +228,7 @@ public:
 class SladranAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SladranAI);
-    SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* sdPoisonNova = nullptr;
         if (_isHeroic())
@@ -261,7 +261,7 @@ class SladranAI : public CreatureAIScript
 class GalDarahAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI);
-    GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             addAISpell(59824, 20.0f, TARGET_SELF, 0, 12);

@@ -23,7 +23,7 @@
 class Dalinda_Malem : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Dalinda_Malem);
-    Dalinda_Malem(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Dalinda_Malem(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {

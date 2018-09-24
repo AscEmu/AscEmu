@@ -9,7 +9,7 @@
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI);
-    SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 };
@@ -17,7 +17,7 @@ class SvalaSorrowgraveAI : public CreatureAIScript
 class GortokPalehoofAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI);
-    GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_GROTOK_PALEHOOF_01);
         addEmoteForEvent(Event_OnTargetDied, SAY_GROTOK_PALEHOOF_02);
@@ -28,7 +28,7 @@ class GortokPalehoofAI : public CreatureAIScript
 class SkadiTheRuthlessAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI);
-    SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_SKADI_RUTHLESS_START);
         addEmoteForEvent(Event_OnTargetDied, SAY_SKADI_RUTHLESS_KILL_01);
@@ -40,7 +40,7 @@ class SkadiTheRuthlessAI : public CreatureAIScript
 class KingYmironAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI);
-    KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_KING_YMIRON_START);
         addEmoteForEvent(Event_OnTargetDied, SAY_KING_YMIRON_KILL_01);

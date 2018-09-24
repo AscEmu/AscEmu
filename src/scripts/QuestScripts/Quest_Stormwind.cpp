@@ -23,7 +23,7 @@
 class DashelStonefist : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist);
-    DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

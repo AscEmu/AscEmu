@@ -31,7 +31,7 @@ enum
 class Lunaclaw : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw);
-    Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {

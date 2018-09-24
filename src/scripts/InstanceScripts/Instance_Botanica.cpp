@@ -26,7 +26,7 @@
 class BloodProtectorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BloodProtectorAI);
-    BloodProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BloodProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crystalStrike = addAISpell(CRYSTAL_STRIKE, 10.0f, TARGET_ATTACKING);
         crystalStrike->setAttackStopTimer(1000);
@@ -44,18 +44,17 @@ class BloodProtectorAI : public CreatureAIScript
 class BloodGreenkeeperAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BloodGreenkeeperAI);
-    BloodGreenkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BloodGreenkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto greenkeeperFury = addAISpell(GREENKEEPER_FURY, 10.0f, TARGET_ATTACKING);
         greenkeeperFury->setAttackStopTimer(1000);
     }
 };
 
-
 class SunchemistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunchemistAI);
-    SunchemistAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunchemistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameBreath = addAISpell(FLAME_BREATH, 10.0f, TARGET_VARIOUS);
         flameBreath->setAttackStopTimer(1000);
@@ -65,11 +64,10 @@ class SunchemistAI : public CreatureAIScript
     }
 };
 
-
 class SunResearcherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunResearcherAI);
-    SunResearcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SunResearcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         poisonShield = addAISpell(POISON_SHIELD, 0.0f, TARGET_SELF);
         poisonShield->setAttackStopTimer(1000);
@@ -98,7 +96,7 @@ protected:
 class CommanderSarannisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CommanderSarannisAI);
-    CommanderSarannisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CommanderSarannisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         GuardAdds = false;
 
@@ -155,7 +153,7 @@ protected:
 class HighBotanistFreywinnAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HighBotanistFreywinnAI);
-    HighBotanistFreywinnAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HighBotanistFreywinnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         PlantTimer = 10;
 
@@ -255,7 +253,7 @@ protected:
 class ThorngrinTheTenderAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ThorngrinTheTenderAI);
-    ThorngrinTheTenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ThorngrinTheTenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = false;
 
@@ -312,7 +310,7 @@ protected:
 class LajAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LajAI);
-    LajAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LajAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         TeleportTimer = 20;    // It's sth about that
 
@@ -366,7 +364,7 @@ protected:
 class WarpSplinterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarpSplinterAI);
-    WarpSplinterAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit WarpSplinterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SummonTimer = 20;    // It's sth about that
 

@@ -11,7 +11,7 @@ class TempleOfAhnQiraj : public InstanceScript
 {
 public:
 
-    TempleOfAhnQiraj(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TempleOfAhnQiraj(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 
@@ -23,4 +23,3 @@ void TempleOfAhnQirajScripts(ScriptMgr* scriptMgr)
 {
     scriptMgr->register_instance_script(531, &TempleOfAhnQiraj::Create);
 }
-

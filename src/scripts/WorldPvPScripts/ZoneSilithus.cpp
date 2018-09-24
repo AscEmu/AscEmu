@@ -4,7 +4,7 @@
  * See COPYING for license details.
  */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 
 enum
 {
