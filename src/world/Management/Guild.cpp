@@ -2337,7 +2337,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
     Item* pSourceItem = player->GetItemInterface()->GetInventoryItem(playerBag, playerSlotId);
     Item* pDestItem = getBankTab(tabId)->getItem(slotId);
-    Item* pSourceItem2;
+    Item* pSourceItem2 = pSourceItem;
 
     if (pSourceItem != nullptr)
     {
@@ -2355,7 +2355,6 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
         if (splitedAmount && pSourceItem->getStackCount() > splitedAmount)
         {
-            pSourceItem2 = pSourceItem;
             pSourceItem = objmgr.CreateItem(pSourceItem2->getEntry(), player);
             if (pSourceItem == nullptr)
                 return;
