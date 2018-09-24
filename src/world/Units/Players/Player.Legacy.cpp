@@ -14528,10 +14528,27 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
 void Player::SendTeleportAckPacket(float x, float y, float z, float o)
 {
     SetPlayerStatus(TRANSFER_PENDING);
+
+#if VERSION_STRING < WotLK
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
-    data << uint32(0);                                     // this value increments every time
+    data << uint32(2);
+    data << uint32(0);
+    data << uint8(0);
+
+    data << float(0);
+    data << x;
+    data << y;
+    data << z;
+    data << o;
+    data << uint16(2);
+    data << uint8(0);
+#else
+    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    data << GetNewGUID();
+    data << uint32(0);
     BuildMovementPacket(&data, x, y, z, o);
+#endif
     GetSession()->SendPacket(&data);
 }
 
