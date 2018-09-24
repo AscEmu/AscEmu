@@ -50,6 +50,7 @@
 #include "Server/Packets/CmsgItemrefundinfo.h"
 #include "Server/Packets/CmsgItemrefundrequest.h"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
+#include "Server/Packets/SmsgReadItemOk.h"
 
 using namespace AscEmu::Packets;
 
@@ -1766,10 +1767,8 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
         // Check if it has pagetext
         if (item->getItemProperties()->PageId)
         {
-            WorldPacket data(SMSG_READ_ITEM_OK, 4);
-            data << item->getGuid();
-            SendPacket(&data);
-            LOG_DEBUG("Sent SMSG_READ_OK %d", item->getGuid());
+            SendPacket(SmsgReadItemOk(item->getGuid()).serialise().get());
+            LOG_DEBUG("Sent SMSG_READ_OK %lld", item->getGuid());
         }
         else
         {
