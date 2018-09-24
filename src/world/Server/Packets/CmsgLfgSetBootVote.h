@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgLfgSetBootVote : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         bool voteFor;
 
@@ -38,5 +39,6 @@ namespace AscEmu { namespace Packets
             packet >> voteFor;
             return true;
         }
+#endif
     };
 }}

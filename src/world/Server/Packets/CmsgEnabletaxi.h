@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgEnabletaxi : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         WoWGuid creatureGuid;
 
@@ -40,5 +41,6 @@ namespace AscEmu { namespace Packets
             creatureGuid.Init(unpackedGuid);
             return true;
         }
+#endif
     };
 }}

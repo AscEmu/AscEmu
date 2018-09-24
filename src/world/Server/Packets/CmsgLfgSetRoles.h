@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgLfgSetRoles : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint8_t roles;
 
@@ -38,5 +39,6 @@ namespace AscEmu { namespace Packets
             packet >> roles;
             return true;
         }
+#endif
     };
 }}

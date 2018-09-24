@@ -98,6 +98,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CHECK_INWORLD_RETURN
 
     CmsgEnabletaxi srlPacket;
@@ -108,6 +109,7 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 
     if (const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLowPart()))
         sendTaxiList(creature);
+#endif
 }
 
 uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
