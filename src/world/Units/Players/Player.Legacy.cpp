@@ -13860,17 +13860,17 @@ void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, P
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 {
-
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
     QuestProperties const* qst = nullptr;
     Object* qst_giver = nullptr;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (wowGuid.isUnit())
     {
-        Creature* quest_giver = m_mapMgr->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* quest_giver = m_mapMgr->GetCreature(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -13882,9 +13882,9 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             qst = sMySQLStore.getQuestProperties(quest_id);
         }
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
-        GameObject* quest_giver = m_mapMgr->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* quest_giver = m_mapMgr->GetGameObject(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -13893,7 +13893,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         bValid = true;
         qst = sMySQLStore.getQuestProperties(quest_id);
     }
-    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    else if (wowGuid.isItem())
     {
         Item* quest_giver = m_ItemInterface->GetItemByGUID(guid);
         if (quest_giver)
@@ -13904,7 +13904,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         bSkipLevelCheck = true;
         qst = sMySQLStore.getQuestProperties(quest_id);
     }
-    else if (guidtype == HIGHGUID_TYPE_PLAYER)
+    else if (wowGuid.isPlayer())
     {
         Player* quest_giver = m_mapMgr->GetPlayer((uint32)guid);
         if (quest_giver)
@@ -14527,10 +14527,27 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
 void Player::SendTeleportAckPacket(float x, float y, float z, float o)
 {
     SetPlayerStatus(TRANSFER_PENDING);
+
+#if VERSION_STRING < WotLK
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
-    data << uint32(0);                                     // this value increments every time
+    data << uint32(2);
+    data << uint32(0);
+    data << uint8(0);
+
+    data << float(0);
+    data << x;
+    data << y;
+    data << z;
+    data << o;
+    data << uint16(2);
+    data << uint8(0);
+#else
+    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    data << GetNewGUID();
+    data << uint32(0);
     BuildMovementPacket(&data, x, y, z, o);
+#endif
     GetSession()->SendPacket(&data);
 }
 

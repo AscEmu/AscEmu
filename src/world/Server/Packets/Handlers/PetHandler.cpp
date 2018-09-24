@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellFailure.h"
+#include "Spell/Definitions/SpellFailure.h"
 
 using namespace AscEmu::Packets;
 
@@ -34,7 +34,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    if (GET_TYPE_FROM_GUID(recv_packet.guid.GetOldGuid()) == HIGHGUID_TYPE_UNIT)
+    if (recv_packet.guid.isUnit())
     {
         const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLowPart());
         if (creature == nullptr)

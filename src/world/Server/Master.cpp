@@ -126,7 +126,7 @@ void createExtendedLogDir()
 bool checkRequiredDirs()
 {
     std::vector<std::string> requiredDirs;
-    requiredDirs.emplace_back("configs");
+    requiredDirs.emplace_back(CONFDIR);
     requiredDirs.emplace_back("dbc");
     requiredDirs.emplace_back("maps");
 
@@ -138,7 +138,7 @@ bool checkRequiredDirs()
     {
         fs::path requiredPath = fs::current_path();
 
-        if (dataDir.empty() || dir == "configs")
+        if (dataDir.empty() || dir == CONFDIR)
         {
             requiredPath /= dir;
         }

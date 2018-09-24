@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/AuraStates.h"
 #include "Management/Battleground/Battleground.h"
 #include "Map/Area/AreaStorage.hpp"
+#include "Objects/ObjectMgr.h"
 
 SpellCastResult Spell::canCast(bool tolerate)
 {
@@ -106,33 +107,33 @@ SpellCastResult Spell::canCast(bool tolerate)
             }
         }
 
+        // Caster's aura state requirements
+        if (GetSpellInfo()->getCasterAuraState() > 0 && !u_caster->hasAuraState(AuraState(GetSpellInfo()->getCasterAuraState()), GetSpellInfo(), u_caster))
+            return SPELL_FAILED_CASTER_AURASTATE;
+        if (GetSpellInfo()->getCasterAuraStateNot() > 0 && u_caster->hasAuraState(AuraState(GetSpellInfo()->getCasterAuraStateNot()), GetSpellInfo(), u_caster))
+            return SPELL_FAILED_CASTER_AURASTATE;
+
+        // Caster's aura spell requirements
+        if (GetSpellInfo()->getCasterAuraSpell() > 0 && !u_caster->HasAura(GetSpellInfo()->getCasterAuraSpell()))
+            return SPELL_FAILED_CASTER_AURASTATE;
+        if (GetSpellInfo()->getCasterAuraSpellNot() > 0)
+        {
+            // TODO: I leave this here for now (from my old work), but this really should be moved to wotlk spellscript -Appled
+            // Paladin's Avenging Wrath / Forbearance thing
+            if (GetSpellInfo()->getCasterAuraSpellNot() == 61988)
+            {
+                if (u_caster->HasAura(61987))
+                    return SPELL_FAILED_CASTER_AURASTATE;
+            }
+            else if (u_caster->HasAura(GetSpellInfo()->getCasterAuraSpellNot()))
+                return SPELL_FAILED_CASTER_AURASTATE;
+        }
+
         if (!m_triggeredSpell)
         {
             // Out of combat spells should not be able to be casted in combat
             if (requireCombat && (GetSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
                 return SPELL_FAILED_AFFECTING_COMBAT;
-
-            // Caster's aura state requirements
-            if (GetSpellInfo()->getCasterAuraState() && !u_caster->hasAuraState(AuraState(GetSpellInfo()->getCasterAuraState()), GetSpellInfo(), u_caster))
-                return SPELL_FAILED_CASTER_AURASTATE;
-            if (GetSpellInfo()->getCasterAuraStateNot() && u_caster->hasAuraState(AuraState(GetSpellInfo()->getCasterAuraStateNot()), GetSpellInfo(), u_caster))
-                return SPELL_FAILED_CASTER_AURASTATE;
-
-            // Caster's aura spell requirements
-            if (GetSpellInfo()->getCasterAuraSpell() != 0 && !u_caster->HasAura(GetSpellInfo()->getCasterAuraSpell()))
-                return SPELL_FAILED_CASTER_AURASTATE;
-            if (GetSpellInfo()->getCasterAuraSpellNot() != 0)
-            {
-                // TODO: I leave this here for now (from my old work), but this really should be moved to wotlk spellscript -Appled
-                // Paladin's Avenging Wrath / Forbearance thing
-                if (GetSpellInfo()->getCasterAuraSpellNot() == 61988)
-                {
-                    if (u_caster->HasAura(61987))
-                        return SPELL_FAILED_CASTER_AURASTATE;
-                }
-                else if (u_caster->HasAura(GetSpellInfo()->getCasterAuraSpellNot()))
-                    return SPELL_FAILED_CASTER_AURASTATE;
-            }
 
             if (tolerate)
             {
@@ -177,6 +178,50 @@ SpellCastResult Spell::canCast(bool tolerate)
         if (GetSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_INDOORS &&
             MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
             return SPELL_FAILED_ONLY_INDOORS;
+    }
+
+    ////////////////////////////////////////////////////////
+    // Target checks
+
+    // Unit target
+    const auto target = m_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+    if (target != nullptr)
+    {
+        // Target's aura state requirements
+        if (!m_triggeredSpell && GetSpellInfo()->getTargetAuraState() > 0 && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), u_caster))
+            return SPELL_FAILED_TARGET_AURASTATE;
+        if (GetSpellInfo()->getTargetAuraStateNot() > 0 && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), u_caster))
+            return SPELL_FAILED_TARGET_AURASTATE;
+
+        // Target's aura spell requirements
+        if (GetSpellInfo()->getTargetAuraSpell() > 0 && !target->HasAura(GetSpellInfo()->getTargetAuraSpell()))
+            return SPELL_FAILED_TARGET_AURASTATE;
+        if (GetSpellInfo()->getTargetAuraSpellNot() > 0)
+        {
+            // TODO: I leave this here for now (from my old work), but this really should be moved to wotlk spellscript -Appled
+            // Paladin's Avenging Wrath / Forbearance thing
+            if (GetSpellInfo()->getTargetAuraSpellNot() == 61988)
+            {
+                if (target->HasAura(61987))
+                    return SPELL_FAILED_TARGET_AURASTATE;
+            }
+            else if (target->HasAura(GetSpellInfo()->getTargetAuraSpellNot()))
+                return SPELL_FAILED_TARGET_AURASTATE;
+        }
+
+        if (target->IsDead())
+        {
+            // Player can't cast spells on corpses with bones only left
+            const auto corpseTarget = objmgr.GetCorpseByOwner(target->getGuidLow());
+            if (corpseTarget == nullptr || !corpseTarget->IsInWorld() || corpseTarget->GetCorpseState() == CORPSE_STATE_BONES)
+                return SPELL_FAILED_BAD_TARGETS;
+        }
+
+        if (GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_CANT_TARGET_SELF && m_caster == target)
+            return SPELL_FAILED_BAD_TARGETS;
+
+        if (GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->getcombatstatus()->IsInCombat())
+            return SPELL_FAILED_TARGET_AFFECTING_COMBAT;
     }
 
     // Call legacy CanCast for yet unhandled cases

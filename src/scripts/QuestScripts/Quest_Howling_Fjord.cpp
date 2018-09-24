@@ -111,7 +111,7 @@ public:
             }
             case 2:
             {
-                plr->GetSession()->SendTaxiList(pCreature);
+                plr->GetSession()->sendTaxiList(pCreature);
                 break;
             }
         }

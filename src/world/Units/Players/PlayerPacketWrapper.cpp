@@ -273,7 +273,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         return;
 
     Loot* pLoot = NULL;
-    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
 
     int8 loot_method;
 
@@ -282,17 +284,17 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     else
         loot_method = PARTY_LOOT_FFA;
 
-    if (guidtype == HIGHGUID_TYPE_UNIT)
+    if (wowGuid.isUnit())
     {
-        Creature* pCreature = GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        Creature* pCreature = GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (!pCreature)return;
         pLoot = &pCreature->loot;
         m_currentLoot = pCreature->getGuid();
 
     }
-    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    else if (wowGuid.isGameObject())
     {
-        GameObject* pGO = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        GameObject* pGO = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
         if (!pGO)
             return;
 
@@ -304,21 +306,21 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         pLoot = &pLGO->loot;
         m_currentLoot = pLGO->getGuid();
     }
-    else if ((guidtype == HIGHGUID_TYPE_PLAYER))
+    else if (wowGuid.isPlayer())
     {
         Player* p = GetMapMgr()->GetPlayer((uint32)guid);
         if (!p)return;
         pLoot = &p->loot;
         m_currentLoot = p->getGuid();
     }
-    else if ((guidtype == HIGHGUID_TYPE_CORPSE))
+    else if (wowGuid.isCorpse())
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
         if (!pCorpse)return;
         pLoot = &pCorpse->loot;
         m_currentLoot = pCorpse->getGuid();
     }
-    else if ((guidtype == HIGHGUID_TYPE_ITEM))
+    else if (wowGuid.isItem())
     {
         Item* pItem = GetItemInterface()->GetItemByGUID(guid);
         if (!pItem)

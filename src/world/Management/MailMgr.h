@@ -111,8 +111,6 @@ struct MailMessage
     uint32 delivery_time;
     uint32 checked_flag;
     bool deleted_flag;
-
-    bool AddMessageDataToPacket(WorldPacket & data);
 };
 
 typedef std::map<uint32, MailMessage> MessageMap;
@@ -122,9 +120,10 @@ class Mailbox
     protected:
 
         uint64 owner;
-        MessageMap Messages;
+        
 
     public:
+        MessageMap Messages;
 
         Mailbox(uint64 owner_) : owner(owner_) {}
 
@@ -138,10 +137,8 @@ class Mailbox
             return &(iter->second);
         }
 
-        WorldPacket* BuildMailboxListingPacket();
         void CleanupExpiredMessages();
         inline size_t MessageCount() { return Messages.size(); }
-        void FillTimePacket(WorldPacket & data);
         inline uint64 GetOwner() { return owner; }
         void Load(QueryResult* result);
 };

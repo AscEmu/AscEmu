@@ -20,6 +20,16 @@
 #include "Management/LFG/LFGMgr.h"
 #include "Common.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/CmsgSetLfgComment.h"
+#include "Server/Packets/CmsgLfgProposalResult.h"
+#include "Server/Packets/CmsgLfgSetRoles.h"
+#include "Server/Packets/CmsgLfgSetBootVote.h"
+#include "Server/Packets/CmsgLfgTeleport.h"
+#include "Server/Packets/SmsgLfgTeleportDenied.h"
+#include "Server/Packets/SmsgLfgOfferContinue.h"
+#include "Server/Packets/SmsgLfgUpdateSearch.h"
+
+using namespace AscEmu::Packets;
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {
@@ -43,18 +53,6 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
     }
 }
 
-
-void WorldSession::HandleLfgSetCommentOpcode(WorldPacket& recv_data)
-{
-    LogDebugFlag(LF_OPCODE, "CMSG_SET_LFG_COMMENT");
-
-    std::string comment;
-    recv_data >> comment;
-    uint64 guid = GetPlayer()->getGuid();
-    LogDebugFlag(LF_OPCODE, "LfgHandler CMSG_SET_LFG_COMMENT %u, comment: %s", guid, comment.c_str());
-
-    sLfgMgr.SetComment(guid, comment);
-}
 
 #if VERSION_STRING > TBC
 void WorldSession::HandleLfgJoinOpcode(WorldPacket& recv_data)
@@ -132,41 +130,38 @@ void WorldSession::HandleLfrLeaveOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleLfgProposalResultOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT");
-    uint32 lfgGroupID;                                     // Internal lfgGroupID
-    bool accept;                                           // Accept to join?
-    recv_data >> lfgGroupID;
-    recv_data >> accept;
+    CmsgLfgProposalResult recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT %u proposal: %u accept: %u", GetPlayer()->getGuid(), lfgGroupID, accept ? 1 : 0);
-    sLfgMgr.UpdateProposal(lfgGroupID, GetPlayer()->getGuid(), accept);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_PROPOSAL_RESULT %u proposal: %u accept: %u", GetPlayer()->getGuid(), recv_packet.lfgGroupId, recv_packet.accept ? 1 : 0);
+    sLfgMgr.UpdateProposal(recv_packet.lfgGroupId, GetPlayer()->getGuid(), recv_packet.accept);
 }
 
 void WorldSession::HandleLfgSetRolesOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES");
-    uint8 roles;
-    recv_data >> roles;                                    // Player Group Roles
-    uint64 guid = GetPlayer()->getGuid();
-    Group* grp = GetPlayer()->GetGroup();
+    CmsgLfgSetRoles recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+    
+    Group* grp = _player->GetGroup();
     if (!grp)
     {
-        LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES %u Not in group", guid);
+        LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES %lld Not in group", _player->getGuid());
         return;
     }
-    uint64 gguid = grp->GetGUID();// NEED TO ADD Bind group to guids
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES: Group %u, Player %u, Roles: %u", gguid, guid, roles);
-    sLfgMgr.UpdateRoleCheck(gguid, guid, roles);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_ROLES: Group %lld, Player %lld, Roles: %u", grp->GetGUID(), _player->getGuid(), recv_packet.roles);
+    sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), recv_packet.roles);
 }
 
 void WorldSession::HandleLfgSetBootVoteOpcode(WorldPacket& recv_data)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE");
-    bool agree;                                            // Agree to kick player
-    recv_data >> agree;
+    CmsgLfgSetBootVote recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE %u agree: %u", GetPlayer()->getGuid(), agree ? 1 : 0);
-    sLfgMgr.UpdateBoot(GetPlayer(), agree);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_SET_BOOT_VOTE %u agree: %u", GetPlayer()->getGuid(), recv_packet.voteFor ? 1 : 0);
+    sLfgMgr.UpdateBoot(GetPlayer(), recv_packet.voteFor);
 }
 
 void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvData*/)
@@ -251,12 +246,12 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvData*
 
 void WorldSession::HandleLfgTeleportOpcode(WorldPacket& recvData)
 {
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT");
-    bool out;
-    recvData >> out;
+    CmsgLfgTeleport recv_packet;
+    if (!recv_packet.deserialise(recvData))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT %u out: %u", GetPlayer()->getGuid(), out ? 1 : 0);
-    sLfgMgr.TeleportPlayer(GetPlayer(), out, true);
+    LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT %u out: %u", GetPlayer()->getGuid(), recv_packet.teleportOut ? 1 : 0);
+    sLfgMgr.TeleportPlayer(GetPlayer(), recv_packet.teleportOut, true);
 }
 
 void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvData*/)
@@ -684,12 +679,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
 void WorldSession::SendLfgUpdateSearch(bool update)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_UPDATE_SEARCH %u update: %u", GetPlayer()->getGuid(), update ? 1 : 0);
-
-    WorldPacket data(SMSG_LFG_UPDATE_SEARCH, 1);
-
-    data << uint8(update);                                 // In Lfg Queue?
-    SendPacket(&data);
+    SendPacket(SmsgLfgUpdateSearch(update).serialise().get());
 #endif
 }
 
@@ -698,30 +688,19 @@ void WorldSession::SendLfgDisabled()
     LogDebugFlag(LF_OPCODE, "SMSG_LFG_DISABLED %u", GetPlayer()->getGuid());
 
     WorldPacket data(SMSG_LFG_DISABLED, 0);
-
     SendPacket(&data);
 }
 
 void WorldSession::SendLfgOfferContinue(uint32 dungeonEntry)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_OFFER_CONTINUE %u dungeon entry: %u", GetPlayer()->getGuid(), dungeonEntry);
-
-    WorldPacket data(SMSG_LFG_OFFER_CONTINUE, 4);
-
-    data << uint32(dungeonEntry);
-    SendPacket(&data);
+    SendPacket(SmsgLfgOfferContinue(dungeonEntry).serialise().get());
 #endif
 }
 
 void WorldSession::SendLfgTeleportError(uint8 err)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_TELEPORT_DENIED %u reason: %u", GetPlayer()->getGuid(), err);
-
-    WorldPacket data(SMSG_LFG_TELEPORT_DENIED, 4);
-
-    data << uint32(err);                                   // Error
-    SendPacket(&data);
+    SendPacket(SmsgLfgTeleportDenied(err).serialise().get());
 #endif
 }

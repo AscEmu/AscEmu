@@ -2203,7 +2203,9 @@ void Spell::finish(bool successful)
             std::vector<uint64_t>::iterator itr = UniqueTargets.begin();
             for (; itr != UniqueTargets.end(); ++itr)
             {
-                if (GET_TYPE_FROM_GUID(*itr) == HIGHGUID_TYPE_UNIT)
+                WoWGuid wowGuid;
+                wowGuid.Init(*itr);
+                if (wowGuid.isUnit())
                 {
                     ++numTargets;
                     sQuestMgr.OnPlayerCast(p_caster, GetSpellInfo()->getId(), *itr);
@@ -3225,31 +3227,35 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             gameObjTarget = nullptr;
             playerTarget = nullptr;
             itemTarget = nullptr;
-            switch (GET_TYPE_FROM_GUID(guid))
+
+            WoWGuid wowGuid;
+            wowGuid.Init(guid);
+
+            switch (wowGuid.getHigh())
             {
-                case HIGHGUID_TYPE_UNIT:
-                case HIGHGUID_TYPE_VEHICLE:
-                    unitTarget = m_caster->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+                case HighGuid::Unit:
+                case HighGuid::Vehicle:
+                    unitTarget = m_caster->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_PET:
-                    unitTarget = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+                case HighGuid::Pet:
+                    unitTarget = m_caster->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_PLAYER:
+                case HighGuid::Player:
                 {
-                    unitTarget = m_caster->GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
+                    unitTarget = m_caster->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
                     playerTarget = static_cast<Player*>(unitTarget);
                 }
                 break;
-                case HIGHGUID_TYPE_ITEM:
+                case HighGuid::Item:
                     if (p_caster != nullptr)
                         itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
 
                     break;
-                case HIGHGUID_TYPE_GAMEOBJECT:
-                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+                case HighGuid::GameObject:
+                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_CORPSE:
-                    corpseTarget = objmgr.GetCorpse(GET_LOWGUID_PART(guid));
+                case HighGuid::Corpse:
+                    corpseTarget = objmgr.GetCorpse(wowGuid.getGuidLowPart());
                     break;
                 default:
                     LOG_ERROR("unitTarget not set");
@@ -4603,10 +4609,6 @@ uint8 Spell::CanCast(bool tolerate)
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
 
-            /* Target OOC check */
-            if (hasAttributeEx(ATTRIBUTESEX_REQ_OOC_TARGET) && target->CombatStatus.IsInCombat())
-                return SPELL_FAILED_TARGET_IN_COMBAT;
-
             if (p_caster != nullptr)
             {
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
@@ -4620,26 +4622,6 @@ uint8 Spell::CanCast(bool tolerate)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;
-                }
-
-                // check aurastate
-                if (GetSpellInfo()->getTargetAuraState() && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-                if (GetSpellInfo()->getTargetAuraStateNot() && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraStateNot()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-
-                // check aura
-                if (GetSpellInfo()->getTargetAuraSpell() && !target->HasAura(GetSpellInfo()->getTargetAuraSpell()))
-                {
-                    return SPELL_FAILED_NOT_READY;
-                }
-                if (GetSpellInfo()->getTargetAuraSpellNot() && target->HasAura(GetSpellInfo()->getTargetAuraSpellNot()))
-                {
-                    return SPELL_FAILED_NOT_READY;
                 }
 
                 if (target->isPlayer())

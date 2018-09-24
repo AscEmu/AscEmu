@@ -61,11 +61,14 @@
 #include "Spell.h"
 #include "Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgTaxinodeStatus.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
 using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
+
+using namespace AscEmu::Packets;
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {
@@ -6218,9 +6221,7 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
         playerTarget->GetSession()->OutPacket(SMSG_NEW_TAXI_PATH);
 
         //Send packet
-        WorldPacket update(SMSG_TAXINODE_STATUS, 9);
-        update << uint64(0) << uint8(1);
-        playerTarget->GetSession()->SendPacket(&update);
+        playerTarget->GetSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
     }
 }
 
