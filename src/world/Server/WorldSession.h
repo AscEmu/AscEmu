@@ -74,7 +74,7 @@ struct AddonEntry;
 
 // Worldsocket related
 #define WORLDSOCKET_TIMEOUT 120
-#define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
+#define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.
 
 #define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 
