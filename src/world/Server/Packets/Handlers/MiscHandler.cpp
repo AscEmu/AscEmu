@@ -293,7 +293,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 
         player->SendPacket(SmsgStandstateUpdate(STANDSTATE_SIT).serialise().get());
 
-        SetLogoutTimer(20000);
+        SetLogoutTimer(PLAYER_LOGOUT_DELAY);
     }
 }
 
