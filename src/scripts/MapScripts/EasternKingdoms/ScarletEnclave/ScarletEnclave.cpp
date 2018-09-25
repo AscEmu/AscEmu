@@ -11,7 +11,7 @@ class ScarletEnclave : public InstanceScript
 {
 public:
 
-    ScarletEnclave(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ScarletEnclave(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

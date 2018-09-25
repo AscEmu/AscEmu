@@ -6,14 +6,14 @@
 #include "Setup.h"
 #include "Event_Nights.h"
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Nights
 // Hande the nights
 // event_properties entry: 25
 
 class HandleNights : public EventScript
 {
-	
+
 };
 
 void SetupHandleNights(ScriptMgr* mgr)

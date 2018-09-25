@@ -74,7 +74,7 @@ struct AddonEntry;
 
 // Worldsocket related
 #define WORLDSOCKET_TIMEOUT 120
-#define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
+#define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.
 
 #define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 
@@ -290,8 +290,8 @@ class SERVER_DECL WorldSession
         void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
         void handleLootRollOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
-        Loot* getLootFromHighGuidType(uint32_t highGuid);
-        void HandleSuggestionOpcode(WorldPacket& recv_data);
+        Loot* getLootFromHighGuidType(HighGuid highGuid);
+        void HandleSuggestionOpcode(WorldPacket& recvPacket);
 #endif
         void handleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
@@ -364,7 +364,6 @@ class SERVER_DECL WorldSession
         // Opcodes implemented in MovementHandler.cpp
         void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
         void HandleMovementOpcodes(WorldPacket& recvPacket);
-        void HandleMoveTimeSkippedOpcode(WorldPacket& recvPacket);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
         void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
@@ -424,12 +423,17 @@ class SERVER_DECL WorldSession
         void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
 #endif
 
-        // Taxi opcodes (TaxiHandler.cpp)
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Taxi helper and handlers (TaxiHandler.cpp)
+    public:
+        void sendTaxiList(Creature* creature);
+
+    protected:
         void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
         void handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
         void handleEnabletaxiOpcode(WorldPacket& recvPacket);
-        void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
-        void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void handleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
         // NPC opcodes (NPCHandler.cpp)
         void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);
@@ -538,7 +542,7 @@ class SERVER_DECL WorldSession
         void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-        void HandleQuestPushResult(WorldPacket& recvPacket);
+        void handleQuestPushResultOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void HandleQuestPOIQueryOpcode(WorldPacket& recvPacket);
 #endif
@@ -556,7 +560,6 @@ class SERVER_DECL WorldSession
         void handleVehicleDismiss(WorldPacket& /*recvPacket*/);
 #endif
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
-        void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
         // Chat opcodes (Chat.cpp)
         bool isSessionMuted();
@@ -773,7 +776,7 @@ class SERVER_DECL WorldSession
 
         // Acknowledgements
         void HandleAcknowledgementOpcodes(WorldPacket& recvPacket);
-        void HandleMountSpecialAnimOpcode(WorldPacket& recvPacket);
+        void handleMountSpecialAnimOpcode(WorldPacket& recvPacket);
 
         void handleSelfResurrect(WorldPacket& /*recvPacket*/);
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
@@ -816,9 +819,7 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        void HandleTeleportCheatOpcode(WorldPacket& recvPacket);
-        void HandleTeleportToUnitOpcode(WorldPacket& recvPacket);
-        void HandleWorldportOpcode(WorldPacket& recvPacket);
+        void handleWorldTeleportOpcode(WorldPacket& recvPacket);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
         // VoicChat
@@ -897,7 +898,7 @@ class SERVER_DECL WorldSession
         void sendStabledPetList(uint64 npcguid);
 
         void SendInventoryList(Creature* pCreature);
-        void SendTaxiList(Creature* pCreature);
+        
         void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendAccountDataTimes(uint32 mask);
         void initGMMyMaster();

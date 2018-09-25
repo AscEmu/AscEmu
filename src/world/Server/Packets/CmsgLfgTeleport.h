@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgLfgTeleport : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         bool teleportOut;
 
@@ -38,5 +39,6 @@ namespace AscEmu { namespace Packets
             packet >> teleportOut;
             return true;
         }
+#endif
     };
 }}

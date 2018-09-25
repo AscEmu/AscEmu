@@ -1,46 +1,43 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #pragma once
 
 #include "Management/Battleground/Battleground.h"
 
- // GENERAL AV DEFINES
-const uint32 AV_NUM_REINFORCEMENTS              = 600;     // Amount of reinforcements we start off with
-const uint32 AV_SCORE_WARNING                   = 530;     // Dunno what this should be ;p
-const uint32 AV_ADD_POINTS_ON_CONTROLLED_MINE   = 1;       // Points to give the team who controls (a) mine(s)
-const uint32 AV_REINFORCEMENT_ADD_INTERVAL      = 45000;   // The interval (in milliseconds) that points from mines are awarded
-const uint32 AV_POINTS_ON_DESTROY_BUNKER        = 75;      // Points to remove for destroying a team's bunker
-const uint32 AV_POINTS_ON_KILL                  = 1;       // Points to remove when killing a member of the opposite team
-const uint32 AV_POINTS_ON_KILL_CAPTAIN          = 100;     // Points  to remove for killing a team's captain
-const uint32 AV_HONOR_ON_KILL_BOSS              = 62;      // Amount of honor awarded to players for killing a boss of the opposite team
-const uint32 AV_NUM_CONTESTED_AREAS             = 9;       // Total contested areas (graveyards/mines)
-const uint32 AV_NUM_DESTROYABLE_AREAS           = 8;       // Total destroyable areas (towers/bunkers)
-const uint32 AV_NUM_BOSS_UNITS                  = 14;      // Boss units (generals/captains/wing commanders etc)
-const uint32 AV_NUM_COLDTOOTH_UNITS             = 5;       // Coldtooth mine NPC types
-const uint32 AV_NUM_IRONDEEP_UNITS              = 4;       // Irondeep mine NPC types
-const uint32 AV_NUM_SNOWFALL_FLAGS              = 2;       // Count of Snowfall flags (used when changing them on a team's acquiration of the CP
-const uint32 AV_CONTESTED_AREAS_START           = 0;       // ID at which contested points start (for loops/ifs)
-const uint32 AV_CONTESTED_AREAS_END             = 8;       // ID at which contested points end (for loops/ifs)
-const uint32 AV_DESTROYABLE_AREAS_START         = 9;       // ID at which destroyable points start (for loops/ifs)
-const uint32 AV_DESTROYABLE_AREAS_END           = 16;      // ID at which contested points finish (for loops/ifs)
+enum
+{
+    // GENERAL AV DEFINES
+    AV_NUM_REINFORCEMENTS = 600,           // Amount of reinforcements we start off with
+
+    //AV_SCORE_WARNING = 530,                // Dunno what this should be ;p
+
+    //AV_ADD_POINTS_ON_CONTROLLED_MINE = 1,  // Points to give the team who controls (a) mine(s)
+
+    AV_REINFORCEMENT_ADD_INTERVAL = 45000, // The interval (in milliseconds) that points from mines are awarded
+ 
+    AV_POINTS_ON_DESTROY_BUNKER = 75,      // Points to remove for destroying a team's bunker
+    AV_POINTS_ON_KILL = 1,                 // Points to remove when killing a member of the opposite team
+    AV_POINTS_ON_KILL_CAPTAIN = 100,       // Points  to remove for killing a team's captain
+
+    AV_HONOR_ON_KILL_BOSS = 62,            // Amount of honor awarded to players for killing a boss of the opposite team
+
+    //AV_NUM_CONTESTED_AREAS = 9,            // Total contested areas (graveyards/mines)
+    //AV_NUM_DESTROYABLE_AREAS = 8,          // Total destroyable areas (towers/bunkers)
+    //AV_NUM_BOSS_UNITS = 14,                // Boss units (generals/captains/wing commanders etc)
+    //AV_NUM_COLDTOOTH_UNITS = 5,            // Coldtooth mine NPC types
+    //AV_NUM_IRONDEEP_UNITS = 4,             // Irondeep mine NPC types
+    //AV_NUM_SNOWFALL_FLAGS = 2,             // Count of Snowfall flags (used when changing them on a team's acquiration of the CP
+
+    //AV_CONTESTED_AREAS_START = 0,          // ID at which contested points start (for loops/ifs)
+    //AV_CONTESTED_AREAS_END = 8,            // ID at which contested points end (for loops/ifs)
+
+    //AV_DESTROYABLE_AREAS_START = 9,        // ID at which destroyable points start (for loops/ifs)
+    //AV_DESTROYABLE_AREAS_END = 16,         // ID at which contested points finish (for loops/ifs)
+
+};
 
 enum AVControlPoints
 {
@@ -146,120 +143,121 @@ enum CreatureEntry
 
 class AlteracValley : public CBattleground
 {
-    protected:
+protected:
 
-        std::list<GameObject*> m_gates;
-        uint32 m_reinforcements[2];
-        bool m_nearingVictory[2];
-        inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
-    public:
+    std::list<GameObject*> m_gates;
+    uint32 m_reinforcements[2];
+    bool m_nearingVictory[2];
+    inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
+public:
 
-        AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
-        ~AlteracValley();
+    AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    ~AlteracValley();
 
-        void EventAssaultControlPoint(uint32 x);
+    void EventAssaultControlPoint(uint32 x);
 
-        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr) override;
-        void HookFlagDrop(Player* plr, GameObject* obj) override;
-        void HookFlagStand(Player* plr, GameObject* obj) override;
-        void HookOnMount(Player* plr) override;
-        void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
-        bool HookHandleRepop(Player* plr) override;
-        void OnAddPlayer(Player* plr) override;
-        void OnRemovePlayer(Player* plr) override;
-        void OnCreate() override;
-        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
-        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
-        void HookOnHK(Player* plr) override;
-        LocationVector GetStartingCoords(uint32 Team) override;
-        void DropFlag(Player* plr);
+    bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
+    void HookOnPlayerDeath(Player* plr) override;
+    void HookFlagDrop(Player* plr, GameObject* obj) override;
+    void HookFlagStand(Player* plr, GameObject* obj) override;
+    void HookOnMount(Player* plr) override;
+    void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+    bool HookHandleRepop(Player* plr) override;
+    void OnAddPlayer(Player* plr) override;
+    void OnRemovePlayer(Player* plr) override;
+    void OnCreate() override;
+    void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+    void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+    void HookOnHK(Player* plr) override;
+    LocationVector GetStartingCoords(uint32 Team) override;
+    void DropFlag(Player* plr);
 
-        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
+    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
 
-        const char* GetName() { return "Alterac Valley"; }
-        void OnStart() override;
+    const char* GetName() { return "Alterac Valley"; }
+    void OnStart() override;
 
-        void EventUpdateResources();
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
+    void EventUpdateResources();
+    bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
-        // AV Functions
-        void AddReinforcements(uint32 teamId, uint32 amt);
-        void RemoveReinforcements(uint32 teamId, uint32 amt);
-        void Finish(uint32 losingTeam);
+    // AV Functions
+    void AddReinforcements(uint32 teamId, uint32 amt);
+    void RemoveReinforcements(uint32 teamId, uint32 amt);
+    void Finish(uint32 losingTeam);
 
-        // loot
-        bool SupportsPlayerLoot() { return true; }
-        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
+    // loot
+    bool SupportsPlayerLoot() { return true; }
+    void HookGenerateLoot(Player* plr, Object* pCorpse) override;
 
-        // herald
-        void Herald(const char* format, ...);
+    // herald
+    void Herald(const char* format, ...);
 
-        void HookOnFlagDrop(Player* plr) override;
-        void HookOnShadowSight() override;
+    void HookOnFlagDrop(Player* plr) override;
+    void HookOnShadowSight() override;
 
-        class AVNode
-        {
-            AlteracValley* m_bg;
-            AVNodeTemplate* m_template;
+    class AVNode
+    {
+        AlteracValley* m_bg;
+        AVNodeTemplate* m_template;
 
-            // boss, changes ownership upon death?
-            Creature* m_boss;
+        // boss, changes ownership upon death?
+        Creature* m_boss;
 
-            // guards, need to be respawned when changes ownership
-            std::vector<Creature*> m_guards;
+        // guards, need to be respawned when changes ownership
+        std::vector<Creature*> m_guards;
 
-            ///\todo  peon locations, used in mines
-            std::vector<Creature*> m_peonLocations;
+        ///\todo  peon locations, used in mines
+        std::vector<Creature*> m_peonLocations;
 
-            // control point (capturable)
-            GameObject* m_flag;
+        // control point (capturable)
+        GameObject* m_flag;
 
-            // aura (light-shiny stuff)
-            GameObject* m_aura;
-            GameObject* m_glow;
+        // aura (light-shiny stuff)
+        GameObject* m_aura;
+        GameObject* m_glow;
 
-            // home NPc
-            Creature* m_homeNPC;
+        // home NPc
+        Creature* m_homeNPC;
 
-            // destroyed flag (prevent all actions)
-            bool m_destroyed;
+        // destroyed flag (prevent all actions)
+        bool m_destroyed;
 
-            // state
-            uint32 m_state;
-            uint32 m_lastState;
-            uint32 m_nodeId;
+        // state
+        uint32 m_state;
+        uint32 m_lastState;
+        uint32 m_nodeId;
 
-            // spirit guides
-            Creature* m_spiritGuide;
+        // spirit guides
+        Creature* m_spiritGuide;
 
-            public:
+public:
 
-                friend class AlteracValley;
+        friend class AlteracValley;
 
-                // constructor
-                AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
-                ~AVNode();
+        // constructor
+        AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
+        ~AVNode();
 
-                // initial spawn
-                void Spawn();
+        // initial spawn
+        void Spawn();
 
-                // assault
-                void Assault(Player* plr);
+        // assault
+        void Assault(Player* plr);
 
-                // capture event
-                void Capture();
+        // capture event
+        void Capture();
 
-                // spawn guards
-                void SpawnGuards(uint32 x);
+        // spawn guards
+        void SpawnGuards(uint32 x);
 
-                // state change
-                void ChangeState(uint32 new_state);
+        // state change
+        void ChangeState(uint32 new_state);
 
-                // spawn home buff guard
-                void SpawnHomeGuard();
-            };
-        protected:
+        // spawn home buff guard
+        void SpawnHomeGuard();
+    };
 
-            AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
+protected:
+
+    AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };

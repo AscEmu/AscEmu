@@ -241,12 +241,11 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //class LieutenantDrakeAI : public CreatureAIScript
 //{
+//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
+//
 //    OldHilsbradInstance* pInstance;
 //
-//public:
-//
-//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
-//    LieutenantDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+//    explicit LieutenantDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        pInstance = dynamic_cast<OldHilsbradInstance*>(GetInstanceScript());
 //    }
@@ -267,7 +266,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //class ThrallAI : public CreatureAIScript // this will be replaced with escortAI
 //{
 //    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
-//    ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
+//    explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 //        for (uint8 i = 1; i < MAX_THRALLWP1; ++i)

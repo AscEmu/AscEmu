@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Setup.h"
 #include "Units/Creatures/AIInterface.h"
 #include "Management/Item.h"
@@ -29,23 +28,21 @@
 #include "Map/MapScriptInterface.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
- ///////////////////////////////////////////////////////
- //Quest: The Drwarfen Spy
- //ID: 8486
-
- // Anvilward say
-#define ANVILWARD_SAY_1 "Very well. Let's see what you have to show me."
-#define ANVILWARD_SAY_2 "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!"
-
-enum eGossipTexts
+enum
 {
+    // Prospector Anvilward
     ANVILWARD_1 = 8239,
     ANVILWARD_2 = 8240,
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//Quest: The Drwarfen Spy
+//ID: 8486
+
 class ProspectorAnvilwardGossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* Plr) override;
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId) override;
     void Destroy() override { delete this; }
@@ -74,7 +71,7 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
         {
             Creature* pCreature = static_cast<Creature*>(pObject);
 
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ANVILWARD_SAY_1);
+            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
             Arcemu::Gossip::Menu::Complete(Plr);
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
 
@@ -85,9 +82,8 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward);
-    ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
@@ -99,7 +95,7 @@ public:
             getCreature()->SetFaction(38);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, ANVILWARD_SAY_2);
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
             getCreature()->GetAIInterface()->getNextTarget();
         }
         if (iWaypointId == 10)
@@ -108,7 +104,6 @@ public:
         }
     }
 };
-
 
 void SetupEversongWoods(ScriptMgr* mgr)
 {

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 //{
 //public:
 //
-//    IsleOfConquest(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+//    explicit IsleOfConquest(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //    {
 //    }
 //

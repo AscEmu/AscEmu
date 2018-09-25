@@ -32,6 +32,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBinderActivate.h
    ${PATH_PREFIX}/CmsgBuyBankSlot.h
    ${PATH_PREFIX}/CmsgBuyItem.h
+   ${PATH_PREFIX}/CmsgBuyItemInSlot.h
    ${PATH_PREFIX}/CmsgBuybackItem.h
    ${PATH_PREFIX}/CmsgCancelTempEnchantment.h
    ${PATH_PREFIX}/CmsgCastSpell.h
@@ -199,6 +200,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgWho.h
+   ${PATH_PREFIX}/CmsgWorldTeleport.h
    ${PATH_PREFIX}/CmsgWrapItem.h
    ${PATH_PREFIX}/CmsgZoneupdate.h
    ${PATH_PREFIX}/ManagedPacket.h
@@ -267,9 +269,13 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgInventoryChangeFailure.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
    ${PATH_PREFIX}/SmsgLearnedDanceMoves.h
+   ${PATH_PREFIX}/SmsgLfgOfferContinue.h
+   ${PATH_PREFIX}/SmsgLfgTeleportDenied.h
+   ${PATH_PREFIX}/SmsgLfgUpdateSearch.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
    ${PATH_PREFIX}/SmsgLootRemoved.h
    ${PATH_PREFIX}/SmsgMessageChat.h
+   ${PATH_PREFIX}/SmsgMountspecialAnim.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemTextQueryResponse.h
@@ -287,6 +293,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
+   ${PATH_PREFIX}/SmsgReadItemFailed.h
+   ${PATH_PREFIX}/SmsgReadItemOk.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgSellItem.h
    ${PATH_PREFIX}/SmsgSendMailResult.h

@@ -9,7 +9,7 @@ set(source
 )
 
 if(UNIX AND NOT IS_64BIT)
-	add_definitions(-D_FILE_OFFSET_BITS=64)
+   add_definitions(-D_FILE_OFFSET_BITS=64)
 endif()
 
 include_directories(

@@ -907,14 +907,15 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
     if (!iguid)
         return false;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    if (wowGuid.GetOldGuid() == 0)
     {
         SystemMessage(m_session, "No selection.");
         return true;
     }
 
-    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");

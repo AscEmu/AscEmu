@@ -486,7 +486,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     // calculate cost
     uint32_t cost = 0;
     if (srlPacket.money > 0)
-        cost += srlPacket.money;
+        cost += static_cast<uint32_t>(srlPacket.money); // \todo Change gold functions to uint64
 
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
         cost += srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;;

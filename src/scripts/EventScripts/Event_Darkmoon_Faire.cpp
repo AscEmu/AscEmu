@@ -112,7 +112,7 @@ static uint32 TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 class TonkControlConsole : public GameObjectAIScript
 {
 public:
-TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+explicit TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
 static GameObjectAIScript *Create(GameObject* GO) { return new TonkControlConsole(GO); }
 
 // Click the Console
@@ -203,10 +203,8 @@ public:
 
 class Flik_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark);
-    Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -219,7 +217,6 @@ public:
         setRandomIdleEmoteTime(120000, 240000);
     }
 };
-
 
 // Flik's Frog
 class FliksFrog_Gossip : public Arcemu::Gossip::Script
@@ -246,13 +243,10 @@ public:
     }
 };
 
-
 class GelvasGrimegate_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark);
-    GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -266,13 +260,10 @@ public:
     }
 };
 
-
 class Lhara_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark);
-    Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -285,7 +276,6 @@ public:
         setRandomIdleEmoteTime(240000, 360000);
     }
 };
-
 
 class MaximaBlastenheimer_Gossip : public Arcemu::Gossip::Script
 {
@@ -305,13 +295,10 @@ public:
     }
 };
 
-
 class Morja_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark);
-    Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -322,10 +309,10 @@ public:
     }
 };
 
-
 class ProfessorThaddeusPaleo_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
@@ -389,13 +376,10 @@ public:
     }
 };
 
-
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark);
-    ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -408,7 +392,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 // Sayge
 /// \todo find correct text in npc_text.
@@ -569,7 +552,6 @@ public:
             }break;
             case 30:
             {
-
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60033, plr->GetSession()->language);
                 menu.Send(plr);
                 // Cast the fortune into the player's inventory - Not working?
@@ -609,10 +591,8 @@ public:
 
 class Sayge_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark);
-    Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -625,7 +605,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 // Selina Dourman
 /// \ todo find right gossip text in npc_text.
@@ -683,7 +662,6 @@ public:
     }
 };
 
-
 class SilasDarkmoon_Gossip : public Arcemu::Gossip::Script
 {
 public:
@@ -701,13 +679,10 @@ public:
     }
 };
 
-
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark);
-    SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -723,13 +698,10 @@ public:
     }
 };
 
-
 class StampThunderhorn_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark);
-    StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -744,13 +716,10 @@ public:
     }
 };
 
-
 class Sylannia_Bark : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark);
-    Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
 
@@ -763,7 +732,6 @@ public:
         setRandomIdleEmoteTime(180000, 360000);
     }
 };
-
 
 void SetupDarkmoonFaire(ScriptMgr* mgr)
 {

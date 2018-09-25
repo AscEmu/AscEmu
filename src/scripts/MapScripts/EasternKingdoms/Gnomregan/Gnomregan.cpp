@@ -11,7 +11,7 @@ class Gnomregan : public InstanceScript
 {
 public:
 
-    Gnomregan(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Gnomregan(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -6,18 +6,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "ManaTombs.h"
 
-
 class ManaTombs : public InstanceScript
 {
 public:
 
-    ManaTombs(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ManaTombs(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ManaTombs(pMapMgr); }
 };
-
 
 void ManaTombsScripts(ScriptMgr* scriptMgr)
 {

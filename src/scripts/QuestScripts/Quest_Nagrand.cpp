@@ -24,6 +24,7 @@
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
     {
         Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
@@ -63,6 +64,7 @@ public:
 class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -99,6 +101,7 @@ public:
 class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -136,6 +139,7 @@ public:
 class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -168,6 +172,7 @@ public:
 class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
@@ -211,6 +216,7 @@ public:
 class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -245,9 +251,8 @@ public:
 
 class mogorQAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
-    mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -257,9 +262,8 @@ public:
 
 class NotOnMyWatch : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
-    NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
+    explicit NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
@@ -308,6 +312,7 @@ public:
 class LumpGossipScript : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 2, plr->GetSession()->language);
@@ -321,7 +326,6 @@ public:
     }
 };
 
-
 void SetupNagrand(ScriptMgr* mgr)
 {
     mgr->register_creature_script(18351, &NotOnMyWatch::Create);
@@ -334,6 +338,5 @@ void SetupNagrand(ScriptMgr* mgr)
     mgr->register_quest_script(9967, new Quest_The_Ring_of_Blood_The_Blue_Brothers());
     mgr->register_quest_script(9962, new Quest_The_Ring_of_Blood_Brokentoe());
 
-    Arcemu::Gossip::Script* LumpGossip = new LumpGossipScript();
-    mgr->register_creature_gossip(18351, LumpGossip);
+    mgr->register_creature_gossip(18351, new LumpGossipScript());
 }

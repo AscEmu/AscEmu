@@ -10,7 +10,7 @@ class Ahnkahet : public InstanceScript
 {
 public:
 
-    Ahnkahet(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Ahnkahet(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

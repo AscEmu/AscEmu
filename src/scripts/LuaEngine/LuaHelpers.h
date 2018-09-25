@@ -18,6 +18,7 @@ extern "C"
 class LuaHelpers
 {
 public:
+
     static int ExtractfRefFromCString(lua_State* L, const char* functionName);
 };
 

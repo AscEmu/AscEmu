@@ -50,6 +50,9 @@
 #include "Server/Packets/CmsgItemrefundinfo.h"
 #include "Server/Packets/CmsgItemrefundrequest.h"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
+#include "Server/Packets/SmsgReadItemOk.h"
+#include "Server/Packets/SmsgReadItemFailed.h"
+#include "Server/Packets/CmsgBuyItemInSlot.h"
 
 using namespace AscEmu::Packets;
 
@@ -1019,7 +1022,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         WorldPacket data(16);
         data.Initialize(SMSG_BUY_ITEM);
         data << uint64(recv_packet.itemGuid);
-        data <<Util::getMSTime(); //VLack: seen is Aspire code
+        data << Util::getMSTime(); //VLack: seen is Aspire code
         data << uint32(itemid);
         data << uint32(amount);
 #else
@@ -1127,39 +1130,31 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & drop
 {
-    CHECK_PACKET_SIZE(recvData, 22);
+    CmsgBuyItemInSlot srlPacket;
+    if (!srlPacket.deserialise(recvData))
+        return;
 
     LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
 
-    uint64 srcguid;
-    uint64 bagguid;
-    uint32 itemid;
-    int8 slot;
-    uint8 amount = 0;
+    int8 slot = srlPacket.slot;
+    uint8 amount = srlPacket.amount;
+
     uint8 error;
     int8 bagslot = INVENTORY_SLOT_NOT_SET;
-    int32 vendorslot; //VLack: 3.1.2
-
-    recvData >> srcguid;
-    recvData >> itemid;
-    recvData >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
-    recvData >> bagguid;
-    recvData >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
-    recvData >> amount;
 
     if (amount < 1)
         amount = 1;
 
     _player->interruptSpell();
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+    Creature* unit = _player->GetMapMgr()->GetCreature(srlPacket.srcGuid.getGuidLowPart());
     if (unit == nullptr || !unit->HasItems())
         return;
 
     Container* c = nullptr;
 
     CreatureItem ci;
-    unit->GetSellItemByItemId(itemid, ci);
+    unit->GetSellItemByItemId(srlPacket.itemId, ci);
 
     if (ci.itemid == 0)
         return;
@@ -1170,7 +1165,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
         return;
     }
 
-    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(srlPacket.itemId);
     if (it == nullptr)
         return;
 
@@ -1186,7 +1181,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
     // if slot is different than -1, check for validation, else continue for auto storing.
     if (slot != INVENTORY_SLOT_NOT_SET)
     {
-        if (!(bagguid >> 32))//buy to backpack
+        if (!(srlPacket.bagGuid >> 32))//buy to backpack
         {
             if (slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
             {
@@ -1197,10 +1192,10 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
         }
         else
         {
-            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(srlPacket.bagGuid));
             if (!c)
                 return;
-            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(srlPacket.bagGuid);
 
             if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->getItemProperties()->ContainerSlots))
             {
@@ -1211,16 +1206,16 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
     }
     else
     {
-        if ((bagguid >> 32))
+        if ((srlPacket.bagGuid >> 32))
         {
-            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(srlPacket.bagGuid));
             if (!c)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
                 return;//non empty
             }
 
-            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(srlPacket.bagGuid);
             slot = c->FindFreeSlot();
         }
         else
@@ -1302,10 +1297,10 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
     _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->getEntry(), pItem->getPropertySeed(), pItem->getRandomPropertiesId(), pItem->getStackCount());
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
-    data << uint64(srcguid);
+    data << uint64(srlPacket.srcGuid.GetOldGuid());
 #if VERSION_STRING != Cata
-    data <<Util::getMSTime();
-    data << uint32(itemid);
+    data << Util::getMSTime();
+    data << uint32(srlPacket.itemId);
 #else
     data << uint32(slot + 1);       // numbered from 1 at client
     data << int32(amount);
@@ -1766,17 +1761,12 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
         // Check if it has pagetext
         if (item->getItemProperties()->PageId)
         {
-            WorldPacket data(SMSG_READ_ITEM_OK, 4);
-            data << item->getGuid();
-            SendPacket(&data);
-            LOG_DEBUG("Sent SMSG_READ_OK %d", item->getGuid());
+            SendPacket(SmsgReadItemOk(item->getGuid()).serialise().get());
+            LOG_DEBUG("Sent SMSG_READ_OK %lld", item->getGuid());
         }
         else
         {
-            WorldPacket data(SMSG_READ_ITEM_FAILED, 5);
-            data << item->getGuid();
-            data << uint8(2);
-            SendPacket(&data);
+            SendPacket(SmsgReadItemFailed(item->getGuid(), 2).serialise().get());
             LOG_DEBUG("Sent SMSG_READ_ITEM_FAILED %d", item->getGuid());
         }
     }

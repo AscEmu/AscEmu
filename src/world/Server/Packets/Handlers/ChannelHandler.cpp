@@ -33,49 +33,22 @@ initialiseSingleton(ChannelMgr);
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING != Cata
 void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 {
-    CmsgJoinChannel recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgJoinChannel srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
+    if (!sWorld.settings.gm.gmClientChannelName.empty() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !GetPermissionCount())
         return;
 
-    const auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), GetPlayer(), recv_packet.dbc_id);
+    const auto channel = channelmgr.GetCreateChannel(srlPacket.channelName.c_str(), GetPlayer(), srlPacket.dbcId);
     if (channel == nullptr)
         return;
 
-    channel->AttemptJoin(GetPlayer(), recv_packet.password.c_str());
-    LogDebugFlag(LF_OPCODE, "CMSG_JOIN_CHANNEL %s", recv_packet.channel_name.c_str());
+    channel->AttemptJoin(GetPlayer(), srlPacket.password.c_str());
+    LogDebugFlag(LF_OPCODE, "ChannelJoin %s", srlPacket.channelName.c_str());
 }
-#else
-void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
-{
-    uint32_t channelId;
-
-    recvPacket >> channelId;
-    recvPacket.readBit();       // has voice
-    recvPacket.readBit();       // zone update
-
-    const uint32_t channelLength = recvPacket.readBits(8);
-    const uint32_t passwordLength = recvPacket.readBits(8);
-
-    std::string channelname = recvPacket.ReadString(channelLength);
-    std::string pass = recvPacket.ReadString(passwordLength);
-
-    if (!sWorld.settings.gm.gmClientChannelName.empty() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), channelname.c_str()) && !GetPermissionCount())
-        return;
-
-    const auto channel = channelmgr.GetCreateChannel(channelname.c_str(), GetPlayer(), channelId);
-    if (channel == nullptr)
-        return;
-
-    channel->AttemptJoin(GetPlayer(), pass.c_str());
-    LogDebugFlag(LF_OPCODE, "ChannelJoin %s", channelname.c_str());
-}
-#endif
 
 void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 {

@@ -688,25 +688,3 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
         }
     }
 }
-
-void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    MsgQuestPushResult recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
-        return;
-
-    LOG_DETAIL("WORLD: Received MSG_QUEST_PUSH_RESULT");
-
-    if (GetPlayer()->GetQuestSharer())
-    {
-        Player* pPlayer = objmgr.GetPlayer(GetPlayer()->GetQuestSharer());
-        if (pPlayer)
-        {
-            uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : recv_packet.giverGuid;
-            pPlayer->GetSession()->SendPacket(MsgQuestPushResult(guid, 0, recv_packet.pushResult).serialise().get());
-            GetPlayer()->SetQuestSharer(0);
-        }
-    }
-}

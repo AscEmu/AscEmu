@@ -11,7 +11,7 @@ class AuchenaiCrypts : public InstanceScript
 {
 public:
 
-    AuchenaiCrypts(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit AuchenaiCrypts(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

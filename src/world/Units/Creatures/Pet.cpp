@@ -1349,7 +1349,6 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        SpellInfo* sp;
         for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
             auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
@@ -1359,7 +1358,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             // Update existing spell, or add new "automatic-acquired" spell
             if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->getBaseLevel())
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it

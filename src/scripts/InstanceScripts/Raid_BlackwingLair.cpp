@@ -1,43 +1,62 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 
+enum
+{
+    CN_DTFLAMESCALE = 12463,
+    FLAME_SHOCK = 22423, // 1 target, ranged like
 
-const uint32 CN_DTCAPTAIN = 12467;
-const uint32 MARK_OF_FLAMES = 25050; // 1 target
-const uint32 MARK_OF_DETONATION = 22438; // 1 target
+    CN_DTWYRMKIN = 12465,
+    FIREBALL_VOLLEY = 36742, // various targets
+
+    CN_TECHNICIAN = 13996,
+    GRANADE = 30217,
+
+    CN_BLACK_WARLOCK = 12459,
+    RAIN_OF_FIRE = 19717,
+    BLACK_WARLOCK_AI_SHADOW_BOLT = 36986,
+
+    CN_LASHLAYER = 12017,
+    FIRE_NOVA_LASH = 39001, // Blast wave
+    //MORTAL_STRIKE = 9347,
+    KNOCK_BACK = 20686,
+
+    CN_FIREMAW = 11983,
+    WING_BUFFET = 37319,
+    FLAME_BUFFET = 23341,
+
+    CN_EBONROC = 14601,
+    SHADOW_OF_EBONROC = 23340,
+
+    CN_FLAMEGOR = 11981,
+    FIRE_NOVA = 23462,
+
+    CN_VAELASTRASZ = 13020,
+    ESSENCE_OF_THE_RED = 23513,
+    FLAME_BREATH = 18435,
+    BURNING_ADRENALINE = 18173,
+
+    CN_DTCAPTAIN = 12467,
+    MARK_OF_FLAMES = 25050, // 1 target
+    MARK_OF_DETONATION = 22438, // 1 target
+};
 
 class DTcaptainAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
-        DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
-            markOfFlames->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
+    explicit DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
+        markOfFlames->setAttackStopTimer(1000);
 
-            auto markOfDetonation = addAISpell(MARK_OF_DETONATION, 4.0f, TARGET_ATTACKING);
-            markOfDetonation->setAttackStopTimer(2000);
-        }
+        auto markOfDetonation = addAISpell(MARK_OF_DETONATION, 4.0f, TARGET_ATTACKING);
+        markOfDetonation->setAttackStopTimer(2000);
+    }
 };
 
 
@@ -50,17 +69,14 @@ They cannot be slept or otherwise crowd controlled, and must be tanked instead.
 The Captain can also dispel any Hibernate effect cast on Death Talon Wyrmkin.
 */
 
-const uint32 CN_DTFLAMESCALE = 12463;
-const uint32 FLAME_SHOCK = 22423; //1 target, ranged like
-
 class DTflamescaleAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
-        DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
-            flameShock->setAttackStopTimer(1000);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
+    explicit DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
+        flameShock->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -83,17 +99,14 @@ They cannot be slept or otherwise crowdcontrolled, and must be tanked instead.
 As of patch 1.12 Seethers now have a Flame Buffet ability that deals roughly 1k damage per stack. Be aware of this if you kite these.
 */
 
-const uint32 CN_DTWYRMKIN = 12465;
-const uint32 FIREBALL_VOLLEY = 36742; // various targets
-
 class DTwyrmkinAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
-        DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
-            fireballVolley->setAttackStopTimer(1000);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
+    explicit DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
+        fireballVolley->setAttackStopTimer(1000);
+    }
 };
 
 /*
@@ -106,41 +119,30 @@ They can be put to sleep by a druid's hibernate ability, but due to their high l
 "Fireball Volley" can be prevented by chain fearing or chain stunning the mob while the rest of the raid nukes it down.
 */
 
-
-
-const uint32 CN_TECHNICIAN = 13996;
-const uint32 GRANADE = 30217;
-
 class TechnicianAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
-        TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
-            granade->setAttackStopTimer(1000);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
+    explicit TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
+        granade->setAttackStopTimer(1000);
+    }
 };
 
 //Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
 
-
-const uint32 CN_BLACK_WARLOCK = 12459;
-const uint32 RAIN_OF_FIRE = 19717;
-const uint32 SHADOW_BOLT = 36986;
-
 class BlackWarlockAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
-        BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
-            rainOfFire->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
+    explicit BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
+        rainOfFire->setAttackStopTimer(1000);
 
-            auto shadowBolt = addAISpell(SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
-            shadowBolt->setAttackStopTimer(1000);
-        }
+        auto shadowBolt = addAISpell(BLACK_WARLOCK_AI_SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
+        shadowBolt->setAttackStopTimer(1000);
+    }
 };
-
 
 /*
 Casts a Rain of Fire that does 925 to 1075 damage per tick, also summons Enraged Felguards.
@@ -173,80 +175,59 @@ That said, as of patch 2.0, Ive been polyd while dpsing these.
 It would appear more accurate to say that the polymorph is targetted at people who do not have the spellbinders aggro.
 */
 
-
-// BOSS
-const uint32 CN_LASHLAYER = 12017;
-const uint32 FIRE_NOVA_LASH = 39001; //BLAST WAVE
-const uint32 MORTAL_STRIKE = 9347;
-const uint32 KNOCK_BACK = 20686;
-
 class LashlayerAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
-        LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
-            fireNovaLash->setAttackStopTimer(1000);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
+    explicit LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
+        fireNovaLash->setAttackStopTimer(1000);
+    }
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
-        }
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
+    }
 };
-
-
-const uint32 CN_FIREMAW = 11983;
-const uint32 WING_BUFFET = 37319;
-const uint32 FLAME_BUFFET = 23341;
 
 class FiremawAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(FiremawAI);
-        FiremawAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-            wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(FiremawAI);
+    explicit FiremawAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-            auto flameBuffet = addAISpell(FLAME_BUFFET, 15.0f, TARGET_VARIOUS);
-            flameBuffet->setAttackStopTimer(1000);
-        }
+        auto flameBuffet = addAISpell(FLAME_BUFFET, 15.0f, TARGET_VARIOUS);
+        flameBuffet->setAttackStopTimer(1000);
+    }
 };
-
-
-const uint32 CN_EBONROC = 14601;
-const uint32 SHADOW_OF_EBONROC = 23340;
 
 class EbonrocAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
-        EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-            wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
+    explicit EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-            auto shadowOfEbonroc = addAISpell(SHADOW_OF_EBONROC, 15.0f, TARGET_ATTACKING);
-            shadowOfEbonroc->setAttackStopTimer(1000);
-        }
+        auto shadowOfEbonroc = addAISpell(SHADOW_OF_EBONROC, 15.0f, TARGET_ATTACKING);
+        shadowOfEbonroc->setAttackStopTimer(1000);
+    }
 };
-
-
-const uint32 CN_FLAMEGOR = 11981;
-const uint32 FIRE_NOVA = 23462;
 
 class FlamegorAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
-        FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
-            wingBuffet->setAttackStopTimer(1000);
+    ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
+    explicit FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
+        wingBuffet->setAttackStopTimer(1000);
 
-            auto fireNova = addAISpell(FIRE_NOVA, 20.0f, TARGET_VARIOUS, 0, 0, false, true);
-            fireNova->setAttackStopTimer(1000);
-        }
+        auto fireNova = addAISpell(FIRE_NOVA, 20.0f, TARGET_VARIOUS, 0, 0, false, true);
+        fireNova->setAttackStopTimer(1000);
+    }
 };
-
 
 /*
 He does a Blastwave / AoE Knockback similar to the Scholomance Handlers (in the undead dragonkin room).
@@ -268,66 +249,61 @@ Over the course of this fight, he will do this repeatedly on all of your tanks.
 // sound A_BroodlordLashlayerAggro -> 8286
 // sound A_BroodlordLashlayerLeashTrigge -> 8287
 
-
-const uint32 CN_VAELASTRASZ = 13020;
-const uint32 ESSENCE_OF_THE_RED = 23513;
-const uint32 FLAME_BREATH = 18435;
-const uint32 BURNING_ADRENALINE = 18173;
-
 class VaelastraszAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
-        VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
+    explicit VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
+        essenceOfTheRed->setAttackStopTimer(1000);
+
+        auto flameBreath = addAISpell(FLAME_BREATH, 15.0f, TARGET_VARIOUS);
+        flameBreath->setAttackStopTimer(3000);
+
+        auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
+        burningAdrenaline->setAttackStopTimer(2000);
+
+        getCreature()->setHealth((uint32)(getCreature()->getMaxHealth() * 0.3f));
+    }
+
+    void OnCombatStart(Unit* /*mTarget*/) override
+    {
+        getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
+    }
+
+    void OnTargetDied(Unit* /*mTarget*/) override
+    {
+        sendDBChatMessage(2296);     // Forgive me, your death only adds to my failure.
+    }
+
+    void OnDied(Unit* /*mKiller*/) override
+    {
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
+    }
+
+    void AIUpdate() override
+    {
+        if (getCreature()->GetHealthPct() <= 15 && getScriptPhase() == 1)
         {
-            essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
-            essenceOfTheRed->setAttackStopTimer(1000);
-
-            auto flameBreath = addAISpell(FLAME_BREATH, 15.0f, TARGET_VARIOUS);
-            flameBreath->setAttackStopTimer(3000);
-
-            auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
-            burningAdrenaline->setAttackStopTimer(2000);
-
-            getCreature()->setHealth((uint32)(getCreature()->getMaxHealth() * 0.3f));
+            sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
+            setScriptPhase(2);
         }
+    }
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
-        }
+protected:
 
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            sendDBChatMessage(2296);     // Forgive me, your death only adds to my failure.
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
-        }
-
-        void AIUpdate() override
-        {
-            if (getCreature()->GetHealthPct() <= 15 && getScriptPhase() == 1)
-            {
-                sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
-                setScriptPhase(2);
-            }
-        }
-
-    protected:
-
-        CreatureAISpells* essenceOfTheRed;
+    CreatureAISpells* essenceOfTheRed;
 };
 
 class VaelastraszGossip : public Arcemu::Gossip::Script
 {
-    public:
-        void OnHello(Object* pObject, Player* Plr) override
-        {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 9903, 0);
-            menu.Send(Plr);
-        }
+public:
+
+    void OnHello(Object* pObject, Player* Plr) override
+    {
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 9903, 0);
+        menu.Send(Plr);
+    }
 };
 
 
@@ -376,7 +352,6 @@ Cleave
 // sound A_VaelastraszLine2 -> 8282
 // sound A_VaelastraszLine2 -> 8283
 
-
 void SetupBlackwingLair(ScriptMgr* mgr)
 {
     mgr->register_creature_script(CN_DTCAPTAIN, &DTcaptainAI::Create);
@@ -390,6 +365,5 @@ void SetupBlackwingLair(ScriptMgr* mgr)
     mgr->register_creature_script(CN_FLAMEGOR, &FlamegorAI::Create);
     mgr->register_creature_script(CN_VAELASTRASZ, &VaelastraszAI::Create);
 
-    Arcemu::Gossip::Script* vg = new VaelastraszGossip();
-    mgr->register_creature_gossip(CN_VAELASTRASZ, vg);        //\todo  Vael Gossip change the flag to agressive
+    mgr->register_creature_gossip(CN_VAELASTRASZ, new VaelastraszGossip()); //\todo  Vael Gossip change the flag to agressive
 }

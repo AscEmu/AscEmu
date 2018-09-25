@@ -11,7 +11,7 @@ class Deadmines : public InstanceScript
 {
 public:
 
-    Deadmines(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Deadmines(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgItemrefundinfo : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint64_t itemGuid;
 
@@ -38,5 +39,6 @@ namespace AscEmu { namespace Packets
             packet >> itemGuid;
             return true;
         }
+#endif
     };
 }}

@@ -44,7 +44,7 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
     pSpell->p_caster->ClearCooldownForSpell(26889);         // Vanish Rank 3
     pSpell->p_caster->ClearCooldownForSpell(14177);         // Cold Blood
     pSpell->p_caster->ClearCooldownForSpell(36554);         // Shadowstep
-    if (pSpell->p_caster->HasAura(56819))                    // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
+    if (pSpell->p_caster->HasAura(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
     {
         pSpell->p_caster->ClearCooldownForSpell(13877);     // Blade Flurry
         pSpell->p_caster->ClearCooldownForSpell(51722);     // Dismantle
@@ -200,13 +200,13 @@ bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
     {
         p_target->m_outStealthDamageBonusPct += amount;
         p_target->m_outStealthDamageBonusPeriod = 6;        // 6 seconds
-        p_target->m_outStealthDamageBonusTimer = 0;            // reset it
+        p_target->m_outStealthDamageBonusTimer = 0;         // reset it
     }
     else
     {
         p_target->m_outStealthDamageBonusPct -= amount;
         p_target->m_outStealthDamageBonusPeriod = 6;        // 6 seconds
-        p_target->m_outStealthDamageBonusTimer = 0;            // reset it
+        p_target->m_outStealthDamageBonusTimer = 0;         // reset it
     }
 
     return true;

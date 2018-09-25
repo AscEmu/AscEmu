@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgLfgProposalResult : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t lfgGroupId;
         bool accept;
@@ -40,5 +41,6 @@ namespace AscEmu { namespace Packets
             packet >> lfgGroupId >> accept;
             return true;
         }
+#endif
     };
 }}

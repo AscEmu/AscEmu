@@ -25,6 +25,9 @@
 #include "Server/Packets/CmsgLfgSetRoles.h"
 #include "Server/Packets/CmsgLfgSetBootVote.h"
 #include "Server/Packets/CmsgLfgTeleport.h"
+#include "Server/Packets/SmsgLfgTeleportDenied.h"
+#include "Server/Packets/SmsgLfgOfferContinue.h"
+#include "Server/Packets/SmsgLfgUpdateSearch.h"
 
 using namespace AscEmu::Packets;
 
@@ -676,12 +679,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
 void WorldSession::SendLfgUpdateSearch(bool update)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_UPDATE_SEARCH %u update: %u", GetPlayer()->getGuid(), update ? 1 : 0);
-
-    WorldPacket data(SMSG_LFG_UPDATE_SEARCH, 1);
-
-    data << uint8(update);                                 // In Lfg Queue?
-    SendPacket(&data);
+    SendPacket(SmsgLfgUpdateSearch(update).serialise().get());
 #endif
 }
 
@@ -690,30 +688,19 @@ void WorldSession::SendLfgDisabled()
     LogDebugFlag(LF_OPCODE, "SMSG_LFG_DISABLED %u", GetPlayer()->getGuid());
 
     WorldPacket data(SMSG_LFG_DISABLED, 0);
-
     SendPacket(&data);
 }
 
 void WorldSession::SendLfgOfferContinue(uint32 dungeonEntry)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_OFFER_CONTINUE %u dungeon entry: %u", GetPlayer()->getGuid(), dungeonEntry);
-
-    WorldPacket data(SMSG_LFG_OFFER_CONTINUE, 4);
-
-    data << uint32(dungeonEntry);
-    SendPacket(&data);
+    SendPacket(SmsgLfgOfferContinue(dungeonEntry).serialise().get());
 #endif
 }
 
 void WorldSession::SendLfgTeleportError(uint8 err)
 {
 #if VERSION_STRING > TBC
-    LogDebugFlag(LF_OPCODE, "SMSG_LFG_TELEPORT_DENIED %u reason: %u", GetPlayer()->getGuid(), err);
-
-    WorldPacket data(SMSG_LFG_TELEPORT_DENIED, 4);
-
-    data << uint32(err);                                   // Error
-    SendPacket(&data);
+    SendPacket(SmsgLfgTeleportDenied(err).serialise().get());
 #endif
 }

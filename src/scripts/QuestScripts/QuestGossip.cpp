@@ -21,6 +21,11 @@
 
 #include "Setup.h"
 
+enum
+{
+    DALARAN_TELEPORT_SPELL = 68328
+};
+
 class Lady_Jaina : public Arcemu::Gossip::Script
 {
 public:
@@ -63,9 +68,6 @@ public:
     }
 };
 
-
-#define DALARAN_TELEPORT_SPELL 68328
-
 class TeleportQ_Gossip : public Arcemu::Gossip::Script
 {
 public:
@@ -94,13 +96,10 @@ public:
 
 void SetupQuestGossip(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* ladyJaina = new Lady_Jaina();
-    mgr->register_creature_gossip(4968, ladyJaina);
+    mgr->register_creature_gossip(4968, new Lady_Jaina());
+    mgr->register_creature_gossip(3057, new Cairne());
 
-    Arcemu::Gossip::Script* cairne = new Cairne();
-    mgr->register_creature_gossip(3057, cairne);
-
-    // **** Dalaran quests start **** //
+    // Dalaran quests start
     Arcemu::Gossip::Script* gs = new TeleportQ_Gossip();
 
     // Horde

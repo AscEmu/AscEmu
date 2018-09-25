@@ -1,21 +1,6 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
  //////////////////////////////////////////////////////////////////////////////////////////
@@ -42,57 +27,57 @@ std::map<uint32, GameobjectTeleport*> m_teleStorage;
 
 class CustomTeleport : public GameObjectAIScript // Custom Portals
 {
-    public:
+public:
 
-        CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
-        { }
+    explicit CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
+    { }
 
-        ~CustomTeleport()
-        { }
+    ~CustomTeleport()
+    { }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        float x, y, z, orientation;
+        uint32 mapid;
+
+        std::map<uint32, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
+        if (itr != m_teleStorage.end())
         {
-            float x, y, z, orientation;
-            uint32 mapid;
+            GameobjectTeleport* gt = itr->second;
+            uint32 required_level = gt->req_level;
+            uint8 req_class = gt->req_class;
+            uint32 req_achievement = gt->req_achievement;
 
-            std::map<uint32, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
-            if (itr != m_teleStorage.end())
+            if (required_level > pPlayer->getLevel())
             {
-                GameobjectTeleport* gt = itr->second;
-                uint32 required_level = gt->req_level;
-                uint8 req_class = gt->req_class;
-                uint32 req_achievement = gt->req_achievement;
-
-                if (required_level > pPlayer->getLevel())
-                {
-                    pPlayer->BroadcastMessage("You must be at least level %ld to use this portal", required_level);
-                    return;
-                }
-                else if (req_class != 0 && req_class != pPlayer->getClass())
-                {
-                    pPlayer->BroadcastMessage("You do not have the required class to use this Portal");
-                    return;
-                }
+                pPlayer->BroadcastMessage("You must be at least level %ld to use this portal", required_level);
+                return;
+            }
+            else if (req_class != 0 && req_class != pPlayer->getClass())
+            {
+                pPlayer->BroadcastMessage("You do not have the required class to use this Portal");
+                return;
+            }
 #if VERSION_STRING > TBC
-                else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
-                {
-                    pPlayer->BroadcastMessage("You do not have the required achievement to use this Portal");
-                    return;
-                }
+            else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
+            {
+                pPlayer->BroadcastMessage("You do not have the required achievement to use this Portal");
+                return;
+            }
 #endif
-                else
-                {
-                    mapid = gt->mapid;
-                    x = gt->x;
-                    y = gt->y;
-                    z = gt->z;
-                    orientation = gt->o;
+            else
+            {
+                mapid = gt->mapid;
+                x = gt->x;
+                y = gt->y;
+                z = gt->z;
+                orientation = gt->o;
 
-                    pPlayer->SafeTeleport(mapid, 0, x, y, z, orientation);
-                }
+                pPlayer->SafeTeleport(mapid, 0, x, y, z, orientation);
             }
         }
-        static GameObjectAIScript* Create(GameObject* GO) { return new CustomTeleport(GO); }
+    }
+    static GameObjectAIScript* Create(GameObject* GO) { return new CustomTeleport(GO); }
 };
 
 

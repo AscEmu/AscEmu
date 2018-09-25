@@ -11,7 +11,7 @@ class TheMechanar : public InstanceScript
 {
 public:
 
-    TheMechanar(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheMechanar(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

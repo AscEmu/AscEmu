@@ -11,7 +11,7 @@ class OnyxiasLair : public InstanceScript
 {
 public:
 
-    OnyxiasLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit OnyxiasLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

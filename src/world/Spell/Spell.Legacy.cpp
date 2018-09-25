@@ -2201,7 +2201,9 @@ void Spell::finish(bool successful)
             std::vector<uint64_t>::iterator itr = UniqueTargets.begin();
             for (; itr != UniqueTargets.end(); ++itr)
             {
-                if (GET_TYPE_FROM_GUID(*itr) == HIGHGUID_TYPE_UNIT)
+                WoWGuid wowGuid;
+                wowGuid.Init(*itr);
+                if (wowGuid.isUnit())
                 {
                     ++numTargets;
                     sQuestMgr.OnPlayerCast(p_caster, GetSpellInfo()->getId(), *itr);
@@ -3231,14 +3233,14 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             {
                 case HighGuid::Unit:
                 case HighGuid::Vehicle:
-                    unitTarget = m_caster->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+                    unitTarget = m_caster->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Pet:
-                    unitTarget = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+                    unitTarget = m_caster->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Player:
                 {
-                    unitTarget = m_caster->GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
+                    unitTarget = m_caster->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
                     playerTarget = static_cast<Player*>(unitTarget);
                 }
                 break;
@@ -3248,10 +3250,10 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
                     break;
                 case HighGuid::GameObject:
-                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Corpse:
-                    corpseTarget = objmgr.GetCorpse(GET_LOWGUID_PART(guid));
+                    corpseTarget = objmgr.GetCorpse(wowGuid.getGuidLowPart());
                     break;
                 default:
                     LOG_ERROR("unitTarget not set");

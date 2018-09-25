@@ -49,7 +49,8 @@ enum CreatureEntry
     // Sethekk Talon Lord AI
     CN_SETHEKK_TALON_LORD       = 18321,
 
-    ////////////////////////////////////////////////////
+
+
     // Lakka AI
     CN_LAKKA                    = 18956,
 

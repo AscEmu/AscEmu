@@ -10,7 +10,7 @@ class GruulsLair : public InstanceScript
 {
 public:
 
-    GruulsLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit GruulsLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

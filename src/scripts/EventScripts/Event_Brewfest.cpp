@@ -10,21 +10,21 @@
 // event_properties entry: 24 \n
 // event_properties holiday: 372 \n
 
-// Boss Coren Direbrew
-enum eGossipTexts
+enum
 {
+    BOSS_DIREBREW = 23872,
+
+    //NPC_ILSA = 26764,
+    //NPC_URSULA = 26822,
+    //NPC_MINION = 26776,
+
+    //SPELL_DISARM = 47310,
+    //SPELL_SUMMON_MINION = 47375,
+
+    // Boss Coren Direbrew
     DIREBREW_1 = 15858,
     DIREBREW_2 = 15859
 };
-
-const uint32 BOSS_DIREBREW = 23872;
-
-const uint32 NPC_ILSA = 26764;
-const uint32 NPC_URSULA = 26822;
-const uint32 NPC_MINION = 26776;
-
-const uint32 SPELL_DISARM = 47310;
-const uint32 SPELL_SUMMON_MINION = 47375;
 
 class SCRIPT_DECL CorenDirebrewGossip : public Arcemu::Gossip::Script
 {
@@ -65,9 +65,8 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
 
 class CorenDirebrew : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew);
-    CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 };
 
@@ -88,8 +87,5 @@ void SetupBrewfest(ScriptMgr* mgr)
 // f.e. Larkin Thunderbrew \n
 //\todo check botm npcs (vendoritems, gossip, ...)
 
-
-
-#define BOTM_GOSSIP_TEXT "Hey there friend!  I see you've got some Brewfest tokens.  As it happens, I still have some Brewfest items for sale." // entry 12864 in npc_text table
-#define BOTM_GOSSIP_ITEM "What do you have for me?"
-
+//#define BOTM_GOSSIP_TEXT "Hey there friend!  I see you've got some Brewfest tokens.  As it happens, I still have some Brewfest items for sale." // entry 12864 in npc_text table
+//#define BOTM_GOSSIP_ITEM "What do you have for me?"

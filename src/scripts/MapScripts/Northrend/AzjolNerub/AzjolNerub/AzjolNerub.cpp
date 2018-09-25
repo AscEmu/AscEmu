@@ -10,7 +10,7 @@ class AzjolNerub : public InstanceScript
 {
 public:
 
-    AzjolNerub(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit AzjolNerub(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

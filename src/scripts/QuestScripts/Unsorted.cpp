@@ -1,4 +1,3 @@
-
 /*
  * ArcScripts for ArcEmu MMORPG Server
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
@@ -19,84 +18,85 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Setup.h"
+
+// QUEST_CLUCK         3861
+// ITEM_CHICKEN_FEED   11109
 
 class Quest_Grimoire_Business : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
-        {
-            Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(22911, 3279.67f, 4640.77f, 216.526f, 1.3516f);
-            if (ct != nullptr)
-                ct->Despawn(2 * 60 * 1000, 0);
-        }
+public:
+
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    {
+        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(22911, 3279.67f, 4640.77f, 216.526f, 1.3516f);
+        if (ct != nullptr)
+            ct->Despawn(2 * 60 * 1000, 0);
+    }
 };
 
 class Quest_Maggocs_Treasure_Chest : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
-        {
-            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(20600, 2001.76f, 5164.77f, 265.19f, 5.5148f, true, false, 0, 0);
-        }
+public:
+
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    {
+        mTarget->GetMapMgr()->GetInterface()->SpawnCreature(20600, 2001.76f, 5164.77f, 265.19f, 5.5148f, true, false, 0, 0);
+    }
 };
 
 class Quest_Grulloc_Has_Two_Skulls : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
-        {
-            Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(20216, 2687.46f, 5541.14f, -1.93669f, 3.52847f);
-            if (ct != nullptr)
-                ct->Despawn(2 * 60 * 1000, 0);
-        }
+public:
+
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    {
+        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(20216, 2687.46f, 5541.14f, -1.93669f, 3.52847f);
+        if (ct != nullptr)
+            ct->Despawn(2 * 60 * 1000, 0);
+    }
 };
 
 class Quest_Zuluhed_the_Whacked : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
-        {
-            Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(11980, -4177.39f, 376.289f, 117.78f, 2.7381f);
-            if (ct != nullptr)
-                ct->Despawn(2 * 60 * 1000, 0);
-        }
-};
+public:
 
-#define QUEST_CLUCK         3861
-#define ITEM_CHICKEN_FEED   11109
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    {
+        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(11980, -4177.39f, 376.289f, 117.78f, 2.7381f);
+        if (ct != nullptr)
+            ct->Despawn(2 * 60 * 1000, 0);
+    }
+};
 
 class Chicken : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Chicken);
-        Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(Chicken);
+    explicit Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad() override
-        {
-            getCreature()->SetFaction(12);
-            getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-            RegisterAIUpdateEvent(120000);
-        }
+    void OnLoad() override
+    {
+        getCreature()->SetFaction(12);
+        getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+        RegisterAIUpdateEvent(120000);
+    }
 
-        void AIUpdate() override
-        {
-            if(getCreature()->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-                OnLoad();
-        }
+    void AIUpdate() override
+    {
+        if(getCreature()->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+            OnLoad();
+    }
 };
 
 class Kaliri : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Kaliri);
-        Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(Kaliri);
+    explicit Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad() override
-        {
-            getCreature()->SetFaction(35);
-        }
+    void OnLoad() override
+    {
+        getCreature()->SetFaction(35);
+    }
 };
 
 void SetupUnsorted(ScriptMgr* mgr)

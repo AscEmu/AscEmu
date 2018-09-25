@@ -11043,7 +11043,6 @@ void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
 
 void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
 {
-    SpellInfo* sp;
     uint32 removeSpellId = 0;
     for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
     {
@@ -11054,7 +11053,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
         // add new "automatic-acquired" spell
         if ((skill_line_ability->skilline == SkillLine) && (skill_line_ability->acquireMethod == 1))
         {
-            sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
             if (sp && (curr_sk >= skill_line_ability->minSkillLineRank))
             {
                 // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
@@ -14338,10 +14337,27 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
 void Player::SendTeleportAckPacket(float x, float y, float z, float o)
 {
     SetPlayerStatus(TRANSFER_PENDING);
+
+#if VERSION_STRING < WotLK
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
-    data << uint32(0);                                     // this value increments every time
+    data << uint32(2);
+    data << uint32(0);
+    data << uint8(0);
+
+    data << float(0);
+    data << x;
+    data << y;
+    data << z;
+    data << o;
+    data << uint16(2);
+    data << uint8(0);
+#else
+    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    data << GetNewGUID();
+    data << uint32(0);
     BuildMovementPacket(&data, x, y, z, o);
+#endif
     GetSession()->SendPacket(&data);
 }
 

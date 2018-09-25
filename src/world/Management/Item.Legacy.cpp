@@ -711,12 +711,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     if (Apply)
                     {
                         SpellCastTargets targets(m_owner->getGuid());
-                        SpellInfo* sp;
                         Spell* spell;
 
                         if (Entry->spell[c] != 0)
                         {
-                            sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
                             if (sp == NULL)
                                 continue;
 

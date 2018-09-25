@@ -6637,10 +6637,9 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
     {
         uint32 groupRelation[3], procClassMask[3];
         int charges;
-        SpellInfo* sp;
 
         // Find spell of effect to be triggered
-        sp = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
         if (sp == nullptr)
         {
             LogDebugFlag(LF_AURA, "Warning! class trigger spell is null for spell %u", GetSpellInfo()->getId());

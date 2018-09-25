@@ -20,9 +20,12 @@
 
 #include "Setup.h"
 
-const uint32 SPELL_BENDINGSHINBONE = 8856;
-const uint32 ITEM_STURDYSHINBONE = 7134;
-const uint32 ITEM_BROKENSHINBONE = 7135;
+enum
+{
+    SPELL_BENDINGSHINBONE = 8856,
+    ITEM_STURDYSHINBONE = 7134,
+    ITEM_BROKENSHINBONE = 7135,
+};
 
 bool BendingShinbone(uint8_t /*effectIndex*/, Spell* pSpell)
 {
@@ -35,7 +38,6 @@ bool BendingShinbone(uint8_t /*effectIndex*/, Spell* pSpell)
     }
     return true;
 }
-
 
 void SetupWetlands(ScriptMgr* mgr)
 {

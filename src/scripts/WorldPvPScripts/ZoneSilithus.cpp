@@ -4,39 +4,41 @@
  * See COPYING for license details.
  */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 
-//general defs
-#define HORDE 1
-#define ALLIANCE 0
+enum
+{
+    // general defs
+    HORDE 1,
+    ALLIANCE 0,
 
-#define SILITHYST_SPELL 29519
+    SILITHYST_SPELL = 29519,
 
-// gameobj
-#define SILITHYST_MOUND        181597
-#define SILITHYST_GEYSER    181598
+    // gameobj
+    SILITHYST_MOUND = 181597,
+    SILITHYST_GEYSER = 181598,
 
-// buffs
-#define TRACES_OF_SILITHYST 29534
-#define CENARION_FAVOR 30754
+    // buffs
+    TRACES_OF_SILITHYST = 29534,
+    CENARION_FAVOR = 30754,
 
-// how much we need to win?
-#define SILITHYST_MAX 200
+    // how much we need to win?
+    SILITHYST_MAX = 200,
 
-// areatriggers
-#define ALLIANCE_RETURN 4162
-#define HORDE_RETURN 4168
+    // areatriggers
+    ALLIANCE_RETURN = 4162,
+    HORDE_RETURN = 4168,
 
-// quests
-#define ALLIANCE_SILITHYST_QUEST 17090
-#define HORDE_SILITHYST_QUEST 18199
+    // quests
+    ALLIANCE_SILITHYST_QUEST = 17090,
+    HORDE_SILITHYST_QUEST = 18199,
 
-// rewards
-#define REWARD_HONOR 19
+    // rewards
+    REWARD_HONOR = 19,
 
-#define REWARD_REPUTATION_FACTION 609
-#define REWARD_REPUTATION_VALUE 20
-
+    REWARD_REPUTATION_FACTION = 609,
+    REWARD_REPUTATION_VALUE = 20,
+};
 
 int32 silithyst_gathered[2] = { 0, 0 };
 
@@ -93,7 +95,6 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
             QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(quest);
             if(qle)
                 qle->SendQuestComplete();
-            /***********/
 
             if(locked)
                 return;
@@ -113,18 +114,19 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
 
 class SilithystPickup : public GameObjectAIScript
 {
-    public:
-        SilithystPickup(GameObjectPointer goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObjectPointer  GO) { return new SilithystPickup(GO); }
+public:
 
-        void OnActivate(PlayerPointer  pPlayer)
-        {
-            if(pPlayer && !pPlayer->HasAura(SILITHYST_SPELL))
-                pPlayer->CastSpell(pPlayer, SILITHYST_SPELL, true);
+    SilithystPickup(GameObjectPointer goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObjectPointer  GO) { return new SilithystPickup(GO); }
 
-            if(_gameobject)
-                _gameobject->Despawn(0);
-        }
+    void OnActivate(PlayerPointer  pPlayer)
+    {
+        if(pPlayer && !pPlayer->HasAura(SILITHYST_SPELL))
+            pPlayer->CastSpell(pPlayer, SILITHYST_SPELL, true);
+
+        if(_gameobject)
+            _gameobject->Despawn(0);
+    }
 };
 
 void DropFlag(PlayerPointer  pPlayer, uint32 spellID)
@@ -135,15 +137,17 @@ void DropFlag(PlayerPointer  pPlayer, uint32 spellID)
     // we have to use AreaTrigger.dbc here
     AreaTrigger* pAreaTrigger = AreaTriggerStorage.LookupEntry(triggerID);
     if(pAreaTrigger)
+    {
         if(pPlayer->CalcDistance(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z) > 10.0f)
         {
             GameObjectPointer pGo = pPlayer->GetMapMgr()->GetInterface()->SpawnGameObject(SILITHYST_MOUND, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, true, 0, 0);
             if(pGo == NULL)
             {
                 pGo->Destructor();
-                pGo = NULLGOB;
+                pGo = NULL;
             }
         };
+    }
 }
 
 void SetupPvPSilithus(ScriptMgr* mgr)

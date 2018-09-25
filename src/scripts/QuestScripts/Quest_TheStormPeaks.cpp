@@ -18,12 +18,13 @@
 
 #include "Setup.h"
 
- // The Gifts of Loken
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Gifts of Loken
 class LokensFury : public GameObjectAIScript
 {
 public:
 
-    LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFury(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -36,7 +37,7 @@ class LokensPower : public GameObjectAIScript
 {
 public:
 
-    LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensPower(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -49,7 +50,7 @@ class LokensFavor : public GameObjectAIScript
 {
 public:
 
-    LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFavor(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -61,6 +62,7 @@ public:
 class MissingScout_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12864))
@@ -98,7 +100,6 @@ public:
 
 };
 
-
 void SetupTheStormPeaks(ScriptMgr* mgr)
 {
     // The Gifts of Loken
@@ -106,6 +107,5 @@ void SetupTheStormPeaks(ScriptMgr* mgr)
     mgr->register_gameobject_script(192121, &LokensPower::Create);
     mgr->register_gameobject_script(192122, &LokensFavor::Create);
 
-    Arcemu::Gossip::Script* MissingScoutGossip = new MissingScout_Gossip();
-    mgr->register_creature_gossip(29811, MissingScoutGossip);
+    mgr->register_creature_gossip(29811, new MissingScout_Gossip());
 }

@@ -435,7 +435,7 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::FlightMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendTaxiList(static_cast<Creature*>(pObject));
 }
 
 // AUCTIONEER

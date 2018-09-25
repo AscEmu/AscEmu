@@ -11,7 +11,7 @@ class ZulGurub : public InstanceScript
 {
 public:
 
-    ZulGurub(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ZulGurub(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

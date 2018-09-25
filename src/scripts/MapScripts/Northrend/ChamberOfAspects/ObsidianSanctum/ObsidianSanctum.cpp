@@ -10,7 +10,7 @@ class ObsidianSanctum : public InstanceScript
 {
 public:
 
-    ObsidianSanctum(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ObsidianSanctum(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

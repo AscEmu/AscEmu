@@ -10,7 +10,7 @@ class Nexus : public InstanceScript
 {
 public:
 
-    Nexus(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Nexus(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

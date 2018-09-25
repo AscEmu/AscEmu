@@ -24,7 +24,8 @@
 class Flayer : public CreatureAIScript
 {
 public:
-    Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
+
+    explicit Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
     static CreatureAIScript* Create(Creature* c) { return new Flayer(c); }
 
     void OnDied(Unit* mKiller)
@@ -58,9 +59,8 @@ public:
 
 class ArajTheSummoner : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
-    ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
+    explicit ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
     void OnDied(Unit* mKiller)
     {
@@ -72,7 +72,6 @@ public:
             go->Despawn(60 * 1000, 0);
     }
 };
-
 
 void SetupEasternPlaguelands(ScriptMgr* mgr)
 {

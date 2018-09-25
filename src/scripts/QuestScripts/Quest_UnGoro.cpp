@@ -23,9 +23,8 @@
 
 class RingoDeadNPC : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
-    RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -39,7 +38,8 @@ public:
 class NorthernPylon : public GameObjectAIScript
 {
 public:
-    NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -59,7 +59,8 @@ public:
 class EasternPylon : public GameObjectAIScript
 {
 public:
-    EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -79,7 +80,8 @@ public:
 class WesternPylon : public GameObjectAIScript
 {
 public:
-    WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
     void OnActivate(Player* pPlayer) override
@@ -98,9 +100,8 @@ public:
 
 class A_Me01 : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
-    A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
@@ -121,7 +122,6 @@ public:
         }
     }
 };
-
 
 void SetupUnGoro(ScriptMgr* mgr)
 {

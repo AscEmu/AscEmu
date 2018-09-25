@@ -96,14 +96,14 @@ enum CreatureSpells
     FROST_NOVA                  = 15063,    //29849 // also can be: 30094 or 32365
 
     // CoilfangLeperAI
-    SHADOW_BOLT                 = 9613,     //39025
+    //SHADOW_BOLT                 = 9613,     //39025
     FIRE_BLAST_LEPER            = 13339,    // not sure to those
     STRIKE                      = 13446,
     FROST_NOVA_LEPER            = 11831,
     CLEAVE_LEPER                = 5532,     // THOSE SPELLS MUST BE VERIFIED!
     HEAL_LEPER                  = 11642,
     SUNDER_ARMOR_LEPER          = 13444,
-    SHOOT                       = 15547,
+    //SHOOT                       = 15547,
 
     // CoilfangSlavemasterAI
     GEYSER                      = 10987,    //40089 // It don't have to be good spell id [can be: 10987, 37478, 40089, 37427] - no idea why it doesn't knock you out

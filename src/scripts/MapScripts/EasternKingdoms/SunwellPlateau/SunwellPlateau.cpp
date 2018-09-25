@@ -11,7 +11,7 @@ class SunwellPlateau : public InstanceScript
 {
 public:
 
-    SunwellPlateau(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SunwellPlateau(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

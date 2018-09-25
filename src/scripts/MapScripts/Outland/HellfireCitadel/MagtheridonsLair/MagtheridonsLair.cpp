@@ -10,7 +10,7 @@ class MagtheridonsLair : public InstanceScript
 {
 public:
 
-    MagtheridonsLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MagtheridonsLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -20,9 +20,9 @@
 
 #include "Setup.h"
 
-#define SAY_DOC1 "I'm saved! Thank you, doctor!"
-#define SAY_DOC2 "HOORAY! I AM SAVED!"
-#define SAY_DOC3 "Sweet, sweet embrace... take me..."
+//#define SAY_DOC1 "I'm saved! Thank you, doctor!"
+//#define SAY_DOC2 "HOORAY! I AM SAVED!"
+//#define SAY_DOC3 "Sweet, sweet embrace... take me..."
 
 const uint32 allianceSoldierId[3] =
 {
@@ -40,9 +40,8 @@ const uint32 hordeSoldierId[3] =
 
 class InjuredSoldier : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier);
-    InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
     {
@@ -68,7 +67,6 @@ public:
         }
     }
 };
-
 
 void SetupFirstAid(ScriptMgr* mgr)
 {
