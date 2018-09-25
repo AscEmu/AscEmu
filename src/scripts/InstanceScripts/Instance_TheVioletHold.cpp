@@ -375,7 +375,7 @@ class VHIntroAzureBinder : VHCreatureAI
     const int SPELL_ARCANE_BARRAGE = 58456;
     const int SPELL_ARCANE_EXPLOSION = 58455;
 
-    VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
+    explicit VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
         //m_spellCount = 2;
@@ -414,7 +414,7 @@ class VHIntroAzureInvader : VHCreatureAI
     const int SPELL_CLEAVE = 15496;
     const int SPELL_IMPALE = 58459;
 
-    VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
+    explicit VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
        /* m_spellCount = 2;
@@ -451,7 +451,7 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
     const int SPELL_ARCANE_EMPOWERMENT = 58469;
 
-    VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
+    explicit VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
         /*m_spellCount = 1;
@@ -479,7 +479,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
     const int SPELL_ARCANE_BLAST = 58462;
     const int SPELL_SLOW = 25603;
 
-    VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
+    explicit VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         m_isIntroMob = true;
         /*m_spellCount = 2;

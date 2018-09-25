@@ -23,7 +23,7 @@
 class NorthFleet : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
-    NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {

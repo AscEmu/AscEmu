@@ -22,7 +22,7 @@ class LadySarevessAI : public CreatureAIScript
 class BaronAquanisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BaronAquanisAI);
-    BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(15043, 20.0f, TARGET_ATTACKING, 3, 0);    // Frostbolt
     }

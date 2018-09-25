@@ -1693,7 +1693,7 @@ class TaintedCoreGO : public GameObjectAIScript
 {
 public:
 
-    TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
+    explicit TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     { }
 
     void OnActivate(Player* pPlayer) override

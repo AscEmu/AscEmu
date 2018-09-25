@@ -90,7 +90,6 @@ enum BannerStatus
 
 class HellfirePeninsulaBannerAI : public GameObjectAIScript
 {
-
 public:
 
     GameObjectPointer  pBanner;
@@ -100,7 +99,7 @@ public:
     uint32 towerid;
     uint32 m_bannerStatus;
 
-    HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+    explicit HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
         m_bannerStatus = BANNER_STATUS_NEUTRAL;
         Status = 50;
