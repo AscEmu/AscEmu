@@ -71,7 +71,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModDamageTaken,                                         //  14 SPELL_AURA_MOD_DAMAGE_TAKEN
     &Aura::SpellAuraDamageShield,                                           //  15 SPELL_AURA_DAMAGE_SHIELD
     &Aura::SpellAuraModStealth,                                             //  16 SPELL_AURA_MOD_STEALTH
-    &Aura::SpellAuraModDetect,                                              //  17 SPELL_AURA_MOD_DETECT
+    &Aura::SpellAuraModStealthDetection,                                    //  17 SPELL_AURA_MOD_DETECT
     &Aura::SpellAuraModInvisibility,                                        //  18 SPELL_AURA_MOD_INVISIBILITY
     &Aura::SpellAuraModInvisibilityDetection,                               //  19 SPELL_AURA_MOD_INVISIBILITY_DETECTION
     &Aura::SpellAuraModTotalHealthRegenPct,                                 //  20 SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT
@@ -282,7 +282,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 225 // Prayer of Mending "Places a spell on the target that heals them for $s1 the next time they take damage.  When the heal occurs, Prayer of Mending jumps to a raid member within $a1 yards.  Jumps up to $n times and lasts $d after each jump.  This spell can only be placed on one target at a time."
     &Aura::SpellAuraPeriodicTriggerDummy,                                   // 226 // used in brewfest spells, headless horseman, Aspect of the Viper
     &Aura::SpellAuraPeriodicTriggerSpellWithValue,                          // 227 // Used by Mind Flay, Siege Turrets 'Machine gun' and a few other spells.
-    &Aura::SpellAuraModStealthDetection,                                    // 228 Stealth Detection. http://www.thottbot.com/s34709
+    &Aura::SpellAuraNULL,                                                   // 228 Stealth Detection. http://www.thottbot.com/s34709 // handled in Unit::canSee
     &Aura::SpellAuraReduceAOEDamageTaken,                                   // 229 Apply Aura:Reduces the damage your pet takes from area of effect attacks http://www.thottbot.com/s35694
     &Aura::SpellAuraIncreaseMaxHealth,                                      // 230 Increase Max Health (commanding shout);
     &Aura::SpellAuraProcTriggerSpell,                                       // 231 curse a target http://www.thottbot.com/s40303
@@ -2610,8 +2610,7 @@ void Aura::SpellAuraModStun(bool apply)
         if (m_target->m_rootCounter == 1)
             m_target->setMoveRoot(true);
 
-        if (m_target->IsStealth())
-            m_target->RemoveStealth();
+        m_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
         m_target->m_stunned++;
         m_target->addUnitStateFlag(UNIT_STATE_STUN);
@@ -2837,7 +2836,7 @@ void Aura::SpellAuraModStealth(bool apply)
     if (apply)
     {
         //Overkill must proc only if we aren't already stealthed, also refreshing duration.
-        if (!m_target->IsStealth() && m_target->HasAura(58426))
+        if (!m_target->isStealthed() && m_target->HasAura(58426))
         {
             Aura *buff = m_target->getAuraWithId(58427);
             if (buff)
@@ -2865,33 +2864,6 @@ void Aura::SpellAuraModStealth(bool apply)
         SetPositive();
         switch (m_spellInfo->getId())
         {
-            //SPELL_HASH_VANISH
-            case 1856:
-            case 1857:
-            case 11327:
-            case 11329:
-            case 24223:
-            case 24228:
-            case 24229:
-            case 24230:
-            case 24231:
-            case 24232:
-            case 24233:
-            case 24699:
-            case 26888:
-            case 26889:
-            case 27617:
-            case 29448:
-            case 31619:
-            case 35205:
-            case 39667:
-            case 41476:
-            case 41479:
-            case 44290:
-            case 55964:
-            case 71400:
-                m_target->SetStealth(GetSpellId());
-                break;
             //SPELL_HASH_STEALTH
             case 1784:
             case 1785:
@@ -2919,7 +2891,7 @@ void Aura::SpellAuraModStealth(bool apply)
             m_target->SetFlag(PLAYER_FIELD_BYTES2, 0x2000);
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
-        m_target->m_stealthLevel += mod->m_amount;
+        m_target->modStealthLevel(StealthFlag(mod->m_miscValue), mod->m_amount);
 
         // hack fix for vanish stuff
         if (m_target->isPlayer())   // Vanish
@@ -3021,7 +2993,7 @@ void Aura::SpellAuraModStealth(bool apply)
     }
     else
     {
-        m_target->m_stealthLevel -= mod->m_amount;
+        m_target->modStealthLevel(StealthFlag(mod->m_miscValue), -mod->m_amount);
 
         switch (m_spellInfo->getId())
         {
@@ -3053,7 +3025,6 @@ void Aura::SpellAuraModStealth(bool apply)
                 break;
             default:
             {
-                m_target->SetStealth(0);
                 m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_CREEP);
 
                 if (p_target != nullptr)
@@ -3131,15 +3102,12 @@ void Aura::SpellAuraModStealth(bool apply)
     m_target->UpdateVisibility();
 }
 
-void Aura::SpellAuraModDetect(bool apply)
+void Aura::SpellAuraModStealthDetection(bool apply)
 {
     if (apply)
-    {
-        //SetPositive();
-        m_target->m_stealthDetectBonus += mod->m_amount;
-    }
+        m_target->modStealthDetection(StealthFlag(mod->m_miscValue), mod->m_amount);
     else
-        m_target->m_stealthDetectBonus -= mod->m_amount;
+        m_target->modStealthDetection(StealthFlag(mod->m_miscValue), -mod->m_amount);
 }
 
 void Aura::SpellAuraModInvisibility(bool apply)
@@ -3150,8 +3118,7 @@ void Aura::SpellAuraModInvisibility(bool apply)
 
     if (apply)
     {
-        m_target->SetInvisibility(GetSpellId());
-        m_target->m_invisFlag = static_cast<uint8>(mod->m_miscValue);
+        m_target->modInvisibilityLevel(InvisibilityFlag(mod->m_miscValue), mod->m_amount);
         if (m_target->isPlayer())
         {
             if (GetSpellId() == 32612)
@@ -3162,7 +3129,7 @@ void Aura::SpellAuraModInvisibility(bool apply)
     }
     else
     {
-        m_target->m_invisFlag = INVIS_FLAG_NORMAL;
+        m_target->modInvisibilityLevel(InvisibilityFlag(mod->m_miscValue), -mod->m_amount);
         if (m_target->isPlayer())
         {
             if (GetSpellId() == 32612)
@@ -3170,7 +3137,6 @@ void Aura::SpellAuraModInvisibility(bool apply)
         }
     }
 
-    m_target->m_invisible = apply;
     m_target->UpdateVisibility();
 }
 
@@ -3181,11 +3147,11 @@ void Aura::SpellAuraModInvisibilityDetection(bool apply)
     ARCEMU_ASSERT(mod->m_miscValue < INVIS_FLAG_TOTAL);
     if (apply)
     {
-        m_target->m_invisDetect[mod->m_miscValue] += mod->m_amount;
+        m_target->modInvisibilityDetection(InvisibilityFlag(mod->m_miscValue), mod->m_amount);
         SetPositive();
     }
     else
-        m_target->m_invisDetect[mod->m_miscValue] -= mod->m_amount;
+        m_target->modInvisibilityDetection(InvisibilityFlag(mod->m_miscValue), -mod->m_amount);
 
     if (m_target->isPlayer())
         static_cast< Player* >(m_target)->UpdateVisibility();
@@ -4007,11 +3973,9 @@ void Aura::SpellAuraModShapeshift(bool apply)
                 //turn back to mana
                 //m_target->setBaseAttackTime(MELEE,oldap);
                 m_target->setPowerType(POWER_TYPE_MANA);
-                if (m_target->m_stealth)
+                if (m_target->isStealthed())
                 {
-                    uint32 sp = m_target->m_stealth;
-                    m_target->m_stealth = 0;
-                    m_target->RemoveAura(sp);//prowl
+                    m_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH); //prowl
                 }
             }
         }
@@ -6259,8 +6223,6 @@ void Aura::SpellAuraGhost(bool apply)
 {
     if (p_target != nullptr)
     {
-        m_target->m_invisible = apply;
-
         if (apply)
         {
             SetNegative();
@@ -7437,10 +7399,10 @@ void Aura::SpellAuraModStealthLevel(bool apply)
     if (apply)
     {
         SetPositive();
-        m_target->m_stealthLevel += mod->m_amount;
+        m_target->modStealthLevel(StealthFlag(mod->m_miscValue), mod->m_amount);
     }
     else
-        m_target->m_stealthLevel -= mod->m_amount;
+        m_target->modStealthLevel(StealthFlag(mod->m_miscValue), -mod->m_amount);
 }
 
 void Aura::SpellAuraModUnderwaterBreathing(bool apply)
@@ -8675,16 +8637,6 @@ void Aura::SpellAuraFinishingMovesCannotBeDodged(bool apply)
 
         static_cast< Player* >(m_target)->m_finishingmovesdodge = false;
     }
-}
-
-void Aura::SpellAuraModStealthDetection(bool apply)
-{
-    if (apply)
-    {
-        m_target->m_stealthDetectBonus += 9999;
-    }
-    else
-        m_target->m_stealthDetectBonus -= 9999;
 }
 
 void Aura::SpellAuraReduceAOEDamageTaken(bool apply)

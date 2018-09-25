@@ -725,7 +725,7 @@ bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /
     if (cpid == IOC_NUM_CONTROL_POINTS)
         return false;
 
-    if (pPlayer->IsStealth() || pPlayer->m_invisible)
+    if (pPlayer->isStealthed() || pPlayer->isInvisible())
         return false;
 
     AssaultControlPoint(pPlayer, cpid);

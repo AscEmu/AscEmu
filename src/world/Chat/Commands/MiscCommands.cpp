@@ -690,7 +690,6 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
     if (selected_player->m_isGmInvisible)
     {
         selected_player->m_isGmInvisible = false;
-        selected_player->m_invisible = false;
         selected_player->bInvincible = false;
 
         selected_player->Social_TellFriendsOnline();
@@ -711,7 +710,6 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
     else
     {
         selected_player->m_isGmInvisible = true;
-        selected_player->m_invisible = true;
         selected_player->bInvincible = true;
 
         selected_player->Social_TellFriendsOffline();
