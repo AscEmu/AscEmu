@@ -48,7 +48,7 @@ class IceCrownCitadelScript : public InstanceScript
 {
 public:
 
-    IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         if (getData(CN_LORD_MARROWGAR) == Finished)
         {

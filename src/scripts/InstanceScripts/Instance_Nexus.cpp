@@ -499,7 +499,7 @@ public:
 
     uint32 m_uiEncounters[NEXUS_END];
 
-    NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         mAnomalusGUID = 0;
         mTelestraGUID = 0;

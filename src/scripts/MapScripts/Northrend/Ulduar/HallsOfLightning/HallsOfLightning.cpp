@@ -10,7 +10,7 @@ class HallsOfLightning : public InstanceScript
 {
 public:
 
-    HallsOfLightning(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit HallsOfLightning(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

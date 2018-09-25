@@ -11,7 +11,7 @@ class RazorfenDowns : public InstanceScript
 {
 public:
 
-    RazorfenDowns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit RazorfenDowns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

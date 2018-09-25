@@ -10,7 +10,7 @@ class Gundrak : public InstanceScript
 {
 public:
 
-    Gundrak(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Gundrak(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

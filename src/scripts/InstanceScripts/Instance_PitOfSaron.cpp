@@ -10,7 +10,7 @@ class InstancePitOfSaronScript : public InstanceScript
 {
 public:
 
-    InstancePitOfSaronScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit InstancePitOfSaronScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {}
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstancePitOfSaronScript(pMapMgr); }

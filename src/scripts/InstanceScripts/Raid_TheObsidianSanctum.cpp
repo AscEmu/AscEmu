@@ -12,7 +12,7 @@ public:
 
     uint32 m_creatureGuid[OS_DATA_END];
 
-    ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         memset(m_creatureGuid, 0, sizeof(m_creatureGuid));
     }

@@ -11,7 +11,7 @@ class ScarletMonastery : public InstanceScript
 {
 public:
 
-    ScarletMonastery(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ScarletMonastery(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

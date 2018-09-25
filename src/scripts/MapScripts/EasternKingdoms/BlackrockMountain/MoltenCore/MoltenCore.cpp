@@ -11,7 +11,7 @@ class MoltenCore : public InstanceScript
 {
 public:
 
-    MoltenCore(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MoltenCore(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

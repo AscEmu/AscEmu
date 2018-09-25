@@ -11,7 +11,7 @@ class Uldaman : public InstanceScript
 {
 public:
 
-    Uldaman(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Uldaman(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

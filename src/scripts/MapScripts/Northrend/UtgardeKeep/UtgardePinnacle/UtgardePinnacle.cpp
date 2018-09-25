@@ -10,7 +10,7 @@ class UtgardePinnacle : public InstanceScript
 {
 public:
 
-    UtgardePinnacle(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit UtgardePinnacle(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

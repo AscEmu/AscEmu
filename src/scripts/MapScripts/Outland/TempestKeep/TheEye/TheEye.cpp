@@ -11,7 +11,7 @@ class TheEye : public InstanceScript
 {
 public:
 
-    TheEye(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheEye(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

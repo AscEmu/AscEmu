@@ -10,7 +10,7 @@ class TheSlavePens : public InstanceScript
 {
 public:
 
-    TheSlavePens(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheSlavePens(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -13,7 +13,7 @@ class InstanceMagistersTerraceScript : public InstanceScript
 {
 public:
 
-    InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {}
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }

@@ -11,7 +11,7 @@ class TheBotanica : public InstanceScript
 {
 public:
 
-    TheBotanica(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheBotanica(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

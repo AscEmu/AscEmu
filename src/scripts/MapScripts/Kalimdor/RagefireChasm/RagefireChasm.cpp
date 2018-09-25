@@ -11,7 +11,7 @@ class RagefireChasm : public InstanceScript
 {
 public:
 
-    RagefireChasm(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit RagefireChasm(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

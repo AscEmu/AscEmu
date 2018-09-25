@@ -10,7 +10,7 @@ class InstanceForgeOfSoulsScript : public InstanceScript
 {
 public:
 
-    InstanceForgeOfSoulsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit InstanceForgeOfSoulsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {}
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }

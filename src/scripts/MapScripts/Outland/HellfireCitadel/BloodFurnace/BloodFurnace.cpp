@@ -10,7 +10,7 @@ class BloodFurnace : public InstanceScript
 {
 public:
 
-    BloodFurnace(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BloodFurnace(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

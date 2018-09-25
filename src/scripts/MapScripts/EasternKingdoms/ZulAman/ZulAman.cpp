@@ -11,7 +11,7 @@ class ZulAman : public InstanceScript
 {
 public:
 
-    ZulAman(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ZulAman(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

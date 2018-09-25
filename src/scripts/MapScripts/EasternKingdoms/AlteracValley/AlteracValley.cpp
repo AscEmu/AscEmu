@@ -11,7 +11,7 @@ class AlteracValley : public InstanceScript
 {
 public:
 
-    AlteracValley(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit AlteracValley(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

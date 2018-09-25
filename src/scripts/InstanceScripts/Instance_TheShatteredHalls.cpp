@@ -13,7 +13,7 @@ class InstanceTheShatteredHallsScript : public InstanceScript
 {
 public:
 
-    InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {}
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
