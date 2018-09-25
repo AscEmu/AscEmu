@@ -278,11 +278,9 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
         if (m_spellInfo->isHealingSpell() && static_cast<Unit*>(itr)->GetHealthPct() == 100)
             continue;
 
-        size_t oldsize;
-
         if (obj->isInRange(firstTarget->GetPositionX(), firstTarget->GetPositionY(), firstTarget->GetPositionZ(), range))
         {
-            oldsize = list->size();
+            size_t oldsize = list->size();
             AddTarget(i, targetType, itr);
             if (list->size() == oldsize || list->size() >= jumps) //either out of jumps or a resist
                 return;
