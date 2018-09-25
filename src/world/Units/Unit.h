@@ -545,12 +545,43 @@ public:
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
 
+    void removeAllAurasByAuraEffect(AuraEffect effect);
+
 #ifdef AE_TBC
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
     void setAuraSlotLevel(uint32_t slot, bool positive);
 #endif
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Visibility system
+    bool canSee(Object* const obj);
+
+    // Stealth
+    int32_t getStealthLevel(StealthFlag flag) const;
+    int32_t getStealthDetection(StealthFlag flag) const;
+    void modStealthLevel(StealthFlag flag, const int32_t amount);
+    void modStealthDetection(StealthFlag flag, const int32_t amount);
+    bool isStealthed() const;
+
+    // Invisibility
+    int32_t getInvisibilityLevel(InvisibilityFlag flag) const;
+    int32_t getInvisibilityDetection(InvisibilityFlag flag) const;
+    void modInvisibilityLevel(InvisibilityFlag flag, const int32_t amount);
+    void modInvisibilityDetection(InvisibilityFlag flag, const int32_t amount);
+    bool isInvisible() const;
+
+    void setVisible(const bool visible);
+
+ private:
+     // Stealth
+     int32_t m_stealthLevel[STEALTH_FLAG_TOTAL];
+     int32_t m_stealthDetection[STEALTH_FLAG_TOTAL];
+     // Invisibility
+     int32_t m_invisibilityLevel[INVIS_FLAG_TOTAL];
+     int32_t m_invisibilityDetection[INVIS_FLAG_TOTAL];
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     void setAttackTimer(WeaponDamageType type, int32_t time);
@@ -639,29 +670,6 @@ public:
     bool IsDazed();
     //this function is used for creatures to get chance to daze for another unit
     float get_chance_to_daze(Unit* target);
-
-    // Stealth
-    int32 GetStealthLevel() { return m_stealthLevel; }
-    int32 GetStealthDetectBonus() { return m_stealthDetectBonus; }
-    void SetStealth(uint32 id) { m_stealth = id; }
-    bool IsStealth() { return (m_stealth != 0 ? true : false); }
-    float detectRange;
-
-    // Invisibility
-    void SetInvisibility(uint32 id) { m_invisibility = id; }
-    bool IsInvisible() { return (m_invisible != 0 ? true : false); }
-    uint32 m_invisibility;
-    bool m_invisible;
-    uint8 m_invisFlag;
-    int32 m_invisDetect[INVIS_FLAG_TOTAL];
-    void SetInvisFlag(uint8 pInvisFlag)
-    {
-        m_invisFlag = pInvisFlag;
-        m_invisible = pInvisFlag != INVIS_FLAG_NORMAL;
-
-        UpdateVisibility();
-    }
-    uint8 GetInvisFlag() { return m_invisFlag; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AURAS
@@ -1090,25 +1098,6 @@ public:
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);
 
-    void RemoveStealth()
-    {
-        if (m_stealth != 0)
-        {
-            RemoveAura(m_stealth);
-            m_stealth = 0;
-        }
-    }
-
-    void RemoveInvisibility()
-    {
-        if (m_invisibility != 0)
-        {
-            RemoveAura(m_invisibility);
-            m_invisibility = 0;
-        }
-    }
-
-    uint32 m_stealth;
     bool m_can_stealth;
 
     Aura* m_auras[MAX_TOTAL_AURAS_END];
@@ -1350,10 +1339,6 @@ protected:
 
     /// Combat
     DeathState m_deathState;
-
-    // Stealth
-    uint32 m_stealthLevel;
-    uint32 m_stealthDetectBonus;
 
     // DK:pet
 

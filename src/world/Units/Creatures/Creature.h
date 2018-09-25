@@ -205,9 +205,6 @@ public:
         void RegenerateMana();
         int BaseAttackType;
 
-        // Invisibility & Stealth Detection - Partha
-        bool CanSee(Unit* obj);
-
         // Looting
         void generateLoot();
         bool HasLootForPlayer(Player* plr);

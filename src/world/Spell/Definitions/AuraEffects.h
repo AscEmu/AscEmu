@@ -24,7 +24,7 @@ enum AuraEffect
     SPELL_AURA_MOD_DAMAGE_TAKEN = 14,                                   // Mod Damage Taken
     SPELL_AURA_DAMAGE_SHIELD = 15,                                      // Damage Shield
     SPELL_AURA_MOD_STEALTH = 16,                                        // Mod Stealth
-    SPELL_AURA_MOD_DETECT = 17,                                         // Mod Detect
+    SPELL_AURA_MOD_STEALTH_DETECTION = 17,                              // Mod Stealth Detection
     SPELL_AURA_MOD_INVISIBILITY = 18,                                   // Mod Invisibility
     SPELL_AURA_MOD_INVISIBILITY_DETECTION = 19,                         // Mod Invisibility Detection
     SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT = 20,
@@ -215,6 +215,7 @@ enum AuraEffect
     SPELL_AURA_HEALING_STAT_PCT = 220,
     SPELL_AURA_PERIODIC_TRIGGER_DUMMY = 226,
     SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE = 227,                 // Used by Mind Flay etc
+    SPELL_AURA_DETECT_STEALTH = 228,
     SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN = 229,
     SPELL_AURA_INCREASE_MAX_HEALTH = 230,                               //Used by Commanding Shout
     SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE = 231,

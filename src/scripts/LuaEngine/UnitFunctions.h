@@ -3323,16 +3323,7 @@ public:
     {
         if (!ptr) return 0;
         bool enabled = CHECK_BOOL(L, 1);
-        if (enabled)
-        {
-            ptr->m_invisFlag = INVIS_FLAG_TOTAL;
-            ptr->m_invisible = true;
-        }
-        else
-        {
-            ptr->m_invisFlag = INVIS_FLAG_NORMAL;
-            ptr->m_invisible = false;
-        }
+        // TODO: remove this
         return 0;
     }
 
@@ -3880,22 +3871,22 @@ public:
     static int SetStealth(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 stealthlevel = CHECK_ULONG(L, 1);
-        ptr->SetStealth(stealthlevel);
+        // TODO: remove this!
         return 0;
     }
 
     static int GetStealthLevel(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        lua_pushinteger(L, ptr->GetStealthLevel());
+        uint32_t stealthFlag = CHECK_ULONG(L, 1);
+        lua_pushinteger(L, ptr->getStealthLevel(StealthFlag(stealthFlag)));
         return 1;
     }
 
     static int IsStealthed(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        if (ptr->IsStealth())
+        if (ptr->isStealthed())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -3905,7 +3896,7 @@ public:
     static int RemoveStealth(lua_State* /*L*/, Unit* ptr)
     {
         if (!ptr) return 0;
-        ptr->RemoveStealth();
+        ptr->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
         return 0;
     }
 

@@ -542,18 +542,17 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     CreatureAttackPowerMod[11] = 0;
     CreatureRangedAttackPowerMod[11] = 0;
 
-    m_invisibility = 0;
-    m_invisible = false;
-    m_invisFlag = INVIS_FLAG_NORMAL;
-
     for (i = 0; i < INVIS_FLAG_TOTAL; i++)
     {
-        m_invisDetect[i] = 0;
+        m_invisibilityLevel[i] = 0;
+        m_invisibilityDetection[i] = 0;
     }
 
-    m_stealthLevel = 0;
-    m_stealthDetectBonus = 0;
-    m_stealth = 0;
+    for (i = 0; i < STEALTH_FLAG_TOTAL; ++i)
+    {
+        m_stealthLevel[i] = 0;
+        m_stealthDetection[i] = 0;
+    }
     m_can_stealth = true;
 
     for (i = 0; i < 5; i++)
@@ -608,7 +607,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
         m_detectRangeMOD[i] = 0;
     }
 
-    detectRange = 0;
     trackStealth = false;
 
     m_threatModifyer = 0;
@@ -685,7 +683,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     m_noFallDamage = false;
     z_axisposition = 0.0f;
     m_safeFall = 0;
-    detectRange = 0.0f;
     m_cTimer = 0;
     m_temp_summon = false;
     m_meleespell_ecn = 0;
@@ -9012,7 +9009,7 @@ void Unit::AddAura(Aura* aur)
         if (pCaster)
         {
             pCaster->RemoveStealth();
-            pCaster->RemoveInvisibility();
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
             uint32 iceBlock[] =
             {
@@ -9590,8 +9587,8 @@ void Unit::AddAura(Aura* aur)
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster)
         {
-            pCaster->RemoveStealth();
-            pCaster->RemoveInvisibility();
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
             uint32 iceBlock[] =
             {
@@ -12132,7 +12129,7 @@ void Unit::UpdateVisibility()
             {
                 pObj = itr2;
 
-                can_see = plr->CanSee(pObj);
+                can_see = plr->canSee(pObj);
                 is_visible = plr->IsVisible(pObj->getGuid());
                 if (can_see)
                 {
@@ -12156,7 +12153,7 @@ void Unit::UpdateVisibility()
                 if (pObj->isPlayer())
                 {
                     pl = static_cast<Player*>(pObj);
-                    can_see = pl->CanSee(plr);
+                    can_see = pl->canSee(plr);
                     is_visible = pl->IsVisible(plr->getGuid());
                     if (can_see)
                     {
@@ -12187,7 +12184,7 @@ void Unit::UpdateVisibility()
             Player* p = static_cast<Player*>(it2);
             if (p)
             {
-                can_see = p->CanSee(this);
+                can_see = p->canSee(this);
                 is_visible = p->IsVisible(this->getGuid());
                 if (!can_see)
                 {

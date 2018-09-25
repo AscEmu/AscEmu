@@ -455,13 +455,13 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (_player->IsDead())    // If the player is dead they can't loot!
         return;
 
-    if (_player->IsStealth())    // Check if the player is stealthed
-        _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
+    if (_player->isStealthed())    // Check if the player is stealthed
+        _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH); // cebernic:RemoveStealth on looting. Blizzlike
 
     _player->interruptSpell(); // Cancel spell casting (no need to check is casting, the function does it)
 
-    if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
-        _player->RemoveInvisibility(); // Remove all invisibility
+    if (_player->isInvisible())    // Check if the player is invisible for what ever reason
+        _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY); // Remove all invisibility
 
     std::vector<uint64_t> onlineGroupMembers;
 
@@ -1218,7 +1218,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
 
-    _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
+    _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH); // cebernic:RemoveStealth due to GO was using. Blizzlike
 
     SpellCastTargets targets;
     Spell* spell = nullptr;

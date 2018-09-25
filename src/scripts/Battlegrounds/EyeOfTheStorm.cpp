@@ -664,7 +664,7 @@ void EyeOfTheStorm::UpdateCPs()
         for (const auto& itr : go->getInRangePlayersSet())
         {
             Player* plr = static_cast<Player*>(itr);
-            if (plr && plr->isAlive() && !(plr->IsStealth()) && !(plr->m_invisible) && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)
+            if (plr && plr->isAlive() && !(plr->isStealthed()) && !plr->isInvisible() && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)
             {
                 playercounts[plr->GetTeam()]++;
 

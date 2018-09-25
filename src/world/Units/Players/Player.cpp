@@ -1267,3 +1267,8 @@ void Player::delayMeleeAttackTimer(int32_t delay)
     setAttackTimer(MELEE, getAttackTimer(MELEE) + delay);
     setAttackTimer(OFFHAND, getAttackTimer(OFFHAND) + delay);
 }
+
+int32_t Player::getMyCorpseInstanceId() const
+{
+    return myCorpseInstanceId;
+}
