@@ -162,7 +162,9 @@ GameObject::GameObject(uint64 guid)
     setScale(1);
     m_summonedGo = false;
     invisible = false;
+    inStealth = false;
     invisibilityFlag = INVIS_FLAG_NORMAL;
+    stealthFlag = STEALTH_FLAG_NORMAL;
     m_summoner = NULL;
     charges = -1;
     gameobject_properties = nullptr;
@@ -894,6 +896,12 @@ void GameObject_Trap::InitAI()
     charges = gameobject_properties->trap.charges;
 
     if (gameobject_properties->trap.stealthed != 0)
+    {
+        inStealth = true;
+        stealthFlag = STEALTH_FLAG_TRAP;
+    }
+
+    if (gameobject_properties->trap.invisible != 0)
     {
         invisible = true;
         invisibilityFlag = INVIS_FLAG_TRAP;

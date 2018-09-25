@@ -4918,7 +4918,7 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     if (!p_caster || !p_caster->isAlive())
         return;
 
-    if (p_caster->IsStealth())
+    if (p_caster->isStealthed())
     {
         SendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED);
         return; // Player is stealth

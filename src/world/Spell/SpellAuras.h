@@ -213,7 +213,7 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModDamageTaken(bool apply);
         void SpellAuraDamageShield(bool apply);
         void SpellAuraModStealth(bool apply);
-        void SpellAuraModDetect(bool apply);
+        void SpellAuraModStealthDetection(bool apply);
         void SpellAuraModInvisibility(bool apply);
         void SpellAuraModInvisibilityDetection(bool apply);
         void SpellAuraModTotalHealthRegenPct(bool apply);
@@ -373,7 +373,7 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseRating(bool apply);
         void SpellAuraRegenManaStatPCT(bool apply);
         void SpellAuraSpellHealingStatPCT(bool apply);
-        void SpellAuraModStealthDetection(bool apply);
+        void SpellAuraDetectStealth(bool apply);
         void SpellAuraReduceAOEDamageTaken(bool apply);
         void SpellAuraIncreaseMaxHealth(bool apply);
         void SpellAuraSpiritOfRedemption(bool apply);

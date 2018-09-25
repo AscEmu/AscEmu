@@ -21,6 +21,41 @@
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
 
+// APGL Ends
+// MIT Start
+
+enum StealthFlag
+{
+    STEALTH_FLAG_NORMAL,
+    STEALTH_FLAG_TRAP,
+    STEALTH_FLAG_TOTAL
+};
+
+// todo: missing possible cata invisiblility types
+enum InvisibilityFlag
+{
+    INVIS_FLAG_NORMAL,              // Used by players
+    INVIS_FLAG_ELEMENTAL_SPIRIT,    // Shaman totem quests
+    INVIS_FLAG_UNKNOWN_2,           // Used by spell id 24306
+    INVIS_FLAG_TRAP,                // Used by gameobjects only
+    INVIS_FLAG_QUEST_4,             // Used by many quest creatures
+    INVIS_FLAG_DUNGEON_SET_NPC,     // Used by dungeon set 2 npcs
+    INVIS_FLAG_DRUNK,               // These can only be seen when drunk
+    INVIS_FLAG_QUEST_7,             // Used by many quest creatures
+    INVIS_FLAG_QUEST_8,             // Used by many quest creatures
+    INVIS_FLAG_QUEST_9,             // Used by many quest creatures
+    INVIS_FLAG_QUEST_10,            // Used by many quest creatures
+    INVIS_FLAG_UNKNOWN_11,          // Used by spell id 49962
+    INVIS_FLAG_UNUSED_12,
+    INVIS_FLAG_UNUSED_13,
+    INVIS_FLAG_UNUSED_14,
+    INVIS_FLAG_NEVER_VISIBLE,       // Used by trigger or placeholder npcs
+    INVIS_FLAG_TOTAL
+};
+
+// MIT End
+// APGL Start
+
 enum DeathState
 {
     ALIVE = 0,  // Unit is alive and well
@@ -808,23 +843,6 @@ enum HitStatus
 
     HITSTATUS_ABSORBED          = HITSTATUS_ABSORB_FULL | HITSTATUS_ABSORB_PARTIAL,
     HITSTATUS_RESIST            = HITSTATUS_RESIST_FULL | HITSTATUS_RESIST_PARTIAL
-};
-
-enum INVIS_FLAG
-{
-    INVIS_FLAG_NORMAL, // players and units with no special invisibility flags
-    INVIS_FLAG_SPIRIT1,
-    INVIS_FLAG_SPIRIT2,
-    INVIS_FLAG_TRAP,
-    INVIS_FLAG_QUEST,
-    INVIS_FLAG_GHOST,
-    INVIS_FLAG_UNKNOWN6,
-    INVIS_FLAG_UNKNOWN7,
-    INVIS_FLAG_SHADOWMOON,
-    INVIS_FLAG_NETHERSTORM,
-    INVIS_FLAG_BASHIR,
-    INVIS_FLAG_UNKNOWN8,
-    INVIS_FLAG_TOTAL
 };
 
 enum FIELD_PADDING//Since this field isn't used you can expand it for you needs

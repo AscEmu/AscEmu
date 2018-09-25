@@ -159,7 +159,7 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         /// we cannot attack shealthed units. Maybe checked in other places too ?
         /// !! warning, this presumes that objA is attacking ObjB
         /// Capt: Added the possibility to disregard this (regarding the spell class)
-        if (static_cast< Unit* >(objB)->IsStealth() && CheckStealth)
+        if (static_cast< Unit* >(objB)->isStealthed() && CheckStealth)
             return false;
     }
 

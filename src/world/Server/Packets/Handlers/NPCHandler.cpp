@@ -252,7 +252,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
         if (creature->GetAIInterface())
             creature->GetAIInterface()->StopMovement(30000);
 
-        if (GetPlayer()->IsStealth())
+        if (GetPlayer()->isStealthed())
             GetPlayer()->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
 
         GetPlayer()->Reputation_OnTalk(creature->m_factionEntry);

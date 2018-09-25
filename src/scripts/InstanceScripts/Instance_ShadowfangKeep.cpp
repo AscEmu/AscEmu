@@ -331,7 +331,7 @@ public:
             // Make him hidden
             case CN_ARUGAL:
             {
-                pCreature->SetInvisFlag(INVIS_FLAG_TOTAL);
+                pCreature->setVisible(false);
             }break;
             case CN_BLEAK_WORG:
             case CN_SLAVERING_WORG:
@@ -398,7 +398,7 @@ class ArugalAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    getCreature()->SetInvisFlag(INVIS_FLAG_NORMAL);
+                    getCreature()->setVisible(true);
                     getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
@@ -451,7 +451,7 @@ class ArugalAI : public CreatureAIScript
                 {
                     getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
-                    getCreature()->SetInvisFlag(INVIS_FLAG_TOTAL);
+                    getCreature()->setVisible(false);
                     RemoveAIUpdateEvent();
                 }break;
             }
