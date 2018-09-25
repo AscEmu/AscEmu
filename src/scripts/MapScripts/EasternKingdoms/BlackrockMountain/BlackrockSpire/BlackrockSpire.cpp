@@ -11,7 +11,7 @@ class BlackrockSpire : public InstanceScript
 {
 public:
 
-    BlackrockSpire(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackrockSpire(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

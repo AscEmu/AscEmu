@@ -10,7 +10,7 @@ class VaultOfArchavon : public InstanceScript
 {
 public:
 
-    VaultOfArchavon(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit VaultOfArchavon(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

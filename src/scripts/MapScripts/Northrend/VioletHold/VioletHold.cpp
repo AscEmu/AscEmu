@@ -10,7 +10,7 @@ class VioletHold : public InstanceScript
 {
 public:
 
-    VioletHold(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit VioletHold(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         addData(608, NotStarted);
     }

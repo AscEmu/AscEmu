@@ -11,7 +11,7 @@ class RazorfenKraul : public InstanceScript
 {
 public:
 
-    RazorfenKraul(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit RazorfenKraul(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -10,7 +10,7 @@ class PitOfSaron : public InstanceScript
 {
 public:
 
-    PitOfSaron(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit PitOfSaron(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

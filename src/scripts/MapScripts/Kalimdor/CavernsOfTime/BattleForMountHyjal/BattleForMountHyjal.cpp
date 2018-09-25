@@ -11,7 +11,7 @@ class BattleForMountHyjal : public InstanceScript
 {
 public:
 
-    BattleForMountHyjal(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BattleForMountHyjal(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

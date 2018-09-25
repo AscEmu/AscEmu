@@ -43,7 +43,7 @@ static Movement::Location Guards[] =
 //{
 //    public:
 //
-//        DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+//        explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //        {
 //            mFactoryDoor_GUID = 0;
 //            mDefiasCannon_GUID = 0;

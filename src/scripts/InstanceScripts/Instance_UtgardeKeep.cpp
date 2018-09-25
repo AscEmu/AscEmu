@@ -49,7 +49,7 @@ public:
 
     uint32 mUtgardeData[UTGARDE_DATA_END];
 
-    UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         mKelesethGUID = 0;
         mSkarvaldGUID = 0;

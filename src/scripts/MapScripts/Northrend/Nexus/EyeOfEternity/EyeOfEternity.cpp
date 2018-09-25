@@ -10,7 +10,7 @@ class EyeOfEternity : public InstanceScript
 {
 public:
 
-    EyeOfEternity(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit EyeOfEternity(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

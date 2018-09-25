@@ -29,7 +29,7 @@ public:
 
     uint8 mStatueCount;
 
-    GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         mSladranAltarGUID = 0;
         mSladranStatueGUID = 0;

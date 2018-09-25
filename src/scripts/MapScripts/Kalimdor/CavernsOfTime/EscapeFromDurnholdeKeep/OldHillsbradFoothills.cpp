@@ -11,7 +11,7 @@ class OldHillsbradFoothills : public InstanceScript
 {
 public:
 
-    OldHillsbradFoothills(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit OldHillsbradFoothills(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

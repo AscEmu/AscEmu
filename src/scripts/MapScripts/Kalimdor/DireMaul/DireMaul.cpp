@@ -11,7 +11,7 @@ class DireMaul : public InstanceScript
 {
 public:
 
-    DireMaul(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit DireMaul(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -10,7 +10,7 @@ class BlackTemple : public InstanceScript
 {
 public:
 
-    BlackTemple(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackTemple(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

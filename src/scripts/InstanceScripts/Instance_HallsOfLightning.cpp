@@ -45,7 +45,7 @@ public:
     uint32 mIonarDoors1GUID;
     uint32 mIonarDoors2GUID;
 
-    HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         mGeneralDoorsGUID = 0;
         mVolkhanDoorsGUID = 0;

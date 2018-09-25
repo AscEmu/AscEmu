@@ -10,7 +10,7 @@ class UtgardeKeep : public InstanceScript
 {
 public:
 
-    UtgardeKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit UtgardeKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

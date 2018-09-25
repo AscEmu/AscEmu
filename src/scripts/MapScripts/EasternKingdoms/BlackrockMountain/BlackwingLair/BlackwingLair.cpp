@@ -11,7 +11,7 @@ class BlackwingLair : public InstanceScript
 {
 public:
 
-    BlackwingLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackwingLair(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

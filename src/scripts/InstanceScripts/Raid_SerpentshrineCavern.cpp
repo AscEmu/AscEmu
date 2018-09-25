@@ -2156,7 +2156,7 @@ public:
     // Console & Bridge parts
     uint32 mBridgePart[3];
 
-    SerpentshrineCavern(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SerpentshrineCavern(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8 i = 0; i < 3; ++i)
             mBridgePart[i] = 0;

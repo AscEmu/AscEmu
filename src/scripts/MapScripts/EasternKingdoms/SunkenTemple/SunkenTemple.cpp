@@ -11,7 +11,7 @@ class SunkenTemple : public InstanceScript
 {
 public:
 
-    SunkenTemple(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SunkenTemple(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

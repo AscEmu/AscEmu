@@ -11,7 +11,7 @@ class SethekkHalls : public InstanceScript
 {
 public:
 
-    SethekkHalls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SethekkHalls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -11,7 +11,7 @@ class ShadowfangKeep : public InstanceScript
 {
 public:
 
-    ShadowfangKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ShadowfangKeep(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

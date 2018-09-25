@@ -10,7 +10,7 @@ class HellfireRamparts : public InstanceScript
 {
 public:
 
-    HellfireRamparts(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit HellfireRamparts(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

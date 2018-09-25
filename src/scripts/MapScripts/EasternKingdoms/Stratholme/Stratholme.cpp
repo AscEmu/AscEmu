@@ -11,7 +11,7 @@ class Stratholme : public InstanceScript
 {
 public:
 
-    Stratholme(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Stratholme(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

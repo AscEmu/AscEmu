@@ -10,7 +10,7 @@ class TrialOfTheChampion : public InstanceScript
 {
 public:
 
-    TrialOfTheChampion(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TrialOfTheChampion(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -10,7 +10,7 @@ class Oculus : public InstanceScript
 {
 public:
 
-    Oculus(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Oculus(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

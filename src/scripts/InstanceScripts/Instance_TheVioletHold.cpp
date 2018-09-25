@@ -37,7 +37,7 @@ class TheVioletHoldScript : public InstanceScript
 
 public:
 
-    TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8 i = 0; i < TVH_END; ++i)
             m_phaseData[i] = NotStarted;
