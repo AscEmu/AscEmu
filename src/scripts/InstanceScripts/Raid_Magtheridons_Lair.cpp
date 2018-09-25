@@ -442,7 +442,7 @@ class ManticronCubeGO : public GameObjectAIScript
 {
 public:
 
-    ManticronCubeGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
+    explicit ManticronCubeGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     {
         CubeTrigger = NULL;
         MagYell = false;

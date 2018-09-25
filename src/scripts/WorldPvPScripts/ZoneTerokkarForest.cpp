@@ -88,10 +88,9 @@ enum BannerStatus
 
 class TerokkarForestBannerAI : public GameObjectAIScript
 {
-
 public:
 
-    TerokkarForestBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+    explicit TerokkarForestBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
         map<uint32, uint32> StoredPlayers;
         uint32 Status;

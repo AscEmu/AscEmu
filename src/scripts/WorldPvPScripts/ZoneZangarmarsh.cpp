@@ -146,7 +146,7 @@ class ZangarmarshBannerAI : public GameObjectAIScript
 
 public:
 
-    ZangarmarshBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+    explicit ZangarmarshBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
         m_bannerStatus = BANNER_STATUS_NEUTRAL;
         Status = 50;
