@@ -821,12 +821,12 @@ void LfgMgr::OfferContinue(Group* grp)
     if (grp)
     {
         uint64 gguid = grp->GetGUID();
-        if (Player* leader = objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)))
+        if (Player* leader = objmgr.GetPlayer(grp->GetLeader()->guid))
         {
             leader->GetSession()->SendLfgOfferContinue(GetDungeon(gguid, false));
         }
 
-        LOG_DEBUG("player %u ", objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)));
+        LOG_DEBUG("player %u ", objmgr.GetPlayer(grp->GetLeader()->guid));
     }
 }
 
@@ -866,8 +866,16 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         return false;
     }
 
-    if (check.size() == 1 && IS_PLAYER_GUID(check.front())) // Player joining dungeon... compatible
-        return true;
+    if (check.size() == 1)
+    {
+        WoWGuid wowGuid;
+        wowGuid.Init(check.front());
+
+        if (wowGuid.isPlayer())
+        {
+            return true;
+        }
+    }
 
     // Previously cached?
     LfgAnswer answer = GetCompatibles(strGuids);

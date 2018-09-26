@@ -1667,7 +1667,10 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
     if (plr == nullptr)
         return true;
 
-    Creature* target = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(plr->GetSelection()));
+    WoWGuid wowGuid;
+    wowGuid.Init(plr->GetSelection());
+
+    Creature* target = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
 
     if (target == nullptr)
         return true;
@@ -1726,7 +1729,10 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
 
     Player* plr = pSpell->p_caster;
 
-    Creature* target = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(plr->GetSelection()));
+    WoWGuid wowGuid;
+    wowGuid.Init(plr->GetSelection());
+
+    Creature* target = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (target == nullptr)
         return true;
 
@@ -2178,7 +2184,10 @@ bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr || qle->GetMobCount(0) >= qle->GetQuest()->required_mob_or_go_count[0])
         return true;
 
-    Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
+    WoWGuid wowGuid;
+    wowGuid.Init(pPlayer->GetSelection());
+
+    Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (pTarget == nullptr)
         return true;
 
@@ -2848,7 +2857,10 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
+
+    WoWGuid wowGuid;
+    wowGuid.Init(pPlayer->GetSelection());
+    Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
 
     if (pTarget == nullptr)
         return true;
@@ -2890,7 +2902,9 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Player* plr = pSpell->p_caster;
-    Creature* target = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(plr->GetSelection()));
+    WoWGuid wowGuid;
+    wowGuid.Init(plr->GetSelection());
+    Creature* target = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
 
     if (target == nullptr)
         return true;
@@ -2946,8 +2960,10 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Player* plr = pSpell->p_caster;
+    WoWGuid wowGuid;
+    wowGuid.Init(plr->GetSelection());
 
-    Creature* target = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(plr->GetSelection()));
+    Creature* target = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (target == nullptr)
         return true;
 

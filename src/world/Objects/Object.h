@@ -85,9 +85,6 @@ enum CurrentSpellType : uint8_t
     CURRENT_SPELL_MAX
 };
 
-#define GET_LOWGUID_PART(x) (Arcemu::Util::GUID_LOPART((x)) & LOWGUID_ENTRY_MASK)
-#define IS_PLAYER_GUID(Guid) (Arcemu::Util::GUID_HIPART((Guid)) == HIGHGUID_TYPE_PLAYER && Guid != 0)
-
 #define MAX_INTERACTION_RANGE 5.0f
 
 typedef struct

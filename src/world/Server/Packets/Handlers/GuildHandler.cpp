@@ -1391,10 +1391,13 @@ void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
     recv_data.ReadByteSeq(playerGuid[0]);
     recv_data.ReadByteSeq(playerGuid[6]);
 
-    if (!IS_PLAYER_GUID(playerGuid))
+    WoWGuid wowGuid;
+    wowGuid.Init(playerGuid);
+
+    if (!wowGuid.isPlayer())
         return;
 
-    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(playerGuid), GetPlayer()->getGuildId());
+    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), GetPlayer()->getGuildId());
 }
 
 void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
