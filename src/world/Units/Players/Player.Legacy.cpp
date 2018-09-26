@@ -8812,7 +8812,10 @@ void Player::DuelBoundaryTest()
     if (!IsInWorld())
         return;
 
-    GameObject* pGameObject = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter()));
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
+    GameObject* pGameObject = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
     if (!pGameObject)
     {
         EndDuel(DUEL_WINNER_RETREAT);
@@ -8861,12 +8864,15 @@ void Player::DuelBoundaryTest()
 
 void Player::EndDuel(uint8 WinCondition)
 {
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
     if (m_duelState == DUEL_STATE_FINISHED)
     {
         //if loggingout player requested a duel then we have to make the cleanups
-        if (GET_LOWGUID_PART(getDuelArbiter()))
+        if (wowGuid.getGuidLowPart())
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
+            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
 
             if (arbiter != nullptr)
             {
@@ -8937,7 +8943,7 @@ void Player::EndDuel(uint8 WinCondition)
 
     //Clear Duel Related Stuff
 
-    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
+    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
 
     if (arbiter != nullptr)
     {

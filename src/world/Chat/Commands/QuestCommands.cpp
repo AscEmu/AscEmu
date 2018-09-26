@@ -310,7 +310,10 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
                     for (size_t guid = 1; guid < plr->GetMapMgr()->CreatureStorage.size(); guid++)
                     {
-                        Creature* pCreature = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+                        WoWGuid wowGuid;
+                        wowGuid.Init(guid);
+
+                        Creature* pCreature = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
                         if (pCreature)
                         {
                             if (pCreature->getEntry() == giver_id) //found creature

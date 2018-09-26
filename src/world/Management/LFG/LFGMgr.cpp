@@ -178,7 +178,11 @@ void LfgMgr::Update(uint32 diff)
         {
             uint64 guid = itRoles->first;
             ClearState(guid);
-            if (Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(guid)))
+
+            WoWGuid wowGuid;
+            wowGuid.Init(guid);
+
+            if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
             {
                 player->GetSession()->SendLfgRoleCheckUpdate(roleCheck);
 
@@ -212,7 +216,10 @@ void LfgMgr::Update(uint32 diff)
             pBoot->inProgress = false;
             for (LfgAnswerMap::const_iterator itVotes = pBoot->votes.begin(); itVotes != pBoot->votes.end(); ++itVotes)
             {
-                if (Player* plrg = objmgr.GetPlayer(GET_LOWGUID_PART(itVotes->first)))
+                WoWGuid wowGuid;
+                wowGuid.Init(itVotes->first);
+
+                if (Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     if (plrg->getGuid() != pBoot->victim)
                     {
@@ -257,7 +264,11 @@ void LfgMgr::Update(uint32 diff)
                 {
                     guid = itPlayers->first;
                     SetState(guid, LFG_STATE_PROPOSAL);
-                    if (Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(itPlayers->first)))
+
+                    WoWGuid wowGuid;
+                    wowGuid.Init(itPlayers->first);
+
+                    if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
                     {
                         Group* grp = player->GetGroup();
                         if (grp)
@@ -337,7 +348,10 @@ void LfgMgr::Update(uint32 diff)
 
             for (LfgRolesMap::const_iterator itPlayer = queue->roles.begin(); itPlayer != queue->roles.end(); ++itPlayer)
             {
-                if (Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(itPlayer->first)))
+                WoWGuid wowGuid;
+                wowGuid.Init(itPlayer->first);
+
+                if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     player->GetSession()->SendLfgQueueStatus(dungeonId, waitTime, m_WaitTimeAvg, m_WaitTimeTank, m_WaitTimeHealer, m_WaitTimeDps, queuedTime, queue->tanks, queue->healers, queue->dps);
                 }
@@ -897,9 +911,12 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         pqInfoMap[guid] = itQueue->second;
         numPlayers += static_cast<uint8>(itQueue->second->roles.size());
 
-        if (IS_GROUP(guid))
+        WoWGuid wowGuid;
+        wowGuid.Init(guid);
+
+        if (wowGuid.isGroup())
         {
-            uint32 lowGuid = GET_LOWGUID_PART(guid);
+            uint32 lowGuid = wowGuid.getGuidLowPart();
             if (Group* grp = objmgr.GetGroupById(lowGuid))  //MAy Check these
             {
                 if (grp->isLFGGroup())
@@ -959,7 +976,10 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     PlayerSet players;
     for (LfgRolesMap::const_iterator it = rolesMap.begin(); it != rolesMap.end(); ++it)
     {
-        Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(it->first));
+        WoWGuid wowGuid;
+        wowGuid.Init(it->first);
+
+        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!player)
         {
             LOG_DEBUG("(%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
@@ -1050,7 +1070,10 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 
                 for (LfgRolesMap::const_iterator itPlayer = queue->roles.begin(); itPlayer != queue->roles.end(); ++itPlayer)
                 {
-                    if (*itPlayers == objmgr.GetPlayer(GET_LOWGUID_PART(itPlayer->first)))
+                    WoWGuid wowGuid;
+                    wowGuid.Init(itPlayer->first);
+
+                    if (*itPlayers == objmgr.GetPlayer(wowGuid.getGuidLowPart()))
                     {
                         queue->tanks = Tanks_Needed;
                         queue->healers = Healers_Needed;
@@ -1156,7 +1179,10 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
     for (LfgRolesMap::const_iterator it = roleCheck->roles.begin(); it != roleCheck->roles.end(); ++it)
     {
         uint64 pguid = it->first;
-        Player* plrg = objmgr.GetPlayer(GET_LOWGUID_PART(pguid));
+        WoWGuid wowGuid;
+        wowGuid.Init(it->first);
+
+        Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!plrg)
         {
             if (roleCheck->state == LFG_ROLECHECK_FINISHED)
@@ -1372,7 +1398,10 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
     bool allAnswered = true;
     for (LfgProposalPlayerMap::const_iterator itPlayers = pProposal->players.begin(); itPlayers != pProposal->players.end(); ++itPlayers)
     {
-        if (Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(itPlayers->first)))
+        WoWGuid wowGuid;
+        wowGuid.Init(itPlayers->first);
+
+        if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
         {
             if (itPlayers->first == pProposal->leader)
                 players.push_front(player);
@@ -1405,7 +1434,10 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         for (LfgPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
         {
             LfgProposalPlayer* player = pProposal->players[(*it)->getGuid()];
-            uint32 lowgroupguid = (*it)->GetGroup() ? GET_LOWGUID_PART((*it)->GetGroup()->GetGUID()) : 0;
+
+            WoWGuid wowGuid;
+            wowGuid.Init((*it)->GetGroup()->GetGUID());
+            uint32 lowgroupguid = (*it)->GetGroup() ? wowGuid.getGuidLowPart() : 0;
             if (player->groupLowGuid != lowgroupguid)
                 LOG_DEBUG("%u group mismatch: actual (%u) - queued (%u)", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
 
@@ -1563,7 +1595,10 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
     // Notify players
     for (LfgProposalPlayerMap::const_iterator it = pProposal->players.begin(); it != pProposal->players.end(); ++it)
     {
-        Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(it->first));
+        WoWGuid wowGuid;
+        wowGuid.Init(it->first);
+
+        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!player)
             continue;
 
@@ -1719,10 +1754,14 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
         for (LfgAnswerMap::const_iterator itVotes = pBoot->votes.begin(); itVotes != pBoot->votes.end(); ++itVotes)
         {
             uint64 pguid = itVotes->first;
+
+            WoWGuid wowGuid;
+            wowGuid.Init(itVotes->first);
+
             if (pguid != pBoot->victim)
             {
                 SetState(pguid, LFG_STATE_DUNGEON);
-                if (Player* plrg = objmgr.GetPlayer(GET_LOWGUID_PART(pguid)))
+                if (Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     plrg->GetSession()->SendLfgBootPlayer(pBoot);
                 }
@@ -2219,7 +2258,11 @@ void LfgMgr::ClearState(uint64 guid)
 void LfgMgr::SetState(uint64 guid, LfgState state)
 {
     LOG_DEBUG("%u state %u", guid, state);
-    if (IS_GROUP(guid))
+
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    if (wowGuid.isGroup())
         m_Groups[guid].SetState(state);
     else
         m_Players[guid].SetState(state);

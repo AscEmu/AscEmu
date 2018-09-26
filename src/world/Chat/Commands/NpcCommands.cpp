@@ -824,18 +824,20 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
 bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
 {
 #if VERSION_STRING != Cata
-    char* pitem = strtok((char*)args, " ");
+    char* pitem = strtok(const_cast<char*>(args), " ");
     if (!pitem)
         return false;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+
+    if (wowGuid.GetOldGuid() == 0)
     {
         SystemMessage(m_session, "No selection.");
         return true;
     }
 
-    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");
@@ -845,7 +847,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     uint32 item = atoi(pitem);
     int amount = -1;
 
-    char* pamount = strtok(NULL, " ");
+    char* pamount = strtok(nullptr, " ");
     if (pamount)
         amount = atoi(pamount);
 
@@ -856,12 +858,12 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     }
 
     uint32 costid = 0;
-    char* pcostid = strtok(NULL, " ");
+    char* pcostid = strtok(nullptr, " ");
     if (pcostid)
         costid = atoi(pcostid);
 
-    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
-    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == NULL)
+    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : nullptr;
+    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == nullptr)
     {
         SystemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
