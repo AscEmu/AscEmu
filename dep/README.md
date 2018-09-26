@@ -2,6 +2,10 @@
 
 # Opensource software in this folder:
 
+## Folder: UTF8-CPP
+- Web: https://github.com/nemtrif/utfcpp
+- Version: 2.3.4
+
 ## Folder: recastnavigation
 - Web: https://github.com/memononen/recastnavigation
 - Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  

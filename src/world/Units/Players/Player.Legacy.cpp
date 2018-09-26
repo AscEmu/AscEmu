@@ -9243,6 +9243,8 @@ void Player::EventTeleportTaxi(uint32 mapid, float x, float y, float z)
 
 void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
 {
+    //\todo check utf8 and cyrillic chars
+
     ARCEMU_ASSERT(Info != NULL);
 
     // Apply level

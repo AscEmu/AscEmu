@@ -40,6 +40,7 @@ add_definitions(-DHAVE_CONFIG_H  )
 mark_as_advanced(
     ZLIB_LIBRARIES
     ZLIB_INCLUDE_DIRS
+    utf8cpp_LIBRARIES
     PCRE_LIBRARIES
     PCRE_INCLUDE_DIR
     OPENSSL_LIBRARIES

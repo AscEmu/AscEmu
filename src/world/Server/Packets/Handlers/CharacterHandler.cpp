@@ -579,6 +579,8 @@ void WorldSession::sendServerStats()
 
 void WorldSession::fullLogin(Player* player)
 {
+    //\todo check utf8 and cyrillic chars
+
     LogDebug("WorldSession : Fully loading player %u", player->getGuidLow());
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -723,6 +725,9 @@ void WorldSession::fullLogin(Player* player)
 
 void WorldSession::handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket)
 {
+    // sch: 12 characters/letters
+    //      if the RU server - then only Cyrillic, without punctuation and other.
+
     CmsgSetPlayerDeclinedNames recv_packet;
     if (!recv_packet.deserialise(recvPacket))
         return;

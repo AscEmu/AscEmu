@@ -1328,6 +1328,8 @@ void WorldSession::Disconnect()
 //\todo replace leftovers from legacy CharacterHandler.cpp file
 CharacterErrorCodes VerifyName(const char* name, size_t nlen)
 {
+    //\todo check utf8 and cyrillic chars
+
     const char* p;
     size_t i;
 

@@ -560,6 +560,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 void Player::SendInitialLogonPackets()
 {
     // SMSG_SET_REST_START
+
+    //\todo check utf8 and cyrillic chars
+
     m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff); // Seem to be unused by client
 
     m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
