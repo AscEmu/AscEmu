@@ -1,109 +1,32 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2009-2010 ArcEmu Team <http://www.arcemu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
 
-
-class HallsOfLightningScript : public InstanceScript
+enum 
 {
-    public:
-        uint32        mGeneralDoorsGUID;
-        uint32        mVolkhanDoorsGUID;
-        uint32        mLokenDoorsGUID;
-        uint32        mIonarDoors1GUID;
-        uint32        mIonarDoors2GUID;
+    // Main Spells
+    SPELL_TEMPER = 52238,
 
-        HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-        {
-            mGeneralDoorsGUID = 0;
-            mVolkhanDoorsGUID = 0;
-            mLokenDoorsGUID = 0;
-            mIonarDoors1GUID = 0;
-            mIonarDoors2GUID = 0;
-        }
+    // Molten Golem Spells
+    SPELL_BLAST_WAVE = 23113,
+    // 24 seconds + up to 6
+    TIMER_STOMP = 24000,
 
-        static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
+    DISPRESE = 52770,
+    SPELL_SUMMON_SPARK = 52746,
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject) override
-        {
-            switch (pGameObject->getEntry())
-            {
-                case GO_GENERAL_DOORS:
-                    mGeneralDoorsGUID = pGameObject->getGuidLow();
-                    break;
-                case GO_VOLKHAN_DOORS:
-                    mVolkhanDoorsGUID = pGameObject->getGuidLow();
-                    break;
-                case GO_LOKEN_DOORS:
-                    mLokenDoorsGUID = pGameObject->getGuidLow();
-                    break;
-                case GO_IONAR_DOORS1:
-                    mIonarDoors1GUID = pGameObject->getGuidLow();
-                    break;
-                case GO_IONAR_DOORS2:
-                    mIonarDoors2GUID = pGameObject->getGuidLow();
-                    break;
-            }
-        }
+    PULSING_SHOCKWAVE_AURA = 59414,
+    ARC_LIGHTNING = 52921,
+    // 14 seconds + random up to 8
+    TIMER_NOVA = 14000,
+    TIMER_RESPOND = 18000,
 
-        void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
-        {
-            GameObject* pDoors = NULL;
-            switch (pVictim->getEntry())
-            {
-                case CN_GENERAL_BJARNGRIM:
-                {
-                    pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
-                    if (pDoors)
-                        pDoors->setState(GO_STATE_OPEN);
-                }
-                break;
-                case CN_VOLKHAN:
-                {
-                    pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
-                    if (pDoors)
-                        pDoors->setState(GO_STATE_OPEN);
-                }
-                break;
-                case CN_LOKEN:
-                {
-                    pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
-                    if (pDoors)
-                        pDoors->setState(GO_STATE_OPEN);
-                }
-                break;
-                case CN_IONAR:
-                {
-                    pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
-                    if (pDoors)
-                        pDoors->setState(GO_STATE_OPEN);
-
-                    pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
-                    if (pDoors)
-                        pDoors->setState(GO_STATE_OPEN);
-                }
-                break;
-            }
-        }
+    TIMER_STANCE_CHANGE = 18000,
 };
-
-const uint32 TIMER_STANCE_CHANGE = 18000;
 
 enum GENERAL_STANCES
 {
@@ -112,10 +35,94 @@ enum GENERAL_STANCES
     STANCE_DEFENSIVE = 3,
 };
 
+class HallsOfLightningScript : public InstanceScript
+{
+public:
+
+    uint32 mGeneralDoorsGUID;
+    uint32 mVolkhanDoorsGUID;
+    uint32 mLokenDoorsGUID;
+    uint32 mIonarDoors1GUID;
+    uint32 mIonarDoors2GUID;
+
+    explicit HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {
+        mGeneralDoorsGUID = 0;
+        mVolkhanDoorsGUID = 0;
+        mLokenDoorsGUID = 0;
+        mIonarDoors1GUID = 0;
+        mIonarDoors2GUID = 0;
+    }
+
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override
+    {
+        switch (pGameObject->getEntry())
+        {
+            case GO_GENERAL_DOORS:
+                mGeneralDoorsGUID = pGameObject->getGuidLow();
+                break;
+            case GO_VOLKHAN_DOORS:
+                mVolkhanDoorsGUID = pGameObject->getGuidLow();
+                break;
+            case GO_LOKEN_DOORS:
+                mLokenDoorsGUID = pGameObject->getGuidLow();
+                break;
+            case GO_IONAR_DOORS1:
+                mIonarDoors1GUID = pGameObject->getGuidLow();
+                break;
+            case GO_IONAR_DOORS2:
+                mIonarDoors2GUID = pGameObject->getGuidLow();
+                break;
+        }
+    }
+
+    void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
+    {
+        GameObject* pDoors = NULL;
+        switch (pVictim->getEntry())
+        {
+            case CN_GENERAL_BJARNGRIM:
+            {
+                pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
+                if (pDoors)
+                    pDoors->setState(GO_STATE_OPEN);
+            }
+            break;
+            case CN_VOLKHAN:
+            {
+                pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
+                    if (pDoors)
+                        pDoors->setState(GO_STATE_OPEN);
+            }
+            break;
+            case CN_LOKEN:
+            {
+                pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
+                if (pDoors)
+                    pDoors->setState(GO_STATE_OPEN);
+            }
+            break;
+            case CN_IONAR:
+            {
+                pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
+                if (pDoors)
+                    pDoors->setState(GO_STATE_OPEN);
+
+                pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
+                if (pDoors)
+                    pDoors->setState(GO_STATE_OPEN);
+            }
+            break;
+        }
+    }
+};
+
 class GeneralBjarngrimAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
-    GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Battle Stance
         auto mortalStrike = addAISpell(SPELL_MORTAL_STRIKE, 25.0f, TARGET_ATTACKING, 0, 5);
@@ -204,24 +211,15 @@ class GeneralBjarngrimAI : public CreatureAIScript
         }
     }
 
-    private:
+private:
 
-        int32 mStanceTimer;
+    int32 mStanceTimer;
 };
-
-
-// Main Spells
-const uint32 SPELL_TEMPER = 52238;
-
-// Molten Golem Spells
-const uint32 SPELL_BLAST_WAVE = 23113;
-// 24 seconds + up to 6
-const uint32 TIMER_STOMP = 24000;
 
 class Volkhan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
-    Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -339,11 +337,10 @@ class Volkhan : public CreatureAIScript
     int32 mPhase;
 };
 
-
 class MoltenGolem : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
-    MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
 
@@ -360,22 +357,20 @@ class MoltenGolem : public CreatureAIScript
     }
 };
 
-
 class BrittleGolem : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem);
-    BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         setRooted(true);
     }
 };
 
-
 class VolkhansAnvil : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil);
-    VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -384,14 +379,11 @@ class VolkhansAnvil : public CreatureAIScript
 
 };
 
-const uint32 DISPRESE = 52770;;
-const uint32 SPELL_SUMMON_SPARK = 52746;
-
 //\todo missing spark phase
 class IonarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
-    IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
         {
@@ -412,17 +404,10 @@ class IonarAI : public CreatureAIScript
     }
 };
 
-
-const uint32 PULSING_SHOCKWAVE_AURA = 59414;
-const uint32 ARC_LIGHTNING = 52921;
-// 14 seconds + random up to 8
-const uint32 TIMER_NOVA = 14000;
-const uint32 TIMER_RESPOND = 18000;
-
 class LokenAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
-    LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
             mNova = addAISpell(59835, 0.0f, TARGET_SELF, 4, 0);

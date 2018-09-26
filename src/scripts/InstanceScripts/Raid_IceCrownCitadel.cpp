@@ -46,88 +46,87 @@ enum IceCrown_Encounters
 //IceCrownCitadel Instance
 class IceCrownCitadelScript : public InstanceScript
 {
-    public:
+public:
 
-        IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {
+        if (getData(CN_LORD_MARROWGAR) == Finished)
         {
-            if (getData(CN_LORD_MARROWGAR) == Finished)
+            setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_CLOSED);    // Icewall 1
+            setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_CLOSED);    // Icewall 2
+            setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_CLOSED);         // Door
+        }
+
+        // test timers
+        addTimer(75000);
+        addTimer(5000);
+        addTimer(35000);
+    }
+
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
+
+    void UpdateEvent() override
+    {
+    }
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override
+    {
+        // Gos which are not visible by killing a boss needs a second check...
+        if (getData(CN_LORD_MARROWGAR) == Finished)
+        {
+            setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_OPEN);    // Icewall 1
+            setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_OPEN);    // Icewall 2
+            setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
+        }
+
+        switch (pGameObject->getEntry())
+        {
+            case GO_TELE_1:
+            case GO_TELE_2:
+            case GO_TELE_3:
+            case GO_TELE_4:
+            case GO_TELE_5:
             {
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_CLOSED);    // Icewall 1
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_CLOSED);    // Icewall 2
-                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_CLOSED);         // Door
-            }
-
-            //test timers
-            addTimer(75000);
-            addTimer(5000);
-            addTimer(35000);
+                pGameObject->setFlags(GO_FLAG_NONE);
+            } break;
         }
+    }
 
-        static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
-
-        void UpdateEvent() override
+    void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
+    {
+        switch (pCreature->getEntry())
         {
-        }
-
-        void OnGameObjectPushToWorld(GameObject* pGameObject) override
-        {
-            // Gos which are not visible by killing a boss needs a second check...
-            if (getData(CN_LORD_MARROWGAR) == Finished)
+            case CN_LORD_MARROWGAR:
             {
                 setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_OPEN);    // Icewall 1
                 setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_OPEN);    // Icewall 2
                 setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
-            }
-
-            switch (pGameObject->getEntry())
-            {
-                case GO_TELE_1:
-                case GO_TELE_2:
-                case GO_TELE_3:
-                case GO_TELE_4:
-                case GO_TELE_5:
-                {
-                    pGameObject->setFlags(GO_FLAG_NONE);
-                } break;
-            }
+            }break;
+            default:
+            break;
         }
+    }
 
-        void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
+    void OnPlayerEnter(Player* player) override
+    {
+        if (!spawnsCreated())
         {
-            switch (pCreature->getEntry())
+            // setup only the npcs with the correct team...
+            switch (player->GetTeam())
             {
-                case CN_LORD_MARROWGAR:
-                {
-                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_OPEN);    // Icewall 1
-                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_OPEN);    // Icewall 2
-                    setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
-                }break;
-                default:
+                case TEAM_ALLIANCE:
+                    for (uint8 i = 0; i < 13; i++)
+                        spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
+                    break;
+                case TEAM_HORDE:
+                    for (uint8 i = 0; i < 13; i++)
+                        spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
+
+            setSpawnsCreated();
         }
-
-        void OnPlayerEnter(Player* player) override
-        {
-            if (!spawnsCreated())
-            {
-                // setup only the npcs with the correct team...
-                switch (player->GetTeam())
-                {
-                    case TEAM_ALLIANCE:
-                        for (uint8 i = 0; i < 13; i++)
-                            spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
-                        break;
-                    case TEAM_HORDE:
-                        for (uint8 i = 0; i < 13; i++)
-                            spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
-                        break;
-                }
-
-                setSpawnsCreated();
-            }
-        }
-
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +134,7 @@ class IceCrownCitadelScript : public InstanceScript
 class ICCTeleporterGossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* object, Player* player) override
     {
         InstanceScript* pInstance = player->GetMapMgr()->GetScript();
@@ -216,132 +216,131 @@ const uint32 SOUL_FEAST = 71203;       // Needs a script
 
 class LordMarrowgarAI : public CreatureAIScript
 {
-    public:
+public:
 
-        static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
-        LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
+    explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+
+        // examplecode for spell setup
+        auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
+        boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
+        boneslice->setAvailableForScriptPhase({ 2 });
+
+        auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
+        bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
+        bonestorm->setAvailableForScriptPhase({ 4 });
+        bonestorm->setAttackStopTimer(3000);
+
+        auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
+        berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
+        berserk->setMaxStackCount(1);
+        berserk->setMinMaxPercentHp(0, 50);
+        berserk->setAvailableForScriptPhase({ 3, 5 });
+
+        auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
+        souldFest->setAvailableForScriptPhase({ 2 });
+
+        auto bonespike = addAISpell(BONE_SPIKE, 80.0f, TARGET_RANDOM_SINGLE, 10, 30);
+        bonespike->setAnnouncement("Lord Marrowgar is preparing BoneSpike");
+        bonespike->addEmote("bonespike", CHAT_MSG_MONSTER_YELL, 0);
+        bonespike->addDBEmote(925);      // Bound by bone!
+        bonespike->addDBEmote(926);      // Stick around!
+        bonespike->addDBEmote(927);      // The only escape is death!
+        bonespike->setAvailableForScriptPhase({ 2 });
+        bonespike->setMinMaxDistance(10.0f, 500.0f);
+
+        // example for random message on event
+        addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
+        addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
+        addEmoteForEvent(Event_OnTargetDied, 929);      // Languish in damnation!
+        addEmoteForEvent(Event_OnDied, 930);            // I see... Only darkness.
+    }
+
+    void AIUpdate() override
+    {
+    }
+
+    void OnCastSpell(uint32 /*spellId*/) override
+    {
+    }
+
+    void OnHitBySpell(uint32_t pSpellId, Unit* pUnitCaster) override
+    {
+        switch (pSpellId)
         {
-            sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
-
-            // examplecode for spell setup
-            auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
-            boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
-            boneslice->setAvailableForScriptPhase({ 2 });
-
-            auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
-            bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
-            bonestorm->setAvailableForScriptPhase({ 4 });
-            bonestorm->setAttackStopTimer(3000);
-
-            auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
-            berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
-            berserk->setMaxStackCount(1);
-            berserk->setMinMaxPercentHp(0, 50);
-            berserk->setAvailableForScriptPhase({ 3, 5 });
-
-            auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
-            souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
-            souldFest->setAvailableForScriptPhase({ 2 });
-
-            auto bonespike = addAISpell(BONE_SPIKE, 80.0f, TARGET_RANDOM_SINGLE, 10, 30);
-            bonespike->setAnnouncement("Lord Marrowgar is preparing BoneSpike");
-            bonespike->addEmote("bonespike", CHAT_MSG_MONSTER_YELL, 0);
-            bonespike->addDBEmote(925);      // Bound by bone!
-            bonespike->addDBEmote(926);      // Stick around!
-            bonespike->addDBEmote(927);      // The only escape is death!
-            bonespike->setAvailableForScriptPhase({ 2 });
-            bonespike->setMinMaxDistance(10.0f, 500.0f);
-
-            // example for random message on event
-            addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
-            addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
-            addEmoteForEvent(Event_OnTargetDied, 929);      // Languish in damnation!
-            addEmoteForEvent(Event_OnDied, 930);            // I see... Only darkness.
-        }
-
-        void AIUpdate() override
-        {
-        }
-
-        void OnCastSpell(uint32 /*spellId*/) override
-        {
-        }
-
-        void OnHitBySpell(uint32_t pSpellId, Unit* pUnitCaster) override
-        {
-            switch (pSpellId)
+            case 49233:
             {
-                case 49233:
-                {
-                    if (pUnitCaster != nullptr && pUnitCaster->isPlayer())
-                    {
-                        std::stringstream ss;
-                        ss << "Player " << static_cast<Player*>(pUnitCaster)->getName().c_str();
-                        sendAnnouncement(ss.str());
-                    }
-                } break;
-                case 9770:
-                {
-                    if (pUnitCaster != nullptr && pUnitCaster->isPlayer())
-                    {
-                        std::stringstream ss;
-                        ss << static_cast<Player*>(pUnitCaster)->getName().c_str() << " hits me with aura 9770... damnit! ";
-                        sendAnnouncement(ss.str());
-                    }
-                } break;
-                case 9798:
+                if (pUnitCaster != nullptr && pUnitCaster->isPlayer())
                 {
                     std::stringstream ss;
-                    ss << "9798 hit me..... damnit! ";
+                    ss << "Player " << static_cast<Player*>(pUnitCaster)->getName().c_str();
                     sendAnnouncement(ss.str());
-                } break;
-            }
-        }
-
-        // Testcode - remove me please
-        void OnScriptPhaseChange(uint32_t scriptPhase) override
-        {
-            // Testcode - remove me please
-            std::stringstream ss;
-            ss << "My scriptPhase is now " << scriptPhase;
-
-            sendAnnouncement(ss.str());
-
-            switch (scriptPhase)
+                }
+            } break;
+            case 9770:
             {
-                case 1:
-                    despawn(60000, 1000);
-                    break;
-                case 2:
-                    despawn(2000, 10000);
-                    break;
-            }
+                if (pUnitCaster != nullptr && pUnitCaster->isPlayer())
+                {
+                    std::stringstream ss;
+                    ss << static_cast<Player*>(pUnitCaster)->getName().c_str() << " hits me with aura 9770... damnit! ";
+                    sendAnnouncement(ss.str());
+                }
+            } break;
+            case 9798:
+            {
+                std::stringstream ss;
+                ss << "9798 hit me..... damnit! ";
+                sendAnnouncement(ss.str());
+            } break;
         }
+    }
 
-        void OnCombatStart(Unit* /*pTarget*/) override
-        {
-        }
+    // Testcode - remove me please
+    void OnScriptPhaseChange(uint32_t scriptPhase) override
+    {
+        // Testcode - remove me please
+        std::stringstream ss;
+        ss << "My scriptPhase is now " << scriptPhase;
 
-        void OnTargetDied(Unit* /*pTarget*/) override
-        {
-        }
+        sendAnnouncement(ss.str());
 
-        void OnDied(Unit* /*pTarget*/) override
+        switch (scriptPhase)
         {
+            case 1:
+                despawn(60000, 1000);
+                break;
+            case 2:
+                despawn(2000, 10000);
+                break;
         }
+    }
+
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+    }
+
+    void OnTargetDied(Unit* /*pTarget*/) override
+    {
+    }
+
+    void OnDied(Unit* /*pTarget*/) override
+    {
+    }
 };
 
 const uint32 IMPALED = 69065;
 
 class BoneSpikeAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
-        BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
-            getCreature()->Despawn(8000, 0);
-        }
-
+    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
+    explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
+        getCreature()->Despawn(8000, 0);
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

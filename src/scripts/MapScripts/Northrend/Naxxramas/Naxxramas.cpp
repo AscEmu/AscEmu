@@ -10,7 +10,7 @@ class Naxxramas : public InstanceScript
 {
 public:
 
-    Naxxramas(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Naxxramas(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

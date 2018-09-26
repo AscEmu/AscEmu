@@ -17,68 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include "IsleOfConquest.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"
 
-const uint32 IOC_NUM_REINFORCEMENTS = 300;
-const uint32 IOC_POINTS_ON_KILL = 1;
-
-enum IOCGOs
-{
-    IOC_FLAGPOLE = 195131,
-    IOC_TELEPORTER_H_IN = 195313,
-    IOC_TELEPORTER_H_OUT = 195314,
-    IOC_TELEPORTER_A_OUT = 195315,
-    IOC_TELEPORTER_A_IN = 195316,
-    TELEPORTER_EFFECT_A = 195701,
-    TELEPORTER_EFFECT_H = 195702,
-    IOC_DYNAMIC_GATE_HORDE = 195491,
-    IOC_DYNAMIC_GATE_ALLY = 195703
-};
-
-enum IOCSpells
-{
-    IOC_REFINERY_BONUS = 68719,
-    IOC_QUARRY_BONUS = 68720
-};
-
-enum ControlPoints
-{
-    IOC_CONTROL_POINT_REFINERY = 0,
-    IOC_CONTROL_POINT_QUARRY = 1,
-    IOC_CONTROL_POINT_DOCKS = 2,
-    IOC_CONTROL_POINT_HANGAR = 3,
-    IOC_CONTROL_POINT_WORKSHOP = 4,
-    IOC_CONTROL_POINT_ALLIANCE_KEEP = 5,
-    IOC_CONTROL_POINT_HORDE_KEEP = 6
-};
-
-enum GraveYards
-{
-    IOC_GY_DOCKS = 0,
-    IOC_GY_HANGAR = 1,
-    IOC_GY_WORKSHOP = 2,
-    IOC_GY_ALLIANCE_KEEP = 3,
-    IOC_GY_HORDE_KEEP = 4,
-    IOC_GY_ALLIANCE = 5,
-    IOC_GY_HORDE = 6,
-    IOC_GY_NONE = 7
-};
-
 // gameobject faction
-static uint32 g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] = {
+static uint32 g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =
+{
     35,             // neutral
     2,              // alliance assault
-    2,              // alliance     controlled
+    2,              // alliance controlled
     1,              // horde assault
     1               // horde controlled
 };
 
 // Graveyard locations
-static float GraveyardLocations[IOC_NUM_CONTROL_POINTS][4] = {
+static float GraveyardLocations[IOC_NUM_CONTROL_POINTS][4] =
+{
     { 0.0f, 0.0f, 0.0f },           // The Oil Derrick
     { 0.0f, 0.0f, 0.0f },           // The Cobalt Mine
     { 0.0f, 0.0f, 0.0f },           // The Docks
@@ -86,7 +43,8 @@ static float GraveyardLocations[IOC_NUM_CONTROL_POINTS][4] = {
     { 0.0f, 0.0f, 0.0f }            // The Siege Workshop
 };
 
-static const char * ControlPointNames[IOC_NUM_CONTROL_POINTS] = {
+static const char * ControlPointNames[IOC_NUM_CONTROL_POINTS] =
+{
     "Refinery",
     "Quarry",
     "Docks",
@@ -96,7 +54,8 @@ static const char * ControlPointNames[IOC_NUM_CONTROL_POINTS] = {
     "Horde Keep"
 };
 
-static uint32 ControlPointGoIds[IOC_NUM_CONTROL_POINTS][5] = {
+static uint32 ControlPointGoIds[IOC_NUM_CONTROL_POINTS][5] =
+{
     // NEUTRAL    ALLIANCE-ATTACK    HORDE-ATTACK    ALLIANCE-CONTROLLED    HORDE_CONTROLLED
     { 195343,       180085,            180086,         180076,                180078 },        // The Oil Derrick
     { 195338,       180085,            180086,         180076,                180078 },        // The Cobalt Mine
@@ -108,7 +67,8 @@ static uint32 ControlPointGoIds[IOC_NUM_CONTROL_POINTS][5] = {
 };
 
 
-static float ControlPointCoordinates[IOC_NUM_CONTROL_POINTS][4] = {
+static float ControlPointCoordinates[IOC_NUM_CONTROL_POINTS][4] =
+{
     { 1266.01f, -400.78f, 37.62f, 0.16f },          // The Oil Derrick
     { 225.29f, -1189.01f, 8.05f, 0.86f },           // The Cobalt Mine
     { 782.88f, -371.84f, 12.37f, 5.45f },           // The Docks
@@ -119,12 +79,14 @@ static float ControlPointCoordinates[IOC_NUM_CONTROL_POINTS][4] = {
 };
 
 
-static float demolisherSalesmen[2][5] = {
+static float demolisherSalesmen[2][5] =
+{
     {35345, 763.660f, -880.25f , 18.55f, 3.14f},    // Gnomish Mechanic (A)
     {35346, 763.660f, -880.25f , 18.55f, 3.14f}     // Goblin Mechanic  (H)
 };
 
-static float iocTransporterLocation[12][4] = {
+static float iocTransporterLocation[12][4] =
+{
     {399.66f, -798.63f, 49.06f, 4.01f},     // Alliance front gate in
     {313.64f, -775.43f, 49.04f, 4.93f},     // Alliance west gate in
     {323.01f, -888.61f, 48.91f, 4.66f},     // Alliance east gate in
@@ -141,31 +103,36 @@ static float iocTransporterLocation[12][4] = {
 };
 
 
-static float allygatelocations[3][4] = {
+static float allygatelocations[3][4] =
+{
     {352.70269f, -762.66369f, 48.91628f, 4.6866f},          // Alliance West gate
     {412.41436f, -833.83011f, 48.5479f, 3.11868f},         // Alliance Front gate
     {352.54592f, -904.92181f, 48.92093f, 1.57336f},         // Alliance East gate
 };
 
-static float hordegatelocations[3][4] = {
+static float hordegatelocations[3][4] =
+{
     {1151.51562f, -763.4730f, 48.62429f, 3.17145f},         // Horde Front gate
     {1218.54126f, -676.44390f, 48.68709f, 1.53727f},        // Horde West gate
     {1218.35607f, -850.55456f, 48.91478f, 4.77781f}         // Horde East gate
 };
 
-static uint32 allygateids[3] = {
+static uint32 allygateids[3] =
+{
     195698,
     195699,
     195700
 };
 
-static uint32 hordegateids[3] = {
+static uint32 hordegateids[3] =
+{
     195494,
     195495,
     195496
 };
 
-static uint32 AssaultFields[IOC_NUM_CONTROL_POINTS][2] = {
+static uint32 AssaultFields[IOC_NUM_CONTROL_POINTS][2] =
+{
     { WORLDSTATE_IOC_REFINERY_ALLIANCE_ASSAULTED, WORLDSTATE_IOC_REFINERY_HORDE_ASSAULTED },
     { WORLDSTATE_IOC_QUARRY_ALLIANCE_ASSAULTED, WORLDSTATE_IOC_QUARRY_HORDE_ASSAULTED },
     { WORLDSTATE_IOC_DOCKS_ALLIANCE_ASSAULTED, WORLDSTATE_IOC_DOCKS_HORDE_ASSAULTED },                 // The Docks
@@ -175,7 +142,8 @@ static uint32 AssaultFields[IOC_NUM_CONTROL_POINTS][2] = {
     { WORLDSTATE_IOC_HORDE_KEEP_ALLIANCE_ASSAULTED, WORLDSTATE_IOC_HORDE_KEEP_HORDE_ASSAULTED }        // Horde Keep
 };
 
-static uint32 OwnedFields[IOC_NUM_CONTROL_POINTS][2] = {
+static uint32 OwnedFields[IOC_NUM_CONTROL_POINTS][2] =
+{
     { WORLDSTATE_IOC_REFINERY_ALLIANCE_CONTROLLED, WORLDSTATE_IOC_REFINERY_HORDE_CONTROLLED },
     { WORLDSTATE_IOC_QUARRY_ALLIANCE_CONTROLLED, WORLDSTATE_IOC_QUARRY_HORDE_CONTROLLED },
     { WORLDSTATE_IOC_DOCKS_ALLIANCE_CONTROLLED, WORLDSTATE_IOC_DOCKS_HORDE_CONTROLLED },                    // The Docks
@@ -185,7 +153,8 @@ static uint32 OwnedFields[IOC_NUM_CONTROL_POINTS][2] = {
     { WORLDSTATE_IOC_HORDE_KEEP_ALLIANCE_CONTROLLED, WORLDSTATE_IOC_HORDE_KEEP_HORDE_CONTROLLED }           // Horde Keep
 };
 
-static uint32 NeutralFields[IOC_NUM_CONTROL_POINTS] = {
+static uint32 NeutralFields[IOC_NUM_CONTROL_POINTS] =
+{
     WORLDSTATE_IOC_REFINERY_NETURAL,
     WORLDSTATE_IOC_QUARRY_NETURAL,
     WORLDSTATE_IOC_DOCKS_NETURAL,
@@ -195,21 +164,24 @@ static uint32 NeutralFields[IOC_NUM_CONTROL_POINTS] = {
     WORLDSTATE_IOC_HORDE_KEEP_NETURAL
 };
 
-static LocationVector DemolisherLocations[4] = {
+static LocationVector DemolisherLocations[4] =
+{
     LocationVector(743.72f, -852.73f, 12.45f, 1.45f),
     LocationVector(755.54f, -854.18f, 12.44f, 1.45f),
     LocationVector(780.19f, -853.44f, 12.44f, 1.45f),
     LocationVector(790.79f, -854.36f, 12.46f, 1.45f)
 };
 
-static LocationVector DockVehicleLocations[4] = {
+static LocationVector DockVehicleLocations[4] =
+{
     LocationVector(760.84f, -323.156f, 12.63f, 4.75f),
     LocationVector(770.13f, -322.77f, 12.62f, 4.75f),
     LocationVector(780.84f, -323.156f, 12.63f, 4.75f),
     LocationVector(790.13f, -322.77f, 12.62f, 4.75f)
 };
 
-static LocationVector AllyKeepCanons[12] = {
+static LocationVector AllyKeepCanons[12] =
+{
     LocationVector(415.825f, -754.634f, 87.799f, 1.78024f),
     LocationVector(410.142f, -755.332f, 87.7991f, 1.78024f),
     LocationVector(424.33f, -879.352f, 88.0446f, 0.436332f),
@@ -224,7 +196,8 @@ static LocationVector AllyKeepCanons[12] = {
     LocationVector(402.554f, -910.557f, 88.0446f, 4.57276f)
 };
 
-static LocationVector HordeKeepCanons[13] = {
+static LocationVector HordeKeepCanons[13] =
+{
     LocationVector(1158.91f, -660.144f, 87.9332f, 0.750492f),
     LocationVector(1156.22f, -866.809f, 87.8754f, 5.27089f),
     LocationVector(1163.74f, -663.67f, 88.3571f, 0.558505f),
@@ -240,31 +213,36 @@ static LocationVector HordeKeepCanons[13] = {
     LocationVector(1166.13f, -858.391f, 87.9653f, 5.63741f)
 };
 
-static LocationVector AllyGuards[4] = {
+static LocationVector AllyGuards[4] =
+{
     LocationVector(223.969f, -822.958f, 60.8151f, 0.46337f),
     LocationVector(224.211f, -826.952f, 60.8188f, 6.25961f),
     LocationVector(223.119f, -838.386f, 60.8145f, 5.64857f),
     LocationVector(223.889f, -835.102f, 60.8201f, 6.21642f)
 };
 
-static LocationVector HordeGuards[4] = {
+static LocationVector HordeGuards[4] =
+{
     LocationVector(1296.01f, -773.256f, 69.958f, 0.292168f),
     LocationVector(1295.94f, -757.756f, 69.9587f, 6.02165f),
     LocationVector(1295.09f, -760.927f, 69.9587f, 5.94311f),
     LocationVector(1295.13f, -769.7f, 69.95f, 0.34f)
 };
 
-static LocationVector AllyTowerGates[2] = {
+static LocationVector AllyTowerGates[2] =
+{
     LocationVector(401.024f, -780.724f, 49.9482f, -2.52896f),
     LocationVector(399.802f, -885.208f, 50.1939f, 2.516f),
 };
 
-static LocationVector HordeTowerGates[2] = {
+static LocationVector HordeTowerGates[2] =
+{
     LocationVector(1156.89f, -843.998f, 48.6322f, 0.732934f),
     LocationVector(1157.05f, -682.36f, 48.6322f, -0.829132f)
 };
 
-static LocationVector SpiritGuideLocations[IOC_NUM_GRAVEYARDS] = {
+static LocationVector SpiritGuideLocations[IOC_NUM_GRAVEYARDS] =
+{
     LocationVector(629.57f, -279.83f, 11.33f, 0.0f),            // dock
     LocationVector(780.729f, -1103.08f, 135.51f, 2.27f),        // hangar
     LocationVector(775.74f, -652.77f, 9.31f, 4.27f),            // workshop
@@ -277,7 +255,8 @@ static LocationVector SpiritGuideLocations[IOC_NUM_GRAVEYARDS] = {
 
 typedef void (IsleOfConquest::*IOCCaptureEvent)();
 
-static IOCCaptureEvent IOCCaptureEvents[IOC_NUM_CONTROL_POINTS] = {
+static IOCCaptureEvent IOCCaptureEvents[IOC_NUM_CONTROL_POINTS] =
+{
     &IsleOfConquest::EventRefineryCaptured,
     &IsleOfConquest::EventQuarryCaptured,
     &IsleOfConquest::EventDocksCaptured,
@@ -289,7 +268,8 @@ static IOCCaptureEvent IOCCaptureEvents[IOC_NUM_CONTROL_POINTS] = {
 
 #define CALL_CAPTURE_EVENT_FOR( object, id ) (*( object ).*( IOCCaptureEvents[ ( id ) ] ) )();
 
-static uint32 ResourceUpdateIntervals[6] = {
+static uint32 ResourceUpdateIntervals[6] =
+{
     0,
     12000,
     9000,
@@ -298,7 +278,8 @@ static uint32 ResourceUpdateIntervals[6] = {
     1000
 };
 
-static uint32 cptogy[IOC_NUM_CONTROL_POINTS] = {
+static uint32 cptogy[IOC_NUM_CONTROL_POINTS] =
+{
     IOC_GY_NONE,
     IOC_GY_NONE,
     IOC_GY_DOCKS,

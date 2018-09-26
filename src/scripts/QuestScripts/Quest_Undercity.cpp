@@ -66,7 +66,6 @@ public:
     }
 };
 
-
 void SetupUndercity(ScriptMgr* mgr)
 {
     mgr->register_quest_script(9180, new Quest_JourneytoUndercity());

@@ -1,195 +1,175 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_WailingCaverns.h"
 
-
 class DevouringEctoplasmAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
-        DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Summon Evolving Ectoplasm
-            addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
+    explicit DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Summon Evolving Ectoplasm
+        addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
+    }
 };
 
 class DruidFangAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
-        DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Serpent Form
-            SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
-            SerpentForm->setMinMaxPercentHp(0, 50);
+    ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
+    explicit DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Serpent Form
+        SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
+        SerpentForm->setMinMaxPercentHp(0, 50);
 
-            // Healing Touch
-            HealingTouch = addAISpell(5187, 5.0f, TARGET_SELF);
-            HealingTouch->setMinMaxPercentHp(0, 5);
+        // Healing Touch
+        HealingTouch = addAISpell(5187, 5.0f, TARGET_SELF);
+        HealingTouch->setMinMaxPercentHp(0, 5);
 
-            // Lightning Bolt
-            LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+        // Lightning Bolt
+        LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
 
-            // Druid's Slumber
-            DruidsSlumber = addAISpell(8040, 20.0f, TARGET_RANDOM_SINGLE, 3, 0);
-        }
+        // Druid's Slumber
+        DruidsSlumber = addAISpell(8040, 20.0f, TARGET_RANDOM_SINGLE, 3, 0);
+    }
 
-        CreatureAISpells* SerpentForm;
-        CreatureAISpells* LightningBolt;
-        CreatureAISpells* DruidsSlumber;
-        CreatureAISpells* HealingTouch;
+    CreatureAISpells* SerpentForm;
+    CreatureAISpells* LightningBolt;
+    CreatureAISpells* DruidsSlumber;
+    CreatureAISpells* HealingTouch;
 };
-
 
 // BOSSES
 class LadyAnacondraAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
-        LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Lightning Bolt
-            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-            // Sleep
-            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 20);
+    ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
+    explicit LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Lightning Bolt
+        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+        // Sleep
+        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 20);
 
-            addEmoteForEvent(Event_OnCombatStart, 8755);     // None can stand against the Serpent Lords
-        }
+        addEmoteForEvent(Event_OnCombatStart, 8755);     // None can stand against the Serpent Lords
+    }
 };
 
 class LordCobrahnAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
-        LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
+    explicit LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Lightning Bolt
+        LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+        mEnableLighningBolt = true;
+        // Poison -- Spell ID Needs checked
+        addAISpell(34969, 15.0f, TARGET_ATTACKING);
+        // Cobrahn Serpent Form
+        SerpentForm = addAISpell(7965, 0.0f, TARGET_SELF);
+        mEnableSerpentForm = true;
+
+        addEmoteForEvent(Event_OnCombatStart, 8756);     // You will never wake the dreamer!
+    }
+
+    void AIUpdate() override
+    {
+        if (_getHealthPercent() <= 20 && mEnableSerpentForm == true)
         {
-            // Lightning Bolt
-            LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+            _castAISpell(SerpentForm);
+            mEnableSerpentForm = false;
+            // Disable Lightning Bolt
+            mEnableLighningBolt = false;
+        }
+        else if (_getHealthPercent() <= 20 && mEnableSerpentForm == false && !getCreature()->HasAura(7965))
+        {
+            // Enable Lightning Bolt
             mEnableLighningBolt = true;
-            // Poison -- Spell ID Needs checked
-            addAISpell(34969, 15.0f, TARGET_ATTACKING);
-            // Cobrahn Serpent Form
-            SerpentForm = addAISpell(7965, 0.0f, TARGET_SELF);
-            mEnableSerpentForm = true;
-
-            addEmoteForEvent(Event_OnCombatStart, 8756);     // You will never wake the dreamer!
         }
-
-        void AIUpdate() override
-        {
-            if (_getHealthPercent() <= 20 && mEnableSerpentForm == true)
-            {
-                _castAISpell(SerpentForm);
-                mEnableSerpentForm = false;
-                // Disable Lightning Bolt
-                mEnableLighningBolt = false;
-            }
-            else if (_getHealthPercent() <= 20 && mEnableSerpentForm == false && !getCreature()->HasAura(7965))
-            {
-                // Enable Lightning Bolt
-                mEnableLighningBolt = true;
-            }
-            
-        }
-        CreatureAISpells* LightningBolt;
-        bool mEnableLighningBolt;
-        CreatureAISpells* SerpentForm;
-        bool mEnableSerpentForm;
+    }
+    CreatureAISpells* LightningBolt;
+    bool mEnableLighningBolt;
+    CreatureAISpells* SerpentForm;
+    bool mEnableSerpentForm;
 };
 
 class LordPythasAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
-        LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Lightning Bolt
-            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-            // Sleep
-            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
-            // Thunderclap
-            addAISpell(8147, 20.0f, TARGET_SELF, 0, 5);
+    ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
+    explicit LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Lightning Bolt
+        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+        // Sleep
+        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
+        // Thunderclap
+        addAISpell(8147, 20.0f, TARGET_SELF, 0, 5);
 
-            addEmoteForEvent(Event_OnCombatStart, 8757);     // The coils of death... Will crush you!
-        }
+        addEmoteForEvent(Event_OnCombatStart, 8757);     // The coils of death... Will crush you!
+    }
 };
 
 class LordSerpentisAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
-        LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Lightning Bolt
-            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-            // Sleep
-            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
+    ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
+    explicit LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Lightning Bolt
+        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+        // Sleep
+        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
 
-            addEmoteForEvent(Event_OnCombatStart, 8758);     // I am the serpent king, i can do anything!
-        }
+        addEmoteForEvent(Event_OnCombatStart, 8758);     // I am the serpent king, i can do anything!
+    }
 };
 
 class VerdanEverlivingAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
-        VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Grasping Vines
-            addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
+    explicit VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Grasping Vines
+        addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
+    }
 };
 
 class SkumAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
-        SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Chained Bolt
-            addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
+    explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Chained Bolt
+        addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
+    }
 
-        void AIUpdate() override
+    void AIUpdate() override
+    {
+        if (_getHealthPercent() <= 10 && getAIAgent() != AGENT_FLEE)
         {
-            if (_getHealthPercent() <= 10 && getAIAgent() != AGENT_FLEE)
-            {
-                sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
-                setAIAgent(AGENT_FLEE);
-                _setMeleeDisabled(false);
-                _setRangedDisabled(true);
-                _setCastDisabled(true);
-                moveTo(-262.829742f, -299.363159f, -68.293579f, true);
-            }
+            sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
+            setAIAgent(AGENT_FLEE);
+            _setMeleeDisabled(false);
+            _setRangedDisabled(true);
+            _setCastDisabled(true);
+            moveTo(-262.829742f, -299.363159f, -68.293579f, true);
         }
+    }
 };
 
 class MutanusAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
-        MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            // Thundercrack
-            addAISpell(8150, 15.0f, TARGET_SELF);
-            // Terrify
-            addAISpell(7399, 15.0f, TARGET_RANDOM_SINGLE, 0, 4);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
+    explicit MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Thundercrack
+        addAISpell(8150, 15.0f, TARGET_SELF);
+        // Terrify
+        addAISpell(7399, 15.0f, TARGET_RANDOM_SINGLE, 0, 4);
+    }
 };
-
 
 // Wailing Caverns Event
 // Discipline of Naralex Gossip
@@ -238,208 +218,203 @@ static Movement::Location ToNaralex[] =
 
 class DofNaralexGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void OnHello(Object* pObject, Player* plr) override
+    void OnHello(Object* pObject, Player* plr) override
+    {
+        Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
+        Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, CN_LORD_PYTHAS);
+        Unit* Fanglord3 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, CN_LORD_SERPENTIS);
+        Unit* Fanglord4 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, CN_LADY_ANACONDRA);
+
+        if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
         {
-            Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
-            Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, CN_LORD_PYTHAS);
-            Unit* Fanglord3 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, CN_LORD_SERPENTIS);
-            Unit* Fanglord4 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, CN_LADY_ANACONDRA);
-
-            if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
-            {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 699, 0);
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
-                menu.Send(plr);
-            }
-            else
-            {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 698, 0);
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
-                menu.Send(plr);
-            }
-
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 699, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
+            menu.Send(plr);
         }
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+        else
         {
-            Creature* pCreature = (pObject->isCreature()) ? static_cast<Creature*>(pObject) : nullptr;
-            if (pCreature == nullptr)
-            {
-                return;
-            }
-
-            switch (Id)
-            {
-                case 1: // Disciple of Naralex Casts Mark of the Wild on players.
-                {
-                    pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
-                    pCreature->CastSpell(Plr, 5232, true);
-                    pCreature->Emote(EMOTE_ONESHOT_CHEER);
-                } break;
-                case 2: // Start Event
-                {
-                    pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-                    pCreature->GetAIInterface()->StopMovement(0);
-                    pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    pCreature->GetAIInterface()->setWayPointToMove(2);
-                } break;
-                default:
-                    break;
-            }
-            Arcemu::Gossip::Menu::Complete(Plr);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 698, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
+            menu.Send(plr);
         }
+
+    }
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    {
+        Creature* pCreature = (pObject->isCreature()) ? static_cast<Creature*>(pObject) : nullptr;
+        if (pCreature == nullptr)
+        {
+            return;
+        }
+
+        switch (Id)
+        {
+            case 1: // Disciple of Naralex Casts Mark of the Wild on players.
+            {
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
+                pCreature->CastSpell(Plr, 5232, true);
+                pCreature->Emote(EMOTE_ONESHOT_CHEER);
+            } break;
+            case 2: // Start Event
+            {
+                pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pCreature->GetAIInterface()->StopMovement(0);
+                pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                pCreature->GetAIInterface()->setWayPointToMove(2);
+            } break;
+            default:
+                break;
+        }
+        Arcemu::Gossip::Menu::Complete(Plr);
+    }
 };
 
 class DofNaralexAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
-        DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
+    explicit DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        Mutanus = nullptr;
+
+        for (uint8 i = 1; i < 39; ++i)
         {
-            Mutanus = nullptr;
-
-            for (uint8 i = 1; i < 39; ++i)
-            {
-                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
-            }
-
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-
-            // Awakening Spell
-            Awakening = addAISpell(6271, 0.0f, TARGET_SELF);
-            Awakening->addEmote("Step back and be ready!, I'll try to Awake Naralex", CHAT_MSG_MONSTER_SAY, 0);
-
-            SpawnTimer = 0;
+            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
         }
 
-        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
-        {
-            ForceWaypointMove(iWaypointId + 1);
-            if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
-                setScriptPhase(2);
-        }
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-        void OnScriptPhaseChange(uint32_t phaseId) override
+        // Awakening Spell
+        Awakening = addAISpell(6271, 0.0f, TARGET_SELF);
+        Awakening->addEmote("Step back and be ready!, I'll try to Awake Naralex", CHAT_MSG_MONSTER_SAY, 0);
+
+        SpawnTimer = 0;
+    }
+
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    {
+        ForceWaypointMove(iWaypointId + 1);
+        if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
+            setScriptPhase(2);
+    }
+
+    void OnScriptPhaseChange(uint32_t phaseId) override
+    {
+        switch (phaseId)
         {
-            switch (phaseId)
+            case 2:
+                getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                _castAISpell(Awakening);
+                SpawnTimer = _addTimer(100000);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void AIUpdate() override
+    {
+        if (SpawnTimer && _isTimerFinished(SpawnTimer))
+        {
+            switch (getScriptPhase())
             {
                 case 2:
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
-                    _castAISpell(Awakening);
-                    SpawnTimer = _addTimer(100000);
+                    Moccasin();
+                    _resetTimer(SpawnTimer, 100000);
+                    setScriptPhase(3);
+                    break;
+                case 3:
+                    Ectoplasm();
+                    _resetTimer(SpawnTimer, 100000);
+                    setScriptPhase(4);
+                    break;
+                case 4:
+                    BMutanus();
+                    _resetTimer(SpawnTimer, 100000);
+                    setScriptPhase(5);
                     break;
                 default:
                     break;
             }
         }
-
-        void AIUpdate() override
+        if (isScriptPhase(5) && (!Mutanus || !Mutanus->isAlive()))
         {
-            if (SpawnTimer && _isTimerFinished(SpawnTimer))
+            CreatureAIScript* Naralex = getNearestCreatureAI(3679);
+            if (Naralex && Naralex->isAlive())
             {
-                switch (getScriptPhase())
-                {
-                    case 2:
-                    {
-                        Moccasin();
-                        _resetTimer(SpawnTimer, 100000);
-                        setScriptPhase(3);
-                    } break;
-                    case 3:
-                    {
-                        Ectoplasm();
-                        _resetTimer(SpawnTimer, 100000);
-                        setScriptPhase(4);
-                    } break;
-                    case 4:
-                    {
-                        BMutanus();
-                        _resetTimer(SpawnTimer, 100000);
-                        setScriptPhase(5);
-                    } break;
-                    default:
-                        break;
-                }
+                _setDisplayId(17089);
+                Naralex->_setDisplayId(17089);
+                Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
+                Naralex->getCreature()->setStandState(STANDSTATE_STAND);
+                setFlyMode(true);
+                Naralex->setFlyMode(true);
+                moveTo(-6.704030f, 200.308838f, -26.938824f);
+                Naralex->moveTo(-6.704030f, 200.308838f, -26.938824f);
             }
-            if (isScriptPhase(5) && (!Mutanus || !Mutanus->isAlive()))
-            {
-                CreatureAIScript* Naralex = getNearestCreatureAI(3679);
-                if (Naralex && Naralex->isAlive())
-                {
-                    _setDisplayId(17089);
-                    Naralex->_setDisplayId(17089);
-                    Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
-                    Naralex->getCreature()->setStandState(STANDSTATE_STAND);
-                    setFlyMode(true);
-                    Naralex->setFlyMode(true);
-                    moveTo(-6.704030f, 200.308838f, -26.938824f);
-                    Naralex->moveTo(-6.704030f, 200.308838f, -26.938824f);
-                }
-                setScriptPhase(6);
-            }
-            
+            setScriptPhase(6);
         }
+    }
 
-        void Moccasin()
-        {
-            spawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            spawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            spawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
-        }
+    void Moccasin()
+    {
+        spawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+        spawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+        spawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+    }
 
-        void Ectoplasm()
-        {
-            spawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            spawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            spawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
-            spawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
-            spawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
-            spawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
-            spawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
-        }
+    void Ectoplasm()
+    {
+        spawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+        spawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+        spawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+        spawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
+        spawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
+        spawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
+        spawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
+    }
 
-        void BMutanus()
-        {
-            Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
-        }
+    void BMutanus()
+    {
+        Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
+    }
 
-        int32 SpawnTimer;
-        CreatureAISpells* Awakening;
-        Creature* Mutanus;
+    int32 SpawnTimer;
+    CreatureAISpells* Awakening;
+    Creature* Mutanus;
 };
 
 
 class DeviateMoccasinAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI);
-        DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI);
+    explicit DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+    }
 };
 
 class EctoplasmAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI);
-        EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI);
+    explicit EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+    }
 };
 
 class Naralex : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Naralex);
-        Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-            getCreature()->setStandState(STANDSTATE_SLEEP);
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(Naralex);
+    explicit Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->setStandState(STANDSTATE_SLEEP);
+    }
 };
 
 void SetupWailingCaverns(ScriptMgr* mgr)
 {
-    //Creatures
+    // Creatures
     mgr->register_creature_script(CN_DRUID_FANG, &DruidFangAI::Create);
     mgr->register_creature_script(CN_DEVOURING_ECTOPLASM, &DevouringEctoplasmAI::Create);
     mgr->register_creature_script(CN_LADY_ANACONDRA, &LadyAnacondraAI::Create);

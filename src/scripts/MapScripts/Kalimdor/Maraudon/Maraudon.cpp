@@ -11,7 +11,7 @@ class Maraudon : public InstanceScript
 {
 public:
 
-    Maraudon(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Maraudon(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

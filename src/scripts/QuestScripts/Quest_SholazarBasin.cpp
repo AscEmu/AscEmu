@@ -22,13 +22,19 @@
 #include "Setup.h"
 #include "Spell/SpellAuras.h"
 
- // -----------------------------------------------------------------------------
- // Quest 12532 - Flown the Coop!
- // Quest 12702 - Chicken Party! (by bartus
+enum
+{
+    HEMET = 27986,
+    HADRIUS = 28047,
+    TAMARA = 28568,
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quest 12532 - Flown the Coop!
+// Quest 12702 - Chicken Party!
 
 class ChickenEscapee : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee);
     ChickenEscapee(Creature* c) : CreatureAIScript(c) {}
 
@@ -64,13 +70,10 @@ public:
     }
 };
 
-const uint32 HEMET = 27986;
-const uint32 HADRIUS = 28047;
-const uint32 TAMARA = 28568;
-
 class SCRIPT_DECL HemetTasteTest : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
@@ -108,6 +111,7 @@ public:
 class SCRIPT_DECL HadriusTasteTest : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
@@ -144,6 +148,7 @@ public:
 class SCRIPT_DECL TamaraTasteTest : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
@@ -178,17 +183,11 @@ public:
     }
 };
 
-
 void SetupSholazarBasin(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* gossip1 = new HemetTasteTest();
-    mgr->register_creature_gossip(HEMET, gossip1);
-
-    Arcemu::Gossip::Script* gossip2 = new HadriusTasteTest();
-    mgr->register_creature_gossip(HADRIUS, gossip2);
-
-    Arcemu::Gossip::Script* gossip3 = new TamaraTasteTest();
-    mgr->register_creature_gossip(TAMARA, gossip3);
+    mgr->register_creature_gossip(HEMET, new HemetTasteTest());
+    mgr->register_creature_gossip(HADRIUS, new HadriusTasteTest());
+    mgr->register_creature_gossip(TAMARA, new TamaraTasteTest());
 
     mgr->register_creature_script(28161, &ChickenEscapee::Create);
 }

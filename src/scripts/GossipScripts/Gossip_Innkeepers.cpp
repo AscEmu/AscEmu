@@ -22,17 +22,20 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 
-const uint32 SPELL_TRICK_OR_TREATED = 24755;
-const uint32 SPELL_TREAT = 24715;
-// -------------------------
+enum
+{
+    SPELL_TRICK_OR_TREATED = 24755,
+    SPELL_TREAT = 24715,
+
+};
 
 class InnkeeperGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void OnHello(Object* pObject, Player* Plr) override;
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
-        void Destroy() { delete this; }
+    void OnHello(Object* pObject, Player* Plr) override;
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
+    void Destroy() { delete this; }
 };
 
 void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
@@ -67,7 +70,6 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
         }
     }
 
-
     if (pCreature->isVendor())
     {
         menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
@@ -84,10 +86,9 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
     Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
+
     if (pCreature == nullptr)
-    {
         return;
-    }
 
     switch (Id)
     {

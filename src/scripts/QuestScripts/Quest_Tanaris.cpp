@@ -23,6 +23,7 @@
 class SpiritScreeches : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(3520))
@@ -44,10 +45,9 @@ public:
 
 class ScreecherSpirit : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit);
 
-    ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -68,6 +68,7 @@ public:
 class StewardOfTime : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
@@ -86,14 +87,11 @@ public:
     }
 };
 
-
 void SetupTanaris(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* Screeches = new SpiritScreeches();
-    mgr->register_creature_gossip(8612, Screeches);
+    mgr->register_creature_gossip(8612, new SpiritScreeches());
 
     mgr->register_creature_script(8612, &ScreecherSpirit::Create);
 
-    Arcemu::Gossip::Script* StewardOfTimeGossip = new StewardOfTime();
-    mgr->register_creature_gossip(20142, StewardOfTimeGossip);
+    mgr->register_creature_gossip(20142, new StewardOfTime());
 }

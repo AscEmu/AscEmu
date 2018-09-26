@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/CastInterruptFlags.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
-#include "Spell/Definitions/SpellCustomFlags.h"
 #include "Spell/Definitions/SpellGoFlags.h"
 #include "Spell/Definitions/SpellTargetType.h"
 #include "Spell/Definitions/SpellRanged.h"

@@ -38,7 +38,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
 #include "Pet.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
 
@@ -1767,10 +1767,9 @@ void Creature::OnPushToWorld()
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    SpellInfo* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo((*itr));
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 

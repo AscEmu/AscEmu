@@ -5,12 +5,27 @@
 
 #include "Setup.h"
 
+enum
+{
+    // Headless HorsemanAI
+    CN_HEADLESS_HORSEMAN = 23682,
+    //HEADLESS_HORSEMAN_CLEAVE = 42587,
+    //HEADLESS_HORSEMAN_CONFLAGRATION = 42380,
+
+    // Shade of the HorsemanAI
+    CN_SHADE_OF_THE_HORSEMAN = 23543,
+    //SHADE_OF_THE_HORSEMAN_SUMMON = 42394,  // Don't think this one is the correct spell
+
+    // Headless Horseman - Wisp Invis
+    CN_HEADLESS_HORSEMAN_WISP_INVIS = 24034, // 42394
+};
+
 // Black Cat
 class BlackCat : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
-    BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
     {
@@ -53,20 +68,15 @@ static Movement::Location WaypointGoldshire[] =
     { -9477.427734f, 86.952667f, 70.950249f, 3.318317f }  // 29
 };
 
-// Headless HorsemanAI
-const uint32 CN_HEADLESS_HORSEMAN = 23682;
-const uint32 HEADLESS_HORSEMAN_CLEAVE = 42587;
-const uint32 HEADLESS_HORSEMAN_CONFLAGRATION = 42380;
 class HeadlessHorsemanAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanAI(c); }
-    HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Scarlet Monastery Boss
     }
 };
-
 
 // Headless Horseman - Fire
 const uint32 CN_HEADLESS_HORSEMAN_FIRE = 23537;
@@ -74,16 +84,12 @@ class HeadlessHorsemanFireAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanFireAI(c); }
-    HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), 42971, true);
     }
 };
 
-
-// Shade of the HorsemanAI
-const uint32 CN_SHADE_OF_THE_HORSEMAN = 23543;
-const uint32 SHADE_OF_THE_HORSEMAN_SUMMON = 42394;  //Don't think this one is the correct spell
 /*
 * Research
 * NPC:
@@ -96,7 +102,7 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ShadeOfTheHorsemanAI(c); }
-    ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         getCreature()->setMountDisplayId(22653);
@@ -174,14 +180,11 @@ public:
     int8 WPCount;
 };
 
-
-// Headless Horseman - Wisp Invis
-const uint32 CN_HEADLESS_HORSEMAN_WISP_INVIS = 24034;    // 42394
 class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanWispInvisAI(c); }
-    HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;
     }
@@ -205,50 +208,49 @@ public:
     Creature* mHeadlessHorseman;
 };
 
-
 class WaterBarrel : public GameObjectAIScript
 {
-    public:
+public:
 
-        WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
+    explicit WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        SlotResult slotresult;
+        ItemProperties const* proto = sMySQLStore.getItemProperties(32971);
+        if (!proto)
+            return;
+
+        slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+
+        if (!slotresult.Result)
         {
-            SlotResult slotresult;
-            ItemProperties const* proto = sMySQLStore.getItemProperties(32971);
-            if (!proto)
-                return;
+            pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            return;
+        }
+        else
+        {
+            if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
+            {
+                auto itm = objmgr.CreateItem(32971, pPlayer);
+                if (itm == nullptr)
+                    return;
 
-            slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
-
-            if (!slotresult.Result)
+                auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+                if (!result)
+                {
+                    DLLLogDetail("Error while adding item %u to player %s", itm->getEntry(), pPlayer->getName().c_str());
+                    itm->DeleteMe();
+                }
+            }
+            else
             {
                 pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                 return;
             }
-            else
-            {
-                if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
-                {
-                    auto itm = objmgr.CreateItem(32971, pPlayer);
-                    if (itm == nullptr)
-                        return;
-
-                    auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
-                    if (!result)
-                    {
-                        DLLLogDetail("Error while adding item %u to player %s", itm->getEntry(), pPlayer->getName().c_str());
-                        itm->DeleteMe();
-                    }
-                }
-                else
-                {
-                    pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-                    return;
-                }
-            }
         }
+    }
 };
 
 void SetupHallowsEnd(ScriptMgr* mgr)

@@ -22,9 +22,8 @@
 
 class The_Defias_Traitor : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor);
-    The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
@@ -48,7 +47,6 @@ public:
         }
     }
 };
-
 
 void SetupWestfall(ScriptMgr* mgr)
 {

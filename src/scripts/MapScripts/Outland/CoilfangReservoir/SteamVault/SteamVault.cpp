@@ -10,9 +10,7 @@ class SteamVault : public InstanceScript
 {
 public:
 
-    SteamVault(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
+    explicit SteamVault(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SteamVault(pMapMgr); }
 };

@@ -29,6 +29,9 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/MsgQuestPushResult.h"
+
+using namespace AscEmu::Packets;
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {
@@ -800,10 +803,7 @@ void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const
 
 void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 response)
 {
-    WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-    data << uint64(pTarget->getGuid());
-    data << uint8(response);
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(MsgQuestPushResult(pTarget->getGuid(), 0, response).serialise().get());
 }
 
 bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)

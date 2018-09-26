@@ -1,32 +1,17 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef PLAYER_CLASSES_HPP
-#define PLAYER_CLASSES_HPP
+#pragma once
+
+#include "Player.h"
 
 #define TOTAL_NORMAL_RUNE_TYPES 3
 #define TOTAL_USED_RUNES (TOTAL_NORMAL_RUNE_TYPES * 2)
 #define MAX_RUNES 6
 #define TOTAL_RUNE_TYPES 4
 #define MAX_RUNE_VALUE 1
-
-#include "Player.h"
 
 enum SPELL_RUNE_TYPES
 {
@@ -52,119 +37,116 @@ class DeathKnight : public Player
     // Holds last slot used
     uint8 m_last_used_rune_slot;
 
-    protected:
+protected:
 
-        void SendRuneUpdate(uint8 slot);
+    void SendRuneUpdate(uint8 slot);
 
-    public:
+public:
 
-        DeathKnight(uint32 guid) : Player(guid)
+    explicit DeathKnight(uint32 guid) : Player(guid)
+    {
+        m_last_used_rune_slot = 0;
+        for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
-            m_last_used_rune_slot = 0;
-            for (uint8 i = 0; i < MAX_RUNES; ++i)
-            {
-                m_runes[i].type = base_runes[i];
-                m_runes[i].is_used = false;
-            }
+            m_runes[i].type = base_runes[i];
+            m_runes[i].is_used = false;
         }
+    }
 
-        bool IsDeathKnight() override { return true; }
+    bool IsDeathKnight() override { return true; }
 
-        //*************************************************************************************
-        // RUNES
-        //*************************************************************************************
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Runes
 
-        uint8 GetBaseRuneType(uint8 slot);
-        uint8 GetRuneType(uint8 slot);
-        bool GetRuneIsUsed(uint8 slot);
-        void ConvertRune(uint8 slot, uint8 type);
-        uint32 HasRunes(uint8 type, uint32 count);
-        uint32 TakeRunes(uint8 type, uint32 count);
-        void ResetRune(uint8 slot);
-        uint8 GetRuneFlags();
-        bool IsAllRunesOfTypeInUse(uint8 type);
-        uint8 GetLastUsedUnitSlot() { return m_last_used_rune_slot; }
+    uint8 GetBaseRuneType(uint8 slot);
+    uint8 GetRuneType(uint8 slot);
+    bool GetRuneIsUsed(uint8 slot);
+    void ConvertRune(uint8 slot, uint8 type);
+    uint32 HasRunes(uint8 type, uint32 count);
+    uint32 TakeRunes(uint8 type, uint32 count);
+    void ResetRune(uint8 slot);
+    uint8 GetRuneFlags();
+    bool IsAllRunesOfTypeInUse(uint8 type);
+    uint8 GetLastUsedUnitSlot() { return m_last_used_rune_slot; }
 };
 
 class Druid : public Player
 {
-    public:
+public:
 
-        Druid(uint32 guid) : Player(guid) {}
+    explicit Druid(uint32_t guid) : Player(guid) {}
 
-        bool IsDruid() override { return true; }
+    bool IsDruid() override { return true; }
 };
 
 class Rogue : public Player
 {
-    public:
+public:
 
-        Rogue(uint32 guid) : Player(guid) {}
+    explicit Rogue(uint32_t guid) : Player(guid) {}
 
-        bool IsRogue() override { return true; }
+    bool IsRogue() override { return true; }
 };
 
 class Priest : public Player
 {
-    public:
+public:
 
-        Priest(uint32 guid) : Player(guid) {}
+    explicit Priest(uint32_t guid) : Player(guid) {}
 
-        bool IsPriest() override { return true; }
+    bool IsPriest() override { return true; }
 };
 
 class Paladin : public Player
 {
-    public:
+public:
 
-        Paladin(uint32 guid) : Player(guid) {}
+    explicit Paladin(uint32_t guid) : Player(guid) {}
 
-        bool IsPaladin() override { return true; }
+    bool IsPaladin() override { return true; }
 };
 
 class Warrior : public Player
 {
-    public:
+public:
 
-        Warrior(uint32 guid) : Player(guid) {}
+    explicit Warrior(uint32_t guid) : Player(guid) {}
 
-        bool IsWarrior() override { return true; }
+    bool IsWarrior() override { return true; }
 };
 
 class Warlock : public Player
 {
-    public:
+public:
 
-        Warlock(uint32 guid) : Player(guid) {}
+    explicit Warlock(uint32_t guid) : Player(guid) {}
 
-        bool IsWarlock() override { return true; }
+    bool IsWarlock() override { return true; }
 };
 
 class Mage : public Player
 {
-    public:
+public:
 
-        Mage(uint32 guid) : Player(guid) {}
+    explicit Mage(uint32_t guid) : Player(guid) {}
 
-        bool IsMage() override { return true; }
+    bool IsMage() override { return true; }
 };
 
 class Hunter : public Player
 {
-    public:
+public:
 
-        Hunter(uint32 guid) : Player(guid) {}
+    explicit Hunter(uint32_t guid) : Player(guid) {}
 
-        bool IsHunter() override { return true; }
+    bool IsHunter() override { return true; }
 };
 
 class Shaman : public Player
 {
-    public:
+public:
 
-        Shaman(uint32 guid) : Player(guid) {}
+    explicit Shaman(uint32_t guid) : Player(guid) {}
 
-        bool IsShaman() override { return true; }
+    bool IsShaman() override { return true; }
 };
-
-#endif  // PLAYER_CLASSES_HPP

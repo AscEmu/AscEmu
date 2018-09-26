@@ -23,6 +23,7 @@
 class TheSummoning : public QuestScript
 {
 public:
+
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
@@ -59,9 +60,8 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Bartleby);
-    Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -124,7 +124,6 @@ public:
         Bartleby->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 };
-
 
 void SetupWarrior(ScriptMgr* mgr)
 {

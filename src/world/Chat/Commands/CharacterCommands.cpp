@@ -1503,6 +1503,8 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
 //.character set name
 bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_session)
 {
+    //\todo check utf8 and cyrillic chars
+
     if (strlen(args) > 100)
         return false;
 

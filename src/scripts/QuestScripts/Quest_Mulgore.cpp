@@ -14,10 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Customization/SpellCustomizations.hpp>
 
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Quest: Rite of Vision
 //
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Plain Visions Encounter
 static Movement::Location WaypointPlainVision[] =
 {
@@ -48,10 +49,8 @@ static Movement::Location WaypointPlainVision[] =
 
 class The_Plains_Vision : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision);
-    The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -74,7 +73,6 @@ public:
 
     uint8 WPCount;
 };
-
 
 void SetupMulgore(ScriptMgr* mgr)
 {

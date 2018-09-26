@@ -43,7 +43,7 @@ static Movement::Location Guards[] =
 //{
 //    public:
 //
-//        DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+//        explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //        {
 //            mFactoryDoor_GUID = 0;
 //            mDefiasCannon_GUID = 0;
@@ -149,11 +149,12 @@ static Movement::Location Guards[] =
 
 class RhahkZorAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
+
     // Just for testing
     LazyTimer debugTimer;
 
-    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
-    RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
+    explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 0, 3);    // Rhahk'Zor Slam
 
@@ -164,146 +165,145 @@ class RhahkZorAI : public CreatureAIScript
 
 class MrSmiteAI : public CreatureAIScript
 {
-        ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
-        MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
+    explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
+        smiteSlam->setMinMaxDistance(0.0f, 8.0f);
+
+        mStomp = addAISpell(SMITE_STOMP, 0.0f, TARGET_SELF);
+        mWaitAtChest = 0;
+        _setWieldWeapon(true);
+    }
+
+    void OnCombatStop(Unit* /*pTarget*/) override
+    {
+        if (isScriptPhase(4))
+            _removeAura(SMITES_HAMMER);
+
+        if (!isAlive())
+            _setWieldWeapon(false);
+
+        setScriptPhase(1);
+        SwitchWeapons();
+        _removeTimer(mWaitAtChest);
+    }
+
+    void AIUpdate() override
+    {
+        if (_getHealthPercent() <= 66 && isScriptPhase(1))
+            setScriptPhase(2);
+        else if (_getHealthPercent() <= 33 && isScriptPhase(3))
+            setScriptPhase(4);
+
+        if (isScriptPhase(2) || isScriptPhase(4))
         {
-            auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
-            smiteSlam->setMinMaxDistance(0.0f, 8.0f);
-
-            mStomp = addAISpell(SMITE_STOMP, 0.0f, TARGET_SELF);
-            mWaitAtChest = 0;
-            _setWieldWeapon(true);
-        }
-
-        void OnCombatStop(Unit* /*pTarget*/) override
-        {
-            if (isScriptPhase(4))
-                _removeAura(SMITES_HAMMER);
-
-            if (!isAlive())
-                _setWieldWeapon(false);
-
-            setScriptPhase(1);
-            SwitchWeapons();
-            _removeTimer(mWaitAtChest);
-        }
-
-        void AIUpdate() override
-        {
-            if (_getHealthPercent() <= 66 && isScriptPhase(1))
-                setScriptPhase(2);
-            else if (_getHealthPercent() <= 33 && isScriptPhase(3))
-                setScriptPhase(4);
-
-            if (isScriptPhase(2) || isScriptPhase(4))
+            if (NearChest())
+                SwitchWeapons();
+            else if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
             {
-                if (NearChest())
-                    SwitchWeapons();
-                else if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
-                {
-                    MoveToChest();
-                }
-            }
-
-            if (_isTimerFinished(mWaitAtChest))
-                MoveToPlayer();
-        }
-
-        void OnScriptPhaseChange(uint32_t phaseId) override
-        {
-            switch (phaseId)
-            {
-                case 2:
-                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
-                    _castAISpell(mStomp);
-                    break;
-                case 4:
-                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
-                    _castAISpell(mStomp);
-                    break;
-                default:
-                    break;
+                MoveToChest();
             }
         }
 
-        void MoveToChest()
-        {
-            if (canEnterCombat())
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        if (_isTimerFinished(mWaitAtChest))
+            MoveToPlayer();
+    }
 
-            stopMovement();
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            moveTo(1.100060f, -780.026367f, 9.811194f);
+    void OnScriptPhaseChange(uint32_t phaseId) override
+    {
+        switch (phaseId)
+        {
+            case 2:
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
+                _castAISpell(mStomp);
+                break;
+            case 4:
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
+                _castAISpell(mStomp);
+                break;
+            default:
+                break;
         }
+    }
 
-        void MoveToPlayer()
-        {
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-        }
+    void MoveToChest()
+    {
+        if (canEnterCombat())
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-        bool NearChest()
+        stopMovement();
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+        moveTo(1.100060f, -780.026367f, 9.811194f);
+    }
+
+    void MoveToPlayer()
+    {
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+    }
+
+    bool NearChest()
+    {
+        if (getCreature()->GetPositionX() == 1.100060f && getCreature()->GetPositionY() == -780.026367f)
+            return true;
+
+        if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
         {
-            if (getCreature()->GetPositionX() == 1.100060f && getCreature()->GetPositionY() == -780.026367f)
+            // Too small distance - let's prevent from blocking
+            float XDiff, YDiff;
+            XDiff = getCreature()->GetPositionX() - 1.100060f;
+            YDiff = getCreature()->GetPositionY() + 780.026367f;
+            float Distance = static_cast<float>(sqrt(XDiff * XDiff + YDiff * YDiff));
+            if (Distance <= 5.0f)
                 return true;
-
-            if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
-            {
-                // Too small distance - let's prevent from blocking
-                float XDiff, YDiff;
-                XDiff = getCreature()->GetPositionX() - 1.100060f;
-                YDiff = getCreature()->GetPositionY() + 780.026367f;
-                float Distance = static_cast<float>(sqrt(XDiff * XDiff + YDiff * YDiff));
-                if (Distance <= 5.0f)
-                    return true;
-            }
-
-            return false;
         }
 
-        void SwitchWeapons()
+        return false;
+    }
+
+    void SwitchWeapons()
+    {
+        // CREDITS to Skyboat on ascentemu.com/forums  he had some of this info on one of his releases
+        switch (getScriptPhase())
         {
-            // CREDITS to Skyboat on ascentemu.com/forums  he had some of this info on one of his releases
-            switch (getScriptPhase())
-            {
-                case 1: // Phase 1 (Default)
-                    _setDisplayWeaponIds(5192, 0);
-                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE));    // 1483 is taken from NCDB creature_proto
-                    break;
-                case 2: // Phase 2
-                    _setDisplayWeaponIds(5196, 5196);
-                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) / 2);
-                    break;
-                case 4: // Phase 4
-                    // Is base attack time change needed if we use aura ?
-                    _setDisplayWeaponIds(7230, 0);
-                    getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) * 2);
-                    _applyAura(SMITES_HAMMER);
-                    break;
-            }
-
-            // Wait at the chest for 4.5seconds -- Still needs work
-            getCreature()->setAttackTimer(MELEE, 4500);
-            mWaitAtChest = _addTimer(4500);
-            setScriptPhase(getScriptPhase() + 1);
+            case 1: // Phase 1 (Default)
+                _setDisplayWeaponIds(5192, 0);
+                getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE));    // 1483 is taken from NCDB creature_proto
+                break;
+            case 2: // Phase 2
+                _setDisplayWeaponIds(5196, 5196);
+                getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) / 2);
+                break;
+            case 4: // Phase 4
+                // Is base attack time change needed if we use aura ?
+                _setDisplayWeaponIds(7230, 0);
+                getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) * 2);
+                _applyAura(SMITES_HAMMER);
+                break;
         }
 
-    protected:
+        // Wait at the chest for 4.5seconds -- Still needs work
+        getCreature()->setAttackTimer(MELEE, 4500);
+        mWaitAtChest = _addTimer(4500);
+        setScriptPhase(getScriptPhase() + 1);
+    }
 
-        CreatureAISpells* mStomp;
-        uint32 mWaitAtChest;
+protected:
+
+    CreatureAISpells* mStomp;
+    uint32 mWaitAtChest;
 };
-
 
 class VanCleefAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
-    VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(3391, 25.0f, TARGET_SELF);    //Thrash (Gives the caster 2 extra attacks.)
+        addAISpell(3391, 25.0f, TARGET_SELF); // Thrash (Gives the caster 2 extra attacks.)
 
-        addEmoteForEvent(Event_OnCombatStart, 7722);     // None may challenge the Brotherhood!
-        addEmoteForEvent(Event_OnDied, 7727);            // The Brotherhood shall prevail!
+        addEmoteForEvent(Event_OnCombatStart, 7722); // None may challenge the Brotherhood!
+        addEmoteForEvent(Event_OnDied, 7727); // The Brotherhood shall prevail!
     }
 
     void OnTargetDied(Unit* pTarget) override

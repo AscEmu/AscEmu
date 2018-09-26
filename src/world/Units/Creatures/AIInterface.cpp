@@ -39,7 +39,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/SpellHelpers.h"
 #include "Pet.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/Movement/CreatureMovement.h"
 

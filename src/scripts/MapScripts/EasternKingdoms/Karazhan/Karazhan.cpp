@@ -11,7 +11,7 @@ class Karazhan : public InstanceScript
 {
 public:
 
-    Karazhan(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Karazhan(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

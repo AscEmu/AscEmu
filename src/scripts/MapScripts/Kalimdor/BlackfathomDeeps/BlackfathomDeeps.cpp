@@ -11,7 +11,7 @@ class BlackfathomDeeps : public InstanceScript
 {
 public:
 
-    BlackfathomDeeps(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackfathomDeeps(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -11,7 +11,7 @@ class TheBlackMorass : public InstanceScript
 {
 public:
 
-    TheBlackMorass(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheBlackMorass(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

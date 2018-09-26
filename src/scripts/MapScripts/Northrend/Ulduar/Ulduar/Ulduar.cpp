@@ -10,7 +10,7 @@ class Ulduar : public InstanceScript
 {
 public:
 
-    Ulduar(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit Ulduar(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

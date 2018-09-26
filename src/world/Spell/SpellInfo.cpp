@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
 #include "Definitions/SpellEffectTarget.h"
-#include "Spell/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.h"
 #include "Spell/SpellAuras.h"
 
 SpellInfo::SpellInfo()
@@ -164,7 +164,6 @@ SpellInfo::SpellInfo()
     custom_is_melee_spell = false;
     custom_is_ranged_spell = false;
     custom_SchoolMask = 0;
-    CustomFlags = 0;
 
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;

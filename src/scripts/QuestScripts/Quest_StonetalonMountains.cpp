@@ -34,10 +34,8 @@ public:
 
 class KayaFlathoof : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof);
-    KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
@@ -78,7 +76,6 @@ public:
             quest_entry->Fail(false);
     }
 };
-
 
 void SetupStonetalonMountains(ScriptMgr* mgr)
 {

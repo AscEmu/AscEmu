@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LUATAXI_H
-#define _LUATAXI_H
+#pragma once
 
 #include "LUAEngine.h"
 #include "Management/TaxiMgr.h"
@@ -124,5 +123,3 @@ namespace LuaTaxi
         return 1;
     }
 }
-
-#endif      // _LUATAXI_H

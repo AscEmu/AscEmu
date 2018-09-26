@@ -64,7 +64,7 @@
  unique numbering, instead of a shared pool.
 */
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include "StrandOfTheAncient.h"
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"
@@ -151,7 +151,7 @@ static LocationVector DemolisherLocations[SOTA_NUM_DEMOLISHERS] =
     LocationVector(1360.56f, -290.51f, 30.89f, 1.94f)
 };
 
-// ---- Verify remaining ----- //
+// Verify remaining
 // There should only be two boats. boats three and four here
 // are a lazy hack for not wanting to program the boats to move via waypoints
 const float sotaBoats[4][4] =
@@ -168,8 +168,7 @@ static LocationVector sotaAttackerStartingPosition[SOTA_NUM_ROUND_STAGES] =
     LocationVector(1607.99f, 47.6378f, 7.579f, 2.265f)  // this is momentary.
 };
 
-static LocationVector sotaDefenderStartingPosition
-= LocationVector(1209.7f, -65.16f, 70.1f, 0.0f);
+static LocationVector sotaDefenderStartingPosition = LocationVector(1209.7f, -65.16f, 70.1f, 0.0f);
 
 // Npcs
 const uint32 sotaNPCsIds[3] = { 29260, 29262, 29 };
@@ -299,7 +298,8 @@ static LocationVector GraveyardLocations[NUM_SOTA_GRAVEYARDS] =
     LocationVector(1457.19372559f, -53.7132720947f, 5.18109416962f, 0.0f)
 };
 
-static const uint32 TeamFactions[MAX_PLAYER_TEAMS] = {
+static const uint32 TeamFactions[MAX_PLAYER_TEAMS] =
+{
     1,
     2
 };
@@ -544,7 +544,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 
 void StrandOfTheAncient::SetIsWeekend(bool isweekend)
 {
-    DLLLogDetail("*** StrandOfTheAncient::SetIsWeekend");
+    DLLLogDetail("StrandOfTheAncient::SetIsWeekend");
     m_isWeekend = isweekend;
 }
 

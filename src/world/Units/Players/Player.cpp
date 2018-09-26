@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellFailure.h"
+#include "Spell/Definitions/SpellFailure.h"
 #include "Spell/SpellMgr.h"
 #include "Map/MapMgr.h"
 #include "Data/WoWPlayer.h"

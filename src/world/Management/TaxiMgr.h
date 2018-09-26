@@ -22,6 +22,19 @@
 #ifndef TAXIMGR_H
 #define TAXIMGR_H
 
+//MIT
+
+namespace TaxiNodeError
+{
+    enum
+    {
+        Ok = 0,
+        UnspecificError = 1,
+        NoDirectPath = 2,
+        NotEnoughMoney = 3
+    };
+};
+
 #include <map>
 
 #define TAXI_TRAVEL_SPEED 32
@@ -123,6 +136,9 @@ class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
         TaxiPath* GetTaxiPath(uint32 path);
         TaxiPath* GetTaxiPath(uint32 from, uint32 to);
         TaxiNode* GetTaxiNode(uint32 node);
+
+        //MIT
+        uint32_t getNearestNodeForPlayer(Player* player);
 
         uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid);
         bool GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask);

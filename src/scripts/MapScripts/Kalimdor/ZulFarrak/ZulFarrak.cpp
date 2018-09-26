@@ -11,7 +11,7 @@ class ZulFarrak : public InstanceScript
 {
 public:
 
-    ZulFarrak(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ZulFarrak(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

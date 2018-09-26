@@ -81,12 +81,14 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
 
 bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj = NULL;
+    Object* obj = nullptr;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid != 0)
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+
+    if (wowGuid.GetOldGuid() != 0)
     {
-        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
 
     if (!obj)
@@ -142,10 +144,11 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {
     Creature* creature = nullptr;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid != 0)
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    if (wowGuid.GetOldGuid() != 0)
     {
-        creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
 
     if (creature == nullptr)
@@ -251,15 +254,17 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj = NULL;
+    Object* obj = nullptr;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid != 0)
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+
+    if (wowGuid.GetOldGuid() != 0)
     {
-        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
 
-    if (obj == NULL)
+    if (obj == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");
         return true;

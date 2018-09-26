@@ -11,7 +11,7 @@ class MagisterTerrace : public InstanceScript
 {
 public:
 
-    MagisterTerrace(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MagisterTerrace(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

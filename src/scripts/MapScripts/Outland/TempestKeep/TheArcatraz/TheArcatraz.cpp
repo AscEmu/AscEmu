@@ -11,7 +11,7 @@ class TheArcatraz : public InstanceScript
 {
 public:
 
-    TheArcatraz(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheArcatraz(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -21,14 +21,12 @@
 
 #include "Setup.h"
 
- //////////////////////////////////////////////////////////////////////////////////////////
- // Fel Orc Scavengers
+//////////////////////////////////////////////////////////////////////////////////////////
+// Fel Orc Scavengers
 class FelOrcScavengersQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI);
-    FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {
@@ -41,10 +39,8 @@ public:
 
 class Dreadtusk : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk);
-    Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
+    explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
     {
         if (!mKiller->isPlayer())
@@ -60,7 +56,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
 {
 public:
 
-    ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
     void OnActivate(Player* pPlayer)
@@ -151,12 +147,12 @@ public:
     }
 };
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Dreghood Elders
 class PrisonerGossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* pPlayer) override
     {
         int32 i = -1;
@@ -221,10 +217,8 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 class PrisonersDreghoodElders : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders);
-    PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -234,12 +228,9 @@ public:
     }
 };
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 class AncestralSpiritWolf : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf);
     AncestralSpiritWolf(Creature* c) : CreatureAIScript(c) {}
     void OnLoad() override
@@ -248,14 +239,10 @@ public:
     }
 };
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
 class HellfireDeadNPC : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC);
-    HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -297,7 +284,6 @@ public:
     }
 };
 
-
 void SetupHellfirePeninsula(ScriptMgr* mgr)
 {
     // Finished
@@ -311,12 +297,9 @@ void SetupHellfirePeninsula(ScriptMgr* mgr)
 
     mgr->register_gameobject_script(184661, &ZethGorMustBurnAlliance::Create);
 
-    Arcemu::Gossip::Script* pPrisonerGossip = new PrisonerGossip();
-    mgr->register_creature_gossip(20677, pPrisonerGossip);
-    mgr->register_creature_gossip(20678, pPrisonerGossip);
-    mgr->register_creature_gossip(20679, pPrisonerGossip);
-
-    //\todo mgr->register_dummy_spell(35460, &FuryOfTheDreghoodElders);
+    mgr->register_creature_gossip(20677, new PrisonerGossip());
+    mgr->register_creature_gossip(20678, new PrisonerGossip());
+    mgr->register_creature_gossip(20679, new PrisonerGossip());
 
     // NPC States
     mgr->register_creature_script(20677, &PrisonersDreghoodElders::Create);
@@ -326,10 +309,11 @@ void SetupHellfirePeninsula(ScriptMgr* mgr)
     mgr->register_creature_script(16852, &HellfireDeadNPC::Create);
     mgr->register_creature_script(20158, &HellfireDeadNPC::Create);
 
-    QuestScript* DarkTidingsHordeQuest = new DarkTidingsHorde();
-    QuestScript* DarkTidingsAllianceQuest = new DarkTidingsAlliance();
-    mgr->register_quest_script(9587, DarkTidingsAllianceQuest);
-    mgr->register_quest_script(9588, DarkTidingsHordeQuest);
+    mgr->register_quest_script(9587, new DarkTidingsAlliance());
+    mgr->register_quest_script(9588, new DarkTidingsHorde());
 
     mgr->register_creature_script(17077, &AncestralSpiritWolf::Create);
+
+
+    //\todo mgr->register_dummy_spell(35460, &FuryOfTheDreghoodElders);
 }

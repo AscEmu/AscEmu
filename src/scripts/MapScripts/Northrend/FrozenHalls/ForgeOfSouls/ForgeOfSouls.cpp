@@ -10,7 +10,7 @@ class ForgeOfSouls : public InstanceScript
 {
 public:
 
-    ForgeOfSouls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ForgeOfSouls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

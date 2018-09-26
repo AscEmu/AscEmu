@@ -1,20 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ This file is released under the MIT license. See README-MIT for more information.
  */
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
@@ -22,52 +8,46 @@
 #include "Raid_Naxxramas.h"
 #include "Spell/SpellMgr.h"
 
-
-const uint32 CN_THADDIUS = 15928;
+//const uint32 CN_THADDIUS = 15928;
 
 class NaxxramasScript : public InstanceScript
 {
-    public:
+public:
 
-        NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
+    explicit NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
 
-        static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
+    void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
+    {
+        //Creature* KelThuzad = NULL;
+        switch (pVictim->getEntry())
         {
-            //Creature* KelThuzad = NULL;
-            switch (pVictim->getEntry())
-            {
-                case 16998: // Kel thuzads cat
-                    {
-                        /* getCreatureBySpawnId not entry!
-                        KelThuzad = getCreatureBySpawnId(CN_KELTHUZAD);
-                        if (KelThuzad && KelThuzad->isAlive())
-                            KelThuzad->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
-                        KelThuzad = NULL;*/
-                    }
-                    break;
-                case CN_PATCHWERK:
-                    setGameObjectStateForEntry(181123, GO_STATE_OPEN);
-                    break;
-                case CN_GLUTH:
-                    {
-                    setGameObjectStateForEntry(181120, GO_STATE_OPEN);
-                    setGameObjectStateForEntry(181121, GO_STATE_OPEN);
-                    }
-                    break;
-                case CN_ANUBREKHAN:
-                    {
-                    setGameObjectStateForEntry(181195, GO_STATE_OPEN);
-                    setGameObjectStateForEntry(194022, GO_STATE_OPEN);
-                    }
-                    break;
-                case CN_GRAND_WIDOW_FAERLINA:
-                    setGameObjectStateForEntry(181209, GO_STATE_OPEN);
-                    break;
-            }
-        }
+            case 16998: // Kel thuzads cat
+                {
+                    /* getCreatureBySpawnId not entry!
+                    KelThuzad = getCreatureBySpawnId(CN_KELTHUZAD);
+                    if (KelThuzad && KelThuzad->isAlive())
+                        KelThuzad->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
+                    KelThuzad = NULL;*/
 
+                } break;
+            case CN_PATCHWERK:
+                setGameObjectStateForEntry(181123, GO_STATE_OPEN);
+                break;
+            case CN_GLUTH:
+                setGameObjectStateForEntry(181120, GO_STATE_OPEN);
+                setGameObjectStateForEntry(181121, GO_STATE_OPEN);
+                break;
+            case CN_ANUBREKHAN:
+                setGameObjectStateForEntry(181195, GO_STATE_OPEN);
+                setGameObjectStateForEntry(194022, GO_STATE_OPEN);
+                break;
+            case CN_GRAND_WIDOW_FAERLINA:
+                setGameObjectStateForEntry(181209, GO_STATE_OPEN);
+                break;
+        }
+    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2023,7 +2003,6 @@ void DeathKnightAI::OnCombatStart(Unit* /*pTarget*/)
     _applyAura(DEATH_KNIGHT_BLOOD_PRESENCE);
 }
 
-
 DeathKnightCaptainAI::DeathKnightCaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     if (_isHeroic())
@@ -2044,7 +2023,6 @@ void DeathKnightCaptainAI::OnCombatStart(Unit* /*pTarget*/)
 GhostOfNaxxramasAI::GhostOfNaxxramasAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
 }
-
 
 ShadeOfNaxxramasAI::ShadeOfNaxxramasAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
@@ -2087,7 +2065,7 @@ void ShadeOfNaxxramasAI::Destroy()
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-////// Portal of Shadows - timer value is a wild guess
+// Portal of Shadows - timer value is a wild guess
 PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     RegisterAIUpdateEvent(1000);

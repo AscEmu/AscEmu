@@ -293,7 +293,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 
         player->SendPacket(SmsgStandstateUpdate(STANDSTATE_SIT).serialise().get());
 
-        SetLogoutTimer(20000);
+        SetLogoutTimer(PLAYER_LOGOUT_DELAY);
     }
 }
 
@@ -516,10 +516,11 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
 
     LootRoll* lootRoll = nullptr;
 
-    const uint32_t guidType = GET_TYPE_FROM_GUID(recv_packet.objectGuid.GetOldGuid());
+    const HighGuid guidType = recv_packet.objectGuid.getHigh();
+
     switch (guidType)
     {
-        case HIGHGUID_TYPE_GAMEOBJECT:
+        case HighGuid::GameObject:
         {
             auto gameObject = GetPlayer()->GetMapMgr()->GetGameObject(recv_packet.objectGuid.getGuidLow());
             if (gameObject == nullptr)
@@ -535,7 +536,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
             if (gameObject->getGoType() == GAMEOBJECT_TYPE_CHEST)
                 lootRoll = gameObjectLootable->loot.items[recv_packet.slot].roll;
         } break;
-        case HIGHGUID_TYPE_UNIT:
+        case HighGuid::Unit:
         {
             auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.objectGuid.getGuidLow());
             if (creature == nullptr)

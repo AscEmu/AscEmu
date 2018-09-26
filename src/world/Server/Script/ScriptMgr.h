@@ -30,7 +30,8 @@
 
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) public:\
 static CreatureAIScript* Create(Creature* c) { return new cl(c); }
-#define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
+
+//#define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
 class Channel;
 class Guild;
@@ -288,7 +289,7 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 
         InstanceCreateMap mInstances;
         CreatureCreateMap _creatures;
-		Mutex m_creaturesMutex;
+        Mutex m_creaturesMutex;
         GameObjectCreateMap _gameobjects;
         HandleDummyAuraMap _auras;
         HandleDummySpellMap _spells;

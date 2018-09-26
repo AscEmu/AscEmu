@@ -10,7 +10,7 @@ class HallsOfReflection : public InstanceScript
 {
 public:
 
-    HallsOfReflection(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit HallsOfReflection(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

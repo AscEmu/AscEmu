@@ -10,7 +10,7 @@ class TrialOfTheCrusader : public InstanceScript
 {
 public:
 
-    TrialOfTheCrusader(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TrialOfTheCrusader(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

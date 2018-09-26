@@ -274,10 +274,9 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
         gossipSelectPacket.gossip_id, gossipSelectPacket.option, gossipSelectPacket.guid.getGuidLow());
 
     Arcemu::Gossip::Script* script = nullptr;
-    const uint32 guidtype = GET_TYPE_FROM_GUID(gossipSelectPacket.guid);
 
     Object* object;
-    if (guidtype == HIGHGUID_TYPE_ITEM)
+    if (gossipSelectPacket.guid.isItem())
     {
         object = GetPlayer()->GetItemInterface()->GetItemByGUID(gossipSelectPacket.guid);
         if (object != nullptr)
@@ -290,9 +289,9 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
 
     if (object != nullptr)
     {
-        if (guidtype == HIGHGUID_TYPE_UNIT)
+        if (gossipSelectPacket.guid.isUnit())
             script = Arcemu::Gossip::Script::GetInterface(static_cast<Creature*>(object));
-        else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+        else if (gossipSelectPacket.guid.isGameObject())
             script = Arcemu::Gossip::Script::GetInterface(static_cast<GameObject*>(object));
     }
 

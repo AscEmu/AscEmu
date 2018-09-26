@@ -10,7 +10,7 @@ class IceCrownCitadel : public InstanceScript
 {
 public:
 
-    IceCrownCitadel(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit IceCrownCitadel(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

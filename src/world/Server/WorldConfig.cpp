@@ -6,16 +6,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 
 #include "WorldConfig.h"
+#include <utility>
 #include "WorldConf.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapCell.h"
-#include "Server/WorldSocket.h"
+//#include "Server/WorldSocket.h"
 #include "Units/Players/PlayerDefines.hpp"
 #include "shared/Log.hpp"
 
 
-WorldConfig::WorldConfig()
+WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
 {
     // world.conf - Mysql Database Section
     worldDb.port = 3306;
@@ -67,7 +68,7 @@ WorldConfig::WorldConfig()
     server.requireGmForCommands = false;
     server.enableLfgJoinForNonLfg = false;
     server.gmtTimeZone = 0;
-    server.disableFearMovement = 0;
+    server.disableFearMovement = false;
     server.saveExtendedCharData = false;
     server.dataDir = "./";
 
@@ -160,10 +161,10 @@ WorldConfig::WorldConfig()
     remoteConsole.port = 8092;
 
     // world.conf - Movement Setup
-    movement.compressIntervalInMs = 1000;               // not used by core
-    movement.compressRate = 1;                          // not used by core
-    movement.compressThresholdCreatures = 15.0f;        // not used by core
-    movement.compressThresholdPlayers = 25.0f;          // not used by core
+    movement.compressIntervalInMs = 1000; // not used by core
+    movement.compressRate = 1; // not used by core
+    movement.compressThresholdCreatures = 15.0f; // not used by core
+    movement.compressThresholdPlayers = 25.0f; // not used by core
 
     // world.conf - Localization Setup
     // world.conf - Dungeon / Instance Setup
@@ -239,7 +240,7 @@ WorldConfig::WorldConfig()
     guild.saveInterval = 0;
 }
 
-WorldConfig::~WorldConfig() {}
+WorldConfig::~WorldConfig() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Config functions
@@ -285,7 +286,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     log.disableCrashdump = Config.MainConfig.getBoolDefault("Log", "DisableCrashdumpReport", false);
 
     log.extendedLogsDir = Config.MainConfig.getStringDefault("Log", "ExtendedLogDir", "./");
-    if (log.extendedLogsDir.compare("./") != 0)
+    if (log.extendedLogsDir != "./")
         log.extendedLogsDir = "./" + log.extendedLogsDir + "/";
 
     log.enableCheaterLog = Config.MainConfig.getBoolDefault("Log", "EnableCheaterLog", false);
@@ -353,10 +354,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.requireGmForCommands = !Config.MainConfig.getBoolDefault("Server", "AllowPlayerCommands", false);
     server.enableLfgJoinForNonLfg = Config.MainConfig.getBoolDefault("Server", "EnableLFGJoin", false);
     server.gmtTimeZone = Config.MainConfig.getIntDefault("Server", "TimeZone", 0);
-    server.disableFearMovement = Config.MainConfig.getBoolDefault("Server", "DisableFearMovement", 0);
+    server.disableFearMovement = Config.MainConfig.getBoolDefault("Server", "DisableFearMovement", false);
     server.saveExtendedCharData = Config.MainConfig.getBoolDefault("Server", "SaveExtendedCharData", false);
     server.dataDir = Config.MainConfig.getStringDefault("Server", "DataDir", "./");
-    if (server.dataDir.compare("./") != 0)
+    if (server.dataDir != "./")
         server.dataDir = "./" + server.dataDir + "/";
 
     // world.conf - Player Settings
@@ -619,7 +620,7 @@ uint32_t WorldConfig::getKickAFKPlayerTime()
 
 void WorldConfig::setMessageOfTheDay(std::string motd)
 {
-    server.messageOfTheDay = motd;
+    server.messageOfTheDay = std::move(motd);
 }
 
 std::string WorldConfig::getMessageOfTheDay()

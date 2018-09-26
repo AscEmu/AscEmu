@@ -145,10 +145,11 @@ void Spell::FillTargetMap(uint32 i)
         AddTarget(i, TargetType, p_caster->GetSummon());
     if (TargetType & SPELL_TARGET_OBJECT_PETOWNER)
     {
-        uint64 guid = m_targets.m_unitTarget;
-        if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PET)
+        WoWGuid wowGuid;
+        wowGuid.Init(m_targets.m_unitTarget);
+        if (wowGuid.isPet())
         {
-            Pet* p = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+            Pet* p = m_caster->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
             if (p != nullptr)
                 AddTarget(i, TargetType, p->GetPetOwner());
         }
@@ -277,11 +278,9 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
         if (m_spellInfo->isHealingSpell() && static_cast<Unit*>(itr)->GetHealthPct() == 100)
             continue;
 
-        size_t oldsize;
-
         if (obj->isInRange(firstTarget->GetPositionX(), firstTarget->GetPositionY(), firstTarget->GetPositionZ(), range))
         {
-            oldsize = list->size();
+            size_t oldsize = list->size();
             AddTarget(i, targetType, itr);
             if (list->size() == oldsize || list->size() >= jumps) //either out of jumps or a resist
                 return;

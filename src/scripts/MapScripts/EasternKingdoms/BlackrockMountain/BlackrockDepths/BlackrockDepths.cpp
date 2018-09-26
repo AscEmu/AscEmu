@@ -11,7 +11,7 @@ class BlackrockDepths : public InstanceScript
 {
 public:
 
-    BlackrockDepths(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackrockDepths(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

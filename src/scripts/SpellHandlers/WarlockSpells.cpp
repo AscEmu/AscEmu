@@ -236,19 +236,19 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->getEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23759;
-    else if (unitTarget->getEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860) //VoidWalker
         casted_spell_id = 23760;
-    else if (unitTarget->getEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863) //Succubus
         casted_spell_id = 23761;
-    else if (unitTarget->getEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417) //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23762;
         inc_resist_by_level = 20;
     }
-    else if (unitTarget->getEntry() == 17252)     //Felguard
+    else if (unitTarget->getEntry() == 17252) //Felguard
     {
         casted_spell_id = 35702;
         inc_resist_by_level_spell = 23762;
@@ -294,19 +294,19 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->getEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23826;
-    else if (unitTarget->getEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860) //VoidWalker
         casted_spell_id = 23841;
-    else if (unitTarget->getEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863) //Succubus
         casted_spell_id = 23833;
-    else if (unitTarget->getEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417) //Felhunter
     {
         casted_spell_id = 1;
         inc_resist_by_level_spell = 23837;
         inc_resist_by_level = 40;
     }
-    else if (unitTarget->getEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252) //Felguard
     {
         casted_spell_id = 35703;
         inc_resist_by_level_spell = 23837;
@@ -351,19 +351,19 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->getEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23827;
-    else if (unitTarget->getEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860) //VoidWalker
         casted_spell_id = 23842;
-    else if (unitTarget->getEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863) //Succubus
         casted_spell_id = 23834;
-    else if (unitTarget->getEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417) //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23838;
         inc_resist_by_level = 60;
     }
-    else if (unitTarget->getEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252) //Felguard
     {
         casted_spell_id = 35704;
         inc_resist_by_level_spell = 23838;
@@ -407,19 +407,19 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->getEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23828;
-    else if (unitTarget->getEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860) //VoidWalker
         casted_spell_id = 23843;
-    else if (unitTarget->getEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863) //Succubus
         casted_spell_id = 23835;
-    else if (unitTarget->getEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417) //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23839;
         inc_resist_by_level = 80;
     }
-    else if (unitTarget->getEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252) //Felguard
     {
         casted_spell_id = 35705;
         inc_resist_by_level_spell = 23839;
@@ -463,19 +463,19 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     uint32 inc_resist_by_level = 0;
     uint32 inc_resist_by_level_spell = 0;
 
-    if (unitTarget->getEntry() == 416)    //in case it is imp
+    if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23829;
-    else if (unitTarget->getEntry() == 1860)    //VoidWalker
+    else if (unitTarget->getEntry() == 1860) //VoidWalker
         casted_spell_id = 23844;
-    else if (unitTarget->getEntry() == 1863)    //Succubus
+    else if (unitTarget->getEntry() == 1863) //Succubus
         casted_spell_id = 23836;
-    else if (unitTarget->getEntry() == 417)    //Felhunter
+    else if (unitTarget->getEntry() == 417) //Felhunter
     {
         casted_spell_id = 0;
         inc_resist_by_level_spell = 23840;
         inc_resist_by_level = 100;
     }
-    else if (unitTarget->getEntry() == 17252)    //Felguard
+    else if (unitTarget->getEntry() == 17252) //Felguard
     {
         casted_spell_id = 35706;
         inc_resist_by_level_spell = 23840;
@@ -678,7 +678,8 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 void SetupWarlockSpells(ScriptMgr* mgr)
 {
-    //////////////////////////////////////////////// Dummy Effect /////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Dummy Effect
 
     mgr->register_dummy_spell(19028, &SoulLinkParent);
 
@@ -693,8 +694,8 @@ void SetupWarlockSpells(ScriptMgr* mgr)
 
     mgr->register_dummy_spell(29858, &SoulShatter);
 
-
-    ////////////////////////////////////////////////// Scripted Effect //////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Scripted Effect
 
     mgr->register_script_effect(6201, &MinorHealthStone);
 

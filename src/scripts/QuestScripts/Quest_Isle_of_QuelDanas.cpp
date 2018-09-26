@@ -23,7 +23,8 @@
 class ScryingOrb : public GameObjectAIScript
 {
 public:
-    ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+
+    explicit ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
 
     void OnActivate(Player* pPlayer)
@@ -52,11 +53,12 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Ayren Cloudbreaker Gossip
+//////////////////////////////////////////////////////////////////////////////////////////
+// Ayren Cloudbreaker Gossip
 class AyrenCloudbreaker_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
@@ -89,17 +91,17 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////// Unrestrained Dragonhawk Gossip
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Unrestrained Dragonhawk Gossip
 class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public Arcemu::Gossip::Script
 {
 public:
+
     void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1); // <Ride the dragonhawk to Sun's Reach>
 
         menu.Send(pPlayer);
     }
@@ -112,12 +114,12 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
-    TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
     {
@@ -131,7 +133,6 @@ public:
     }
 };
 
-
 void SetupIsleOfQuelDanas(ScriptMgr* mgr)
 {
     mgr->register_gameobject_script(187578, &ScryingOrb::Create);
@@ -139,10 +140,6 @@ void SetupIsleOfQuelDanas(ScriptMgr* mgr)
     mgr->register_creature_script(25001, &TheBattleForTheSunReachArmory::Create);
     mgr->register_creature_script(25002, &TheBattleForTheSunReachArmory::Create);
 
-    //GOSSIP
-    Arcemu::Gossip::Script* AyrenCloudbreakerGossip = new AyrenCloudbreaker_Gossip();
-    mgr->register_creature_gossip(25059, AyrenCloudbreakerGossip);
-
-    Arcemu::Gossip::Script* UnrestrainedDragonhawkGossip = new UnrestrainedDragonhawk_Gossip();
-    mgr->register_creature_gossip(25236, UnrestrainedDragonhawkGossip);
+    mgr->register_creature_gossip(25059, new AyrenCloudbreaker_Gossip());
+    mgr->register_creature_gossip(25236, new UnrestrainedDragonhawk_Gossip());
 }

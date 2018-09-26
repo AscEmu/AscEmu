@@ -237,11 +237,15 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     bool is_creature = false;
     Player* player_target = nullptr;
     uint64 guid = m_session->GetPlayer()->GetSelection();
-    switch (GET_TYPE_FROM_GUID(guid))
+
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    switch (wowGuid.getHigh())
     {
-        case HIGHGUID_TYPE_PET:
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
+        case HighGuid::Pet:
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
         {
             is_creature = true;
             break;
@@ -280,17 +284,18 @@ Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerr
 
     Creature* creature = nullptr;
     bool is_invalid_type = false;
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    switch(GET_TYPE_FROM_GUID(guid))
+    switch(wowGuid.getHigh())
     {
-        case HIGHGUID_TYPE_PET:
-            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid)));
+        case HighGuid::Pet:
+            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->GetMapMgr()->GetPet(wowGuid.getGuidLowPart()));
             break;
 
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
-            creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
             break;
         default:
             is_invalid_type = true;
@@ -329,13 +334,16 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
 uint32 ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
 {
     uint64 guid = m_session->GetPlayer()->GetSelection();
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+
     if (guid == 0)
     {
         SystemMessage(m_session, "No selection.");
         return 0;
     }
 
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
+    if (!wowGuid.isWaypoint())
     {
         SystemMessage(m_session, "You should select a Waypoint.");
         return 0;

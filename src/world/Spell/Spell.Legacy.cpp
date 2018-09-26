@@ -30,7 +30,6 @@
 #include "Definitions/ProcFlags.h"
 #include "Definitions/CastInterruptFlags.h"
 #include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/SpellCustomFlags.h"
 #include "Definitions/SpellGoFlags.h"
 #include "Definitions/SpellTargetType.h"
 #include "Definitions/SpellRanged.h"
@@ -2204,7 +2203,9 @@ void Spell::finish(bool successful)
             std::vector<uint64_t>::iterator itr = UniqueTargets.begin();
             for (; itr != UniqueTargets.end(); ++itr)
             {
-                if (GET_TYPE_FROM_GUID(*itr) == HIGHGUID_TYPE_UNIT)
+                WoWGuid wowGuid;
+                wowGuid.Init(*itr);
+                if (wowGuid.isUnit())
                 {
                     ++numTargets;
                     sQuestMgr.OnPlayerCast(p_caster, GetSpellInfo()->getId(), *itr);
@@ -3226,31 +3227,35 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             gameObjTarget = nullptr;
             playerTarget = nullptr;
             itemTarget = nullptr;
-            switch (GET_TYPE_FROM_GUID(guid))
+
+            WoWGuid wowGuid;
+            wowGuid.Init(guid);
+
+            switch (wowGuid.getHigh())
             {
-                case HIGHGUID_TYPE_UNIT:
-                case HIGHGUID_TYPE_VEHICLE:
-                    unitTarget = m_caster->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+                case HighGuid::Unit:
+                case HighGuid::Vehicle:
+                    unitTarget = m_caster->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_PET:
-                    unitTarget = m_caster->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+                case HighGuid::Pet:
+                    unitTarget = m_caster->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_PLAYER:
+                case HighGuid::Player:
                 {
-                    unitTarget = m_caster->GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
+                    unitTarget = m_caster->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
                     playerTarget = static_cast<Player*>(unitTarget);
                 }
                 break;
-                case HIGHGUID_TYPE_ITEM:
+                case HighGuid::Item:
                     if (p_caster != nullptr)
                         itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
 
                     break;
-                case HIGHGUID_TYPE_GAMEOBJECT:
-                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+                case HighGuid::GameObject:
+                    gameObjTarget = m_caster->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
                     break;
-                case HIGHGUID_TYPE_CORPSE:
-                    corpseTarget = objmgr.GetCorpse(GET_LOWGUID_PART(guid));
+                case HighGuid::Corpse:
+                    corpseTarget = objmgr.GetCorpse(wowGuid.getGuidLowPart());
                     break;
                 default:
                     LOG_ERROR("unitTarget not set");
@@ -3860,14 +3865,6 @@ uint32 Spell::GetMechanic(SpellInfo* sp)
 
 uint8 Spell::CanCast(bool tolerate)
 {
-    // Check if spell can be casted while player is moving.
-    if ((p_caster != nullptr) && p_caster->m_isMoving && (m_spellInfo->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT) && (m_castTime != 0) && (GetDuration() != 0))
-        return SPELL_FAILED_MOVING;
-
-    // Check if spell requires caster to be in combat to be casted.
-    if (p_caster != nullptr && m_spellInfo->CustomFlags & CUSTOM_FLAG_SPELL_REQUIRES_COMBAT && !p_caster->CombatStatus.IsInCombat())
-        return SPELL_FAILED_SPELL_UNAVAILABLE;
-
     /**
      *	Object cast checks
      */
@@ -3992,12 +3989,6 @@ uint8 Spell::CanCast(bool tolerate)
     if (p_caster)
     {
         /**
-         *	Stealth check
-         */
-        if (hasAttribute(ATTRIBUTES_REQ_STEALTH) && !p_caster->IsStealth() && !p_caster->ignoreShapeShiftChecks)
-            return SPELL_FAILED_ONLY_STEALTHED;
-
-        /**
          *	Indoor/Outdoor check
          */
         if (worldConfig.terrainCollision.isCollisionEnabled)
@@ -4007,11 +3998,6 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
             }
-            else if (hasAttribute(ATTRIBUTES_ONLY_OUTDOORS))
-            {
-                if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
-                    return SPELL_FAILED_ONLY_OUTDOORS;
-            }
         }
 
         /**
@@ -4019,13 +4005,9 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (p_caster->m_bg)
         {
-            if (isArena(p_caster->m_bg->GetType()) && hasAttributeExD(ATTRIBUTESEXD_NOT_IN_ARENA))
-                return SPELL_FAILED_NOT_IN_ARENA;
             if (!p_caster->m_bg->HasStarted() && (m_spellInfo->getId() == 1953 || m_spellInfo->getId() == 36554))  //Don't allow blink or shadowstep  if in a BG and the BG hasn't started.
                 return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
-        else if (hasAttributeExC(ATTRIBUTESEXC_BG_ONLY))
-            return SPELL_FAILED_ONLY_BATTLEGROUNDS;
 
         // only in outland check
         if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(ATTRIBUTESEXD_ONLY_IN_OUTLANDS))
@@ -4096,17 +4078,6 @@ uint8 Spell::CanCast(bool tolerate)
         {
             if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE))
                 return SPELL_FAILED_NOT_MOUNTED;
-        }
-
-        /**
-         *	Shapeshifting checks
-         */
-        if (!p_caster->ignoreShapeShiftChecks)
-        {
-            // No need to go through this function if the results are gonna be ignored anyway
-            uint8 shapeError = GetErrorAtShapeshiftedCast(GetSpellInfo(), p_caster->getShapeShiftForm());
-            if (shapeError != 0)
-                return shapeError;
         }
 
         // check if spell is allowed while shapeshifted
@@ -4638,10 +4609,6 @@ uint8 Spell::CanCast(bool tolerate)
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
 
-            /* Target OOC check */
-            if (hasAttributeEx(ATTRIBUTESEX_REQ_OOC_TARGET) && target->CombatStatus.IsInCombat())
-                return SPELL_FAILED_TARGET_IN_COMBAT;
-
             if (p_caster != nullptr)
             {
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
@@ -4655,26 +4622,6 @@ uint8 Spell::CanCast(bool tolerate)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;
-                }
-
-                // check aurastate
-                if (GetSpellInfo()->getTargetAuraState() && !target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraState()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-                if (GetSpellInfo()->getTargetAuraStateNot() && target->hasAuraState(AuraState(GetSpellInfo()->getTargetAuraStateNot()), GetSpellInfo(), p_caster)/* && !p_caster->ignoreAuraStateCheck*/)
-                {
-                    return SPELL_FAILED_TARGET_AURASTATE;
-                }
-
-                // check aura
-                if (GetSpellInfo()->getTargetAuraSpell() && !target->HasAura(GetSpellInfo()->getTargetAuraSpell()))
-                {
-                    return SPELL_FAILED_NOT_READY;
-                }
-                if (GetSpellInfo()->getTargetAuraSpellNot() && target->HasAura(GetSpellInfo()->getTargetAuraSpellNot()))
-                {
-                    return SPELL_FAILED_NOT_READY;
                 }
 
                 if (target->isPlayer())
@@ -7110,63 +7057,6 @@ bool Spell::GetCanReflect() const
 void Spell::SetCanReflect(bool reflect)
 {
     m_CanRelect = reflect;
-}
-
-uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
-{
-    uint32 stanceMask = (form ? decimalToMask(form) : 0);
-
-    if (spellInfo->getShapeshiftExclude() > 0 && spellInfo->getShapeshiftExclude() & stanceMask)				// can explicitly not be casted in this stance
-        return SPELL_FAILED_NOT_SHAPESHIFT;
-
-    if (spellInfo->getRequiredShapeShift() == 0 || spellInfo->getRequiredShapeShift() & stanceMask)			// can explicitly be casted in this stance
-        return 0;
-
-    bool actAsShifted = false;
-    if (form > FORM_NORMAL)
-    {
-        auto shapeshift_form = sSpellShapeshiftFormStore.LookupEntry(form);
-        if (!shapeshift_form)
-        {
-            LOG_ERROR("GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
-            return 0;
-        }
-
-        switch (shapeshift_form->id)
-        {
-            case FORM_TREE:
-            {
-                auto skill_line_ability = objmgr.GetSpellSkill(spellInfo->getId());
-                if (skill_line_ability && skill_line_ability->skilline == SPELLTREE_DRUID_RESTORATION)		// Restoration spells can be cast in Tree of Life form, for the rest: apply the default rules.
-                    return 0;
-            }
-            break;
-            case FORM_MOONKIN:
-            {
-                auto skill_line_ability = objmgr.GetSpellSkill(spellInfo->getId());
-                if (skill_line_ability && skill_line_ability->skilline == SPELLTREE_DRUID_BALANCE)			// Balance spells can be cast in Moonkin form, for the rest: apply the default rules.
-                    return 0;
-            }
-            break;
-        }
-        actAsShifted = !(shapeshift_form->Flags & 1);						// shapeshift acts as normal form for spells
-    }
-
-    if (actAsShifted)
-    {
-        if (hasAttribute(ATTRIBUTES_NOT_SHAPESHIFT))	// not while shapeshifted
-            return SPELL_FAILED_NOT_SHAPESHIFT;
-        else //if (spellInfo->RequiredShapeShift != 0)			// needs other shapeshift
-            return SPELL_FAILED_ONLY_SHAPESHIFT;
-    }
-    else
-    {
-        // Check if it even requires a shapeshift....
-        if (!hasAttributeExB(ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT) && spellInfo->getRequiredShapeShift() != 0)
-            return SPELL_FAILED_ONLY_SHAPESHIFT;
-    }
-
-    return 0;
 }
 
 uint32 Spell::GetTargetType(uint32 value, uint32 i)

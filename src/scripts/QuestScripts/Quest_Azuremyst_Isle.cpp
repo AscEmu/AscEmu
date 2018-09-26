@@ -24,10 +24,8 @@
  // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ChieftainOomoorooQAI);
-    ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
     {
@@ -37,7 +35,6 @@ public:
         }
     }
 };
-
 
 void SetupAzuremystIsle(ScriptMgr* mgr)
 {

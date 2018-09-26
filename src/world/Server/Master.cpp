@@ -54,7 +54,7 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20180714-00_guild_tables";
+static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
 static const char* REQUIRED_WORLD_DB_VERSION = "20180817-00_guild_data";
 
 void Master::_OnSignal(int s)
@@ -126,7 +126,7 @@ void createExtendedLogDir()
 bool checkRequiredDirs()
 {
     std::vector<std::string> requiredDirs;
-    requiredDirs.emplace_back("configs");
+    requiredDirs.emplace_back(CONFDIR);
     requiredDirs.emplace_back("dbc");
     requiredDirs.emplace_back("maps");
 
@@ -138,7 +138,7 @@ bool checkRequiredDirs()
     {
         fs::path requiredPath = fs::current_path();
 
-        if (dataDir.empty() || dir == "configs")
+        if (dataDir.empty() || dir == CONFDIR)
         {
             requiredPath /= dir;
         }

@@ -10,7 +10,7 @@ class TheUnderbog : public InstanceScript
 {
 public:
 
-    TheUnderbog(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheUnderbog(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

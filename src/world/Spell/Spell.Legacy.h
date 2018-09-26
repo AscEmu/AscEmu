@@ -24,7 +24,7 @@
 #include "SpellCastTargets.h"
 #include "Definitions/SpellTargetMod.h"
 #include "Spell/SpellInfo.hpp"
-#include "SpellFailure.h"
+#include "Definitions/SpellFailure.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"
 #include "Units/Unit.h"
@@ -54,6 +54,8 @@ class SERVER_DECL Spell : public EventableObject
         int32_t getCastTimeLeft() const { return m_timer; }
 
         virtual SpellCastResult canCast(bool tolerate);
+
+        SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -139,9 +141,6 @@ class SERVER_DECL Spell : public EventableObject
         void AddTime(uint32 type);
         void AddCooldown();
         void AddStartCooldown();
-        //
-        uint8 GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form);
-
 
         bool Reflect(Unit* refunit);
 

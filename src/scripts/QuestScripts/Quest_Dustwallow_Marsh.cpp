@@ -20,12 +20,15 @@
 
 #include "Setup.h"
 
-const uint32 BALOS_FRIENDLY_TIMER = 120;
+enum
+{
+    BALOS_FRIENDLY_TIMER = 120,
+};
+
 class BalosJackenQAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI);
-    BalosJackenQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit BalosJackenQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         friendlyTimer = BALOS_FRIENDLY_TIMER;
     }
@@ -88,9 +91,8 @@ protected:
 
 class OverlordMokMorokk : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk);
-    OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -159,9 +161,8 @@ public:
 
 class PrivateHendel : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel);
-    PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -220,7 +221,6 @@ public:
         Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 };
-
 
 void SetupDustwallowMarsh(ScriptMgr* mgr)
 {

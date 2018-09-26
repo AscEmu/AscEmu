@@ -23,6 +23,7 @@
 class TheDormantShade : public QuestScript
 {
 public:
+
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(1946, 2467.314f, 14.8471f, 23.5950f, 0, true, false, 0, 0);
@@ -33,9 +34,8 @@ public:
 
 class CalvinMontague : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague);
-    CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -104,9 +104,8 @@ public:
 
 class Zealot : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Zealot);
-    Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
@@ -123,7 +122,6 @@ public:
         }
     }
 };
-
 
 void SetupTirisfalGlades(ScriptMgr* mgr)
 {

@@ -10,7 +10,7 @@ class ShatteredHalls : public InstanceScript
 {
 public:
 
-    ShatteredHalls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ShatteredHalls(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

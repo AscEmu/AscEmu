@@ -27,8 +27,11 @@
 #include <Spell/Definitions/DispelType.h>
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-const uint32 BLOOD_PLAGUE = 55078;
-const uint32 FROST_FEVER = 55095;
+enum
+{
+    BLOOD_PLAGUE = 55078,
+    FROST_FEVER = 55095
+};
 
 bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 {

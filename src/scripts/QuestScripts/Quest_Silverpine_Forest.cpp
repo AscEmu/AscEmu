@@ -23,9 +23,8 @@
 
 class Deathstalker_Erland : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland);
-    Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
@@ -49,9 +48,8 @@ public:
 
 class Nightlash : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Nightlash);
-    Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
@@ -66,7 +64,6 @@ public:
         }
     }
 };
-
 
 void SetupSilverpineForest(ScriptMgr* mgr)
 {

@@ -11,7 +11,7 @@ class RuinsOfAhnQiraj : public InstanceScript
 {
 public:
 
-    RuinsOfAhnQiraj(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit RuinsOfAhnQiraj(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

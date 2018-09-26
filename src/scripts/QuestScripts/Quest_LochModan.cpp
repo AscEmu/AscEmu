@@ -59,10 +59,8 @@ static Movement::Location WaypointsMiran[] =
 
 class Miran : public CreatureAIScript
 {
-
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Miran);
-    Miran(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 7;
 
@@ -93,7 +91,6 @@ public:
 
     uint8 WPCount;
 };
-
 
 void SetupLochModan(ScriptMgr* mgr)
 {

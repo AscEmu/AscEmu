@@ -1,12 +1,12 @@
 #ifndef uint32
-	typedef unsigned int uint32;
+    typedef unsigned int uint32;
 #endif
 #ifndef int
-	typedef int int32;
+    typedef int int32;
 #endif
 
 #ifndef ASSERT
-	#define ASSERT assert
+    #define ASSERT assert
 #endif
 
 #define SERVER_DECL __declspec(dllexport)

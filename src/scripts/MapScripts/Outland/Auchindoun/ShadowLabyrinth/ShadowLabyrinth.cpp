@@ -11,7 +11,7 @@ class ShadowLabyrinth : public InstanceScript
 {
 public:
 
-    ShadowLabyrinth(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ShadowLabyrinth(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
     }
 

@@ -20,12 +20,29 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
- // Call to Arms!
+enum 
+{
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Hunt Is On (Quest: 11794)
+    QUEST_HUNT_IS_ON = 11794,
+
+    NPC_SURRISTRASZ = 24795,
+    GI_SURRISTRASZ = 191,   // "May I use a drake to fly elsewhere?"   
+
+    //SPELL_ABMER_TO_COLDARRA = 46064
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Neutralizing the Cauldrons
+    CN_PURIFYING_TOTEM = 25494
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Call to Arms!
 class BellRope : public GameObjectAIScript
 {
 public:
 
-    BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BellRope(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -34,12 +51,13 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Reading the Meters
 class ColdarraGeoMonitorNexus : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNexus(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -52,7 +70,7 @@ class ColdarraGeoMonitorSouth : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorSouth(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -65,7 +83,7 @@ class ColdarraGeoMonitorNorth : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNorth(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -78,7 +96,7 @@ class ColdarraGeoMonitorWest : public GameObjectAIScript
 {
 public:
 
-    ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorWest(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -87,13 +105,10 @@ public:
     }
 };
 
-// Neutralizing the Cauldrons
-const uint32 CN_PURIFYING_TOTEM = 25494;
-
 class PurifyingTotemAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI);
-    PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         setRooted(true);
@@ -101,13 +116,13 @@ class PurifyingTotemAI : public CreatureAIScript
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Cutting Off the Source
 class NerubarEggSac : public GameObjectAIScript
 {
 public:
 
-    NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NerubarEggSac(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -120,12 +135,12 @@ public:
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Bury Those Cockroaches!
 class SeaforiumDepthCharge : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge);
-    SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
         setCanEnterCombat(false);
@@ -179,13 +194,13 @@ class SeaforiumDepthCharge : public CreatureAIScript
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Hatching a Plan
 class BlueDragonEgg : public GameObjectAIScript
 {
 public:
 
-    BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BlueDragonEgg(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -199,7 +214,7 @@ public:
     }
 };
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
 // Quest: The Machagnomes
 enum eFizzcrank
 {
@@ -220,7 +235,6 @@ enum eFizzcrank
 
     QUEST_THE_MECHAGNOMES = 11708
 };
-
 
 class FizzcrankGossip : public Arcemu::Gossip::Script
 {
@@ -295,16 +309,7 @@ public:
     }
 };
 
-
-//GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield." this is not blizzlike...
-enum eSurristrasz
-{
-    NPC_SURRISTRASZ = 24795,
-    GI_SURRISTRASZ = 191,   // "May I use a drake to fly elsewhere?"   
-
-    SPELL_ABMER_TO_COLDARRA = 46064
-};
-
+///\todo: GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield." this is not blizzlike...
 class SurristraszGossip : public Arcemu::Gossip::Script
 {
 public:
@@ -327,7 +332,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
+        pPlayer->GetSession()->sendTaxiList(static_cast<Creature*>(pObject));
     }
 };
 
@@ -338,7 +343,7 @@ class WestPointStationValve : public GameObjectAIScript
 {
 public:
 
-    WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new WestPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -361,12 +366,13 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // North Point Station Valve
 class NorthPointStationValve : public GameObjectAIScript
 {
 public:
 
-    NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -389,12 +395,13 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Fizzcrank Pumping Station Valve
 class FizzcrankPumpingStationValve : public GameObjectAIScript
 {
 public:
 
-    FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new FizzcrankPumpingStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -417,12 +424,13 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // South Point Station Valve
 class SouthPointStationValve : public GameObjectAIScript
 {
 public:
 
-    SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new SouthPointStationValve(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -452,7 +460,7 @@ class TheGearmastersManual : public GameObjectAIScript
 {
 public:
 
-    TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+    explicit TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new TheGearmastersManual(GO); };
 
     void OnActivate(Player* pPlayer)
@@ -483,10 +491,8 @@ public:
 ///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
 class GearmasterMechazodAI : public CreatureAIScript
 {
-public:
-
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
-    GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
         getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
@@ -540,16 +546,15 @@ protected:
     uint32 phase;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // Hunt Is On (Quest: 11794)
-const uint32 questHuntIsOn = 11794;
-
 class SaltyJohnGossip : public Arcemu::Gossip::Script
 {
 public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
@@ -571,7 +576,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
@@ -593,7 +598,7 @@ public:
 
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
@@ -649,9 +654,8 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
 class Worm : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(Worm);
-    Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -660,7 +664,6 @@ public:
         getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
     }
 };
-
 
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
