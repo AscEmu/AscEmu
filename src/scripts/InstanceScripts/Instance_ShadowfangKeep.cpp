@@ -318,15 +318,18 @@ public:
 
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
+        WoWGuid wowGuid;
+        wowGuid.Init(pCreature->getGuid());
+
         switch (pCreature->getEntry())
         {
             case CN_ADAMANT:
             {
-                npc_adamant_GUID = GET_LOWGUID_PART(pCreature->getGuid());
+                npc_adamant_GUID = wowGuid.getGuidLowPart();
             }break;
             case CN_ASHCROMBE:
             {
-                npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->getGuid());
+                npc_ashcrombe_GUID = wowGuid.getGuidLowPart();
             }break;
             // Make him hidden
             case CN_ARUGAL:
@@ -341,7 +344,7 @@ public:
                 if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                 {
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
-                    nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
+                    nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
             }break;
             case CN_LUPINE_DELUSION:
@@ -349,7 +352,7 @@ public:
                 // Add to nandos summon lists only on his event is started
                 if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                 {
-                    nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
+                    nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
                 pCreature->Despawn(60 * 4 * 1000, 0); // Despawn in 4 mins
             }break;

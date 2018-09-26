@@ -4400,8 +4400,11 @@ public:
         uint8 loot_type2 = 1;
         Player* plr = static_cast<Player*>(ptr);
         plr->SetLootGUID(guid);
-        uint32 guidtype = GET_TYPE_FROM_GUID(guid);
-        if (guidtype == HIGHGUID_TYPE_UNIT)
+
+        WoWGuid wowGuid;
+        wowGuid.Init(guid);
+
+        if (wowGuid.isUnit())
         {
             Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
             CreatureProperties const* creature_properties = static_cast<Creature*>(pUnit)->GetCreatureProperties();
@@ -4422,10 +4425,10 @@ public:
                     break;
             }
         }
-        else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+        else if (wowGuid.isGameObject())
         {
-            GameObject* pGO = plr->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-            if (pGO != NULL && pGO->IsLootable())
+            GameObject* pGO = plr->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+            if (pGO != nullptr && pGO->IsLootable())
             {
                 GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
                 switch (loot_type)
@@ -4441,7 +4444,7 @@ public:
                 }
             }
         }
-        else if (guidtype == HIGHGUID_TYPE_ITEM)
+        else if (wowGuid.isItem())
         {
             Item* pItem = plr->GetItemInterface()->GetItemByGUID(guid);
             switch (loot_type)

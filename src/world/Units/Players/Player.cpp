@@ -1004,7 +1004,9 @@ PlayerSpec& Player::getActiveSpec()
 void Player::cancelDuel()
 {
     // arbiter
-    const auto arbiter = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter()));
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+    const auto arbiter = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
     if (arbiter)
         arbiter->RemoveFromWorld(true);
 

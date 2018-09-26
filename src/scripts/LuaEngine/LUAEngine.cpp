@@ -1762,9 +1762,13 @@ public:
         {
             iid = 0;
         }
+
+        WoWGuid wowGuid;
+        wowGuid.Init(getCreature()->getGuid());
+
         LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
         LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-        LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->getGuid()));
+        LuaGlobal::instance()->m_onLoadInfo.push_back(wowGuid.getGuidLowPart());
     }
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
