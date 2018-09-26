@@ -87,7 +87,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     wowGuid.Init(_player->GetLootGUID());
     if (wowGuid.isUnit())
     {
-        pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+        pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
         if (pCreature == nullptr)
             return;
 
@@ -95,7 +95,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else if (wowGuid.isGameObject())
     {
-        pGO = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
+        pGO = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
         if (pGO == nullptr)
             return;
 
@@ -859,8 +859,11 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
     if (pCorpse == NULL)	return;
 
+    WoWGuid wowGuid;
+    wowGuid.Init(pCorpse->getOwnerGuid());
+
     // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->getOwnerGuid()) != _player->getGuidLow() && pCorpse->getFlags() == 5)
+    if (wowGuid.getGuidLowPart() != _player->getGuidLow() && pCorpse->getFlags() == 5)
     {
         WorldPacket data(SMSG_RESURRECT_FAILED, 4);
         data << uint32(1); // this is a real guess!

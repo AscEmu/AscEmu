@@ -559,14 +559,16 @@ Corpse* ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
     _corpseslock.Acquire();
     for (CorpseMap::const_iterator itr = m_corpses.begin(); itr != m_corpses.end(); ++itr)
     {
-        if (GET_LOWGUID_PART(itr->second->getOwnerGuid()) == ownerguid)
+        WoWGuid wowGuid;
+        wowGuid.Init(itr->second->getOwnerGuid());
+
+        if (wowGuid.getGuidLowPart() == ownerguid)
         {
             rv = itr->second;
             break;
         }
     }
     _corpseslock.Release();
-
 
     return rv;
 }

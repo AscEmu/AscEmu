@@ -488,7 +488,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Unit* target = NULL;
+    Unit* target = nullptr;
     target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
     if (!target)
     {
@@ -496,10 +496,12 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
         return true;
     }
 
+    WoWGuid wowGuid;
+    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+
     std::stringstream sstext;
-    sstext << "threatlist of creature: " << Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection()) << " " << Arcemu::Util::GUID_HIPART(m_session->GetPlayer()->GetSelection()) << '\n';
-    TargetMap::iterator itr;
-    for (itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
+    sstext << "threatlist of creature: " << wowGuid.getGuidLowPart() << " " << wowGuid.getGuidHighPart() << '\n';
+    for (TargetMap::iterator itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
     {
         Unit* ai_t = target->GetMapMgr()->GetUnit(itr->first);
         if (!ai_t || !itr->second)

@@ -465,7 +465,10 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
         data << uint8(roles > 0);                          // Ready
         data << uint32(roles);                             // Roles
 
-        Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(guid));
+        WoWGuid wowGuid;
+        wowGuid.Init(guid);
+
+        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         data << uint8(player ? player->getLevel() : 0);    // Level
 
         for (LfgRolesMap::const_iterator it = pRoleCheck->roles.begin(); it != pRoleCheck->roles.end(); ++it)
@@ -473,13 +476,16 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
             if (it->first == pRoleCheck->leader)
                 continue;
 
+            WoWGuid guidItr;
+            guidItr.Init(it->first);
+
             guid = it->first;
             roles = it->second;
             data << uint64(guid);                          // Guid
             data << uint8(roles > 0);                      // Ready
             data << uint32(roles);                         // Roles
 
-            player = objmgr.GetPlayer(GET_LOWGUID_PART(guid));
+            player = objmgr.GetPlayer(guidItr.getGuidLowPart());
             data << uint8(player ? player->getLevel() : 0);     // Level
         }
     }
