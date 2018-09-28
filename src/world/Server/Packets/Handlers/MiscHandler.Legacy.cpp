@@ -47,6 +47,7 @@
 #include "Server/Packets/SmsgLootMasterList.h"
 #include "Server/Packets/SmsgLootMoneyNotify.h"
 #include "Server/Packets/CmsgLootRelease.h"
+#include "Server/Packets/SmsgLootReleaseResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -492,10 +493,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     if (!srlPacket.deserialise(recv_data))
         return;
 
-    WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, 9);
-    data << srlPacket.guid.GetOldGuid();
-    data << uint8(1);
-    SendPacket(&data);
+    SendPacket(SmsgLootReleaseResponse(srlPacket.guid.GetOldGuid(), 1).serialise().get());
 
     _player->SetLootGUID(0);
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);
