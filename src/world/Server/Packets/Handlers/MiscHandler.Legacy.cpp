@@ -48,6 +48,7 @@
 #include "Server/Packets/SmsgLootMoneyNotify.h"
 #include "Server/Packets/CmsgLootRelease.h"
 #include "Server/Packets/SmsgLootReleaseResponse.h"
+#include "Server/Packets/CmsgWhoIs.h"
 
 using namespace AscEmu::Packets;
 
@@ -679,8 +680,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 // MISC
 void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 {
-    std::string charname;
-    recv_data >> charname;
+    CmsgWhoIs srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     if (!GetPlayer()->GetSession()->CanUseCommand('3'))
     {
@@ -688,16 +690,16 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (charname.empty())
+    if (srlPacket.characterName.empty())
     {
         SendNotification("You did not enter a character name!");
         return;
     }
 
-    QueryResult* result_acctID = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", charname.c_str());
+    QueryResult* result_acctID = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
     if (!result_acctID)
     {
-        SendNotification("%s does not exit!", charname.c_str());
+        SendNotification("%s does not exit!", srlPacket.characterName.c_str());
         delete result_acctID;
         return;
     }
@@ -711,7 +713,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 
     if (!result)
     {
-        SendNotification("Account information for %s not found!", charname.c_str());
+        SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
         delete result;
         return;
     }
@@ -743,12 +745,12 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 
     delete result;
 
-    std::string msg = charname + "'s " + "account information: acctID: " + acctID + ", Name: " + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
+    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: " + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
 
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
     data << msg;
     SendPacket(&data);
-    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", GetPlayer()->getName().c_str(), charname.c_str());
+    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", GetPlayer()->getName().c_str(), srlPacket.characterName.c_str());
 }
 
 void WorldSession::HandlePlayerLogoutOpcode(WorldPacket& /*recv_data*/)
