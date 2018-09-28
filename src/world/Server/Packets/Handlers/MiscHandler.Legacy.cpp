@@ -44,6 +44,7 @@
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "WoWGuid.h"
 #include "Server/Packets/CmsgLoot.h"
+#include "Server/Packets/SmsgLootMasterList.h"
 
 using namespace AscEmu::Packets;
 
@@ -454,6 +455,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
         _player->RemoveInvisibility(); // Remove all invisibility
 
+    std::vector<uint64_t> onlineGroupMembers;
 
     if (_player->InGroup() && !_player->m_bg)
     {
@@ -462,28 +464,21 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
         {
             if (party->GetMethod() == PARTY_LOOT_MASTER)
             {
-                WorldPacket data(SMSG_LOOT_MASTER_LIST, 330);  // wont be any larger
-                data << (uint8)party->MemberCount();
-                uint32 real_count = 0;
-                SubGroup* s;
-                GroupMembersSet::iterator itr;
                 party->Lock();
                 for (uint32 i = 0; i < party->GetSubGroupCount(); ++i)
                 {
-                    s = party->GetSubGroup(i);
-                    for (itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
+                    if (SubGroup* s = party->GetSubGroup(i))
                     {
-                        if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
+                        for (auto groupMemberPlayerInfo : s->getGroupMembers())
                         {
-                            data << (*itr)->m_loggedInPlayer->getGuid();
-                            ++real_count;
+                            if (groupMemberPlayerInfo->m_loggedInPlayer && _player->GetZoneId() == groupMemberPlayerInfo->m_loggedInPlayer->GetZoneId())
+                                onlineGroupMembers.push_back(groupMemberPlayerInfo->m_loggedInPlayer->getGuid());
                         }
                     }
                 }
                 party->Unlock();
-                *(uint8*)&data.contents()[0] = static_cast<uint8>(real_count);
 
-                party->SendPacketToAll(&data);
+                party->SendPacketToAll(SmsgLootMasterList(onlineGroupMembers).serialise().get());
             }
         }
     }
