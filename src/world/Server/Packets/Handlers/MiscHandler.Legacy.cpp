@@ -49,6 +49,7 @@
 #include "Server/Packets/CmsgLootRelease.h"
 #include "Server/Packets/SmsgLootReleaseResponse.h"
 #include "Server/Packets/CmsgWhoIs.h"
+#include "Server/Packets/CmsgBug.h"
 
 using namespace AscEmu::Packets;
 
@@ -802,19 +803,11 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 suggestion;
-    uint32 contentlen;
-    std::string content;
-    uint32 typelen;
-    std::string type;
+    CmsgBug srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
-    recv_data >> suggestion;
-    recv_data >> contentlen;
-    recv_data >> content;
-    recv_data >> typelen;
-    recv_data >> type;
-
-    if (suggestion == 0)
+    if (srlPacket.suggestion == 0)
         LOG_DEBUG("WORLD: Received CMSG_BUG [Bug Report]");
     else
         LOG_DEBUG("WORLD: Received CMSG_BUG [Suggestion]");
@@ -829,9 +822,9 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
     ss << ReportID << "','";
     ss << AccountId << "','";
     ss << TimeStamp << "','";
-    ss << suggestion << "','";
-    ss << CharacterDatabase.EscapeString(type) << "','";
-    ss << CharacterDatabase.EscapeString(content) << "')";
+    ss << srlPacket.suggestion << "','";
+    ss << CharacterDatabase.EscapeString(srlPacket.type) << "','";
+    ss << CharacterDatabase.EscapeString(srlPacket.content) << "')";
 
     CharacterDatabase.ExecuteNA(ss.str().c_str());
 }

@@ -30,6 +30,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBattlemasterHello.h
    ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
    ${PATH_PREFIX}/CmsgBinderActivate.h
+   ${PATH_PREFIX}/CmsgBug.h
    ${PATH_PREFIX}/CmsgBuyBankSlot.h
    ${PATH_PREFIX}/CmsgBuyItem.h
    ${PATH_PREFIX}/CmsgBuyItemInSlot.h
