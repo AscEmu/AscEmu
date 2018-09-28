@@ -120,6 +120,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgLoot.h
    ${PATH_PREFIX}/CmsgLootMasterGive.h
    ${PATH_PREFIX}/CmsgLootMethod.h
+   ${PATH_PREFIX}/CmsgLootRelease.h
    ${PATH_PREFIX}/CmsgLootRoll.h
    ${PATH_PREFIX}/CmsgMailCreateTextItem.h
    ${PATH_PREFIX}/CmsgMailDelete.h

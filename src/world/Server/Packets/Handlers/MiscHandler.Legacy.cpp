@@ -46,6 +46,7 @@
 #include "Server/Packets/CmsgLoot.h"
 #include "Server/Packets/SmsgLootMasterList.h"
 #include "Server/Packets/SmsgLootMoneyNotify.h"
+#include "Server/Packets/CmsgLootRelease.h"
 
 using namespace AscEmu::Packets;
 
@@ -487,10 +488,12 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    recv_data >> guid;
+    CmsgLootRelease srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
+
     WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, 9);
-    data << guid;
+    data << srlPacket.guid.GetOldGuid();
     data << uint8(1);
     SendPacket(&data);
 
@@ -498,12 +501,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
-    WoWGuid wowGuid;
-    wowGuid.Init(guid);
-
-    if (wowGuid.isUnit())
+    if (srlPacket.guid.isUnit())
     {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
         if (pCreature == NULL)
             return;
         // remove from looter set
@@ -530,9 +530,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             }
         }
     }
-    else if (wowGuid.isGameObject())
+    else if (srlPacket.guid.isGameObject())
     {
-        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)guid);
+        GameObject* pGO = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
         if (pGO == NULL)
             return;
 
@@ -633,15 +633,15 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 break;
         }
     }
-    else if (wowGuid.isCorpse())
+    else if (srlPacket.guid.isCorpse())
     {
-        Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+        Corpse* pCorpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow());
         if (pCorpse)
             pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
     }
-    else if (wowGuid.isPlayer())
+    else if (srlPacket.guid.isPlayer())
     {
-        Player* plr = objmgr.GetPlayer((uint32)guid);
+        Player* plr = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
         if (plr)
         {
             plr->bShouldHaveLootableOnCorpse = false;
@@ -649,9 +649,9 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             plr->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
     }
-    else if (wowGuid.isItem())     // Loot from items, eg. sacks, milling, prospecting...
+    else if (srlPacket.guid.isItem())     // Loot from items, eg. sacks, milling, prospecting...
     {
-        Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
+        Item* item = _player->GetItemInterface()->GetItemByGUID(srlPacket.guid.GetOldGuid());
         if (item == NULL)
             return;
 
@@ -669,7 +669,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 
         // remove loot source items
         if (item->loot == NULL)
-            _player->GetItemInterface()->RemoveItemAmtByGuid(guid, 1);
+            _player->GetItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.GetOldGuid(), 1);
     }
     else
         LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
