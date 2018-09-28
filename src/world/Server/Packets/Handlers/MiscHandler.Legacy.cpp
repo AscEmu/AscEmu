@@ -288,15 +288,14 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    Loot* pLoot = NULL;
+    Loot* pLoot = nullptr;
     uint64 lootguid = GetPlayer()->GetLootGUID();
     if (!lootguid)
         return;   // dunno why this happens
 
     _player->interruptSpell();
 
-    WorldPacket pkt;
-    Unit* pt = 0;
+    Unit* pt = nullptr;
 
     WoWGuid wowGuid;
     wowGuid.Init(lootguid);
@@ -304,7 +303,8 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
     if (wowGuid.isUnit())
     {
         Creature* pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
-        if (!pCreature)return;
+        if (!pCreature)
+            return;
         pLoot = &pCreature->loot;
         pt = pCreature;
     }
@@ -324,13 +324,15 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
     else if (wowGuid.isCorpse())
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32)lootguid);
-        if (!pCorpse)return;
+        if (!pCorpse)
+            return;
         pLoot = &pCorpse->loot;
     }
     else if (wowGuid.isPlayer())
     {
         Player* pPlayer = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
-        if (!pPlayer) return;
+        if (!pPlayer)
+            return;
         pLoot = &pPlayer->loot;
         pPlayer->bShouldHaveLootableOnCorpse = false;
         pt = pPlayer;
@@ -343,22 +345,18 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
         pLoot = pItem->loot;
     }
 
-    if (!pLoot)
-    {
-        //bitch about cheating maybe?
+    if (pLoot == nullptr)
         return;
-    }
 
-    uint32 money = pLoot->gold;
-
+    const uint32 money = pLoot->gold;
     pLoot->gold = 0;
+
     WorldPacket data(1);
     data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
     // send to all looters
-    Player* plr;
-    for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    for (auto looters : pLoot->looters)
     {
-        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+        if (auto plr = _player->GetMapMgr()->GetPlayer(looters))
             plr->GetSession()->SendPacket(&data);
     }
 
@@ -384,48 +382,49 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
     else
     {
         //this code is wrong must be party not raid!
-        Group* party = _player->GetGroup();
-        if (party)
+        if (Group* party = _player->GetGroup())
         {
-            /*uint32 share = money/party->MemberCount();*/
-            std::vector<Player*> targets;
-            targets.reserve(party->MemberCount());
+            std::vector<Player*> groupMembers;
 
-            GroupMembersSet::iterator itr;
-            SubGroup* sgrp;
+            groupMembers.reserve(party->MemberCount());
+
             party->getLock().Acquire();
             for (uint32 i = 0; i < party->GetSubGroupCount(); i++)
             {
-                sgrp = party->GetSubGroup(i);
-                for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
+                auto subGroup = party->GetSubGroup(i);
+                for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                 {
-                    if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
-                        targets.push_back((*itr)->m_loggedInPlayer);
+                    if (groupMemberPlayerInfo->m_loggedInPlayer
+                        && groupMemberPlayerInfo->m_loggedInPlayer->GetZoneId() == _player->GetZoneId()
+                        && _player->GetInstanceID() == groupMemberPlayerInfo->m_loggedInPlayer->GetInstanceID())
+                    {
+                        groupMembers.push_back(groupMemberPlayerInfo->m_loggedInPlayer);
+                    }
                 }
             }
             party->getLock().Release();
 
-            if (!targets.size())
+            if (groupMembers.empty())
                 return;
 
-            uint32 share = money / uint32(targets.size());
+            const uint32 sharedMoney = money / uint32(groupMembers.size());
 
-            pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
-            pkt << share;
+            WorldPacket pkt(SMSG_LOOT_MONEY_NOTIFY, 4);
+            pkt << sharedMoney;
 
-            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (auto& player : groupMembers)
             {
                 // Check they don't have more than the max gold
-                if (worldConfig.player.isGoldCapEnabled && ((*itr2)->GetGold() + share) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (player->GetGold() + sharedMoney) > worldConfig.player.limitGoldAmount)
                 {
-                    (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+                    player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    (*itr2)->ModGold(share);
-                    (*itr2)->GetSession()->SendPacket(&pkt);
+                    player->ModGold(sharedMoney);
+                    player->GetSession()->SendPacket(&pkt);
 #if VERSION_STRING > TBC
-                    (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+                    player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney, 0, 0);
 #endif
                 }
             }
