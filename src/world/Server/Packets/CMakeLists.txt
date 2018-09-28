@@ -165,6 +165,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgQuestQuery.h
    ${PATH_PREFIX}/CmsgReadItem.h
    ${PATH_PREFIX}/CmsgRealmSplit.h
+   ${PATH_PREFIX}/CmsgReclaimCorpse.h
    ${PATH_PREFIX}/CmsgRepairItem.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
    ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h

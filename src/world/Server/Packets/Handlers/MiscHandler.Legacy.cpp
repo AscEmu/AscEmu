@@ -50,6 +50,7 @@
 #include "Server/Packets/SmsgLootReleaseResponse.h"
 #include "Server/Packets/CmsgWhoIs.h"
 #include "Server/Packets/CmsgBug.h"
+#include "Server/Packets/CmsgReclaimCorpse.h"
 
 using namespace AscEmu::Packets;
 
@@ -835,16 +836,18 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
-
-    uint64 guid;
-    recv_data >> guid;
-
-    if (guid == 0)
+    CmsgReclaimCorpse srlPacket;
+    if (!srlPacket.deserialise(recv_data))
         return;
 
-    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
-    if (pCorpse == NULL)	return;
+    LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
+
+    if (srlPacket.guid.GetOldGuid() == 0)
+        return;
+
+    Corpse* pCorpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow());
+    if (pCorpse == nullptr)
+        return;
 
     // Check that we're reviving from a corpse, and that corpse is associated with us.
     if (GET_LOWGUID_PART(pCorpse->getOwnerGuid()) != _player->getGuidLow() && pCorpse->getFlags() == 5)
