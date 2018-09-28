@@ -45,6 +45,7 @@
 #include "WoWGuid.h"
 #include "Server/Packets/CmsgLoot.h"
 #include "Server/Packets/SmsgLootMasterList.h"
+#include "Server/Packets/SmsgLootMoneyNotify.h"
 
 using namespace AscEmu::Packets;
 
@@ -409,9 +410,6 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
 
             const uint32 sharedMoney = money / uint32(groupMembers.size());
 
-            WorldPacket pkt(SMSG_LOOT_MONEY_NOTIFY, 4);
-            pkt << sharedMoney;
-
             for (auto& player : groupMembers)
             {
                 // Check they don't have more than the max gold
@@ -422,7 +420,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
                 else
                 {
                     player->ModGold(sharedMoney);
-                    player->GetSession()->SendPacket(&pkt);
+                    player->GetSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney).serialise().get());
 #if VERSION_STRING > TBC
                     player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney, 0, 0);
 #endif
