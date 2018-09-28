@@ -117,6 +117,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgLfgProposalResult.h
    ${PATH_PREFIX}/CmsgLfgSetBootVote.h
    ${PATH_PREFIX}/CmsgListInventory.h
+   ${PATH_PREFIX}/CmsgLoot.h
    ${PATH_PREFIX}/CmsgLootMasterGive.h
    ${PATH_PREFIX}/CmsgLootMethod.h
    ${PATH_PREFIX}/CmsgLootRoll.h

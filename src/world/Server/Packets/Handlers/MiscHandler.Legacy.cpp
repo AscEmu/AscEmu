@@ -43,6 +43,7 @@
 #include "Server/Packets/CmsgGameobjUse.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "WoWGuid.h"
+#include "Server/Packets/CmsgLoot.h"
 
 using namespace AscEmu::Packets;
 
@@ -435,10 +436,11 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid;
-    recv_data >> guid;
+    CmsgLoot srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
-    if (guid == 0)
+    if (srlPacket.guid == 0)
         return;
 
     if (_player->IsDead())    // If the player is dead they can't loot!
@@ -485,7 +487,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
             }
         }
     }
-    _player->SendLoot(guid, LOOT_CORPSE, _player->GetMapId());
+    _player->SendLoot(srlPacket.guid, LOOT_CORPSE, _player->GetMapId());
 }
 
 
