@@ -51,6 +51,7 @@
 #include "Server/Packets/CmsgWhoIs.h"
 #include "Server/Packets/CmsgBug.h"
 #include "Server/Packets/CmsgReclaimCorpse.h"
+#include "Server/Packets/SmsgResurrectFailed.h"
 
 using namespace AscEmu::Packets;
 
@@ -852,18 +853,14 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     // Check that we're reviving from a corpse, and that corpse is associated with us.
     if (GET_LOWGUID_PART(pCorpse->getOwnerGuid()) != _player->getGuidLow() && pCorpse->getFlags() == 5)
     {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1); // this is a real guess!
-        SendPacket(&data);
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
         return;
     }
 
     // Check we are actually in range of our corpse
     if (pCorpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
     {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
         return;
     }
 
@@ -871,9 +868,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     // cebernic: changes for better logic
     if (time(NULL) < pCorpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
     {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
         return;
     }
 

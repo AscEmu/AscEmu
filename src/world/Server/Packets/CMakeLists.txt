@@ -304,6 +304,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgReadItemFailed.h
    ${PATH_PREFIX}/SmsgReadItemOk.h
    ${PATH_PREFIX}/SmsgRealmSplit.h
+   ${PATH_PREFIX}/SmsgResurrectFailed.h
    ${PATH_PREFIX}/SmsgSellItem.h
    ${PATH_PREFIX}/SmsgSendMailResult.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
