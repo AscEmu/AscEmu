@@ -53,6 +53,7 @@
 #include "Server/Packets/CmsgReclaimCorpse.h"
 #include "Server/Packets/SmsgResurrectFailed.h"
 #include "Server/Packets/CmsgAlterAppearance.h"
+#include "Server/Packets/SmsgBarberShopResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -1102,6 +1103,16 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
 #define OPEN_CHEST 11437
 
 #if VERSION_STRING > TBC
+
+namespace BarberShopResult
+{
+    enum
+    {
+        Ok = 0,
+        NoMoney = 1
+    };
+}
+
 void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1162,14 +1173,11 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 
     if (!_player->HasGold(cost))
     {
-        WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
-        data << uint32(1);                                  // no money
-        SendPacket(&data);
+        SendPacket(SmsgBarberShopResult(BarberShopResult::NoMoney).serialise().get());
         return;
     }
-    WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
-    data << uint32(0);                                  // ok
-    SendPacket(&data);
+
+    SendPacket(SmsgBarberShopResult(BarberShopResult::Ok).serialise().get());
 
     _player->setHairStyle(static_cast<uint8>(newhair));
     _player->setHairColor(static_cast<uint8>(newhaircolor));

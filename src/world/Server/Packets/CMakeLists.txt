@@ -239,6 +239,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
    ${PATH_PREFIX}/SmsgArenaError.h
    ${PATH_PREFIX}/SmsgAuctionCommandResult.h
+   ${PATH_PREFIX}/SmsgBarberShopResult.h
    ${PATH_PREFIX}/SmsgBinderConfirm.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
    ${PATH_PREFIX}/SmsgBuyBankSlotResult.h
