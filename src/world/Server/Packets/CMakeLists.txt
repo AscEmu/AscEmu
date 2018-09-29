@@ -195,6 +195,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSplitItem.h
    ${PATH_PREFIX}/CmsgStableSwapPet.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
+   ${PATH_PREFIX}/CmsgSummonResponse.h
    ${PATH_PREFIX}/CmsgSwapInvItem.h
    ${PATH_PREFIX}/CmsgSwapItem.h
    ${PATH_PREFIX}/CmsgTaxinodeStatusQuery.h

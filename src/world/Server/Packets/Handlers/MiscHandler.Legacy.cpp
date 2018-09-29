@@ -55,6 +55,7 @@
 #include "Server/Packets/CmsgAlterAppearance.h"
 #include "Server/Packets/SmsgBarberShopResult.h"
 #include "Server/Packets/CmsgInspect.h"
+#include "Server/Packets/CmsgSummonResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -1913,14 +1914,13 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 SummonerGUID;
-    uint8 IsClickOk;
-
-    recv_data >> SummonerGUID;
-    recv_data >> IsClickOk;
-
-    if (!IsClickOk)
+    CmsgSummonResponse srlPacket;
+    if (!srlPacket.deserialise(recv_data))
         return;
+
+    if (!srlPacket.isClickOn)
+        return;
+
     if (!_player->m_summoner)
     {
         SendNotification("You do not have permission to perform that function.");
