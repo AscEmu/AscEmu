@@ -52,6 +52,7 @@
 #include "Server/Packets/CmsgBug.h"
 #include "Server/Packets/CmsgReclaimCorpse.h"
 #include "Server/Packets/SmsgResurrectFailed.h"
+#include "Server/Packets/CmsgAlterAppearance.h"
 
 using namespace AscEmu::Packets;
 
@@ -891,7 +892,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     if (uiID > 8)
     {
         // Shit..
-        LOG_ERROR("WARNING: Accountdata > 8 (%d) was requested to be updated by %s of account %d!", uiID, GetPlayer()->getName().c_str(), this->GetAccountId());
+        LOG_ERROR("WARNING: Accountdata > 8 (%u) was requested to be updated by %s of account %d!", uiID, GetPlayer()->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -1105,17 +1106,11 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
+    CmsgAlterAppearance srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
+
     LOG_DEBUG("WORLD: CMSG_ALTER_APPEARANCE ");
-
-    uint32 hair;
-    uint32 haircolor;
-    uint32 facialhairorpiercing;
-    uint32 skincolor;
-
-    recv_data >> hair;
-    recv_data >> haircolor;
-    recv_data >> facialhairorpiercing;
-    recv_data >> skincolor;
 
     uint32 oldhair = _player->getHairStyle();
     uint32 oldhaircolor = _player->getHairColor();
@@ -1126,19 +1121,19 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 
     uint32 cost = 0;
 
-    auto barberShopHair = sBarberShopStyleStore.LookupEntry(hair);
+    auto barberShopHair = sBarberShopStyleStore.LookupEntry(srlPacket.hair);
     if (!barberShopHair)
         return;
     newhair = barberShopHair->hair_id;
 
-    newhaircolor = haircolor;
+    newhaircolor = srlPacket.hairColor;
 
-    auto barberShopFacial = sBarberShopStyleStore.LookupEntry(facialhairorpiercing);
+    auto barberShopFacial = sBarberShopStyleStore.LookupEntry(srlPacket.facialHairOrPiercing);
     if (!barberShopFacial)
         return;
     newfacial = barberShopFacial->hair_id;
 
-    auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(skincolor);
+    auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(srlPacket.skinColor);
     if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
         return;
 

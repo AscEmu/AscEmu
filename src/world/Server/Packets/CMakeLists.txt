@@ -7,6 +7,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgActivatetaxiexpress.h
    ${PATH_PREFIX}/CmsgAddFriend.h
    ${PATH_PREFIX}/CmsgAddIgnore.h
+   ${PATH_PREFIX}/CmsgAlterAppearance.h
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQuery.h
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQueue.h
    ${PATH_PREFIX}/CmsgAreatrigger.h
