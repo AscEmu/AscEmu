@@ -54,6 +54,7 @@
 #include "Server/Packets/SmsgResurrectFailed.h"
 #include "Server/Packets/CmsgAlterAppearance.h"
 #include "Server/Packets/SmsgBarberShopResult.h"
+#include "Server/Packets/CmsgInspect.h"
 
 using namespace AscEmu::Packets;
 
@@ -1582,13 +1583,14 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
 void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data, 8);
     CHECK_INWORLD_RETURN;
 
-    uint64 guid;
+    CmsgInspect srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
+
     ByteBuffer m_Packed_GUID;
-    recv_data >> guid;
-    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
+    Player* player = _player->GetMapMgr()->GetPlayer((uint32)srlPacket.guid);
 
     if (player == NULL)
     {
@@ -1596,8 +1598,8 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         return;
     }
 
-    _player->setTargetGuid(guid);
-    _player->SetSelection(guid);
+    _player->setTargetGuid(srlPacket.guid);
+    _player->SetSelection(srlPacket.guid);
 
     if (_player->m_comboPoints)
         _player->UpdateComboPoints();

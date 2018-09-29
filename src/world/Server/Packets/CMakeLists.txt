@@ -106,6 +106,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGuildSetPublicNote.h
    ${PATH_PREFIX}/CmsgGuildSetRank.h
    ${PATH_PREFIX}/CmsgInitiateTrade.h
+   ${PATH_PREFIX}/CmsgInspect.h
    ${PATH_PREFIX}/CmsgInspectAchievements.h
    ${PATH_PREFIX}/CmsgItemNameQuery.h
    ${PATH_PREFIX}/CmsgItemQuerySingle.h
