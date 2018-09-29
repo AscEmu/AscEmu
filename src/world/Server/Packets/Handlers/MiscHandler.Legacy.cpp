@@ -56,6 +56,7 @@
 #include "Server/Packets/SmsgBarberShopResult.h"
 #include "Server/Packets/CmsgInspect.h"
 #include "Server/Packets/CmsgSummonResponse.h"
+#include "Server/Packets/CmsgRemoveGlyph.h"
 
 using namespace AscEmu::Packets;
 
@@ -1940,14 +1941,15 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint16_t glyphNum;
-    recv_data >> glyphNum;
+    CmsgRemoveGlyph srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
-    if (glyphNum > 5)
+    if (srlPacket.glyphNumber > 5)
         return; // Glyph doesn't exist
 
     // Get info
-    uint32 glyphId = _player->GetGlyph(glyphNum);
+    uint32 glyphId = _player->GetGlyph(srlPacket.glyphNumber);
     if (glyphId == 0)
         return;
 
@@ -1955,9 +1957,9 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
     if (!glyph_properties)
         return;
 
-    _player->SetGlyph(glyphNum, 0);
+    _player->SetGlyph(srlPacket.glyphNumber, 0);
     _player->removeAllAurasById(glyph_properties->SpellID);
-    _player->m_specs[_player->m_talentActiveSpec].glyphs[glyphNum] = 0;
+    _player->m_specs[_player->m_talentActiveSpec].glyphs[srlPacket.glyphNumber] = 0;
     _player->smsg_TalentsInfo(false);
 }
 #endif
