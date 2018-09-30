@@ -38,3 +38,5 @@ UPDATE `creature_properties` SET `invisibility_type`='0' WHERE `invisibility_typ
 -- Quest npc invisibility (invisibility_type 10)
 -- These npcs have already correct aura set
 UPDATE `creature_properties` SET `invisibility_type`='0' WHERE `invisibility_type`='10';
+
+INSERT INTO `world_db_version` VALUES ('37', '20180930-00_creature_properties');
