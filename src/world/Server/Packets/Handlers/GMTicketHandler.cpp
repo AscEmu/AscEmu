@@ -10,6 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Server/Packets/CmsgGmTicketCreate.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 enum GMTicketResults
@@ -29,17 +32,9 @@ enum GMTicketSystem
 
 void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 {
-    uint32_t map;
-    float x, y, z;
-    std::string message;
-    std::string message2;
-
-    recv_data >> map;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
-    recv_data >> message;
-    recv_data >> message2;
+    CmsgGmTicketCreate srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     // Remove pending tickets
     objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
@@ -47,11 +42,11 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
     GM_Ticket* ticket = new GM_Ticket;
     ticket->guid = uint64_t(objmgr.GenerateTicketID());
     ticket->playerGuid = GetPlayer()->getGuid();
-    ticket->map = map;
-    ticket->posX = x;
-    ticket->posY = y;
-    ticket->posZ = z;
-    ticket->message = message;
+    ticket->map = srlPacket.map;
+    ticket->posX = srlPacket.location.x;
+    ticket->posY = srlPacket.location.y;
+    ticket->posZ = srlPacket.location.z;
+    ticket->message = srlPacket.message;
     ticket->timestamp = (uint32_t)UNIXTIME;
     ticket->name = GetPlayer()->getName().c_str();
     ticket->level = GetPlayer()->getLevel();
