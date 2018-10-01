@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/Packets/CmsgGmTicketCreate.h"
+#include "Server/Packets/SmsgGmTicketCreate.h"
 
 using namespace AscEmu::Packets;
 
@@ -56,9 +57,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 
     objmgr.AddGMTicket(ticket, false);
 
-    WorldPacket data(SMSG_GMTICKET_CREATE, 4);
-    data << uint32_t(GMTNoErrors);
-    SendPacket(&data);
+    SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
     // send message indicating new ticket
     Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), GetPlayer());
