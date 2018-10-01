@@ -272,6 +272,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGmTicketCreate.h
    ${PATH_PREFIX}/SmsgGmTicketDeleteTicket.h
    ${PATH_PREFIX}/SmsgGmTicketGetTicket.h
+   ${PATH_PREFIX}/SmsgGmTicketSystemstatus.h
    ${PATH_PREFIX}/SmsgGmTicketUpdateText.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h

@@ -38,7 +38,7 @@ namespace AscEmu { namespace Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << error;
-            if (error != 6)                             // No current ticket
+            if (error == 6)                             // No current ticket
                 packet << message.c_str() << mapId;     // mapId is uint8_t, valid for cata/mop?
             return true;
         }
