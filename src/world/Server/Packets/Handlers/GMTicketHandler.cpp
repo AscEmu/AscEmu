@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketCreate.h"
 #include "Server/Packets/CmsgGmTicketUpdateText.h"
 #include "Server/Packets/SmsgGmTicketUpdateText.h"
+#include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 
 using namespace AscEmu::Packets;
 
@@ -120,9 +121,7 @@ void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/)
 
     objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
 
-    WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-    data << uint32_t(GMTTicketRemoved);
-    SendPacket(&data);
+    SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
     Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), GetPlayer());
     if (channel != nullptr && ticket != nullptr)

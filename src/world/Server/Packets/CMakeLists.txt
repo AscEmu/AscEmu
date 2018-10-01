@@ -270,6 +270,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgFriendStatus.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGmTicketCreate.h
+   ${PATH_PREFIX}/SmsgGmTicketDeleteTicket.h
    ${PATH_PREFIX}/SmsgGmTicketUpdateText.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupInvite.h

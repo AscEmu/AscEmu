@@ -26,6 +26,9 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgGmTicketDeleteTicket.h"
+
+using namespace AscEmu::Packets;
 
 #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE
@@ -153,9 +156,8 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
 
     // Notify player about removing ticket
-    WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-    data << uint32(9);
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+
     // Response - Send GM Survey
     WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
     datab << uint32(3);
@@ -309,9 +311,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
 
     // Notify player about removing ticket
-    WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-    data << uint32(9);
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
     // Response - Send GM Survey
     WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
     datab << uint32(3);
@@ -548,9 +548,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
     if (plr != NULL && plr->IsInWorld())
     {
         // Notify player about removing ticket
-        WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-        data << uint32(9);
-        plr->GetSession()->SendPacket(&data);
+        plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
         // Response - Send GM Survey
         WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
