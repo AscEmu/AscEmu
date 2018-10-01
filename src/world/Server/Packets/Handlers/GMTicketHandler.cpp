@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGmTicketCreate.h"
 #include "Server/Packets/SmsgGmTicketCreate.h"
 #include "Server/Packets/CmsgGmTicketUpdateText.h"
+#include "Server/Packets/SmsgGmTicketUpdateText.h"
 
 using namespace AscEmu::Packets;
 
@@ -85,12 +86,10 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
     if (!srlPacket.deserialise(recv_data))
         return;
 
-    WorldPacket data(SMSG_GMTICKET_UPDATETEXT, 4);
-
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
     if (ticket == nullptr)
     {
-        data << uint32_t(GMTNoTicketFound);
+        SendPacket(SmsgGmTicketUpdateText(GMTNoTicketFound).serialise().get());
     }
     else
     {
@@ -98,10 +97,8 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
         ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
         objmgr.UpdateGMTicket(ticket);
 
-        data << uint32_t(GMTNoErrors);
+        SendPacket(SmsgGmTicketUpdateText(GMTNoErrors).serialise().get());
     }
-
-    SendPacket(&data);
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     Channel* channel = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), GetPlayer());
