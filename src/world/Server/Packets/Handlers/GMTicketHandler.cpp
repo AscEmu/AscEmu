@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketGetTicket.h"
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
+#include "Server/Packets/CmsgGmReportLag.h"
 
 using namespace AscEmu::Packets;
 
@@ -159,31 +160,22 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
     if (HasGMPermissions())
-    {
         sWorld.toggleGmTicketStatus();
-    }
 }
 
 void WorldSession::HandleReportLag(WorldPacket& recv_data)
 {
-    uint32_t lagType;
-    uint32_t mapId;
-    float position_x;
-    float position_y;
-    float position_z;
-
-    recv_data >> lagType;
-    recv_data >> mapId;
-    recv_data >> position_x;
-    recv_data >> position_y;
-    recv_data >> position_z;
+    CmsgGmReportLag srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     if (GetPlayer() != nullptr)
     {
-        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->getGuidLow(), _accountId, lagType, mapId, position_x, position_y, position_z);
+        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", 
+            GetPlayer()->getGuidLow(), _accountId, srlPacket.lagType, srlPacket.mapId, srlPacket.location.x, srlPacket.location.y, srlPacket.location.z);
     }
 
-    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->getName().c_str(), lagType, mapId);
+    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->getName().c_str(), srlPacket.lagType, srlPacket.mapId);
 }
 
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
