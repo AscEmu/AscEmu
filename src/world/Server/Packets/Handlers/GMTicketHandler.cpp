@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ChannelMgr.h"
 #include "Server/Packets/CmsgGmTicketCreate.h"
 #include "Server/Packets/SmsgGmTicketCreate.h"
+#include "Server/Packets/CmsgGmTicketUpdateText.h"
 
 using namespace AscEmu::Packets;
 
@@ -80,8 +81,9 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 {
-    std::string message;
-    recv_data >> message;
+    CmsgGmTicketUpdateText srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     WorldPacket data(SMSG_GMTICKET_UPDATETEXT, 4);
 
@@ -92,8 +94,8 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
     }
     else
     {
-        ticket->message = message;
-        ticket->timestamp = (uint32_t)UNIXTIME;
+        ticket->message = srlPacket.message;
+        ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
         objmgr.UpdateGMTicket(ticket);
 
         data << uint32_t(GMTNoErrors);
