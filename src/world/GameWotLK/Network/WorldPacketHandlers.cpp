@@ -131,7 +131,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::handleAddIgnoreOpcode;
     WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::handleDelIgnoreOpcode;
     WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
-    WorldPacketHandlers[CMSG_SET_CONTACT_NOTES].handler = &WorldSession::HandleSetFriendNote;
+    WorldPacketHandlers[CMSG_SET_CONTACT_NOTES].handler = &WorldSession::handleSetFriendNote;
 
     // Areatrigger
     WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::handleAreaTriggerOpcode;
