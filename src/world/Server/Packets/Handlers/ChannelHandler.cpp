@@ -52,196 +52,196 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 
 void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 {
-    CmsgGetChannelMemberCount recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGetChannelMemberCount srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
-        SendPacket(SmgsChannelMemberCount(recv_packet.name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
+        SendPacket(SmgsChannelMemberCount(srlPacket.name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
 }
 
 void WorldSession::handleChannelLeave(WorldPacket& recvPacket)
 {
-    CmsgLeaveChannel recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgLeaveChannel srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->Part(GetPlayer());
 }
 
 void WorldSession::handleChannelList(WorldPacket& recvPacket)
 {
-    CmsgChannelList recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelList srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->List(GetPlayer());
 }
 
 void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
 {
-    CmsgChannelPassword recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelPassword srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
-        channel->Password(GetPlayer(), recv_packet.password.c_str());
+        channel->Password(GetPlayer(), srlPacket.password.c_str());
 }
 
 void WorldSession::handleChannelSetOwner(WorldPacket& recvPacket)
 {
-    CmsgChannelSetOwner recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelSetOwner srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.setName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.setName.c_str(), false);
     if (channel && player)
         channel->SetOwner(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelOwner(WorldPacket& recvPacket)
 {
-    CmsgChannelOwner recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelOwner srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->GetOwner(GetPlayer());
 }
 
 void WorldSession::handleChannelModerator(WorldPacket& recvPacket)
 {
-    CmsgChannelModerator recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelModerator srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.modName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.modName.c_str(), false);
     if (channel && player)
         channel->GiveModerator(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelUnmoderator(WorldPacket& recvPacket)
 {
-    CmsgChannelUnmoderator recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelUnmoderator srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.unmodName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.unmodName.c_str(), false);
     if (channel && player)
         channel->TakeModerator(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelMute(WorldPacket& recvPacket)
 {
-    CmsgChannelMute recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelMute srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.muteName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.muteName.c_str(), false);
     if (channel && player)
         channel->Mute(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelUnmute(WorldPacket& recvPacket)
 {
-    CmsgChannelUnmute recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelUnmute srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.unmuteName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.unmuteName.c_str(), false);
     if (channel && player)
         channel->Unmute(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelInvite(WorldPacket& recvPacket)
 {
-    CmsgChannelInvite recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelInvite srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.inviteName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.inviteName.c_str(), false);
     if (channel && player)
         channel->Invite(GetPlayer(), player);
 }
 
 void WorldSession::handleChannelKick(WorldPacket& recvPacket)
 {
-    CmsgChannelKick recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelKick srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.kickName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.kickName.c_str(), false);
     if (channel && player)
         channel->Kick(GetPlayer(), player, false);
 }
 
 void WorldSession::handleChannelBan(WorldPacket& recvPacket)
 {
-    CmsgChannelBan recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelBan srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto player = objmgr.GetPlayer(recv_packet.banName.c_str(), false);
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto player = objmgr.GetPlayer(srlPacket.banName.c_str(), false);
     if (channel && player)
         channel->Kick(GetPlayer(), player, true);
 }
 
 void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
 {
-    CmsgChannelUnban recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelUnban srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
-    const auto playerInfo = objmgr.GetPlayerInfoByName(recv_packet.unbanName.c_str());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
+    const auto playerInfo = objmgr.GetPlayerInfoByName(srlPacket.unbanName.c_str());
     if (channel && playerInfo)
         channel->Unban(GetPlayer(), playerInfo);
 }
 
 void WorldSession::handleChannelAnnounce(WorldPacket& recvPacket)
 {
-    CmsgChannelAnnouncements recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelAnnouncements srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->Announce(GetPlayer());
 }
 
 void WorldSession::handleChannelModerate(WorldPacket& recvPacket)
 {
-    CmsgChannelModerate recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelModerate srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->Moderate(GetPlayer());
 }
 
 void WorldSession::handleChannelRosterQuery(WorldPacket& recvPacket)
 {
-    CmsgChannelDisplayList recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChannelDisplayList srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = channelmgr.GetChannel(recv_packet.name.c_str(), GetPlayer());
+    const auto channel = channelmgr.GetChannel(srlPacket.name.c_str(), GetPlayer());
     if (channel)
         channel->List(GetPlayer());
 }
