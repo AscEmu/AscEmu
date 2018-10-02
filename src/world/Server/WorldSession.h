@@ -745,14 +745,19 @@ class SERVER_DECL WorldSession
         //????
         void handleDismissCritter(WorldPacket& recvPacket);
 
-        // Battleground
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Battleground helper and handlers (BattlegroundHandler.cpp)
+    public:
+        void sendBattlegroundList(Creature* creature, uint32_t mapId);
+
+    protected:
         void handleBattlefieldPortOpcode(WorldPacket& recvPacket);
-        void handleBattlefieldStatusOpcode(WorldPacket& recvPacket);
+        void handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/);
         void handleBattleMasterHelloOpcode(WorldPacket& recvPacket);
-        void handleLeaveBattlefieldOpcode(WorldPacket& recvPacket);
+        void handleLeaveBattlefieldOpcode(WorldPacket& /*recvPacket*/);
         void handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket);
         void handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket);
-        void handleBattlegroundPlayerPositionsOpcode(WorldPacket& recvPacket);
+        void handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPacket*/);
         void handleArenaJoinOpcode(WorldPacket& recvPacket);
         void handleBattleMasterJoinOpcode(WorldPacket& recvPacket);
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
@@ -899,7 +904,6 @@ class SERVER_DECL WorldSession
 
         void SendInventoryList(Creature* pCreature);
         
-        void SendBattlegroundList(Creature* pCreature, uint32_t mapId);
         void SendAccountDataTimes(uint32 mask);
         void initGMMyMaster();
         void sendServerStats();

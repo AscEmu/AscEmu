@@ -4322,7 +4322,7 @@ public:
         else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
         else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
         else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
-        else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
+        else if (actionid == 5) plr->GetSession()->sendBattlegroundList(crc, miscint);
         else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
         else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
         else if (actionid == 8) plr->GetSession()->sendSpiritHealerRequest(crc);
@@ -4388,7 +4388,7 @@ public:
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));
         uint32 bgid = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (bgid && crc != NULL)
-            plr->GetSession()->SendBattlegroundList(crc, bgid); //player filler ftw
+            plr->GetSession()->sendBattlegroundList(crc, bgid); //player filler ftw
         return 0;
     }
 

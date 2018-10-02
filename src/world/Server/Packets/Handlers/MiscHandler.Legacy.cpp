@@ -1908,6 +1908,13 @@ void WorldSession::HandleCompleteCinematic(WorldPacket& /*recv_data*/)
     _player->setStandState(STANDSTATE_STAND);
 }
 
+void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+
+    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+}
+
 void WorldSession::HandleNextCinematic(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
