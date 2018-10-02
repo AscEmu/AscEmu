@@ -59,24 +59,11 @@ struct LfgReward;
 struct LfgRoleCheck;
 struct AddonEntry;
 
-//#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
-
-// Does nothing on release builds
-#ifdef _DEBUG
-#define CHECK_INWORLD_ASSERT ARCEMU_ASSERT(_player != NULL && _player->IsInWorld())
-#else
-#define CHECK_INWORLD_ASSERT CHECK_INWORLD_RETURN
-#endif
-
-#define CHECK_GUID_EXISTS(guidx) if (_player == NULL || _player->GetMapMgr() == NULL || _player->GetMapMgr()->GetUnit((guidx)) == NULL) { return; }
-#define CHECK_PACKET_SIZE(pckp, ssize) if (ssize && pckp.size() < ssize) { Disconnect(); return; }
 
 // Worldsocket related
 #define WORLDSOCKET_TIMEOUT 120
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.
-
-#define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 
 struct OpcodeHandler
 {

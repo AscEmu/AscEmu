@@ -1012,10 +1012,6 @@ void World::Update(unsigned long timePassed)
     mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
     sAuctionMgr.Update();
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
-#ifdef SESSION_CAP
-    if (GetSessionCount() >= SESSION_CAP)
-        TerminateProcess(GetCurrentProcess(), 0);
-#endif
 
     sGuildMgr.update(static_cast<uint32>(timePassed));
 }
