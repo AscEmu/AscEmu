@@ -76,6 +76,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgGameobjUse.h
    ${PATH_PREFIX}/CmsgGetChannelMemberCount.h
    ${PATH_PREFIX}/CmsgGmReportLag.h
+   ${PATH_PREFIX}/CmsgGmSurveySubmit.h
    ${PATH_PREFIX}/CmsgGmTicketCreate.h
    ${PATH_PREFIX}/CmsgGmTicketUpdateText.h
    ${PATH_PREFIX}/CmsgGossipHello.h

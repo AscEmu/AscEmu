@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketGetTicket.h"
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
 #include "Server/Packets/CmsgGmReportLag.h"
+#include "Server/Packets/CmsgGmSurveySubmit.h"
 
 using namespace AscEmu::Packets;
 
@@ -180,40 +181,24 @@ void WorldSession::HandleReportLag(WorldPacket& recv_data)
 
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
 {
+    CmsgGmSurveySubmit srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
+
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
     if (result == nullptr)
         return;
 
     uint32_t next_survey_id = result->Fetch()[0].GetUInt32() + 1;
 
-    uint32_t main_survey;
-    recv_data >> main_survey;
+    for (auto subSurvey : srlPacket.subSurvey)
+        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)",
+            next_survey_id, subSurvey.subSurveyId, subSurvey.answerId);
 
-    std::unordered_set<uint32> survey_ids;
-    for (uint8_t i = 0; i < 10; ++i)
-    {
-        uint32_t sub_survey_id;
-        recv_data >> sub_survey_id;
-        if (sub_survey_id == 0)
-            break;
+    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))",
+        next_survey_id, GetPlayer()->getGuidLow(), srlPacket.mainSurveyId, CharacterDatabase.EscapeString(srlPacket.mainComment).c_str());
 
-        uint8_t answer_id;
-        recv_data >> answer_id;
-
-        std::string comment; // unused empty string
-        recv_data >> comment;
-
-        if (!survey_ids.insert(sub_survey_id).second)
-            continue;
-
-        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)", next_survey_id, sub_survey_id, answer_id);
-    }
-
-    std::string comment; // receive the player comment for this survey
-    recv_data >> comment;
-
-    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->getGuidLow(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
-
-    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->getName().c_str(), next_survey_id);
+    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.",
+        GetPlayer()->getName().c_str(), next_survey_id);
 }
 #endif
