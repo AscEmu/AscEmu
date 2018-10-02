@@ -847,21 +847,21 @@ class SERVER_DECL WorldSession
 
         // Calendar \todo handle it
 #if VERSION_STRING > TBC
-        void HandleCalendarGetCalendar(WorldPacket& /*recvPacket*/);
-        void HandleCalendarComplain(WorldPacket& recvPacket);
-        void HandleCalendarGetNumPending(WorldPacket& /*recvPacket*/);
-        void HandleCalendarAddEvent(WorldPacket& recvPacket);
-        void HandleCalendarGetEvent(WorldPacket& recvPacket);
-        void HandleCalendarGuildFilter(WorldPacket& recvPacket);
-        void HandleCalendarArenaTeam(WorldPacket& recvPacket);
-        void HandleCalendarUpdateEvent(WorldPacket& recvPacket);
-        void HandleCalendarRemoveEvent(WorldPacket& recvPacket);
-        void HandleCalendarCopyEvent(WorldPacket& recvPacket);
-        void HandleCalendarEventInvite(WorldPacket& recvPacket);
-        void HandleCalendarEventRsvp(WorldPacket& recvPacket);
-        void HandleCalendarEventRemoveInvite(WorldPacket& recvPacket);
-        void HandleCalendarEventStatus(WorldPacket& recvPacket);
-        void HandleCalendarEventModeratorStatus(WorldPacket& recvPacket);
+        void handleCalendarGetCalendar(WorldPacket& /*recvPacket*/);
+        void handleCalendarComplain(WorldPacket& recvPacket);
+        void handleCalendarGetNumPending(WorldPacket& /*recvPacket*/);
+        void handleCalendarAddEvent(WorldPacket& recvPacket);
+        void handleCalendarGetEvent(WorldPacket& recvPacket);
+        void handleCalendarGuildFilter(WorldPacket& recvPacket);
+        void handleCalendarArenaTeam(WorldPacket& recvPacket);
+        void handleCalendarUpdateEvent(WorldPacket& recvPacket);
+        void handleCalendarRemoveEvent(WorldPacket& recvPacket);
+        void handleCalendarCopyEvent(WorldPacket& recvPacket);
+        void handleCalendarEventInvite(WorldPacket& recvPacket);
+        void handleCalendarEventRsvp(WorldPacket& recvPacket);
+        void handleCalendarEventRemoveInvite(WorldPacket& recvPacket);
+        void handleCalendarEventStatus(WorldPacket& recvPacket);
+        void handleCalendarEventModeratorStatus(WorldPacket& recvPacket);
 #endif
 #if VERSION_STRING == Cata
         void HandleReadyForAccountDataTimesOpcode(WorldPacket& recvPacket);
