@@ -502,7 +502,8 @@ class SERVER_DECL WorldSession
         void HandleEquipmentSetDelete(WorldPacket& recvPacket);
 #endif
 
-        // Combat opcodes (CombatHandler.cpp)
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Combat handler (CombatHandler.cpp)
         void handleAttackSwingOpcode(WorldPacket& recvPacket);
         void handleAttackStopOpcode(WorldPacket& /*recvPacket*/);
 
