@@ -26,7 +26,7 @@ namespace AreaTriggerResult
         Success = 0,
         Unavailable = 1,
         NoBurningCrusade = 2,
-        NoNeroic = 3,
+        NoHeroic = 3,
         NoRaid = 4,
         NoAttuneQA = 5,
         NoAttuneI = 6,
@@ -40,51 +40,51 @@ namespace AreaTriggerResult
     };
 }
 
-uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MySQLStructure::MapInfo const* pMapInfo)
+uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigger, WorldSession* session, Player* player, MySQLStructure::MapInfo const* mapInfo)
 {
-    if (!pMapInfo || !pMapInfo->hasFlag(WMI_INSTANCE_ENABLED))
+    if (!mapInfo || !mapInfo->hasFlag(WMI_INSTANCE_ENABLED))
         return AreaTriggerResult::Unavailable;
 
-    if (pMapInfo->hasFlag(WMI_INSTANCE_XPACK_01) && !pSession->HasFlag(ACCOUNT_FLAG_XPACK_01) && !pSession->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_01) && !session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         return AreaTriggerResult::NoBurningCrusade;
 
-    if (pMapInfo->hasFlag(WMI_INSTANCE_XPACK_02) && !pSession->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_02) && !session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         return AreaTriggerResult::NoWotLK;
 
     // These can be overridden by cheats/GM
-    if (pPlayer->TriggerpassCheat)
+    if (player->TriggerpassCheat)
         return AreaTriggerResult::Success;
 
-    if (pAreaTrigger->requiredLevel && pPlayer->getLevel() < pAreaTrigger->requiredLevel)
+    if (areaTrigger->requiredLevel && player->getLevel() < areaTrigger->requiredLevel)
         return AreaTriggerResult::Level;
 
-    if (pPlayer->iInstanceType >= MODE_HEROIC && pMapInfo->type != INSTANCE_MULTIMODE && pMapInfo->type != INSTANCE_NULL)
-        return AreaTriggerResult::NoNeroic;
+    if (player->iInstanceType >= MODE_HEROIC && mapInfo->type != INSTANCE_MULTIMODE && mapInfo->type != INSTANCE_NULL)
+        return AreaTriggerResult::NoHeroic;
 
-    if (pMapInfo->type == INSTANCE_RAID && (!pPlayer->GetGroup() || (pPlayer->GetGroup() && pPlayer->GetGroup()->getGroupType() != GROUP_TYPE_RAID)))
+    if (mapInfo->type == INSTANCE_RAID && (!player->GetGroup() || (player->GetGroup() && player->GetGroup()->getGroupType() != GROUP_TYPE_RAID)))
         return AreaTriggerResult::NoRaid;
 
-    if ((pMapInfo->type == INSTANCE_MULTIMODE && pPlayer->iInstanceType >= MODE_HEROIC) && !pPlayer->GetGroup())
+    if ((mapInfo->type == INSTANCE_MULTIMODE && player->iInstanceType >= MODE_HEROIC) && !player->GetGroup())
         return AreaTriggerResult::NoGroup;
 
-    if (pMapInfo && pMapInfo->required_quest_A && (pPlayer->GetTeam() == TEAM_ALLIANCE) && !pPlayer->HasFinishedQuest(pMapInfo->required_quest_A))
+    if (mapInfo && mapInfo->required_quest_A && (player->GetTeam() == TEAM_ALLIANCE) && !player->HasFinishedQuest(mapInfo->required_quest_A))
         return AreaTriggerResult::NoAttuneQA;
 
-    if (pMapInfo && pMapInfo->required_quest_H && (pPlayer->GetTeam() == TEAM_HORDE) && !pPlayer->HasFinishedQuest(pMapInfo->required_quest_H))
+    if (mapInfo && mapInfo->required_quest_H && (player->GetTeam() == TEAM_HORDE) && !player->HasFinishedQuest(mapInfo->required_quest_H))
         return AreaTriggerResult::NoAttuneQH;
 
-    if (pMapInfo && pMapInfo->required_item && !pPlayer->GetItemInterface()->GetItemCount(pMapInfo->required_item, true))
+    if (mapInfo && mapInfo->required_item && !player->GetItemInterface()->GetItemCount(mapInfo->required_item, true))
         return AreaTriggerResult::NoAttuneI;
 
-    if (pPlayer->iInstanceType >= MODE_HEROIC &&
-        pMapInfo->type == INSTANCE_MULTIMODE
-        && ((pMapInfo->heroic_key_1 > 0 && !pPlayer->GetItemInterface()->GetItemCount(pMapInfo->heroic_key_1, false))
-        && (pMapInfo->heroic_key_2 > 0 && !pPlayer->GetItemInterface()->GetItemCount(pMapInfo->heroic_key_2, false))
+    if (player->iInstanceType >= MODE_HEROIC &&
+        mapInfo->type == INSTANCE_MULTIMODE
+        && ((mapInfo->heroic_key_1 > 0 && !player->GetItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
+        && (mapInfo->heroic_key_2 > 0 && !player->GetItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
         )
         )
         return AreaTriggerResult::NoKey;
 
-    if (pMapInfo->type != INSTANCE_NULL && pPlayer->iInstanceType >= MODE_HEROIC && pPlayer->getLevel() < pMapInfo->minlevel_heroic)
+    if (mapInfo->type != INSTANCE_NULL && player->iInstanceType >= MODE_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return AreaTriggerResult::LevelHeroic;
 
     return AreaTriggerResult::Success;
@@ -92,34 +92,34 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* pAreaTrigg
 
 void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
 {
-    CmsgAreatrigger recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAreatrigger srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AREATRIGGER: %u (triggerId)", recv_packet.triggerId);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
 
-    if (!GetPlayer()->IsInWorld())
+    if (!_player->IsInWorld())
         return;
 
-    sQuestMgr.OnPlayerExploreArea(GetPlayer(), recv_packet.triggerId);
+    sQuestMgr.OnPlayerExploreArea(_player, srlPacket.triggerId);
 
-    const auto areaTriggerEntry = sAreaTriggerStore.LookupEntry(recv_packet.triggerId);
+    const auto areaTriggerEntry = sAreaTriggerStore.LookupEntry(srlPacket.triggerId);
     if (areaTriggerEntry == nullptr)
     {
-        LOG_DEBUG("%u is not part of AreaTrigger.dbc", recv_packet.triggerId);
+        LogDebugFlag(LF_OPCODE, "%u is not part of AreaTrigger.dbc", srlPacket.triggerId);
         return;
     }
 
-    sHookInterface.OnAreaTrigger(GetPlayer(), recv_packet.triggerId);
-    CALL_INSTANCE_SCRIPT_EVENT(GetPlayer()->GetMapMgr(), OnAreaTrigger)(GetPlayer(), recv_packet.triggerId);
+    sHookInterface.OnAreaTrigger(_player, srlPacket.triggerId);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnAreaTrigger)(_player, srlPacket.triggerId);
 
-    if (GetPlayer()->m_bg)
+    if (_player->m_bg)
     {
-        GetPlayer()->m_bg->HookOnAreaTrigger(GetPlayer(), recv_packet.triggerId);
+        _player->m_bg->HookOnAreaTrigger(_player, srlPacket.triggerId);
         return;
     }
 
-    const auto areaTrigger = sMySQLStore.getAreaTrigger(recv_packet.triggerId);
+    const auto areaTrigger = sMySQLStore.getAreaTrigger(srlPacket.triggerId);
     if (areaTrigger == nullptr)
         return;
 
@@ -127,17 +127,17 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     {
         case ATTYPE_INSTANCE:
         {
-            if (GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING)
+            if (_player->GetPlayerStatus() == TRANSFER_PENDING)
                 break;
 
             if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
             {
                 const auto mapInfo = sMySQLStore.getWorldMapInfo(areaTrigger->mapId);
-                const uint32_t reason = checkTriggerPrerequisites(areaTrigger, this, GetPlayer(), mapInfo);
+                const uint32_t reason = checkTriggerPrerequisites(areaTrigger, this, _player, mapInfo);
                 if (reason != AreaTriggerResult::Success)
                 {
                     char buffer[200];
-                    const auto session = GetPlayer()->GetSession();
+                    const auto session = _player->GetSession();
 
                     switch (reason)
                     {
@@ -177,8 +177,8 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                     return;
                 }
             }
-            GetPlayer()->SaveEntryPoint(areaTrigger->mapId);
-            GetPlayer()->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+            _player->SaveEntryPoint(areaTrigger->mapId);
+            _player->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
         } break;
         case ATTYPE_QUESTTRIGGER:
         {
@@ -186,15 +186,15 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         } break;
         case ATTYPE_INN:
         {
-            if (!GetPlayer()->m_isResting)
-                GetPlayer()->ApplyPlayerRestState(true);
+            if (!_player->m_isResting)
+                _player->ApplyPlayerRestState(true);
         } break;
         case ATTYPE_TELEPORT:
         {
-            if (GetPlayer()->GetPlayerStatus() != TRANSFER_PENDING)
+            if (_player->GetPlayerStatus() != TRANSFER_PENDING)
             {
-                GetPlayer()->SaveEntryPoint(areaTrigger->mapId);
-                GetPlayer()->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+                _player->SaveEntryPoint(areaTrigger->mapId);
+                _player->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
             }
         } break;
         default:
