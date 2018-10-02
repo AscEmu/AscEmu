@@ -13,18 +13,18 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
 {
-    const auto duelPlayer = GetPlayer()->DuelingWith;
+    const auto duelPlayer = _player->DuelingWith;
     if (duelPlayer == nullptr)
         return;
 
-    if (GetPlayer()->m_duelState != DUEL_STATE_FINISHED)
+    if (_player->m_duelState != DUEL_STATE_FINISHED)
         return;
 
-    if (GetPlayer()->m_duelCountdownTimer > 0)
+    if (_player->m_duelCountdownTimer > 0)
         return;
 
-    GetPlayer()->m_duelStatus = DUEL_STATUS_INBOUNDS;
-    GetPlayer()->m_duelState = DUEL_STATE_STARTED;
+    _player->m_duelStatus = DUEL_STATUS_INBOUNDS;
+    _player->m_duelState = DUEL_STATE_STARTED;
 
     duelPlayer->m_duelStatus = DUEL_STATUS_INBOUNDS;
     duelPlayer->m_duelState = DUEL_STATE_STARTED;
@@ -34,18 +34,18 @@ void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
     SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
     duelPlayer->SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
 
-    GetPlayer()->m_duelCountdownTimer = defaultDuelCountdown;
+    _player->m_duelCountdownTimer = defaultDuelCountdown;
 
     sEventMgr.AddEvent(_player, &Player::DuelCountdown, EVENT_PLAYER_DUEL_COUNTDOWN, 1000, 3, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
 {
-    const auto duelPlayer = GetPlayer()->DuelingWith;
+    const auto duelPlayer = _player->DuelingWith;
     if (duelPlayer == nullptr)
         return;
 
-    if (GetPlayer()->m_duelState == DUEL_STATE_STARTED)
+    if (_player->m_duelState == DUEL_STATE_STARTED)
     {
         duelPlayer->EndDuel(DUEL_WINNER_KNOCKOUT);
         return;
@@ -54,5 +54,5 @@ void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
     SendPacket(SmsgDuelComplete(1).serialise().get());
     duelPlayer->SendPacket(SmsgDuelComplete(1).serialise().get());
 
-    GetPlayer()->cancelDuel();
+    _player->cancelDuel();
 }

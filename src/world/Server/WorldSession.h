@@ -507,6 +507,11 @@ class SERVER_DECL WorldSession
         void handleAttackSwingOpcode(WorldPacket& recvPacket);
         void handleAttackStopOpcode(WorldPacket& /*recvPacket*/);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Duel handler (DuelHandler.cpp)
+        void handleDuelAccepted(WorldPacket& /*recvPacket*/);
+        void handleDuelCancelled(WorldPacket& /*recvPacket*/);
+
         // Spell opcodes (SpellHandler.cpp)
         void HandleUseItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
@@ -598,10 +603,6 @@ class SERVER_DECL WorldSession
         void handleChannelModerate(WorldPacket& recvPacket);
         void handleGetChannelMemberCount(WorldPacket& recvPacket);
         void handleChannelRosterQuery(WorldPacket& recvPacket);
-
-        // Duel
-        void handleDuelAccepted(WorldPacket& /*recvPacket*/);
-        void handleDuelCancelled(WorldPacket& /*recvPacket*/);
 
         // Trade
 #if VERSION_STRING == Cata
