@@ -36,6 +36,9 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> guid;
+            if (guid == 0)
+                return false;
+
             return true;
         }
     };

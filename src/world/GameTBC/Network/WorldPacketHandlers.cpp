@@ -103,12 +103,12 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REPOP_REQUEST].handler = &WorldSession::HandleRepopRequestOpcode;
 
     // Loot
-    WorldPacketHandlers[CMSG_AUTOSTORE_LOOT_ITEM].handler = &WorldSession::HandleAutostoreLootItemOpcode;
-    //WorldPacketHandlers[CMSG_LOOT_MONEY].handler = &WorldSession::HandleLootMoneyOpcode;
-    //WorldPacketHandlers[CMSG_LOOT].handler = &WorldSession::HandleLootOpcode;
-    //WorldPacketHandlers[CMSG_LOOT_RELEASE].handler = &WorldSession::HandleLootReleaseOpcode;
+    WorldPacketHandlers[CMSG_AUTOSTORE_LOOT_ITEM].handler = &WorldSession::handleAutostoreLootItemOpcode;
+    //WorldPacketHandlers[CMSG_LOOT_MONEY].handler = &WorldSession::handleLootMoneyOpcode;
+    //WorldPacketHandlers[CMSG_LOOT].handler = &WorldSession::handleLootOpcode;
+    //WorldPacketHandlers[CMSG_LOOT_RELEASE].handler = &WorldSession::handleLootReleaseOpcode;
     //WorldPacketHandlers[CMSG_LOOT_ROLL].handler = &WorldSession::HandleLootRollOpcode;
-    //WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::HandleLootMasterGiveOpcode;
+    //WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::handleLootMasterGiveOpcode;
 
     // Player Interaction
     WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::handleWhoOpcode;

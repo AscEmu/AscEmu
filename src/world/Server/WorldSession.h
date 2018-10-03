@@ -373,6 +373,16 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LootHandler.cpp
+    public:
+        Loot* getItemLootFromHighGuidType(WoWGuid wowGuid);
+        Loot* getMoneyLootFromHighGuidType(WoWGuid wowGuid);
+
+    protected:
+        void handleAutostoreLootItemOpcode(WorldPacket& recvPacket);
+        void handleLootMoneyOpcode(WorldPacket& /*recvPacket*/);
+        void handleLootOpcode(WorldPacket& recvPacket);
+        void handleLootReleaseOpcode(WorldPacket& recvPacket);
+        void handleLootMasterGiveOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MailHandler.cpp
@@ -597,16 +607,7 @@ class SERVER_DECL WorldSession
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
         void HandleRepopRequestOpcode(WorldPacket& recvPacket);
-        void HandleAutostoreLootItemOpcode(WorldPacket& recvPacket);
-        void HandleLootMoneyOpcode(WorldPacket& recvPacket);
-        void HandleLootOpcode(WorldPacket& recvPacket);
-        void HandleLootReleaseOpcode(WorldPacket& recvPacket);
-        void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
-        
-#if VERSION_STRING == Cata
-        Loot* getLootFromHighGuidType(HighGuid highGuid);
-#endif
-        
+
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
 
         void HandleRequestAccountData(WorldPacket& recvPacket);
