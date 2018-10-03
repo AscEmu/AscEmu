@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Objects/ObjectMgr.h"
 #include "Management/GuildMgr.h"
+#include "Management/ItemInterface.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
@@ -1004,7 +1005,9 @@ PlayerSpec& Player::getActiveSpec()
 void Player::cancelDuel()
 {
     // arbiter
-    const auto arbiter = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter()));
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+    const auto arbiter = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
     if (arbiter)
         arbiter->RemoveFromWorld(true);
 
@@ -1266,4 +1269,9 @@ void Player::delayMeleeAttackTimer(int32_t delay)
 {
     setAttackTimer(MELEE, getAttackTimer(MELEE) + delay);
     setAttackTimer(OFFHAND, getAttackTimer(OFFHAND) + delay);
+}
+
+int32_t Player::getMyCorpseInstanceId() const
+{
+    return myCorpseInstanceId;
 }

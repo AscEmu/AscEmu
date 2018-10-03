@@ -10,6 +10,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Server/Packets/CmsgGmTicketCreate.h"
+#include "Server/Packets/SmsgGmTicketCreate.h"
+#include "Server/Packets/CmsgGmTicketUpdateText.h"
+#include "Server/Packets/SmsgGmTicketUpdateText.h"
+#include "Server/Packets/SmsgGmTicketDeleteTicket.h"
+#include "Server/Packets/SmsgGmTicketGetTicket.h"
+#include "Server/Packets/SmsgGmTicketSystemstatus.h"
+#include "Server/Packets/CmsgGmReportLag.h"
+#include "Server/Packets/CmsgGmSurveySubmit.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
 enum GMTicketResults
@@ -29,17 +40,9 @@ enum GMTicketSystem
 
 void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 {
-    uint32_t map;
-    float x, y, z;
-    std::string message;
-    std::string message2;
-
-    recv_data >> map;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
-    recv_data >> message;
-    recv_data >> message2;
+    CmsgGmTicketCreate srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     // Remove pending tickets
     objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
@@ -47,11 +50,11 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
     GM_Ticket* ticket = new GM_Ticket;
     ticket->guid = uint64_t(objmgr.GenerateTicketID());
     ticket->playerGuid = GetPlayer()->getGuid();
-    ticket->map = map;
-    ticket->posX = x;
-    ticket->posY = y;
-    ticket->posZ = z;
-    ticket->message = message;
+    ticket->map = srlPacket.map;
+    ticket->posX = srlPacket.location.x;
+    ticket->posY = srlPacket.location.y;
+    ticket->posZ = srlPacket.location.z;
+    ticket->message = srlPacket.message;
     ticket->timestamp = (uint32_t)UNIXTIME;
     ticket->name = GetPlayer()->getName().c_str();
     ticket->level = GetPlayer()->getLevel();
@@ -61,9 +64,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 
     objmgr.AddGMTicket(ticket, false);
 
-    WorldPacket data(SMSG_GMTICKET_CREATE, 4);
-    data << uint32_t(GMTNoErrors);
-    SendPacket(&data);
+    SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
     // send message indicating new ticket
     Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), GetPlayer());
@@ -86,26 +87,23 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 {
-    std::string message;
-    recv_data >> message;
-
-    WorldPacket data(SMSG_GMTICKET_UPDATETEXT, 4);
+    CmsgGmTicketUpdateText srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
     if (ticket == nullptr)
     {
-        data << uint32_t(GMTNoTicketFound);
+        SendPacket(SmsgGmTicketUpdateText(GMTNoTicketFound).serialise().get());
     }
     else
     {
-        ticket->message = message;
-        ticket->timestamp = (uint32_t)UNIXTIME;
+        ticket->message = srlPacket.message;
+        ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
         objmgr.UpdateGMTicket(ticket);
 
-        data << uint32_t(GMTNoErrors);
+        SendPacket(SmsgGmTicketUpdateText(GMTNoErrors).serialise().get());
     }
-
-    SendPacket(&data);
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     Channel* channel = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), GetPlayer());
@@ -127,9 +125,7 @@ void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/)
 
     objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
 
-    WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-    data << uint32_t(GMTTicketRemoved);
-    SendPacket(&data);
+    SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
     Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), GetPlayer());
     if (channel != nullptr && ticket != nullptr)
@@ -150,96 +146,59 @@ void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
 {
-    WorldPacket data(SMSG_GMTICKET_GETTICKET, 400);
-
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
     if (ticket == nullptr)
-    {
-        data << uint32_t(GMTNoCurrentTicket);
-    }
+        SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0).serialise().get());
     else
-    {
-        data << uint32_t(GMTCurrentTicketFound);
-        data << ticket->message.c_str();
-        data << (uint8_t)ticket->map;
-    }
-
-    SendPacket(&data);
+        SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, ticket->map).serialise().get());
 }
 
 void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
-    WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
-    data << uint32_t(sWorld.getGmTicketStatus() ? TicketSystemOK : TicketSystemDisabled);
-    SendPacket(&data);
+    SendPacket(SmsgGmTicketSystemstatus(sWorld.getGmTicketStatus() ? TicketSystemOK : TicketSystemDisabled).serialise().get());
 }
 
 void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
     if (HasGMPermissions())
-    {
         sWorld.toggleGmTicketStatus();
-    }
 }
 
 void WorldSession::HandleReportLag(WorldPacket& recv_data)
 {
-    uint32_t lagType;
-    uint32_t mapId;
-    float position_x;
-    float position_y;
-    float position_z;
-
-    recv_data >> lagType;
-    recv_data >> mapId;
-    recv_data >> position_x;
-    recv_data >> position_y;
-    recv_data >> position_z;
+    CmsgGmReportLag srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
 
     if (GetPlayer() != nullptr)
     {
-        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->getGuidLow(), _accountId, lagType, mapId, position_x, position_y, position_z);
+        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", 
+            GetPlayer()->getGuidLow(), _accountId, srlPacket.lagType, srlPacket.mapId, srlPacket.location.x, srlPacket.location.y, srlPacket.location.z);
     }
 
-    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->getName().c_str(), lagType, mapId);
+    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->getName().c_str(), srlPacket.lagType, srlPacket.mapId);
 }
 
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
 {
+    CmsgGmSurveySubmit srlPacket;
+    if (!srlPacket.deserialise(recv_data))
+        return;
+
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
     if (result == nullptr)
         return;
 
     uint32_t next_survey_id = result->Fetch()[0].GetUInt32() + 1;
 
-    uint32_t main_survey;
-    recv_data >> main_survey;
+    for (auto subSurvey : srlPacket.subSurvey)
+        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)",
+            next_survey_id, subSurvey.subSurveyId, subSurvey.answerId);
 
-    std::unordered_set<uint32> survey_ids;
-    for (uint8_t i = 0; i < 10; ++i)
-    {
-        uint32_t sub_survey_id;
-        recv_data >> sub_survey_id;
-        if (sub_survey_id == 0)
-            break;
+    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))",
+        next_survey_id, GetPlayer()->getGuidLow(), srlPacket.mainSurveyId, CharacterDatabase.EscapeString(srlPacket.mainComment).c_str());
 
-        uint8_t answer_id;
-        recv_data >> answer_id;
-
-        std::string comment; // unused empty string
-        recv_data >> comment;
-
-        if (!survey_ids.insert(sub_survey_id).second)
-            continue;
-
-        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)", next_survey_id, sub_survey_id, answer_id);
-    }
-
-    std::string comment; // receive the player comment for this survey
-    recv_data >> comment;
-
-    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->getGuidLow(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
-
-    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->getName().c_str(), next_survey_id);
+    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.",
+        GetPlayer()->getName().c_str(), next_survey_id);
 }
 #endif

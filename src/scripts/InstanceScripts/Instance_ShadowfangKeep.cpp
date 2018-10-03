@@ -318,20 +318,23 @@ public:
 
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
+        WoWGuid wowGuid;
+        wowGuid.Init(pCreature->getGuid());
+
         switch (pCreature->getEntry())
         {
             case CN_ADAMANT:
             {
-                npc_adamant_GUID = GET_LOWGUID_PART(pCreature->getGuid());
+                npc_adamant_GUID = wowGuid.getGuidLowPart();
             }break;
             case CN_ASHCROMBE:
             {
-                npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->getGuid());
+                npc_ashcrombe_GUID = wowGuid.getGuidLowPart();
             }break;
             // Make him hidden
             case CN_ARUGAL:
             {
-                pCreature->SetInvisFlag(INVIS_FLAG_TOTAL);
+                pCreature->setVisible(false);
             }break;
             case CN_BLEAK_WORG:
             case CN_SLAVERING_WORG:
@@ -341,7 +344,7 @@ public:
                 if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                 {
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
-                    nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
+                    nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
             }break;
             case CN_LUPINE_DELUSION:
@@ -349,7 +352,7 @@ public:
                 // Add to nandos summon lists only on his event is started
                 if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                 {
-                    nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
+                    nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
                 pCreature->Despawn(60 * 4 * 1000, 0); // Despawn in 4 mins
             }break;
@@ -398,7 +401,7 @@ class ArugalAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    getCreature()->SetInvisFlag(INVIS_FLAG_NORMAL);
+                    getCreature()->setVisible(true);
                     getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
@@ -451,7 +454,7 @@ class ArugalAI : public CreatureAIScript
                 {
                     getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
-                    getCreature()->SetInvisFlag(INVIS_FLAG_TOTAL);
+                    getCreature()->setVisible(false);
                     RemoveAIUpdateEvent();
                 }break;
             }

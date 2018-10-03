@@ -1358,10 +1358,9 @@ void Player::_EventAttack(bool offhand)
             }
         }
 
-        if (this->IsStealth())
+        if (this->isStealthed())
         {
-            RemoveAura(m_stealth);
-            SetStealth(0);
+            removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
         }
 
         if ((GetOnMeleeSpell() == 0) || offhand)
@@ -6599,195 +6598,6 @@ void Player::ApplyPlayerRestState(bool apply)
     UpdateRestState();
 }
 
-#define CORPSE_VIEW_DISTANCE 1600 // 40*40
-
-bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha *
-{
-    if (obj == this)
-        return true;
-
-    uint32 object_type = obj->getObjectTypeId();
-
-    if (getDeathState() == CORPSE) // we are dead and we have released our spirit
-    {
-        if (obj->isPlayer())
-        {
-            Player* pObj = static_cast< Player* >(obj);
-
-            if (myCorpseInstanceId == GetInstanceID() && obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
-                return !pObj->m_isGmInvisible; // we can see all players within range of our corpse except invisible GMs
-
-            if (m_deathVision) // if we have arena death-vision we can see all players except invisible GMs
-                return !pObj->m_isGmInvisible;
-
-            return (pObj->getDeathState() == CORPSE); // we can only see players that are spirits
-        }
-
-        if (myCorpseInstanceId == GetInstanceID())
-        {
-            if (obj->isCorpse() && static_cast< Corpse* >(obj)->getOwnerGuid() == getGuid())
-                return true;
-
-            if (obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
-                return true; // we can see everything within range of our corpse
-        }
-
-        if (m_deathVision) // if we have arena death-vision we can see everything
-            return true;
-
-        if (obj->isCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
-            return true; // we can see spirit healers
-
-        return false;
-    }
-    //------------------------------------------------------------------
-
-    if (!(m_phase & obj->m_phase))  //What you can't see, you can't see, no need to check things further.
-        return false;
-
-    switch (object_type) // we are alive or we haven't released our spirit yet
-    {
-        case TYPEID_PLAYER:
-        {
-            Player* pObj = static_cast< Player* >(obj);
-
-            if (pObj->m_invisible) // Invisibility - Detection of Players
-            {
-                if (pObj->getDeathState() == CORPSE)
-                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // only GM can see players that are spirits
-
-                if (GetGroup() && pObj->GetGroup() == GetGroup() // can see invisible group members except when dueling them
-                    && DuelingWith != pObj)
-                    return true;
-
-                if (pObj->stalkedby == getGuid()) // Hunter's Mark / MindVision is visible to the caster
-                    return true;
-
-                if (m_invisDetect[INVIS_FLAG_NORMAL] < 1 // can't see invisible without proper detection
-                    || pObj->m_isGmInvisible) // can't see invisible GM
-                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible players
-            }
-
-            if (m_invisible && pObj->m_invisDetect[m_invisFlag] < 1)   // Invisible - can see those that detect, but not others
-                return m_isGmInvisible;
-
-            if (pObj->IsStealth()) // Stealth Detection (I Hate Rogues :P)
-            {
-                if (GetGroup() && pObj->GetGroup() == GetGroup() // can see stealthed group members except when dueling them
-                    && DuelingWith != pObj)
-                    return true;
-
-                if (pObj->stalkedby == getGuid()) // Hunter's Mark / MindVision is visible to the caster
-                    return true;
-
-                if (isInFront(pObj)) // stealthed player is in front of us
-                {
-                    // Detection Range = 5yds + (Detection Skill - Stealth Skill)/5
-                    detectRange = 5.0f + getLevel() + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
-
-                    // Hehe... stealth skill is increased by 5 each level and detection skill is increased by 5 each level too.
-                    // This way, a level 70 should easily be able to detect a level 4 rogue (level 4 because that's when you get stealth)
-                    //    detectRange += 0.2f * (getLevel() - pObj->getLevel());
-                    if (detectRange < 1.0f)
-                        detectRange = 1.0f;     // Minimum Detection Range = 1yd
-                }
-                else // stealthed player is behind us
-                {
-                    if (GetStealthDetectBonus() > 1000)
-                        return true;            // immune to stealth
-                    else
-                        detectRange = 0.0f;
-                }
-
-                detectRange += getBoundingRadius(); // adjust range for size of player
-                detectRange += pObj->getBoundingRadius(); // adjust range for size of stealthed player
-                //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , getDistanceSq(pObj));
-                if (getDistanceSq(pObj) > detectRange * detectRange)
-                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see stealthed players
-            }
-
-            return !pObj->m_isGmInvisible;
-        }
-        //------------------------------------------------------------------
-
-        case TYPEID_UNIT:
-        {
-            Unit* uObj = static_cast< Unit* >(obj);
-
-            // can't see spirit-healers when alive
-            if (uObj->isCreature() && static_cast<Creature*>(uObj)->isSpiritHealer())
-                return false;
-
-            // always see our units
-            if (getGuid() == uObj->getCreatedByGuid())
-                return true;
-
-            // unit is invisible
-            if (uObj->m_invisible)
-            {
-                // gms can see invisible units
-                /// \todo is invis detection missing here?
-                if (hasPlayerFlags(PLAYER_FLAG_GM))
-                    return true;
-                else
-                    return false;
-            }
-
-            if (uObj->GetAIInterface()->faction_visibility == 1)
-                if (IsTeamHorde())
-                    return true;
-                else
-                    return false;
-
-            if (uObj->GetAIInterface()->faction_visibility == 2)
-                if (IsTeamHorde())
-                    return false;
-                else
-                    return true;
-
-
-            /*if (uObj->m_invisible  // Invisibility - Detection of Units
-                && m_invisDetect[uObj->m_invisFlag] < 1) // can't see invisible without proper detection
-                return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible units
-
-            if (m_invisible && uObj->m_invisDetect[m_invisFlag] < 1)   // Invisible - can see those that detect, but not others
-                return m_isGmInvisible;*/
-
-            return true;
-        }
-        //------------------------------------------------------------------
-
-        case TYPEID_GAMEOBJECT:
-        {
-            GameObject* gObj = static_cast< GameObject* >(obj);
-
-            if (gObj->invisible) // Invisibility - Detection of GameObjects
-            {
-                uint64 owner = gObj->getCreatedByGuid();
-
-                if (getGuid() == owner) // the owner of an object can always see it
-                    return true;
-
-                if (GetGroup())
-                {
-                    PlayerInfo* inf = objmgr.GetPlayerInfo((uint32)owner);
-                    if (inf && GetGroup()->HasMember(inf))
-                        return true;
-                }
-
-                if (m_invisDetect[gObj->invisibilityFlag] < 1) // can't see invisible without proper detection
-                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible objects
-            }
-
-            return true;
-        }
-        //------------------------------------------------------------------
-
-        default:
-            return true;
-    }
-}
-
 void Player::addToInRangeObjects(Object* pObj)
 {
     //Send taxi move if we're on a taxi
@@ -6915,9 +6725,9 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 
     // special drunk invisibility detection
     if (newDrunkenState >= DRUNKEN_DRUNK)
-        m_invisDetect[INVIS_FLAG_UNKNOWN6] = 100;
+        modInvisibilityDetection(INVIS_FLAG_DRUNK, 100);
     else
-        m_invisDetect[INVIS_FLAG_UNKNOWN6] = 0;
+        modInvisibilityDetection(INVIS_FLAG_DRUNK, -getInvisibilityDetection(INVIS_FLAG_DRUNK));
 
     UpdateVisibility();
 
@@ -9002,7 +8812,10 @@ void Player::DuelBoundaryTest()
     if (!IsInWorld())
         return;
 
-    GameObject* pGameObject = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter()));
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
+    GameObject* pGameObject = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
     if (!pGameObject)
     {
         EndDuel(DUEL_WINNER_RETREAT);
@@ -9051,12 +8864,15 @@ void Player::DuelBoundaryTest()
 
 void Player::EndDuel(uint8 WinCondition)
 {
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
     if (m_duelState == DUEL_STATE_FINISHED)
     {
         //if loggingout player requested a duel then we have to make the cleanups
-        if (GET_LOWGUID_PART(getDuelArbiter()))
+        if (wowGuid.getGuidLowPart())
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
+            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
 
             if (arbiter != nullptr)
             {
@@ -9127,7 +8943,7 @@ void Player::EndDuel(uint8 WinCondition)
 
     //Clear Duel Related Stuff
 
-    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
+    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
 
     if (arbiter != nullptr)
     {

@@ -14,32 +14,32 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 {
-    CmsgAttackSwing recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAttackSwing srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_ATTACKSWING: %u (guidLow)", recv_packet.guid.getGuidLow());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_ATTACKSWING: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    if (GetPlayer()->IsFeared() || GetPlayer()->IsStunned() || GetPlayer()->IsPacified() || GetPlayer()->IsDead())
+    if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->IsDead())
         return;
 
-    const auto unitTarget = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid.GetOldGuid());
+    const auto unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.guid.GetOldGuid());
     if (unitTarget == nullptr)
         return;
 
-    if (!isAttackable(GetPlayer(), unitTarget, false) || unitTarget->IsDead())
+    if (!isAttackable(_player, unitTarget, false) || unitTarget->IsDead())
         return;
 
-    GetPlayer()->smsg_AttackStart(unitTarget);
-    GetPlayer()->EventAttackStart();
+    _player->smsg_AttackStart(unitTarget);
+    _player->EventAttackStart();
 }
 
 void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto unitTarget = GetPlayer()->GetMapMgr()->GetUnit(GetPlayer()->GetSelection());
+    const auto unitTarget = _player->GetMapMgr()->GetUnit(_player->GetSelection());
     if (unitTarget == nullptr)
         return;
 
-    GetPlayer()->EventAttackStop();
-    GetPlayer()->smsg_AttackStop(unitTarget);
+    _player->EventAttackStop();
+    _player->smsg_AttackStop(unitTarget);
 }

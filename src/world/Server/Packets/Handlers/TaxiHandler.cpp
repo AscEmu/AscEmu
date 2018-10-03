@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgActivatetaxireply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
+#include "Map/MapMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -140,7 +141,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_ACTIVATETAXI");
 
-    if (GetPlayer()->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
+    if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
 
     const auto taxiPath = sTaxiMgr.GetTaxiPath(srlPacket.srcNode, srlPacket.destNode);
@@ -153,7 +154,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     const uint8_t field = static_cast<uint8_t>((currentNode - 1) / 32);
     const uint32_t subMask = 1 << ((currentNode - 1) % 32);
 
-    if ((GetPlayer()->GetTaximask(field) & subMask) != subMask)
+    if ((_player->GetTaximask(field) & subMask) != subMask)
     {
         SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
@@ -193,7 +194,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
 
-    if (GetPlayer()->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
+    if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
 
     const auto taxiNode = sTaxiMgr.GetTaxiNode(srlPacket.pathParts[0]);

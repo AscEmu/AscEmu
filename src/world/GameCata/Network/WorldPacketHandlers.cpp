@@ -39,19 +39,19 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::handleRealmSplitOpcode;
     WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_OBJECT_UPDATE_FAILED].handler = &WorldSession::HandleObjectUpdateFailedOpcode;
+    WorldPacketHandlers[CMSG_OBJECT_UPDATE_FAILED].handler = &WorldSession::handleObjectUpdateFailedOpcode;
     WorldPacketHandlers[CMSG_OBJECT_UPDATE_FAILED].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_LOAD_SCREEN].handler = &WorldSession::HandleLoadScreenOpcode;
+    WorldPacketHandlers[CMSG_LOAD_SCREEN].handler = &WorldSession::handleLoadScreenOpcode;
     WorldPacketHandlers[CMSG_LOAD_SCREEN].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].handler = &WorldSession::HandleReadyForAccountDataTimesOpcode;
+    WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].handler = &WorldSession::handleReadyForAccountDataTimesOpcode;
     WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_UI_TIME_REQUEST].handler = &WorldSession::HandleUITimeRequestOpcode;
+    WorldPacketHandlers[CMSG_UI_TIME_REQUEST].handler = &WorldSession::handleUITimeRequestOpcode;
     WorldPacketHandlers[CMSG_UI_TIME_REQUEST].status = STATUS_AUTHED;
 
-    WorldPacketHandlers[CMSG_TIME_SYNC_RESP].handler = &WorldSession::HandleTimeSyncRespOpcode;
+    WorldPacketHandlers[CMSG_TIME_SYNC_RESP].handler = &WorldSession::handleTimeSyncRespOpcode;
     WorldPacketHandlers[CMSG_TIME_SYNC_RESP].status = STATUS_AUTHED;
 
     // Queries
@@ -120,19 +120,19 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REPOP_REQUEST].handler = &WorldSession::HandleRepopRequestOpcode;
 
     // Loot
-    WorldPacketHandlers[CMSG_AUTOSTORE_LOOT_ITEM].handler = &WorldSession::HandleAutostoreLootItemOpcode;
-    WorldPacketHandlers[CMSG_LOOT_MONEY].handler = &WorldSession::HandleLootMoneyOpcode;
-    WorldPacketHandlers[CMSG_LOOT].handler = &WorldSession::HandleLootOpcode;
-    WorldPacketHandlers[CMSG_LOOT_RELEASE].handler = &WorldSession::HandleLootReleaseOpcode;
+    WorldPacketHandlers[CMSG_AUTOSTORE_LOOT_ITEM].handler = &WorldSession::handleAutostoreLootItemOpcode;
+    WorldPacketHandlers[CMSG_LOOT_MONEY].handler = &WorldSession::handleLootMoneyOpcode;
+    WorldPacketHandlers[CMSG_LOOT].handler = &WorldSession::handleLootOpcode;
+    WorldPacketHandlers[CMSG_LOOT_RELEASE].handler = &WorldSession::handleLootReleaseOpcode;
     WorldPacketHandlers[CMSG_LOOT_ROLL].handler = &WorldSession::handleLootRollOpcode;
-    WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::HandleLootMasterGiveOpcode;
+    WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::handleLootMasterGiveOpcode;
 
     // Player Interaction
     WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::handleWhoOpcode;
     WorldPacketHandlers[CMSG_WHOIS].handler = &WorldSession::HandleWhoIsOpcode;
     WorldPacketHandlers[CMSG_LOGOUT_REQUEST].handler = &WorldSession::handleLogoutRequestOpcode;
-    //WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler = &WorldSession::HandlePlayerLogoutOpcode;
-    WorldPacketHandlers[CMSG_LOGOUT_CANCEL].handler = &WorldSession::HandleLogoutCancelOpcode;
+    //WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler = &WorldSession::handlePlayerLogoutOpcode;
+    WorldPacketHandlers[CMSG_LOGOUT_CANCEL].handler = &WorldSession::handleLogoutCancelOpcode;
     // //WorldPacketHandlers[CMSG_LOGOUT_CANCEL].status = STATUS_LOGGEDIN_RECENTLY_LOGGOUT;
 
     WorldPacketHandlers[CMSG_ZONEUPDATE].handler = &WorldSession::handleZoneupdate;
@@ -153,7 +153,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::HandleAreaTriggerOpcode;
 
     // Account Data
-    WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].handler = &WorldSession::HandleUpdateAccountData;
+    WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].handler = &WorldSession::handleUpdateAccountData;
     WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].status = STATUS_AUTHED;
     //WorldPacketHandlers[CMSG_REQUEST_ACCOUNT_DATA].handler = &WorldSession::HandleRequestAccountData;
     WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::handleTogglePVPOpcode;
@@ -331,21 +331,21 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_SET_TRADE_GOLD].handler = &WorldSession::handleSetTradeGold;
     // Quest System
     WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::handleInrangeQuestgiverQuery;
-    WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_QUERY].handler = &WorldSession::HandleQuestgiverStatusQueryOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_HELLO].handler = &WorldSession::HandleQuestgiverHelloOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_ACCEPT_QUEST].handler = &WorldSession::HandleQuestgiverAcceptQuestOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_CANCEL].handler = &WorldSession::HandleQuestgiverCancelOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_CHOOSE_REWARD].handler = &WorldSession::HandleQuestgiverChooseRewardOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_REQUEST_REWARD].handler = &WorldSession::HandleQuestgiverRequestRewardOpcode;
-    WorldPacketHandlers[CMSG_QUEST_QUERY].handler = &WorldSession::HandleQuestQueryOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_QUERY_QUEST].handler = &WorldSession::HandleQuestGiverQueryQuestOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::HandleQuestgiverCompleteQuestOpcode;
-    WorldPacketHandlers[CMSG_QUESTLOG_REMOVE_QUEST].handler = &WorldSession::HandleQuestlogRemoveQuestOpcode;
-    WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::HandleCorpseReclaimOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_QUERY].handler = &WorldSession::handleQuestgiverStatusQueryOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_HELLO].handler = &WorldSession::handleQuestgiverHelloOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_ACCEPT_QUEST].handler = &WorldSession::handleQuestgiverAcceptQuestOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_CANCEL].handler = &WorldSession::handleQuestgiverCancelOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_CHOOSE_REWARD].handler = &WorldSession::handleQuestgiverChooseRewardOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_REQUEST_REWARD].handler = &WorldSession::handleQuestgiverRequestRewardOpcode;
+    WorldPacketHandlers[CMSG_QUEST_QUERY].handler = &WorldSession::handleQuestQueryOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_QUERY_QUEST].handler = &WorldSession::handleQuestGiverQueryQuestOpcode;
+    WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::handleQuestgiverCompleteQuestOpcode;
+    WorldPacketHandlers[CMSG_QUESTLOG_REMOVE_QUEST].handler = &WorldSession::handleQuestlogRemoveQuestOpcode;
+    WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::handleCorpseReclaimOpcode;
     //WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::HandleResurrectResponseOpcode;
-    WorldPacketHandlers[CMSG_PUSHQUESTTOPARTY].handler = &WorldSession::HandlePushQuestToPartyOpcode;
+    WorldPacketHandlers[CMSG_PUSHQUESTTOPARTY].handler = &WorldSession::handlePushQuestToPartyOpcode;
     //WorldPacketHandlers[MSG_QUEST_PUSH_RESULT].handler = &WorldSession::handleQuestPushResultOpcode;
-    WorldPacketHandlers[CMSG_QUEST_POI_QUERY].handler = &WorldSession::HandleQuestPOIQueryOpcode;
+    WorldPacketHandlers[CMSG_QUEST_POI_QUERY].handler = &WorldSession::handleQuestPOIQueryOpcode;
 
     // Auction System
     WorldPacketHandlers[CMSG_AUCTION_LIST_ITEMS].handler = &WorldSession::handleAuctionListItems;
@@ -493,7 +493,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REPORT_PLAYER].handler = &WorldSession::HandleReportPlayerOpcode;
 
     // Meeting Stone / Instances
-    //WorldPacketHandlers[CMSG_SUMMON_RESPONSE].handler = &WorldSession::HandleSummonResponseOpcode;
+    //WorldPacketHandlers[CMSG_SUMMON_RESPONSE].handler = &WorldSession::handleSummonResponseOpcode;
     WorldPacketHandlers[CMSG_RESET_INSTANCES].handler = &WorldSession::handleResetInstanceOpcode;
     //WorldPacketHandlers[CMSG_SELF_RES].handler = &WorldSession::HandleSelfResurrectOpcode;
     //WorldPacketHandlers[MSG_RANDOM_ROLL].handler = &WorldSession::HandleRandomRollOpcode;
@@ -502,8 +502,8 @@ void WorldSession::loadSpecificHandlers()
 
     // Misc
     WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::handleOpenItemOpcode;
-    WorldPacketHandlers[CMSG_COMPLETE_CINEMATIC].handler = &WorldSession::HandleCompleteCinematic;
-    WorldPacketHandlers[CMSG_NEXT_CINEMATIC_CAMERA].handler = &WorldSession::HandleNextCinematic;
+    WorldPacketHandlers[CMSG_COMPLETE_CINEMATIC].handler = &WorldSession::handleCompleteCinematic;
+    WorldPacketHandlers[CMSG_NEXT_CINEMATIC_CAMERA].handler = &WorldSession::handleNextCinematic;
     //WorldPacketHandlers[CMSG_MOUNTSPECIAL_ANIM].handler = &WorldSession::handleMountSpecialAnimOpcode;
     //WorldPacketHandlers[CMSG_TOGGLE_CLOAK].handler = &WorldSession::HandleToggleCloakOpcode;
     //WorldPacketHandlers[CMSG_TOGGLE_HELM].handler = &WorldSession::HandleToggleHelmOpcode;
@@ -513,12 +513,12 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::handleWorldStateUITimerUpdate;
     WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::handleSetTaxiBenchmarkOpcode;
     WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
-    WorldPacketHandlers[CMSG_REQUEST_CEMETERY_LIST].handler = &WorldSession::HandleRequestCemeteryListOpcode;
-    WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
-    WorldPacketHandlers[CMSG_RETURN_TO_GRAVEYARD].handler = &WorldSession::HandleReturnToGraveyardOpcode;
-    WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
-    WorldPacketHandlers[CMSG_SUGGESTION].handler = &WorldSession::HandleSuggestionOpcode;
-    WorldPacketHandlers[CMSG_LOG_DISCONNECT].handler = &WorldSession::HandleLogDisconnectOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_CEMETERY_LIST].handler = &WorldSession::handleRequestCemeteryListOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::handleRequestHotfix;
+    WorldPacketHandlers[CMSG_RETURN_TO_GRAVEYARD].handler = &WorldSession::handleReturnToGraveyardOpcode;
+    WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::handleBugOpcode;
+    WorldPacketHandlers[CMSG_SUGGESTION].handler = &WorldSession::handleSuggestionOpcode;
+    WorldPacketHandlers[CMSG_LOG_DISCONNECT].handler = &WorldSession::handleLogDisconnectOpcode;
 
     // Chat
     WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::handleChatIgnoredOpcode;
@@ -555,48 +555,48 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].status = STATUS_AUTHED;
 
     //WorldPacketHandlers[CMSG_OPT_OUT_OF_LOOT].handler = &WorldSession::HandleSetAutoLootPassOpcode;
-    //WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::HandleInrangeQuestgiverQuery;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::handleInrangeQuestgiverQuery;
     //WorldPacketHandlers[CMSG_REMOVE_GLYPH].handler = &WorldSession::HandleRemoveGlyph;
     WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
     //WorldPacketHandlers[CMSG_GET_MIRRORIMAGE_DATA].handler = &WorldSession::HandleMirrorImageOpcode;
 
     // Calendar - Unhandled
-    WorldPacketHandlers[CMSG_CALENDAR_GET_CALENDAR].handler = &WorldSession::HandleCalendarGetCalendar;
-    //WorldPacketHandlers[CMSG_CALENDAR_COMPLAIN].handler = &WorldSession::HandleCalendarComplain;
-    WorldPacketHandlers[CMSG_CALENDAR_GET_NUM_PENDING].handler = &WorldSession::HandleCalendarGetNumPending;
-    //WorldPacketHandlers[CMSG_CALENDAR_ADD_EVENT].handler = &WorldSession::HandleCalendarAddEvent;
+    WorldPacketHandlers[CMSG_CALENDAR_GET_CALENDAR].handler = &WorldSession::handleCalendarGetCalendar;
+    //WorldPacketHandlers[CMSG_CALENDAR_COMPLAIN].handler = &WorldSession::handleCalendarComplain;
+    WorldPacketHandlers[CMSG_CALENDAR_GET_NUM_PENDING].handler = &WorldSession::handleCalendarGetNumPending;
+    //WorldPacketHandlers[CMSG_CALENDAR_ADD_EVENT].handler = &WorldSession::handleCalendarAddEvent;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_GET_EVENT].handler = &WorldSession::HandleCalendarGetEvent;
+    //WorldPacketHandlers[CMSG_CALENDAR_GET_EVENT].handler = &WorldSession::handleCalendarGetEvent;
     //WorldPacketHandlers[CMSG_CALENDAR_GET_EVENT].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_GUILD_FILTER].handler = &WorldSession::HandleCalendarGuildFilter;
+    //WorldPacketHandlers[CMSG_CALENDAR_GUILD_FILTER].handler = &WorldSession::handleCalendarGuildFilter;
     //WorldPacketHandlers[CMSG_CALENDAR_GUILD_FILTER].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_ARENA_TEAM].handler = &WorldSession::HandleCalendarArenaTeam;
+    //WorldPacketHandlers[CMSG_CALENDAR_ARENA_TEAM].handler = &WorldSession::handleCalendarArenaTeam;
     //WorldPacketHandlers[CMSG_CALENDAR_ARENA_TEAM].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_UPDATE_EVENT].handler = &WorldSession::HandleCalendarUpdateEvent;
+    //WorldPacketHandlers[CMSG_CALENDAR_UPDATE_EVENT].handler = &WorldSession::handleCalendarUpdateEvent;
     //WorldPacketHandlers[CMSG_CALENDAR_UPDATE_EVENT].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_REMOVE_EVENT].handler = &WorldSession::HandleCalendarRemoveEvent;
+    //WorldPacketHandlers[CMSG_CALENDAR_REMOVE_EVENT].handler = &WorldSession::handleCalendarRemoveEvent;
     //WorldPacketHandlers[CMSG_CALENDAR_REMOVE_EVENT].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_COPY_EVENT].handler = &WorldSession::HandleCalendarCopyEvent;
+    //WorldPacketHandlers[CMSG_CALENDAR_COPY_EVENT].handler = &WorldSession::handleCalendarCopyEvent;
     //WorldPacketHandlers[CMSG_CALENDAR_COPY_EVENT].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_INVITE].handler = &WorldSession::HandleCalendarEventInvite;
+    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_INVITE].handler = &WorldSession::handleCalendarEventInvite;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_INVITE].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_RSVP].handler = &WorldSession::HandleCalendarEventRsvp;
+    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_RSVP].handler = &WorldSession::handleCalendarEventRsvp;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_RSVP].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_REMOVE_INVITE].handler = &WorldSession::HandleCalendarEventRemoveInvite;
+    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_REMOVE_INVITE].handler = &WorldSession::handleCalendarEventRemoveInvite;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_REMOVE_INVITE].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_STATUS].handler = &WorldSession::HandleCalendarEventStatus;
+    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_STATUS].handler = &WorldSession::handleCalendarEventStatus;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_STATUS].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].handler = &WorldSession::HandleCalendarEventModeratorStatus;
+    //WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].handler = &WorldSession::handleCalendarEventModeratorStatus;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].status = STATUS_LOGGEDIN;
 
     //Misc - Unhandled

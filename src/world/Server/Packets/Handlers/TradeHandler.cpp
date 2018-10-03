@@ -25,18 +25,18 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING != Cata
 void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
 {
-    CmsgInitiateTrade recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgInitiateTrade srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerTarget = GetPlayer()->GetMapMgr()->GetPlayer(recv_packet.guid.getGuidLow());
+    const auto playerTarget = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
     if (playerTarget == nullptr)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_NOT_FOUND, 0).serialise().get());
         return;
     }
 
-    if (playerTarget->CalcDistance(GetPlayer()) > 10.0f)
+    if (playerTarget->CalcDistance(_player) > 10.0f)
     {
         playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_TOO_FAR_AWAY, 0).serialise().get());
         return;
@@ -54,34 +54,34 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->GetTeam() != GetPlayer()->GetTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    if (playerTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
     {
         playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_WRONG_FACTION, 0).serialise().get());
         return;
     }
 
-    GetPlayer()->ResetTradeVariables();
+    _player->ResetTradeVariables();
     playerTarget->ResetTradeVariables();
 
-    playerTarget->mTradeTarget = GetPlayer()->getGuidLow();
+    playerTarget->mTradeTarget = _player->getGuidLow();
     playerTarget->mTradeStatus = TRADE_STATUS_PROPOSED;
 
-    GetPlayer()->mTradeTarget = playerTarget->getGuidLow();
-    GetPlayer()->mTradeStatus = TRADE_STATUS_PROPOSED;
+    _player->mTradeTarget = playerTarget->getGuidLow();
+    _player->mTradeStatus = TRADE_STATUS_PROPOSED;
 
-    playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_PROPOSED, GetPlayer()->getGuid()).serialise().get());
+    playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_PROPOSED, _player->getGuid()).serialise().get());
 }
 
 void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
-    if (GetPlayer()->mTradeTarget == 0 || playerTarget == nullptr)
+    const auto playerTarget = _player->GetTradeTarget();
+    if (_player->mTradeTarget == 0 || playerTarget == nullptr)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_NOT_FOUND, 0).serialise().get());
         return;
     }
 
-    if (GetPlayer()->CalcDistance(objmgr.GetPlayer(GetPlayer()->mTradeTarget)) > 10.0f)
+    if (_player->CalcDistance(objmgr.GetPlayer(_player->mTradeTarget)) > 10.0f)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_TOO_FAR_AWAY, 0).serialise().get());
         return;
@@ -91,13 +91,13 @@ void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
     playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_INITIATED, 0).serialise().get());
 
     playerTarget->mTradeStatus = TRADE_STATUS_INITIATED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_INITIATED;
+    _player->mTradeStatus = TRADE_STATUS_INITIATED;
 }
 
 void WorldSession::handleBusyTrade(WorldPacket& /*recvPacket*/)
 {
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
-    if (GetPlayer()->mTradeTarget == 0 || playerTarget == nullptr)
+    const auto playerTarget = _player->GetTradeTarget();
+    if (_player->mTradeTarget == 0 || playerTarget == nullptr)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_NOT_FOUND, 0).serialise().get());
         return;
@@ -107,16 +107,16 @@ void WorldSession::handleBusyTrade(WorldPacket& /*recvPacket*/)
     playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_BUSY, 0).serialise().get());
 
     playerTarget->mTradeStatus = TRADE_STATUS_PLAYER_BUSY;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_PLAYER_BUSY;
+    _player->mTradeStatus = TRADE_STATUS_PLAYER_BUSY;
 
     playerTarget->mTradeTarget = 0;
-    GetPlayer()->mTradeTarget = 0;
+    _player->mTradeTarget = 0;
 }
 
 void WorldSession::handleIgnoreTrade(WorldPacket& /*recvPacket*/)
 {
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
-    if (GetPlayer()->mTradeTarget == 0 || playerTarget == nullptr)
+    const auto playerTarget = _player->GetTradeTarget();
+    if (_player->mTradeTarget == 0 || playerTarget == nullptr)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_NOT_FOUND, 0).serialise().get());
         return;
@@ -126,20 +126,20 @@ void WorldSession::handleIgnoreTrade(WorldPacket& /*recvPacket*/)
     playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_PLAYER_IGNORED, 0).serialise().get());
 
     playerTarget->mTradeStatus = TRADE_STATUS_PLAYER_IGNORED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_PLAYER_IGNORED;
+    _player->mTradeStatus = TRADE_STATUS_PLAYER_IGNORED;
 
     playerTarget->mTradeTarget = 0;
-    GetPlayer()->mTradeTarget = 0;
+    _player->mTradeTarget = 0;
 }
 
 void WorldSession::handleCancelTrade(WorldPacket& /*recvPacket*/)
 {
-    if (GetPlayer()->mTradeTarget == 0 || GetPlayer()->mTradeStatus == TRADE_STATUS_COMPLETE)
+    if (_player->mTradeTarget == 0 || _player->mTradeStatus == TRADE_STATUS_COMPLETE)
         return;
 
     SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
 
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
+    const auto playerTarget = _player->GetTradeTarget();
     if (playerTarget != nullptr)
     {
         if (playerTarget->m_session && playerTarget->m_session->GetSocket())
@@ -148,13 +148,13 @@ void WorldSession::handleCancelTrade(WorldPacket& /*recvPacket*/)
         playerTarget->ResetTradeVariables();
     }
 
-    GetPlayer()->ResetTradeVariables();
+    _player->ResetTradeVariables();
 }
 
 void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
 {
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
-    if (GetPlayer()->mTradeTarget == 0 || playerTarget == nullptr)
+    const auto playerTarget = _player->GetTradeTarget();
+    if (_player->mTradeTarget == 0 || playerTarget == nullptr)
         return;
 
     SendPacket(SmsgTradeStatus(TRADE_STATUS_UNACCEPTED, 0).serialise().get());
@@ -164,30 +164,30 @@ void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
     playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
 
     playerTarget->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
+    _player->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
 }
 
 void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 {
-    if (GetPlayer()->mTradeTarget == 0)
+    if (_player->mTradeTarget == 0)
         return;
 
-    CmsgSetTradeItem recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgSetTradeItem srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (recv_packet.tradeSlot > 6)
+    if (srlPacket.tradeSlot > 6)
         return;
 
-    const auto playerTarget = GetPlayer()->GetTradeTarget();
+    const auto playerTarget = _player->GetTradeTarget();
     if (playerTarget == nullptr)
         return;
 
-    const auto tradeItem = GetPlayer()->GetItemInterface()->GetInventoryItem(recv_packet.sourceBag, recv_packet.sourceSlot);
+    const auto tradeItem = _player->GetItemInterface()->GetInventoryItem(srlPacket.sourceBag, srlPacket.sourceSlot);
     if (tradeItem == nullptr)
         return;
 
-    if (recv_packet.tradeSlot < 6)
+    if (srlPacket.tradeSlot < 6)
     {
         if (tradeItem->isAccountbound())
             return;
@@ -204,16 +204,16 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
     playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
 
     playerTarget->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
+    _player->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
 
     if (tradeItem->isContainer())
     {
         if (dynamic_cast<Container*>(tradeItem)->HasItems())
         {
-            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
+            _player->GetItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
 
             SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
-            GetPlayer()->ResetTradeVariables();
+            _player->ResetTradeVariables();
 
             playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
             playerTarget->ResetTradeVariables();
@@ -224,7 +224,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 
     for (uint8_t i = 0; i < 8; ++i)
     {
-        if (GetPlayer()->mTradeItems[i] == tradeItem || playerTarget->mTradeItems[i] == tradeItem)
+        if (_player->mTradeItems[i] == tradeItem || playerTarget->mTradeItems[i] == tradeItem)
         {
             sCheatLog.writefromsession(this, "tried to dupe an item through trade");
             Disconnect();
@@ -232,76 +232,76 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
         }
     }
 
-    if (recv_packet.sourceSlot >= INVENTORY_SLOT_BAG_START && recv_packet.sourceSlot < INVENTORY_SLOT_BAG_END)
+    if (srlPacket.sourceSlot >= INVENTORY_SLOT_BAG_START && srlPacket.sourceSlot < INVENTORY_SLOT_BAG_END)
     {
-        const auto item = GetPlayer()->GetItemInterface()->GetInventoryItem(recv_packet.sourceBag);
-        if (item == nullptr || recv_packet.sourceSlot >= item->getItemProperties()->ContainerSlots)
+        const auto item = _player->GetItemInterface()->GetInventoryItem(srlPacket.sourceBag);
+        if (item == nullptr || srlPacket.sourceSlot >= item->getItemProperties()->ContainerSlots)
         {
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
             Disconnect();
         }
     }
 
-    GetPlayer()->mTradeItems[recv_packet.tradeSlot] = tradeItem;
-    GetPlayer()->SendTradeUpdate();
+    _player->mTradeItems[srlPacket.tradeSlot] = tradeItem;
+    _player->SendTradeUpdate();
 }
 
 void WorldSession::handleSetTradeGold(WorldPacket& recvPacket)
 {
-    const auto targetPlayer = GetPlayer()->GetTradeTarget();
+    const auto targetPlayer = _player->GetTradeTarget();
     if (targetPlayer == nullptr)
         return;
 
-    CmsgSetTradeGold recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgSetTradeGold srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
     targetPlayer->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
 
     targetPlayer->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
+    _player->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
 
-    if (GetPlayer()->mTradeGold != recv_packet.tradeGoldAmount)
+    if (_player->mTradeGold != srlPacket.tradeGoldAmount)
     {
-        GetPlayer()->mTradeGold = recv_packet.tradeGoldAmount > GetPlayer()->GetGold() ? GetPlayer()->GetGold() : recv_packet.tradeGoldAmount;
-        GetPlayer()->SendTradeUpdate();
+        _player->mTradeGold = srlPacket.tradeGoldAmount > _player->GetGold() ? _player->GetGold() : srlPacket.tradeGoldAmount;
+        _player->SendTradeUpdate();
     }
 }
 
 void WorldSession::handleClearTradeItem(WorldPacket& recvPacket)
 {
-    const auto targetPlayer = GetPlayer()->GetTradeTarget();
+    const auto targetPlayer = _player->GetTradeTarget();
     if (targetPlayer == nullptr)
         return;
 
-    CmsgClearTradeItem recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgClearTradeItem srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (recv_packet.tradeSlot > 6)
+    if (srlPacket.tradeSlot > 6)
         return;
 
     SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
     targetPlayer->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_STATE_CHANGED, 0).serialise().get());
 
     targetPlayer->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
-    GetPlayer()->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
+    _player->mTradeStatus = TRADE_STATUS_STATE_CHANGED;
 
-    GetPlayer()->mTradeItems[recv_packet.tradeSlot] = nullptr;
-    GetPlayer()->SendTradeUpdate();
+    _player->mTradeItems[srlPacket.tradeSlot] = nullptr;
+    _player->SendTradeUpdate();
 }
 
 void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 {
-    const auto targetPlayer = GetPlayer()->GetTradeTarget();
+    const auto targetPlayer = _player->GetTradeTarget();
     if (targetPlayer == nullptr)
         return;
 
     uint32_t tradeStatus = TRADE_STATUS_ACCEPTED;
 
     targetPlayer->m_session->SendPacket(SmsgTradeStatus(tradeStatus, 0).serialise().get());
-    GetPlayer()->mTradeStatus = tradeStatus;
+    _player->mTradeStatus = tradeStatus;
 
     if (targetPlayer->mTradeStatus == TRADE_STATUS_ACCEPTED)
     {
@@ -310,7 +310,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
         for (uint32_t index = 0; index < 6; ++index)
         {
-            auto tradeItem = GetPlayer()->mTradeItems[index];
+            auto tradeItem = _player->mTradeItems[index];
             if (tradeItem)
             {
                 if ((tradeItem->isContainer() && dynamic_cast< Container* >(tradeItem)->HasItems()) || tradeItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
@@ -338,9 +338,9 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
         }
 
-        if (GetPlayer()->m_ItemInterface->CalculateFreeSlots(nullptr) + itemCount < targetItemCount ||
+        if (_player->m_ItemInterface->CalculateFreeSlots(nullptr) + itemCount < targetItemCount ||
             targetPlayer->m_ItemInterface->CalculateFreeSlots(nullptr) + targetItemCount < itemCount ||
-            itemCount == 0 && targetItemCount == 0 && !targetPlayer->mTradeGold && !GetPlayer()->mTradeGold)
+            itemCount == 0 && targetItemCount == 0 && !targetPlayer->mTradeGold && !_player->mTradeGold)
         {
             tradeStatus = TRADE_STATUS_CANCELLED;
         }
@@ -348,19 +348,19 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         {
             for (uint32_t index = 0; index < 6; ++index)
             {
-                uint64_t tradeItemGuid = GetPlayer()->mTradeItems[index] ? GetPlayer()->mTradeItems[index]->getGuid() : 0;
+                uint64_t tradeItemGuid = _player->mTradeItems[index] ? _player->mTradeItems[index]->getGuid() : 0;
                 if (tradeItemGuid != 0)
                 {
-                    if (GetPlayer()->mTradeItems[index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
-                        GetPlayer()->mTradeItems[index]->getItemProperties()->Bonding >= ITEM_BIND_QUEST)
+                    if (_player->mTradeItems[index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
+                        _player->mTradeItems[index]->getItemProperties()->Bonding >= ITEM_BIND_QUEST)
                     {
-                        GetPlayer()->mTradeItems[index] = nullptr;
+                        _player->mTradeItems[index] = nullptr;
                     }
                     else
                     {
                         if (GetPermissionCount() > 0)
                         {
-                            sGMLog.writefromsession(this, "traded item %s to %s", GetPlayer()->mTradeItems[index]->getItemProperties()->Name.c_str(), targetPlayer->getName().c_str());
+                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[index]->getItemProperties()->Name.c_str(), targetPlayer->getName().c_str());
                         }
                     }
                 }
@@ -382,7 +382,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
             for (uint32_t index = 0; index < 6; ++index)
             {
-                auto tradeItem = GetPlayer()->mTradeItems[index];
+                auto tradeItem = _player->mTradeItems[index];
                 if (tradeItem != nullptr)
                 {
                     tradeItem->setOwner(targetPlayer);
@@ -393,35 +393,35 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                 tradeItem = targetPlayer->mTradeItems[index];
                 if (tradeItem != nullptr)
                 {
-                    tradeItem->setOwner(GetPlayer());
-                    if (!GetPlayer()->m_ItemInterface->AddItemToFreeSlot(tradeItem))
+                    tradeItem->setOwner(_player);
+                    if (!_player->m_ItemInterface->AddItemToFreeSlot(tradeItem))
                         tradeItem->DeleteMe();
                 }
             }
 
             if (targetPlayer->mTradeGold)
             {
-                if (worldConfig.player.isGoldCapEnabled && (GetPlayer()->GetGold() + targetPlayer->mTradeGold) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (_player->GetGold() + targetPlayer->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
-                    GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                    _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    GetPlayer()->ModGold(targetPlayer->mTradeGold);
+                    _player->ModGold(targetPlayer->mTradeGold);
                     targetPlayer->ModGold(-static_cast<int32_t>(targetPlayer->mTradeGold));
                 }
             }
 
-            if (GetPlayer()->mTradeGold)
+            if (_player->mTradeGold)
             {
-                if (worldConfig.player.isGoldCapEnabled && (targetPlayer->GetGold() + GetPlayer()->mTradeGold) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (targetPlayer->GetGold() + _player->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
                     targetPlayer->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    targetPlayer->ModGold(GetPlayer()->mTradeGold);
-                    GetPlayer()->ModGold(-static_cast<int32_t>(GetPlayer()->mTradeGold));
+                    targetPlayer->ModGold(_player->mTradeGold);
+                    _player->ModGold(-static_cast<int32_t>(_player->mTradeGold));
                 }
             }
 
@@ -432,13 +432,13 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         SendPacket(SmsgTradeStatus(tradeStatus, 0).serialise().get());
         targetPlayer->m_session->SendPacket(SmsgTradeStatus(tradeStatus, 0).serialise().get());
 
-        GetPlayer()->mTradeStatus = tradeStatus;
+        _player->mTradeStatus = tradeStatus;
         targetPlayer->mTradeStatus = tradeStatus;
 
-        GetPlayer()->ResetTradeVariables();
+        _player->ResetTradeVariables();
         targetPlayer->ResetTradeVariables();
 
-        GetPlayer()->SaveToDB(false);
+        _player->SaveToDB(false);
         targetPlayer->SaveToDB(false);
     }
 }
@@ -654,7 +654,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(targetGuid[6]);
     recvData.ReadByteSeq(targetGuid[0]);
 
-    if (GetPlayer()->m_TradeData)
+    if (_player->m_TradeData)
     {
         sendTradeResult(TRADE_STATUS_BUSY);
         return;
@@ -667,7 +667,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (player_target == GetPlayer() || player_target->m_TradeData)
+    if (player_target == _player || player_target->m_TradeData)
     {
         sendTradeResult(TRADE_STATUS_BUSY);
         return;
@@ -679,7 +679,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (GetPlayer()->IsDead())
+    if (_player->IsDead())
     {
         sendTradeResult(TRADE_STATUS_YOU_DEAD);
         return;

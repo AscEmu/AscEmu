@@ -14,6 +14,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgItemTextQueryResponse.h"
 #include "Server/Packets/CmsgSendMail.h"
 #include "Server/Packets/CmsgMailTakeItem.h"
+#include "Server/WorldSession.h"
+#include "Management/MailMgr.h"
+#include "Server/World.h"
+#include "Units/Players/Player.h"
+#include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -3821,7 +3821,10 @@ Pet* Object::GetMapMgrPet(const uint64 & guid)
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
 }
 
 Unit* Object::GetMapMgrUnit(const uint64 & guid)
@@ -3837,7 +3840,10 @@ Player* Object::GetMapMgrPlayer(const uint64 & guid)
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
 }
 
 Creature* Object::GetMapMgrCreature(const uint64 & guid)
@@ -3845,7 +3851,10 @@ Creature* Object::GetMapMgrCreature(const uint64 & guid)
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
 }
 
 GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
@@ -3853,7 +3862,10 @@ GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
 }
 
 DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
@@ -3861,7 +3873,10 @@ DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetDynamicObject(GET_LOWGUID_PART(guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return GetMapMgr()->GetDynamicObject(wowGuid.getGuidLowPart());
 }
 
 Object* Object::GetPlayerOwner()

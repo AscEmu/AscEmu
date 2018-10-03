@@ -499,7 +499,7 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::BattleMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendBattlegroundList(static_cast<Creature*>(pObject), 0);
+    Plr->GetSession()->sendBattlegroundList(static_cast<Creature*>(pObject), 0);
 }
 
 //BANKER

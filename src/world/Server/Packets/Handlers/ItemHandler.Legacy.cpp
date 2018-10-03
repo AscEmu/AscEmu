@@ -1469,7 +1469,10 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
     if (!listInventoryPacket.deserialise(recvData))
         return;
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(listInventoryPacket.guid));
+    WoWGuid wowGuid;
+    wowGuid.Init(listInventoryPacket.guid);
+
+    Creature* unit = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     if (unit == nullptr)
         return;
 

@@ -23,80 +23,80 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
 {
-    CmsgAuctionListOwnerItems recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionListOwnerItems srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", recv_packet.guid.getGuidLow());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->SendOwnerListPacket(GetPlayer(), nullptr);
+    creature->auctionHouse->SendOwnerListPacket(_player, nullptr);
 }
 
 void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
 {
-    CmsgAuctionListItems recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionListItems srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", recv_packet.guid.getGuidLow());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->SendAuctionList(GetPlayer(), &recvPacket);
+    creature->auctionHouse->SendAuctionList(_player, &recvPacket);
 }
 
 void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
 {
-    CmsgAuctionRemoveItem recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionRemoveItem srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_REMOVE_ITEM %u (auctionId)", recv_packet.auctionId);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_REMOVE_ITEM %u (auctionId)", srlPacket.auctionId);
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    const auto auction = creature->auctionHouse->GetAuction(recv_packet.auctionId);
+    const auto auction = creature->auctionHouse->GetAuction(srlPacket.auctionId);
     if (auction == nullptr)
         return;
 
     creature->auctionHouse->QueueDeletion(auction, AUCTION_REMOVE_CANCELLED);
 
-    SendPacket(SmsgAuctionCommandResult(recv_packet.auctionId, AUCTION_CANCEL, AUCTION_ERROR_NONE).serialise().get());
+    SendPacket(SmsgAuctionCommandResult(srlPacket.auctionId, AUCTION_CANCEL, AUCTION_ERROR_NONE).serialise().get());
 
-    creature->auctionHouse->SendOwnerListPacket(GetPlayer(), nullptr);
+    creature->auctionHouse->SendOwnerListPacket(_player, nullptr);
 }
 
 void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
 {
-    CmsgAuctionListIBidderItemse recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionListIBidderItemse srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_LIST_BIDDER_ITEMS %u (lowguid)", recv_packet.guid.getGuidLow());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_BIDDER_ITEMS %u (lowguid)", srlPacket.guid.getGuidLow());
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->SendBidListPacket(GetPlayer(), &recvPacket);
+    creature->auctionHouse->SendBidListPacket(_player, &recvPacket);
 }
 
 void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    CmsgAuctionListIPendingSales recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionListIPendingSales srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_LIST_PRENDING_SALES %u (lowguid)", recv_packet.guid.getGuidLow());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_PRENDING_SALES %u (lowguid)", srlPacket.guid.getGuidLow());
 
     //\todo SMSG_AUCTION_LIST_PENDING_SALES needs to be researched!
 #endif
@@ -104,23 +104,23 @@ void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
 
 void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 {
-    CmsgAuctionSellItem recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionSellItem srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_SELL_ITEM");
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_SELL_ITEM");
 
-    if (!recv_packet.bidMoney || !recv_packet.expireTime)
+    if (!srlPacket.bidMoney || !srlPacket.expireTime)
         return;
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.auctioneerGuid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.auctioneerGuid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
     const auto auctionHouse = creature->auctionHouse;
-    recv_packet.expireTime *= MINUTE;
+    srlPacket.expireTime *= MINUTE;
 
-    switch (recv_packet.expireTime)
+    switch (srlPacket.expireTime)
     {
         case 1 * MIN_AUCTION_TIME:
         case 2 * MIN_AUCTION_TIME:
@@ -134,57 +134,57 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
     uint32_t finalCount = 0;
 
-    for (uint32_t i = 0; i < recv_packet.itemsCount; ++i)
+    for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
     {
-        const auto item = GetPlayer()->GetItemInterface()->GetItemByGUID(recv_packet.itemGuids[i]);
+        const auto item = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuids[i]);
         if (!item)
         {
-            GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);
+            _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);
             return;
         }
 
         items[i] = item;
-        finalCount += recv_packet.count[i];
+        finalCount += srlPacket.count[i];
     }
 
     if (!finalCount)
     {
-        GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
+        _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
         return;
     }
 
-    for (uint32_t i = 0; i < recv_packet.itemsCount; ++i)
+    for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
     {
         if (items[i] == nullptr || items[i]->getStackCount() < finalCount)
         {
-            GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
+            _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
             return;
         }
     }
 
-    for (uint32_t i = 0; i < recv_packet.itemsCount; ++i)
+    for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
     {
         if (items[i] == nullptr)
         {
-            GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
+            _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_INTERNAL);
             return;
         }
 
         const uint32_t item_worth = items[i]->getItemProperties()->SellPrice * items[i]->getStackCount();
-        const uint32_t item_deposit = static_cast<uint32_t>(item_worth * auctionHouse->deposit_percent) * static_cast<uint32_t>(recv_packet.expireTime / 240.0f);
+        const uint32_t item_deposit = static_cast<uint32_t>(item_worth * auctionHouse->deposit_percent) * static_cast<uint32_t>(srlPacket.expireTime / 240.0f);
 
-        if (!GetPlayer()->HasGold(item_deposit))
+        if (!_player->HasGold(item_deposit))
         {
-            GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_MONEY);
+            _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_MONEY);
             return;
         }
 
-        GetPlayer()->ModGold(-int32(item_deposit));
+        _player->ModGold(-int32(item_deposit));
 
-        const auto item = GetPlayer()->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(recv_packet.itemGuids[i], false);
+        const auto item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
         if (!item)
         {
-            GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);
+            _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);
             return;
         };
 
@@ -196,13 +196,13 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         item->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
 
         const auto auction = new Auction;
-        auction->BuyoutPrice = static_cast<uint32_t>(recv_packet.buyoutPrice);
-        auction->ExpiryTime = static_cast<uint32_t>(UNIXTIME) + recv_packet.expireTime * MINUTE;
-        auction->StartingPrice = static_cast<uint32_t>(recv_packet.bidMoney);
+        auction->BuyoutPrice = static_cast<uint32_t>(srlPacket.buyoutPrice);
+        auction->ExpiryTime = static_cast<uint32_t>(UNIXTIME) + srlPacket.expireTime * MINUTE;
+        auction->StartingPrice = static_cast<uint32_t>(srlPacket.bidMoney);
         auction->HighestBid = 0;
         auction->HighestBidder = 0;
         auction->Id = sAuctionMgr.GenerateAuctionId();
-        auction->Owner = GetPlayer()->getGuidLow();
+        auction->Owner = _player->getGuidLow();
         auction->pItem = item;
         auction->Deleted = false;
         auction->DeletedReason = 0;
@@ -211,65 +211,65 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auctionHouse->AddAuction(auction);
         auction->SaveToDB(auctionHouse->GetID());
 
-        GetPlayer()->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_NONE);
+        _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_NONE);
     }
 
-    auctionHouse->SendOwnerListPacket(GetPlayer(), &recvPacket);
+    auctionHouse->SendOwnerListPacket(_player, &recvPacket);
 }
 
 void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 {
-    CmsgAuctionPlaceBid recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAuctionPlaceBid srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_AUCTION_PLACE_BID: %u (auctionId), %u (price)", recv_packet.auctionId, recv_packet.price);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_PLACE_BID: %u (auctionId), %u (price)", srlPacket.auctionId, srlPacket.price);
 
-    const auto creature = GetPlayer()->GetMapMgr()->GetCreature(recv_packet.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
     const auto auctionHouse = creature->auctionHouse;
-    const auto auction = auctionHouse->GetAuction(recv_packet.auctionId);
-    if (auction == nullptr || !auction->Owner || GetPlayer() == nullptr)
+    const auto auction = auctionHouse->GetAuction(srlPacket.auctionId);
+    if (auction == nullptr || !auction->Owner || _player == nullptr)
     {
         SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
         return;
     }
 
-    if (auction->Owner == GetPlayer()->getGuidLow())
+    if (auction->Owner == _player->getGuidLow())
     {
         SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0).serialise().get());
         return;
     }
 
-    if (auction->HighestBid > recv_packet.price && recv_packet.price != auction->BuyoutPrice)
+    if (auction->HighestBid > srlPacket.price && srlPacket.price != auction->BuyoutPrice)
     {
         SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
         return;
     }
 
-    if (!GetPlayer()->HasGold(recv_packet.price))
+    if (!_player->HasGold(srlPacket.price))
     {
         SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_MONEY, 0).serialise().get());
         return;
     }
 
-    GetPlayer()->ModGold(-static_cast<int32_t>(recv_packet.price));
+    _player->ModGold(-static_cast<int32_t>(srlPacket.price));
     if (auction->HighestBidder != 0)
     {
         char subject[100];
         snprintf(subject, 100, "%u:0:0", static_cast<int>(auction->pItem->getEntry()));
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouse->GetID(), auction->HighestBidder, subject, "", auction->HighestBid, 0, 0, MAIL_STATIONERY_AUCTION);
 
-        if (auction->HighestBidder != GetPlayer()->getGuidLow())
-            auctionHouse->SendAuctionOutBidNotificationPacket(auction, GetPlayer()->getGuid(), recv_packet.price);
+        if (auction->HighestBidder != _player->getGuidLow())
+            auctionHouse->SendAuctionOutBidNotificationPacket(auction, _player->getGuid(), srlPacket.price);
     }
 
-    if (auction->BuyoutPrice == recv_packet.price)
+    if (auction->BuyoutPrice == srlPacket.price)
     {
-        auction->HighestBidder = GetPlayer()->getGuidLow();
-        auction->HighestBid = recv_packet.price;
+        auction->HighestBidder = _player->getGuidLow();
+        auction->HighestBid = srlPacket.price;
 
         auctionHouse->QueueDeletion(auction, AUCTION_REMOVE_WON);
 
@@ -278,8 +278,8 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     }
     else
     {
-        auction->HighestBidder = GetPlayer()->getGuidLow();
-        auction->HighestBid = recv_packet.price;
+        auction->HighestBidder = _player->getGuidLow();
+        auction->HighestBid = srlPacket.price;
         auction->UpdateInDB();
 
         SendPacket(SmsgAuctionCommandResult(auction->Id, AUCTION_BID, AUCTION_ERROR_NONE, 0).serialise().get());

@@ -2337,7 +2337,11 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
+
+        WoWGuid wowGuid;
+        wowGuid.Init(corpseTarget->getOwnerGuid());
+
+        playerTarget = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!playerTarget) return;
     }
 
@@ -4918,7 +4922,7 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     if (!p_caster || !p_caster->isAlive())
         return;
 
-    if (p_caster->IsStealth())
+    if (p_caster->isStealthed())
     {
         SendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED);
         return; // Player is stealth
@@ -5489,7 +5493,11 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
 
             return;
         }
-        playerTarget = objmgr.GetPlayer(GET_LOWGUID_PART(corpseTarget->getOwnerGuid()));
+
+        WoWGuid wowGuid;
+        wowGuid.Init(corpseTarget->getOwnerGuid());
+
+        playerTarget = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!playerTarget) return;
     }
 
@@ -5560,7 +5568,10 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     else if (corpse)
     {
         // find the corpses' owner
-        Player* owner = objmgr.GetPlayer(GET_LOWGUID_PART(corpse->getOwnerGuid()));
+        WoWGuid wowGuid;
+        wowGuid.Init(corpse->getOwnerGuid());
+
+        Player* owner = objmgr.GetPlayer(wowGuid.getGuidLowPart());
         if (owner)
         {
             if (!owner->m_bg) return;

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 #include <Management/Gossip/Gossip.h>
 #include <Server/Script/ScriptMgr.h>
+#include "WoWGuid.h"
 
 class LuaEngine;
 

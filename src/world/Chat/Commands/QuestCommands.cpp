@@ -306,26 +306,24 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 else
                 {
                     // I need some way to get the guid without targeting the creature or looking through all the spawns...
-                    Object* quest_giver = 0;
+                    Object* questGiver = nullptr;
 
-                    for (size_t guid = 1; guid < plr->GetMapMgr()->CreatureStorage.size(); guid++)
+                    for (auto pCreature: plr->GetMapMgr()->CreatureStorage)
                     {
-                        Creature* pCreature = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
                         if (pCreature)
                         {
                             if (pCreature->getEntry() == giver_id) //found creature
                             {
-                                quest_giver = pCreature;
-                                guid = plr->GetMapMgr()->CreatureStorage.size();
+                                questGiver = pCreature;
                             }
                         }
                     }
 
-                    if (quest_giver)
+                    if (questGiver)
                     {
                         GreenSystemMessage(m_session, "Found a quest_giver creature.");
-                        sQuestMgr.OnActivateQuestGiver(quest_giver, plr);
-                        sQuestMgr.GiveQuestRewardReputation(plr, qst, quest_giver);
+                        sQuestMgr.OnActivateQuestGiver(questGiver, plr);
+                        sQuestMgr.GiveQuestRewardReputation(plr, qst, questGiver);
                     }
                     else
                         RedSystemMessage(m_session, "Unable to find quest_giver object.");

@@ -18,86 +18,86 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING > TBC
 void WorldSession::handleDismissVehicle(WorldPacket& /*recvPacket*/)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
-    const auto unit = GetPlayer()->GetMapMgr()->GetUnit(GetPlayer()->getCharmGuid());
+    const auto unit = _player->GetMapMgr()->GetUnit(_player->getCharmGuid());
     if (unit == nullptr)
         return;
 
     if (unit->GetVehicleComponent() == nullptr)
         return;
 
-    unit->GetVehicleComponent()->EjectPassenger(GetPlayer());
+    unit->GetVehicleComponent()->EjectPassenger(_player);
 }
 
 void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
-    GetPlayer()->GetCurrentVehicle()->MovePassengerToPrevSeat(GetPlayer());
+    _player->GetCurrentVehicle()->MovePassengerToPrevSeat(_player);
 }
 
 void WorldSession::handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
-    GetPlayer()->GetCurrentVehicle()->MovePassengerToNextSeat(GetPlayer());
+    _player->GetCurrentVehicle()->MovePassengerToNextSeat(_player);
 }
 
 void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
-    CmsgRequestVehicleSwitchSeat recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgRequestVehicleSwitchSeat srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (recv_packet.guid.GetOldGuid() == GetPlayer()->GetCurrentVehicle()->GetOwner()->getGuid())
+    if (srlPacket.guid.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
     {
-        GetPlayer()->GetCurrentVehicle()->MovePassengerToSeat(GetPlayer(), recv_packet.seat);
+        _player->GetCurrentVehicle()->MovePassengerToSeat(_player, srlPacket.seat);
     }
     else
     {
-        const auto unit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid.GetOldGuid());
+        const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid.GetOldGuid());
         if (unit == nullptr)
             return;
 
         if (unit->GetVehicleComponent() == nullptr)
             return;
 
-        if (GetPlayer()->GetVehicleBase()->getGuid() != unit->GetVehicleBase()->getGuid())
+        if (_player->GetVehicleBase()->getGuid() != unit->GetVehicleBase()->getGuid())
             return;
 
-        GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
-        unit->GetVehicleComponent()->AddPassengerToSeat(GetPlayer(), recv_packet.seat);
+        _player->GetCurrentVehicle()->EjectPassenger(_player);
+        unit->GetVehicleComponent()->AddPassengerToSeat(_player, srlPacket.seat);
     }
 }
 
 void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
 #if VERSION_STRING == WotLK
-    CmsgChangeSeatsOnControlledVehicle recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChangeSeatsOnControlledVehicle srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto sourceUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.sourceGuid.GetOldGuid());
+    const auto sourceUnit = _player->GetMapMgr()->GetUnit(srlPacket.sourceGuid.GetOldGuid());
     if (sourceUnit == nullptr)
         return;
 
     if (sourceUnit->GetVehicleComponent() == nullptr)
         return;
 
-    if (sourceUnit->getGuid() != GetPlayer()->GetCurrentVehicle()->GetOwner()->getGuid())
+    if (sourceUnit->getGuid() != _player->GetCurrentVehicle()->GetOwner()->getGuid())
         return;
 
-    const auto destinationUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.destinationGuid.GetOldGuid());
+    const auto destinationUnit = _player->GetMapMgr()->GetUnit(srlPacket.destinationGuid.GetOldGuid());
     if (destinationUnit == nullptr)
         return;
 
@@ -106,15 +106,15 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
 
     if (sourceUnit->getGuid() == destinationUnit->getGuid())
     {
-        sourceUnit->GetVehicleComponent()->MovePassengerToSeat(GetPlayer(), recv_packet.seat);
+        sourceUnit->GetVehicleComponent()->MovePassengerToSeat(_player, srlPacket.seat);
     }
     else
     {
         if (sourceUnit->GetVehicleBase()->getGuid() != destinationUnit->GetVehicleBase()->getGuid())
             return;
 
-        GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
-        destinationUnit->GetVehicleComponent()->AddPassengerToSeat(GetPlayer(), recv_packet.seat);
+        _player->GetCurrentVehicle()->EjectPassenger(_player);
+        destinationUnit->GetVehicleComponent()->AddPassengerToSeat(_player, srlPacket.seat);
     }
 #endif
 }
@@ -122,22 +122,22 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
 void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
 {
     Vehicle* vehicle = nullptr;
-    if (GetPlayer()->isVehicle())
-        vehicle = GetPlayer()->GetVehicleComponent();
+    if (_player->isVehicle())
+        vehicle = _player->GetVehicleComponent();
     else
-        vehicle = GetPlayer()->GetCurrentVehicle();
+        vehicle = _player->GetCurrentVehicle();
 
     if (vehicle == nullptr)
         return;
 
-    CmsgEjectPassenger recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgEjectPassenger srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (recv_packet.guid == 0)
+    if (srlPacket.guid == 0)
         return;
 
-    const auto passengerUnit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid);
+    const auto passengerUnit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
     if (passengerUnit == nullptr)
         return;
 
@@ -146,28 +146,28 @@ void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
 
 void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 {
-    if (GetPlayer()->GetCurrentVehicle() == nullptr)
+    if (_player->GetCurrentVehicle() == nullptr)
         return;
 
-    GetPlayer()->GetCurrentVehicle()->EjectPassenger(GetPlayer());
+    _player->GetCurrentVehicle()->EjectPassenger(_player);
 }
 
 void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
 {
-    CmsgPlayerVehicleEnter recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPlayerVehicleEnter srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto unit = GetPlayer()->GetMapMgr()->GetUnit(recv_packet.guid);
+    const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
     if (unit == nullptr)
         return;
 
-    if (!GetPlayer()->isInRange(unit, MAX_INTERACTION_RANGE))
+    if (!_player->isInRange(unit, MAX_INTERACTION_RANGE))
         return;
 
     if (unit->GetVehicleComponent() == nullptr)
         return;
 
-    unit->GetVehicleComponent()->AddPassenger(GetPlayer());
+    unit->GetVehicleComponent()->AddPassenger(_player);
 }
 #endif

@@ -28,64 +28,64 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 {
     //\todo check utf8 and cyrillic chars
 
-    CmsgNameQuery query;
-    if (!query.deserialise(recvData))
+    CmsgNameQuery srlPacket;
+    if (!srlPacket.deserialise(recvData))
     {
         Disconnect();
         return;
     }
 
-    const auto info = objmgr.GetPlayerInfo(query.guid.getGuidLow());
+    const auto info = objmgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
     if (!info)
         return;
 
-    LOG_DEBUG("Received CMSG_NAME_QUERY for: %s", info->name);
-    SendPacket(SmsgNameQueryResponse(query.guid, info->name, info->race, info->gender, info->cl).serialise().get());
+    LogDebugFlag(LF_OPCODE, "Received CMSG_NAME_QUERY for: %s", info->name);
+    SendPacket(SmsgNameQueryResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
 {
-    CmsgGameobjectQuery query;
-    if (!query.deserialise(recvData))
+    CmsgGameobjectQuery srlPacket;
+    if (!srlPacket.deserialise(recvData))
     {
         Disconnect();
         return;
     }
 
-    const auto gameobject_info = sMySQLStore.getGameObjectProperties(query.entry);
+    const auto gameobject_info = sMySQLStore.getGameObjectProperties(srlPacket.entry);
     if (!gameobject_info)
         return;
 
-    const auto loc = (language > 0) ? sMySQLStore.getLocalizedGameobject(query.entry, language) : nullptr;
+    const auto loc = (language > 0) ? sMySQLStore.getLocalizedGameobject(srlPacket.entry, language) : nullptr;
     const auto name = loc ? loc->name : gameobject_info->name.c_str();
 
 
-    LOG_DEBUG("Received CMSG_GAMEOBJECT_QUERY for entry: %u", query.entry);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJECT_QUERY for entry: %u", srlPacket.entry);
     SendPacket(SmsgGameobjectQueryResponse(*gameobject_info, name).serialise().get());
 }
 
 void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
 {
-    CmsgCreatureQuery query;
-    if (!query.deserialise(recvData))
+    CmsgCreatureQuery srlPacket;
+    if (!srlPacket.deserialise(recvData))
     {
         Disconnect();
         return;
     }
 
-    const auto creature_info = sMySQLStore.getCreatureProperties(query.entry);
+    const auto creature_info = sMySQLStore.getCreatureProperties(srlPacket.entry);
     if (!creature_info)
         return;
 
-    const auto loc = (language > 0) ? sMySQLStore.getLocalizedCreature(query.entry, language) : nullptr;
+    const auto loc = (language > 0) ? sMySQLStore.getLocalizedCreature(srlPacket.entry, language) : nullptr;
     const auto name = loc ? loc->name : creature_info->Name.c_str();
     const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
 
-    LOG_DEBUG("Received SMSG_CREATURE_QUERY_RESPONSE for entry: %u", query.entry);
-    SendPacket(SmsgCreatureQueryResponse(*creature_info, query.entry, name, subName).serialise().get());
+    LogDebugFlag(LF_OPCODE, "Received SMSG_CREATURE_QUERY_RESPONSE for entry: %u", srlPacket.entry);
+    SendPacket(SmsgCreatureQueryResponse(*creature_info, srlPacket.entry, name, subName).serialise().get());
 }
 
-void WorldSession::handleQueryTimeOpcode(WorldPacket&)
+void WorldSession::handleQueryTimeOpcode(WorldPacket& /*recvPacket*/)
 {
     SendPacket(SmsgQueryTimeResponse(UNIXTIME).serialise().get());
 }
@@ -93,15 +93,15 @@ void WorldSession::handleQueryTimeOpcode(WorldPacket&)
 void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    CmsgInspectAchievements recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgInspectAchievements srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto player = objmgr.GetPlayer(recv_packet.guid.getGuidLow());
+    auto player = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         return;
 
-    player->GetAchievementMgr().SendAllAchievementData(GetPlayer());
+    player->GetAchievementMgr().SendAllAchievementData(_player);
 #endif
 }
 
@@ -110,7 +110,7 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
     std::vector<QuestgiverInrangeStatus> questgiverSet;
     QuestgiverInrangeStatus temp;
 
-    for (const auto& inrangeObject : GetPlayer()->getInRangeObjectsSet())
+    for (const auto& inrangeObject : _player->getInRangeObjectsSet())
     {
         if (inrangeObject == nullptr || !inrangeObject->isCreature())
             continue;
@@ -119,7 +119,7 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
         if (creature->isQuestGiver())
         {
             temp.rawGuid = creature->getGuid();
-            temp.status = uint8_t(sQuestMgr.CalcStatus(creature, GetPlayer()));
+            temp.status = uint8_t(sQuestMgr.CalcStatus(creature, _player));
             questgiverSet.push_back(temp);
         }
     }
@@ -129,13 +129,13 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
 {
-    CmsgPageTextQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPageTextQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_PAGE_TEXT_QUERY: %u (pageId)", recv_packet.pageId);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_PAGE_TEXT_QUERY: %u (pageId)", srlPacket.pageId);
 
-    uint32_t pageId = recv_packet.pageId;
+    uint32_t pageId = srlPacket.pageId;
     while (pageId)
     {
         const auto itemPage = sMySQLStore.getItemPage(pageId);
@@ -153,25 +153,25 @@ void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
 {
-    CmsgItemNameQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgItemNameQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("Received CMSG_ITEM_NAME_QUERY: %u (itemEntry)", recv_packet.itemEntry);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_ITEM_NAME_QUERY: %u (itemEntry)", srlPacket.itemEntry);
 
-    const auto itemProperties = sMySQLStore.getItemProperties(recv_packet.itemEntry);
+    const auto itemProperties = sMySQLStore.getItemProperties(srlPacket.itemEntry);
     if (itemProperties == nullptr)
         return;
 
-    const auto localizedItem = language > 0 ? sMySQLStore.getLocalizedItem(recv_packet.itemEntry, language) : nullptr;
+    const auto localizedItem = language > 0 ? sMySQLStore.getLocalizedItem(srlPacket.itemEntry, language) : nullptr;
     const auto name = localizedItem ? localizedItem->name : itemProperties->Name.c_str();
 
-    SendPacket(SmsgItemNameQueryResponse(recv_packet.itemEntry, name, itemProperties->InventoryType).serialise().get());
+    SendPacket(SmsgItemNameQueryResponse(srlPacket.itemEntry, name, itemProperties->InventoryType).serialise().get());
 }
 
 void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto corpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
+    const auto corpse = objmgr.GetCorpseByOwner(_player->getGuidLow());
     if (corpse == nullptr)
         return;
 
@@ -182,7 +182,7 @@ void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
     }
     else
     {
-        // type INSTANCE_RAID, INSTANCE_NONRAID or INSTANCE_MULTIMODE
+        // type INSTANCE_RAID, INSTANCE_NONRAID, INSTANCE_MULTIMODE
         SendPacket(MsgCorspeQuery(uint8_t(1), mapInfo->repopmapid, 
             LocationVector(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz), corpse->GetMapId(), uint32_t(0)).serialise().get());
     }

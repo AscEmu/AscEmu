@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
 #include "World.h"
+#include "Management/AddonMgr.h"
 //#include "World.Legacy.h"
 
 #pragma pack(push, 1)
@@ -584,14 +585,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     LOG_DEBUG("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
-#ifdef SESSION_CAP
-    if (sWorld.GetSessionCount() >= SESSION_CAP)
-    {
-        OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0D");
-        Disconnect();
-        return;
-    }
-#endif
 
     // Check for queue.
     uint32 playerLimit = worldConfig.getPlayerLimit();

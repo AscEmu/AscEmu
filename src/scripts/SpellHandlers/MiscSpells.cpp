@@ -292,9 +292,12 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     uint64 crtguid = p_target->m_areaSpiritHealer_guid;
 
-    Creature* pCreature = p_target->IsInWorld() ? p_target->GetMapMgr()->GetCreature(GET_LOWGUID_PART(crtguid)) : NULL;
+    WoWGuid wowGuid;
+    wowGuid.Init(crtguid);
 
-    if (pCreature == NULL || p_target->m_bg == NULL)
+    Creature* pCreature = p_target->IsInWorld() ? p_target->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()) : nullptr;
+
+    if (pCreature == nullptr || p_target->m_bg == nullptr)
         return true;
 
     p_target->m_bg->RemovePlayerFromResurrect(p_target, pCreature);

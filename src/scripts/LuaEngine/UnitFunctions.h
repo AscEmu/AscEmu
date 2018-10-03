@@ -3323,16 +3323,7 @@ public:
     {
         if (!ptr) return 0;
         bool enabled = CHECK_BOOL(L, 1);
-        if (enabled)
-        {
-            ptr->m_invisFlag = INVIS_FLAG_TOTAL;
-            ptr->m_invisible = true;
-        }
-        else
-        {
-            ptr->m_invisFlag = INVIS_FLAG_NORMAL;
-            ptr->m_invisible = false;
-        }
+        // TODO: remove this
         return 0;
     }
 
@@ -3880,22 +3871,22 @@ public:
     static int SetStealth(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 stealthlevel = CHECK_ULONG(L, 1);
-        ptr->SetStealth(stealthlevel);
+        // TODO: remove this!
         return 0;
     }
 
     static int GetStealthLevel(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        lua_pushinteger(L, ptr->GetStealthLevel());
+        uint32_t stealthFlag = CHECK_ULONG(L, 1);
+        lua_pushinteger(L, ptr->getStealthLevel(StealthFlag(stealthFlag)));
         return 1;
     }
 
     static int IsStealthed(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        if (ptr->IsStealth())
+        if (ptr->isStealthed())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -3905,7 +3896,7 @@ public:
     static int RemoveStealth(lua_State* /*L*/, Unit* ptr)
     {
         if (!ptr) return 0;
-        ptr->RemoveStealth();
+        ptr->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
         return 0;
     }
 
@@ -4331,7 +4322,7 @@ public:
         else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
         else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
         else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
-        else if (actionid == 5) plr->GetSession()->SendBattlegroundList(crc, miscint);
+        else if (actionid == 5) plr->GetSession()->sendBattlegroundList(crc, miscint);
         else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
         else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
         else if (actionid == 8) plr->GetSession()->sendSpiritHealerRequest(crc);
@@ -4397,7 +4388,7 @@ public:
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));
         uint32 bgid = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (bgid && crc != NULL)
-            plr->GetSession()->SendBattlegroundList(crc, bgid); //player filler ftw
+            plr->GetSession()->sendBattlegroundList(crc, bgid); //player filler ftw
         return 0;
     }
 
@@ -4409,8 +4400,11 @@ public:
         uint8 loot_type2 = 1;
         Player* plr = static_cast<Player*>(ptr);
         plr->SetLootGUID(guid);
-        uint32 guidtype = GET_TYPE_FROM_GUID(guid);
-        if (guidtype == HIGHGUID_TYPE_UNIT)
+
+        WoWGuid wowGuid;
+        wowGuid.Init(guid);
+
+        if (wowGuid.isUnit())
         {
             Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
             CreatureProperties const* creature_properties = static_cast<Creature*>(pUnit)->GetCreatureProperties();
@@ -4431,10 +4425,10 @@ public:
                     break;
             }
         }
-        else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+        else if (wowGuid.isGameObject())
         {
-            GameObject* pGO = plr->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-            if (pGO != NULL && pGO->IsLootable())
+            GameObject* pGO = plr->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+            if (pGO != nullptr && pGO->IsLootable())
             {
                 GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
                 switch (loot_type)
@@ -4450,7 +4444,7 @@ public:
                 }
             }
         }
-        else if (guidtype == HIGHGUID_TYPE_ITEM)
+        else if (wowGuid.isItem())
         {
             Item* pItem = plr->GetItemInterface()->GetItemByGUID(guid);
             switch (loot_type)

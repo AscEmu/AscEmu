@@ -18,54 +18,54 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleFriendListOpcode(WorldPacket& recvPacket)
 {
-    CmsgContactList recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgContactList srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_SendFriendList(recv_packet.list_flag);
+    _player->Social_SendFriendList(srlPacket.list_flag);
 }
 
 void WorldSession::handleAddFriendOpcode(WorldPacket& recvPacket)
 {
-    CmsgAddFriend recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAddFriend srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_AddFriend(recv_packet.name.c_str(), recv_packet.note.size() ? recv_packet.note.c_str() : nullptr);
+    _player->Social_AddFriend(srlPacket.name.c_str(), srlPacket.note.size() ? srlPacket.note.c_str() : nullptr);
 }
 
 void WorldSession::handleDelFriendOpcode(WorldPacket& recvPacket)
 {
-    CmsgDelFriend recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgDelFriend srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_RemoveFriend((uint32)recv_packet.guid);
+    _player->Social_RemoveFriend((uint32)srlPacket.guid);
 }
 
 void WorldSession::handleAddIgnoreOpcode(WorldPacket& recvPacket)
 {
-    CmsgAddIgnore recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgAddIgnore srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_AddIgnore(recv_packet.name.c_str());
+    _player->Social_AddIgnore(srlPacket.name.c_str());
 }
 
 void WorldSession::handleDelIgnoreOpcode(WorldPacket& recvPacket)
 {
-    CmsgDelIgnore recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgDelIgnore srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_RemoveIgnore((uint32)recv_packet.guid);
+    _player->Social_RemoveIgnore((uint32)srlPacket.guid);
 }
 
-void WorldSession::HandleSetFriendNote(WorldPacket& recvPacket)
+void WorldSession::handleSetFriendNote(WorldPacket& recvPacket)
 {
-    CmsgSetContactNotes recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgSetContactNotes srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_SetNote((uint32)recv_packet.guid, recv_packet.note.size() ? recv_packet.note.c_str() : nullptr);
+    _player->Social_SetNote((uint32)srlPacket.guid, srlPacket.note.size() ? srlPacket.note.c_str() : nullptr);
 }
