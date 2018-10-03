@@ -212,6 +212,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTurnInPetition.h
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
+   ${PATH_PREFIX}/CmsgUpdateAccountData.h
    ${PATH_PREFIX}/CmsgWho.h
    ${PATH_PREFIX}/CmsgWhoIs.h
    ${PATH_PREFIX}/CmsgWorldTeleport.h
@@ -335,6 +336,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTrainerBuySucceeded.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
+   ${PATH_PREFIX}/SmsgUpdateAccountDataComplete.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h
    ${PATH_PREFIX}/SmsgWeather.h
    ${PATH_PREFIX}/SmsgWorldStateUiTimerUpdate.h

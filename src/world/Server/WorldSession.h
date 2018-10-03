@@ -410,9 +410,12 @@ class SERVER_DECL WorldSession
         void handleZoneupdate(WorldPacket& recvPacket);
         void handleResurrectResponse(WorldPacket& recvPacket);
         void handleSelfResurrect(WorldPacket& /*recvPacket*/);
+        void handleUpdateAccountData(WorldPacket& recvPacket);
         void handleBugOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void handleSuggestionOpcode(WorldPacket& recvPacket);
+        void handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);
+        void handleLogDisconnectOpcode(WorldPacket& recvPacket);
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -594,7 +597,6 @@ class SERVER_DECL WorldSession
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
 
-        void HandleUpdateAccountData(WorldPacket& recvPacket);
         void HandleRequestAccountData(WorldPacket& recvPacket);
 
         void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
@@ -927,9 +929,6 @@ class SERVER_DECL WorldSession
         void HandleMirrorImageOpcode(WorldPacket& recvPacket);
         void HandleRemoveGlyph(WorldPacket& recvPacket);
         void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
-        void HandleLogDisconnectOpcode(WorldPacket& recvPacket);
-#endif
 
 
 #if VERSION_STRING == Cata
@@ -940,7 +939,7 @@ class SERVER_DECL WorldSession
         void HandleRequestHotfix(WorldPacket& recvPacket);
         void HandleRequestCemeteryListOpcode(WorldPacket& recvPacket);
         void HandleForceSpeedAckOpcodes(WorldPacket& recvPacket);
-        void HandleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);
+        
 
         // Reports
         void HandleReportOpcode(WorldPacket& recvPacket);

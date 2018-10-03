@@ -43,6 +43,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgZoneupdate.h"
 #include "Server/Packets/CmsgResurrectResponse.h"
 #include "Server/Packets/CmsgBug.h"
+#include "Server/Packets/CmsgUpdateAccountData.h"
+#include "Server/Packets/SmsgUpdateAccountDataComplete.h"
 
 using namespace AscEmu::Packets;
 
@@ -742,6 +744,80 @@ void WorldSession::handleSelfResurrect(WorldPacket& /*recvPacket*/)
     }
 }
 
+void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
+{
+    if (!worldConfig.server.useAccountData)
+        return;
+
+    CmsgUpdateAccountData srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    if (srlPacket.uiId > 8)
+    {
+        LOG_ERROR("WARNING: Accountdata > 8 (%u) was requested to be updated by %s of account %u!",
+            srlPacket.uiId, GetPlayer()->getName().c_str(), this->GetAccountId());
+        return;
+    }
+
+    uLongf uid = srlPacket.uiDecompressedSize;
+
+    if (srlPacket.uiDecompressedSize == 0)
+    {
+        SetAccountData(srlPacket.uiId, NULL, false, 0);
+#if VERSION_STRING > TBC
+        SendPacket(SmsgUpdateAccountDataComplete(srlPacket.uiId, 0).serialise().get());
+#endif
+        return;
+    }
+
+    size_t receivedPackedSize = recvPacket.size() - 8;
+    auto data = new char[srlPacket.uiDecompressedSize + 1];
+    memset(data, 0, srlPacket.uiDecompressedSize + 1);
+
+    if (srlPacket.uiDecompressedSize > receivedPackedSize)
+    {
+        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8, 
+            static_cast<uLong>(receivedPackedSize));
+
+        switch (ZlibResult)
+        {
+            case Z_OK:                  //0 no error decompression is OK
+            {
+                SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
+                LogDebugFlag(LF_OPCODE, "Successfully decompressed account data %d for %s, and updated storage array.",
+                    srlPacket.uiId, GetPlayer()->getName().c_str());
+            } break;
+            case Z_ERRNO:               //-1
+            case Z_STREAM_ERROR:        //-2
+            case Z_DATA_ERROR:          //-3
+            case Z_MEM_ERROR:           //-4
+            case Z_BUF_ERROR:           //-5
+            case Z_VERSION_ERROR:       //-6
+            {
+                delete[] data;
+                LOG_ERROR("Decompression of account data %u for %s FAILED.", srlPacket.uiId, GetPlayer()->getName().c_str());
+            } break;
+
+            default:
+            {
+                delete[] data;
+                LOG_ERROR("Decompression gave a unknown error: %x, of account data %u for %s FAILED.",
+                    ZlibResult, srlPacket.uiId, GetPlayer()->getName().c_str());
+            } break;
+        }
+    }
+    else
+    {
+        memcpy(data, recvPacket.contents() + 8, srlPacket.uiDecompressedSize);
+        SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
+    }
+
+#if VERSION_STRING > TBC
+    SendPacket(SmsgUpdateAccountDataComplete(srlPacket.uiId, 0).serialise().get());
+#endif
+}
+
 #if VERSION_STRING != Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
@@ -841,5 +917,25 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     ss << CharacterDatabase.EscapeString(suggestionMessage) << "')";
 
     CharacterDatabase.ExecuteNA(ss.str().c_str());
+}
+#endif
+
+#if VERSION_STRING == Cata
+void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
+{
+    if (_player->isAlive())
+        return;
+
+    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+}
+#endif
+
+#if VERSION_STRING == Cata
+void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
+{
+    uint32_t disconnectReason;
+    recvPacket >> disconnectReason;     // 13 - closed window
+
+    LogDebugFlag(LF_OPCODE, "Player %s disconnected on %s - Reason %u", _player->getName().c_str(), Util::GetCurrentDateTimeString().c_str(), disconnectReason);
 }
 #endif
