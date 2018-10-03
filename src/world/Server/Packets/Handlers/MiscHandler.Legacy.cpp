@@ -805,37 +805,6 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     LOG_DEBUG("WORLD: sent SMSG_LOGOUT_CANCEL_ACK Message");
 }
 
-#if VERSION_STRING != Cata
-void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CmsgBug srlPacket;
-    if (!srlPacket.deserialise(recv_data))
-        return;
-
-    if (srlPacket.suggestion == 0)
-        LOG_DEBUG("WORLD: Received CMSG_BUG [Bug Report]");
-    else
-        LOG_DEBUG("WORLD: Received CMSG_BUG [Suggestion]");
-
-    uint64 AccountId = GetAccountId();
-    uint32 TimeStamp = uint32(UNIXTIME);
-    uint32 ReportID = objmgr.GenerateReportID();
-
-    std::stringstream ss;
-
-    ss << "INSERT INTO playerbugreports VALUES('";
-    ss << ReportID << "','";
-    ss << AccountId << "','";
-    ss << TimeStamp << "','";
-    ss << srlPacket.suggestion << "','";
-    ss << CharacterDatabase.EscapeString(srlPacket.type) << "','";
-    ss << CharacterDatabase.EscapeString(srlPacket.content) << "')";
-
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
-}
-#endif
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
