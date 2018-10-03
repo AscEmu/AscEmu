@@ -158,7 +158,7 @@ void WorldSession::HandleAddonRegisteredPrefixesOpcode(WorldPacket& recv_data)
 {
     uint32_t addonCount = recv_data.readBits(25);
 
-    if (addonCount > REGISTERED_ADDON_PREFIX_SOFTCAP)
+    if (addonCount > 64)
     {
         isAddonMessageFiltered = false;
         recv_data.rfinish();
@@ -176,7 +176,7 @@ void WorldSession::HandleAddonRegisteredPrefixesOpcode(WorldPacket& recv_data)
         mRegisteredAddonPrefixesVector.push_back(recv_data.ReadString(nameLengths[i]));
     }
 
-    if (mRegisteredAddonPrefixesVector.size() > REGISTERED_ADDON_PREFIX_SOFTCAP)
+    if (mRegisteredAddonPrefixesVector.size() > 64)
     {
         isAddonMessageFiltered = false;
         return;
