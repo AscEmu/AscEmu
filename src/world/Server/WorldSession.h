@@ -449,9 +449,24 @@ class SERVER_DECL WorldSession
         void handleQuestPushResultOpcode(WorldPacket& recvPacket);
         void handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
         void handleQuestQueryOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING > TBC
+        void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.Legacy.cpp
+#if VERSION_STRING == TBC
+        void HandleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
+#endif
+        void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
+        void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
+        void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
+        void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SocialHandler.cpp
@@ -720,24 +735,6 @@ class SERVER_DECL WorldSession
         void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
         void HandleUnlearnTalents(WorldPacket& recvPacket);
 
-        // Quest opcodes (QuestHandler.cpp)
-#if VERSION_STRING == TBC
-        void HandleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
-#endif
-        void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
-        
-        void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
-
-        void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
-        void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void HandleQuestPOIQueryOpcode(WorldPacket& recvPacket);
-#endif
 
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
 
