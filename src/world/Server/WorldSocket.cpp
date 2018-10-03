@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
 #include "World.h"
+#include "Management/AddonMgr.h"
 //#include "World.Legacy.h"
 
 #pragma pack(push, 1)

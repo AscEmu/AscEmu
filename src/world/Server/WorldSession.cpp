@@ -38,6 +38,7 @@
 //#include "Packets/SmsgGuildInvite.h"
 //#include "Management/Guild.h"
 #include "CharacterErrors.h"
+#include "WorldSocket.h"
 
 using namespace AscEmu::Packets;
 

@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaHelpers.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 #include <Map/WorldCreator.h>
+#include "Management/WeatherMgr.h"
 
 extern "C"
 {

@@ -446,27 +446,25 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.cpp
+    public:
+        WorldPacket* buildQuestQueryResponse(QuestProperties const* qst);
+
+    protected:
         void handleQuestPushResultOpcode(WorldPacket& recvPacket);
         void handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
         void handleQuestQueryOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverCancelOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverHelloOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
+        void handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
+        void handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
+        void handlePushQuestToPartyOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);
 #endif
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // QuestHandler.Legacy.cpp
-#if VERSION_STRING == TBC
-        void HandleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
-#endif
-        void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
-        void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SocialHandler.cpp
@@ -1056,7 +1054,6 @@ class SERVER_DECL WorldSession
         void SystemMessage(const char* format, ...);
 
         uint32 language;
-        WorldPacket* BuildQuestQueryResponse(QuestProperties const* qst);
         uint32 m_muted;
 #if VERSION_STRING > TBC
         void SendClientCacheVersion(uint32 version);

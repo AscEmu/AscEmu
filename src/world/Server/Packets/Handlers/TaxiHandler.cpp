@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgActivatetaxireply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
+#include "Map/MapMgr.h"
 
 using namespace AscEmu::Packets;
 

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Objects/ObjectMgr.h"
 #include "Management/GuildMgr.h"
+#include "Management/ItemInterface.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data

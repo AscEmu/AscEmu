@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellFailure.h"
 #include "Server/ServerState.h"
 #include "Objects/ObjectMgr.h"
+#include "Management/WeatherMgr.h"
 
 bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* session)
 {
