@@ -256,15 +256,6 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket& recv_data)
-{
-    CmsgQuestgiverAcceptQuest recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    _player->AcceptQuest(recv_packet.guid, recv_packet.questId);
-}
-
 void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
@@ -323,26 +314,6 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     GetPlayer()->UpdateNearbyGameObjects();
 
     sHookInterface.OnQuestCancelled(_player, qPtr);
-}
-
-void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CmsgQuestQuery recv_packet;
-    if (!recv_packet.deserialise(recv_data))
-        return;
-
-    QuestProperties const* qst = sMySQLStore.getQuestProperties(recv_packet.questId);
-    if (!qst)
-    {
-        LOG_DEBUG("WORLD: Invalid quest ID.");
-        return;
-    }
-
-    WorldPacket* pkt = BuildQuestQueryResponse(qst);
-    SendPacket(pkt);
-    delete pkt;
 }
 
 void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)

@@ -446,6 +446,9 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.cpp
+        void handleQuestPushResultOpcode(WorldPacket& recvPacket);
+        void handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
+        void handleQuestQueryOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.Legacy.cpp
@@ -723,16 +726,15 @@ class SERVER_DECL WorldSession
 #endif
         void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
+        
         void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
         void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestQueryOpcode(WorldPacket& recvPacket);
+
         void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-        void handleQuestPushResultOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void HandleQuestPOIQueryOpcode(WorldPacket& recvPacket);
 #endif
