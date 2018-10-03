@@ -18,7 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
-#include <Server/Packets/SmsgMountspecialAnim.h>
+#include "Server/Packets/SmsgMountspecialAnim.h"
+
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
@@ -502,6 +503,14 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 }
 #endif
+
+void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
+{
+    LogDebugFlag(LF_OPCODE, "Opcode %s (%u) received. This opcode is not known/implemented right now!",
+        getOpcodeName(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
+
+    recvPacket.rfinish();
+}
 
 void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 {

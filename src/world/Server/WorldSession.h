@@ -421,6 +421,7 @@ class SERVER_DECL WorldSession
         void handleResurrectResponse(WorldPacket& recvPacket);
         void handleSelfResurrect(WorldPacket& /*recvPacket*/);
         void handleUpdateAccountData(WorldPacket& recvPacket);
+        void handleRequestAccountData(WorldPacket& recvPacket);
         void handleBugOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void handleSuggestionOpcode(WorldPacket& recvPacket);
@@ -443,12 +444,23 @@ class SERVER_DECL WorldSession
         void handleRequestHotfix(WorldPacket& recvPacket);
         void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);
 #endif
+#if VERSION_STRING > TBC
+        void handleRemoveGlyph(WorldPacket& recvPacket);
+        void handleBarberShopResult(WorldPacket& recvPacket);
+#endif
+        void handleRepopRequestOpcode(WorldPacket& /*recvPacket*/);
+        void handleWhoIsOpcode(WorldPacket& recvPacket);
+        void handleAmmoSetOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.Legacy.cpp
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
+
+        void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
+        void handleWorldTeleportOpcode(WorldPacket& recvPacket);
+        void handleMountSpecialAnimOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.Legacy.cpp
@@ -606,19 +618,11 @@ class SERVER_DECL WorldSession
         // Authentification and misc opcodes (MiscHandler.cpp):
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
-        void HandleRepopRequestOpcode(WorldPacket& recvPacket);
-
-        void HandleWhoIsOpcode(WorldPacket& recvPacket);
-
-        void HandleRequestAccountData(WorldPacket& recvPacket);
 
         void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
 
-        void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         void HandleGameObjectUse(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void HandleBarberShopResult(WorldPacket& recvPacket);
-#endif
+
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
         
@@ -889,13 +893,6 @@ class SERVER_DECL WorldSession
         void HandleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);
 #endif
 
-        // Helper functions
-        //void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
-
-        // Acknowledgements
-        void HandleAcknowledgementOpcodes(WorldPacket& recvPacket);
-        void handleMountSpecialAnimOpcode(WorldPacket& recvPacket);
-
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
         
 #if VERSION_STRING != Cata
@@ -925,7 +922,7 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        void handleWorldTeleportOpcode(WorldPacket& recvPacket);
+        
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
         // VoicChat
@@ -936,7 +933,7 @@ class SERVER_DECL WorldSession
         
         // Misc
         void HandleMirrorImageOpcode(WorldPacket& recvPacket);
-        void HandleRemoveGlyph(WorldPacket& recvPacket);
+        
         void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
 
 

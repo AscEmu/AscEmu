@@ -885,10 +885,3 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
         }
     }
 }
-
-void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
-{
-    LOG_DEBUG("Received ACK package!");
-
-    recv_data.rfinish();
-}

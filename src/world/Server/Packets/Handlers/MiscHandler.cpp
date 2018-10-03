@@ -48,6 +48,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSummonResponse.h"
 #include "Server/Packets/SmsgResurrectFailed.h"
 #include "Server/Packets/CmsgReclaimCorpse.h"
+#include "Server/Packets/CmsgRemoveGlyph.h"
+#include "Server/Packets/CmsgWhoIs.h"
+#include "Server/Packets/SmsgBarberShopResult.h"
+#include "Server/Packets/CmsgAlterAppearance.h"
 
 using namespace AscEmu::Packets;
 
@@ -821,6 +825,57 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 #endif
 }
 
+void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
+{
+    if (!worldConfig.server.useAccountData)
+        return;
+
+    uint32_t accountDataId;
+    recvPacket >> accountDataId;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
+
+    if (accountDataId > 8)
+    {
+        LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Accountdata > 8 (%d) was requested by %s of account %u!", accountDataId, _player->getName().c_str(), this->GetAccountId());
+        return;
+    }
+
+    AccountDataEntry* accountDataEntry = GetAccountData(accountDataId);
+    WorldPacket data;
+    data.SetOpcode(SMSG_UPDATE_ACCOUNT_DATA);
+    data << accountDataId;
+
+    if (!accountDataEntry || !accountDataEntry->data)
+    {
+        data << uint32_t(0);
+    }
+    else
+    {
+        data << accountDataEntry->sz;
+
+        if (accountDataEntry->sz > 200)
+        {
+            data.resize(accountDataEntry->sz + 800);
+
+            uLongf destSize;
+            if (compress(const_cast<uint8_t*>(data.contents()) + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
+            {
+                LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
+                return;
+            }
+
+            data.resize(destSize + 8);
+        }
+        else
+        {
+            data.append(accountDataEntry->data, accountDataEntry->sz);
+        }
+    }
+
+    SendPacket(&data);
+}
+
 #if VERSION_STRING != Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
@@ -1079,11 +1134,6 @@ void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
     recvPacket.readBit();
 }
 
-void WorldSession::handleReadyForAccountDataTimesOpcode(WorldPacket& /*recvPacket*/)
-{
-    SendAccountDataTimes(GLOBAL_CACHE_MASK);
-}
-
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
 {
     WorldPacket data(SMSG_UI_TIME, 4);
@@ -1208,3 +1258,287 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
     }
 }
 #endif
+
+#if VERSION_STRING > TBC
+void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgRemoveGlyph srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    if (srlPacket.glyphNumber > 5)
+        return;
+
+    const uint32_t glyphId = _player->GetGlyph(srlPacket.glyphNumber);
+    if (glyphId == 0)
+        return;
+
+    const auto glyphPropertiesEntry = sGlyphPropertiesStore.LookupEntry(glyphId);
+    if (!glyphPropertiesEntry)
+        return;
+
+    _player->SetGlyph(srlPacket.glyphNumber, 0);
+    _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
+    _player->m_specs[_player->m_talentActiveSpec].glyphs[srlPacket.glyphNumber] = 0;
+    _player->smsg_TalentsInfo(false);
+}
+#endif
+
+#if VERSION_STRING > TBC
+
+namespace BarberShopResult
+{
+    enum
+    {
+        Ok = 0,
+        NoMoney = 1
+    };
+}
+
+void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    // todo: Here was SMSG_BARBER_SHOP:RESULT... maybe itr is MSG or it was just wrong. Check it!
+    CmsgAlterAppearance srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_ALTER_APPEARANCE");
+
+    const uint32_t oldHair = _player->getHairStyle();
+    const uint32_t oldHairColor = _player->getHairColor();
+    const uint32_t oldFacial = _player->getFacialFeatures();
+
+    uint32_t cost = 0;
+
+    const auto barberShopHair = sBarberShopStyleStore.LookupEntry(srlPacket.hair);
+    if (!barberShopHair)
+        return;
+
+    const auto newHair = barberShopHair->hair_id;
+
+    const auto newHairColor = srlPacket.hairColor;
+
+    const auto barberShopFacial = sBarberShopStyleStore.LookupEntry(srlPacket.facialHairOrPiercing);
+    if (!barberShopFacial)
+        return;
+
+    const auto newFacial = barberShopFacial->hair_id;
+
+    const auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(srlPacket.skinColor);
+    if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
+        return;
+
+    auto level = _player->getLevel();
+    if (level >= 100)
+        level = 100;
+
+    const auto gtBarberShopCostBaseEntry = sBarberShopCostBaseStore.LookupEntry(level - 1);
+    if (!gtBarberShopCostBaseEntry)
+        return;
+
+    if (newHair != oldHair)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost);
+    else if (newHairColor != oldHairColor)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost) >> 1;
+
+    if (newFacial != oldFacial)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost * 0.75f);
+
+    if (!_player->HasGold(cost))
+    {
+        SendPacket(SmsgBarberShopResult(BarberShopResult::NoMoney).serialise().get());
+        return;
+    }
+
+    SendPacket(SmsgBarberShopResult(BarberShopResult::Ok).serialise().get());
+
+    _player->setHairStyle(static_cast<uint8_t>(newHair));
+    _player->setHairColor(static_cast<uint8_t>(newHairColor));
+    _player->setFacialFeatures(static_cast<uint8_t>(newFacial));
+    if (barberShopSkinColor)
+        _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hair_id));
+
+    _player->ModGold(-static_cast<int32_t>(cost));
+
+    _player->setStandState(STANDSTATE_STAND);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
+}
+#endif
+
+void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPOP_REQUEST");
+
+    if (_player->getDeathState() != JUST_DIED)
+        return;
+
+#if VERSION_STRING != Cata
+    if (_player->obj_movement_info.isOnTransport())
+#else
+    if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
+    {
+        auto transport = _player->GetTransport();
+        if (transport != nullptr)
+            transport->RemovePassenger(_player);
+    }
+
+    _player->RepopRequestedPlayer();
+}
+
+void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
+{
+    CmsgWhoIs srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", _player->getName().c_str(), srlPacket.characterName.c_str());
+
+    if (!_player->GetSession()->CanUseCommand('3'))
+    {
+        SendNotification("You do not have permission to perform that function.");
+        return;
+    }
+
+    if (srlPacket.characterName.empty())
+    {
+        SendNotification("You did not enter a character name!");
+        return;
+    }
+
+    QueryResult* resultAcctId = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
+    if (!resultAcctId)
+    {
+        SendNotification("%s does not exit!", srlPacket.characterName.c_str());
+        delete resultAcctId;
+        return;
+    }
+
+    Field* fields_acctID = resultAcctId->Fetch();
+    const uint32_t accId = fields_acctID[0].GetUInt32();
+    delete resultAcctId;
+
+    //todo: this will not work! no table accounts in character_db!!!
+    QueryResult* accountInfoResult = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
+    if (!accountInfoResult)
+    {
+        SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
+        delete accountInfoResult;
+        return;
+    }
+
+    Field* fields = accountInfoResult->Fetch();
+    std::string acctID = fields[0].GetString();
+    if (acctID.empty())
+        acctID = "Unknown";
+
+    std::string acctName = fields[1].GetString();
+    if (acctName.empty())
+        acctName = "Unknown";
+
+    std::string acctPerms = fields[2].GetString();
+    if (acctPerms.empty())
+        acctPerms = "Unknown";
+
+    std::string acctEmail = fields[3].GetString();
+    if (acctEmail.empty())
+        acctEmail = "Unknown";
+
+    std::string acctIP = fields[4].GetString();
+    if (acctIP.empty())
+        acctIP = "Unknown";
+
+    std::string acctMuted = fields[5].GetString();
+    if (acctMuted.empty())
+        acctMuted = "Unknown";
+
+    delete accountInfoResult;
+
+    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: " 
+    + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
+
+    WorldPacket data(SMSG_WHOIS, msg.size() + 1);
+    data << msg;
+    SendPacket(&data);
+}
+
+void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32_t ammoId;
+    recvPacket >> ammoId;
+
+    if (!ammoId)
+        return;
+
+    const auto itemProperties = sMySQLStore.getItemProperties(ammoId);
+    if (!itemProperties)
+        return;
+
+    if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->GetItemInterface()->GetItemCount(ammoId) == 0)
+    {
+        sCheatLog.writefromsession(GetPlayer()->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
+        _player->GetSession()->Disconnect();
+        return;
+    }
+
+    if (itemProperties->RequiredLevel)
+    {
+        if (_player->getLevel() < itemProperties->RequiredLevel)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        }
+    }
+    if (itemProperties->RequiredSkill)
+    {
+        if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        }
+
+        if (itemProperties->RequiredSkillRank)
+        {
+            if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
+            {
+                _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                _player->SetAmmoId(0);
+                _player->CalcDamage();
+                return;
+            }
+        }
+    }
+    switch (_player->getClass())
+    {
+        case PRIEST:  // allowing priest, warlock, mage to equip ammo will mess up wand shoot. stop it.
+        case WARLOCK:
+        case MAGE:
+        case SHAMAN: // these don't get messed up since they don't use wands, but they don't get to use bows/guns/crossbows anyways
+        case DRUID:  // we wouldn't want them cheating extra stats from ammo, would we?
+        case PALADIN:
+#if VERSION_STRING > TBC
+        case DEATHKNIGHT:
+#endif
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        default:
+            _player->SetAmmoId(ammoId);
+            _player->CalcDamage();
+            break;
+    }
+}
