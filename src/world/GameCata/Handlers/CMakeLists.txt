@@ -10,7 +10,6 @@ set(SRC_GAMECATA_HANDLER_FILES
     ${PATH_PREFIX}/ItemHandler.cpp
     ${PATH_PREFIX}/LfgHandler.cpp
     ${PATH_PREFIX}/LootHandler.cpp
-    ${PATH_PREFIX}/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/MovementHandler.cpp
     ${PATH_PREFIX}/ReportHandler.cpp
     ${PATH_PREFIX}/SkillHandler.cpp

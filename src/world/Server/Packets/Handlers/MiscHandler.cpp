@@ -45,6 +45,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgBug.h"
 #include "Server/Packets/CmsgUpdateAccountData.h"
 #include "Server/Packets/SmsgUpdateAccountDataComplete.h"
+#include "Server/Packets/CmsgSummonResponse.h"
+#include "Server/Packets/SmsgResurrectFailed.h"
+#include "Server/Packets/CmsgReclaimCorpse.h"
 
 using namespace AscEmu::Packets;
 
@@ -756,7 +759,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     if (srlPacket.uiId > 8)
     {
         LOG_ERROR("WARNING: Accountdata > 8 (%u) was requested to be updated by %s of account %u!",
-            srlPacket.uiId, GetPlayer()->getName().c_str(), this->GetAccountId());
+            srlPacket.uiId, _player->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -786,7 +789,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
             {
                 SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
                 LogDebugFlag(LF_OPCODE, "Successfully decompressed account data %d for %s, and updated storage array.",
-                    srlPacket.uiId, GetPlayer()->getName().c_str());
+                    srlPacket.uiId, _player->getName().c_str());
             } break;
             case Z_ERRNO:               //-1
             case Z_STREAM_ERROR:        //-2
@@ -796,14 +799,14 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
             case Z_VERSION_ERROR:       //-6
             {
                 delete[] data;
-                LOG_ERROR("Decompression of account data %u for %s FAILED.", srlPacket.uiId, GetPlayer()->getName().c_str());
+                LOG_ERROR("Decompression of account data %u for %s FAILED.", srlPacket.uiId, _player->getName().c_str());
             } break;
 
             default:
             {
                 delete[] data;
                 LOG_ERROR("Decompression gave a unknown error: %x, of account data %u for %s FAILED.",
-                    ZlibResult, srlPacket.uiId, GetPlayer()->getName().c_str());
+                    ZlibResult, srlPacket.uiId, _player->getName().c_str());
             } break;
         }
     }
@@ -936,6 +939,272 @@ void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
     uint32_t disconnectReason;
     recvPacket >> disconnectReason;     // 13 - closed window
 
-    LogDebugFlag(LF_OPCODE, "Player %s disconnected on %s - Reason %u", _player->getName().c_str(), Util::GetCurrentDateTimeString().c_str(), disconnectReason);
+    LogDebugFlag(LF_OPCODE, "Player %s disconnected on %s - Reason %u", _player->getName().c_str(),
+        Util::GetCurrentDateTimeString().c_str(), disconnectReason);
+}
+#endif
+
+void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_COMPLETE_CINEMATIC");
+
+    _player->setStandState(STANDSTATE_STAND);
+}
+
+void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+    LogDebugFlag(LF_OPCODE, "Received CMSG_NEXT_CINEMATIC_CAMERA");
+
+    _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01),
+        float(_player->GetPositionZ() + 0.01), _player->GetOrientation());
+}
+
+void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+
+    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+}
+
+void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgSummonResponse srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    if (!srlPacket.isClickOn)
+        return;
+
+    if (!_player->m_summoner)
+    {
+        SendNotification("You do not have permission to perform that function.");
+        return;
+    }
+
+    if (_player->CombatStatus.IsInCombat())
+        return;
+
+    _player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);
+
+    _player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
+}
+
+void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_LOGOUT_CANCEL");
+
+    if (!LoggingOut)
+        return;
+
+    LoggingOut = false;
+
+    SetLogoutTimer(0);
+
+    OutPacket(SMSG_LOGOUT_CANCEL_ACK);
+
+    _player->setMoveRoot(false);
+
+    _player->setStandState(STANDSTATE_STAND);
+    _player->SendPacket(SmsgStandstateUpdate(STANDSTATE_STAND).serialise().get());
+
+    _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    LogDebugFlag(LF_OPCODE, "Sent SMSG_LOGOUT_CANCEL_ACK");
+}
+
+void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
+    if (!HasGMPermissions())
+        SendNotification("You do not have permission to perform that function.");
+    else
+        LogoutPlayer(true);
+}
+
+void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgReclaimCorpse srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_RECLAIM_CORPSE");
+
+    if (srlPacket.guid.GetOldGuid() == 0)
+        return;
+
+    auto corpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow());
+    if (corpse == nullptr)
+        return;
+
+    WoWGuid wowGuid;
+    wowGuid.Init(corpse->getOwnerGuid());
+
+    if (wowGuid.getGuidLowPart() != _player->getGuidLow() && corpse->getFlags() == 5)
+    {
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        return;
+    }
+
+    if (corpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
+    {
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        return;
+    }
+
+    if (time(nullptr) < corpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
+    {
+        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        return;
+    }
+
+    _player->ResurrectPlayer();
+    _player->setHealth(GetPlayer()->getMaxHealth() / 2);
+}
+
+#if VERSION_STRING == Cata
+void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
+{
+    uint32_t mapId;
+
+    recvPacket >> mapId;
+    recvPacket.readBit();
+}
+
+void WorldSession::handleReadyForAccountDataTimesOpcode(WorldPacket& /*recvPacket*/)
+{
+    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+}
+
+void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
+{
+    WorldPacket data(SMSG_UI_TIME, 4);
+    data << uint32_t(time(nullptr));
+    SendPacket(&data);
+}
+
+void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
+{
+    uint32_t counter;
+    uint32_t clientTicks;
+    recvPacket >> counter;
+    recvPacket >> clientTicks;
+}
+
+void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
+{
+    ObjectGuid guid;
+
+    guid[6] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[3] = recvPacket.readBit();
+    guid[2] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[4]);
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[5]);
+
+    LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
+
+    if (_player == nullptr)
+        return;
+
+    if (_player->getGuid() == guid)
+    {
+        LogoutPlayer(true);
+        return;
+    }
+
+    //_player->UpdateVisibility();
+}
+
+void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
+{
+    uint32_t type;
+    recvPacket >> type;
+
+    uint32_t count = recvPacket.readBits(23);
+
+    ObjectGuid* guids = new ObjectGuid[count];
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        guids[i][0] = recvPacket.readBit();
+        guids[i][4] = recvPacket.readBit();
+        guids[i][7] = recvPacket.readBit();
+        guids[i][2] = recvPacket.readBit();
+        guids[i][5] = recvPacket.readBit();
+        guids[i][3] = recvPacket.readBit();
+        guids[i][6] = recvPacket.readBit();
+        guids[i][1] = recvPacket.readBit();
+    }
+
+    uint32_t entry;
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        recvPacket.ReadByteSeq(guids[i][5]);
+        recvPacket.ReadByteSeq(guids[i][6]);
+        recvPacket.ReadByteSeq(guids[i][7]);
+        recvPacket.ReadByteSeq(guids[i][0]);
+        recvPacket.ReadByteSeq(guids[i][1]);
+        recvPacket.ReadByteSeq(guids[i][3]);
+        recvPacket.ReadByteSeq(guids[i][4]);
+        recvPacket >> entry;
+        recvPacket.ReadByteSeq(guids[i][2]);
+
+        /*switch (type)
+        {
+            case DB2_REPLY_ITEM:
+                SendItemDb2Reply(entry);
+                break;
+            case DB2_REPLY_SPARSE:
+                SendItemSparseDb2Reply(entry);
+                break;
+            default:
+                LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
+                recvPacket.clear();
+                break;
+        }*/
+    }
+}
+
+void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
+
+    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
+    if (result)
+    {
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
+        data.writeBit(false);               //unk bit
+        data.flushBits();
+        data.writeBits(result->GetRowCount(), 24);
+        data.flushBits();
+
+        do
+        {
+            Field* field = result->Fetch();
+            data << uint32_t(field[0].GetUInt32());
+        } while (result->NextRow());
+        delete result;
+
+        SendPacket(&data);
+    }
 }
 #endif

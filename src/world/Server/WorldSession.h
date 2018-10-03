@@ -417,6 +417,22 @@ class SERVER_DECL WorldSession
         void handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);
         void handleLogDisconnectOpcode(WorldPacket& recvPacket);
 #endif
+        void handleCompleteCinematic(WorldPacket& /*recvPacket*/);
+        void handleNextCinematic(WorldPacket& /*recvPacket*/);
+        void handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/);
+        void handleSummonResponseOpcode(WorldPacket& recvPacket);
+        void handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/);
+        void handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/);
+        void handleCorpseReclaimOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING == Cata
+        void handleLoadScreenOpcode(WorldPacket& recvPacket);
+        void handleReadyForAccountDataTimesOpcode(WorldPacket& /*recvPacket*/);
+        void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);
+        void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
+        void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);
+        void handleRequestHotfix(WorldPacket& recvPacket);
+        void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.Legacy.cpp
@@ -575,7 +591,6 @@ class SERVER_DECL WorldSession
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         
-        void HandleObjectUpdateFailedOpcode(WorldPacket& recvPacket);
         void handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
 
         // Authentification and misc opcodes (MiscHandler.cpp):
@@ -593,9 +608,6 @@ class SERVER_DECL WorldSession
 #endif
         
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
-        
-        void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
-        void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
 
         void HandleRequestAccountData(WorldPacket& recvPacket);
 
@@ -608,8 +620,7 @@ class SERVER_DECL WorldSession
 #endif
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
-        void HandleCompleteCinematic(WorldPacket& recvPacket);
-        void HandleNextCinematic(WorldPacket& recvPacket);
+        
         void HandleInspectOpcode(WorldPacket& recvPacket);
 
         // Gm Ticket System in GMTicket.cpp:
@@ -767,9 +778,6 @@ class SERVER_DECL WorldSession
         void handleReportSpamOpcode(WorldPacket& recvPacket);
         void handleChatIgnoredOpcode(WorldPacket& recvPacket);
         void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
-
-        // Corpse opcodes (Corpse.cpp)
-        void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
         
         // Guild
         void handleGuildQuery(WorldPacket& recvPacket);
@@ -900,10 +908,10 @@ class SERVER_DECL WorldSession
         void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
 #endif
-        void handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/);
+        
 
         void handlePartyMemberStatsOpcode(WorldPacket& recvPacket);
-        void HandleSummonResponseOpcode(WorldPacket& recvPacket);
+        
 
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
         void HandleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
@@ -932,15 +940,8 @@ class SERVER_DECL WorldSession
 
 
 #if VERSION_STRING == Cata
-        void HandleReadyForAccountDataTimesOpcode(WorldPacket& recvPacket);
-        void HandleLoadScreenOpcode(WorldPacket& recvPacket);
-        void HandleUITimeRequestOpcode(WorldPacket& recvPacket);
-        void HandleTimeSyncRespOpcode(WorldPacket& recvPacket);
-        void HandleRequestHotfix(WorldPacket& recvPacket);
-        void HandleRequestCemeteryListOpcode(WorldPacket& recvPacket);
         void HandleForceSpeedAckOpcodes(WorldPacket& recvPacket);
         
-
         // Reports
         void HandleReportOpcode(WorldPacket& recvPacket);
         void HandleReportPlayerOpcode(WorldPacket& recvPacket);
