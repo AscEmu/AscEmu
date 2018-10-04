@@ -587,6 +587,7 @@ public:
     void setAttackTimer(WeaponDamageType type, int32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
     bool isAttackReady(WeaponDamageType type) const;
+    void resetAttackTimers();
 
     // Do not alter anything below this line
     // -------------------------------------
