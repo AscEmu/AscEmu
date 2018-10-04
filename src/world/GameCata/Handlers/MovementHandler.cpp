@@ -784,7 +784,3 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, float cu
     }
 }
 
-void WorldSession::HandleForceSpeedAckOpcodes(WorldPacket& /*recvData*/)
-{
-    LOG_DEBUG("WORLD : Received FORCED SPEED ACK package!");
-}

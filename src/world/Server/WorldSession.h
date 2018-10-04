@@ -928,9 +928,7 @@ class SERVER_DECL WorldSession
         void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
 
 
-#if VERSION_STRING == Cata
-        void HandleForceSpeedAckOpcodes(WorldPacket& recvPacket);
-        
+#if VERSION_STRING == Cata        
         // Reports
         void HandleReportOpcode(WorldPacket& recvPacket);
         void HandleReportPlayerOpcode(WorldPacket& recvPacket);
