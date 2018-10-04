@@ -56,6 +56,10 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
             gameobject = new GameObject_Trap(GUID);
             break;
 
+        case GAMEOBJECT_TYPE_CHAIR:
+            gameobject = new GameObject_Chair(GUID);
+            break;
+
         case GAMEOBJECT_TYPE_SPELL_FOCUS:
             gameobject = new GameObject_SpellFocus(GUID);
             break;

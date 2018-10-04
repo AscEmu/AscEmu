@@ -389,6 +389,9 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
+public:
+        void handleGameObjectUseByType(GameObject* gameObject, Player* player);
+protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void handleWhoOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);

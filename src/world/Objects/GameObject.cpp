@@ -31,6 +31,7 @@
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWGameObject.h"
+#include "Server/Packets/SmsgStandstateUpdate.h"
 
 // MIT
 
@@ -672,7 +673,7 @@ void GameObject_Door::SpecialOpen()
     setState(GO_STATE_ALTERNATIVE_OPEN);
 }
 
-void GameObject_Door::Use(uint64 /*GUID*/)
+void GameObject_Door::onUse(Player* /*player*/)
 {
     if (getState() == GO_STATE_CLOSED)
         Open();
@@ -722,14 +723,15 @@ void GameObject_Button::Close()
     setState(GO_STATE_CLOSED);
 }
 
-void GameObject_Button::Use(uint64 GUID)
+void GameObject_Button::onUse(Player* player)
 {
+    LOG_ERROR("Player uses Button.");
     if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
-        if (spell != NULL)
-            CastSpell(GUID, spell);
+        if (spell != nullptr)
+            CastSpell(player->getGuid(), spell);
     }
     else
     {
@@ -751,6 +753,12 @@ void GameObject_QuestGiver::InitAI()
 {
     LoadQuests();
     GameObject::InitAI();
+}
+
+void GameObject_QuestGiver::onUse(Player* player)
+{
+    if (HasQuests())
+        sQuestMgr.OnActivateQuestGiver(this, player);
 }
 
 void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
@@ -849,14 +857,21 @@ void GameObject_Chest::Close()
     setState(GO_STATE_CLOSED);
 }
 
-void GameObject_Chest::Use(uint64 GUID)
+void GameObject_Chest::onUse(Player* player)
 {
     if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
         if (spell != NULL)
-            CastSpell(GUID, spell);
+            CastSpell(player->getGuid(), spell);
+
+        //open chest spell?
+        SpellCastTargets targets;
+        auto spellInfo = sSpellCustomizations.GetSpellInfo(11437);
+        auto spellOpen = sSpellFactoryMgr.NewSpell(player, spellInfo, true, nullptr);
+        targets.m_unitTarget = getGuid();
+        spellOpen->prepare(&targets);
     }
     else
     {
@@ -998,6 +1013,22 @@ void GameObject_Trap::Update(unsigned long time_passed)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Chair
+
+void GameObject_Chair::onUse(Player* player)
+{
+    LOG_ERROR("Player uses Chair.");
+
+    // todo: parameter_1 defines the height!
+    player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    player->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
+    player->SendPacket(AscEmu::Packets::SmsgStandstateUpdate(STANDSTATE_SIT_MEDIUM_CHAIR).serialise().get());
+
+    player->UpdateSpeed();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
 GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
 { }
@@ -1073,15 +1104,23 @@ void GameObject_Goober::Close()
     setState(GO_STATE_CLOSED);
 }
 
-void GameObject_Goober::Use(uint64 GUID)
+void GameObject_Goober::onUse(Player* player)
 {
+    LOG_ERROR("Player uses Goober.");
     if (getState() == GO_STATE_CLOSED)
     {
         Open();
 
-        if (spell != NULL)
+        if (spell != nullptr)
+            CastSpell(player->getGuid(), spell);
+
+        player->CastSpell(getGuid(), gameobject_properties->goober.spell_id, false);
+
+        if (gameobject_properties->goober.page_id)
         {
-            CastSpell(GUID, spell);
+            WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
+            data << getGuid();
+            player->SendPacket(&data);
         }
     }
     else
@@ -1115,6 +1154,88 @@ void GameObject_FishingNode::OnPushToWorld()
 
     }
     sEventMgr.AddEvent(this, &GameObject_FishingNode::EndFishing, true, EVENT_GAMEOBJECT_END_FISHING, 17 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void GameObject_FishingNode::onUse(Player* player)
+{
+    sEventMgr.RemoveEvents(player, EVENT_STOP_CHANNELING);
+
+    bool success = UseNode();
+
+    if (success)
+    {
+        uint32 zone = player->GetAreaID();
+        if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
+            zone = player->GetZoneId();
+
+        MySQLStructure::FishingZones const* entry = sMySQLStore.getFishingZone(zone);
+        if (entry == nullptr)
+        {
+            LogError("ERROR: Fishing zone information for zone %u not found!", zone);
+            EndFishing(true);
+            success = false;
+        }
+
+        const uint32 maxskill = entry->maxSkill;
+        const uint32 minskill = entry->minSkill;
+
+        if (player->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
+            player->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+
+        GameObject_FishingHole* school = nullptr;
+        GameObject* go = GetMapMgr()->FindNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
+        if (go != nullptr)
+        {
+            school = dynamic_cast<GameObject_FishingHole*>(go);
+
+            if (!isInRange(school, static_cast<float>(school->GetGameObjectProperties()->fishinghole.radius)))
+                school = nullptr;
+        }
+
+        if (school != nullptr)
+        {
+            if (school->GetMapMgr() != nullptr)
+                lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
+            else
+                lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
+
+            player->SendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
+            EndFishing(false);
+            school->CatchFish();
+
+        }
+        else if (maxskill != 0 && Rand(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
+        {
+            lootmgr.FillFishingLoot(&this->loot, zone);
+            player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());
+            EndFishing(false);
+        }
+        else
+        {
+            player->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
+            EndFishing(true);
+        }
+    }
+    else
+    {
+        player->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
+    }
+
+    // Fishing is channeled spell
+    auto channelledSpell = player->getCurrentSpell(CURRENT_CHANNELED_SPELL);
+    if (channelledSpell != nullptr)
+    {
+        if (success)
+        {
+            channelledSpell->SendChannelUpdate(0);
+            channelledSpell->finish(true);
+        }
+        else
+        {
+            channelledSpell->SendChannelUpdate(0);
+            channelledSpell->finish(false);
+        }
+    }
 }
 
 bool GameObject_FishingNode::UseNode()
@@ -1194,14 +1315,30 @@ void GameObject_SpellCaster::InitAI()
         LogError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }
 
-void GameObject_SpellCaster::Use(uint64 GUID)
+void GameObject_SpellCaster::onUse(Player* player)
 {
+    if (GetGameObjectProperties()->spell_caster.party_only != 0)
+    {
+        if (m_summoner != nullptr && m_summoner->isPlayer())
+        {
+            Player* summoner = static_cast<Player*>(m_summoner);
+            if (summoner->getGuid() != player->getGuid())
+            {
+                if (!player->InGroup())
+                    return;
+
+                if (player->GetGroup() != summoner->GetGroup())
+                    return;
+            }
+        }
+    }
+
     if (spell == nullptr)
         return;
 
-    CastSpell(GUID, spell);
+    CastSpell(player->getGuid(), spell);
 
-    if ((charges > 0) && (--charges == 0))
+    if (charges > 0 && --charges == 0)
         ExpireAndDelete();
 }
 
