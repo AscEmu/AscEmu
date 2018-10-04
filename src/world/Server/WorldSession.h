@@ -437,7 +437,6 @@ class SERVER_DECL WorldSession
         void handleCorpseReclaimOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING == Cata
         void handleLoadScreenOpcode(WorldPacket& recvPacket);
-        void handleReadyForAccountDataTimesOpcode(WorldPacket& /*recvPacket*/);
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);
