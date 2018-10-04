@@ -1825,3 +1825,11 @@ bool Unit::isAttackReady(WeaponDamageType type) const
 {
     return Util::getMSTime() >= m_attackTimer[type];
 }
+
+void Unit::resetAttackTimers()
+{
+    for (int i = MELEE; i <= RANGED; ++i)
+    {
+        setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
+    }
+}

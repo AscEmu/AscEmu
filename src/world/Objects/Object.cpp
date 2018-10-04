@@ -780,21 +780,21 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
 
 bool Object::isCastingSpell(bool skipChanneled /*= false*/, bool skipAutorepeat /*= false*/, bool isAutoshoot /*= false*/) const
 {
-    // Check from generic spells, ignore finished spells
+    // Check generic spell, but ignore finished spells
     if (m_currentSpell[CURRENT_GENERIC_SPELL] != nullptr && m_currentSpell[CURRENT_GENERIC_SPELL]->getState() != SPELL_STATE_FINISHED && m_currentSpell[CURRENT_GENERIC_SPELL]->getCastTimeLeft() > 0 &&
         (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
     {
         return true;
     }
 
-    // If not skipped, check from channeled spells
+    // If not skipped, check channeled spell
     if (!skipChanneled && m_currentSpell[CURRENT_CHANNELED_SPELL] != nullptr && m_currentSpell[CURRENT_CHANNELED_SPELL]->getState() != SPELL_STATE_FINISHED &&
         (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
     {
         return true;
     }
 
-    // If not skipped, check from autorepeat spells
+    // If not skipped, check autorepeat spell
     if (!skipAutorepeat && m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
     {
         return true;

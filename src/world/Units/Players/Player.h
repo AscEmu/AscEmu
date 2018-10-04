@@ -624,7 +624,6 @@ public:
 
     void unEquipOffHandIfRequired();
     bool hasOffHandWeapon();
-    void delayMeleeAttackTimer(int32_t delay);
 
     int32_t getMyCorpseInstanceId() const;
 
