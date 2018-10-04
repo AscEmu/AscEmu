@@ -230,6 +230,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgListStabledPets.h
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
+   ${PATH_PREFIX}/MsgMoveTeleportAck.h
    ${PATH_PREFIX}/MsgPartyAssign.h
    ${PATH_PREFIX}/MsgPetitionDecline.h
    ${PATH_PREFIX}/MsgPetitionRename.h

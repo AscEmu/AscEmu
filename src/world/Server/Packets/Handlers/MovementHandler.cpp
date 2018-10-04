@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
 #include "Server/Packets/SmsgMountspecialAnim.h"
+#include "Server/Packets/MsgMoveTeleportAck.h"
 
 using namespace AscEmu::Packets;
 
@@ -534,4 +535,75 @@ void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
     CHECK_INWORLD_RETURN
 
     _player->SendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
+}
+
+void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
+{
+    _player->SetPlayerStatus(NONE);
+    if (_player->IsInWorld())
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received MSG_MOVE_WORLDPORT_ACK");
+
+    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
+    {
+        const auto transporter = _player->GetTransport();
+
+        const float transportPositionX = transporter->GetPositionX() + _player->GetTransPositionX();
+        const float transportPositionY = transporter->GetPositionY() + _player->GetTransPositionY();
+        const float transportPositionZ = transporter->GetPositionZ() + _player->GetTransPositionZ();
+
+        const auto positionOnTransport = LocationVector(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
+
+        _player->SetMapId(transporter->GetMapId());
+        _player->SetPosition(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
+
+        SendPacket(SmsgNewWorld(transporter->GetMapId(), positionOnTransport).serialise().get());
+    }
+    else
+    {
+        _player->m_TeleportState = 2;
+        _player->AddToWorld();
+    }
+}
+
+void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
+{
+    MsgMoveTeleportAck srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received MSG_MOVE_TELEPORT_ACK.");
+
+    if (srlPacket.guid.GetOldGuid() == _player->getGuid())
+    {
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
+        {
+            if (_player->GetPlayerStatus() != TRANSFER_PENDING)
+            {
+                sCheatLog.writefromsession(this, "Used Teleporthack 1, disconnecting.");
+                Disconnect();
+                return;
+            }
+
+            if (_player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)
+            {
+                sCheatLog.writefromsession(this, "Used Teleporthack 2, disconnecting.");
+                Disconnect();
+                return;
+            }
+        }
+
+        _player->SetPlayerStatus(NONE);
+        _player->SpeedCheatReset();
+
+        for (auto summon : _player->GetSummons())
+            summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);
+
+        if (_player->m_sentTeleportPosition.x != 999999.0f)
+        {
+            _player->m_position = _player->m_sentTeleportPosition;
+            _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
+        }
+    }
 }
