@@ -166,6 +166,7 @@ void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recv_da
 
 void WorldSession::HandleReportLag(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     CmsgGmReportLag srlPacket;
     if (!srlPacket.deserialise(recv_data))
         return;
@@ -177,6 +178,7 @@ void WorldSession::HandleReportLag(WorldPacket& recv_data)
     }
 
     LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->getName().c_str(), srlPacket.lagType, srlPacket.mapId);
+#endif
 }
 
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)

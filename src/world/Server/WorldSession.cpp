@@ -39,6 +39,7 @@
 //#include "Management/Guild.h"
 #include "CharacterErrors.h"
 #include "WorldSocket.h"
+#include "Auth/MD5.h"
 
 using namespace AscEmu::Packets;
 

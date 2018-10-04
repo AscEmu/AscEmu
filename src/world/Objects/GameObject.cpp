@@ -32,6 +32,7 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
+#include "Spell/SpellMgr.h"
 
 // MIT
 

@@ -285,7 +285,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         if (hasMovementData)
         {
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
-            HandleMovementOpcodes(recvPacket);
+            handleMovementOpcodes(recvPacket);
         }
 
         spell->m_missilePitch = projectilePitch;
@@ -475,10 +475,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         {
 #if VERSION_STRING != Cata
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
-            HandleMovementOpcodes(recvPacket);
+            handleMovementOpcodes(recvPacket);
 #else
             recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
-            HandleMovementOpcodes(recvPacket);
+            handleMovementOpcodes(recvPacket);
 #endif
         }
 
@@ -729,7 +729,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         if (hasMovementData)
         {
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
-            HandleMovementOpcodes(recvPacket);
+            handleMovementOpcodes(recvPacket);
         }
 
         spell->m_missilePitch = projectilePitch;

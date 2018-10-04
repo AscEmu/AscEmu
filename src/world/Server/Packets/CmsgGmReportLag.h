@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgGmReportLag : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t lagType;
         uint32_t mapId;
@@ -43,5 +44,6 @@ namespace AscEmu { namespace Packets
 
             return true;
         }
+#endif
     };
 }}

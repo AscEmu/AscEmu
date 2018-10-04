@@ -1631,7 +1631,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 #ifdef FT_DUAL_SPEC
         const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
 #else
-        const PlayerSpec playerSpec = player->m_spec;
+        const PlayerSpec playerSpec = inspectedPlayer->m_spec;
 #endif
 
         uint8_t talentCount = 0;

@@ -26,8 +26,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/MiscHandler.cpp
    ${PATH_PREFIX}/NPCHandler.cpp
    ${PATH_PREFIX}/MovementHandler.cpp
-   ${PATH_PREFIX}/MovementHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/PetHandler.cpp
    ${PATH_PREFIX}/QueryHandler.cpp
    ${PATH_PREFIX}/QuestHandler.cpp

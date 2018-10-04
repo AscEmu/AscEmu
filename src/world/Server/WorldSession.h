@@ -456,16 +456,13 @@ class SERVER_DECL WorldSession
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
+        void handleMovementOpcodes(WorldPacket& recvPacket);
         void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
         void handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/);
         void handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/);
         void handleMoveTeleportAckOpcode(WorldPacket& recvPacket);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // MovementHandler.Legacy.cpp
-        void HandleMovementOpcodes(WorldPacket& recvPacket);
-        void HandleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
+        void handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // NPCHandler.cpp
