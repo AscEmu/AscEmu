@@ -1718,7 +1718,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     data.put<uint32_t>(slotMaskPos, slotMask);
 
 #if VERSION_STRING == Cata
-    if (Guild* guild = sGuildMgr.getGuildById(player->getGuildId()))
+    if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
     {
         data << guild->getGUID();
         data << uint32_t(guild->getLevel());

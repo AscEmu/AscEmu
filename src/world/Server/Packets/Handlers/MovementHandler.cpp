@@ -23,34 +23,34 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata
-void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
+void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    CmsgSetActiveMover cmsg;
-    if (!cmsg.deserialise(recvData))
+    CmsgSetActiveMover srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (cmsg.guid == m_MoverWoWGuid.GetOldGuid())
+    if (srlPacket.guid == m_MoverWoWGuid.GetOldGuid())
         return;
 
-    if (_player->m_CurrentCharm != cmsg.guid.GetOldGuid() || _player->getGuid() != cmsg.guid.GetOldGuid())
+    if (_player->m_CurrentCharm != srlPacket.guid.GetOldGuid() || _player->getGuid() != srlPacket.guid.GetOldGuid())
     {
         auto bad_packet = true;
 #if VERSION_STRING >= TBC
         if (const auto vehicle = _player->GetCurrentVehicle())
             if (const auto owner = vehicle->GetOwner())
-                if (owner->getGuid() == cmsg.guid.GetOldGuid())
+                if (owner->getGuid() == srlPacket.guid.GetOldGuid())
                     bad_packet = false;
 #endif
         if (bad_packet)
             return;
     }
 
-    if (cmsg.guid.GetOldGuid() == 0)
+    if (srlPacket.guid.GetOldGuid() == 0)
         m_MoverWoWGuid.Init(_player->getGuid());
     else
-        m_MoverWoWGuid = cmsg.guid;
+        m_MoverWoWGuid = srlPacket.guid;
 
     // set up to the movement packet
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();

@@ -454,17 +454,18 @@ class SERVER_DECL WorldSession
         void handleInspectOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // MiscHandler.Legacy.cpp
-
-        //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
-
+        void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
         void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
         void handleMountSpecialAnimOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.Legacy.cpp
+        void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
+        void HandleMovementOpcodes(WorldPacket& recvPacket);
+        void HandleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
+        void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // NPCHandler.cpp
@@ -637,13 +638,6 @@ class SERVER_DECL WorldSession
         void HandleReportLag(WorldPacket& recvPacket);
 
         void HandleGMSurveySubmitOpcode(WorldPacket& recvPacket);
-
-        // Opcodes implemented in MovementHandler.cpp
-        void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
-        void HandleMovementOpcodes(WorldPacket& recvPacket);
-        void HandleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
-        void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
-        void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
 
         // Opcodes implemented in GroupHandler.cpp:
 #if VERSION_STRING == Cata
