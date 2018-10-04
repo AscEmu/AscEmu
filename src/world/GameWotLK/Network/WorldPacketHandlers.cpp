@@ -154,7 +154,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_MESSAGECHAT].handler = &WorldSession::handleMessageChatOpcode;
     WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::handleEmoteOpcode;
     WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::handleTextEmoteOpcode;
-    WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
+    WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::handleInspectOpcode;
     // clearly wrong naming!
     //WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::handleBarberShopResult;
 

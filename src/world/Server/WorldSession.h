@@ -451,6 +451,7 @@ class SERVER_DECL WorldSession
         void handleWhoIsOpcode(WorldPacket& recvPacket);
         void handleAmmoSetOpcode(WorldPacket& recvPacket);
         void handleGameObjectUse(WorldPacket& recvPacket);
+        void handleInspectOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.Legacy.cpp
@@ -623,8 +624,6 @@ class SERVER_DECL WorldSession
 
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
-        
-        void HandleInspectOpcode(WorldPacket& recvPacket);
 
         // Gm Ticket System in GMTicket.cpp:
         void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);

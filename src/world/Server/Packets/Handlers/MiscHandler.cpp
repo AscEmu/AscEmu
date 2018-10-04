@@ -53,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBarberShopResult.h"
 #include "Server/Packets/CmsgAlterAppearance.h"
 #include "Server/Packets/CmsgGameobjUse.h"
+#include "Server/Packets/CmsgInspect.h"
 
 using namespace AscEmu::Packets;
 
@@ -1592,4 +1593,139 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
             LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
             break;
     }
+}
+
+void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN;
+
+    CmsgInspect srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
+
+    auto inspectedPlayer = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(srlPacket.guid));
+    if (inspectedPlayer == nullptr)
+    {
+        LogDebugFlag(LF_OPCODE, "Error received CMSG_INSPECT for unknown player!");
+        return;
+    }
+
+    _player->setTargetGuid(srlPacket.guid);
+    _player->SetSelection(srlPacket.guid);
+
+    if (_player->m_comboPoints)
+        _player->UpdateComboPoints();
+
+    ByteBuffer packedGuid;
+    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
+    packedGuid.appendPackGUID(inspectedPlayer->getGuid());
+    data.append(packedGuid);
+
+    data << uint32_t(inspectedPlayer->getActiveSpec().GetTP());
+    data << uint8_t(inspectedPlayer->m_talentSpecsCount);
+    data << uint8_t(inspectedPlayer->m_talentActiveSpec);
+    for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
+    {
+#ifdef FT_DUAL_SPEC
+        const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
+#else
+        const PlayerSpec playerSpec = player->m_spec;
+#endif
+
+        uint8_t talentCount = 0;
+        const auto talentCountPos = data.wpos();
+        data << uint8_t(talentCount);
+
+        const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
+        for (uint8_t i = 0; i < 3; ++i)
+        {
+            const uint32_t talentTabId = talentTabIds[i];
+            for (uint32_t j = 0; j < sTalentStore.GetNumRows(); ++j)
+            {
+                const auto talentInfo = sTalentStore.LookupEntry(j);
+                if (talentInfo == nullptr)
+                    continue;
+
+                if (talentInfo->TalentTree != talentTabId)
+                    continue;
+
+                int32_t talentMaxRank = -1;
+                for (int32_t k = 4; k > -1; --k)
+                {
+                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->HasSpell(talentInfo->RankID[k]))
+                    {
+                        talentMaxRank = k;
+                        break;
+                    }
+                }
+
+                if (talentMaxRank < 0)
+                    continue;
+
+                data << uint32_t(talentInfo->TalentID);
+                data << uint8_t(talentMaxRank);
+
+                ++talentCount;
+            }
+        }
+        data.put<uint8_t>(talentCountPos, talentCount);
+
+#ifdef FT_GLYPHS
+        data << uint8_t(GLYPHS_COUNT);
+
+        for (auto glyph : playerSpec.glyphs)
+            data << uint16_t(glyph);
+#endif
+    }
+
+    uint32_t slotMask = 0;
+    const auto slotMaskPos = data.wpos();
+    data << uint32_t(slotMask);
+
+    auto itemInterface = inspectedPlayer->GetItemInterface();
+    for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
+        if (!inventoryItem)
+            continue;
+
+        slotMask |= (1 << i);
+
+        data << uint32_t(inventoryItem->getEntry());
+
+        uint16_t enchantMask = 0;
+        const auto enchantMaskPos = data.wpos();
+
+        data << uint16_t(enchantMask);
+
+        for (uint8_t slot = 0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+        {
+            const uint32_t enchantId = inventoryItem->getEnchantmentId(slot);
+            if (!enchantId)
+                continue;
+
+            enchantMask |= (1 << slot);
+            data << uint16_t(enchantId);
+        }
+        data.put<uint16_t>(enchantMaskPos, enchantMask);
+
+        data << uint16_t(0);
+        FastGUIDPack(data, inventoryItem->getCreatorGuid());
+        data << uint32_t(0);
+    }
+    data.put<uint32_t>(slotMaskPos, slotMask);
+
+#if VERSION_STRING == Cata
+    if (Guild* guild = sGuildMgr.getGuildById(player->getGuildId()))
+    {
+        data << guild->getGUID();
+        data << uint32_t(guild->getLevel());
+        data << uint64(guild->getExperience());
+        data << uint32_t(guild->getMembersCount());
+    }
+#endif
+
+    SendPacket(&data);
 }
