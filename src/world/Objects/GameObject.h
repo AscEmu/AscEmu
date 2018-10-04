@@ -733,7 +733,7 @@ public:
     GameObject_Chair(uint64 GUID) : GameObject(GUID){}
     ~GameObject_Chair(){};
 
-    void onUse(Player* player);
+    void onUse(Player* player) override;
 
 };
 
@@ -771,6 +771,19 @@ class GameObject_Goober : public GameObject
 
     private:
         SpellInfo* spell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 13 (CAMERA) GameObjects
+class GameObject_Camera : public GameObject
+{
+public:
+
+    GameObject_Camera(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_Camera() {}
+
+    void onUse(Player* player) override;
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -815,6 +828,8 @@ class GameObject_Ritual : public GameObject
 
         void InitAI();
 
+        void onUse(Player* player) override;
+
         CRitual* GetRitual() const
         {
             return Ritual;
@@ -843,7 +858,31 @@ class GameObject_SpellCaster : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// implementing Type 26 (FISHINGHOLE) GameObjects
+// implementing Type 23 (MEETINGSTONE) GameObjects
+class GameObject_Meetingstone : public GameObject
+{
+public:
+
+    GameObject_Meetingstone(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_Meetingstone() {}
+
+    void onUse(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 24 (FLAGSTAND) GameObjects
+class GameObject_FlagStand : public GameObject
+{
+public:
+
+    GameObject_FlagStand(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_FlagStand() {}
+
+    void onUse(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 25 (FISHINGHOLE) GameObjects
 class GameObject_FishingHole : public GameObject_Lootable
 {
     public:
@@ -865,6 +904,30 @@ class GameObject_FishingHole : public GameObject_Lootable
     private:
 
         uint32 usage_remaining;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 26 (FLAGDROP) GameObjects
+class GameObject_FlagDrop : public GameObject
+{
+public:
+
+    GameObject_FlagDrop(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_FlagDrop() {}
+
+    void onUse(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 32 (BARBER_CHAIR) GameObjects
+class GameObject_BarberChair : public GameObject
+{
+public:
+
+    GameObject_BarberChair(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_BarberChair() {}
+
+    void onUse(Player* player) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

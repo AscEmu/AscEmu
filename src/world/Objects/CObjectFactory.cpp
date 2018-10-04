@@ -68,6 +68,10 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
             gameobject = new GameObject_Goober(GUID);
             break;
 
+        case GAMEOBJECT_TYPE_CAMERA:
+            gameobject = new GameObject_Camera(GUID);
+            break;
+
         case GAMEOBJECT_TYPE_FISHINGNODE:
             gameobject = new GameObject_FishingNode(GUID);
             break;
@@ -80,8 +84,24 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
             gameobject = new GameObject_SpellCaster(GUID);
             break;
 
+        case GAMEOBJECT_TYPE_MEETINGSTONE:
+            gameobject = new GameObject_Meetingstone(GUID);
+            break;
+
+        case GAMEOBJECT_TYPE_FLAGSTAND:
+            gameobject = new GameObject_FlagStand(GUID);
+            break;
+
         case GAMEOBJECT_TYPE_FISHINGHOLE:
             gameobject = new GameObject_FishingHole(GUID);
+            break;
+
+        case GAMEOBJECT_TYPE_FLAGDROP:
+            gameobject = new GameObject_FlagDrop(GUID);
+            break;
+
+        case GAMEOBJECT_TYPE_BARBER_CHAIR:
+            gameobject = new GameObject_BarberChair(GUID);
             break;
 
         case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:

@@ -1130,6 +1130,14 @@ void GameObject_Goober::onUse(Player* player)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Camera
+void GameObject_Camera::onUse(Player* player)
+{
+    if (gameobject_properties->camera.cinematic_id != 0)
+        player->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &gameobject_properties->camera.cinematic_id);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
 GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
 {
@@ -1296,6 +1304,122 @@ void GameObject_Ritual::InitAI()
     Ritual = new CRitual(gameobject_properties->summoning_ritual.req_participants);
 }
 
+void GameObject_Ritual::onUse(Player* player)
+{
+    SpellCastTargets targets;
+    Spell* spell = nullptr;
+
+    // store the members in the ritual, cast sacrifice spell, and summon.
+    if (GetRitual()->IsFinished() || GetRitual()->GetCasterGUID() == 0)
+        return;
+
+    // If we clicked on the ritual we are already in, remove us, otherwise add us as a ritual member
+    if (GetRitual()->HasMember(player->getGuidLow()))
+    {
+        GetRitual()->RemoveMember(player->getGuidLow());
+        player->setChannelSpellId(0);
+        player->setChannelObjectGuid(0);
+        return;
+    }
+    else
+    {
+        GetRitual()->AddMember(player->getGuidLow());
+        player->setChannelSpellId(GetRitual()->GetSpellID());
+        player->setChannelObjectGuid(getGuid());
+    }
+
+    // If we were the last required member, proceed with the ritual!
+    if (!GetRitual()->HasFreeSlots())
+    {
+        GetRitual()->Finish();
+        Player* plr = nullptr;
+
+        unsigned long MaxMembers = GetRitual()->GetMaxMembers();
+        for (unsigned long i = 0; i < MaxMembers; i++)
+        {
+            plr = player->GetMapMgr()->GetPlayer(GetRitual()->GetMemberGUIDBySlot(i));
+            if (plr != nullptr)
+            {
+                plr->setChannelObjectGuid(0);
+                plr->setChannelSpellId(0);
+            }
+        }
+
+        if (gameobject_properties->entry == 36727 || gameobject_properties->entry == 194108)   // summon portal
+        {
+            if (!GetRitual()->GetTargetGUID() == 0)
+                return;
+
+            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            if (info == nullptr)
+                return;
+
+            Player* target = objmgr.GetPlayer(GetRitual()->GetTargetGUID());
+            if (target == nullptr || !target->IsInWorld())
+                return;
+
+            spell = sSpellFactoryMgr.NewSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            targets.m_unitTarget = target->getGuid();
+            spell->prepare(&targets);
+        }
+        else if (gameobject_properties->entry == 177193)    // doom portal
+        {
+            uint32 victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
+
+            // kill the sacrifice player
+            Player* psacrifice = player->GetMapMgr()->GetPlayer(GetRitual()->GetMemberGUIDBySlot(victimid));
+            Player* pCaster = GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID());
+            if (!psacrifice || !pCaster)
+                return;
+
+            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.caster_target_spell);
+            if (!info)
+                return;
+
+            spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, nullptr);
+            targets.m_unitTarget = psacrifice->getGuid();
+            spell->prepare(&targets);
+
+            // summons demon
+            info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, nullptr);
+
+            SpellCastTargets targets2;
+            targets2.m_unitTarget = pCaster->getGuid();
+            spell->prepare(&targets2);
+        }
+        else if (gameobject_properties->entry == 179944)    // Summoning portal for meeting stones
+        {
+            plr = player->GetMapMgr()->GetPlayer(GetRitual()->GetTargetGUID());
+            if (!plr)
+                return;
+
+            Player* pleader = player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID());
+            if (!pleader)
+                return;
+
+            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            spell = sSpellFactoryMgr.NewSpell(pleader, info, true, nullptr);
+            SpellCastTargets targets2(plr->getGuid());
+            spell->prepare(&targets2);
+
+            // expire the gameobject
+            ExpireAndDelete();
+        }
+        else if (gameobject_properties->entry == 186811 || gameobject_properties->entry == 181622)
+        {
+            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            if (info == NULL)
+                return;
+
+            spell = sSpellFactoryMgr.NewSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            SpellCastTargets targets2(GetRitual()->GetCasterGUID());
+            spell->prepare(&targets2);
+            ExpireAndDelete();
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
 GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
@@ -1340,6 +1464,52 @@ void GameObject_SpellCaster::onUse(Player* player)
 
     if (charges > 0 && --charges == 0)
         ExpireAndDelete();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Meetingstone
+void GameObject_Meetingstone::onUse(Player* player)
+{
+    // Use selection
+    Player* pPlayer = objmgr.GetPlayer(static_cast<uint32>(player->GetSelection()));
+    if (pPlayer == nullptr)
+        return;
+
+    // If we are not in a group we can't summon anyone
+    if (!player->InGroup())
+        return;
+
+    // We can only summon someone if they are in our raid/group
+    if (player->GetGroup() != pPlayer->GetGroup())
+        return;
+
+    // We can't summon ourselves!
+    if (pPlayer->getGuid() == player->getGuid())
+        return;
+
+    // Create the summoning portal
+    GameObject* pGo = player->GetMapMgr()->CreateGameObject(179944);
+    if (pGo == nullptr)
+        return;
+
+    GameObject_Ritual* rGo = static_cast<GameObject_Ritual*>(pGo);
+
+    rGo->CreateFromProto(179944, player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 0);
+    rGo->GetRitual()->Setup(player->getGuidLow(), pPlayer->getGuidLow(), 18540);
+    rGo->PushToWorld(player->GetMapMgr());
+
+    player->setChannelObjectGuid(rGo->getGuid());
+    player->setChannelSpellId(rGo->GetRitual()->GetSpellID());
+
+    // expire after 2mins
+    sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_FlagStand
+void GameObject_FlagStand::onUse(Player* player)
+{
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1390,6 +1560,31 @@ bool GameObject_FishingHole::HasLoot()
             return true;
     }
     return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_FlagDrop
+void GameObject_FlagDrop::onUse(Player* player)
+{
+    if (player->m_bg)
+        player->m_bg->HookFlagDrop(player, this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_BarberChair
+void GameObject_BarberChair::onUse(Player* player)
+{
+#if VERSION_STRING > TBC
+    //parameter_0 defines the height!
+    player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    player->UpdateSpeed();
+
+    //send barber shop menu to player
+    WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
+    player->SendPacket(&data);
+
+    player->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

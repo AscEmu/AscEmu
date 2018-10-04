@@ -52,6 +52,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgWhoIs.h"
 #include "Server/Packets/SmsgBarberShopResult.h"
 #include "Server/Packets/CmsgAlterAppearance.h"
+#include "Server/Packets/CmsgGameobjUse.h"
 
 using namespace AscEmu::Packets;
 
@@ -1539,6 +1540,56 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         default:
             _player->SetAmmoId(ammoId);
             _player->CalcDamage();
+            break;
+    }
+}
+
+void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
+{
+    CmsgGameobjUse srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
+
+    auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLowPart());
+    if (!gameObject)
+        return;
+
+    const auto gameObjectProperties = gameObject->GetGameObjectProperties();
+    if (!gameObjectProperties)
+        return;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //\brief: the following lines are handled in gobj class
+
+    objmgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
+
+    CALL_GO_SCRIPT_EVENT(gameObject, OnActivate)(_player);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(gameObject, _player);
+
+    _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+
+    switch (gameObject->getGoType())
+    {
+        case GAMEOBJECT_TYPE_DOOR:
+        case GAMEOBJECT_TYPE_BUTTON:
+        case GAMEOBJECT_TYPE_QUESTGIVER:
+        case GAMEOBJECT_TYPE_CHEST:
+        case GAMEOBJECT_TYPE_CHAIR:
+        case GAMEOBJECT_TYPE_GOOBER:
+        case GAMEOBJECT_TYPE_CAMERA:
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+        case GAMEOBJECT_TYPE_RITUAL:
+        case GAMEOBJECT_TYPE_SPELLCASTER:
+        case GAMEOBJECT_TYPE_MEETINGSTONE:
+        case GAMEOBJECT_TYPE_FLAGSTAND:
+        case GAMEOBJECT_TYPE_FLAGDROP:
+        case GAMEOBJECT_TYPE_BARBER_CHAIR:
+            gameObject->onUse(_player);
+            break;
+        default:
+            LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
             break;
     }
 }

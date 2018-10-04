@@ -389,9 +389,6 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
-public:
-        void handleGameObjectUseByType(GameObject* gameObject, Player* player);
-protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void handleWhoOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);
@@ -453,6 +450,7 @@ protected:
         void handleRepopRequestOpcode(WorldPacket& /*recvPacket*/);
         void handleWhoIsOpcode(WorldPacket& recvPacket);
         void handleAmmoSetOpcode(WorldPacket& recvPacket);
+        void handleGameObjectUse(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.Legacy.cpp
@@ -622,8 +620,6 @@ protected:
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
 
         void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
-
-        void HandleGameObjectUse(WorldPacket& recvPacket);
 
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
