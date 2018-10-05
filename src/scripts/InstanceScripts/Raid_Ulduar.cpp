@@ -92,7 +92,7 @@ class UlduarTeleporterAI : public GameObjectAIScript
 {
 public:
 
-    UlduarTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
+    explicit UlduarTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
     ~UlduarTeleporterAI() {}
 
     static GameObjectAIScript* Create(GameObject* go) { return new UlduarTeleporterAI(go); }

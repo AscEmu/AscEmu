@@ -37,7 +37,7 @@ class ShadowfangKeepInstance : public InstanceScript
 
 public:
 
-    ShadowfangKeepInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr),
+    explicit ShadowfangKeepInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr),
 
     // Gameobjects low guids
     go_leftCell_GUID(0),
@@ -1256,9 +1256,10 @@ class VileBatAI : public CreatureAIScript
 // Creature entry: 3868
 class BloodSeekerAI : public CreatureAIScript
 {
+    ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
+
     const uint32 SPELL_EXPOSE_WEAKNESS = 7140;
 
-    ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
     explicit BloodSeekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_EXPOSE_WEAKNESS, 5.0f, TARGET_ATTACKING, 0, 5);
@@ -1340,7 +1341,6 @@ class ShadowfangGluttonAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI);
     explicit ShadowfangGluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-
         // Blood Tap
         addAISpell(7122, 5.0f, TARGET_ATTACKING);
     }

@@ -232,7 +232,7 @@ class PrisonersDreghoodElders : public CreatureAIScript
 class AncestralSpiritWolf : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf);
-    AncestralSpiritWolf(Creature* c) : CreatureAIScript(c) {}
+    explicit AncestralSpiritWolf(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
         getCreature()->CastSpell(getCreature(), 29938, false);

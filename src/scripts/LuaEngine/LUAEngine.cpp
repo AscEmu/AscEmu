@@ -1939,7 +1939,7 @@ class LuaGameObjectScript : public GameObjectAIScript
 {
 public:
 
-    LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
+    explicit LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
     ~LuaGameObjectScript() {}
     inline GameObject* getGO()
     {
@@ -2361,7 +2361,7 @@ class LuaInstance : public InstanceScript
 {
 public:
 
-    LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
+    explicit LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
     ~LuaInstance() {}
 
     // Player

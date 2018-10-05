@@ -383,7 +383,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell
 class SolariumAgentAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SolariumAgentAI);
-    SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 };
