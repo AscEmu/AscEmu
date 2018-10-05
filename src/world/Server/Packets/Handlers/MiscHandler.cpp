@@ -1729,3 +1729,269 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 
     SendPacket(&data);
 }
+
+#if VERSION_STRING == Cata
+void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
+{
+    if (recvPacket.rpos() + 4 > recvPacket.size())
+        return;
+
+    uint32_t recvSize;
+    recvPacket >> recvSize;
+
+    if (!recvSize)
+        return;
+
+    if (recvSize > 0xFFFFF)
+    {
+        LOG_DEBUG("recvSize %u too long", recvSize);
+        return;
+    }
+
+    uLongf uSize = recvSize;
+
+    uint32_t pos = static_cast<uint32_t>(recvPacket.rpos());
+
+    ByteBuffer unpackedInfo;
+    unpackedInfo.resize(recvSize);
+
+    if (uncompress(unpackedInfo.contents(), &uSize, recvPacket.contents() + pos, static_cast<uLong>(recvPacket.size() - pos)) == Z_OK)
+    {
+        uint32_t addonsCount;
+        unpackedInfo >> addonsCount;
+
+        for (uint32_t i = 0; i < addonsCount; ++i)
+        {
+            std::string addonName;
+            uint8_t enabledState;
+            uint32_t crc;
+            uint32_t unknown;
+
+            if (unpackedInfo.rpos() + 1 > unpackedInfo.size())
+                return;
+
+            unpackedInfo >> addonName;
+
+            unpackedInfo >> enabledState;
+            unpackedInfo >> crc;
+            unpackedInfo >> unknown;
+
+            LOG_DEBUG("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
+
+            AddonEntry addon(addonName, enabledState, crc, 2, true);
+
+            SavedAddon const* savedAddon = sAddonMgr.getAddonInfoForAddonName(addonName);
+            if (savedAddon)
+            {
+                if (addon.crc != savedAddon->crc)
+                    LOG_DEBUG("Addon: %s: modified (CRC: 0x%x) - accountID %d)", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                else
+                    LOG_DEBUG("Addon: %s: validated (CRC: 0x%x) - accountID %d", addon.name.c_str(), savedAddon->crc, GetAccountId());
+            }
+            else
+            {
+                sAddonMgr.SaveAddon(addon);
+                LOG_DEBUG("Addon: %s: unknown (CRC: 0x%x) - accountId %d (storing addon name and checksum to database)", addon.name.c_str(), addon.crc, GetAccountId());
+            }
+
+            m_addonList.push_back(addon);
+        }
+
+        uint32_t addonTime;
+        unpackedInfo >> addonTime;
+    }
+    else
+    {
+        LOG_ERROR("Decompression of addon section of CMSG_AUTH_SESSION failed.");
+    }
+}
+
+void WorldSession::sendAddonInfo()
+{
+    WorldPacket data(SMSG_ADDON_INFO, 4);
+    for (auto itr : m_addonList)
+    {
+        data << uint8_t(itr.state);
+
+        uint8_t crcpub = itr.usePublicKeyOrCRC;
+        data << uint8_t(crcpub);
+        if (crcpub)
+        {
+            uint8_t usepk = (itr.crc != STANDARD_ADDON_CRC); // standard addon CRC
+            data << uint8_t(usepk);
+            if (usepk)                                      // add public key if crc is wrong
+            {
+                LogDebugFlag(LF_OPCODE, "AddOn: %s: CRC checksum mismatch: got 0x%x - expected 0x%x - sending pubkey to accountID %d",
+                    itr.name.c_str(), itr.crc, STANDARD_ADDON_CRC, GetAccountId());
+
+                data.append(PublicKey, sizeof(PublicKey));
+            }
+
+            data << uint32_t(0);
+        }
+
+        data << uint8_t(0);
+    }
+
+    m_addonList.clear();
+
+    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+    data << uint32_t(bannedAddons->size());
+    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+    {
+        data << uint32_t(itr->id);
+        data.append(itr->nameMD5, sizeof(itr->nameMD5));
+        data.append(itr->versionMD5, sizeof(itr->versionMD5));
+        data << uint32_t(itr->timestamp);
+        data << uint32_t(1);  // banned?
+    }
+
+    SendPacket(&data);
+}
+
+bool WorldSession::isAddonRegistered(const std::string& addon_name) const
+{
+    if (!isAddonMessageFiltered)
+        return true;
+
+    if (mRegisteredAddonPrefixesVector.empty())
+        return false;
+
+    auto itr = std::find(mRegisteredAddonPrefixesVector.begin(), mRegisteredAddonPrefixesVector.end(), addon_name);
+    return itr != mRegisteredAddonPrefixesVector.end();
+}
+
+void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
+
+    mRegisteredAddonPrefixesVector.clear();
+}
+
+void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
+{
+    uint32_t addonCount = recvPacket.readBits(25);
+
+    if (addonCount > 64)
+    {
+        isAddonMessageFiltered = false;
+        recvPacket.rfinish();
+        return;
+    }
+
+    std::vector<uint8_t> nameLengths(addonCount);
+    for (uint32_t i = 0; i < addonCount; ++i)
+        nameLengths[i] = static_cast<uint8_t>(recvPacket.readBits(5));
+
+    for (uint32_t i = 0; i < addonCount; ++i)
+        mRegisteredAddonPrefixesVector.push_back(recvPacket.ReadString(nameLengths[i]));
+
+    if (mRegisteredAddonPrefixesVector.size() > 64)
+    {
+        isAddonMessageFiltered = false;
+        return;
+    }
+
+    isAddonMessageFiltered = true;
+}
+
+void WorldSession::HandleReportOpcode(WorldPacket& recvPacket)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT");
+
+    uint8_t spam_type;                                        // 0 - mail, 1 - chat
+    uint64_t spammer_guid;
+    uint32_t unk1 = 0;
+    uint32_t unk2 = 0;
+    uint32_t unk3 = 0;
+    uint32_t unk4 = 0;
+
+    std::string description;
+    recvPacket >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
+    recvPacket >> spammer_guid;                              // player guid
+
+    switch (spam_type)
+    {
+        case 0:
+        {
+            recvPacket >> unk1;                              // const 0
+            recvPacket >> unk2;                              // probably mail id
+            recvPacket >> unk3;                              // const 0
+
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3);
+
+        } break;
+        case 1:
+        {
+            recvPacket >> unk1;                              // probably language
+            recvPacket >> unk2;                              // message type?
+            recvPacket >> unk3;                              // probably channel id
+            recvPacket >> unk4;                              // unk random value
+            recvPacket >> description;                       // spam description string (messagetype, channel name, player name, message)
+
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+
+        } break;
+    }
+
+    // Complaint Received message
+    WorldPacket data(SMSG_REPORT_RESULT, 1);
+    data << uint8_t(0);     // 1 reset reported player 0 ignore
+    data << uint8_t(0);
+
+    SendPacket(&data);
+}
+
+void WorldSession::HandleReportPlayerOpcode(WorldPacket& recvPacket)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
+
+    uint8_t unk3 = 0;   // type
+    uint8_t unk4 = 0;   // guid - 1
+    uint32_t unk5 = 0;
+    uint64_t unk6 = 0;
+    uint32_t unk7 = 0;
+    uint32_t unk8 = 0;
+
+    std::string message;
+
+    uint32_t length = recvPacket.readBits(9);    // length * 2
+    recvPacket >> unk3;                          // type
+    recvPacket >> unk4;                          // guid - 1?
+    message = recvPacket.ReadString(length / 2);   // message
+    recvPacket >> unk5;                          // unk
+    recvPacket >> unk6;                          // unk
+    recvPacket >> unk7;                          // unk
+    recvPacket >> unk8;                          // unk
+
+    switch (unk3)
+    {
+        case 0:     // chat spamming
+            LOG_DEBUG("Chat spamming report for guid: %u received.", unk4 + 1);
+            break;
+        case 2:     // cheat
+            recvPacket >> message;
+            LOG_DEBUG("Cheat report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 6:     // char name
+            recvPacket >> message;
+            LOG_DEBUG("char name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 12:     // guild name
+            recvPacket >> message;
+            LOG_DEBUG("guild name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 18:     // arena team name
+            recvPacket >> message;
+            LOG_DEBUG("arena team name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 20:     // chat language
+            LOG_DEBUG("Chat language report for guid: %u received.", unk4 + 1);
+            break;
+        default:
+            LOG_DEBUG("type is %u", unk3);
+            break;
+    }
+}
+
+#endif

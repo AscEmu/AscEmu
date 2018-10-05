@@ -416,17 +416,17 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE].handler = &WorldSession::HandleBgInviteResponse;
 
     // GM Ticket System
-    /*WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::HandleGMTicketCreateOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_UPDATETEXT].handler = &WorldSession::HandleGMTicketUpdateOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_DELETETICKET].handler = &WorldSession::HandleGMTicketDeleteOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_GETTICKET].handler = &WorldSession::HandleGMTicketGetTicketOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::HandleGMTicketSystemStatusOpcode;
-    WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;*/
+    /*WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::handleGMTicketCreateOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_UPDATETEXT].handler = &WorldSession::handleGMTicketUpdateOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_DELETETICKET].handler = &WorldSession::handleGMTicketDeleteOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_GETTICKET].handler = &WorldSession::handleGMTicketGetTicketOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::handleGMTicketSystemStatusOpcode;
+    WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::handleGMTicketToggleSystemStatusOpcode;*/
 
     // Lag report
-    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::HandleReportLag;
+    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::handleReportLag;
     //WorldPacketHandlers[CMSG_GM_REPORT_LAG].status = STATUS_LOGGEDIN;
-    //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::HandleGMSurveySubmitOpcode;
+    //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::handleGMSurveySubmitOpcode;
     //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].status = STATUS_LOGGEDIN;
 
     // Meeting Stone / Instances

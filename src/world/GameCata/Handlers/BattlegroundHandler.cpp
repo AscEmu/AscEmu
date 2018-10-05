@@ -8,10 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 
-void WorldSession::HandleRequestRatedBgInfoOpcode(WorldPacket & recv_data)
+void WorldSession::HandleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
 {
     uint8_t unk_type;
-    recv_data >> unk_type;
+    recvPacket >> unk_type;
 
     LOG_DEBUG("CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", unk_type);
 
@@ -24,7 +24,7 @@ void WorldSession::HandleRequestRatedBgInfoOpcode(WorldPacket & recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleRequestRatedBgStatsOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
 {
     LOG_DEBUG("CMSG_REQUEST_RATED_BG_STATS received");
 
@@ -41,7 +41,7 @@ void WorldSession::HandleRequestRatedBgStatsOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleRequestPvPRewardsOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
 {
     LOG_DEBUG("CMSG_REQUEST_RATED_BG_STATS received");
 
@@ -56,7 +56,7 @@ void WorldSession::HandleRequestPvPRewardsOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&packet);
 }
 
-void WorldSession::HandleRequestPvpOptionsOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/)
 {
     LOG_DEBUG("CMSG_REQUEST_RATED_BG_STATS received");
 

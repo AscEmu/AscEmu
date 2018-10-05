@@ -352,6 +352,12 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GMTicketHandler.cpp
+        void handleGMTicketCreateOpcode(WorldPacket& recvPacket);
+        void handleGMTicketUpdateOpcode(WorldPacket& recvPacket);
+        void handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/);
+        void handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/);
+        void handleGMTicketSystemStatusOpcode(WorldPacket& /*recvPacket*/);
+        void handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPacket*/);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GroupHandler.cpp
@@ -362,7 +368,7 @@ class SERVER_DECL WorldSession
         void handleInviteToGuild(WorldPacket& recvPacket);
 #if VERSION_STRING != Cata
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
-#else
+#endif
         void handleSaveGuildEmblem(WorldPacket& recvPacket);
         void handleGuildAccept(WorldPacket& /*recvPacket*/);
         void handleGuildDecline(WorldPacket& /*recvPacket*/);
@@ -556,6 +562,16 @@ class SERVER_DECL WorldSession
         void handleGameObjectUse(WorldPacket& recvPacket);
         void handleInspectOpcode(WorldPacket& recvPacket);
 
+    //\todo move to seperated file
+#if VERSION_STRING == Cata
+        bool isAddonMessageFiltered;
+        std::vector<std::string> mRegisteredAddonPrefixesVector;
+
+        bool isAddonRegistered(const std::string& addon_name) const;
+        void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);
+        void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);
+#endif
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
@@ -726,18 +742,10 @@ class SERVER_DECL WorldSession
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
 
-        // Gm Ticket System in GMTicket.cpp:
-        void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketUpdateOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/);
-        void HandleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/);
-        void HandleGMTicketSystemStatusOpcode(WorldPacket& /*recvPacket*/);
-        void HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recvPacket);
-
         // Lag report
-        void HandleReportLag(WorldPacket& recvPacket);
+        void handleReportLag(WorldPacket& recvPacket);
 
-        void HandleGMSurveySubmitOpcode(WorldPacket& recvPacket);
+        void handleGMSurveySubmitOpcode(WorldPacket& recvPacket);
 
         // Opcodes implemented in GroupHandler.cpp:
 #if VERSION_STRING == Cata
@@ -862,11 +870,6 @@ class SERVER_DECL WorldSession
         void handleReportSpamOpcode(WorldPacket& recvPacket);
         void handleChatIgnoredOpcode(WorldPacket& recvPacket);
         void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
-
-    public:
-
-        
-#endif
 
 #if VERSION_STRING == Cata
         void HandleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);
@@ -1028,15 +1031,6 @@ class SERVER_DECL WorldSession
         uint32 m_muted;
 #if VERSION_STRING > TBC
         void SendClientCacheVersion(uint32 version);
-#endif
-
-#if VERSION_STRING == Cata
-        bool isAddonMessageFiltered;
-        std::vector<std::string> mRegisteredAddonPrefixesVector;
-
-        bool isAddonRegistered(const std::string& addon_name) const;
-        void HandleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);
-        void HandleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);
 #endif
 
 };

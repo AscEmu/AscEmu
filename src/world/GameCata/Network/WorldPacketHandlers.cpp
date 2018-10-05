@@ -474,19 +474,19 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REQUEST_PVP_OPTIONS_ENABLED].handler = &WorldSession::HandleRequestPvpOptionsOpcode;
 
     // GM Ticket System
-    WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::HandleGMTicketCreateOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_UPDATETEXT].handler = &WorldSession::HandleGMTicketUpdateOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_DELETETICKET].handler = &WorldSession::HandleGMTicketDeleteOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_GETTICKET].handler = &WorldSession::HandleGMTicketGetTicketOpcode;
-    WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::HandleGMTicketSystemStatusOpcode;
-    //WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;
-    WorldPacketHandlers[SMSG_GMTICKET_GETTICKET].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::handleGMTicketCreateOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_UPDATETEXT].handler = &WorldSession::handleGMTicketUpdateOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_DELETETICKET].handler = &WorldSession::handleGMTicketDeleteOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_GETTICKET].handler = &WorldSession::handleGMTicketGetTicketOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::handleGMTicketSystemStatusOpcode;
+    //WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::handleGMTicketToggleSystemStatusOpcode;
+    WorldPacketHandlers[SMSG_GMTICKET_GETTICKET].handler = &WorldSession::handleGMTicketToggleSystemStatusOpcode;
 
     // Reports
-    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::HandleReportLag;
+    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::handleReportLag;
     //WorldPacketHandlers[CMSG_GM_REPORT_LAG].status = STATUS_LOGGEDIN;
 
-    //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::HandleGMSurveySubmitOpcode;
+    //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::handleGMSurveySubmitOpcode;
     //WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].status = STATUS_LOGGEDIN;
 
     WorldPacketHandlers[CMSG_REPORT].handler = &WorldSession::HandleReportOpcode;
@@ -606,6 +606,6 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_UNKNOWN_ON_LOGIN].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 
-    WorldPacketHandlers[CMSG_ADDON_REGISTERED_PREFIXES].handler = &WorldSession::HandleAddonRegisteredPrefixesOpcode;
-    WorldPacketHandlers[CMSG_UNREGISTER_ALL_ADDON_PREFIXES].handler = &WorldSession::HandleUnregisterAddonPrefixesOpcode;
+    WorldPacketHandlers[CMSG_ADDON_REGISTERED_PREFIXES].handler = &WorldSession::handleAddonRegisteredPrefixesOpcode;
+    WorldPacketHandlers[CMSG_UNREGISTER_ALL_ADDON_PREFIXES].handler = &WorldSession::handleUnregisterAddonPrefixesOpcode;
 }
