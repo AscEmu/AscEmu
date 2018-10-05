@@ -223,9 +223,7 @@ class SERVER_DECL WorldSession
         void SendBuyFailed(uint64 guid, uint32 itemid, uint8 error);
         void SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error);
         void SendNotification(const char* message, ...);
-#if VERSION_STRING > TBC
-        void SendRefundInfo(uint64_t guid);
-#endif
+
 
         void SetInstance(uint32 Instance) { instanceId = Instance; }
         uint32 GetLatency() const { return _latency; }
@@ -250,8 +248,7 @@ class SERVER_DECL WorldSession
         int32 m_moveDelayTime;
         int32 m_clientTimeDelay;
 
-        void CharacterEnumProc(QueryResult* result);
-        void LoadAccountDataProc(QueryResult* result);
+        
         bool IsLoggingOut() { return _loggingOut; }
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +289,12 @@ class SERVER_DECL WorldSession
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
         void handleBattlefieldListOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING == Cata
+        void handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);
+        void handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);
+        void handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);
+        void handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // CalendarHandler.cpp
@@ -336,7 +339,30 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // CharacterHandler.cpp
+    public:
+        void loadPlayerFromDBProc(QueryResultVector& results);
+        uint8_t deleteCharacter(WoWGuid guid);
 
+        void initGMMyMaster();
+        void sendServerStats();
+        void fullLogin(Player* player);
+        void CharacterEnumProc(QueryResult* result);
+        void LoadAccountDataProc(QueryResult* result);
+
+    protected:
+        void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
+        void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
+        void handleCharDeleteOpcode(WorldPacket& recvPacket);
+        void handlePlayerLoginOpcode(WorldPacket& recvPacket);
+        void handleCharRenameOpcode(WorldPacket& recvPacket);
+        void handleCharCreateOpcode(WorldPacket& recvPacket);
+        void handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
+        void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
+#if VERSION_STRING > TBC
+        void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
+        void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);
+#endif
+        
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChatHandler.cpp
 
@@ -355,6 +381,8 @@ class SERVER_DECL WorldSession
         void handleGMTicketCreateOpcode(WorldPacket& recvPacket);
         void handleGMTicketUpdateOpcode(WorldPacket& recvPacket);
         void handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/);
+        void handleGMSurveySubmitOpcode(WorldPacket& recvPacket);
+        void handleReportLag(WorldPacket& recvPacket);
         void handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/);
         void handleGMTicketSystemStatusOpcode(WorldPacket& /*recvPacket*/);
         void handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPacket*/);
@@ -488,6 +516,16 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ItemHandler.cpp
+#if VERSION_STRING >= WotLK
+    public:
+        void sendRefundInfo(uint64_t guid);
+
+    protected:
+        void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
+        void handleItemRefundRequestOpcode(WorldPacket& recvPacket);
+#endif
+        void handleSwapItemOpcode(WorldPacket& recvPacket);
+
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ItemHandler.Legacy.cpp
@@ -753,52 +791,22 @@ class SERVER_DECL WorldSession
         ////////////////////////////////////UNSORTED BELOW THIS LINE///////////////////////////////
 
         // Login screen opcodes (CharacterHandler.cpp):
-        void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
-        void handleCharDeleteOpcode(WorldPacket& recvPacket);
-        uint8_t deleteCharacter(WoWGuid guid);
-        void handleCharCreateOpcode(WorldPacket& recvPacket);
-        void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         
-        void handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
+        
+        
+        
+        
+        
+        
 
         // Authentification and misc opcodes (MiscHandler.cpp):
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
 
-        void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
+        
 
         //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
-
-        // Lag report
-        void handleReportLag(WorldPacket& recvPacket);
-
-        void handleGMSurveySubmitOpcode(WorldPacket& recvPacket);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Group handler (GroupHandler.cpp)
-        
-        //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-        // Raid
-        
-        
-        
-        
-       
-        
-
 
         //LFG
         void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
@@ -821,7 +829,7 @@ class SERVER_DECL WorldSession
 
         // Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
-        void handleSwapItemOpcode(WorldPacket& recvPacket);
+        
         void HandleDestroyItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
@@ -839,10 +847,6 @@ class SERVER_DECL WorldSession
         void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
         void HandleInsertGemOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
-        void HandleItemRefundRequestOpcode(WorldPacket& recvPacket);
-#endif
 
         // Equipment set opcode
 #if VERSION_STRING > TBC
@@ -850,8 +854,6 @@ class SERVER_DECL WorldSession
         void HandleEquipmentSetSave(WorldPacket& recvPacket);
         void HandleEquipmentSetDelete(WorldPacket& recvPacket);
 #endif
-
-        
 
         // Spell opcodes (SpellHandler.cpp)
         void HandleUseItemOpcode(WorldPacket& recvPacket);
@@ -886,13 +888,6 @@ class SERVER_DECL WorldSession
         void handleChatIgnoredOpcode(WorldPacket& recvPacket);
         void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
-#if VERSION_STRING == Cata
-        void HandleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);
-        void HandleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);
-        void HandleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);
-        void HandleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);
-#endif
-
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
         
 #if VERSION_STRING != Cata
@@ -901,16 +896,7 @@ class SERVER_DECL WorldSession
         TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #endif
         // At Login
-        void handleCharRenameOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);
-        void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
-#endif
         
-
-        
-        
-
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
         void HandleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
         void HandleArenaTeamInviteAcceptOpcode(WorldPacket& recvPacket);
@@ -922,7 +908,6 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
         // VoicChat
@@ -933,8 +918,6 @@ class SERVER_DECL WorldSession
         
         // Misc
         void HandleMirrorImageOpcode(WorldPacket& recvPacket);
-        
-        void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
 
 
 #if VERSION_STRING == Cata        
@@ -960,10 +943,10 @@ class SERVER_DECL WorldSession
         void SendInventoryList(Creature* pCreature);
         
         void SendAccountDataTimes(uint32 mask);
-        void initGMMyMaster();
-        void sendServerStats();
+        
+        
 
-    void fullLogin(Player* player);
+    
         void SendMOTD();
 
         void SendLfgUpdatePlayer(const LfgUpdateData& updateData);
@@ -989,8 +972,6 @@ class SERVER_DECL WorldSession
         Player* _player;
         WorldSocket* _socket;
 
-        // Used to know race on login
-        void loadPlayerFromDBProc(QueryResultVector& results);
 
         // Preallocated buffers for movement handlers
         MovementInfo movement_info;
