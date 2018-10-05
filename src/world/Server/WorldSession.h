@@ -361,6 +361,34 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GroupHandler.cpp
+#if VERSION_STRING == Cata
+    public:
+        void sendEmptyGroupList(Player* player);
+
+    private:
+        void handleGroupInviteResponseOpcode(WorldPacket& recvPacket);
+        void handleGroupSetRolesOpcode(WorldPacket& recvPacket);
+        void handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket);
+#endif
+
+        void handleGroupInviteOpcode(WorldPacket& recvPacket);
+        void handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupUninviteOpcode(WorldPacket& recvPacket);
+        void handleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
+        void handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/);
+        void handleMinimapPingOpcode(WorldPacket& recvPacket);
+        void handleGroupSetLeaderOpcode(WorldPacket& recvPacket);
+        void handleLootMethodOpcode(WorldPacket& recvPacket);
+        void handleSetPlayerIconOpcode(WorldPacket& recvPacket);
+        void handlePartyMemberStatsOpcode(WorldPacket& recvPacket);
+        void handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/);
+        void handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/);
+        void handleGroupChangeSubGroup(WorldPacket& recvPacket);
+        void handleGroupAssistantLeader(WorldPacket& recvPacket);
+        void handleGroupPromote(WorldPacket& recvPacket);
+        void handleReadyCheckOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildHandler.cpp
@@ -747,43 +775,30 @@ class SERVER_DECL WorldSession
 
         void handleGMSurveySubmitOpcode(WorldPacket& recvPacket);
 
-        // Opcodes implemented in GroupHandler.cpp:
-#if VERSION_STRING == Cata
-    public:
-        void SendEmptyGroupList(Player* player);
-
-    private:
-        void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
-        void HandleGroupSetRolesOpcode(WorldPacket& recvPacket);
-        void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recvPacket);
-
-#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Group handler (GroupHandler.cpp)
-        void handleGroupInviteOpcode(WorldPacket& recvPacket);
+        
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
-        void handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/);
-        void handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/);
-        void handleGroupUninviteOpcode(WorldPacket& recvPacket);
-        void handleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
-        void handleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        void handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/);
-        void handleLootMethodOpcode(WorldPacket& recvPacket);
-        void handleMinimapPingOpcode(WorldPacket& recvPacket);
-        void handleSetPlayerIconOpcode(WorldPacket& recvPacket);
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 
         // Raid
-        void handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/);
-        void handleGroupChangeSubGroup(WorldPacket& recvPacket);
-        void handleGroupAssistantLeader(WorldPacket& recvPacket);
-        void handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/);
-        void handleReadyCheckOpcode(WorldPacket& recvPacket);
-        void handleGroupPromote(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
-        void HandleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket);
-#endif
+        
+        
+        
+        
+       
+        
+
 
         //LFG
         void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
@@ -893,7 +908,7 @@ class SERVER_DECL WorldSession
 #endif
         
 
-        void handlePartyMemberStatsOpcode(WorldPacket& recvPacket);
+        
         
 
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
