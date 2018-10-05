@@ -98,7 +98,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //public:
 //
-//    OldHilsbradInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+//    explicit OldHilsbradInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //    {
 //        m_numBarrel = 0;
 //

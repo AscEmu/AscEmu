@@ -31,7 +31,7 @@
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI);
-    ArmyOfTheDeadGhoulAI(Creature* c) : CreatureAIScript(c)
+    explicit ArmyOfTheDeadGhoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->m_canMove = false;
     }
@@ -63,7 +63,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 class ShadowFiendAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI);
-    ShadowFiendAI(Creature* c) : CreatureAIScript(c)
+    explicit ShadowFiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 
@@ -95,7 +95,7 @@ class ShadowFiendAI : public CreatureAIScript
 class MirrorImageAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI);
-    MirrorImageAI(Creature* c) : CreatureAIScript(c)
+    explicit MirrorImageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 
@@ -303,7 +303,7 @@ private:
 class FrostBroodVanquisherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI);
-    FrostBroodVanquisherAI(Creature* c) : CreatureAIScript(c)
+    explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
 

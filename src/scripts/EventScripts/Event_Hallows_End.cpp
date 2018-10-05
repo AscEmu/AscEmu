@@ -23,8 +23,7 @@ enum
 // Black Cat
 class BlackCat : public CreatureAIScript
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(BlackCat);
     explicit BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
@@ -70,8 +69,7 @@ static Movement::Location WaypointGoldshire[] =
 
 class HeadlessHorsemanAI : public CreatureAIScript
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanAI(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanAI);
     explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Scarlet Monastery Boss
@@ -82,8 +80,7 @@ public:
 const uint32 CN_HEADLESS_HORSEMAN_FIRE = 23537;
 class HeadlessHorsemanFireAI : public CreatureAIScript
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanFireAI(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanFireAI);
     explicit HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), 42971, true);
@@ -100,8 +97,7 @@ public:
 */
 class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadeOfTheHorsemanAI(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeOfTheHorsemanAI);
     explicit ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -182,8 +178,7 @@ public:
 
 class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanWispInvisAI(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI);
     explicit HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;

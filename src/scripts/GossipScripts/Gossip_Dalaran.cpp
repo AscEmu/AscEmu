@@ -33,7 +33,7 @@ class DedicationOfHonorAI : public GameObjectAIScript
 {
 public:
 
-    DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
+    explicit DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
 
     void OnActivate(Player* player)

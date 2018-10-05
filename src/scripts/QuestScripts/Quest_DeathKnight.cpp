@@ -137,7 +137,7 @@ class EyeofAcherusControl : public GameObjectAIScript
 {
 public:
 
-    EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
+    explicit EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
     static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 
     void OnActivate(Player* player) override
