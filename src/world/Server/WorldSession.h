@@ -358,6 +358,99 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildHandler.cpp
+        void handleGuildQuery(WorldPacket& recvPacket);
+        void handleInviteToGuild(WorldPacket& recvPacket);
+#if VERSION_STRING != Cata
+        void handleGuildInfo(WorldPacket& /*recvPacket*/);
+#else
+        void handleSaveGuildEmblem(WorldPacket& recvPacket);
+        void handleGuildAccept(WorldPacket& /*recvPacket*/);
+        void handleGuildDecline(WorldPacket& /*recvPacket*/);
+        void handleGuildRoster(WorldPacket& /*recvPacket*/);
+        void handleGuildLeave(WorldPacket& /*recvPacket*/);
+        void handleGuildDisband(WorldPacket& /*recvPacket*/);
+        void handleGuildLog(WorldPacket& /*recvPacket*/);
+        void handleGuildPermissions(WorldPacket& /*recvPacket*/);
+        void handleGuildBankBuyTab(WorldPacket& recvPacket);
+        void handleGuildBankLogQuery(WorldPacket& recvPacket);
+        void handleSetGuildBankText(WorldPacket& recvPacket);
+        void handleGuildLeader(WorldPacket& recvPacket);
+        void handleGuildMotd(WorldPacket& recvPacket);
+        void handleGuildAddRank(WorldPacket& recvPacket);
+        void handleSetGuildInfo(WorldPacket& recvPacket);
+        void handleGuildRemove(WorldPacket& recvPacket);
+        void handleGuildPromote(WorldPacket& recvPacket);
+        void handleGuildDemote(WorldPacket& recvPacket);
+        void handleGuildBankWithdrawMoney(WorldPacket& recvPacket);
+        void handleGuildBankDepositMoney(WorldPacket& recvPacket);
+        void handleGuildBankUpdateTab(WorldPacket& recvPacket);
+        void handleGuildBankSwapItems(WorldPacket& recvPacket);
+        void handleGuildBankQueryTab(WorldPacket& recvPacket);
+        void handleGuildBankerActivate(WorldPacket& recvPacket);
+        void handleGuildSetRank(WorldPacket& recvPacket);
+
+        //\brief this was an MSG opcode on versions < Cata.
+        //       now it is split into CMSG and SMSG packets since cata.
+        void handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/);
+
+        //\brief this was two seperated opcodes on versions < Cata.
+        //       now it is one since cata.
+#if VERSION_STRING != Cata
+        void handleGuildSetPublicNote(WorldPacket& recvPacket);
+        void handleGuildSetOfficerNote(WorldPacket& recvPacket);
+#else
+        void handleGuildSetNoteOpcode(WorldPacket& recvPacket);
+#endif
+
+        //\brief this was an empty opcodes on versions < Cata.
+        //       now it has some content since cata.
+#if VERSION_STRING != Cata
+        void handleGuildDelRank(WorldPacket& /*recvPacket*/);
+#else
+        void handleGuildDelRank(WorldPacket& recvPacket);
+#endif
+
+        //\brief this was an MSG opcode on versions < Cata.
+        //       now it is split into CMSG and SMSG packets since cata.
+#if VERSION_STRING != Cata
+        void handleGuildBankQueryText(WorldPacket& recvPacket);
+#else
+        void handleQueryGuildBankTabText(WorldPacket& recvPacket);
+#endif
+
+        void handleCharterShowSignatures(WorldPacket& recvPacket);
+        void handleCharterOffer(WorldPacket& recvPacket);
+        void handleCharterSign(WorldPacket& recvPacket);
+        void handleCharterDecline(WorldPacket& recvPacket);
+        void handleCharterRename(WorldPacket& recvPacket);
+        void handleCharterTurnInCharter(WorldPacket& recvPacket);
+        void handleCharterQuery(WorldPacket& recvPacket);
+        void handleCharterBuy(WorldPacket& recvPacket);
+
+#if VERSION_STRING == Cata
+        // Guild
+        void handleGuildAssignRankOpcode(WorldPacket& recvPacket);
+        void handleGuildQueryRanksOpcode(WorldPacket& recvPacket);
+        void handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/);
+        void handleGuildQueryXPOpcode(WorldPacket& recvPacket);
+        void handleGuildRequestPartyState(WorldPacket& recvPacket);
+        void handleGuildRequestMaxDailyXP(WorldPacket& recvPacket);
+        void handleAutoDeclineGuildInvites(WorldPacket& recvPacket);
+        void handleGuildRewardsQueryOpcode(WorldPacket& recvPacket);
+        void handleGuildQueryNewsOpcode(WorldPacket& recvPacket);
+        void handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket);
+        void handleGuildSetGuildMaster(WorldPacket& recvPacket);
+
+        // GuildFinder
+        void handleGuildFinderAddRecruit(WorldPacket& recvPacket);
+        void handleGuildFinderBrowse(WorldPacket& recvPacket);
+        void handleGuildFinderDeclineRecruit(WorldPacket& recvPacket);
+        void handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/);
+        void handleGuildFinderGetRecruits(WorldPacket& recvPacket);
+        void handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/);
+        void handleGuildFinderRemoveRecruit(WorldPacket& recvPacket);
+        void handleGuildFinderSetGuildPost(WorldPacket& recvPacket);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ItemHandler.cpp
@@ -386,6 +479,16 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MailHandler.cpp
+        void handleGetMailOpcode(WorldPacket& /*recvPacket*/);
+        void handleSendMailOpcode(WorldPacket& recvPacket);
+        void handleTakeMoneyOpcode(WorldPacket& recvPacket);
+        void handleTakeItemOpcode(WorldPacket& recvPacket);
+        void handleMarkAsReadOpcode(WorldPacket& recvPacket);
+        void handleReturnToSenderOpcode(WorldPacket& recvPacket);
+        void handleMailDeleteOpcode(WorldPacket& recvPacket);
+        void handleItemTextQueryOpcode(WorldPacket& recvPacket);
+        void handleMailTimeOpcode(WorldPacket& /*recvPacket*/);
+        void handleMailCreateTextItemOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
@@ -693,18 +796,6 @@ class SERVER_DECL WorldSession
         void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
 #endif
 
-        // Mail opcodes
-        void handleGetMailOpcode(WorldPacket& /*recvPacket*/);
-        void handleSendMailOpcode(WorldPacket& recvPacket);
-        void handleTakeMoneyOpcode(WorldPacket& recvPacket);
-        void handleTakeItemOpcode(WorldPacket& recvPacket);
-        void handleMarkAsReadOpcode(WorldPacket& recvPacket);
-        void handleReturnToSenderOpcode(WorldPacket& recvPacket);
-        void handleMailDeleteOpcode(WorldPacket& recvPacket);
-        void handleItemTextQueryOpcode(WorldPacket& recvPacket);
-        void handleMailTimeOpcode(WorldPacket& /*recvPacket*/);
-        void handleMailCreateTextItemOpcode(WorldPacket& recvPacket);
-
         // Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
         void handleSwapItemOpcode(WorldPacket& recvPacket);
@@ -771,107 +862,10 @@ class SERVER_DECL WorldSession
         void handleReportSpamOpcode(WorldPacket& recvPacket);
         void handleChatIgnoredOpcode(WorldPacket& recvPacket);
         void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
-        
-        // Guild
-        void handleGuildQuery(WorldPacket& recvPacket);
-        void handleInviteToGuild(WorldPacket& recvPacket);
-        void handleSaveGuildEmblem(WorldPacket& recvPacket);
-        void handleGuildAccept(WorldPacket& /*recvPacket*/);
-        void handleGuildDecline(WorldPacket& /*recvPacket*/);
-        void handleGuildRoster(WorldPacket& /*recvPacket*/);
-        void handleGuildLeave(WorldPacket& /*recvPacket*/);
-        void handleGuildDisband(WorldPacket& /*recvPacket*/);
-        void handleGuildLog(WorldPacket& /*recvPacket*/);
-        void handleGuildPermissions(WorldPacket& /*recvPacket*/);
-        void handleGuildBankBuyTab(WorldPacket& recvPacket);
-        void handleGuildBankLogQuery(WorldPacket& recvPacket);
-        void handleSetGuildBankText(WorldPacket& recvPacket);
-        void handleGuildLeader(WorldPacket& recvPacket);
-        void handleGuildMotd(WorldPacket& recvPacket);
-        void handleGuildAddRank(WorldPacket& recvPacket);
-        void handleSetGuildInfo(WorldPacket& recvPacket);
-        void handleGuildRemove(WorldPacket& recvPacket);
-        void handleGuildPromote(WorldPacket& recvPacket);
-        void handleGuildDemote(WorldPacket& recvPacket);
-        void handleGuildBankWithdrawMoney(WorldPacket& recvPacket);
-        void handleGuildBankDepositMoney(WorldPacket& recvPacket);
-        void handleGuildBankUpdateTab(WorldPacket& recvPacket);
-        void handleGuildBankSwapItems(WorldPacket& recvPacket);
-        void handleGuildBankQueryTab(WorldPacket& recvPacket);
-        void handleGuildBankerActivate(WorldPacket& recvPacket);
-        void handleGuildSetRank(WorldPacket& recvPacket);
 
-        //\brief this was an MSG opcode on versions < Cata.
-        //       now it is split into CMSG and SMSG packets since cata.
-        void handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/);
-
-    //\brief this was two seperated opcodes on versions < Cata.
-    //       now it is one since cata.
-#if VERSION_STRING != Cata
-        void handleGuildSetPublicNote(WorldPacket& recvPacket);
-        void handleGuildSetOfficerNote(WorldPacket& recvPacket);
-#else
-        void handleGuildSetNoteOpcode(WorldPacket& recvPacket);
-#endif
-
-    //\brief this was an empty opcodes on versions < Cata.
-    //       now it has some content since cata.
-#if VERSION_STRING != Cata
-        void handleGuildDelRank(WorldPacket& /*recvPacket*/);
-#else
-        void handleGuildDelRank(WorldPacket& recvPacket);
-#endif
-
-    //\brief this was an MSG opcode on versions < Cata.
-    //       now it is split into CMSG and SMSG packets since cata.
-#if VERSION_STRING != Cata
-        void handleGuildBankQueryText(WorldPacket& recvPacket);
-#else
-        void handleQueryGuildBankTabText(WorldPacket& recvPacket);
-#endif
-
-        void handleCharterShowSignatures(WorldPacket& recvPacket);
-        void handleCharterOffer(WorldPacket& recvPacket);
-        void handleCharterSign(WorldPacket& recvPacket);
-        void handleCharterDecline(WorldPacket& recvPacket);
-        void handleCharterRename(WorldPacket& recvPacket);
-        void handleCharterTurnInCharter(WorldPacket& recvPacket);
-        void handleCharterQuery(WorldPacket& recvPacket);
-        void handleCharterBuy(WorldPacket& recvPacket);
-
-
-#if VERSION_STRING != Cata
-        //void HandleCreateGuild(WorldPacket& recvPacket);
-        void handleGuildInfo(WorldPacket& /*recvPacket*/);
-#else
     public:
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Guild
-        void HandleGuildAssignRankOpcode(WorldPacket& recvPacket);
         
-        void HandleGuildQueryRanksOpcode(WorldPacket& recvPacket);
-        
-        void HandleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/);
-        void HandleGuildQueryXPOpcode(WorldPacket& recvPacket);
-        void HandleGuildRequestPartyState(WorldPacket& recvPacket);
-        void HandleGuildRequestMaxDailyXP(WorldPacket& recvPacket);
-        void HandleAutoDeclineGuildInvites(WorldPacket& recvPacket);
-        void HandleGuildRewardsQueryOpcode(WorldPacket& recvPacket);
-        void HandleGuildQueryNewsOpcode(WorldPacket& recvPacket);
-        void HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket);
-        void HandleGuildSetGuildMaster(WorldPacket& recvPacket);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // GuildFinder
-        void HandleGuildFinderAddRecruit(WorldPacket& recvPacket);
-        void HandleGuildFinderBrowse(WorldPacket& recvPacket);
-        void HandleGuildFinderDeclineRecruit(WorldPacket& recvPacket);
-        void HandleGuildFinderGetApplications(WorldPacket& /*recvPacket*/);
-        void HandleGuildFinderGetRecruits(WorldPacket& recvPacket);
-        void HandleGuildFinderPostRequest(WorldPacket& /*recvPacket*/);
-        void HandleGuildFinderRemoveRecruit(WorldPacket& recvPacket);
-        void HandleGuildFinderSetGuildPost(WorldPacket& recvPacket);
 #endif
 
 #if VERSION_STRING == Cata
