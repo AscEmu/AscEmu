@@ -299,7 +299,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -399,15 +398,12 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         return;
     }
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
     CmsgCastSpell spellPacket;
-
     if (!spellPacket.deserialise(recvPacket))
         return;
 
@@ -452,6 +448,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = spellPacket.cast_count;
 
+#if VERSION_STRING == Cata
+    spell->m_glyphslot = spellPacket.glyphSlot;
+#endif
+
     // Some spell cast packets include more data
     if (spellPacket.flags & 0x02)
     {
@@ -488,9 +488,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     spell->prepare(&targets);
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -506,9 +504,7 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
         _player->interruptSpell(spellId, false);
     }
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -582,9 +578,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 
     _player->removeAllAurasById(spellId);
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -593,16 +587,13 @@ void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
 
     _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
     _player->interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
 }
-#endif
 
 void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 {
@@ -739,7 +730,6 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     spell->prepare(&targets);
 }
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleCancelTotem(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -755,9 +745,7 @@ void WorldSession::HandleCancelTotem(WorldPacket& recvPacket)
 
     _player->summonhandler.RemoveSummonFromSlot(totemSlot);
 }
-#endif
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -794,4 +782,3 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recvPacket)
     caster->SendMessageToSet(&data, true);
 #endif
 }
-#endif
