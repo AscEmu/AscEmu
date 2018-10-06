@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20180930-00_creature_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20181006-00_spell_custom_override";
 
 void Master::_OnSignal(int s)
 {
