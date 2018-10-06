@@ -261,7 +261,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
 void WorldSession::LogoutPlayer(bool Save)
 {
-    Player* pPlayer = GetPlayer();
+    Player* pPlayer = _player;
 
     if (_loggingOut)
         return;
@@ -394,7 +394,7 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->m_playerInfo->m_Group->Update();
 
         // Remove the "player locked" flag, to allow movement on next login
-        GetPlayer()->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+        _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         // Save Honor Points
         // _player->SaveHonorFields();
@@ -459,7 +459,7 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
 
 Player* WorldSession::GetPlayerOrThrow()
 {
-    Player* player = this->GetPlayer();
+    Player* player = this->_player;
     if (player == nullptr)
         throw AscEmu::Exception::PlayerNotFoundException();
 
@@ -775,13 +775,13 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 void WorldSession::HandleUnlearnTalents(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
-        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-    if (!GetPlayer()->HasGold(price))
+        uint32 price = _player->CalcTalentResetCost(_player->GetTalentResetTimes());
+    if (!_player->HasGold(price))
         return;
 
-    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-    GetPlayer()->ModGold(-(int32)price);
-    GetPlayer()->resetTalents();
+    _player->SetTalentResetTimes(_player->GetTalentResetTimes() + 1);
+    _player->ModGold(-(int32)price);
+    _player->resetTalents();
 }
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)

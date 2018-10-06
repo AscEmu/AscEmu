@@ -81,14 +81,14 @@ void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendGuildInvitePacket(GetPlayer()->GetSession(), srlPacket.name);
+    if (Guild* guild = _player->GetGuild())
+        guild->sendGuildInvitePacket(_player->GetSession(), srlPacket.name);
 }
 
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 {
-    if (const auto guild = GetPlayer()->GetGuild())
+    if (const auto guild = _player->GetGuild())
         SendPacket(SmsgGuildInfo(guild->getName(), guild->getCreatedDate(), guild->getMembersCount(), guild->getAccountCount()).serialise().get());
 }
 #endif
@@ -121,20 +121,20 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildAccept(WorldPacket& /*recvPacket*/)
 {
-    if (!GetPlayer()->getGuildId())
-        if (Guild* guild = sGuildMgr.getGuildById(GetPlayer()->GetGuildIdInvited()))
+    if (!_player->getGuildId())
+        if (Guild* guild = sGuildMgr.getGuildById(_player->GetGuildIdInvited()))
             guild->handleAcceptMember(this);
 }
 
 void WorldSession::handleGuildDecline(WorldPacket& /*recvPacket*/)
 {
-    GetPlayer()->SetGuildIdInvited(0);
-    GetPlayer()->setGuildId(0);
+    _player->SetGuildIdInvited(0);
+    _player->setGuildId(0);
 }
 
 void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRoster(this);
     else
         SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
@@ -142,25 +142,25 @@ void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleGuildLeave(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleLeaveMember(this);
 }
 
 void WorldSession::handleGuildDisband(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleDisband(this);
 }
 
 void WorldSession::handleGuildLog(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendEventLog(this);
 }
 
 void WorldSession::handleGuildPermissions(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendPermissions(this);
 }
 
@@ -170,7 +170,7 @@ void WorldSession::handleGuildBankBuyTab(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleBuyBankTab(this, srlPacket.tabId);
 }
 
@@ -180,7 +180,7 @@ void WorldSession::handleGuildBankLogQuery(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendBankLog(this, srlPacket.tabId);
 }
 
@@ -190,7 +190,7 @@ void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->setBankTabText(static_cast<uint8_t>(srlPacket.tabId), srlPacket.text);
 }
 
@@ -207,7 +207,7 @@ void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
         return;
     }
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetNewGuildMaster(this, targetPlayerInfo->name);
 }
 
@@ -217,7 +217,7 @@ void WorldSession::handleGuildMotd(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMOTD(this, srlPacket.message);
 }
 
@@ -227,7 +227,7 @@ void WorldSession::handleGuildAddRank(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleAddNewRank(this, srlPacket.name);
 }
 
@@ -237,7 +237,7 @@ void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetInfo(this, srlPacket.text);
 }
 
@@ -252,10 +252,10 @@ void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveMember(this, targetPlayerInfo->guid);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveMember(this, srlPacket.guid);
 
 #endif
@@ -272,10 +272,10 @@ void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, false);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, srlPacket.guid, false);
 
 #endif
@@ -292,10 +292,10 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, srlPacket.guid, true);
 #endif
 }
@@ -311,7 +311,7 @@ void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, true);
 }
 
@@ -325,7 +325,7 @@ void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, false);
 }
 #else
@@ -335,7 +335,7 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberNote(this, srlPacket.note, srlPacket.guid, srlPacket.isPublic);
 }
 #endif
@@ -343,7 +343,7 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveLowestRank(this);
 }
 #else
@@ -353,7 +353,7 @@ void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveRank(this, static_cast<uint8_t>(srlPacket.rankId));
 }
 #endif
@@ -364,7 +364,7 @@ void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleMemberWithdrawMoney(this, srlPacket.money);
 }
 
@@ -375,8 +375,8 @@ void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
         return;
 
     //\todo HasGold requires an uint32_t
-    if (srlPacket.money && GetPlayer()->HasGold(static_cast<uint32_t>(srlPacket.money)))
-        if (Guild* guild = GetPlayer()->GetGuild())
+    if (srlPacket.money && _player->HasGold(static_cast<uint32_t>(srlPacket.money)))
+        if (Guild* guild = _player->GetGuild())
             guild->handleMemberDepositMoney(this, srlPacket.money);
 }
 
@@ -387,13 +387,13 @@ void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)
         return;
 
     if (!srlPacket.tabName.empty() && !srlPacket.tabIcon.empty())
-        if (Guild* guild = GetPlayer()->GetGuild())
+        if (Guild* guild = _player->GetGuild())
             guild->handleSetBankTabInfo(this, srlPacket.slot, srlPacket.tabName, srlPacket.tabIcon);
 }
 
 void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
 {
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
     {
         recvPacket.rfinish();
@@ -405,9 +405,9 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
         return;
 
     if (srlPacket.bankToBank)
-        guild->swapItems(GetPlayer(), srlPacket.tabId, srlPacket.slotId, srlPacket.destTabId, srlPacket.destSlotId, srlPacket.splitedAmount);
+        guild->swapItems(_player, srlPacket.tabId, srlPacket.slotId, srlPacket.destTabId, srlPacket.destSlotId, srlPacket.splitedAmount);
     else
-        guild->swapItemsWithInventory(GetPlayer(), srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
+        guild->swapItemsWithInventory(_player, srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
 }
 
 #if VERSION_STRING != Cata
@@ -417,7 +417,7 @@ void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendBankTabText(this, srlPacket.tabId);
 }
 #else
@@ -427,7 +427,7 @@ void WorldSession::handleQueryGuildBankTabText(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendBankTabText(this, srlPacket.tabId);
 }
 #endif
@@ -438,7 +438,7 @@ void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
         return;
 
@@ -459,11 +459,11 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto gameObject = GetPlayer()->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
+    const auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
     if (gameObject == nullptr)
         return;
 
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
@@ -479,7 +479,7 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendMoneyInfo(this);
 }
 
@@ -489,7 +489,7 @@ void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetRankInfo(this, srlPacket.newRankId, srlPacket.rankName, srlPacket.newRights, srlPacket.moneyPerDay, srlPacket._rightsAndSlots);
 }
 
@@ -971,7 +971,7 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
         _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
 }
 
@@ -1115,7 +1115,7 @@ void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
 
     bool enabled = enable > 0 ? true : false;
 
-    GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
+    _player->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
 }
 
 void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
@@ -1149,7 +1149,7 @@ void WorldSession::handleGuildQueryNewsOpcode(WorldPacket& recvPacket)
 {
     recvPacket.read_skip<uint32_t>();
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendNewsUpdate(this);
 }
 
@@ -1180,7 +1180,7 @@ void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guid[7]);
     recvPacket.ReadByteSeq(guid[4]);
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleNewsSetSticky(this, newsId, isSticky);
 }
 
@@ -1192,7 +1192,7 @@ void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 
     const auto playerName = recvPacket.ReadString(nameLength);
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetNewGuildMaster(this, playerName);
 }
 
@@ -1200,7 +1200,7 @@ void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 // GuildFinder
 void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
 {
-    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow()).size() == 10)
+    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow()).size() == 10)
         return;
 
     uint32_t classRoles = 0;
@@ -1252,7 +1252,7 @@ void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
     if (!(guildInterests & ALL_INTERESTS) || guildInterests > ALL_INTERESTS)
         return;
 
-    MembershipRequest request = MembershipRequest(GetPlayer()->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
+    MembershipRequest request = MembershipRequest(_player->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
     sGuildFinderMgr.addMembershipRequest(guildLowGuid, request);
 }
 
@@ -1280,7 +1280,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
     if (playerLevel > worldConfig.player.playerLevelCap || playerLevel < 1)
         return;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
 
     LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
     LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeam());
@@ -1394,12 +1394,12 @@ void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
     if (!wowGuid.isPlayer())
         return;
 
-    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), GetPlayer()->getGuildId());
+    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), _player->getGuildId());
 }
 
 void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 {
-    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow());
+    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow());
     uint32_t applicationsCount = static_cast<uint32_t>(applicatedGuilds.size());
     WorldPacket data(SMSG_LF_GUILD_MEMBERSHIP_LIST_UPDATED, 7 + 54 * applicationsCount);
     data.writeBits(applicationsCount, 20);
@@ -1457,9 +1457,9 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
         data.flushBits();
         data.append(bufferData);
     }
-    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(GetPlayer()->getGuidLow()));
+    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
 
-    GetPlayer()->SendPacket(&data);
+    _player->SendPacket(&data);
 }
 
 void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
@@ -1467,7 +1467,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
     uint32_t unkTime = 0;
     recvPacket >> unkTime;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 
@@ -1537,7 +1537,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 {
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 
@@ -1599,7 +1599,7 @@ void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guildGuid[2]);
     recvPacket.ReadByteSeq(guildGuid[7]);
 
-    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(GetPlayer()->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(_player->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
 }
 
 void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
@@ -1633,7 +1633,7 @@ void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
     if (!(level & ALL_GUILDFINDER_LEVELS) || level > ALL_GUILDFINDER_LEVELS)
         return;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 

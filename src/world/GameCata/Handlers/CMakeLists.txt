@@ -3,7 +3,6 @@
 set(PATH_PREFIX GameCata/Handlers)
 
 set(SRC_GAMECATA_HANDLER_FILES
-    ${PATH_PREFIX}/LfgHandler.cpp
     ${PATH_PREFIX}/SkillHandler.cpp
     ${PATH_PREFIX}/SpellHandler.cpp
 )

@@ -44,7 +44,7 @@ void WorldSession::handleSetFactionAtWarOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    GetPlayer()->SetAtWar(recv_packet.id, recv_packet.state == 1);
+    _player->SetAtWar(recv_packet.id, recv_packet.state == 1);
 }
 
 void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
@@ -53,7 +53,7 @@ void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    GetPlayer()->SetFactionInactive(recv_packet.id, recv_packet.state == 1);
+    _player->SetFactionInactive(recv_packet.id, recv_packet.state == 1);
 }
 
 void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
@@ -542,7 +542,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
 void WorldSession::initGMMyMaster()
 {
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
     if (ticket)
     {
         //Send status change to gm_sync_channel
@@ -564,16 +564,16 @@ void WorldSession::sendServerStats()
     if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
     {
 #ifdef WIN32
-        GetPlayer()->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-        GetPlayer()->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
-        GetPlayer()->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-        GetPlayer()->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+        _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
             MSG_COLOR_SEXGREEN, sWorld.getSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 
-        GetPlayer()->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 }
 

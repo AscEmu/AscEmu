@@ -101,7 +101,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
     uint32 itemMaxStack2 = (i2) ? ((i2->getOwner()->ItemStackCheat) ? 0x7fffffff : i2->getItemProperties()->MaxCount) : 0;
     if ((i1 && i1->wrapped_item_id) || (i2 && i2->wrapped_item_id) || (c > itemMaxStack1))
     {
-        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
+        _player->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
         return;
     }
 
@@ -124,7 +124,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
                 }
                 else
                 {
-                    GetPlayer()->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
+                    _player->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
                 }
             }
             else
@@ -135,7 +135,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
         }
         else
         {
-            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
+            _player->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
         }
     }
     else
@@ -212,7 +212,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 
     if (recv_packet.destSlot == recv_packet.srcSlot) // player trying to add item to the same slot
     {
-        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
         return;
     }
 
@@ -1505,8 +1505,8 @@ void WorldSession::SendInventoryList(Creature* unit)
     if (!unit->HasItems())
     {
         sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->getName().c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
-        Arcemu::Gossip::Menu::Complete(GetPlayer());
+        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", _player->getName().c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
+        Arcemu::Gossip::Menu::Complete(_player);
         return;
     }
 
@@ -1545,10 +1545,10 @@ void WorldSession::SendInventoryList(Creature* unit)
                     if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
                         continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !GetPlayer()->IsTeamHorde())
+                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !_player->IsTeamHorde())
                         continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
+                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !_player->IsTeamAlliance())
                         continue;
                 }
 

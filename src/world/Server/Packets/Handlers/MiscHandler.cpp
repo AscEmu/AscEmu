@@ -1124,7 +1124,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     }
 
     _player->ResurrectPlayer();
-    _player->setHealth(GetPlayer()->getMaxHealth() / 2);
+    _player->setHealth(_player->getMaxHealth() / 2);
 }
 
 #if VERSION_STRING == Cata
@@ -1487,7 +1487,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 
     if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->GetItemInterface()->GetItemCount(ammoId) == 0)
     {
-        sCheatLog.writefromsession(GetPlayer()->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
+        sCheatLog.writefromsession(_player->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
         _player->GetSession()->Disconnect();
         return;
     }
@@ -1895,7 +1895,7 @@ void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
     isAddonMessageFiltered = true;
 }
 
-void WorldSession::HandleReportOpcode(WorldPacket& recvPacket)
+void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT");
 
@@ -1942,7 +1942,7 @@ void WorldSession::HandleReportOpcode(WorldPacket& recvPacket)
     SendPacket(&data);
 }
 
-void WorldSession::HandleReportPlayerOpcode(WorldPacket& recvPacket)
+void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
 

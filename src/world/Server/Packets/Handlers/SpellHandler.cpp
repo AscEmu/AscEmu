@@ -448,8 +448,8 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    SpellCastTargets targets(recvPacket, GetPlayer()->getGuid());
-    Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+    SpellCastTargets targets(recvPacket, _player->getGuid());
+    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = spellPacket.cast_count;
 
     // Some spell cast packets include more data

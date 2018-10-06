@@ -16,8 +16,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/GroupHandler.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
    ${PATH_PREFIX}/LfgHandler.cpp
-   ${PATH_PREFIX}/LfgHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/LootHandler.cpp
    ${PATH_PREFIX}/ItemHandler.cpp
    ${PATH_PREFIX}/ItemHandler.Legacy.cpp

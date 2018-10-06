@@ -532,9 +532,38 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LfgHandler.cpp
+    public:
+        void sendLfgUpdateSearch(bool update);
+        void sendLfgDisabled();
+        void sendLfgOfferContinue(uint32_t dungeonEntry);
+        void sendLfgTeleportError(uint8_t error);
+        void sendLfgJoinResult(const LfgJoinResultData& joinData);
+        void sendLfgUpdatePlayer(const LfgUpdateData& updateData);
+        void sendLfgUpdateParty(const LfgUpdateData& updateData);
+        void sendLfgRoleChosen(uint64_t guid, uint8_t roles);
+        void sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck);
+        void sendLfgQueueStatus(uint32_t dungeon, int32_t waitTime, int32_t avgWaitTime, int32_t waitTimeTanks, int32_t waitTimeHealer, int32_t waitTimeDps, uint32_t queuedTime, uint8_t tanks, uint8_t healers, uint8_t dps);
+        void sendLfgPlayerReward(uint32_t RandomDungeonEntry, uint32_t DungeonEntry, uint8_t done, const LfgReward* reward, QuestProperties const* qReward);
+        void sendLfgBootPlayer(const LfgPlayerBoot* pBoot);
+        void sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal *pProp);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // LfgHandler.Legacy.cpp
+    protected:
+        void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING == Cata
+        void handleLfgLockInfoOpcode(WorldPacket& recvPacket);
+#endif
+#if VERSION_STRING > TBC
+        void handleLfgJoinOpcode(WorldPacket& recvPacket);
+        void handleLfgLeaveOpcode(WorldPacket& recvPacket);
+        void handleLfgSearchOpcode(WorldPacket& recvPacket);
+        void handleLfgSearchLeaveOpcode(WorldPacket& recvPacket);
+        void handleLfgProposalResultOpcode(WorldPacket& recvPacket);
+        void handleLfgSetRolesOpcode(WorldPacket& recvPacket);
+        void handleLfgSetBootVoteOpcode(WorldPacket& recvPacket);
+        void handleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket);
+        void handleLfgTeleportOpcode(WorldPacket& recvPacket);
+        void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LootHandler.cpp
@@ -630,12 +659,22 @@ class SERVER_DECL WorldSession
 
     //\todo move to seperated file
 #if VERSION_STRING == Cata
+    private:
         bool isAddonMessageFiltered;
         std::vector<std::string> mRegisteredAddonPrefixesVector;
+        typedef std::list<AddonEntry> AddonsList;
+        AddonsList m_addonList;
 
+    public:
         bool isAddonRegistered(const std::string& addon_name) const;
+        void readAddonInfoPacket(ByteBuffer& recvPacket);
+        void sendAddonInfo();
+
+    protected:
         void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);
         void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);
+        void handleReportOpcode(WorldPacket& recvPacket);
+        void handleReportPlayerOpcode(WorldPacket& recvPacket);
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -790,42 +829,11 @@ class SERVER_DECL WorldSession
 
         ////////////////////////////////////UNSORTED BELOW THIS LINE///////////////////////////////
 
-        // Login screen opcodes (CharacterHandler.cpp):
-        
-        
-        
-        
-        
-        
-        
 
         // Authentification and misc opcodes (MiscHandler.cpp):
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
 
-        
-
-        //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
-        //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);        
-
-        //LFG
-        void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
-        void HandleLfgLockInfoOpcode(WorldPacket& recvPacket);
-#endif
-
-#if VERSION_STRING > TBC
-        void HandleLfgJoinOpcode(WorldPacket& recvPacket);
-        void HandleLfgLeaveOpcode(WorldPacket& recvPacket);
-        void HandleLfrSearchOpcode(WorldPacket& recvPacket);
-        void HandleLfrLeaveOpcode(WorldPacket& recvPacket);
-        void HandleLfgProposalResultOpcode(WorldPacket& recvPacket);
-        void HandleLfgSetRolesOpcode(WorldPacket& recvPacket);
-        void HandleLfgSetBootVoteOpcode(WorldPacket& recvPacket);
-        void HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket);
-        void HandleLfgTeleportOpcode(WorldPacket& recvPacket);
-        void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
-#endif
 
         // Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
@@ -895,7 +903,6 @@ class SERVER_DECL WorldSession
 #else
         TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #endif
-        // At Login
         
         void HandleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
         void HandleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
@@ -920,48 +927,20 @@ class SERVER_DECL WorldSession
         void HandleMirrorImageOpcode(WorldPacket& recvPacket);
 
 
-#if VERSION_STRING == Cata        
-        // Reports
-        void HandleReportOpcode(WorldPacket& recvPacket);
-        void HandleReportPlayerOpcode(WorldPacket& recvPacket);
-
-    private:
-        typedef std::list<AddonEntry> AddonsList;
-        AddonsList m_addonList;
-
-
-    public:
-        void readAddonInfoPacket(ByteBuffer& recvPacket);
-        void sendAddonInfo();
-#endif
-
         void Unhandled(WorldPacket& recvPacket);
         void nothingToHandle(WorldPacket& recvPacket);
 
     public:
 
         void SendInventoryList(Creature* pCreature);
-        
         void SendAccountDataTimes(uint32 mask);
-        
-        
 
-    
         void SendMOTD();
 
-        void SendLfgUpdatePlayer(const LfgUpdateData& updateData);
-        void SendLfgUpdateParty(const LfgUpdateData& updateData);
-        void SendLfgRoleChosen(uint64 guid, uint8 roles);
-        void SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck);
-        void SendLfgUpdateSearch(bool update);
-        void SendLfgJoinResult(const LfgJoinResultData& joinData);
-        void SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgWaitTime, int32 waitTimeTanks, int32 waitTimeHealer, int32 waitTimeDps, uint32 queuedTime, uint8 tanks, uint8 healers, uint8 dps);
-        void SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, QuestProperties const* qReward);
-        void SendLfgBootPlayer(const LfgPlayerBoot* pBoot);
-        void SendLfgUpdateProposal(uint32 proposalId, const LfgProposal *pProp);
-        void SendLfgDisabled();
-        void SendLfgOfferContinue(uint32 dungeonEntry);
-        void SendLfgTeleportError(uint8 err);
+        
+        
+        
+        
 
         float m_wLevel; // Level of water the player is currently in
         bool m_bIsWLevelSet; // Does the m_wLevel variable contain up-to-date information about water level?

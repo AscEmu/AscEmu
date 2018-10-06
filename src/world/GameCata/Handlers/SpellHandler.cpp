@@ -44,10 +44,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->getName().c_str(), recvPacket.size());
 
     // Check does player have the spell
-    if (!GetPlayer()->HasSpell(spellId))
+    if (!_player->HasSpell(spellId))
     {
         sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", _player->getName().c_str());
         return;
     }
 
@@ -55,7 +55,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->getName().c_str());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", _player->getName().c_str());
         return;
     }
 
@@ -73,7 +73,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    SpellCastTargets targets(recvPacket, GetPlayer()->getGuid());
+    SpellCastTargets targets(recvPacket, _player->getGuid());
 
     // some anticheat stuff
     if (spellInfo->custom_self_cast_only)
@@ -86,7 +86,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         }
     }
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = castCount;
     spell->m_glyphslot = glyphSlot;
     spell->prepare(&targets);
@@ -291,7 +291,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
     //on original we automatically enter combat when creature got close to us
-    //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+    //	_player->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
     _player->interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
 }
 
