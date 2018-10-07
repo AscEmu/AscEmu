@@ -525,6 +525,7 @@ class SERVER_DECL WorldSession
         void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
         void handleItemRefundRequestOpcode(WorldPacket& recvPacket);
 #endif
+        void handleUseItemOpcode(WorldPacket& recvPacket);
         void handleSwapItemOpcode(WorldPacket& recvPacket);
         void handleSplitOpcode(WorldPacket& recvPacket);
         void handleSwapInvItemOpcode(WorldPacket& recvPacket);
@@ -792,6 +793,15 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SpellHandler.cpp
+        void handleSpellClick(WorldPacket& recvPacket);
+        void handleCastSpellOpcode(WorldPacket& recvPacket);
+        void handleCancelCastOpcode(WorldPacket& recvPacket);
+        void handleCancelAuraOpcode(WorldPacket& recvPacket);
+        void handleCancelChannellingOpcode(WorldPacket& recvPacket);
+        void handleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/);
+        void handlePetCastSpell(WorldPacket& recvPacket);
+        void handleCancelTotem(WorldPacket& recvPacket);
+        void handleUpdateProjectilePosition(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // TaxiHandler.cpp
@@ -850,45 +860,12 @@ class SERVER_DECL WorldSession
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
 
-
-        // Item opcodes (ItemHandler.cpp)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
         // Equipment set opcode
 #if VERSION_STRING > TBC
         void HandleEquipmentSetUse(WorldPacket& recvPacket);
         void HandleEquipmentSetSave(WorldPacket& recvPacket);
         void HandleEquipmentSetDelete(WorldPacket& recvPacket);
 #endif
-
-        // Spell opcodes (SpellHandler.cpp)
-        void HandleUseItemOpcode(WorldPacket& recvPacket);
-        void HandleCastSpellOpcode(WorldPacket& recvPacket);
-        void HandleSpellClick(WorldPacket& recvPacket);
-        void HandleCancelCastOpcode(WorldPacket& recvPacket);
-        void HandleCancelAuraOpcode(WorldPacket& recvPacket);
-        void HandleCancelChannellingOpcode(WorldPacket& recvPacket);
-        void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recvPacket);
-        void HandlePetCastSpell(WorldPacket& recvPacket);
-        void HandleCancelTotem(WorldPacket& recvPacket);
-        void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
 
         // Skill opcodes (SkillHandler.spp)
 #if VERSION_STRING == Cata
