@@ -62,7 +62,8 @@ bool WorldSession::isFloodProtectionTriggered()
         {
             if (worldConfig.chat.enableSendFloodProtectionMessage)
             {
-                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - UNIXTIME);
+                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.",
+                    floodTime - UNIXTIME);
             }
             return true;
         }
@@ -112,15 +113,15 @@ static const uint32_t LanguageSkills[NUM_LANGUAGES] =
     759,        // -                0x23
 };
 
-void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
+void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    CmsgMessageChat recv_packet;
-    if (!recv_packet.deserialise(recvData))
+    CmsgMessageChat srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto language = recv_packet.language;
+    auto language = srlPacket.language;
     auto player_can_speak_language = true;
 
     if (language != LANG_ADDON)
@@ -154,7 +155,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
     if (isSessionMuted() && isFloodProtectionTriggered())
         return;
 
-    switch (recv_packet.type)
+    switch (srlPacket.type)
     {
         case CHAT_MSG_EMOTE:
         case CHAT_MSG_SAY:
@@ -171,23 +172,23 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             break;
     }
 
-    if (int(recv_packet.message.find("|T")) > -1)
+    if (int(srlPacket.message.find("|T")) > -1)
     {
         //_player->BroadcastMessage("Don't even THINK about doing that again");
         return;
     }
 
-    if (!sHookInterface.OnChat(_player, recv_packet.type, recv_packet.language, recv_packet.message.c_str(), recv_packet.destination.c_str()))
+    if (!sHookInterface.OnChat(_player, srlPacket.type, srlPacket.language, srlPacket.message.c_str(), srlPacket.destination.c_str()))
         return;
 
-    if (g_chatFilter->isBlockedOrReplaceWord(recv_packet.message))
+    if (g_chatFilter->isBlockedOrReplaceWord(srlPacket.message))
     {
         SystemMessage("Your chat message was blocked by a server-side filter.");
         return;
     }
 
     auto is_gm_command = false;
-    switch (recv_packet.type)
+    switch (srlPacket.type)
     {
         case CHAT_MSG_SAY:
         case CHAT_MSG_PARTY:
@@ -198,22 +199,22 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
         case CHAT_MSG_GUILD:
         case CHAT_MSG_OFFICER:
         case CHAT_MSG_YELL:
-            is_gm_command = sChatHandler.ParseCommands(recv_packet.message.c_str(), this) > 0;
+            is_gm_command = sChatHandler.ParseCommands(srlPacket.message.c_str(), this) > 0;
             break;
     }
 
-    switch (recv_packet.type)
+    switch (srlPacket.type)
     {
         case CHAT_MSG_EMOTE:
             // TODO Verify "strange gestures" for xfaction
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, language, _player->getGuid(), recv_packet.message, _player->isGMFlagSet()).serialise().get(), true, true);
-            LogDetail("[emote] %s: %s", _player->getName().c_str(), recv_packet.message.c_str());
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true, true);
+            LogDetail("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             break;
         case CHAT_MSG_SAY:
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, language, _player->getGuid(), recv_packet.message, _player->isGMFlagSet()).serialise().get(), true);
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true);
             break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
@@ -224,11 +225,11 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            const auto send_packet = SmsgMessageChat(recv_packet.type, language, _player->getGuid(), recv_packet.message, _player->isGMFlagSet()).serialise();
+            const auto send_packet = SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise();
 
             if (const auto group = _player->GetGroup())
             {
-                if (recv_packet.type == CHAT_MSG_PARTY || recv_packet.type == CHAT_MSG_PARTY_LEADER
+                if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER
                     && group->isRaid())
                 {
                     if (const auto subgroup = group->GetSubGroup(_player->GetSubGroup()))
@@ -254,7 +255,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                         }
                     }
                 }
-                LogDetail("[party] %s: %s", _player->getName().c_str(), recv_packet.message.c_str());
+                LogDetail("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             }
         }
         break;
@@ -263,28 +264,28 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                 break;
 
             if (const auto guild = _player->GetGuild())
-                guild->broadcastToGuild(this, false, recv_packet.message, language);
+                guild->broadcastToGuild(this, false, srlPacket.message, language);
             break;
         case CHAT_MSG_OFFICER:
             if (is_gm_command)
                 break;
 
             if (const auto guild = _player->GetGuild())
-                guild->broadcastToGuild(this, true, recv_packet.message, language);
+                guild->broadcastToGuild(this, true, srlPacket.message, language);
             break;
         case CHAT_MSG_YELL:
         {
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, language, _player->getGuid(), recv_packet.message,
+            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, language, _player->getGuid(), srlPacket.message,
                 _player->isGMFlagSet());
             _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, language,
                 this);
         }
         break;
         case CHAT_MSG_WHISPER:
-            if (const auto player_cache = objmgr.GetPlayerCache(recv_packet.destination.c_str(), false))
+            if (const auto player_cache = objmgr.GetPlayerCache(srlPacket.destination.c_str(), false))
             {
                 const auto target_is_our_faction = _player->GetTeamInitial() == player_cache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM);
                 const auto target_is_gm_flagged = player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM);
@@ -306,15 +307,15 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     const auto we_are_being_ignored = player_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0;
                     if (we_are_being_ignored)
                     {
-                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, player_cache->GetGUID(), srlPacket.message, we_are_gm_flagged).serialise().get());
                         player_cache->DecRef();
                         break;
                     }
 
-                    player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                    player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
                     if (language != LANG_ADDON)
                         // TODO Verify should this be LANG_UNIVERSAL?
-                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), srlPacket.message, we_are_gm_flagged).serialise().get());
 
                     if (player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
                     {
@@ -334,23 +335,23 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             }
             else
             {
-                SendPacket(SmsgChatPlayerNotFound(recv_packet.destination).serialise().get());
+                SendPacket(SmsgChatPlayerNotFound(srlPacket.destination).serialise().get());
             }
             break;
         case CHAT_MSG_CHANNEL:
             if (is_gm_command)
                 break;
 
-            if (const auto channel = channelmgr.GetChannel(recv_packet.destination.c_str(), _player))
-                channel->Say(_player, recv_packet.message.c_str(), nullptr, false);
+            if (const auto channel = channelmgr.GetChannel(srlPacket.destination.c_str(), _player))
+                channel->Say(_player, srlPacket.message.c_str(), nullptr, false);
 
             break;
         case CHAT_MSG_AFK:
-            _player->SetAFKReason(recv_packet.message);
+            _player->SetAFKReason(srlPacket.message);
             _player->toggleAfk();
             break;
         case CHAT_MSG_DND:
-            _player->SetAFKReason(recv_packet.message);
+            _player->SetAFKReason(srlPacket.message);
             _player->toggleDnd();
             break;
         case CHAT_MSG_BATTLEGROUND:
@@ -361,7 +362,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             if (!_player->m_bg)
                 break;
 
-            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(recv_packet.type, language, _player->getGuid(), recv_packet.message, _player->isGMFlagSet()).serialise().get(), _player->GetTeam());
+            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), _player->GetTeam());
             break;
     }
 }
@@ -438,10 +439,10 @@ OpcodeToChatType opcodeToChatTypeList[MSG_OPCODE_COUNT] =
 
 uint8_t getMessageTypeForOpcode(uint16_t opcode)
 {
-    for (int i = 0; i < MSG_OPCODE_COUNT; ++i)
+    for (auto& i : opcodeToChatTypeList)
     {
-        if (opcodeToChatTypeList[i].opcode == opcode)
-            return opcodeToChatTypeList[i].chatType;
+        if (i.opcode == opcode)
+            return i.chatType;
     }
 
     return 0xFF;
@@ -457,7 +458,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     const char* pMisc = nullptr;
     const char* pMsg = nullptr;
 
-    uint8_t type = getMessageTypeForOpcode(recvPacket.GetOpcode());
+    const uint8_t type = getMessageTypeForOpcode(recvPacket.GetOpcode());
     if (type == 0xFF)
     {
         LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recvPacket.GetOpcode());
@@ -568,7 +569,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
+    if (g_chatFilter->isBlockedOrReplaceWord(msg))
     {
         SystemMessage("Your chat message was blocked by a server-side filter.");
         return;
@@ -654,7 +655,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 if (sgr)
                 {
                     _player->GetGroup()->Lock();
-                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
@@ -669,7 +670,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 {
                     sgr = _player->GetGroup()->GetSubGroup(i);
                     _player->GetGroup()->Lock();
-                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
@@ -793,7 +794,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         break;
         case CHAT_MSG_AFK:
         {
-            std::string reason = "";
+            std::string reason;
             recvPacket >> reason;
 
             _player->SetAFKReason(reason);
@@ -845,13 +846,13 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 #endif
 
 #if VERSION_STRING != Cata
-void WorldSession::handleTextEmoteOpcode(WorldPacket& recv_data)
+void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 {
     if (!_player->isAlive())
         return;
 
-    CmsgTextEmote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
+    CmsgTextEmote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (m_muted && m_muted >= static_cast<uint32_t>(UNIXTIME))
@@ -875,7 +876,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recv_data)
     uint32_t nameLength = 1;
     std::string unitName;
 
-    auto unit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
+    auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
     if (unit != nullptr)
     {
         if (unit->isPlayer())
@@ -888,7 +889,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recv_data)
         nameLength = static_cast<uint32_t>(unitName.length() + 1);
     }
 
-    auto emoteTextEntry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
+    auto emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote);
     if (emoteTextEntry)
     {
         sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), unit);
@@ -910,12 +911,12 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recv_data)
 
         _player->SendMessageToSet(SmsgEmote(emoteTextEntry->textid, _player->getGuid()).serialise().get(), true);
 
-        _player->SendMessageToSet(SmsgTextEmote(nameLength, unitName, recv_packet.text_emote, _player->getGuid(), recv_packet.unk).serialise().get(), true);
+        _player->SendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.text_emote, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 #endif
-        sQuestMgr.OnPlayerEmote(_player, recv_packet.text_emote, recv_packet.guid);
+        sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
     }
 }
 #else
@@ -924,8 +925,8 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     if (!_player->isAlive())
         return;
 
-    CmsgTextEmote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgTextEmote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (isSessionMuted() || isFloodProtectionTriggered())
@@ -934,28 +935,28 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     const char* unitName = " ";
     uint32_t nameLength = 1;
 
-    Unit* unit = _player->GetMapMgr()->GetUnit(recv_packet.guid);
+    Unit* unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
     if (unit)
     {
         if (unit->isPlayer())
         {
-            unitName = static_cast<Player*>(unit)->getName().c_str();
+            unitName = dynamic_cast<Player*>(unit)->getName().c_str();
             nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else if (unit->isPet())
         {
-            unitName = static_cast<Pet*>(unit)->GetName().c_str();
+            unitName = dynamic_cast<Pet*>(unit)->GetName().c_str();
             nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else
         {
-            Creature* p = static_cast<Creature*>(unit);
-            unitName = p->GetCreatureProperties()->Name.c_str();
+            auto creature = dynamic_cast<Creature*>(unit);
+            unitName = creature->GetCreatureProperties()->Name.c_str();
             nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
     }
 
-    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(recv_packet.text_emote);
+    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote);
     if (emoteTextEntry == nullptr)
         return;
 
@@ -981,42 +982,42 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         } break;
     }
 
-    _player->SendMessageToSet(AscEmu::Packets::SmsgTextEmote(nameLength, unitName, recv_packet.text_emote, _player->getGuid(), recv_packet.unk).serialise().get(), true);
+    _player->SendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.text_emote, 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 
-    sQuestMgr.OnPlayerEmote(_player, recv_packet.text_emote, recv_packet.guid);
+    sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
 }
 #endif
 
-void WorldSession::handleEmoteOpcode(WorldPacket& recv_data)
+void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
 {
-    CmsgEmote recv_packet;
-    if (!recv_packet.deserialise(recv_data))
+    CmsgEmote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (!_player->isAlive())
         return;
 
-    _player->Emote(static_cast<EmoteType>(recv_packet.emote));
+    _player->Emote(static_cast<EmoteType>(srlPacket.emote));
 
 #if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, recv_packet.emote, 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.emote, 0, 0);
 #endif
 
     uint64_t guid = _player->getGuid();
-    sQuestMgr.OnPlayerEmote(_player, recv_packet.emote, guid);
+    sQuestMgr.OnPlayerEmote(_player, srlPacket.emote, guid);
 }
 
 #if VERSION_STRING != Cata
 void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 {
-    CmsgComplaint recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgComplaint srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", recv_packet.spam_type, recv_packet.spammer_guid.getGuidLow(),
-        recv_packet.unk1, recv_packet.unk2, recv_packet.unk3, recv_packet.unk4, recv_packet.description.c_str());
+    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
+        srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description.c_str());
 
     SendPacket(SmsgComplainResult(0).serialise().get());
 }
@@ -1025,11 +1026,11 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING != Cata
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 {
-    CmsgChatIgnored recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgChatIgnored srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto player = objmgr.GetPlayer(recv_packet.guid.getGuidLow());
+    const auto player = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr || player->GetSession() == nullptr)
         return;
 
@@ -1063,7 +1064,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(playerGuid[7]);
     recvPacket.ReadByteSeq(playerGuid[2]);
 
-    Player* player = objmgr.GetPlayer((uint32_t)playerGuid);
+    const auto player = objmgr.GetPlayer(static_cast<uint32_t>(playerGuid));
     if (player == nullptr || player->GetSession() == nullptr)
         return;
 
@@ -1075,9 +1076,9 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)
 {
-    CmsgSetChannelWatch recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgSetChannelWatch srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->getName().c_str(), recv_packet.name.c_str());
+    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
 }

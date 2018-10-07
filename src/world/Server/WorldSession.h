@@ -365,6 +365,17 @@ class SERVER_DECL WorldSession
         
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChatHandler.cpp
+    public:
+        bool isSessionMuted();
+        bool isFloodProtectionTriggered();
+
+    protected:
+        void handleMessageChatOpcode(WorldPacket& recvPacket);
+        void handleTextEmoteOpcode(WorldPacket& recvPacket);
+        void handleEmoteOpcode(WorldPacket& recvPacket);
+        void handleReportSpamOpcode(WorldPacket& recvPacket);
+        void handleChatIgnoredOpcode(WorldPacket& recvPacket);
+        void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // CombatHandler.cpp
@@ -876,17 +887,6 @@ class SERVER_DECL WorldSession
         void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
         void HandleUnlearnTalents(WorldPacket& recvPacket);
 
-        // Chat opcodes (Chat.cpp)
-        bool isSessionMuted();
-        bool isFloodProtectionTriggered();
-
-        void handleMessageChatOpcode(WorldPacket& recvPacket);
-        void handleTextEmoteOpcode(WorldPacket& recvPacket);
-        void handleEmoteOpcode(WorldPacket& recvPacket);
-
-        void handleReportSpamOpcode(WorldPacket& recvPacket);
-        void handleChatIgnoredOpcode(WorldPacket& recvPacket);
-        void handleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
         
@@ -907,8 +907,6 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        
-
         // VoicChat
         // Zyres: this feature will be not implemented in the near future!
         //void HandleEnableMicrophoneOpcode(WorldPacket& recvPacket);
@@ -923,16 +921,9 @@ class SERVER_DECL WorldSession
         void nothingToHandle(WorldPacket& recvPacket);
 
     public:
-
         
         void SendAccountDataTimes(uint32 mask);
-
         void SendMOTD();
-
-        
-        
-        
-        
 
         float m_wLevel; // Level of water the player is currently in
         bool m_bIsWLevelSet; // Does the m_wLevel variable contain up-to-date information about water level?
