@@ -56,6 +56,7 @@ class SERVER_DECL Spell : public EventableObject
         virtual SpellCastResult canCast(bool tolerate);
 
         SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
+        bool canAttackCreatureType(Creature* target);
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;

@@ -95,9 +95,9 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setManaPerSecond(dbc_spell_entry->manaPerSecond);
             spellInfo.setManaPerSecondPerLevel(dbc_spell_entry->manaPerSecondPerLevel);
             spellInfo.setMaxstack(dbc_spell_entry->MaxStackAmount);
-            for (auto j = 0; j < MAX_SPELL_TOTEMS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
                 spellInfo.setTotem(dbc_spell_entry->Totem[j], j);
-            for (auto j = 0; j < MAX_SPELL_REAGENTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
             {
                 spellInfo.setReagent(dbc_spell_entry->Reagent[j], j);
                 spellInfo.setReagentCount(dbc_spell_entry->ReagentCount[j], j);
@@ -105,7 +105,7 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setEquippedItemClass(dbc_spell_entry->EquippedItemClass);
             spellInfo.setEquippedItemSubClass(dbc_spell_entry->EquippedItemSubClass);
             spellInfo.setEquippedItemInventoryTypeMask(dbc_spell_entry->EquippedItemInventoryTypeMask);
-            for (auto j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
                 spellInfo.setEffect(dbc_spell_entry->Effect[j], j);
                 spellInfo.setEffectDieSides(dbc_spell_entry->EffectDieSides[j], j);
@@ -127,7 +127,7 @@ void SpellCustomizations::LoadSpellInfoData()
                 spellInfo.setEffectTriggerSpell(dbc_spell_entry->EffectTriggerSpell[j], j);
                 spellInfo.setEffectPointsPerComboPoint(dbc_spell_entry->EffectPointsPerComboPoint[j], j);
 #if VERSION_STRING == WotLK
-                for (auto x = 0; x < 3; ++x)
+                for (uint8_t x = 0; x < 3; ++x)
                     spellInfo.setEffectSpellClassMask(dbc_spell_entry->EffectSpellClassMask[j][x], j, x);
 #endif
             }
@@ -140,19 +140,19 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setMaxTargetLevel(dbc_spell_entry->MaxTargetLevel);
             spellInfo.setSpellFamilyName(dbc_spell_entry->SpellFamilyName);
 #if VERSION_STRING == Classic
-            for (auto j = 0; j < 2; ++j)
+            for (uint8_t j = 0; j < 2; ++j)
                 spellInfo.setSpellFamilyFlags(dbc_spell_entry->SpellFamilyFlags[j], j);
 #else
-            for (auto j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
                 spellInfo.setSpellFamilyFlags(dbc_spell_entry->SpellFamilyFlags[j], j);
 #endif
             spellInfo.setMaxTargets(dbc_spell_entry->MaxTargets);
             spellInfo.setDmgClass(dbc_spell_entry->DmgClass);
             spellInfo.setPreventionType(dbc_spell_entry->PreventionType);
-            for (auto j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
                 spellInfo.setEffectDamageMultiplier(dbc_spell_entry->EffectDamageMultiplier[j], j);
 #if VERSION_STRING >= TBC
-            for (auto j = 0; j < MAX_SPELL_TOTEM_CATEGORIES; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_TOTEM_CATEGORIES; ++j)
                 spellInfo.setTotemCategory(dbc_spell_entry->TotemCategory[j], j);
             spellInfo.setRequiresAreaId(dbc_spell_entry->AreaGroupId);
 #endif
@@ -303,7 +303,7 @@ void SpellCustomizations::LoadSpellInfoData()
             // Data from SpellTotems.dbc
             if (dbc_spell_entry->SpellTotemsId && dbc_spell_entry->GetSpellTotems() != nullptr)
             {
-                for (auto j = 0; j < MAX_SPELL_TOTEMS; ++j)
+                for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
                 {
                     spellInfo.setTotemCategory(dbc_spell_entry->GetSpellTotems()->TotemCategory[j], j);
                     spellInfo.setTotem(dbc_spell_entry->GetSpellTotems()->Totem[j], j);
@@ -311,7 +311,7 @@ void SpellCustomizations::LoadSpellInfoData()
             }
 
             // Data from SpellEffect.dbc
-            for (auto j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
                 const auto spell_effect_entry = GetSpellEffectEntry(spell_id, SpellEffectIndex(j));
                 if (spell_effect_entry != nullptr)
@@ -333,7 +333,7 @@ void SpellCustomizations::LoadSpellInfoData()
                     spellInfo.setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
                     spellInfo.setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
                     spellInfo.setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
-                    for (auto x = 0; x < 3; ++x)
+                    for (uint8_t x = 0; x < 3; ++x)
                         spellInfo.setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
                     spellInfo.setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
                     spellInfo.setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);

@@ -1690,7 +1690,7 @@ bool Unit::canSee(Object* const obj)
             // Stealthed / invisible gameobjects
             if (gameObjectObj->inStealth || gameObjectObj->invisible)
             {
-                const auto ownerGuid = gameObjectObj->getCreatedByGuid();
+                ownerGuid = gameObjectObj->getCreatedByGuid();
                 // Unit can always see their own created gameobjects
                 if (getGuid() == ownerGuid)
                     return true;
@@ -1923,7 +1923,7 @@ bool Unit::isAttackReady(WeaponDamageType type) const
 
 void Unit::resetAttackTimers()
 {
-    for (int i = MELEE; i <= RANGED; ++i)
+    for (int8_t i = MELEE; i <= RANGED; ++i)
     {
         setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
     }
