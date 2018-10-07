@@ -18,8 +18,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/LfgHandler.cpp
    ${PATH_PREFIX}/LootHandler.cpp
    ${PATH_PREFIX}/ItemHandler.cpp
-   ${PATH_PREFIX}/ItemHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/MailHandler.cpp  
    ${PATH_PREFIX}/MiscHandler.cpp
    ${PATH_PREFIX}/NPCHandler.cpp
@@ -29,7 +27,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/QuestHandler.cpp
    ${PATH_PREFIX}/SocialHandler.cpp
    ${PATH_PREFIX}/SpellHandler.cpp
-   
    ${PATH_PREFIX}/TaxiHandler.cpp
    ${PATH_PREFIX}/TradeHandler.cpp
    ${PATH_PREFIX}/VehicleHandler.cpp

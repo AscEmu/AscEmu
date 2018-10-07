@@ -519,16 +519,32 @@ class SERVER_DECL WorldSession
 #if VERSION_STRING >= WotLK
     public:
         void sendRefundInfo(uint64_t guid);
+        void sendInventoryList(Creature* pCreature);
 
     protected:
         void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
         void handleItemRefundRequestOpcode(WorldPacket& recvPacket);
 #endif
         void handleSwapItemOpcode(WorldPacket& recvPacket);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // ItemHandler.Legacy.cpp
+        void handleSplitOpcode(WorldPacket& recvPacket);
+        void handleSwapInvItemOpcode(WorldPacket& recvPacket);
+        void handleDestroyItemOpcode(WorldPacket& recvPacket);
+        void handleAutoEquipItemOpcode(WorldPacket& recvPacket);
+        void handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
+        void handleItemQuerySingleOpcode(WorldPacket& recvPacket);
+        void handleBuyBackOpcode(WorldPacket& recvPacket);
+        void handleSellItemOpcode(WorldPacket& recvPacket);
+        void handleBuyItemInSlotOpcode(WorldPacket& recvPacket);
+        void handleBuyItemOpcode(WorldPacket& recvPacket);
+        void handleListInventoryOpcode(WorldPacket& recvPacket);
+        void handleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
+        void handleReadItemOpcode(WorldPacket& recvPacket);
+        void handleRepairItemOpcode(WorldPacket& recvPacket);
+        void handleAutoBankItemOpcode(WorldPacket& recvPacket);
+        void handleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
+        void handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
+        void handleInsertGemOpcode(WorldPacket& recvPacket);
+        void handleWrapItemOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LfgHandler.cpp
@@ -836,25 +852,24 @@ class SERVER_DECL WorldSession
 
 
         // Item opcodes (ItemHandler.cpp)
-        void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
         
-        void HandleDestroyItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
-        void HandleItemQuerySingleOpcode(WorldPacket& recvPacket);
-        void HandleSellItemOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemOpcode(WorldPacket& recvPacket);
-        void HandleListInventoryOpcode(WorldPacket& recvPacket);
-        void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
-        void HandleBuyBackOpcode(WorldPacket& recvPacket);
-        void HandleSplitOpcode(WorldPacket& recvPacket);
-        void HandleReadItemOpcode(WorldPacket& recvPacket);
-        void HandleRepairItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
-        void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
-        void HandleInsertGemOpcode(WorldPacket& recvPacket);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         // Equipment set opcode
 #if VERSION_STRING > TBC
@@ -915,7 +930,7 @@ class SERVER_DECL WorldSession
         void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
 
-        void HandleWrapItemOpcode(WorldPacket& recvPacket);
+        
 
         // VoicChat
         // Zyres: this feature will be not implemented in the near future!
@@ -932,7 +947,7 @@ class SERVER_DECL WorldSession
 
     public:
 
-        void SendInventoryList(Creature* pCreature);
+        
         void SendAccountDataTimes(uint32 mask);
 
         void SendMOTD();

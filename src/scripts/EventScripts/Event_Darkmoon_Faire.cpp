@@ -331,7 +331,7 @@ public:
         switch (Id)
         {
             case 1:
-                plr->GetSession()->SendInventoryList(pCreature);
+                plr->GetSession()->sendInventoryList(pCreature);
                 break;
             case 2:
             {
