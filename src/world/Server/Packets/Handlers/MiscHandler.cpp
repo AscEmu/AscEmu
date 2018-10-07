@@ -1995,3 +1995,99 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 }
 
 #endif
+
+void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
+{
+    if (!_player->IsInWorld())
+        return;
+
+    LOG_DEBUG("Received CMG_GET_MIRRORIMAGE_DATA");
+
+    uint64 GUID;
+
+    recv_data >> GUID;
+
+    Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
+    if (Image == nullptr)
+        return;					// ups no unit found with that GUID on the map. Spoofed packet?
+
+    if (Image->getCreatedByGuid() == 0)
+        return;
+
+    uint64 CasterGUID = Image->getCreatedByGuid();
+    Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
+
+    if (Caster == nullptr)
+        return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
+
+    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
+
+    data << uint64(GUID);
+    data << uint32(Caster->getDisplayId());
+    data << uint8(Caster->getRace());
+
+    if (Caster->isPlayer())
+    {
+        Player* pcaster = dynamic_cast<Player*>(Caster);
+
+        data << uint8(pcaster->getGender());
+        data << uint8(pcaster->getClass());
+
+        // facial features
+        data << uint8(pcaster->getSkinColor());
+        data << uint8(pcaster->getFace());
+        data << uint8(pcaster->getHairStyle());
+        data << uint8(pcaster->getHairColor());
+        data << uint8(pcaster->getFacialFeatures());
+
+        if (pcaster->IsInGuild())
+            data << uint32(pcaster->getGuildId());
+        else
+            data << uint32(0);
+
+        static const uint32 imageitemslots[] =
+        {
+            EQUIPMENT_SLOT_HEAD,
+            EQUIPMENT_SLOT_SHOULDERS,
+            EQUIPMENT_SLOT_BODY,
+            EQUIPMENT_SLOT_CHEST,
+            EQUIPMENT_SLOT_WAIST,
+            EQUIPMENT_SLOT_LEGS,
+            EQUIPMENT_SLOT_FEET,
+            EQUIPMENT_SLOT_WRISTS,
+            EQUIPMENT_SLOT_HANDS,
+            EQUIPMENT_SLOT_BACK,
+            EQUIPMENT_SLOT_TABARD
+        };
+
+        for (uint8 i = 0; i < 11; ++i)
+        {
+            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
+            if (item != nullptr)
+                data << uint32(item->getItemProperties()->DisplayInfoID);
+            else
+                data << uint32(0);
+        }
+    }
+    else // do not send player data for creatures
+    {
+        data << uint8(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+    }
+
+    SendPacket(&data);
+
+    LOG_DEBUG("Sent: SMSG_MIRRORIMAGE_DATA");
+}

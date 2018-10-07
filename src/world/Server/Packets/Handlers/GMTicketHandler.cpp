@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
 #include "Server/Packets/CmsgGmReportLag.h"
 #include "Server/Packets/CmsgGmSurveySubmit.h"
+#include <zlib.h>
 
 using namespace AscEmu::Packets;
 

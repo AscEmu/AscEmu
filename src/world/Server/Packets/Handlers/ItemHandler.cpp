@@ -29,6 +29,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgDestroyItem.h"
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgUseItem.h"
+#include "Management/Battleground/Battleground.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Storage/MySQLDataStore.hpp"
+#include "Units/Creatures/Pet.h"
+#include "Spell/SpellMgr.h"
+#include "Management/Container.h"
+#include "Map/MapMgr.h"
+#include "Server/Packets/CmsgListInventory.h"
+#include "Server/Packets/SmsgBuyItem.h"
+#include "Server/Packets/CmsgBuyItem.h"
+#include "Server/Packets/SmsgSellItem.h"
+#include "Server/Packets/CmsgSellItem.h"
+#include "Server/Packets/CmsgItemQuerySingle.h"
+#include "Spell/Definitions/AuraInterruptFlags.h"
 
 using namespace AscEmu::Packets;
 
@@ -243,7 +257,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            if (!_player->GetSummon() || _player->GetSummon()->getEntry() != (uint32_t)itemProto->ForcedPetId)
+            if (!_player->GetSummon() || _player->GetSummon()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
             {
                 _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
@@ -2721,3 +2735,135 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
     dst->m_isDirty = true;
     dst->SaveToDB(srlPacket.destBagSlot, srlPacket.destSlot, false, nullptr);
 }
+
+#if VERSION_STRING > TBC
+void WorldSession::handleEquipmentSetUse(WorldPacket& data)
+{
+    CHECK_INWORLD_RETURN
+    
+    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
+
+    WoWGuid guid;
+    int8_t SrcBagID;
+    uint8_t SrcSlotID;
+    uint8_t result = 0;
+
+    for (int8_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        guid.Clear();
+
+        data >> guid;
+        data >> SrcBagID;
+        data >> SrcSlotID;
+
+        const uint64_t ItemGUID = guid.GetOldGuid();
+
+        const auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
+        if (item == nullptr)
+        {
+            result = 1;
+            continue;
+        }
+
+        const int8_t destSlot = i;
+        const int8_t destBag = static_cast<int8_t>(INVALID_BACKPACK_SLOT);
+
+        if (SrcBagID == destBag && (SrcSlotID == destSlot))
+            continue;
+
+        auto dstslotitem = _player->GetItemInterface()->GetInventoryItem(destSlot);
+        if (dstslotitem == nullptr)
+        {
+            const int8_t equipError = _player->GetItemInterface()->CanEquipItemInSlot(destBag, destSlot, item->getItemProperties(), false, false);
+            if (equipError == INV_ERR_OK)
+            {
+                dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
+                const auto itemResult = _player->GetItemInterface()->SafeAddItem(item, destBag, destSlot);
+                if (itemResult != ADD_ITEM_RESULT_OK)
+                {
+                    const auto addItemResult = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
+                    if (!addItemResult)
+                    {
+                        LOG_ERROR("handleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->getName().c_str());
+                        result = 0;
+                    }
+                    else
+                        result = 1;
+                }
+            }
+            else
+            {
+                result = 1;
+            }
+
+        }
+        else
+        {
+            // There is something equipped so we need to swap
+            if (!_player->GetItemInterface()->SwapItems(INVALID_BACKPACK_SLOT, destSlot, SrcBagID, SrcSlotID))
+                result = 1;
+        }
+
+    }
+
+    _player->SendEquipmentSetUseResult(result);
+}
+
+void WorldSession::handleEquipmentSetSave(WorldPacket& data)
+{
+    CHECK_INWORLD_RETURN
+    
+    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
+
+    WoWGuid guid;
+
+    data >> guid;
+
+    uint32_t setGUID = guid.getGuidLowPart();
+
+    if (setGUID == 0)
+        setGUID = objmgr.GenerateEquipmentSetID();
+
+    auto equipmentSet = new Arcemu::EquipmentSet();
+
+    equipmentSet->SetGUID = setGUID;
+
+    data >> equipmentSet->SetID;
+    data >> equipmentSet->SetName;
+    data >> equipmentSet->IconName;
+
+    for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        guid.Clear();
+        data >> guid;
+        equipmentSet->ItemGUID[i] = guid.getGuidLowPart();
+    }
+
+    if (_player->GetItemInterface()->m_EquipmentSets.AddEquipmentSet(equipmentSet->SetGUID, equipmentSet))
+    {
+        LogDebugFlag(LF_OPCODE, "Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
+        _player->SendEquipmentSetSaved(equipmentSet->SetID, equipmentSet->SetGUID);
+    }
+    else
+    {
+        LogDebugFlag(LF_OPCODE, "Player %u couldn't store equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
+    }
+}
+
+void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
+{
+    CHECK_INWORLD_RETURN
+    
+    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");
+
+    WoWGuid guid;
+
+    data >> guid;
+
+    if (_player->GetItemInterface()->m_EquipmentSets.DeleteEquipmentSet(guid.getGuidLowPart()))
+        LOG_DEBUG("Equipmentset with GUID %u was successfully deleted.", guid.getGuidLowPart());
+    else
+        LOG_DEBUG("Equipmentset with GUID %u couldn't be deleted.", guid.getGuidLowPart());
+
+}
+#endif

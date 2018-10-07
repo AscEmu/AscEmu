@@ -261,6 +261,19 @@ class SERVER_DECL WorldSession
         void handleAreaTriggerOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // ArenaTeamHandler.cpp
+        void handleArenaTeamQueryOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/);
+        void handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/);
+        void handleArenaTeamLeaveOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamDisbandOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamPromoteOpcode(WorldPacket& recvPacket);
+        void handleArenaTeamRosterOpcode(WorldPacket& recvPacket);
+        void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // AuctionHandler.cpp
         void handleAuctionHelloOpcode(WorldPacket& recvPacket);
         void handleAuctionListItems(WorldPacket& recvPacket);
@@ -527,10 +540,10 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ItemHandler.cpp
-#if VERSION_STRING >= WotLK
     public:
-        void sendRefundInfo(uint64_t guid);
         void sendInventoryList(Creature* pCreature);
+#if VERSION_STRING >= WotLK
+        void sendRefundInfo(uint64_t guid);
 
     protected:
         void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
@@ -557,6 +570,11 @@ class SERVER_DECL WorldSession
         void handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
         void handleInsertGemOpcode(WorldPacket& recvPacket);
         void handleWrapItemOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING > TBC
+        void handleEquipmentSetUse(WorldPacket& recvPacket);
+        void handleEquipmentSetSave(WorldPacket& recvPacket);
+        void handleEquipmentSetDelete(WorldPacket& recvPacket);
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LfgHandler.cpp
@@ -705,6 +723,8 @@ class SERVER_DECL WorldSession
         void handleReportPlayerOpcode(WorldPacket& recvPacket);
 #endif
 
+        void HandleMirrorImageOpcode(WorldPacket& recvPacket);
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
@@ -727,6 +747,11 @@ class SERVER_DECL WorldSession
         void sendInnkeeperBind(Creature* creature);
         void sendTrainerList(Creature* creature);
         void sendStabledPetList(uint64_t npcguid);
+#if VERSION_STRING != Cata
+        uint8_t trainerGetSpellStatus(TrainerSpell* trainerSpell);
+#else
+        TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
+#endif
 
     protected:
         void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);
@@ -791,6 +816,17 @@ class SERVER_DECL WorldSession
         void handlePushQuestToPartyOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);
+#endif
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // SkillHandler.cpp
+        void handleUnlearnSkillOpcode(WorldPacket& recvPacket);
+        void handleLearnTalentOpcode(WorldPacket& recvPacket);
+        void handleUnlearnTalents(WorldPacket& recvPacket);
+#if VERSION_STRING != Cata
+        void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
+#else
+        void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -861,61 +897,17 @@ class SERVER_DECL WorldSession
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // OtherFiles
-
-
-        ////////////////////////////////////UNSORTED BELOW THIS LINE///////////////////////////////
-
-
-        // Authentification and misc opcodes (MiscHandler.cpp):
-        void HandlePingOpcode(WorldPacket& recvPacket);
-        void HandleAuthSessionOpcode(WorldPacket& recvPacket);
-
-        // Equipment set opcode
-#if VERSION_STRING > TBC
-        void HandleEquipmentSetUse(WorldPacket& recvPacket);
-        void HandleEquipmentSetSave(WorldPacket& recvPacket);
-        void HandleEquipmentSetDelete(WorldPacket& recvPacket);
-#endif
-
-        // Skill opcodes (SkillHandler.spp)
-#if VERSION_STRING == Cata
-        void HandleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
-#endif
-        //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
-        void HandleLearnTalentOpcode(WorldPacket& recvPacket);
-        void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
-        void HandleUnlearnTalents(WorldPacket& recvPacket);
-
-
-        void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
-        
-#if VERSION_STRING != Cata
-        uint8_t trainerGetSpellStatus(TrainerSpell* trainerSpell);
-#else
-        TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
-#endif
-        
-        void HandleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamInviteAcceptOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamInviteDenyOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamLeaveOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamDisbandOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamPromoteOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamQueryOpcode(WorldPacket& recvPacket);
-        void HandleArenaTeamRosterOpcode(WorldPacket& recvPacket);
-        void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
-
-        // VoicChat
+        // VoiceChatHandler.Legacy.cpp
         // Zyres: this feature will be not implemented in the near future!
         //void HandleEnableMicrophoneOpcode(WorldPacket& recvPacket);
         //void HandleVoiceChatQueryOpcode(WorldPacket& recvPacket);
         //void HandleChannelVoiceQueryOpcode(WorldPacket& recvPacket);
-        
-        // Misc
-        void HandleMirrorImageOpcode(WorldPacket& recvPacket);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // OtherFiles
+
+
+        ////////////////////////////////////UNSORTED BELOW THIS LINE///////////////////////////////
 
         void Unhandled(WorldPacket& recvPacket);
         void nothingToHandle(WorldPacket& recvPacket);

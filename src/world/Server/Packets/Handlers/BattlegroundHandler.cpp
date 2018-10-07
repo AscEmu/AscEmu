@@ -29,48 +29,6 @@ void WorldSession::handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/)
         _player->m_bg->SendPVPData(_player);
 }
 
-void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
-{
-#if VERSION_STRING != Classic
-    MsgInspectArenaTeams srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
-
-    LogDebugFlag(LF_OPCODE, "Received MSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
-
-    const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
-    if (player == nullptr)
-        return;
-
-    std::vector<ArenaTeamsList> arenaTeamList;
-    ArenaTeamsList tempList;
-
-    for (uint8_t offset = 0; offset < 3; ++offset)
-    {
-        const uint32_t teamId = player->getUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (offset * 7));
-        if (teamId > 0)
-        {
-            const auto team = objmgr.GetArenaTeamById(teamId);
-            if (team != nullptr)
-            {
-                tempList.playerGuid = player->getGuid();
-                tempList.teamType = team->m_type;
-                tempList.teamId = team->m_id;
-                tempList.teamRating = team->m_stat_rating;
-                tempList.playedWeek = team->m_stat_gamesplayedweek;
-                tempList.wonWeek = team->m_stat_gameswonweek;
-                tempList.playedSeason = team->m_stat_gamesplayedseason;
-
-                arenaTeamList.push_back(tempList);
-            }
-        }
-    }
-
-    if (!arenaTeamList.empty())
-        SendPacket(MsgInspectArenaTeams(0, arenaTeamList).serialise().get());
-#endif
-}
-
 void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 {
     MsgInspectHonorStats srlPacket;
