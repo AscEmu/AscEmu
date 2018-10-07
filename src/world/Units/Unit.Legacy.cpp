@@ -9008,7 +9008,7 @@ void Unit::AddAura(Aura* aur)
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster)
         {
-            pCaster->RemoveStealth();
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
             pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
             uint32 iceBlock[] =

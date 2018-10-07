@@ -144,6 +144,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgPageTextQuery.h
    ${PATH_PREFIX}/CmsgPetAction.h
    ${PATH_PREFIX}/CmsgPetCancelAura.h
+   ${PATH_PREFIX}/CmsgPetCastSpell.h
    ${PATH_PREFIX}/CmsgPetitionBuy.h
    ${PATH_PREFIX}/CmsgPetitionQuery.h
    ${PATH_PREFIX}/CmsgPetitionShowlist.h
@@ -213,6 +214,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgUpdateAccountData.h
+   ${PATH_PREFIX}/CmsgUseItem.h
    ${PATH_PREFIX}/CmsgWho.h
    ${PATH_PREFIX}/CmsgWhoIs.h
    ${PATH_PREFIX}/CmsgWorldTeleport.h
@@ -230,6 +232,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgListStabledPets.h
    ${PATH_PREFIX}/MsgMinimapPing.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
+   ${PATH_PREFIX}/MsgMoveTeleportAck.h
    ${PATH_PREFIX}/MsgPartyAssign.h
    ${PATH_PREFIX}/MsgPetitionDecline.h
    ${PATH_PREFIX}/MsgPetitionRename.h

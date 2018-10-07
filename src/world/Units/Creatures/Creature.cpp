@@ -2177,12 +2177,12 @@ DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByIte
 DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 #endif
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-        {
-            if (itr->itemid == itemid)
-                return itr->extended_cost;
-        }
-    return NULL;
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
+          return itr->extended_cost;
+    }
+    return nullptr;
 }
 
 std::vector<CreatureItem>::iterator Creature::GetSellItemBegin()
@@ -2195,6 +2195,11 @@ std::vector<CreatureItem>::iterator Creature::GetSellItemEnd()
     return m_SellItems->end();
 }
 
+std::vector<CreatureItem>* Creature::getSellItems()
+{
+    return m_SellItems;
+}
+
 size_t Creature::GetSellItemCount()
 {
     return m_SellItems->size();
@@ -2202,14 +2207,14 @@ size_t Creature::GetSellItemCount()
 
 void Creature::RemoveVendorItem(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
         {
-            if (itr->itemid == itemid)
-            {
-                m_SellItems->erase(itr);
-                return;
-            }
+            m_SellItems->erase(itr);
+            return;
         }
+    }
 }
 
 void Creature::PrepareForRemove()

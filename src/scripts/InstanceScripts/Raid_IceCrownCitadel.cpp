@@ -41,7 +41,6 @@ enum IceCrown_Encounters
     ICC_DATA_END
 };
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //IceCrownCitadel Instance
 class IceCrownCitadelScript : public InstanceScript
@@ -193,7 +192,7 @@ class ICCTeleporterAI : public GameObjectAIScript
 {
 public:
 
-    ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
+    explicit ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
 
     ~ICCTeleporterAI() {}
 
@@ -216,9 +215,7 @@ const uint32 SOUL_FEAST = 71203;       // Needs a script
 
 class LordMarrowgarAI : public CreatureAIScript
 {
-public:
-
-    static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
+    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI);
     explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!

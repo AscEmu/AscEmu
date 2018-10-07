@@ -16,26 +16,17 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/GroupHandler.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
    ${PATH_PREFIX}/LfgHandler.cpp
-   ${PATH_PREFIX}/LfgHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/LootHandler.cpp
    ${PATH_PREFIX}/ItemHandler.cpp
-   ${PATH_PREFIX}/ItemHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/MailHandler.cpp  
    ${PATH_PREFIX}/MiscHandler.cpp
-   ${PATH_PREFIX}/MiscHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/NPCHandler.cpp
    ${PATH_PREFIX}/MovementHandler.cpp
-   ${PATH_PREFIX}/MovementHandler.Legacy.cpp
-   
    ${PATH_PREFIX}/PetHandler.cpp
    ${PATH_PREFIX}/QueryHandler.cpp
    ${PATH_PREFIX}/QuestHandler.cpp
    ${PATH_PREFIX}/SocialHandler.cpp
    ${PATH_PREFIX}/SpellHandler.cpp
-   
    ${PATH_PREFIX}/TaxiHandler.cpp
    ${PATH_PREFIX}/TradeHandler.cpp
    ${PATH_PREFIX}/VehicleHandler.cpp

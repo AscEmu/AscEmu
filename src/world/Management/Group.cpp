@@ -406,7 +406,7 @@ void SubGroup::Disband()
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
 #if VERSION_STRING == Cata
-                    (*itr)->m_loggedInPlayer->GetSession()->SendEmptyGroupList((*itr)->m_loggedInPlayer);
+                    (*itr)->m_loggedInPlayer->GetSession()->sendEmptyGroupList((*itr)->m_loggedInPlayer);
 #else
                     (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
 #endif
@@ -518,7 +518,7 @@ void Group::RemovePlayer(PlayerInfo* info)
 
 #if VERSION_STRING == Cata
             pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR).serialise().get());
-            pPlayer->GetSession()->SendEmptyGroupList(pPlayer);
+            pPlayer->GetSession()->sendEmptyGroupList(pPlayer);
 #else
             data.Initialize(SMSG_PARTY_COMMAND_RESULT);
             data << uint32(2);

@@ -4318,7 +4318,7 @@ public:
         uint32 actionid = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (!crc && actionid < 9)
             return 0;
-        if (actionid == 1) plr->GetSession()->SendInventoryList(crc);
+        if (actionid == 1) plr->GetSession()->sendInventoryList(crc);
         else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
         else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
         else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
@@ -4337,7 +4337,7 @@ public:
             Player* plr = static_cast<Player*>(ptr);
         Creature* object = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (plr != NULL && object != NULL)
-            plr->GetSession()->SendInventoryList(object);
+            plr->GetSession()->sendInventoryList(object);
         return 0;
     }
 

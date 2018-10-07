@@ -313,3 +313,69 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
 
     BattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
 }
+
+#if VERSION_STRING == Cata
+void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
+{
+    uint8_t unk_type;
+    recvPacket >> unk_type;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", unk_type);
+
+    WorldPacket data(SMSG_RATED_BG_INFO, 72);
+    for (int i = 0; i < 18; ++i)
+    {
+        data << uint32_t(0);    // unknown
+    }
+
+    SendPacket(&data);
+}
+
+void WorldSession::handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+
+    WorldPacket data(SMSG_RATED_BG_STATS, 29);
+    data << uint32_t(0);    // unknown
+    data << uint8_t(3);     // unknown - always 3?... type?
+    data << uint32_t(0);    // unknown
+    data << uint32_t(0);    // unknown
+    data << uint32_t(0);    // unknown
+    data << uint32_t(0);    // unknown
+    data << uint32_t(0);    // unknown
+    data << uint32_t(0);    // unknown
+
+    SendPacket(&data);
+}
+
+void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+
+    WorldPacket packet(SMSG_REQUEST_PVP_REWARDS_RESPONSE, 24);
+    packet << uint32_t(0);    // unknown currency week cap conquest points
+    packet << uint32_t(0);    // unknown currency on week conquest points
+    packet << uint32_t(0);    // unknown currency week cap conquest arena
+    packet << uint32_t(0);    // unknown currency on week conquest random baattleground
+    packet << uint32_t(0);    // unknown currency on week conquest arena
+    packet << uint32_t(0);    // unknown currency week cap conquest points
+
+    SendPacket(&packet);
+}
+
+void WorldSession::handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+
+    WorldPacket data(SMSG_PVP_OPTIONS_ENABLED, 1);
+    data.writeBit(1);       // unknown 
+    data.writeBit(1);       // unknown wargames enabled
+    data.writeBit(1);       // unknown 
+    data.writeBit(1);       // unknown rated battlegrounds enabled
+    data.writeBit(1);       // unknown rated arenas enabled
+
+    data.flushBits();
+
+    SendPacket(&data);
+}
+#endif

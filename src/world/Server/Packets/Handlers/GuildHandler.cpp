@@ -58,11 +58,11 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
 {
-    CmsgGuildQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto guild = sGuildMgr.getGuildById(uint32_t(recv_packet.guildId));
+    const auto guild = sGuildMgr.getGuildById(uint32_t(srlPacket.guildId));
     if (guild == nullptr)
         return;
 
@@ -70,38 +70,38 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
     guild->handleQuery(this);
 #else
 
-    if (guild->isMember(recv_packet.playerGuid))
+    if (guild->isMember(srlPacket.playerGuid))
         guild->handleQuery(this);
 #endif
 }
 
 void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
 {
-    CmsgGuildInvite recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildInvite srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendGuildInvitePacket(GetPlayer()->GetSession(), recv_packet.name);
+    if (Guild* guild = _player->GetGuild())
+        guild->sendGuildInvitePacket(_player->GetSession(), srlPacket.name);
 }
 
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 {
-    if (const auto guild = GetPlayer()->GetGuild())
+    if (const auto guild = _player->GetGuild())
         SendPacket(SmsgGuildInfo(guild->getName(), guild->getCreatedDate(), guild->getMembersCount(), guild->getAccountCount()).serialise().get());
 }
 #endif
 
 void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
 {
-    MsgSaveGuildEmblem recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    MsgSaveGuildEmblem srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u",
-        _player->getName().c_str(), recv_packet.guid.getGuidLow(), recv_packet.emblemInfo.getStyle(), recv_packet.emblemInfo.getColor(),
-        recv_packet.emblemInfo.getBorderStyle(), recv_packet.emblemInfo.getBorderColor(), recv_packet.emblemInfo.getBackgroundColor());
+        _player->getName().c_str(), srlPacket.guid.getGuidLow(), srlPacket.emblemInfo.getStyle(), srlPacket.emblemInfo.getColor(),
+        srlPacket.emblemInfo.getBorderStyle(), srlPacket.emblemInfo.getBorderColor(), srlPacket.emblemInfo.getBackgroundColor());
 
     Guild* guild = _player->GetGuild();
     if (guild == nullptr)
@@ -116,25 +116,25 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
         return;
     }
 
-    guild->handleSetEmblem(this, recv_packet.emblemInfo);
+    guild->handleSetEmblem(this, srlPacket.emblemInfo);
 }
 
 void WorldSession::handleGuildAccept(WorldPacket& /*recvPacket*/)
 {
-    if (!GetPlayer()->getGuildId())
-        if (Guild* guild = sGuildMgr.getGuildById(GetPlayer()->GetGuildIdInvited()))
+    if (!_player->getGuildId())
+        if (Guild* guild = sGuildMgr.getGuildById(_player->GetGuildIdInvited()))
             guild->handleAcceptMember(this);
 }
 
 void WorldSession::handleGuildDecline(WorldPacket& /*recvPacket*/)
 {
-    GetPlayer()->SetGuildIdInvited(0);
-    GetPlayer()->setGuildId(0);
+    _player->SetGuildIdInvited(0);
+    _player->setGuildId(0);
 }
 
 void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRoster(this);
     else
         SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
@@ -142,328 +142,328 @@ void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleGuildLeave(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleLeaveMember(this);
 }
 
 void WorldSession::handleGuildDisband(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleDisband(this);
 }
 
 void WorldSession::handleGuildLog(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendEventLog(this);
 }
 
 void WorldSession::handleGuildPermissions(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendPermissions(this);
 }
 
 void WorldSession::handleGuildBankBuyTab(WorldPacket& recvPacket)
 {
-    CmsgGuildBankBuyTab recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankBuyTab srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleBuyBankTab(this, recv_packet.tabId);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleBuyBankTab(this, srlPacket.tabId);
 }
 
 void WorldSession::handleGuildBankLogQuery(WorldPacket& recvPacket)
 {
-    MsgGuildBankLogQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    MsgGuildBankLogQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankLog(this, recv_packet.tabId);
+    if (Guild* guild = _player->GetGuild())
+        guild->sendBankLog(this, srlPacket.tabId);
 }
 
 void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
 {
-    CmsgSetGuildBankText recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgSetGuildBankText srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->setBankTabText(static_cast<uint8_t>(recv_packet.tabId), recv_packet.text);
+    if (Guild* guild = _player->GetGuild())
+        guild->setBankTabText(static_cast<uint8_t>(srlPacket.tabId), srlPacket.text);
 }
 
 void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
 {
-    CmsgGuildLeader recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildLeader srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
     {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, recv_packet.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, srlPacket.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
         return;
     }
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetNewGuildMaster(this, targetPlayerInfo->name);
 }
 
 void WorldSession::handleGuildMotd(WorldPacket& recvPacket)
 {
-    CmsgGuildMotd recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildMotd srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMOTD(this, recv_packet.message);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetMOTD(this, srlPacket.message);
 }
 
 void WorldSession::handleGuildAddRank(WorldPacket& recvPacket)
 {
-    CmsgGuildAddRank recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildAddRank srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleAddNewRank(this, recv_packet.name);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleAddNewRank(this, srlPacket.name);
 }
 
 void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
 {
-    CmsgGuildInfoText recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildInfoText srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetInfo(this, recv_packet.text);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetInfo(this, srlPacket.text);
 }
 
 void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
 {
-    CmsgGuildRemove recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildRemove srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
 #if VERSION_STRING != Cata
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveMember(this, targetPlayerInfo->guid);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleRemoveMember(this, recv_packet.guid);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleRemoveMember(this, srlPacket.guid);
 
 #endif
 }
 
 void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
 {
-    CmsgGuildPromote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildPromote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
 #if VERSION_STRING != Cata
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, false);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleUpdateMemberRank(this, recv_packet.guid, false);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleUpdateMemberRank(this, srlPacket.guid, false);
 
 #endif
 }
 
 void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
 {
-    CmsgGuildDemote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildDemote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
 #if VERSION_STRING != Cata
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.name.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleUpdateMemberRank(this, targetPlayerInfo->guid, true);
 #else
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleUpdateMemberRank(this, recv_packet.guid, true);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleUpdateMemberRank(this, srlPacket.guid, true);
 #endif
 }
 
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
 {
-    CmsgGuildSetPublicNote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildSetPublicNote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.targetName.c_str());
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, true);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, true);
 }
 
 void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
 {
-    CmsgGuildSetOfficerNote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildSetOfficerNote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(recv_packet.targetName.c_str());
+    const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.targetName.c_str());
     if (targetPlayerInfo == nullptr)
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, targetPlayerInfo->guid, false);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, false);
 }
 #else
 void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 {
-    CmsgGuildSetNote recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildSetNote srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetMemberNote(this, recv_packet.note, recv_packet.guid, recv_packet.isPublic);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetMemberNote(this, srlPacket.note, srlPacket.guid, srlPacket.isPublic);
 }
 #endif
 
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleRemoveLowestRank(this);
 }
 #else
 void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
 {
-    CmsgGuildDelRank recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildDelRank srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleRemoveRank(this, static_cast<uint8_t>(recv_packet.rankId));
+    if (Guild* guild = _player->GetGuild())
+        guild->handleRemoveRank(this, static_cast<uint8_t>(srlPacket.rankId));
 }
 #endif
 
 void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
 {
-    CmsgGuildBankWithdrawMoney recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankWithdrawMoney srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleMemberWithdrawMoney(this, recv_packet.money);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleMemberWithdrawMoney(this, srlPacket.money);
 }
 
 void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
 {
-    CmsgGuildBankDepositMoney recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankDepositMoney srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
     //\todo HasGold requires an uint32_t
-    if (recv_packet.money && GetPlayer()->HasGold(static_cast<uint32_t>(recv_packet.money)))
-        if (Guild* guild = GetPlayer()->GetGuild())
-            guild->handleMemberDepositMoney(this, recv_packet.money);
+    if (srlPacket.money && _player->HasGold(static_cast<uint32_t>(srlPacket.money)))
+        if (Guild* guild = _player->GetGuild())
+            guild->handleMemberDepositMoney(this, srlPacket.money);
 }
 
 void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)
 {
-    CmsgGuildBankUpdateTab recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankUpdateTab srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!recv_packet.tabName.empty() && !recv_packet.tabIcon.empty())
-        if (Guild* guild = GetPlayer()->GetGuild())
-            guild->handleSetBankTabInfo(this, recv_packet.slot, recv_packet.tabName, recv_packet.tabIcon);
+    if (!srlPacket.tabName.empty() && !srlPacket.tabIcon.empty())
+        if (Guild* guild = _player->GetGuild())
+            guild->handleSetBankTabInfo(this, srlPacket.slot, srlPacket.tabName, srlPacket.tabIcon);
 }
 
 void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
 {
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
     {
         recvPacket.rfinish();
         return;
     }
 
-    CmsgGuildBankSwapItems recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankSwapItems srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (recv_packet.bankToBank)
-        guild->swapItems(GetPlayer(), recv_packet.tabId, recv_packet.slotId, recv_packet.destTabId, recv_packet.destSlotId, recv_packet.splitedAmount);
+    if (srlPacket.bankToBank)
+        guild->swapItems(_player, srlPacket.tabId, srlPacket.slotId, srlPacket.destTabId, srlPacket.destSlotId, srlPacket.splitedAmount);
     else
-        guild->swapItemsWithInventory(GetPlayer(), recv_packet.toChar, recv_packet.tabId, recv_packet.slotId, recv_packet.playerBag, recv_packet.playerSlotId, recv_packet.splitedAmount);
+        guild->swapItemsWithInventory(_player, srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
 }
 
 #if VERSION_STRING != Cata
 void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
 {
-    MsgQueryGuildBankText recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    MsgQueryGuildBankText srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankTabText(this, recv_packet.tabId);
+    if (Guild* guild = _player->GetGuild())
+        guild->sendBankTabText(this, srlPacket.tabId);
 }
 #else
 void WorldSession::handleQueryGuildBankTabText(WorldPacket& recvPacket)
 {
-    CmsgGuildBankQueryText recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankQueryText srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->sendBankTabText(this, recv_packet.tabId);
+    if (Guild* guild = _player->GetGuild())
+        guild->sendBankTabText(this, srlPacket.tabId);
 }
 #endif
 
 void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
 {
-    CmsgGuildBankQueryTab recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankQueryTab srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
         return;
 
-    GuildBankTab* pTab = guild->getBankTab(recv_packet.tabId);
+    GuildBankTab* pTab = guild->getBankTab(srlPacket.tabId);
     if (pTab == nullptr)
         return;
 
 #if VERSION_STRING != Cata
-    guild->sendBankList(this, recv_packet.tabId, false, true);
+    guild->sendBankList(this, srlPacket.tabId, false, true);
 #else
-    guild->sendBankList(this, recv_packet.tabId, true, false);
+    guild->sendBankList(this, srlPacket.tabId, true, false);
 #endif
 }
 
 void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
 {
-    CmsgGuildBankerActivate recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildBankerActivate srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto gameObject = GetPlayer()->GetMapMgr()->GetGameObject(recv_packet.guid.getGuidLow());
+    const auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
     if (gameObject == nullptr)
         return;
 
-    Guild* guild = GetPlayer()->GetGuild();
+    Guild* guild = _player->GetGuild();
     if (guild == nullptr)
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
@@ -479,40 +479,40 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/)
 {
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendMoneyInfo(this);
 }
 
 void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
 {
-    CmsgGuildSetRank recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgGuildSetRank srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Guild* guild = GetPlayer()->GetGuild())
-        guild->handleSetRankInfo(this, recv_packet.newRankId, recv_packet.rankName, recv_packet.newRights, recv_packet.moneyPerDay, recv_packet._rightsAndSlots);
+    if (Guild* guild = _player->GetGuild())
+        guild->handleSetRankInfo(this, srlPacket.newRankId, srlPacket.rankName, srlPacket.newRights, srlPacket.moneyPerDay, srlPacket._rightsAndSlots);
 }
 
 
 void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
 {
-    CmsgPetitionShowSignatures recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPetitionShowSignatures srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
-        _player->GetSession()->SendPacket(SmsgPetitionShowSignatures(recv_packet.itemGuid, charter->GetLeader(), charter->GetID(), charter->SignatureCount,
+    if (Charter* charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid))
+        _player->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->GetLeader(), charter->GetID(), charter->SignatureCount,
             charter->Slots, charter->Signatures).serialise().get());
 }
 
 void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
 {
-    CmsgOfferPetition recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgOfferPetition srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Player* pTarget = _player->GetMapMgr()->GetPlayer(recv_packet.playerGuid.getGuidLow());
-    Charter* pCharter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    Player* pTarget = _player->GetMapMgr()->GetPlayer(srlPacket.playerGuid.getGuidLow());
+    Charter* pCharter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter != nullptr)
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
@@ -531,7 +531,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(recv_packet.itemGuid, pCharter->GetLeader(), pCharter->GetID(), pCharter->SignatureCount,
+    pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->GetLeader(), pCharter->GetID(), pCharter->SignatureCount,
         pCharter->Slots, pCharter->Signatures).serialise().get());
 }
 
@@ -546,18 +546,18 @@ namespace PetitionSignResult
 
 void WorldSession::handleCharterSign(WorldPacket& recvPacket)
 {
-    CmsgPetitionSign recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPetitionSign srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
+    if (Charter* charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid))
     {
         for (uint32_t i = 0; i < charter->SignatureCount; ++i)
         {
             if (charter->Signatures[i] == _player->getGuid())
             {
                 SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
-                SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
+                SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
                 return;
             }
         }
@@ -574,18 +574,18 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         if (player == nullptr)
             return;
 
-        player->SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
-        SendPacket(SmsgPetitionSignResult(recv_packet.itemGuid, uint64_t(charter->GetLeader()), PetitionSignResult::OK).serialise().get());
+        player->SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
+        SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, uint64_t(charter->GetLeader()), PetitionSignResult::OK).serialise().get());
     }
 }
 
 void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
 {
-    MsgPetitionDecline recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    MsgPetitionDecline srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    Charter* charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (charter == nullptr)
         return;
 
@@ -596,16 +596,16 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
 
 void WorldSession::handleCharterRename(WorldPacket& recvPacket)
 {
-    MsgPetitionRename recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    MsgPetitionRename srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Charter* charter1 = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    Charter* charter1 = objmgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (charter1 == nullptr)
         return;
 
-    Guild* guild = sGuildMgr.getGuildByName(recv_packet.name);
-    Charter* charter = objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(charter1->CharterType));
+    Guild* guild = sGuildMgr.getGuildByName(srlPacket.name);
+    Charter* charter = objmgr.GetCharterByName(srlPacket.name, static_cast<CharterTypes>(charter1->CharterType));
     if (charter || guild)
     {
         SendNotification("That name is in use by another guild.");
@@ -613,19 +613,19 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     }
 
     charter = charter1;
-    charter->GuildName = recv_packet.name;
+    charter->GuildName = srlPacket.name;
     charter->SaveToDB();
 
-    SendPacket(MsgPetitionRename(recv_packet.itemGuid, recv_packet.name).serialise().get());
+    SendPacket(MsgPetitionRename(srlPacket.itemGuid, srlPacket.name).serialise().get());
 }
 
 void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 {
-    CmsgTurnInPetition recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgTurnInPetition srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid);
+    const auto charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (charter == nullptr)
         return;
 
@@ -691,11 +691,11 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         const auto arenaTeam = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
         arenaTeam->m_name = charter->GuildName;
-        arenaTeam->m_emblemColour = recv_packet.iconColor;
-        arenaTeam->m_emblemStyle = recv_packet.icon;
-        arenaTeam->m_borderColour = recv_packet.borderColor;
-        arenaTeam->m_borderStyle = recv_packet.border;
-        arenaTeam->m_backgroundColour = recv_packet.background;
+        arenaTeam->m_emblemColour = srlPacket.iconColor;
+        arenaTeam->m_emblemStyle = srlPacket.icon;
+        arenaTeam->m_borderColour = srlPacket.borderColor;
+        arenaTeam->m_borderStyle = srlPacket.border;
+        arenaTeam->m_backgroundColour = srlPacket.background;
         arenaTeam->m_leader = _player->getGuidLow();
         arenaTeam->m_stat_rating = 1500;
 
@@ -707,7 +707,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             if (PlayerInfo* info = objmgr.GetPlayerInfo(charter->Signatures[i]))
                 arenaTeam->AddMember(info);
 
-        _player->GetItemInterface()->SafeFullRemoveItemByGuid(recv_packet.itemGuid);
+        _player->GetItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
         _player->m_charters[charter->CharterType] = nullptr;
         charter->Destroy();
     }
@@ -717,22 +717,22 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
 void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
 {
-    CmsgPetitionQuery recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPetitionQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = objmgr.GetCharterByItemGuid(recv_packet.itemGuid))
-        SendPacket(SmsgPetitionQueryResponse(recv_packet.charterId, static_cast<uint64>(charter->LeaderGuid),
+    if (Charter* charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid))
+        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, static_cast<uint64>(charter->LeaderGuid),
             charter->GuildName, charter->CharterType, charter->Slots).serialise().get());
 }
 
 void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 {
-    CmsgPetitionBuy recv_packet;
-    if (!recv_packet.deserialise(recvPacket))
+    CmsgPetitionBuy srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Creature* creature = _player->GetMapMgr()->GetCreature(recv_packet.creatureGuid.getGuidLow());
+    Creature* creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLow());
     if (!creature)
     {
         Disconnect();
@@ -741,7 +741,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
     if (!creature->isTabardDesigner())
     {
-        const uint32_t arena_type = recv_packet.arenaIndex - 1;
+        const uint32_t arena_type = srlPacket.arenaIndex - 1;
         if (arena_type > 2)
             return;
 
@@ -751,20 +751,20 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        ArenaTeam* arenaTeam = objmgr.GetArenaTeamByName(recv_packet.name, arena_type);
+        ArenaTeam* arenaTeam = objmgr.GetArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
-        if (objmgr.GetCharterByName(recv_packet.name, static_cast<CharterTypes>(recv_packet.arenaIndex)))
+        if (objmgr.GetCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
-        if (_player->m_charters[recv_packet.arenaIndex])
+        if (_player->m_charters[srlPacket.arenaIndex])
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_ARENA_CHARTER));
             return;
@@ -805,14 +805,14 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             Item* item = objmgr.CreateItem(item_ids[arena_type], _player);
 
-            Charter* charter = objmgr.CreateCharter(_player->getGuidLow(), static_cast<CharterTypes>(recv_packet.arenaIndex));
+            Charter* charter = objmgr.CreateCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
                 return;
 
-            charter->GuildName = recv_packet.name;
+            charter->GuildName = srlPacket.name;
             charter->ItemGuid = item->getGuid();
 
-            charter->PetitionSignerCount = recv_packet.signerCount;
+            charter->PetitionSignerCount = srlPacket.signerCount;
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
@@ -831,7 +831,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
                 _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->ModGold(-static_cast<int32_t>(costs[arena_type]));
-            _player->m_charters[recv_packet.arenaIndex] = charter;
+            _player->m_charters[srlPacket.arenaIndex] = charter;
             _player->SaveToDB(false);
         }
     }
@@ -843,8 +843,8 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        Guild* guild = sGuildMgr.getGuildByName(recv_packet.name);
-        Charter* charter = objmgr.GetCharterByName(recv_packet.name, CHARTER_TYPE_GUILD);
+        Guild* guild = sGuildMgr.getGuildByName(srlPacket.name);
+        Charter* charter = objmgr.GetCharterByName(srlPacket.name, CHARTER_TYPE_GUILD);
         if (guild != nullptr || charter != nullptr)
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_GUILD_NAME_ALREADY_IN_USE));
@@ -875,7 +875,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
         else
         {
-            _player->PlaySoundToPlayer(recv_packet.creatureGuid, 6594);
+            _player->PlaySoundToPlayer(srlPacket.creatureGuid, 6594);
 
             Item* item = objmgr.CreateItem(CharterEntry::Guild, _player);
 
@@ -883,10 +883,10 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             if (item == nullptr || guildCharter == nullptr)
                 return;
 
-            guildCharter->GuildName = recv_packet.name;
+            guildCharter->GuildName = srlPacket.name;
             guildCharter->ItemGuid = item->getGuid();
 
-            guildCharter->PetitionSignerCount = recv_packet.signerCount;
+            guildCharter->PetitionSignerCount = srlPacket.signerCount;
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
@@ -912,90 +912,90 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 }
 
 #if VERSION_STRING == Cata
-void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid targetGuid;
     ObjectGuid setterGuid;
 
     uint32_t rankId;
-    recvData >> rankId;
+    recvPacket >> rankId;
 
-    targetGuid[1] = recvData.readBit();
-    targetGuid[7] = recvData.readBit();
+    targetGuid[1] = recvPacket.readBit();
+    targetGuid[7] = recvPacket.readBit();
 
-    setterGuid[4] = recvData.readBit();
-    setterGuid[2] = recvData.readBit();
+    setterGuid[4] = recvPacket.readBit();
+    setterGuid[2] = recvPacket.readBit();
 
-    targetGuid[4] = recvData.readBit();
-    targetGuid[5] = recvData.readBit();
-    targetGuid[6] = recvData.readBit();
+    targetGuid[4] = recvPacket.readBit();
+    targetGuid[5] = recvPacket.readBit();
+    targetGuid[6] = recvPacket.readBit();
 
-    setterGuid[1] = recvData.readBit();
-    setterGuid[7] = recvData.readBit();
+    setterGuid[1] = recvPacket.readBit();
+    setterGuid[7] = recvPacket.readBit();
 
-    targetGuid[2] = recvData.readBit();
-    targetGuid[3] = recvData.readBit();
-    targetGuid[0] = recvData.readBit();
+    targetGuid[2] = recvPacket.readBit();
+    targetGuid[3] = recvPacket.readBit();
+    targetGuid[0] = recvPacket.readBit();
 
-    setterGuid[6] = recvData.readBit();
-    setterGuid[3] = recvData.readBit();
-    setterGuid[0] = recvData.readBit();
-    setterGuid[5] = recvData.readBit();
+    setterGuid[6] = recvPacket.readBit();
+    setterGuid[3] = recvPacket.readBit();
+    setterGuid[0] = recvPacket.readBit();
+    setterGuid[5] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(targetGuid[0]);
+    recvPacket.ReadByteSeq(targetGuid[0]);
 
-    recvData.ReadByteSeq(setterGuid[1]);
-    recvData.ReadByteSeq(setterGuid[3]);
-    recvData.ReadByteSeq(setterGuid[5]);
+    recvPacket.ReadByteSeq(setterGuid[1]);
+    recvPacket.ReadByteSeq(setterGuid[3]);
+    recvPacket.ReadByteSeq(setterGuid[5]);
 
-    recvData.ReadByteSeq(targetGuid[7]);
-    recvData.ReadByteSeq(targetGuid[3]);
+    recvPacket.ReadByteSeq(targetGuid[7]);
+    recvPacket.ReadByteSeq(targetGuid[3]);
 
-    recvData.ReadByteSeq(setterGuid[0]);
+    recvPacket.ReadByteSeq(setterGuid[0]);
 
-    recvData.ReadByteSeq(targetGuid[1]);
+    recvPacket.ReadByteSeq(targetGuid[1]);
 
-    recvData.ReadByteSeq(setterGuid[6]);
+    recvPacket.ReadByteSeq(setterGuid[6]);
 
-    recvData.ReadByteSeq(targetGuid[2]);
-    recvData.ReadByteSeq(targetGuid[5]);
-    recvData.ReadByteSeq(targetGuid[4]);
+    recvPacket.ReadByteSeq(targetGuid[2]);
+    recvPacket.ReadByteSeq(targetGuid[5]);
+    recvPacket.ReadByteSeq(targetGuid[4]);
 
-    recvData.ReadByteSeq(setterGuid[2]);
-    recvData.ReadByteSeq(setterGuid[4]);
+    recvPacket.ReadByteSeq(setterGuid[2]);
+    recvPacket.ReadByteSeq(setterGuid[4]);
 
-    recvData.ReadByteSeq(targetGuid[6]);
+    recvPacket.ReadByteSeq(targetGuid[6]);
 
-    recvData.ReadByteSeq(setterGuid[7]);
+    recvPacket.ReadByteSeq(setterGuid[7]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
         _player->getName().c_str(), Arcemu::Util::GUID_LOPART(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
 }
 
-void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[2] = recvData.readBit();
-    guildGuid[3] = recvData.readBit();
-    guildGuid[0] = recvData.readBit();
-    guildGuid[6] = recvData.readBit();
-    guildGuid[4] = recvData.readBit();
-    guildGuid[7] = recvData.readBit();
-    guildGuid[5] = recvData.readBit();
-    guildGuid[1] = recvData.readBit();
+    guildGuid[2] = recvPacket.readBit();
+    guildGuid[3] = recvPacket.readBit();
+    guildGuid[0] = recvPacket.readBit();
+    guildGuid[6] = recvPacket.readBit();
+    guildGuid[4] = recvPacket.readBit();
+    guildGuid[7] = recvPacket.readBit();
+    guildGuid[5] = recvPacket.readBit();
+    guildGuid[1] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(guildGuid[3]);
-    recvData.ReadByteSeq(guildGuid[4]);
-    recvData.ReadByteSeq(guildGuid[5]);
-    recvData.ReadByteSeq(guildGuid[7]);
-    recvData.ReadByteSeq(guildGuid[1]);
-    recvData.ReadByteSeq(guildGuid[0]);
-    recvData.ReadByteSeq(guildGuid[6]);
-    recvData.ReadByteSeq(guildGuid[2]);
+    recvPacket.ReadByteSeq(guildGuid[3]);
+    recvPacket.ReadByteSeq(guildGuid[4]);
+    recvPacket.ReadByteSeq(guildGuid[5]);
+    recvPacket.ReadByteSeq(guildGuid[7]);
+    recvPacket.ReadByteSeq(guildGuid[1]);
+    recvPacket.ReadByteSeq(guildGuid[0]);
+    recvPacket.ReadByteSeq(guildGuid[6]);
+    recvPacket.ReadByteSeq(guildGuid[2]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->getName().c_str(), Arcemu::Util::GUID_LOPART(guildGuid));
 
@@ -1006,33 +1006,33 @@ void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildRequestChallengeUpdate(WorldPacket& /*recv_data*/)
+void WorldSession::handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/)
 {
     if (Guild* guild = _player->GetGuild())
         guild->handleGuildRequestChallengeUpdate(this);
 }
 
-void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[2] = recvData.readBit();
-    guildGuid[1] = recvData.readBit();
-    guildGuid[0] = recvData.readBit();
-    guildGuid[5] = recvData.readBit();
-    guildGuid[4] = recvData.readBit();
-    guildGuid[7] = recvData.readBit();
-    guildGuid[6] = recvData.readBit();
-    guildGuid[3] = recvData.readBit();
+    guildGuid[2] = recvPacket.readBit();
+    guildGuid[1] = recvPacket.readBit();
+    guildGuid[0] = recvPacket.readBit();
+    guildGuid[5] = recvPacket.readBit();
+    guildGuid[4] = recvPacket.readBit();
+    guildGuid[7] = recvPacket.readBit();
+    guildGuid[6] = recvPacket.readBit();
+    guildGuid[3] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(guildGuid[7]);
-    recvData.ReadByteSeq(guildGuid[2]);
-    recvData.ReadByteSeq(guildGuid[3]);
-    recvData.ReadByteSeq(guildGuid[6]);
-    recvData.ReadByteSeq(guildGuid[1]);
-    recvData.ReadByteSeq(guildGuid[5]);
-    recvData.ReadByteSeq(guildGuid[0]);
-    recvData.ReadByteSeq(guildGuid[4]);
+    recvPacket.ReadByteSeq(guildGuid[7]);
+    recvPacket.ReadByteSeq(guildGuid[2]);
+    recvPacket.ReadByteSeq(guildGuid[3]);
+    recvPacket.ReadByteSeq(guildGuid[6]);
+    recvPacket.ReadByteSeq(guildGuid[1]);
+    recvPacket.ReadByteSeq(guildGuid[5]);
+    recvPacket.ReadByteSeq(guildGuid[0]);
+    recvPacket.ReadByteSeq(guildGuid[4]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guildGuid);
 
@@ -1045,27 +1045,27 @@ void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildRequestPartyState(WorldPacket& recvData)
+void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[0] = recvData.readBit();
-    guildGuid[6] = recvData.readBit();
-    guildGuid[7] = recvData.readBit();
-    guildGuid[3] = recvData.readBit();
-    guildGuid[5] = recvData.readBit();
-    guildGuid[1] = recvData.readBit();
-    guildGuid[2] = recvData.readBit();
-    guildGuid[4] = recvData.readBit();
+    guildGuid[0] = recvPacket.readBit();
+    guildGuid[6] = recvPacket.readBit();
+    guildGuid[7] = recvPacket.readBit();
+    guildGuid[3] = recvPacket.readBit();
+    guildGuid[5] = recvPacket.readBit();
+    guildGuid[1] = recvPacket.readBit();
+    guildGuid[2] = recvPacket.readBit();
+    guildGuid[4] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(guildGuid[6]);
-    recvData.ReadByteSeq(guildGuid[3]);
-    recvData.ReadByteSeq(guildGuid[2]);
-    recvData.ReadByteSeq(guildGuid[1]);
-    recvData.ReadByteSeq(guildGuid[5]);
-    recvData.ReadByteSeq(guildGuid[0]);
-    recvData.ReadByteSeq(guildGuid[7]);
-    recvData.ReadByteSeq(guildGuid[4]);
+    recvPacket.ReadByteSeq(guildGuid[6]);
+    recvPacket.ReadByteSeq(guildGuid[3]);
+    recvPacket.ReadByteSeq(guildGuid[2]);
+    recvPacket.ReadByteSeq(guildGuid[1]);
+    recvPacket.ReadByteSeq(guildGuid[5]);
+    recvPacket.ReadByteSeq(guildGuid[0]);
+    recvPacket.ReadByteSeq(guildGuid[7]);
+    recvPacket.ReadByteSeq(guildGuid[4]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guildGuid);
 
@@ -1073,27 +1073,27 @@ void WorldSession::HandleGuildRequestPartyState(WorldPacket& recvData)
         guild->handleGuildPartyRequest(this);
 }
 
-void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recvData)
+void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
 {
     ObjectGuid guid;
 
-    guid[0] = recvData.readBit();
-    guid[3] = recvData.readBit();
-    guid[5] = recvData.readBit();
-    guid[1] = recvData.readBit();
-    guid[4] = recvData.readBit();
-    guid[6] = recvData.readBit();
-    guid[7] = recvData.readBit();
-    guid[2] = recvData.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[3] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[2] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(guid[7]);
-    recvData.ReadByteSeq(guid[4]);
-    recvData.ReadByteSeq(guid[3]);
-    recvData.ReadByteSeq(guid[5]);
-    recvData.ReadByteSeq(guid[1]);
-    recvData.ReadByteSeq(guid[2]);
-    recvData.ReadByteSeq(guid[6]);
-    recvData.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[4]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[0]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guid);
 
@@ -1108,19 +1108,19 @@ void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleAutoDeclineGuildInvites(WorldPacket& recvData)
+void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
 {
     uint8_t enable;
-    recvData >> enable;
+    recvPacket >> enable;
 
     bool enabled = enable > 0 ? true : false;
 
-    GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
+    _player->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
 }
 
-void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
 {
-    recvData.read_skip<uint32_t>();
+    recvPacket.read_skip<uint32_t>();
 
     if (sGuildMgr.getGuildById(_player->getGuildId()))
     {
@@ -1145,104 +1145,101 @@ void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildQueryNewsOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildQueryNewsOpcode(WorldPacket& recvPacket)
 {
-    recvData.read_skip<uint32_t>();
+    recvPacket.read_skip<uint32_t>();
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->sendNewsUpdate(this);
 }
 
-void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvData)
+void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
 {
     uint32_t newsId;
-    bool isSticky;
+    recvPacket >> newsId;
 
     ObjectGuid guid;
+    guid[2] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[3] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
 
-    recvData >> newsId;
+    bool isSticky = recvPacket.readBit();
 
-    guid[2] = recvData.readBit();
-    guid[4] = recvData.readBit();
-    guid[3] = recvData.readBit();
-    guid[0] = recvData.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
 
-    isSticky = recvData.readBit();
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[4]);
 
-    guid[6] = recvData.readBit();
-    guid[7] = recvData.readBit();
-    guid[1] = recvData.readBit();
-    guid[5] = recvData.readBit();
-
-    recvData.ReadByteSeq(guid[6]);
-    recvData.ReadByteSeq(guid[2]);
-    recvData.ReadByteSeq(guid[1]);
-    recvData.ReadByteSeq(guid[0]);
-    recvData.ReadByteSeq(guid[5]);
-    recvData.ReadByteSeq(guid[3]);
-    recvData.ReadByteSeq(guid[7]);
-    recvData.ReadByteSeq(guid[4]);
-
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleNewsSetSticky(this, newsId, isSticky);
 }
 
-void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recvData)
+void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 {
-    uint8_t nameLength = static_cast<uint8_t>(recvData.readBits(7));
+    const auto nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
 
-    recvData.readBit();
+    recvPacket.readBit();
 
-    std::string playerName = recvData.ReadString(nameLength);
+    const auto playerName = recvPacket.ReadString(nameLength);
 
-    if (Guild* guild = GetPlayer()->GetGuild())
+    if (Guild* guild = _player->GetGuild())
         guild->handleSetNewGuildMaster(this, playerName);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // GuildFinder
-void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recvData)
+void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
 {
-    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow()).size() == 10)
+    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow()).size() == 10)
         return;
 
     uint32_t classRoles = 0;
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
 
-    recvData >> classRoles;
-    recvData >> guildInterests;
-    recvData >> availability;
+    recvPacket >> classRoles;
+    recvPacket >> guildInterests;
+    recvPacket >> availability;
 
     ObjectGuid guid;
 
-    guid[3] = recvData.readBit();
-    guid[0] = recvData.readBit();
-    guid[6] = recvData.readBit();
-    guid[1] = recvData.readBit();
+    guid[3] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
 
-    uint16_t commentLength = static_cast<uint16_t>(recvData.readBits(11));
+    uint16_t commentLength = static_cast<uint16_t>(recvPacket.readBits(11));
 
-    guid[5] = recvData.readBit();
-    guid[4] = recvData.readBit();
-    guid[7] = recvData.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
 
-    uint8_t nameLength = static_cast<uint8_t>(recvData.readBits(7));
+    uint8_t nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
 
-    guid[2] = recvData.readBit();
+    guid[2] = recvPacket.readBit();
 
-    recvData.ReadByteSeq(guid[4]);
-    recvData.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[4]);
+    recvPacket.ReadByteSeq(guid[5]);
 
-    std::string comment = recvData.ReadString(commentLength);
-    std::string playerName = recvData.ReadString(nameLength);
+    std::string comment = recvPacket.ReadString(commentLength);
+    std::string playerName = recvPacket.ReadString(nameLength);
 
-    recvData.ReadByteSeq(guid[7]);
-    recvData.ReadByteSeq(guid[2]);
-    recvData.ReadByteSeq(guid[0]);
-    recvData.ReadByteSeq(guid[6]);
-    recvData.ReadByteSeq(guid[1]);
-    recvData.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[3]);
 
     uint32_t guildLowGuid = Arcemu::Util::GUID_LOPART(uint64_t(guid));
 
@@ -1255,21 +1252,21 @@ void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recvData)
     if (!(guildInterests & ALL_INTERESTS) || guildInterests > ALL_INTERESTS)
         return;
 
-    MembershipRequest request = MembershipRequest(GetPlayer()->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
+    MembershipRequest request = MembershipRequest(_player->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
     sGuildFinderMgr.addMembershipRequest(guildLowGuid, request);
 }
 
-void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
+void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
 {
     uint32_t classRoles = 0;
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
     uint32_t playerLevel = 0;
 
-    recv_data >> classRoles;
-    recv_data >> availability;
-    recv_data >> guildInterests;
-    recv_data >> playerLevel;
+    recvPacket >> classRoles;
+    recvPacket >> availability;
+    recvPacket >> guildInterests;
+    recvPacket >> playerLevel;
 
     if (!(classRoles & GUILDFINDER_ALL_ROLES) || classRoles > GUILDFINDER_ALL_ROLES)
         return;
@@ -1283,7 +1280,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
     if (playerLevel > worldConfig.player.playerLevelCap || playerLevel < 1)
         return;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
 
     LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
     LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeam());
@@ -1369,27 +1366,27 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
     player->SendPacket(&data);
 }
 
-void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
+void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
 {
     ObjectGuid playerGuid;
 
-    playerGuid[1] = recv_data.readBit();
-    playerGuid[4] = recv_data.readBit();
-    playerGuid[5] = recv_data.readBit();
-    playerGuid[2] = recv_data.readBit();
-    playerGuid[6] = recv_data.readBit();
-    playerGuid[7] = recv_data.readBit();
-    playerGuid[0] = recv_data.readBit();
-    playerGuid[3] = recv_data.readBit();
+    playerGuid[1] = recvPacket.readBit();
+    playerGuid[4] = recvPacket.readBit();
+    playerGuid[5] = recvPacket.readBit();
+    playerGuid[2] = recvPacket.readBit();
+    playerGuid[6] = recvPacket.readBit();
+    playerGuid[7] = recvPacket.readBit();
+    playerGuid[0] = recvPacket.readBit();
+    playerGuid[3] = recvPacket.readBit();
 
-    recv_data.ReadByteSeq(playerGuid[5]);
-    recv_data.ReadByteSeq(playerGuid[7]);
-    recv_data.ReadByteSeq(playerGuid[2]);
-    recv_data.ReadByteSeq(playerGuid[3]);
-    recv_data.ReadByteSeq(playerGuid[4]);
-    recv_data.ReadByteSeq(playerGuid[1]);
-    recv_data.ReadByteSeq(playerGuid[0]);
-    recv_data.ReadByteSeq(playerGuid[6]);
+    recvPacket.ReadByteSeq(playerGuid[5]);
+    recvPacket.ReadByteSeq(playerGuid[7]);
+    recvPacket.ReadByteSeq(playerGuid[2]);
+    recvPacket.ReadByteSeq(playerGuid[3]);
+    recvPacket.ReadByteSeq(playerGuid[4]);
+    recvPacket.ReadByteSeq(playerGuid[1]);
+    recvPacket.ReadByteSeq(playerGuid[0]);
+    recvPacket.ReadByteSeq(playerGuid[6]);
 
     WoWGuid wowGuid;
     wowGuid.Init(playerGuid);
@@ -1397,12 +1394,12 @@ void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
     if (!wowGuid.isPlayer())
         return;
 
-    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), GetPlayer()->getGuildId());
+    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), _player->getGuildId());
 }
 
-void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
+void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 {
-    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow());
+    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow());
     uint32_t applicationsCount = static_cast<uint32_t>(applicatedGuilds.size());
     WorldPacket data(SMSG_LF_GUILD_MEMBERSHIP_LIST_UPDATED, 7 + 54 * applicationsCount);
     data.writeBits(applicationsCount, 20);
@@ -1460,17 +1457,17 @@ void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
         data.flushBits();
         data.append(bufferData);
     }
-    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(GetPlayer()->getGuidLow()));
+    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
 
-    GetPlayer()->SendPacket(&data);
+    _player->SendPacket(&data);
 }
 
-void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
+void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
 {
     uint32_t unkTime = 0;
-    recv_data >> unkTime;
+    recvPacket >> unkTime;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 
@@ -1538,9 +1535,9 @@ void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
     player->SendPacket(&data);
 }
 
-void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
+void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 {
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 
@@ -1580,49 +1577,49 @@ void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleGuildFinderRemoveRecruit(WorldPacket& recv_data)
+void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[0] = recv_data.readBit();
-    guildGuid[4] = recv_data.readBit();
-    guildGuid[3] = recv_data.readBit();
-    guildGuid[5] = recv_data.readBit();
-    guildGuid[7] = recv_data.readBit();
-    guildGuid[6] = recv_data.readBit();
-    guildGuid[2] = recv_data.readBit();
-    guildGuid[1] = recv_data.readBit();
+    guildGuid[0] = recvPacket.readBit();
+    guildGuid[4] = recvPacket.readBit();
+    guildGuid[3] = recvPacket.readBit();
+    guildGuid[5] = recvPacket.readBit();
+    guildGuid[7] = recvPacket.readBit();
+    guildGuid[6] = recvPacket.readBit();
+    guildGuid[2] = recvPacket.readBit();
+    guildGuid[1] = recvPacket.readBit();
 
-    recv_data.ReadByteSeq(guildGuid[4]);
-    recv_data.ReadByteSeq(guildGuid[0]);
-    recv_data.ReadByteSeq(guildGuid[3]);
-    recv_data.ReadByteSeq(guildGuid[6]);
-    recv_data.ReadByteSeq(guildGuid[5]);
-    recv_data.ReadByteSeq(guildGuid[1]);
-    recv_data.ReadByteSeq(guildGuid[2]);
-    recv_data.ReadByteSeq(guildGuid[7]);
+    recvPacket.ReadByteSeq(guildGuid[4]);
+    recvPacket.ReadByteSeq(guildGuid[0]);
+    recvPacket.ReadByteSeq(guildGuid[3]);
+    recvPacket.ReadByteSeq(guildGuid[6]);
+    recvPacket.ReadByteSeq(guildGuid[5]);
+    recvPacket.ReadByteSeq(guildGuid[1]);
+    recvPacket.ReadByteSeq(guildGuid[2]);
+    recvPacket.ReadByteSeq(guildGuid[7]);
 
-    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(GetPlayer()->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(_player->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
 }
 
-void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
+void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
 {
     uint32_t classRoles = 0;
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
     uint32_t level = 0;
 
-    recv_data >> level;
-    recv_data >> availability;
-    recv_data >> guildInterests;
-    recv_data >> classRoles;
+    recvPacket >> level;
+    recvPacket >> availability;
+    recvPacket >> guildInterests;
+    recvPacket >> classRoles;
 
     if (level == 0)
         level = ANY_FINDER_LEVEL;
 
-    uint32_t length = recv_data.readBits(11);
-    bool listed = recv_data.readBit();
-    std::string comment = recv_data.ReadString(length);
+    uint32_t length = recvPacket.readBits(11);
+    bool listed = recvPacket.readBit();
+    std::string comment = recvPacket.ReadString(length);
 
     if (!(classRoles & GUILDFINDER_ALL_ROLES) || classRoles > GUILDFINDER_ALL_ROLES)
         return;
@@ -1636,7 +1633,7 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
     if (!(level & ALL_GUILDFINDER_LEVELS) || level > ALL_GUILDFINDER_LEVELS)
         return;
 
-    Player* player = GetPlayer();
+    Player* player = _player;
     if (!player->getGuildId())
         return;
 

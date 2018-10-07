@@ -367,7 +367,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::Vendor::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
+    Plr->GetSession()->sendInventoryList(static_cast<Creature*>(pObject));
 }
 
 //TRAINER
@@ -414,7 +414,7 @@ void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint3
     if (1 == Id)
         Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else
-        Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendInventoryList(static_cast<Creature*>(pObject));
 }
 
 // TAXIMASTER
@@ -480,7 +480,7 @@ void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uin
     if (1 == Id)
         Plr->GetSession()->sendInnkeeperBind(static_cast<Creature*>(pObject));
     else
-        Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
+        Plr->GetSession()->sendInventoryList(static_cast<Creature*>(pObject));
 }
 
 //BATTLE MASTER
@@ -566,7 +566,7 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
                 Plr->GetSession()->sendCharterRequest(static_cast<Creature*>(pObject));
             break;
         case 3:
-            Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
+            Plr->GetSession()->sendInventoryList(static_cast<Creature*>(pObject));
             break;
     }
 }

@@ -25,7 +25,7 @@
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
-    WyrmcultBlackwhelp(Creature* c) : CreatureAIScript(c) {}
+    explicit WyrmcultBlackwhelp(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

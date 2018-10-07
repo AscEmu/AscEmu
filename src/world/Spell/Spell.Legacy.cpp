@@ -980,8 +980,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
         if (i_caster == nullptr)
         {
-            if (p_caster != nullptr && m_timer > 0 && !m_triggeredSpell)
-                p_caster->delayMeleeAttackTimer(m_timer + 1000);
+            if (p_caster != nullptr && m_timer > 0 && !m_triggeredSpell && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS))
+                p_caster->resetAttackTimers();
             //p_caster->setAttackTimer(m_timer + 1000, false);
         }
 
@@ -1064,7 +1064,6 @@ void Spell::cancel()
 
                 if (m_timer > 0)
                 {
-                    p_caster->delayMeleeAttackTimer(-m_timer);
                     RemoveItems();
                 }
                 //				p_caster->setAttackTimer(1000, false);
@@ -1772,7 +1771,9 @@ void Spell::AddTime(uint32 type)
             {
                 //				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,attackTimeoutInterval,true);
                 // also add a new delay to offhand and main hand attacks to avoid cutting the cast short
-                p_caster->delayMeleeAttackTimer(delay);
+
+                // TODO: should spell cast time pushback reset swing timers again? -Appled
+                //p_caster->delayMeleeAttackTimer(delay);
             }
         }
         else if (GetSpellInfo()->getChannelInterruptFlags() != 48140)
@@ -1782,8 +1783,9 @@ void Spell::AddTime(uint32 type)
             m_timer -= delay;
             if (m_timer < 0)
                 m_timer = 0;
-            else if (p_caster != nullptr)
-                p_caster->delayMeleeAttackTimer(-delay);
+            //else if (p_caster != nullptr)
+                // TODO: should spell cast time pushback reset swing timers again? -Appled
+                //p_caster->delayMeleeAttackTimer(-delay);
 
             m_Delayed = true;
             if (m_timer > 0)

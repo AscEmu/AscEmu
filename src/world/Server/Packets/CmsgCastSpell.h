@@ -16,6 +16,7 @@ namespace AscEmu { namespace Packets
         uint32_t spell_id;
         uint8_t cast_count;
         uint8_t flags;
+        uint32_t glyphSlot;
 
         CmsgCastSpell() : CmsgCastSpell(0, 0, 0)
         {
@@ -37,12 +38,7 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= TBC
-            packet << spell_id << cast_count;
-#elif VERSION_STRING == WotLK
-            packet << cast_count << spell_id << flags;
-#endif
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
@@ -51,6 +47,8 @@ namespace AscEmu { namespace Packets
             packet >> spell_id >> cast_count;
 #elif VERSION_STRING == WotLK
             packet >> cast_count >> spell_id >> flags;
+#elif VERSION_STRING == Cata
+            packet >> cast_count >> spell_id >> glyphSlot >> flags;
 #endif
             return true;
         }

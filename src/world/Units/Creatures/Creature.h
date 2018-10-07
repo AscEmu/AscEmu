@@ -124,6 +124,10 @@ public:
 
         std::vector<CreatureItem>::iterator GetSellItemEnd();
 
+    //MIT
+        std::vector<CreatureItem>* getSellItems();
+    //MIT end
+
         size_t GetSellItemCount();
 
         void RemoveVendorItem(uint32 itemid);
@@ -376,8 +380,7 @@ public:
             if (m_custom_waypoint_map == nullptr)
                 return;
 
-            Movement::WayPointMap::iterator i = m_custom_waypoint_map->begin();
-            for (; i != m_custom_waypoint_map->end(); ++i)
+            for (auto i = m_custom_waypoint_map->begin(); i != m_custom_waypoint_map->end(); ++i)
             {
                 if ((*i) != nullptr)
                     delete(*i);

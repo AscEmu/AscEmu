@@ -526,11 +526,11 @@ public:
     public:
 
         void SetCustomAnim(uint32_t anim = 0);
+        virtual void onUse(Player* /*player*/) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Abstract Base Class for lootables (fishing node, fishing hole, and chests)
-//////////////////////////////////////////////////////////////////////////////////////////
+// Abstract Base Class for lootables (fishing node, fishing hole, and chests)
 class GameObject_Lootable : public GameObject
 {
     public:
@@ -552,8 +552,7 @@ class GameObject_Lootable : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Implements Type 0 (DOOR) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// Implements Type 0 (DOOR) GameObjects
 class GameObject_Door : public GameObject
 {
     public:
@@ -563,7 +562,7 @@ class GameObject_Door : public GameObject
 
         void InitAI();
 
-        void Use(uint64 GUID);
+        void onUse(Player* player) override;
 
         void Open();
         void Close();
@@ -573,8 +572,7 @@ class GameObject_Door : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Implements Type 1 (BUTTON) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// Implements Type 1 (BUTTON) GameObjects
 class GameObject_Button : public GameObject
 {
     public:
@@ -584,7 +582,7 @@ class GameObject_Button : public GameObject
 
         void InitAI();
 
-        void Use(uint64 GUID);
+        void onUse(Player* player) override;
 
         void Open();
         void Close();
@@ -595,8 +593,7 @@ class GameObject_Button : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing Type 2 (QUESTGIVER) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 2 (QUESTGIVER) GameObjects
 class GameObject_QuestGiver : public GameObject
 {
     public:
@@ -615,8 +612,9 @@ class GameObject_QuestGiver : public GameObject
                 return false;
 
             return true;
-        };
+        }
 
+        void onUse(Player* player) override;
 
         uint32 NumOfQuests()
         {
@@ -631,37 +629,37 @@ class GameObject_QuestGiver : public GameObject
         void DeleteQuest(QuestRelation* Q);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Searches for a QuestRelation in the GO and if found, returns the Quest
-        /// \param uint32 quest_id  -  Identifier of the Quest
-        /// \param uint8 quest_relation  -  QuestRelation type
-        /// \return the Quest on success NULL on failure
+        // Searches for a QuestRelation in the GO and if found, returns the Quest
+        // \param uint32 quest_id  -  Identifier of the Quest
+        // \param uint8 quest_relation  -  QuestRelation type
+        // \return the Quest on success NULL on failure
         QuestProperties const* FindQuest(uint32 quest_id, uint8 quest_relation);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
-        /// \param uint32 quest_id  -  Identifier of the Quest
-        /// \return Returns the QuestRelation type on success, 0 on failure
+        // Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
+        // \param uint32 quest_id  -  Identifier of the Quest
+        // \return Returns the QuestRelation type on success, 0 on failure
         uint16 GetQuestRelation(uint32 quest_id);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Returns an iterator to the GO's QuestRelation list beginning
-        /// \return an iterator to the QuestRelation list's beginning
+        // Returns an iterator to the GO's QuestRelation list beginning
+        // \return an iterator to the QuestRelation list's beginning
         std::list<QuestRelation*>::iterator QuestsBegin()
         {
             return m_quests->begin();
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Returns an iterator to the GO's QuestRelation list end
-        /// \return an iterator to the QuestRelation list's end
+        // Returns an iterator to the GO's QuestRelation list end
+        // \return an iterator to the QuestRelation list's end
         std::list<QuestRelation*>::iterator QuestsEnd()
         {
             return m_quests->end();
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Initializes the QuestRelation list with another
-        /// \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
+        // Initializes the QuestRelation list with another
+        // \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
         void SetQuestList(std::list<QuestRelation*>* qst_lst)
         {
             m_quests = qst_lst;
@@ -675,7 +673,7 @@ class GameObject_QuestGiver : public GameObject
     private:
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Loads the QuestRelations from QuestMgr for this GO
+        // Loads the QuestRelations from QuestMgr for this GO
         void LoadQuests() { sQuestMgr.LoadGOQuests(this); }
 
         std::list<QuestRelation*>* m_quests;
@@ -683,8 +681,7 @@ class GameObject_QuestGiver : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing type 3 (CHEST) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// implementing type 3 (CHEST) GameObjects
 class GameObject_Chest : public GameObject_Lootable
 {
     public:
@@ -697,7 +694,7 @@ class GameObject_Chest : public GameObject_Lootable
         bool IsLootable() { return true; }
         bool HasLoot();
 
-        void Use(uint64 GUID);
+        void onUse(Player* player) override;
 
         void Open();
         void Close();
@@ -708,8 +705,7 @@ class GameObject_Chest : public GameObject_Lootable
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing Type 6 (TRAP) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 6 (TRAP) GameObjects
 class GameObject_Trap : public GameObject
 {
     public:
@@ -729,8 +725,20 @@ class GameObject_Trap : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing Type 8 (SPELL_FOCUS) GameObjects
+// implementing Type 7 (GAMEOBJECT_TYPE_CHAIR) GameObjects
+class GameObject_Chair : public GameObject
+{
+public:
+
+    GameObject_Chair(uint64 GUID) : GameObject(GUID){}
+    ~GameObject_Chair(){};
+
+    void onUse(Player* player) override;
+
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 8 (SPELL_FOCUS) GameObjects
 class GameObject_SpellFocus : public GameObject
 {
     public:
@@ -746,8 +754,7 @@ class GameObject_SpellFocus : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing Type 10 (GOOBER) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 10 (GOOBER) GameObjects
 class GameObject_Goober : public GameObject
 {
     public:
@@ -757,7 +764,7 @@ class GameObject_Goober : public GameObject
 
         void InitAI();
 
-        void Use(uint64 GUID);
+        void onUse(Player* player) override;
 
         void Open();
         void Close();
@@ -767,8 +774,20 @@ class GameObject_Goober : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implements Type 17 (FISHINGNODE) GameObjects
+// implementing Type 13 (CAMERA) GameObjects
+class GameObject_Camera : public GameObject
+{
+public:
+
+    GameObject_Camera(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_Camera() {}
+
+    void onUse(Player* player) override;
+
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
+// implements Type 17 (FISHINGNODE) GameObjects
 class GameObject_FishingNode : public GameObject_Lootable
 {
     public:
@@ -778,9 +797,11 @@ class GameObject_FishingNode : public GameObject_Lootable
 
         void OnPushToWorld();
 
+        void onUse(Player* player) override;
+
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Handles the click on the bobber, if there is a fish hooked, otherwise end session
-        /// \return true on success, false otherwise.
+        // Handles the click on the bobber, if there is a fish hooked, otherwise end session
+        // \return true on success, false otherwise.
         bool UseNode();
 
         void EndFishing(bool abort);
@@ -797,8 +818,7 @@ class GameObject_FishingNode : public GameObject_Lootable
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Class implementing Type 18 (SUMMONING_RITUAL) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// Class implementing Type 18 (SUMMONING_RITUAL) GameObjects
 class GameObject_Ritual : public GameObject
 {
     public:
@@ -807,6 +827,8 @@ class GameObject_Ritual : public GameObject
         ~GameObject_Ritual();
 
         void InitAI();
+
+        void onUse(Player* player) override;
 
         CRitual* GetRitual() const
         {
@@ -818,8 +840,7 @@ class GameObject_Ritual : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Implements Type 22 (SPELLCASTER) GameObjects
-//////////////////////////////////////////////////////////////////////////////////////////
+// Implements Type 22 (SPELLCASTER) GameObjects
 class GameObject_SpellCaster : public GameObject
 {
     public:
@@ -829,7 +850,7 @@ class GameObject_SpellCaster : public GameObject
 
         void InitAI();
 
-        void Use(uint64 GUID);
+        void onUse(Player* player) override;
 
     private:
 
@@ -837,8 +858,31 @@ class GameObject_SpellCaster : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// implementing Type 26 (FISHINGHOLE) GameObjects
+// implementing Type 23 (MEETINGSTONE) GameObjects
+class GameObject_Meetingstone : public GameObject
+{
+public:
+
+    GameObject_Meetingstone(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_Meetingstone() {}
+
+    void onUse(Player* player) override;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 24 (FLAGSTAND) GameObjects
+class GameObject_FlagStand : public GameObject
+{
+public:
+
+    GameObject_FlagStand(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_FlagStand() {}
+
+    void onUse(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 25 (FISHINGHOLE) GameObjects
 class GameObject_FishingHole : public GameObject_Lootable
 {
     public:
@@ -863,8 +907,31 @@ class GameObject_FishingHole : public GameObject_Lootable
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Implements Type 33 (DESTRUCTIBLE) GameObjects
+// implementing Type 26 (FLAGDROP) GameObjects
+class GameObject_FlagDrop : public GameObject
+{
+public:
+
+    GameObject_FlagDrop(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_FlagDrop() {}
+
+    void onUse(Player* player) override;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
+// implementing Type 32 (BARBER_CHAIR) GameObjects
+class GameObject_BarberChair : public GameObject
+{
+public:
+
+    GameObject_BarberChair(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_BarberChair() {}
+
+    void onUse(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Implements Type 33 (DESTRUCTIBLE) GameObjects
 class SERVER_DECL GameObject_Destructible : public GameObject
 {
     public:

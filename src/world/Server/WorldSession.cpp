@@ -39,6 +39,7 @@
 //#include "Management/Guild.h"
 #include "CharacterErrors.h"
 #include "WorldSocket.h"
+#include "Auth/MD5.h"
 
 using namespace AscEmu::Packets;
 
@@ -260,7 +261,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
 void WorldSession::LogoutPlayer(bool Save)
 {
-    Player* pPlayer = GetPlayer();
+    Player* pPlayer = _player;
 
     if (_loggingOut)
         return;
@@ -393,7 +394,7 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->m_playerInfo->m_Group->Update();
 
         // Remove the "player locked" flag, to allow movement on next login
-        GetPlayer()->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+        _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         // Save Honor Points
         // _player->SaveHonorFields();
@@ -458,7 +459,7 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
 
 Player* WorldSession::GetPlayerOrThrow()
 {
-    Player* player = this->GetPlayer();
+    Player* player = this->_player;
     if (player == nullptr)
         throw AscEmu::Exception::PlayerNotFoundException();
 
@@ -711,96 +712,6 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
     }
 }
 
-#if VERSION_STRING == WotLK
-void WorldSession::SendRefundInfo(uint64 GUID)
-{
-    if (!_player || !_player->IsInWorld())
-        return;
-
-    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
-    if (item == nullptr)
-        return;
-
-    if (item->IsEligibleForRefund())
-    {
-        std::pair<time_t, uint32> RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
-
-        if (RefundEntry.first == 0 || RefundEntry.second == 0)
-            return;
-
-        auto item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
-        if (item_extended_cost == nullptr)
-            return;
-
-        ItemProperties const* proto = item->getItemProperties();
-
-        item->setFlags(ITEM_FLAG_REFUNDABLE);
-        // ////////////////////////////////////////////////////////////////////////////////////////
-        // As of 3.2.0a the server sends this packet to provide refund info on
-        // an item
-        //
-        // {SERVER} Packet: (0x04B2) UNKNOWN PacketSize = 68 TimeStamp =
-        // 265984265
-        // E6 EE 09 18 02 00 00 42 00 00 00 00 4B 25 00 00 00 00 00 00 50 50
-        // 00 00 0A 00 00 00 00
-        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 D3 12 12 00
-        //
-        // Structure:
-        // uint64 GUID
-        // uint32 price (in copper)
-        // uint32 honor
-        // uint32 arena
-        // uint32 item1
-        // uint32 item1cnt
-        // uint32 item2
-        // uint32 item2cnt
-        // uint32 item3
-        // uint32 item3cnt
-        // uint32 item4
-        // uint32 item4cnt
-        // uint32 item5
-        // uint32 item5cnt
-        // uint32 unknown - always seems 0
-        // uint32 buytime - buytime in total playedtime seconds
-        //
-        //
-        // Remainingtime:
-        // Seems to be in playedtime format
-        //
-        //
-        // ////////////////////////////////////////////////////////////////////////////////////////
-
-
-        WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
-        packet << uint64(GUID);
-        packet << uint32(proto->BuyPrice);
-        packet << uint32(item_extended_cost->honor_points);
-        packet << uint32(item_extended_cost->arena_points);
-
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            packet << uint32(item_extended_cost->item[i]);
-            packet << uint32(item_extended_cost->count[i]);
-        }
-
-        packet << uint32(0);	// always seems to be 0
-
-        uint32* played = _player->GetPlayedtime();
-
-        if (played[1] >(RefundEntry.first + 60 * 60 * 2))
-            packet << uint32(0);
-        else
-            packet << uint32(RefundEntry.first);
-
-        this->SendPacket(&packet);
-
-        LOG_DEBUG("Sent SMSG_ITEMREFUNDINFO.");
-    }
-}
-#endif
-
 void WorldSession::SendAccountDataTimes(uint32 mask)
 {
 #if VERSION_STRING == TBC
@@ -864,13 +775,13 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 void WorldSession::HandleUnlearnTalents(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
-        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-    if (!GetPlayer()->HasGold(price))
+        uint32 price = _player->CalcTalentResetCost(_player->GetTalentResetTimes());
+    if (!_player->HasGold(price))
         return;
 
-    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-    GetPlayer()->ModGold(-(int32)price);
-    GetPlayer()->resetTalents();
+    _player->SetTalentResetTimes(_player->GetTalentResetTimes() + 1);
+    _player->ModGold(-(int32)price);
+    _player->resetTalents();
 }
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
@@ -940,6 +851,72 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
     }
 
     _player->smsg_TalentsInfo(false);
+}
+#else
+void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
+{
+    uint32_t talent_id;
+    uint32_t requested_rank;
+
+    recv_data >> talent_id;
+    recv_data >> requested_rank;
+
+    _player->learnTalent(talent_id, requested_rank);
+    _player->smsg_TalentsInfo(false);
+}
+
+void WorldSession::HandleLearnPreviewTalentsOpcode(WorldPacket& recv_data)
+{
+    int32_t current_tab;
+    uint32_t talent_count;
+    uint32_t talent_id;
+    uint32_t talent_rank;
+
+    //if currentTab -1 player has already the spec.
+    recv_data >> current_tab;
+    recv_data >> talent_count;
+
+    for (uint32_t i = 0; i < talent_count; ++i)
+    {
+        recv_data >> talent_id;
+        recv_data >> talent_rank;
+
+        _player->learnTalent(talent_id, talent_rank);
+    }
+
+    _player->smsg_TalentsInfo(false);
+}
+
+void WorldSession::HandleUnlearnTalents(WorldPacket& /*recvData*/)
+{
+    uint32_t price = _player->CalcTalentResetCost(_player->GetTalentResetTimes());
+    if (!_player->HasGold(price))
+        return;
+
+    _player->SetTalentResetTimes(_player->GetTalentResetTimes() + 1);
+    _player->ModGold(-(int32_t)price);
+    _player->resetTalents();
+}
+
+void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
+{
+    uint32_t skill_line_id;
+    uint32_t points_remaining = _player->getFreePrimaryProfessionPoints();
+
+    recv_data >> skill_line_id;
+
+    _player->RemoveSpellsFromLine(skill_line_id);
+    _player->_RemoveSkillLine(skill_line_id);
+
+    if (points_remaining == _player->getFreePrimaryProfessionPoints())
+    {
+        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
+        if (!skill_line)
+            return;
+
+        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
+            _player->setFreePrimaryProfessionPoints(points_remaining + 1);
+    }
 }
 #endif
 

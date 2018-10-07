@@ -94,7 +94,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
     {
         case 1:     // VENDOR
         {
-            Plr->GetSession()->SendInventoryList(pCreature);
+            Plr->GetSession()->sendInventoryList(pCreature);
         } break;
         case 2:     // BINDER
         {

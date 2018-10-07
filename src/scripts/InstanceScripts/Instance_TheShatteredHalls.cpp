@@ -21,7 +21,6 @@ public:
 
 class FelOrcConvertAI : public CreatureAIScript
 {
-    
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcConvertAI);
     explicit FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {

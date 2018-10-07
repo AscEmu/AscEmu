@@ -79,7 +79,7 @@ class IcecrownCitadelTeleport : public GameObjectAIScript
 {
 public:
 
-    IcecrownCitadelTeleport(GameObject* go) : GameObjectAIScript(go)
+    explicit IcecrownCitadelTeleport(GameObject* go) : GameObjectAIScript(go)
     {
     }
 

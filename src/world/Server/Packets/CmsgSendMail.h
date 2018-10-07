@@ -86,12 +86,12 @@ namespace AscEmu { namespace Packets
 
             itemCount = static_cast<uint8_t>(packet.readBits(5));
 
-            if (itemCount > MAIL_MAX_ITEM_SLOT)
+            if (itemCount > 12)
                 return false;
 
             gobjGuid[0] = packet.readBit();
 
-            ObjectGuid itemGUIDs[MAIL_MAX_ITEM_SLOT];
+            ObjectGuid itemGUIDs[12];
 
             for (uint8_t i = 0; i < itemCount; ++i)
             {

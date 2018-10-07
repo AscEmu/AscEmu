@@ -12,23 +12,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu { namespace Packets
 {
-    class CmsgGmReportLag : public ManagedPacket
+    class CmsgPetCastSpell : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
-        uint32_t lagType;
-        uint32_t mapId;
-        LocationVector location;
+        uint64_t petGuid;
+        uint8_t castCount;
+        uint32_t spellId;
+        uint8_t castFlags;
 
-        CmsgGmReportLag() : CmsgGmReportLag(0, 0, { 0.0f, 0.0f, 0.0f })
+        CmsgPetCastSpell() : CmsgPetCastSpell(0, 0, 0, 0)
         {
         }
 
-        CmsgGmReportLag(uint32_t lagType, uint32_t mapId, LocationVector location) :
-            ManagedPacket(CMSG_GM_REPORT_LAG, 4 + 4 + 4 * 3),
-            lagType(lagType),
-            mapId(mapId),
-            location(location)
+        CmsgPetCastSpell(uint64_t petGuid, uint8_t castCount, uint32_t spellId, uint8_t castFlags) :
+            ManagedPacket(CMSG_PET_CAST_SPELL, 12),
+            petGuid(petGuid),
+            castCount(castCount),
+            spellId(spellId),
+            castFlags(castFlags)
         {
         }
 
@@ -40,10 +41,8 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> lagType >> mapId >> location.x >> location.y >> location.z;
-
+            packet >> petGuid >> castCount >> spellId >> castFlags;
             return true;
         }
-#endif
     };
 }}

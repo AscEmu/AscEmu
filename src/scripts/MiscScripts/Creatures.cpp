@@ -319,7 +319,7 @@ class TrollRoofStalker : public CreatureAIScript
 class DISCO : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DISCO);
-    DISCO(Creature* c) : CreatureAIScript(c) {}
+    explicit DISCO(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
     {

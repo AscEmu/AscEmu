@@ -48,6 +48,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSummonResponse.h"
 #include "Server/Packets/SmsgResurrectFailed.h"
 #include "Server/Packets/CmsgReclaimCorpse.h"
+#include "Server/Packets/CmsgRemoveGlyph.h"
+#include "Server/Packets/CmsgWhoIs.h"
+#include "Server/Packets/SmsgBarberShopResult.h"
+#include "Server/Packets/CmsgAlterAppearance.h"
+#include "Server/Packets/CmsgGameobjUse.h"
+#include "Server/Packets/CmsgInspect.h"
 
 using namespace AscEmu::Packets;
 
@@ -821,6 +827,57 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 #endif
 }
 
+void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
+{
+    if (!worldConfig.server.useAccountData)
+        return;
+
+    uint32_t accountDataId;
+    recvPacket >> accountDataId;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
+
+    if (accountDataId > 8)
+    {
+        LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Accountdata > 8 (%d) was requested by %s of account %u!", accountDataId, _player->getName().c_str(), this->GetAccountId());
+        return;
+    }
+
+    AccountDataEntry* accountDataEntry = GetAccountData(accountDataId);
+    WorldPacket data;
+    data.SetOpcode(SMSG_UPDATE_ACCOUNT_DATA);
+    data << accountDataId;
+
+    if (!accountDataEntry || !accountDataEntry->data)
+    {
+        data << uint32_t(0);
+    }
+    else
+    {
+        data << accountDataEntry->sz;
+
+        if (accountDataEntry->sz > 200)
+        {
+            data.resize(accountDataEntry->sz + 800);
+
+            uLongf destSize;
+            if (compress(const_cast<uint8_t*>(data.contents()) + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
+            {
+                LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
+                return;
+            }
+
+            data.resize(destSize + 8);
+        }
+        else
+        {
+            data.append(accountDataEntry->data, accountDataEntry->sz);
+        }
+    }
+
+    SendPacket(&data);
+}
+
 #if VERSION_STRING != Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
@@ -1067,7 +1124,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     }
 
     _player->ResurrectPlayer();
-    _player->setHealth(GetPlayer()->getMaxHealth() / 2);
+    _player->setHealth(_player->getMaxHealth() / 2);
 }
 
 #if VERSION_STRING == Cata
@@ -1077,11 +1134,6 @@ void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
 
     recvPacket >> mapId;
     recvPacket.readBit();
-}
-
-void WorldSession::handleReadyForAccountDataTimesOpcode(WorldPacket& /*recvPacket*/)
-{
-    SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
@@ -1207,4 +1259,739 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
         SendPacket(&data);
     }
 }
+#endif
+
+#if VERSION_STRING > TBC
+void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CmsgRemoveGlyph srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    if (srlPacket.glyphNumber > 5)
+        return;
+
+    const uint32_t glyphId = _player->GetGlyph(srlPacket.glyphNumber);
+    if (glyphId == 0)
+        return;
+
+    const auto glyphPropertiesEntry = sGlyphPropertiesStore.LookupEntry(glyphId);
+    if (!glyphPropertiesEntry)
+        return;
+
+    _player->SetGlyph(srlPacket.glyphNumber, 0);
+    _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
+    _player->m_specs[_player->m_talentActiveSpec].glyphs[srlPacket.glyphNumber] = 0;
+    _player->smsg_TalentsInfo(false);
+}
+#endif
+
+#if VERSION_STRING > TBC
+
+namespace BarberShopResult
+{
+    enum
+    {
+        Ok = 0,
+        NoMoney = 1
+    };
+}
+
+void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    // todo: Here was SMSG_BARBER_SHOP:RESULT... maybe itr is MSG or it was just wrong. Check it!
+    CmsgAlterAppearance srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_ALTER_APPEARANCE");
+
+    const uint32_t oldHair = _player->getHairStyle();
+    const uint32_t oldHairColor = _player->getHairColor();
+    const uint32_t oldFacial = _player->getFacialFeatures();
+
+    uint32_t cost = 0;
+
+    const auto barberShopHair = sBarberShopStyleStore.LookupEntry(srlPacket.hair);
+    if (!barberShopHair)
+        return;
+
+    const auto newHair = barberShopHair->hair_id;
+
+    const auto newHairColor = srlPacket.hairColor;
+
+    const auto barberShopFacial = sBarberShopStyleStore.LookupEntry(srlPacket.facialHairOrPiercing);
+    if (!barberShopFacial)
+        return;
+
+    const auto newFacial = barberShopFacial->hair_id;
+
+    const auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(srlPacket.skinColor);
+    if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
+        return;
+
+    auto level = _player->getLevel();
+    if (level >= 100)
+        level = 100;
+
+    const auto gtBarberShopCostBaseEntry = sBarberShopCostBaseStore.LookupEntry(level - 1);
+    if (!gtBarberShopCostBaseEntry)
+        return;
+
+    if (newHair != oldHair)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost);
+    else if (newHairColor != oldHairColor)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost) >> 1;
+
+    if (newFacial != oldFacial)
+        cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost * 0.75f);
+
+    if (!_player->HasGold(cost))
+    {
+        SendPacket(SmsgBarberShopResult(BarberShopResult::NoMoney).serialise().get());
+        return;
+    }
+
+    SendPacket(SmsgBarberShopResult(BarberShopResult::Ok).serialise().get());
+
+    _player->setHairStyle(static_cast<uint8_t>(newHair));
+    _player->setHairColor(static_cast<uint8_t>(newHairColor));
+    _player->setFacialFeatures(static_cast<uint8_t>(newFacial));
+    if (barberShopSkinColor)
+        _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hair_id));
+
+    _player->ModGold(-static_cast<int32_t>(cost));
+
+    _player->setStandState(STANDSTATE_STAND);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
+}
+#endif
+
+void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
+{
+    CHECK_INWORLD_RETURN
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPOP_REQUEST");
+
+    if (_player->getDeathState() != JUST_DIED)
+        return;
+
+#if VERSION_STRING != Cata
+    if (_player->obj_movement_info.isOnTransport())
+#else
+    if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
+    {
+        auto transport = _player->GetTransport();
+        if (transport != nullptr)
+            transport->RemovePassenger(_player);
+    }
+
+    _player->RepopRequestedPlayer();
+}
+
+void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
+{
+    CmsgWhoIs srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", _player->getName().c_str(), srlPacket.characterName.c_str());
+
+    if (!_player->GetSession()->CanUseCommand('3'))
+    {
+        SendNotification("You do not have permission to perform that function.");
+        return;
+    }
+
+    if (srlPacket.characterName.empty())
+    {
+        SendNotification("You did not enter a character name!");
+        return;
+    }
+
+    QueryResult* resultAcctId = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
+    if (!resultAcctId)
+    {
+        SendNotification("%s does not exit!", srlPacket.characterName.c_str());
+        delete resultAcctId;
+        return;
+    }
+
+    Field* fields_acctID = resultAcctId->Fetch();
+    const uint32_t accId = fields_acctID[0].GetUInt32();
+    delete resultAcctId;
+
+    //todo: this will not work! no table accounts in character_db!!!
+    QueryResult* accountInfoResult = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
+    if (!accountInfoResult)
+    {
+        SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
+        delete accountInfoResult;
+        return;
+    }
+
+    Field* fields = accountInfoResult->Fetch();
+    std::string acctID = fields[0].GetString();
+    if (acctID.empty())
+        acctID = "Unknown";
+
+    std::string acctName = fields[1].GetString();
+    if (acctName.empty())
+        acctName = "Unknown";
+
+    std::string acctPerms = fields[2].GetString();
+    if (acctPerms.empty())
+        acctPerms = "Unknown";
+
+    std::string acctEmail = fields[3].GetString();
+    if (acctEmail.empty())
+        acctEmail = "Unknown";
+
+    std::string acctIP = fields[4].GetString();
+    if (acctIP.empty())
+        acctIP = "Unknown";
+
+    std::string acctMuted = fields[5].GetString();
+    if (acctMuted.empty())
+        acctMuted = "Unknown";
+
+    delete accountInfoResult;
+
+    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: " 
+    + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
+
+    WorldPacket data(SMSG_WHOIS, msg.size() + 1);
+    data << msg;
+    SendPacket(&data);
+}
+
+void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32_t ammoId;
+    recvPacket >> ammoId;
+
+    if (!ammoId)
+        return;
+
+    const auto itemProperties = sMySQLStore.getItemProperties(ammoId);
+    if (!itemProperties)
+        return;
+
+    if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->GetItemInterface()->GetItemCount(ammoId) == 0)
+    {
+        sCheatLog.writefromsession(_player->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
+        _player->GetSession()->Disconnect();
+        return;
+    }
+
+    if (itemProperties->RequiredLevel)
+    {
+        if (_player->getLevel() < itemProperties->RequiredLevel)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        }
+    }
+    if (itemProperties->RequiredSkill)
+    {
+        if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        }
+
+        if (itemProperties->RequiredSkillRank)
+        {
+            if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
+            {
+                _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                _player->SetAmmoId(0);
+                _player->CalcDamage();
+                return;
+            }
+        }
+    }
+    switch (_player->getClass())
+    {
+        case PRIEST:  // allowing priest, warlock, mage to equip ammo will mess up wand shoot. stop it.
+        case WARLOCK:
+        case MAGE:
+        case SHAMAN: // these don't get messed up since they don't use wands, but they don't get to use bows/guns/crossbows anyways
+        case DRUID:  // we wouldn't want them cheating extra stats from ammo, would we?
+        case PALADIN:
+#if VERSION_STRING > TBC
+        case DEATHKNIGHT:
+#endif
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+            _player->SetAmmoId(0);
+            _player->CalcDamage();
+            return;
+        default:
+            _player->SetAmmoId(ammoId);
+            _player->CalcDamage();
+            break;
+    }
+}
+
+void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
+{
+    CmsgGameobjUse srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
+
+    auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLowPart());
+    if (!gameObject)
+        return;
+
+    const auto gameObjectProperties = gameObject->GetGameObjectProperties();
+    if (!gameObjectProperties)
+        return;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //\brief: the following lines are handled in gobj class
+
+    objmgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
+
+    CALL_GO_SCRIPT_EVENT(gameObject, OnActivate)(_player);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(gameObject, _player);
+
+    _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+
+    switch (gameObject->getGoType())
+    {
+        case GAMEOBJECT_TYPE_DOOR:
+        case GAMEOBJECT_TYPE_BUTTON:
+        case GAMEOBJECT_TYPE_QUESTGIVER:
+        case GAMEOBJECT_TYPE_CHEST:
+        case GAMEOBJECT_TYPE_CHAIR:
+        case GAMEOBJECT_TYPE_GOOBER:
+        case GAMEOBJECT_TYPE_CAMERA:
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+        case GAMEOBJECT_TYPE_RITUAL:
+        case GAMEOBJECT_TYPE_SPELLCASTER:
+        case GAMEOBJECT_TYPE_MEETINGSTONE:
+        case GAMEOBJECT_TYPE_FLAGSTAND:
+        case GAMEOBJECT_TYPE_FLAGDROP:
+        case GAMEOBJECT_TYPE_BARBER_CHAIR:
+            gameObject->onUse(_player);
+            break;
+        default:
+            LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
+            break;
+    }
+}
+
+void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN;
+
+    CmsgInspect srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
+
+    auto inspectedPlayer = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(srlPacket.guid));
+    if (inspectedPlayer == nullptr)
+    {
+        LogDebugFlag(LF_OPCODE, "Error received CMSG_INSPECT for unknown player!");
+        return;
+    }
+
+    _player->setTargetGuid(srlPacket.guid);
+    _player->SetSelection(srlPacket.guid);
+
+    if (_player->m_comboPoints)
+        _player->UpdateComboPoints();
+
+    ByteBuffer packedGuid;
+    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
+    packedGuid.appendPackGUID(inspectedPlayer->getGuid());
+    data.append(packedGuid);
+
+    data << uint32_t(inspectedPlayer->getActiveSpec().GetTP());
+    data << uint8_t(inspectedPlayer->m_talentSpecsCount);
+    data << uint8_t(inspectedPlayer->m_talentActiveSpec);
+    for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
+    {
+#ifdef FT_DUAL_SPEC
+        const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
+#else
+        const PlayerSpec playerSpec = inspectedPlayer->m_spec;
+#endif
+
+        uint8_t talentCount = 0;
+        const auto talentCountPos = data.wpos();
+        data << uint8_t(talentCount);
+
+        const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
+        for (uint8_t i = 0; i < 3; ++i)
+        {
+            const uint32_t talentTabId = talentTabIds[i];
+            for (uint32_t j = 0; j < sTalentStore.GetNumRows(); ++j)
+            {
+                const auto talentInfo = sTalentStore.LookupEntry(j);
+                if (talentInfo == nullptr)
+                    continue;
+
+                if (talentInfo->TalentTree != talentTabId)
+                    continue;
+
+                int32_t talentMaxRank = -1;
+                for (int32_t k = 4; k > -1; --k)
+                {
+                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->HasSpell(talentInfo->RankID[k]))
+                    {
+                        talentMaxRank = k;
+                        break;
+                    }
+                }
+
+                if (talentMaxRank < 0)
+                    continue;
+
+                data << uint32_t(talentInfo->TalentID);
+                data << uint8_t(talentMaxRank);
+
+                ++talentCount;
+            }
+        }
+        data.put<uint8_t>(talentCountPos, talentCount);
+
+#ifdef FT_GLYPHS
+        data << uint8_t(GLYPHS_COUNT);
+
+        for (auto glyph : playerSpec.glyphs)
+            data << uint16_t(glyph);
+#endif
+    }
+
+    uint32_t slotMask = 0;
+    const auto slotMaskPos = data.wpos();
+    data << uint32_t(slotMask);
+
+    auto itemInterface = inspectedPlayer->GetItemInterface();
+    for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
+        if (!inventoryItem)
+            continue;
+
+        slotMask |= (1 << i);
+
+        data << uint32_t(inventoryItem->getEntry());
+
+        uint16_t enchantMask = 0;
+        const auto enchantMaskPos = data.wpos();
+
+        data << uint16_t(enchantMask);
+
+        for (uint8_t slot = 0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+        {
+            const uint32_t enchantId = inventoryItem->getEnchantmentId(slot);
+            if (!enchantId)
+                continue;
+
+            enchantMask |= (1 << slot);
+            data << uint16_t(enchantId);
+        }
+        data.put<uint16_t>(enchantMaskPos, enchantMask);
+
+        data << uint16_t(0);
+        FastGUIDPack(data, inventoryItem->getCreatorGuid());
+        data << uint32_t(0);
+    }
+    data.put<uint32_t>(slotMaskPos, slotMask);
+
+#if VERSION_STRING == Cata
+    if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
+    {
+        data << guild->getGUID();
+        data << uint32_t(guild->getLevel());
+        data << uint64(guild->getExperience());
+        data << uint32_t(guild->getMembersCount());
+    }
+#endif
+
+    SendPacket(&data);
+}
+
+#if VERSION_STRING == Cata
+void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
+{
+    if (recvPacket.rpos() + 4 > recvPacket.size())
+        return;
+
+    uint32_t recvSize;
+    recvPacket >> recvSize;
+
+    if (!recvSize)
+        return;
+
+    if (recvSize > 0xFFFFF)
+    {
+        LOG_DEBUG("recvSize %u too long", recvSize);
+        return;
+    }
+
+    uLongf uSize = recvSize;
+
+    uint32_t pos = static_cast<uint32_t>(recvPacket.rpos());
+
+    ByteBuffer unpackedInfo;
+    unpackedInfo.resize(recvSize);
+
+    if (uncompress(unpackedInfo.contents(), &uSize, recvPacket.contents() + pos, static_cast<uLong>(recvPacket.size() - pos)) == Z_OK)
+    {
+        uint32_t addonsCount;
+        unpackedInfo >> addonsCount;
+
+        for (uint32_t i = 0; i < addonsCount; ++i)
+        {
+            std::string addonName;
+            uint8_t enabledState;
+            uint32_t crc;
+            uint32_t unknown;
+
+            if (unpackedInfo.rpos() + 1 > unpackedInfo.size())
+                return;
+
+            unpackedInfo >> addonName;
+
+            unpackedInfo >> enabledState;
+            unpackedInfo >> crc;
+            unpackedInfo >> unknown;
+
+            LOG_DEBUG("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
+
+            AddonEntry addon(addonName, enabledState, crc, 2, true);
+
+            SavedAddon const* savedAddon = sAddonMgr.getAddonInfoForAddonName(addonName);
+            if (savedAddon)
+            {
+                if (addon.crc != savedAddon->crc)
+                    LOG_DEBUG("Addon: %s: modified (CRC: 0x%x) - accountID %d)", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                else
+                    LOG_DEBUG("Addon: %s: validated (CRC: 0x%x) - accountID %d", addon.name.c_str(), savedAddon->crc, GetAccountId());
+            }
+            else
+            {
+                sAddonMgr.SaveAddon(addon);
+                LOG_DEBUG("Addon: %s: unknown (CRC: 0x%x) - accountId %d (storing addon name and checksum to database)", addon.name.c_str(), addon.crc, GetAccountId());
+            }
+
+            m_addonList.push_back(addon);
+        }
+
+        uint32_t addonTime;
+        unpackedInfo >> addonTime;
+    }
+    else
+    {
+        LOG_ERROR("Decompression of addon section of CMSG_AUTH_SESSION failed.");
+    }
+}
+
+void WorldSession::sendAddonInfo()
+{
+    WorldPacket data(SMSG_ADDON_INFO, 4);
+    for (auto itr : m_addonList)
+    {
+        data << uint8_t(itr.state);
+
+        uint8_t crcpub = itr.usePublicKeyOrCRC;
+        data << uint8_t(crcpub);
+        if (crcpub)
+        {
+            uint8_t usepk = (itr.crc != STANDARD_ADDON_CRC); // standard addon CRC
+            data << uint8_t(usepk);
+            if (usepk)                                      // add public key if crc is wrong
+            {
+                LogDebugFlag(LF_OPCODE, "AddOn: %s: CRC checksum mismatch: got 0x%x - expected 0x%x - sending pubkey to accountID %d",
+                    itr.name.c_str(), itr.crc, STANDARD_ADDON_CRC, GetAccountId());
+
+                data.append(PublicKey, sizeof(PublicKey));
+            }
+
+            data << uint32_t(0);
+        }
+
+        data << uint8_t(0);
+    }
+
+    m_addonList.clear();
+
+    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+    data << uint32_t(bannedAddons->size());
+    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+    {
+        data << uint32_t(itr->id);
+        data.append(itr->nameMD5, sizeof(itr->nameMD5));
+        data.append(itr->versionMD5, sizeof(itr->versionMD5));
+        data << uint32_t(itr->timestamp);
+        data << uint32_t(1);  // banned?
+    }
+
+    SendPacket(&data);
+}
+
+bool WorldSession::isAddonRegistered(const std::string& addon_name) const
+{
+    if (!isAddonMessageFiltered)
+        return true;
+
+    if (mRegisteredAddonPrefixesVector.empty())
+        return false;
+
+    auto itr = std::find(mRegisteredAddonPrefixesVector.begin(), mRegisteredAddonPrefixesVector.end(), addon_name);
+    return itr != mRegisteredAddonPrefixesVector.end();
+}
+
+void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
+
+    mRegisteredAddonPrefixesVector.clear();
+}
+
+void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
+{
+    uint32_t addonCount = recvPacket.readBits(25);
+
+    if (addonCount > 64)
+    {
+        isAddonMessageFiltered = false;
+        recvPacket.rfinish();
+        return;
+    }
+
+    std::vector<uint8_t> nameLengths(addonCount);
+    for (uint32_t i = 0; i < addonCount; ++i)
+        nameLengths[i] = static_cast<uint8_t>(recvPacket.readBits(5));
+
+    for (uint32_t i = 0; i < addonCount; ++i)
+        mRegisteredAddonPrefixesVector.push_back(recvPacket.ReadString(nameLengths[i]));
+
+    if (mRegisteredAddonPrefixesVector.size() > 64)
+    {
+        isAddonMessageFiltered = false;
+        return;
+    }
+
+    isAddonMessageFiltered = true;
+}
+
+void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT");
+
+    uint8_t spam_type;                                        // 0 - mail, 1 - chat
+    uint64_t spammer_guid;
+    uint32_t unk1 = 0;
+    uint32_t unk2 = 0;
+    uint32_t unk3 = 0;
+    uint32_t unk4 = 0;
+
+    std::string description;
+    recvPacket >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
+    recvPacket >> spammer_guid;                              // player guid
+
+    switch (spam_type)
+    {
+        case 0:
+        {
+            recvPacket >> unk1;                              // const 0
+            recvPacket >> unk2;                              // probably mail id
+            recvPacket >> unk3;                              // const 0
+
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3);
+
+        } break;
+        case 1:
+        {
+            recvPacket >> unk1;                              // probably language
+            recvPacket >> unk2;                              // message type?
+            recvPacket >> unk3;                              // probably channel id
+            recvPacket >> unk4;                              // unk random value
+            recvPacket >> description;                       // spam description string (messagetype, channel name, player name, message)
+
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+
+        } break;
+    }
+
+    // Complaint Received message
+    WorldPacket data(SMSG_REPORT_RESULT, 1);
+    data << uint8_t(0);     // 1 reset reported player 0 ignore
+    data << uint8_t(0);
+
+    SendPacket(&data);
+}
+
+void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
+{
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
+
+    uint8_t unk3 = 0;   // type
+    uint8_t unk4 = 0;   // guid - 1
+    uint32_t unk5 = 0;
+    uint64_t unk6 = 0;
+    uint32_t unk7 = 0;
+    uint32_t unk8 = 0;
+
+    std::string message;
+
+    uint32_t length = recvPacket.readBits(9);    // length * 2
+    recvPacket >> unk3;                          // type
+    recvPacket >> unk4;                          // guid - 1?
+    message = recvPacket.ReadString(length / 2);   // message
+    recvPacket >> unk5;                          // unk
+    recvPacket >> unk6;                          // unk
+    recvPacket >> unk7;                          // unk
+    recvPacket >> unk8;                          // unk
+
+    switch (unk3)
+    {
+        case 0:     // chat spamming
+            LOG_DEBUG("Chat spamming report for guid: %u received.", unk4 + 1);
+            break;
+        case 2:     // cheat
+            recvPacket >> message;
+            LOG_DEBUG("Cheat report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 6:     // char name
+            recvPacket >> message;
+            LOG_DEBUG("char name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 12:     // guild name
+            recvPacket >> message;
+            LOG_DEBUG("guild name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 18:     // arena team name
+            recvPacket >> message;
+            LOG_DEBUG("arena team name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            break;
+        case 20:     // chat language
+            LOG_DEBUG("Chat language report for guid: %u received.", unk4 + 1);
+            break;
+        default:
+            LOG_DEBUG("type is %u", unk3);
+            break;
+    }
+}
+
 #endif
