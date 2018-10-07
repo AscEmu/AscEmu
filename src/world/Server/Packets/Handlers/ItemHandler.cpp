@@ -43,6 +43,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSellItem.h"
 #include "Server/Packets/CmsgItemQuerySingle.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Server/Packets/SmsgBuyFailed.h"
 
 using namespace AscEmu::Packets;
 
@@ -1490,7 +1491,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
         uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + srlPacket.buybackSlot));
         if (!_player->HasGold(cost))
         {
-            SendBuyFailed(srlPacket.buybackSlot, itemid, 2);
+            sendBuyFailed(srlPacket.buybackSlot, itemid, 2);
             return;
         }
 
@@ -1559,7 +1560,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     // Check if item exists
     if (!srlPacket.itemGuid)
     {
-        SendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
+        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
         return;
     }
 
@@ -1567,14 +1568,14 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     // Check if Vendor exists
     if (unit == nullptr)
     {
-        SendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 3);
+        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 3);
         return;
     }
 
     Item* item = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuid);
     if (!item)
     {
-        SendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
+        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
         return; //our player doesn't have this item
     }
 
@@ -1582,14 +1583,14 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 
     if (item->isContainer() && dynamic_cast<Container*>(item)->HasItems())
     {
-        SendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 6);
+        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 6);
         return;
     }
 
     // Check if item can be sold
     if (it->SellPrice == 0 || item->wrapped_item_id != 0)
     {
-        SendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 2);
+        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 2);
         return;
     }
 
@@ -2867,3 +2868,17 @@ void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
 
 }
 #endif
+
+void WorldSession::sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error)
+{
+    SendPacket(SmsgBuyFailed(guid, itemid, error).serialise().get());
+}
+
+void WorldSession::sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error)
+{
+    WorldPacket data(SMSG_SELL_ITEM, 17);
+    data << vendorguid;
+    data << itemid;
+    data << error;
+    SendPacket(&data);
+}

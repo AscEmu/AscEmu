@@ -26,17 +26,11 @@
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
-//#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
-//#include "Auth/MD5.h"
-#include "Packets/SmsgBuyFailed.h"
-//#include "Packets/SmsgGuildCommandResult.h"
-//#include "Packets/SmsgGuildInvite.h"
-//#include "Management/Guild.h"
 #include "CharacterErrors.h"
 #include "WorldSocket.h"
 #include "Auth/MD5.h"
@@ -442,21 +436,6 @@ void WorldSession::LogoutPlayer(bool Save)
     SetLogoutTimer(0);
 }
 
-void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)
-{
-    SendPacket(SmsgBuyFailed(guid, itemid, error).serialise().get());
-}
-
-void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
-{
-    WorldPacket data(17);
-    data.SetOpcode(SMSG_SELL_ITEM);
-    data << vendorguid;
-    data << itemid;
-    data << error;
-    SendPacket(&data);
-}
-
 Player* WorldSession::GetPlayerOrThrow()
 {
     Player* player = this->_player;
@@ -712,79 +691,6 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
     }
 }
 
-void WorldSession::SendAccountDataTimes(uint32 mask)
-{
-#if VERSION_STRING == TBC
-    StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
-    for (auto i = 0; i < 32; ++i)
-        data << uint32(0);
-    SendPacket(&data);
-    return;
-
-    MD5Hash md5hash;
-    for (int i = 0; i < 8; ++i)
-    {
-        AccountDataEntry* acct_data = GetAccountData(i);
-
-        if (!acct_data->data)
-        {
-            data << uint64(0) << uint64(0);
-            continue;
-        }
-        md5hash.Initialize();
-        md5hash.UpdateData((const uint8*)acct_data->data, acct_data->sz);
-        md5hash.Finalize();
-
-        data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
-    }
-#else
-    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);	// changed in WotLK
-    data << uint32(UNIXTIME);	// unix time of something
-    data << uint8(1);
-    data << uint32(mask);		// type mask
-    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
-    {
-        if (mask & (1 << i))
-        {
-            // data << uint32(GetAccountData(AccountDataType(i))->Time);
-            // also unix time
-            data << uint32(0);
-        }
-    }
-#endif
-    SendPacket(&data);
-}
-
-void WorldSession::SendMOTD()
-{
-    WorldPacket data(SMSG_MOTD, 50);
-    data << uint32(0);
-    uint32 linecount = 0;
-    std::string str_motd = worldConfig.getMessageOfTheDay();
-    std::string::size_type nextpos;
-
-    std::string::size_type pos = 0;
-    while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
-    {
-        if (nextpos != pos)
-        {
-            data << str_motd.substr(pos, nextpos - pos);
-            ++linecount;
-        }
-        pos = nextpos + 1;
-    }
-
-    if (pos < str_motd.length())
-    {
-        data << str_motd.substr(pos);
-        ++linecount;
-    }
-
-    data.put(0, linecount);
-
-    SendPacket(&data);
-}
-
 void WorldSession::Unhandled(WorldPacket& recv_data)
 {
     recv_data.rfinish();
@@ -798,15 +704,6 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
             getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode(), recv_data.size());
     }
 }
-
-#if VERSION_STRING > TBC
-void WorldSession::SendClientCacheVersion(uint32 version)
-{
-    WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
-    data << uint32(version);
-    SendPacket(&data);
-}
-#endif
 
 void WorldSession::SendPacket(WorldPacket* packet)
 {
@@ -864,51 +761,4 @@ void WorldSession::Disconnect()
     {
         _socket->Disconnect();
     }
-}
-
-//\todo replace leftovers from legacy CharacterHandler.cpp file
-CharacterErrorCodes VerifyName(const char* name, size_t nlen)
-{
-    const char* p;
-    size_t i;
-
-    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    if (worldConfig.server.enableLimitedNames)
-    {
-        if (nlen == 0)
-            return E_CHAR_NAME_NO_NAME;
-        else if (nlen < 2)
-            return E_CHAR_NAME_TOO_SHORT;
-        else if (nlen > 12)
-            return E_CHAR_NAME_TOO_LONG;
-
-        for (i = 0; i < nlen; ++i)
-        {
-            p = allowedCharacters;
-            for (; *p != 0; ++p)
-            {
-                if (name[i] == *p)
-                    goto cont;
-            }
-            return E_CHAR_NAME_INVALID_CHARACTER;
-        cont:
-            continue;
-        }
-    }
-    else
-    {
-        for (i = 0; i < nlen; ++i)
-        {
-            p = bannedCharacters;
-            while (*p != 0 && name[i] != *p && name[i] != 0)
-                ++p;
-
-            if (*p != 0)
-                return E_CHAR_NAME_INVALID_CHARACTER;
-        }
-    }
-
-    return E_CHAR_NAME_SUCCESS;
 }

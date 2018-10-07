@@ -1021,7 +1021,7 @@ void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
 
-    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+    sendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
 void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
@@ -2001,9 +2001,9 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (!_player->IsInWorld())
         return;
 
-    LOG_DEBUG("Received CMG_GET_MIRRORIMAGE_DATA");
+    LogDebugFlag(LF_OPCODE, "Received CMG_GET_MIRRORIMAGE_DATA");
 
-    uint64 GUID;
+    uint64_t GUID;
 
     recv_data >> GUID;
 
@@ -2014,7 +2014,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Image->getCreatedByGuid() == 0)
         return;
 
-    uint64 CasterGUID = Image->getCreatedByGuid();
+    uint64_t CasterGUID = Image->getCreatedByGuid();
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
     if (Caster == nullptr)
@@ -2022,30 +2022,30 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
 
-    data << uint64(GUID);
-    data << uint32(Caster->getDisplayId());
-    data << uint8(Caster->getRace());
+    data << uint64_t(GUID);
+    data << uint32_t(Caster->getDisplayId());
+    data << uint8_t(Caster->getRace());
 
     if (Caster->isPlayer())
     {
         Player* pcaster = dynamic_cast<Player*>(Caster);
 
-        data << uint8(pcaster->getGender());
-        data << uint8(pcaster->getClass());
+        data << uint8_t(pcaster->getGender());
+        data << uint8_t(pcaster->getClass());
 
         // facial features
-        data << uint8(pcaster->getSkinColor());
-        data << uint8(pcaster->getFace());
-        data << uint8(pcaster->getHairStyle());
-        data << uint8(pcaster->getHairColor());
-        data << uint8(pcaster->getFacialFeatures());
+        data << uint8_t(pcaster->getSkinColor());
+        data << uint8_t(pcaster->getFace());
+        data << uint8_t(pcaster->getHairStyle());
+        data << uint8_t(pcaster->getHairColor());
+        data << uint8_t(pcaster->getFacialFeatures());
 
         if (pcaster->IsInGuild())
-            data << uint32(pcaster->getGuildId());
+            data << uint32_t(pcaster->getGuildId());
         else
-            data << uint32(0);
+            data << uint32_t(0);
 
-        static const uint32 imageitemslots[] =
+        static const uint32_t imageitemslots[] =
         {
             EQUIPMENT_SLOT_HEAD,
             EQUIPMENT_SLOT_SHOULDERS,
@@ -2060,34 +2060,112 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
             EQUIPMENT_SLOT_TABARD
         };
 
-        for (uint8 i = 0; i < 11; ++i)
+        for (uint8_t i = 0; i < 11; ++i)
         {
-            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
+            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
             if (item != nullptr)
-                data << uint32(item->getItemProperties()->DisplayInfoID);
+                data << uint32_t(item->getItemProperties()->DisplayInfoID);
             else
-                data << uint32(0);
+                data << uint32_t(0);
         }
     }
     else // do not send player data for creatures
     {
-        data << uint8(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
+        data << uint8_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
     }
 
     SendPacket(&data);
 
-    LOG_DEBUG("Sent: SMSG_MIRRORIMAGE_DATA");
+    LogDebugFlag(LF_OPCODE, "Sent SMSG_MIRRORIMAGE_DATA");
+}
+
+#if VERSION_STRING > TBC
+void WorldSession::sendClientCacheVersion(uint32 version)
+{
+    WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
+    data << uint32_t(version);
+    SendPacket(&data);
+}
+#endif
+
+void WorldSession::sendAccountDataTimes(uint32 mask)
+{
+#if VERSION_STRING == TBC
+    StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+    for (auto i = 0; i < 32; ++i)
+        data << uint32_t(0);
+    SendPacket(&data);
+    return;
+
+    MD5Hash md5hash;
+    for (int i = 0; i < 8; ++i)
+    {
+        AccountDataEntry* acct_data = GetAccountData(i);
+
+        if (!acct_data->data)
+        {
+            data << uint64(0) << uint64(0);
+            continue;
+        }
+        md5hash.Initialize();
+        md5hash.UpdateData((const uint8_t*)acct_data->data, acct_data->sz);
+        md5hash.Finalize();
+
+        data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
+    }
+#else
+    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
+    data << uint32_t(UNIXTIME);
+    data << uint8_t(1);
+    data << uint32_t(mask);
+    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    {
+        if (mask & (1 << i))
+            data << uint32(0);
+    }
+#endif
+    SendPacket(&data);
+}
+
+void WorldSession::sendMOTD()
+{
+    WorldPacket data(SMSG_MOTD, 50);
+    data << uint32_t(0);
+    uint32_t linecount = 0;
+    std::string str_motd = worldConfig.getMessageOfTheDay();
+    std::string::size_type nextpos;
+
+    std::string::size_type pos = 0;
+    while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
+    {
+        if (nextpos != pos)
+        {
+            data << str_motd.substr(pos, nextpos - pos);
+            ++linecount;
+        }
+        pos = nextpos + 1;
+    }
+
+    if (pos < str_motd.length())
+    {
+        data << str_motd.substr(pos);
+        ++linecount;
+    }
+
+    data.put(0, linecount);
+
+    SendPacket(&data);
 }

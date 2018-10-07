@@ -420,7 +420,7 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
     const uint32_t untrainCost = pet->GetUntrainCost();
     if (!_player->HasGold(untrainCost))
     {
-        SendBuyFailed(_player->getGuid(), 0, 2);
+        sendBuyFailed(_player->getGuid(), 0, 2);
         return;
     }
     _player->ModGold(-static_cast<int32_t>(untrainCost));

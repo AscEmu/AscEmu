@@ -38,6 +38,54 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+CharacterErrorCodes VerifyName(const char* name, size_t nlen)
+{
+    const char* p;
+    size_t i;
+
+    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (worldConfig.server.enableLimitedNames)
+    {
+        if (nlen == 0)
+            return E_CHAR_NAME_NO_NAME;
+
+        if (nlen < 2)
+            return E_CHAR_NAME_TOO_SHORT;
+
+        if (nlen > 12)
+            return E_CHAR_NAME_TOO_LONG;
+
+        for (i = 0; i < nlen; ++i)
+        {
+            p = allowedCharacters;
+            for (; *p != 0; ++p)
+            {
+                if (name[i] == *p)
+                    goto cont;
+            }
+            return E_CHAR_NAME_INVALID_CHARACTER;
+        cont:
+            continue;
+        }
+    }
+    else
+    {
+        for (i = 0; i < nlen; ++i)
+        {
+            p = bannedCharacters;
+            while (*p != 0 && name[i] != *p && name[i] != 0)
+                ++p;
+
+            if (*p != 0)
+                return E_CHAR_NAME_INVALID_CHARACTER;
+        }
+    }
+
+    return E_CHAR_NAME_SUCCESS;
+}
+
 void WorldSession::handleSetFactionAtWarOpcode(WorldPacket& recvPacket)
 {
     CmsgSetFactionAtWar srlPacket;
@@ -657,7 +705,7 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // account data times - since we just logged in, it is 0
-    SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
+    sendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -708,7 +756,7 @@ void WorldSession::fullLogin(Player* player)
 
     sendServerStats();
 
-    SendMOTD();
+    sendMOTD();
 
     //////////////////////////////////////////////////////////////////////////////////////////
 

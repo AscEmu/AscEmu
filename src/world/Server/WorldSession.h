@@ -220,8 +220,7 @@ class SERVER_DECL WorldSession
 
         uint8 Update(uint32 InstanceID);
 
-        void SendBuyFailed(uint64 guid, uint32 itemid, uint8 error);
-        void SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error);
+        
         void SendNotification(const char* message, ...);
 
 
@@ -544,6 +543,8 @@ class SERVER_DECL WorldSession
         void sendInventoryList(Creature* pCreature);
 #if VERSION_STRING >= WotLK
         void sendRefundInfo(uint64_t guid);
+        void sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error);
+        void sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error);
 
     protected:
         void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
@@ -639,6 +640,14 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
+    public:
+        void sendAccountDataTimes(uint32 mask);
+        void sendMOTD();
+#if VERSION_STRING > TBC
+        void sendClientCacheVersion(uint32 version);
+#endif
+
+    protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void handleWhoOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);
@@ -913,9 +922,6 @@ class SERVER_DECL WorldSession
         void nothingToHandle(WorldPacket& recvPacket);
 
     public:
-        
-        void SendAccountDataTimes(uint32 mask);
-        void SendMOTD();
 
         float m_wLevel; // Level of water the player is currently in
         bool m_bIsWLevelSet; // Does the m_wLevel variable contain up-to-date information about water level?
@@ -979,10 +985,6 @@ class SERVER_DECL WorldSession
 
         uint32 language;
         uint32 m_muted;
-#if VERSION_STRING > TBC
-        void SendClientCacheVersion(uint32 version);
-#endif
-
 };
 
 #endif // WORLDSESSION_H
