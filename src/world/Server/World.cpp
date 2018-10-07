@@ -323,14 +323,14 @@ void World::sendCharacterEnumToAccountSession(QueryResultVector& results, uint32
 {
     WorldSession* worldSession = getSessionByAccountId(accountId);
     if (worldSession != nullptr)
-        worldSession->CharacterEnumProc(results[0].result);
+        worldSession->characterEnumProc(results[0].result);
 }
 
 void World::loadAccountDataProcForId(QueryResultVector& results, uint32_t accountId)
 {
     WorldSession* worldSession = getSessionByAccountId(accountId);
     if (worldSession != nullptr)
-        worldSession->LoadAccountDataProc(results[0].result);
+        worldSession->loadAccountDataProc(results[0].result);
 }
 
 size_t World::getSessionCount()

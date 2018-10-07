@@ -346,8 +346,8 @@ class SERVER_DECL WorldSession
         void initGMMyMaster();
         void sendServerStats();
         void fullLogin(Player* player);
-        void CharacterEnumProc(QueryResult* result);
-        void LoadAccountDataProc(QueryResult* result);
+        void characterEnumProc(QueryResult* result);
+        void loadAccountDataProc(QueryResult* result);
 
     protected:
         void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
