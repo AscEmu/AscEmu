@@ -29,9 +29,9 @@ enum SpellAttributes
 {
     ATTRIBUTES_NULL                                 = 0x00000000,
     ATTRIBUTES_UNK2                                 = 0x00000001,
-    ATTRIBUTES_RANGED                               = 0x00000002,   // related to ranged??
+    ATTRIBUTES_RANGED                               = 0x00000002,   // Ranged attack (Arcane shot, Serpent sting etc...)
     ATTRIBUTES_ON_NEXT_ATTACK                       = 0x00000004,
-    ATTRIBUTES_UNK5                                 = 0x00000008,   // ATTRIBUTES_UNUSED0
+    ATTRIBUTES_UNK5                                 = 0x00000008,
     ATTRIBUTES_ABILITY                              = 0x00000010,
     ATTRIBUTES_TRADESPELL                           = 0x00000020,   // Tradeskill recipies
     ATTRIBUTES_PASSIVE                              = 0x00000040,
@@ -40,25 +40,25 @@ enum SpellAttributes
     ATTRIBUTES_TARGET_MAINHAND                      = 0x00000200,   // automatically select item from mainhand
     ATTRIBUTES_ON_NEXT_SWING_2                      = 0x00000400,   //completely the same as ATTRIBUTE_ON_NEXT_ATTACK for class spells. So difference somewhere in mob abilities.
     ATTRIBUTES_UNK13                                = 0x00000800,
-    ATTRIBUTES_DAY_ONLY                             = 0x00001000,
-    ATTRIBUTES_NIGHT_ONLY                           = 0x00002000,
-    ATTRIBUTES_ONLY_INDOORS                         = 0x00004000,
+    ATTRIBUTES_DAY_ONLY                             = 0x00001000,   // No spells in 3.3.5a
+    ATTRIBUTES_NIGHT_ONLY                           = 0x00002000,   // No spells in 3.3.5a
+    ATTRIBUTES_ONLY_INDOORS                         = 0x00004000,   // No spells in 3.3.5a
     ATTRIBUTES_ONLY_OUTDOORS                        = 0x00008000,
-    ATTRIBUTES_NOT_SHAPESHIFT                       = 0x00010000,
+    ATTRIBUTES_NOT_SHAPESHIFT                       = 0x00010000,   // Cannot be cast while shapeshifted
     ATTRIBUTES_REQ_STEALTH                          = 0x00020000,
     ATTRIBUTES_UNK20                                = 0x00040000,   //it's not : must be behind
-    ATTRIBUTES_LEVEL_DAMAGE_CALCULATION             = 0x00080000,
-    ATTRIBUTES_STOP_ATTACK                          = 0x00100000,   //switch off auto attack on use. Maim,Gouge,Disengage,Polymorph etc
-    ATTRIBUTES_CANT_BE_DPB                          = 0x00200000,   //can't be dodged, blocked, parried
+    ATTRIBUTES_LEVEL_DAMAGE_CALCULATION             = 0x00080000,   ///\ todo: implement
+    ATTRIBUTES_STOP_ATTACK                          = 0x00100000,   // Switches auto attack off (Gouge, Maim etc...)
+    ATTRIBUTES_CANT_BE_DPB                          = 0x00200000,   // Cannot be dodged, parried or blocked
     ATTRIBUTES_UNK24                                = 0x00400000,   // related to ranged
-    ATTRIBUTES_DEAD_CASTABLE                        = 0x00800000,   //castable while dead
-    ATTRIBUTES_MOUNT_CASTABLE                       = 0x01000000,   //castable on mounts
+    ATTRIBUTES_DEAD_CASTABLE                        = 0x00800000,   // Castable while dead
+    ATTRIBUTES_MOUNT_CASTABLE                       = 0x01000000,   // Castable while mounted
     ATTRIBUTES_TRIGGER_COOLDOWN                     = 0x02000000,   //also requires atributes ex = 32 ?
-    ATTRIBUTES_NEGATIVE                             = 0x04000000,   // most negative spells have this attribute
+    ATTRIBUTES_NEGATIVE                             = 0x04000000,   // Most negative spells have this attribute
     ATTRIBUTES_CASTABLE_WHILE_SITTING               = 0x08000000,
-    ATTRIBUTES_REQ_OOC                              = 0x10000000,   // ATTRIBUTES_REQ_OUT_OF_COMBAT
+    ATTRIBUTES_REQ_OOC                              = 0x10000000,   // Requires caster to be out of combat
     ATTRIBUTES_IGNORE_INVULNERABILITY               = 0x20000000,   // debuffs that can't be removed by any spell and spells that can't be resisted in any case
-    ATTRIBUTES_UNK32                                = 0x40000000,   // seems like IS_DIMINISHING but some spells not there (f.e. Gouge)
+    ATTRIBUTES_UNK32                                = 0x40000000,   ///\ todo: Heartbeat resist, not implemented
     ATTRIBUTES_CANT_CANCEL                          = 0x80000000    // seems like aura is not removeable by CMSG_CANCEL_AURA
 };
 
@@ -74,12 +74,12 @@ enum SpellAttributesEx
     ATTRIBUTESEX_CHANNELED_2                        = 0x00000040,   // 7 Channeled - [POSSIBLY: dynamite, grenades from engineering etc..]
     ATTRIBUTESEX_NEGATIVE                           = 0x00000080,   // 8
     ATTRIBUTESEX_REQ_OOC_TARGET                     = 0x00000100,   // 9 Spell req target should not be in combat
-    ATTRIBUTESEX_UNK11                              = 0x00000200,   // 10
+    ATTRIBUTESEX_REQ_FACING_TARGET                  = 0x00000200,   // 10 Requires caster to face target
     ATTRIBUTESEX_NO_INITIAL_AGGRO                   = 0x00000400,   // 11 guessed
     ATTRIBUTESEX_UNK13                              = 0x00000800,   // 12
     ATTRIBUTESEX_UNK14                              = 0x00001000,   // 13 related to pickpocket
     ATTRIBUTESEX_UNK15                              = 0x00002000,   // 14 related to remote control
-    ATTRIBUTESEX_UNK16                              = 0x00004000,   // 15
+    ATTRIBUTESEX_CHANNEL_FACE_TARGET                = 0x00004000,   // 15 Channeling makes you face target
     ATTRIBUTESEX_DISPEL_AURAS_ON_IMMUNITY           = 0x00008000,   // 16 remove auras on immunity - something like "grant immunity"
     ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE        = 0x00010000,   // 17 unaffected by school immunity - something like "grant immunity" too
     ATTRIBUTESEX_REMAIN_OOC                         = 0x00020000,   // 18
@@ -102,13 +102,13 @@ enum SpellAttributesEx
 enum SpellAttributesExB
 {
     ATTRIBUTESEXB_NULL                              = 0x00000000,   // 0
-    ATTRIBUTESEXB_UNK2                              = 0x00000001,   // 1
+    ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET      = 0x00000001,   // 1 Can be casted on dead target
     ATTRIBUTESEXB_UNK3                              = 0x00000002,   // 2 Can be used while stealthed
-    ATTRIBUTESEXB_UNK4                              = 0x00000004,   // 3 request pet maybe
+    ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT              = 0x00000004,   // 3 Ignores Line of Sight
     ATTRIBUTESEXB_UNK5                              = 0x00000008,   // 4 something todo with temp enchanted items
     ATTRIBUTESEXB_PARTY_EFFECTING_AURA              = 0x00000010,   // 5 Party affecting aura's
     ATTRIBUTESEXB_AUTOREPEAT                        = 0x00000020,   // 6 Autorepeat spells (Auto Shot, Shoot wand)
-    ATTRIBUTESEXB_UNK8                              = 0x00000040,   // 7 Polymorph spells
+    ATTRIBUTESEXB_CANT_TARGET_TAGGED                = 0x00000040,   // 7 Spells with this attribute cannot be casted on mobs tagged by another player
     ATTRIBUTESEXB_UNK9                              = 0x00000080,   // 8
     ATTRIBUTESEXB_UNUSED1                           = 0x00000100,   // 9 not set in 3.0.3
     ATTRIBUTESEXB_UNK11                             = 0x00000200,   // 10 used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
@@ -128,7 +128,7 @@ enum SpellAttributesExB
     ATTRIBUTESEXB_UNK25                             = 0x00800000,   // 24
     ATTRIBUTESEXB_UNK26                             = 0x01000000,   // 25
     ATTRIBUTESEXB_UNK27                             = 0x02000000,   // 26
-    ATTRIBUTESEXB_UNK28                             = 0x04000000,   // 27
+    ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY     = 0x04000000,   // 27
     ATTRIBUTESEXB_UNK29                             = 0x08000000,   // 28 fishing spells and enchanting weapons
     ATTRIBUTESEXB_UNK30                             = 0x10000000,   // 29 some secondairy spell triggers, especialy for lightning shield alike spells
     ATTRIBUTESEXB_CANT_CRIT                         = 0x20000000,   // 30 spell can't crit
@@ -147,11 +147,11 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_UNK7                              = 0x00000020,
     ATTRIBUTESEXC_UNK8                              = 0x00000040,
     ATTRIBUTESEXC_UNK9                              = 0x00000080,
-    ATTRIBUTESEXC_UNK10                             = 0x00000100,
+    ATTRIBUTESEXC_TARGET_ONLY_PLAYERS               = 0x00000100,   // Requires player target
     ATTRIBUTESEXC_UNK11                             = 0x00000200,
     ATTRIBUTESEXC_UNK12                             = 0x00000400,
     ATTRIBUTESEXC_BG_ONLY                           = 0x00000800,
-    ATTRIBUTESEXC_UNK14                             = 0x00001000,
+    ATTRIBUTESEXC_TARGET_ONLY_GHOSTS                = 0x00001000,   // Requires ghost target
     ATTRIBUTESEXC_UNK15                             = 0x00002000,
     ATTRIBUTESEXC_UNK16                             = 0x00004000,
     ATTRIBUTESEXC_PLAYER_RANGED_SPELLS              = 0x00008000,
@@ -186,14 +186,14 @@ enum SpellAttributesExD
     ATTRIBUTESEXD_TRIGGERED                         = 0x00000080,   // spells forced to be triggered
     ATTRIBUTESEXD_UNK6                              = 0x00000100,
     ATTRIBUTESEXD_TRIGGER_ACTIVATE                  = 0x00000200,   // trigger activate (Deep Freeze...)
-    ATTRIBUTESEXD_UNK7                              = 0x00000400,
+    ATTRIBUTESEXD_SHIV                              = 0x00000400,   // Only rogue's Shiv has this attribute in 3.3.5a
     ATTRIBUTESEXD_UNK8                              = 0x00000800,
     ATTRIBUTESEXD_UNK9                              = 0x00001000,
     ATTRIBUTESEXD_UNK10                             = 0x00002000,
     ATTRIBUTESEXD_NOT_BREAK_AURAS                   = 0x00004000,   // not breake auras by damage from this spell
     ATTRIBUTESEXD_UNK11                             = 0x00008000,
-    ATTRIBUTESEXD_NOT_IN_ARENA                      = 0x00010000,   // can not be used in arenas
-    ATTRIBUTESEXD_UNK12                             = 0x00020000,   // can be used in arenas
+    ATTRIBUTESEXD_NOT_IN_ARENAS                     = 0x00010000,   // Cannot be used in arenas
+    ATTRIBUTESEXD_CAN_BE_USED_IN_ARENAS             = 0x00020000,
     ATTRIBUTESEXD_UNK13                             = 0x00040000,
     ATTRIBUTESEXD_UNK14                             = 0x00080000,
     ATTRIBUTESEXD_UNK15                             = 0x00100000,
@@ -202,7 +202,7 @@ enum SpellAttributesExD
     ATTRIBUTESEXD_UNK18                             = 0x00800000,
     ATTRIBUTESEXD_UNK19                             = 0x01000000,
     ATTRIBUTESEXD_NOT_USED                          = 0x02000000,
-    ATTRIBUTESEXD_ONLY_IN_OUTLANDS                  = 0x04000000,   // can be used only in outland
+    ATTRIBUTESEXD_ONLY_IN_OUTLANDS                  = 0x04000000,   // Flying mounts maybe?
     ATTRIBUTESEXD_UNK20                             = 0x08000000,
     ATTRIBUTESEXD_UNK21                             = 0x10000000,
     ATTRIBUTESEXD_UNK22                             = 0x20000000,
@@ -226,7 +226,7 @@ enum SpellAttributesExE
     ATTRIBUTESEXE_HIDE_DURATION                     = 0x00000400,   // no duration for client
     ATTRIBUTESEXE_UNK13                             = 0x00000800,
     ATTRIBUTESEXE_UNK14                             = 0x00001000,
-    ATTRIBUTESEXE_UNK15                             = 0x00002000,   // haste effect duration
+    ATTRIBUTESEXE_HASTE_AFFECTS_DURATION            = 0x00002000,
     ATTRIBUTESEXE_UNK16                             = 0x00004000,
     ATTRIBUTESEXE_UNK17                             = 0x00008000,
     ATTRIBUTESEXE_ITEM_CLASS_CHECK                  = 0x00010000,   ///\todo this allows spells with EquippedItemClass to affect spells from other items if the required item is equipped
@@ -239,7 +239,7 @@ enum SpellAttributesExE
     ATTRIBUTESEXE_UNK25                             = 0x00800000,
     ATTRIBUTESEXE_UNK26                             = 0x01000000,
     ATTRIBUTESEXE_UNK27                             = 0x02000000,
-    ATTRIBUTESEXE_UNK28                             = 0x04000000,
+    ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK          = 0x04000000, // Used for spells which explode around target
     ATTRIBUTESEXE_UNK29                             = 0x08000000,
     ATTRIBUTESEXE_UNK30                             = 0x10000000,
     ATTRIBUTESEXE_UNK31                             = 0x20000000,
@@ -261,9 +261,9 @@ enum SpellAttributesExF
     ATTRIBUTESEXF_UNK10                             = 0x00000100,
     ATTRIBUTESEXF_UNK11                             = 0x00000200,
     ATTRIBUTESEXF_UNK12                             = 0x00000400,
-    ATTRIBUTESEXF_UNK13                             = 0x00000800,   // not in raid/instances
+    ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS   = 0x00000800,   // Cannot be casted in raids or heroic dungeons
     ATTRIBUTESEXF_UNUSED4                           = 0x00001000,   // castable on vehicle
-    ATTRIBUTESEXF_UNK15                             = 0x00002000,
+    ATTRIBUTESEXF_CAN_TARGET_INVISIBLE              = 0x00002000,
     ATTRIBUTESEXF_UNUSED5                           = 0x00004000,
     ATTRIBUTESEXF_UNUSED6                           = 0x00008000,   // 54368, 67892
     ATTRIBUTESEXF_UNUSED7                           = 0x00010000,
@@ -309,7 +309,7 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK20                             = 0x00080000,
     ATTRIBUTESEXG_UNK21                             = 0x00100000,
     ATTRIBUTESEXG_UNK22                             = 0x00200000,
-    ATTRIBUTESEXG_UNK23                             = 0x00400000,
+    ATTRIBUTESEXG_IGNORE_COLD_WEATHER_FLYING        = 0x00400000,
     ATTRIBUTESEXG_UNK24                             = 0x00800000,
     ATTRIBUTESEXG_UNK25                             = 0x01000000,
     ATTRIBUTESEXG_UNK26                             = 0x02000000,

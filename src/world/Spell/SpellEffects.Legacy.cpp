@@ -4103,7 +4103,8 @@ void Spell::SpellEffectAddHonor(uint8_t effectIndex)
 
     uint32 val = GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-    if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNK4) val /= 10;
+    // TODO: is this correct? -Appled
+    if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) val /= 10;
 
     val += 1;
 

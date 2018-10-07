@@ -50,7 +50,7 @@ void CreateDummySpell(uint32 id)
     sp->setId(id);
     sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
     sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
-    sp->setAttributesExB(ATTRIBUTESEXB_UNK4);   //4
+    sp->setAttributesExB(ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT);   //4
     sp->setCastingTimeIndex(1);
     sp->setProcChance(75);
     sp->setRangeIndex(13);

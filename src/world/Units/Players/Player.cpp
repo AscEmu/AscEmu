@@ -633,7 +633,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
     SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
     if (spellInfo != nullptr)
     {
-        for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             // If talent teaches another spell, remove it as well
             if (spellInfo->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
@@ -643,7 +643,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
                 SpellInfo const* taughtSpell = sSpellCustomizations.GetSpellInfo(taughtSpellId);
                 if (taughtSpell != nullptr)
                 {
-                    for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
+                    for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
                     {
                         if (taughtSpell->getEffect(u) == SPELL_EFFECT_LEARN_SPELL)
                         {

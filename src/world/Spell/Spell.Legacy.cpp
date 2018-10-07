@@ -80,18 +80,6 @@ enum SpellTargetSpecification
     TARGET_SPEC_DEAD = 2,
 };
 
-bool CanAttackCreatureType(uint32 TargetTypeMask, uint32 type)
-{
-    uint32 cmask = 1 << (type - 1);
-
-    if (type != 0 &&
-        TargetTypeMask != 0 &&
-        ((TargetTypeMask & cmask) == 0))
-        return false;
-    else
-        return true;
-}
-
 Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
@@ -928,7 +916,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     else
         cancastresult = canCast(false);
 
-    LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
+    if (cancastresult != 0)
+        LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
     if (cancastresult != SPELL_CANCAST_OK)
@@ -3877,10 +3866,6 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (target)
         {
-            // GM Flagged Players should be immune to other players' casts, but not their own.
-            if ((target != m_caster) && target->isPlayer() && static_cast<Player*>(target)->isGMFlagSet())
-                return SPELL_FAILED_BM_OR_INVISGOD;
-
             //you can't mind control someone already mind controlled
             switch (GetSpellInfo()->getId())
             {
@@ -3924,17 +3909,6 @@ uint8 Spell::CanCast(bool tolerate)
                     if (target->getSummonedByGuid() != m_caster->getGuid())
                         return SPELL_FAILED_BAD_TARGETS;
                 } break;
-            }
-
-            // Check if we can attack this creature type
-            if (target->isCreature())
-            {
-                Creature* cp = static_cast<Creature*>(target);
-                uint32 type = cp->GetCreatureProperties()->Type;
-                uint32 targettype = GetSpellInfo()->getTargetCreatureType();
-
-                if (!CanAttackCreatureType(targettype, type))
-                    return SPELL_FAILED_BAD_TARGETS;
             }
         }
 
@@ -4277,28 +4251,6 @@ uint8 Spell::CanCast(bool tolerate)
             if (!found)
                 return SPELL_FAILED_REQUIRES_SPELL_FOCUS;
         }
-
-#if VERSION_STRING > TBC
-        /**
-         *	Area requirement
-         */
-        if (GetSpellInfo()->getRequiresAreaId() > 0)
-        {
-            auto area_group = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
-            auto area = p_caster->GetArea();
-            for (uint8_t i = 0; i < 6; ++i)
-            {
-                if (area_group->AreaId[i] == area->id || (area->zone != 0 && area_group->AreaId[i] == area->zone))
-                    break;
-            }
-            /* i are not initaliazed (only in for loops) -- ask Zyres
-            if (i == 7)
-            {
-                return SPELL_FAILED_REQUIRES_AREA;
-            }
-            */
-        }
-#endif
     }
 
     /**
@@ -4618,12 +4570,6 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_AMMO;
                 }
 
-                if (worldConfig.terrainCollision.isCollisionEnabled)
-                {
-                    if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
-                        return SPELL_FAILED_LINE_OF_SIGHT;
-                }
-
                 if (target->isPlayer())
                 {
                     // disallow spell casting in sanctuary zones
@@ -4869,33 +4815,6 @@ uint8 Spell::CanCast(bool tolerate)
                             facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
                     } break;
                 }
-
-                /* burlex: units are always facing the target! */
-                if (p_caster && facing_flags != SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK)
-                {
-                    if (GetSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
-                    {
-                        // our spell is a ranged spell
-                        if (!p_caster->isInFront(target))
-                            return SPELL_FAILED_UNIT_NOT_INFRONT;
-                    }
-                    else
-                    {
-                        // our spell is not a ranged spell
-                        if (facing_flags == SPELL_INFRONT_STATUS_REQUIRE_INFRONT)
-                        {
-                            // must be in front
-                            if (!u_caster->isInFront(target))
-                                return SPELL_FAILED_UNIT_NOT_INFRONT;
-                        }
-                        else if (facing_flags == SPELL_INFRONT_STATUS_REQUIRE_INBACK)
-                        {
-                            // behind
-                            if (target->isInFront(u_caster))
-                                return SPELL_FAILED_NOT_BEHIND;
-                        }
-                    }
-                }
             }
 
             if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_SKINNING)  // skinning
@@ -4962,29 +4881,6 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != nullptr)
             {
-                switch (GetSpellInfo()->getId())
-                {
-                    // SPELL_HASH_GOUGE:
-                    case 1776:
-                    case 1777:
-                    case 8629:
-                    case 11285:
-                    case 11286:
-                    case 12540:
-                    case 13579:
-                    case 24698:
-                    case 28456:
-                    case 29425:
-                    case 34940:
-                    case 36862:
-                    case 38764:
-                    case 38863:
-                    {
-                        if (!target->isInFront(p_caster))
-                            return SPELL_FAILED_NOT_INFRONT;
-                    }
-                }
-
                 if (GetSpellInfo()->getCategory() == 1131) //Hammer of wrath, requires target to have 20- % of hp
                 {
                     if (target->getHealth() == 0)

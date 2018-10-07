@@ -7,9 +7,30 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAuras.h"
 #include "Definitions/AuraInterruptFlags.h"
 #include "Definitions/AuraStates.h"
+#include "Definitions/SpellCastTargetFlags.h"
+#include "Definitions/SpellDamageType.h"
+#include "Definitions/SpellEffectTarget.h"
+#include "Definitions/SpellInFrontStatus.h"
+#include "Definitions/SpellMechanics.h"
+#include "Definitions/SpellRanged.h"
+
 #include "Management/Battleground/Battleground.h"
+#include "Management/ItemInterface.h"
 #include "Map/Area/AreaStorage.hpp"
+#include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
+#include "Units/Creatures/Pet.h"
+
+bool Spell::canAttackCreatureType(Creature* target)
+{
+    // Skip check for Grounding Totem
+    if (target->getUInt32Value(UNIT_CREATED_BY_SPELL) == 8177)
+        return true;
+
+    const auto typeMask = GetSpellInfo()->getTargetCreatureType();
+    const auto mask = 1 << (target->GetCreatureProperties()->Type - 1);
+    return (target->GetCreatureProperties()->Type != 0 && typeMask != 0 && (typeMask & mask) == 0) ? false : true;
+}
 
 SpellCastResult Spell::canCast(bool tolerate)
 {
@@ -48,7 +69,7 @@ SpellCastResult Spell::canCast(bool tolerate)
             {
                 // Spells with longer than 10 minute cooldown cannot be casted in arena
                 const auto spellCooldown = GetSpellInfo()->getRecoveryTime() > GetSpellInfo()->getCategoryRecoveryTime() ? GetSpellInfo()->getRecoveryTime() : GetSpellInfo()->getCategoryRecoveryTime();
-                if (GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_NOT_IN_ARENA || (spellCooldown > 10 * MINUTE * IN_MILLISECONDS && !(GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_NOT_IN_ARENA)))
+                if (GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_NOT_IN_ARENAS || (spellCooldown > 10 * MINUTE * IN_MILLISECONDS && !(GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_NOT_IN_ARENAS)))
                     return SPELL_FAILED_NOT_IN_ARENA;
             }
 
@@ -72,12 +93,12 @@ SpellCastResult Spell::canCast(bool tolerate)
 
     if (u_caster != nullptr)
     {
-        // Check is caster alive
+        // Check if caster is alive
         if (!u_caster->isAlive() && !(GetSpellInfo()->getAttributes() & ATTRIBUTES_DEAD_CASTABLE || (m_triggeredSpell && !m_triggeredByAura)))
             return SPELL_FAILED_CASTER_DEAD;
 
         // Check if spell requires caster to be in combat
-        if (GetSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNK28 && !u_caster->CombatStatus.IsInCombat())
+        if (GetSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY && !u_caster->CombatStatus.IsInCombat())
             return SPELL_FAILED_CASTER_AURASTATE;
 
         auto requireCombat = true;
@@ -209,19 +230,225 @@ SpellCastResult Spell::canCast(bool tolerate)
                 return SPELL_FAILED_TARGET_AURASTATE;
         }
 
-        if (target->IsDead())
+        if (target->isCorpse())
         {
             // Player can't cast spells on corpses with bones only left
-            const auto corpseTarget = objmgr.GetCorpseByOwner(target->getGuidLow());
-            if (corpseTarget == nullptr || !corpseTarget->IsInWorld() || corpseTarget->GetCorpseState() == CORPSE_STATE_BONES)
+            const auto targetCorpse = objmgr.GetCorpseByOwner(target->getGuidLow());
+            if (targetCorpse == nullptr || !targetCorpse->IsInWorld() || targetCorpse->GetCorpseState() == CORPSE_STATE_BONES)
                 return SPELL_FAILED_BAD_TARGETS;
         }
 
         if (GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_CANT_TARGET_SELF && m_caster == target)
             return SPELL_FAILED_BAD_TARGETS;
 
+        // Check if spell requires target to be out of combat
         if (GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->getcombatstatus()->IsInCombat())
             return SPELL_FAILED_TARGET_AFFECTING_COMBAT;
+
+        if (!(GetSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAN_TARGET_INVISIBLE) && (u_caster != nullptr && !u_caster->canSee(target)))
+            return SPELL_FAILED_BAD_TARGETS;
+
+        if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_GHOSTS)
+        {
+            if (!target->hasAuraWithAuraEffect(SPELL_AURA_GHOST))
+                return SPELL_FAILED_TARGET_NOT_GHOST;
+        }
+        else
+        {
+            if (target->hasAuraWithAuraEffect(SPELL_AURA_GHOST))
+                return SPELL_FAILED_BAD_TARGETS;
+        }
+
+        // Check if target can be resurrected
+        ///\ Appled's personal note: move this to effect check later
+        if (GetSpellInfo()->hasEffect(SPELL_EFFECT_RESURRECT) || GetSpellInfo()->hasEffect(SPELL_EFFECT_RESURRECT_FLAT) || GetSpellInfo()->hasEffect(SPELL_EFFECT_SELF_RESURRECT))
+        {
+            if (target->isAlive())
+                return SPELL_FAILED_TARGET_NOT_DEAD;
+            if (target->hasAuraWithAuraEffect(SPELL_AURA_PREVENT_RESURRECTION))
+                return SPELL_FAILED_TARGET_CANNOT_BE_RESURRECTED;
+        }
+
+        if (m_caster != target)
+        {
+            if (p_caster != nullptr)
+            {
+                // Check if caster can attack this creature type
+                if (target->isCreature())
+                {
+                    if (!canAttackCreatureType(dynamic_cast<Creature*>(target)))
+                        return SPELL_FAILED_BAD_TARGETS;
+                }
+
+                // Check if target is already tagged
+                // Several spells cannot be casted at already tagged creatures
+                // TODO: implement this error message for skinning, mining and herbalism (mining and herbalism cata only)
+                if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CANT_TARGET_TAGGED && target->IsTagged())
+                {
+                    if (target->GetTaggerGUID() != p_caster->getGuid())
+                    {
+                        // Player isn't the tagger, check if player is in group with the tagger
+                        if (p_caster->InGroup())
+                        {
+                            const auto playerTagger = p_caster->GetMapMgrPlayer(target->GetTaggerGUID());
+                            if (playerTagger == nullptr || !p_caster->GetGroup()->HasMember(playerTagger))
+                                return SPELL_FAILED_CANT_CAST_ON_TAPPED;
+                        }
+                        else
+                            return SPELL_FAILED_CANT_CAST_ON_TAPPED;
+                    }
+                }
+
+                ///\ Appled's personal note: move this to effect check later
+                if (GetSpellInfo()->getMechanicsType() == MECHANIC_DISARMED)
+                {
+                    if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+                        return SPELL_FAILED_TARGET_NO_WEAPONS;
+
+                    if (target->isPlayer())
+                    {
+                        // Check if target has no weapon or if target is already disarmed
+                        const auto mainHandWeapon = dynamic_cast<Player*>(target)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                        if (mainHandWeapon == nullptr || mainHandWeapon->getItemProperties()->Class != ITEM_CLASS_WEAPON)
+                            return SPELL_FAILED_TARGET_NO_WEAPONS;
+                    }
+                    else
+                    {
+                        if (target->getVirtualItemSlotId(MELEE) == 0)
+                            return SPELL_FAILED_TARGET_NO_WEAPONS;
+                    }
+                }
+
+                // GM flagged players should be immune to other players' casts, but not their own
+                if (target->isPlayer() && (dynamic_cast<Player*>(target)->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) || dynamic_cast<Player*>(target)->m_isGmInvisible))
+                    return SPELL_FAILED_BM_OR_INVISGOD;
+            }
+
+            // Do facing checks only for unit casters
+            if (u_caster != nullptr)
+            {
+                // Target must be in front of caster
+                // Check for generic ranged spells as well
+                if (GetSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || GetSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+                {
+                    if (!u_caster->isInFront(target))
+                        return SPELL_FAILED_UNIT_NOT_INFRONT;
+                }
+
+                // Target must be behind caster
+                if (GetSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INBACK)
+                {
+                    if (u_caster->isInFront(target))
+                        return SPELL_FAILED_UNIT_NOT_BEHIND;
+                }
+
+                // Caster must be behind the target
+                if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_BEHIND_TARGET && GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET && target->isInFront(u_caster))
+                {
+                    // Throw spell has these attributes in 3.3.5a, ignore
+                    if (GetSpellInfo()->getId() != SPELL_RANGED_THROW
+#if VERSION_STRING >= TBC
+                        // Druid - Pounce, "Patch 2.0.3 - Pounce no longer requires the druid to be behind the target."
+                        && !(GetSpellInfo()->getSpellFamilyName() == 7 && GetSpellInfo()->getSpellFamilyFlags(0) == 0x20000)
+#endif
+#if VERSION_STRING >= WotLK
+                        // Rogue - Mutilate, "Patch 3.0.2 - Mutilate no longer requires you be behind the target."
+                        && !(GetSpellInfo()->getSpellFamilyName() == 8 && GetSpellInfo()->getSpellFamilyFlags(1) == 0x200000)
+#endif
+                        )
+                        return SPELL_FAILED_NOT_BEHIND;
+                }
+
+                // Caster must be in front of target
+                // in 3.3.5a only rogue's and npcs' Gouge spell
+                if ((GetSpellInfo()->getAttributes() == (ATTRIBUTES_ABILITY | ATTRIBUTES_NOT_SHAPESHIFT | ATTRIBUTES_UNK20 | ATTRIBUTES_STOP_ATTACK)
+                    || GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET) && !target->isInFront(u_caster))
+                    return SPELL_FAILED_NOT_INFRONT;
+            }
+
+            // Check if spell can be casted on dead target
+            if (!((GetSpellInfo()->getTargets() & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_UNIT_CORPSE)) ||
+                GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) && !target->isAlive())
+                return SPELL_FAILED_TARGETS_DEAD;
+
+            if (target->hasAuraWithAuraEffect(SPELL_AURA_SPIRIT_OF_REDEMPTION))
+                return SPELL_FAILED_BAD_TARGETS;
+
+            // Line of Sight check
+            if (worldConfig.terrainCollision.isCollisionEnabled)
+            {
+                if (m_caster->IsInWorld() && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
+                    (m_caster->GetMapId() != target->GetMapId() || !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ())))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
+            }
+
+            if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS && !target->isPlayer())
+                return SPELL_FAILED_TARGET_NOT_PLAYER;
+        }
+    }
+
+    // Check if spell effect requires pet target
+    if (p_caster != nullptr)
+    {
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (GetSpellInfo()->getEffectImplicitTargetA(i) == EFF_TARGET_PET)
+            {
+                const auto pet = p_caster->GetSummon();
+                if (pet == nullptr)
+                    return m_triggeredByAura ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NO_PET;
+                else if (!pet->isAlive())
+                    return SPELL_FAILED_TARGETS_DEAD;
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////
+    // Area checks
+
+    // Check Line of Sight for spells with a destination
+    if (m_targets.hasDestination() && worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        if (m_caster->IsInWorld() && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
+            !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_targets.destination().x, m_targets.destination().y, m_targets.destination().z))
+            return SPELL_FAILED_LINE_OF_SIGHT;
+    }
+
+    if (p_caster != nullptr)
+    {
+        // Check if spell requires certain area
+        // TODO: load area DBC file for tbc
+#if VERSION_STRING >= WotLK
+        if (GetSpellInfo()->getRequiresAreaId() > 0)
+        {
+            auto found = false;
+            auto areaGroup = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
+            const auto areaEntry = p_caster->GetArea();
+            while (areaGroup != nullptr)
+            {
+                for (auto i = 0; i < 6; ++i)
+                {
+                    if (areaGroup->AreaId[i] == areaEntry->id || (areaEntry->zone != 0 && areaGroup->AreaId[i] == areaEntry->zone))
+                        found = true;
+                }
+
+                if (found || areaGroup->next_group == 0)
+                    break;
+
+                areaGroup = sAreaGroupStore.LookupEntry(areaGroup->next_group);
+            }
+
+            if (!found)
+                return SPELL_FAILED_INCORRECT_AREA;
+        }
+#endif
+
+        // Check if spell can be casted in heroic dungeons or in raids
+        if (GetSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
+        {
+            if (p_caster->IsInWorld() && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == MODE_HEROIC))
+                return SPELL_FAILED_NOT_IN_RAID_INSTANCE;
+        }
     }
 
     // Call legacy CanCast for yet unhandled cases
