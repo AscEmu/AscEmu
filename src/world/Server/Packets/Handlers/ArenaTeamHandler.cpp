@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgArenaTeamQuery.h"
 #include "Server/Packets/CmsgArenaTeamInvite.h"
+#include "Server/Packets/CmsgArenaTeamRemove.h"
 
 using namespace AscEmu::Packets;
 
@@ -97,13 +98,11 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32_t teamId;
-    std::string name;
+    CmsgArenaTeamRemove srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> teamId;
-    recvPacket >> name;
-
-    auto arenaTeam = objmgr.GetArenaTeamById(teamId);
+    auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
         GetPlayer()->SoftDisconnect();
@@ -124,7 +123,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerInfo = objmgr.GetPlayerInfoByName(name.c_str());
+    const auto playerInfo = objmgr.GetPlayerInfoByName(srlPacket.playerName.c_str());
     if (playerInfo == nullptr)
     {
         SystemMessage("That player cannot be found.");

@@ -13,6 +13,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAreatrigger.h
    ${PATH_PREFIX}/CmsgArenaTeamInvite.h
    ${PATH_PREFIX}/CmsgArenaTeamQuery.h
+   ${PATH_PREFIX}/CmsgArenaTeamRemove.h
    ${PATH_PREFIX}/CmsgAttackSwing.h
    ${PATH_PREFIX}/CmsgAuctionListIBidderItemse.h
    ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h
