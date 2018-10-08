@@ -11,6 +11,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQuery.h
    ${PATH_PREFIX}/CmsgAreaSpiritHealerQueue.h
    ${PATH_PREFIX}/CmsgAreatrigger.h
+   ${PATH_PREFIX}/CmsgArenaTeamQuery.h
    ${PATH_PREFIX}/CmsgAttackSwing.h
    ${PATH_PREFIX}/CmsgAuctionListIBidderItemse.h
    ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h

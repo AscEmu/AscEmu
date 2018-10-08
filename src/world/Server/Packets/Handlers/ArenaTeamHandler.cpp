@@ -8,16 +8,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/CmsgArenaTeamQuery.h"
 
 using namespace AscEmu::Packets;
 
 void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 {
-    uint32_t teamId;
+    CmsgArenaTeamQuery srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> teamId;
-
-    if (auto arenaTeam = objmgr.GetArenaTeamById(teamId))
+    if (auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId))
     {
         WorldPacket data(1000);
         arenaTeam->Query(data);
