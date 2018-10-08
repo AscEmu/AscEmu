@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamQuery.h"
 #include "Server/Packets/CmsgArenaTeamInvite.h"
 #include "Server/Packets/CmsgArenaTeamRemove.h"
+#include "Server/Packets/CmsgArenaTeamLeave.h"
 
 using namespace AscEmu::Packets;
 
@@ -212,11 +213,11 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32_t teamId;
+    CmsgArenaTeamLeave srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> teamId;
-
-    auto arenaTeam = objmgr.GetArenaTeamById(teamId);
+    auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
         GetPlayer()->SoftDisconnect();
