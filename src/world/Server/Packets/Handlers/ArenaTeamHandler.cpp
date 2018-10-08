@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamRemove.h"
 #include "Server/Packets/CmsgArenaTeamLeave.h"
 #include "Server/Packets/CmsgArenaTeamDisband.h"
+#include "Server/Packets/CmsgArenaTeamLeader.h"
 
 using namespace AscEmu::Packets;
 
@@ -288,13 +289,11 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32_t teamId;
-    std::string name;
+    CmsgArenaTeamLeader srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> teamId;
-    recvPacket >> name;
-
-    auto arenaTeam = objmgr.GetArenaTeamById(teamId);
+    auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
         GetPlayer()->SoftDisconnect();
@@ -318,7 +317,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerInfo = objmgr.GetPlayerInfoByName(name.c_str());
+    const auto playerInfo = objmgr.GetPlayerInfoByName(srlPacket.playerName.c_str());
     if (playerInfo == nullptr)
     {
         SystemMessage("That player cannot be found.");
