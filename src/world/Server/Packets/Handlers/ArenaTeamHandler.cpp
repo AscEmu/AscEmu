@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamLeave.h"
 #include "Server/Packets/CmsgArenaTeamDisband.h"
 #include "Server/Packets/CmsgArenaTeamLeader.h"
+#include "Server/Packets/CmsgArenaTeamRoster.h"
 
 using namespace AscEmu::Packets;
 
@@ -335,10 +336,11 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
 {
-    uint32_t teamId;
-    recvPacket >> teamId;
+    CmsgArenaTeamRoster srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    if (auto arenaTeam = objmgr.GetArenaTeamById(teamId))
+    if (auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId))
     {
         WorldPacket data(1000);
         arenaTeam->Roster(data);

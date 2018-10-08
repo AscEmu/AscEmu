@@ -17,6 +17,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgArenaTeamLeave.h
    ${PATH_PREFIX}/CmsgArenaTeamQuery.h
    ${PATH_PREFIX}/CmsgArenaTeamRemove.h
+   ${PATH_PREFIX}/CmsgArenaTeamRoster.h
    ${PATH_PREFIX}/CmsgAttackSwing.h
    ${PATH_PREFIX}/CmsgAuctionListIBidderItemse.h
    ${PATH_PREFIX}/CmsgAuctionListIPendingSales.h
