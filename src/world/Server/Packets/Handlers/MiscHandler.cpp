@@ -1021,7 +1021,7 @@ void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
 
-    SendAccountDataTimes(GLOBAL_CACHE_MASK);
+    sendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
 void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
@@ -1995,3 +1995,177 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 }
 
 #endif
+
+void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
+{
+    if (!_player->IsInWorld())
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMG_GET_MIRRORIMAGE_DATA");
+
+    uint64_t GUID;
+
+    recv_data >> GUID;
+
+    Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
+    if (Image == nullptr)
+        return;					// ups no unit found with that GUID on the map. Spoofed packet?
+
+    if (Image->getCreatedByGuid() == 0)
+        return;
+
+    uint64_t CasterGUID = Image->getCreatedByGuid();
+    Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
+
+    if (Caster == nullptr)
+        return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
+
+    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
+
+    data << uint64_t(GUID);
+    data << uint32_t(Caster->getDisplayId());
+    data << uint8_t(Caster->getRace());
+
+    if (Caster->isPlayer())
+    {
+        Player* pcaster = dynamic_cast<Player*>(Caster);
+
+        data << uint8_t(pcaster->getGender());
+        data << uint8_t(pcaster->getClass());
+
+        // facial features
+        data << uint8_t(pcaster->getSkinColor());
+        data << uint8_t(pcaster->getFace());
+        data << uint8_t(pcaster->getHairStyle());
+        data << uint8_t(pcaster->getHairColor());
+        data << uint8_t(pcaster->getFacialFeatures());
+
+        if (pcaster->IsInGuild())
+            data << uint32_t(pcaster->getGuildId());
+        else
+            data << uint32_t(0);
+
+        static const uint32_t imageitemslots[] =
+        {
+            EQUIPMENT_SLOT_HEAD,
+            EQUIPMENT_SLOT_SHOULDERS,
+            EQUIPMENT_SLOT_BODY,
+            EQUIPMENT_SLOT_CHEST,
+            EQUIPMENT_SLOT_WAIST,
+            EQUIPMENT_SLOT_LEGS,
+            EQUIPMENT_SLOT_FEET,
+            EQUIPMENT_SLOT_WRISTS,
+            EQUIPMENT_SLOT_HANDS,
+            EQUIPMENT_SLOT_BACK,
+            EQUIPMENT_SLOT_TABARD
+        };
+
+        for (uint8_t i = 0; i < 11; ++i)
+        {
+            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
+            if (item != nullptr)
+                data << uint32_t(item->getItemProperties()->DisplayInfoID);
+            else
+                data << uint32_t(0);
+        }
+    }
+    else // do not send player data for creatures
+    {
+        data << uint8_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
+    }
+
+    SendPacket(&data);
+
+    LogDebugFlag(LF_OPCODE, "Sent SMSG_MIRRORIMAGE_DATA");
+}
+
+#if VERSION_STRING > TBC
+void WorldSession::sendClientCacheVersion(uint32 version)
+{
+    WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
+    data << uint32_t(version);
+    SendPacket(&data);
+}
+#endif
+
+void WorldSession::sendAccountDataTimes(uint32 mask)
+{
+#if VERSION_STRING == TBC
+    StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+    for (auto i = 0; i < 32; ++i)
+        data << uint32_t(0);
+    SendPacket(&data);
+    return;
+
+    MD5Hash md5hash;
+    for (int i = 0; i < 8; ++i)
+    {
+        AccountDataEntry* acct_data = GetAccountData(i);
+
+        if (!acct_data->data)
+        {
+            data << uint64(0) << uint64(0);
+            continue;
+        }
+        md5hash.Initialize();
+        md5hash.UpdateData((const uint8_t*)acct_data->data, acct_data->sz);
+        md5hash.Finalize();
+
+        data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
+    }
+#else
+    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
+    data << uint32_t(UNIXTIME);
+    data << uint8_t(1);
+    data << uint32_t(mask);
+    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    {
+        if (mask & (1 << i))
+            data << uint32(0);
+    }
+#endif
+    SendPacket(&data);
+}
+
+void WorldSession::sendMOTD()
+{
+    WorldPacket data(SMSG_MOTD, 50);
+    data << uint32_t(0);
+    uint32_t linecount = 0;
+    std::string str_motd = worldConfig.getMessageOfTheDay();
+    std::string::size_type nextpos;
+
+    std::string::size_type pos = 0;
+    while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
+    {
+        if (nextpos != pos)
+        {
+            data << str_motd.substr(pos, nextpos - pos);
+            ++linecount;
+        }
+        pos = nextpos + 1;
+    }
+
+    if (pos < str_motd.length())
+    {
+        data << str_motd.substr(pos);
+        ++linecount;
+    }
+
+    data.put(0, linecount);
+
+    SendPacket(&data);
+}
