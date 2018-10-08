@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgArenaTeamQuery.h"
+#include "Server/Packets/CmsgArenaTeamInvite.h"
 
 using namespace AscEmu::Packets;
 
@@ -33,13 +34,11 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32_t teamId;
-    std::string playerName;
+    CmsgArenaTeamInvite srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> teamId;
-    recvPacket >> playerName;
-
-    auto arenaTeam = objmgr.GetArenaTeamById(teamId);
+    auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
         return;
 
@@ -49,10 +48,10 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto player = objmgr.GetPlayer(playerName.c_str(), false);
+    auto player = objmgr.GetPlayer(srlPacket.playerName.c_str(), false);
     if (player == nullptr)
     {
-        SystemMessage("Player `%s` is non-existent or not online.", playerName.c_str());
+        SystemMessage("Player `%s` is non-existent or not online.", srlPacket.playerName.c_str());
         return;
     }
 
