@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/Packets/CmsgUnlearnSkill.h"
 #include "Server/Packets/CmsgLearnTalent.h"
+#include "Server/Packets/CmsgLearnTalentMultiple.h"
 
 using namespace AscEmu::Packets;
 
@@ -54,47 +55,16 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
     _player->resetTalents();
 }
 
-#if VERSION_STRING != Cata
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
-    uint32_t talentCount;
-    uint32_t talentId;
-    uint32_t talentRank;
+    CmsgLearnTalentMultiple srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
+    LogDebugFlag(LF_OPCODE, "Recieved CMSG_LEARN_TALENTS_MULTIPLE");
 
-    recvPacket >> talentCount;
-
-    for (uint32 i = 0; i < talentCount; ++i)
-    {
-        recvPacket >> talentId;
-        recvPacket >> talentRank;
-
-        _player->learnTalent(talentId, talentRank);
-    }
+    for (auto learnTalent : srlPacket.multipleTalents)
+        _player->learnTalent(learnTalent.talentId, learnTalent.talentRank);
 
     _player->smsg_TalentsInfo(false);
 }
-#else
-void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
-{
-    int32_t current_tab;
-    uint32_t talent_count;
-    uint32_t talent_id;
-    uint32_t talent_rank;
-
-    //if currentTab -1 player has already the spec.
-    recvPacket >> current_tab;
-    recvPacket >> talent_count;
-
-    for (uint32_t i = 0; i < talent_count; ++i)
-    {
-        recvPacket >> talent_id;
-        recvPacket >> talent_rank;
-
-        _player->learnTalent(talent_id, talent_rank);
-    }
-
-    _player->smsg_TalentsInfo(false);
-}
-#endif
