@@ -125,6 +125,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgItemrefundrequest.h
    ${PATH_PREFIX}/CmsgItemTextQuery.h
    ${PATH_PREFIX}/CmsgJoinChannel.h
+   ${PATH_PREFIX}/CmsgLearnTalent.h
    ${PATH_PREFIX}/CmsgLeaveChannel.h
    ${PATH_PREFIX}/CmsgLfgSetRoles.h
    ${PATH_PREFIX}/CmsgLfgTeleport.h

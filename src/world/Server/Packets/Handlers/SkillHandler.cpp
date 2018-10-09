@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/Packets/CmsgUnlearnSkill.h"
+#include "Server/Packets/CmsgLearnTalent.h"
 
 using namespace AscEmu::Packets;
 
@@ -34,13 +35,11 @@ void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
 {
-    uint32_t talentId;
-    uint32_t requestedRank;
+    CmsgLearnTalent srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> talentId;
-    recvPacket >> requestedRank;
-
-    _player->learnTalent(talentId, requestedRank);
+    _player->learnTalent(srlPacket.talentId, srlPacket.requestedRank);
     _player->smsg_TalentsInfo(false);
 }
 
