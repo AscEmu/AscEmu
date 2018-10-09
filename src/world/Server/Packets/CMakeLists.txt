@@ -188,6 +188,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
    ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h
    ${PATH_PREFIX}/CmsgResurrectResponse.h
+   ${PATH_PREFIX}/CmsgSearchLfgJoin.h
    ${PATH_PREFIX}/CmsgSellItem.h
    ${PATH_PREFIX}/CmsgSendMail.h
    ${PATH_PREFIX}/CmsgSetActionbarToggles.h

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLfgSetRoles.h"
 #include "Server/Packets/CmsgLfgProposalResult.h"
 #include "Server/Packets/SmsgLfgRoleChosen.h"
+#include "Server/Packets/CmsgSearchLfgJoin.h"
 
 using namespace AscEmu::Packets;
 
@@ -549,9 +550,12 @@ void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
 {
-    uint32_t entry;                         // Raid id to search
-    recvPacket >> entry;
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid %lld dungeon entry: %u", _player->getGuid(), entry);
+    CmsgSearchLfgJoin srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    LogDebugFlag(LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid %lld dungeon entry: %u",
+        _player->getGuid(), srlPacket.entry);
 }
 
 void WorldSession::handleLfgSearchLeaveOpcode(WorldPacket& recvPacket)
