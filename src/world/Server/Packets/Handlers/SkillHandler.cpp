@@ -6,23 +6,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/ManagedPacket.h"
+#include "Server/Packets/CmsgUnlearnSkill.h"
 
 using namespace AscEmu::Packets;
 
 
 void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 {
-    uint32_t skillLineId;
+    CmsgUnlearnSkill srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    recvPacket >> skillLineId;
-
-    _player->RemoveSpellsFromLine(skillLineId);
-    _player->_RemoveSkillLine(skillLineId);
+    _player->RemoveSpellsFromLine(srlPacket.skillLineId);
+    _player->_RemoveSkillLine(srlPacket.skillLineId);
 
     uint32_t remainingPoints = _player->getFreePrimaryProfessionPoints();
     if (remainingPoints == _player->getFreePrimaryProfessionPoints())
     {
-        const auto skillLineEntry = sSkillLineStore.LookupEntry(skillLineId);
+        const auto skillLineEntry = sSkillLineStore.LookupEntry(srlPacket.skillLineId);
         if (!skillLineEntry)
             return;
 

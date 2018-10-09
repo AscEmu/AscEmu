@@ -219,6 +219,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgTrainerList.h
    ${PATH_PREFIX}/CmsgTurnInPetition.h
    ${PATH_PREFIX}/CmsgTutorialFlag.h
+   ${PATH_PREFIX}/CmsgUnlearnSkill.h
    ${PATH_PREFIX}/CmsgUnstablePet.h
    ${PATH_PREFIX}/CmsgUpdateAccountData.h
    ${PATH_PREFIX}/CmsgUseItem.h
