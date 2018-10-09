@@ -21,9 +21,6 @@ namespace AscEmu { namespace Packets
     class CmsgLearnTalentMultiple : public ManagedPacket
     {
     public:
-#if VERSION_STRING == Cata
-        int32_t currentTab;
-#endif
         uint32_t talentCount;
         std::vector<MultipleTalents> multipleTalents;
 
@@ -46,9 +43,6 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Cata
-            packet >> currentTab;
-#endif
             packet >> talentCount;
 
             MultipleTalents multiTalent{};

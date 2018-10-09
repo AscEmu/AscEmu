@@ -55,6 +55,7 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
     _player->resetTalents();
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
     CmsgLearnTalentMultiple srlPacket;
@@ -68,3 +69,25 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 
     _player->smsg_TalentsInfo(false);
 }
+#else	
+void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
+{
+    int32_t current_tab;
+    uint32_t talent_count;
+    uint32_t talent_id;
+    uint32_t talent_rank;
+    //if currentTab -1 player has already the spec.	
+    recvPacket >> current_tab;
+    recvPacket >> talent_count;
+
+    for (uint32_t i = 0; i < talent_count; ++i)
+    {
+        recvPacket >> talent_id;
+        recvPacket >> talent_rank;
+
+        _player->learnTalent(talent_id, talent_rank);
+    }
+
+    _player->smsg_TalentsInfo(false);
+}
+#endif
