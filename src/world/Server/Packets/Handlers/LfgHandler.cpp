@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLfgSetBootVote.h"
 #include "Server/Packets/CmsgLfgSetRoles.h"
 #include "Server/Packets/CmsgLfgProposalResult.h"
+#include "Server/Packets/SmsgLfgRoleChosen.h"
 
 using namespace AscEmu::Packets;
 
@@ -205,12 +206,7 @@ void WorldSession::sendLfgRoleChosen(uint64_t guid, uint8_t roles)
 #if VERSION_STRING > TBC
     LogDebugFlag(LF_OPCODE, "SMSG_LFG_ROLE_CHOSEN %lld guid: %lld roles: %u", _player->getGuid(), guid, roles);
 
-    WorldPacket data(SMSG_LFG_ROLE_CHOSEN, 8 + 1 + 4);
-
-    data << uint64_t(guid);                                  // Guid
-    data << uint8_t(roles > 0);                              // Ready
-    data << uint32_t(roles);                                 // Roles
-    SendPacket(&data);
+    SendPacket(SmsgLfgRoleChosen(guid, roles > 0 ? 1 : 0, roles).serialise().get());
 #endif
 }
 
