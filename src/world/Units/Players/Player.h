@@ -519,6 +519,9 @@ public:
     void setPlayerFieldBytes2(uint32_t bytes);
     // playerfieldbytes2 end
 
+    uint32_t getGlyphsEnabled() const;
+    void setGlyphsEnabled(uint32_t glyphs);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
