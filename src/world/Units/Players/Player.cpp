@@ -181,6 +181,9 @@ void Player::setActionBarId(uint8_t actionBarId) { write(playerData()->player_fi
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
 
+uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled; }
+void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

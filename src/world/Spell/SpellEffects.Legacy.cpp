@@ -4802,7 +4802,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         return;
 
     // check if glyph is locked (obviously)
-    if (!(p_caster->getUInt32Value(PLAYER_GLYPHS_ENABLED) & (1 << m_glyphslot)))
+    if (!(p_caster->getGlyphsEnabled() & (1 << m_glyphslot)))
     {
         SendCastResult(SPELL_FAILED_GLYPH_SOCKET_LOCKED);
         return;

@@ -12372,7 +12372,7 @@ void Player::UpdateGlyphs()
         level = DBC_PLAYER_LEVEL_CAP;
 
     // Enable number of glyphs depending on level
-    setUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
+    setGlyphsEnabled(glyphMask[level]);
 }
 #endif
 
@@ -12423,7 +12423,7 @@ void Player::UpdateGlyphs()
         slotMask = (GS_MASK_LEVEL_25 | GS_MASK_LEVEL_50 | GS_MASK_LEVEL_75);
     }
 
-    setUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
+    setGlyphsEnabled(slotMask);
 }
 #endif
 
