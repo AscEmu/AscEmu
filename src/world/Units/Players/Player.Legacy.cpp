@@ -974,7 +974,7 @@ bool Player::Create(CharCreate& charCreateContent)
     setPvpRank(getPvpRank());   //useless
 
     setNextLevelXp(400);
-    setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
+    setPlayerFieldBytes(0x08);
     setModCastSpeed(1.0f);
     setMaxLevel(worldConfig.player.playerLevelCap);
 
@@ -2519,7 +2519,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     ss << getPlayerFlags() << ","
-        << m_uint32Values[PLAYER_FIELD_BYTES] << ",";
+        << getPlayerFieldBytes() << ",";
 
     if (in_arena)
     {
@@ -3113,7 +3113,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setPlayerBytes2(get_next_field.GetUInt32());
     setPlayerGender(getGender());
     setPlayerFlags(get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
+    setPlayerFieldBytes(get_next_field.GetUInt32());
 
     m_position.x = get_next_field.GetFloat();
     m_position.y = get_next_field.GetFloat();
@@ -3858,7 +3858,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setPlayerBytes2(get_next_field.GetUInt32());
     setPlayerGender(getGender());
     setPlayerFlags(get_next_field.GetUInt32());
-    setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
+    setPlayerFieldBytes(get_next_field.GetUInt32());
     //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
 
     m_position.x = get_next_field.GetFloat();

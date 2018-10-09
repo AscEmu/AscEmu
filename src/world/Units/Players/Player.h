@@ -506,6 +506,19 @@ public:
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
 
+    // playerfieldbytes start
+    uint32_t getPlayerFieldBytes() const;
+    void setPlayerFieldBytes(uint32_t bytes);
+
+    uint8_t getActionBarId() const;
+    void setActionBarId(uint8_t actionBarId);
+    // playerfieldbytes end
+
+    // playerfieldbytes2 start
+    uint32_t getPlayerFieldBytes2() const;
+    void setPlayerFieldBytes2(uint32_t bytes);
+    // playerfieldbytes2 end
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);

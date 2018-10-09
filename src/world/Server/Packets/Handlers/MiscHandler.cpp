@@ -515,7 +515,7 @@ void WorldSession::handleSetActionBarTogglesOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", srlPacket.actionbarId);
 
-    _player->setByteValue(PLAYER_FIELD_BYTES, 2, srlPacket.actionbarId);
+    _player->setActionBarId(srlPacket.actionbarId);
 }
 
 void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
