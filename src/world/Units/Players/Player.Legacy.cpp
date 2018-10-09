@@ -982,8 +982,8 @@ bool Player::Create(CharCreate& charCreateContent)
     SetGold(worldConfig.player.startGoldAmount);
 
 
-    for (uint16 x = 0; x < 7; x++)
-        setFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
+    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+        setModDamageDonePct(1.00f, x);
 
     //\todo not sure if this is what we want.
     setWatchedFaction(std::numeric_limits<uint32_t>::max());
@@ -3129,8 +3129,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         CalcStat(i);
 
 #if VERSION_STRING != Classic
-    for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
-        setFloatValue(x, 1.0f);
+    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+        setModDamageDonePct(1.00f, x);
 #endif
 
     // Normal processing...
@@ -3878,8 +3878,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     ///    SetFloatValue(x, 0.0f);
 
 #if VERSION_STRING != Classic
-    for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
-        setFloatValue(x, 1.0f);
+    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+        setModDamageDonePct(1.00f, x);
 #endif
 
     // Normal processing...

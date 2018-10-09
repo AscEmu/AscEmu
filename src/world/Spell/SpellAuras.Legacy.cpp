@@ -5761,7 +5761,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
                 if (mod->m_miscValue & ((uint32)1 << x))
                 {
                     // display to client (things that are weapon dependant don't get displayed)
-                    p_target->modFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, val);
+                    p_target->setModDamageDonePct(p_target->getModDamageDonePct(x) + val, x);
                 }
             }
         }

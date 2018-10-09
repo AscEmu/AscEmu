@@ -172,6 +172,9 @@ void Player::setMaxLevel(uint32_t level)
 #endif 
 }
 
+float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
+void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
+
 uint32_t Player::getPlayerFieldBytes() const { return playerData()->player_field_bytes.raw; }
 void Player::setPlayerFieldBytes(uint32_t bytes) { write(playerData()->player_field_bytes.raw, bytes); }
 
