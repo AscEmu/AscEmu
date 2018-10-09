@@ -519,6 +519,9 @@ public:
     void setPlayerFieldBytes2(uint32_t bytes);
     // playerfieldbytes2 end
 
+    float getModDamageDonePct(uint8_t shool) const;
+    void setModDamageDonePct(float damagePct, uint8_t shool);
+
     uint32_t getGlyphsEnabled() const;
     void setGlyphsEnabled(uint32_t glyphs);
 
@@ -993,7 +996,7 @@ public:
             if (school >= SCHOOL_COUNT)
                 return 0;
 
-            return getFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + school);
+            return getModDamageDonePct(school);
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
