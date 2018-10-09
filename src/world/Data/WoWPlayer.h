@@ -69,6 +69,29 @@ union
     uint32_t raw;
 } typedef player_bytes_3_union;
 
+union
+{
+    struct
+    {
+        uint8_t flags; // not used
+        uint8_t rafLevel; // not used
+        uint8_t actionBarId;
+        uint8_t maxPvpRank; // not used
+    } s;
+    uint32_t raw;
+} typedef player_field_bytes_union;
+
+union
+{
+    struct
+    {
+        uint16_t overrideSpellId;
+        uint8_t ignorePowerRegenPredictionMask; // not used
+        uint8_t auraVision; //not used
+    } s;
+    uint32_t raw;
+} typedef player_field_bytes_2_union;
+
 // Adjusted values.
 #if VERSION_STRING == Classic
 #define WOWPLAYER_QUEST_COUNT 20
@@ -146,7 +169,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
     float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_bytes;
+    player_field_bytes_union player_field_bytes;
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
@@ -162,7 +185,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_yersterday_contribution;
     uint32_t field_last_week_contribution;
     uint32_t field_last_week_rank;
-    uint32_t player_field_bytes_2;
+    player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
 };
@@ -252,7 +275,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_mod_healing_done;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;
-    uint32_t field_bytes;
+    player_field_bytes_union player_field_bytes;
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
@@ -262,7 +285,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
-    uint32_t player_field_bytes_2;
+    player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
     uint32_t field_arena_team_info[WOWPLAYER_ARENA_TEAM_INFO_COUNT];
@@ -364,7 +387,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_mod_healing_done_pct;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;
-    uint32_t field_bytes;
+    player_field_bytes_union player_field_bytes;
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
@@ -374,7 +397,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
-    uint32_t player_field_bytes_2;
+    player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
     uint32_t field_arena_team_info[WOWPLAYER_ARENA_TEAM_INFO_COUNT];
@@ -481,14 +504,14 @@ struct WoWPlayer : WoWUnit
     float override_spell_power_by_ap_pct;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;
-    uint32_t field_bytes;
+    player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_kills;
     uint32_t field_lifetime_honorable_kills;
-    uint32_t player_field_bytes_2;
+    player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[26];
     uint32_t field_arena_team_info[21];

@@ -172,6 +172,15 @@ void Player::setMaxLevel(uint32_t level)
 #endif 
 }
 
+uint32_t Player::getPlayerFieldBytes() const { return playerData()->player_field_bytes.raw; }
+void Player::setPlayerFieldBytes(uint32_t bytes) { write(playerData()->player_field_bytes.raw, bytes); }
+
+uint8_t Player::getActionBarId() const { return playerData()->player_field_bytes.s.actionBarId; }
+void Player::setActionBarId(uint8_t actionBarId) { write(playerData()->player_field_bytes.s.actionBarId, actionBarId); }
+
+uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
+void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

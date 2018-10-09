@@ -2888,7 +2888,7 @@ void Aura::SpellAuraModStealth(bool apply)
 
         m_target->setStandStateFlags(UNIT_STAND_FLAGS_CREEP);
         if (m_target->isPlayer())
-            m_target->SetFlag(PLAYER_FIELD_BYTES2, 0x2000);
+            dynamic_cast<Player*>(m_target)->setPlayerFieldBytes2(0x2000);
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
         m_target->modStealthLevel(StealthFlag(mod->m_miscValue), mod->m_amount);
@@ -3029,7 +3029,7 @@ void Aura::SpellAuraModStealth(bool apply)
 
                 if (p_target != nullptr)
                 {
-                    p_target->RemoveFlag(PLAYER_FIELD_BYTES2, 0x2000);
+                    p_target->setPlayerFieldBytes2(0x2000);
                     p_target->SendSpellCooldownEvent(m_spellInfo->getId());
 
                     if (p_target->m_outStealthDamageBonusPeriod && p_target->m_outStealthDamageBonusPct)
@@ -3122,7 +3122,7 @@ void Aura::SpellAuraModInvisibility(bool apply)
         if (m_target->isPlayer())
         {
             if (GetSpellId() == 32612)
-                static_cast< Player* >(m_target)->SetFlag(PLAYER_FIELD_BYTES2, 0x4000);   //Mage Invis self visual
+                dynamic_cast<Player*>(m_target)->setPlayerFieldBytes2(0x4000);   //Mage Invis self visual
         }
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
@@ -3133,7 +3133,7 @@ void Aura::SpellAuraModInvisibility(bool apply)
         if (m_target->isPlayer())
         {
             if (GetSpellId() == 32612)
-                static_cast< Player* >(m_target)->RemoveFlag(PLAYER_FIELD_BYTES2, 0x4000);
+                dynamic_cast<Player*>(m_target)->setPlayerFieldBytes2(0x4000);
         }
     }
 
