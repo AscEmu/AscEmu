@@ -54,8 +54,8 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20181006-00_spell_custom_override";
+static const char* REQUIRED_CHAR_DB_VERSION  = "20181007-00_character_declinedname";
+static const char* REQUIRED_WORLD_DB_VERSION = "20181007-00_update_utf8";
 
 void Master::_OnSignal(int s)
 {

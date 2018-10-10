@@ -326,6 +326,8 @@ bool ArenaTeam::HasMember(uint32 guid)
 
 void ArenaTeam::SetLeader(PlayerInfo* info)
 {
+    //\todo check utf8 and cyrillic chars
+
     uint32 old_leader = m_leader;
     char buffer[1024];
     WorldPacket* data;

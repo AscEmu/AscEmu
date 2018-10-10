@@ -1415,6 +1415,8 @@ void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t
 
 bool Guild::addMember(uint64_t guid, uint8_t rankId)
 {
+    //\todo check utf8 and cyrillic chars
+
     WoWGuid wGuid;
     wGuid.Init(guid);
 
