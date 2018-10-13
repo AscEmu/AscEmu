@@ -996,7 +996,7 @@ public:
             if (school >= SCHOOL_COUNT)
                 return 0;
 
-            return getModDamageDonePct(school);
+            return getModDamageDonePct(static_cast<uint8_t>(school));
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
