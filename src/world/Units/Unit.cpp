@@ -235,6 +235,11 @@ void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
     setPowerCostMultiplier(school, currentMultiplier);
 }
 
+#if VERSION_STRING >= WotLK
+float Unit::getHoverHeight() const { return unitData()->hover_height; }
+void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height); }
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

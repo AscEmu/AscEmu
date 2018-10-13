@@ -429,6 +429,10 @@ public:
     void setPowerCostMultiplier(uint16_t school, float multiplier);
     void modPowerCostMultiplier(uint16_t school, float multiplier);
 
+#if VERSION_STRING >= WotLK
+    float getHoverHeight() const;
+    void setHoverHeight(float height);
+#endif
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:

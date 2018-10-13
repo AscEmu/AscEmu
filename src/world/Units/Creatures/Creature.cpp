@@ -1300,7 +1300,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
-    setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+    setHoverHeight(creature_properties->Scale);
 #endif
 
     uint32 health;
@@ -1569,7 +1569,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
-    setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+    setHoverHeight(creature_properties->Scale);
 #endif
 
     uint32 health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);

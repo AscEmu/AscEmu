@@ -3888,7 +3888,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Initialize 'normal' fields
     setScale(1.0f);
 #if VERSION_STRING > TBC
-    setFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+    setHoverHeight(1.0f);
 #endif
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);

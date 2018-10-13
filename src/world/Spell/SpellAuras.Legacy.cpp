@@ -6424,12 +6424,12 @@ void Aura::SpellAuraHover(bool apply)
     if (apply)
     {
         m_target->setMoveHover(true);
-        m_target->setFloatValue(UNIT_FIELD_HOVERHEIGHT, (float(mod->m_amount) / 2));
+        m_target->setHoverHeight(float(mod->m_amount) / 2);
     }
     else
     {
         m_target->setMoveHover(false);
-        m_target->setFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
+        m_target->setHoverHeight(0.0f);
     }
 #endif
 }
