@@ -429,6 +429,10 @@ public:
     void setPowerCostMultiplier(uint16_t school, float multiplier);
     void modPowerCostMultiplier(uint16_t school, float multiplier);
 
+    int32_t getAttackPowerMods() const;
+    void setAttackPowerMods(int32_t modifier);
+    void modAttackPowerMods(int32_t modifier);
+
     float getAttackPowerMultiplier() const;
     void setAttackPowerMultiplier(float multiplier);
     void modAttackPowerMultiplier(float multiplier);
@@ -1207,36 +1211,7 @@ public:
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    //\todo fix this
-    void SetAttackPowerMods(int32 amt)
-    {
-#if VERSION_STRING != Cata
-        setInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
-#else
-        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
-        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
-#endif
-    }
-
-    //\todo fix this
-    int32 GetAttackPowerMods()
-    {
-#if VERSION_STRING != Cata
-        return getInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
-#else
-        return getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
-#endif
-    }
-
-    //\todo fix this - bad style
-    void ModAttackPowerMods(int32 amt)
-    {
-#if VERSION_STRING != Cata
-        modInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
-#else
-        if (amt == 0) { return; }
-#endif
-    }
+    
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

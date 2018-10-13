@@ -904,7 +904,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     //Preventing overbuffs
     setAttackPower(0);
-    SetAttackPowerMods(0);
+    setAttackPowerMods(0);
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
     setModCastSpeed(1.0f);          // better set this one

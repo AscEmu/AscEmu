@@ -12232,7 +12232,7 @@ void Unit::EventHealthChangeSinceLastUpdate()
 
 int32 Unit::GetAP()
 {
-    int32 baseap = getAttackPower() + GetAttackPowerMods();
+    int32 baseap = getAttackPower() + getAttackPowerMods();
     float totalap = baseap * (getAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);

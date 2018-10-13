@@ -10204,7 +10204,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case ATTACK_POWER:
         {
-            ModAttackPowerMods(val);
+            modAttackPowerMods(val);
             ModRangedAttackPowerMods(val);
         }
         break;
@@ -10215,7 +10215,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case FERAL_ATTACK_POWER:
         {
-            ModAttackPowerMods(val);
+            modAttackPowerMods(val);
         }
         break;
         case SPELL_HEALING_DONE:

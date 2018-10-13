@@ -6288,7 +6288,7 @@ void Aura::SpellAuraModAttackPower(bool apply)
         SetNegative();
     else
         SetPositive();
-    m_target->ModAttackPowerMods(apply ? mod->m_amount : -mod->m_amount);
+    m_target->modAttackPowerMods(apply ? mod->m_amount : -mod->m_amount);
     m_target->CalcDamage();
 }
 
@@ -9027,10 +9027,10 @@ void Aura::SpellAuraIncreaseAPbyStatPct(bool apply)
         uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
 
         mod->fixed_amount[mod->m_effectIndex] = m_target->getStat(modValue) * mod->m_amount / 100;
-        m_target->ModAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else
-        m_target->ModAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
 
     m_target->CalcDamage();
 }
@@ -9172,10 +9172,10 @@ void Aura::SpellAuraModAttackPowerOfArmor(bool apply)
             SetNegative();
 
         mod->fixed_amount[mod->m_effectIndex] = m_target->getResistance(SCHOOL_NORMAL) / mod->m_amount;
-        m_target->ModAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else
-        m_target->ModAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
 
     m_target->CalcDamage();
 }

@@ -130,10 +130,10 @@ struct WoWUnit : WoWObject
     uint32_t base_health;
     field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
-    uint32_t attack_power_mods;
+    int32_t attack_power_mods;
     float attack_power_multiplier;
     uint32_t ranged_attack_power;
-    uint32_t ranged_attack_power_mods;
+    int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
     float maximum_ranged_ddamage;
@@ -226,10 +226,10 @@ struct WoWUnit : WoWObject
     uint32_t base_health;
     field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
-    uint32_t attack_power_mods;
+    int32_t attack_power_mods;
     float attack_power_multiplier;
     uint32_t ranged_attack_power;
-    uint32_t ranged_attack_power_mods;
+    int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
     float maximum_ranged_ddamage;
@@ -315,10 +315,10 @@ struct WoWUnit : WoWObject
     uint32_t base_health;
     field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
-    uint32_t attack_power_mods;
+    int32_t attack_power_mods;
     float attack_power_multiplier;
     uint32_t ranged_attack_power;
-    uint32_t ranged_attack_power_mods;
+    int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
     float maximum_ranged_ddamage;

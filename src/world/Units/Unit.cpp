@@ -235,6 +235,36 @@ void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
     setPowerCostMultiplier(school, currentMultiplier);
 }
 
+int32_t Unit::getAttackPowerMods() const
+{
+#if VERSION_STRING != Cata
+    return unitData()->attack_power_mods;
+#else
+    return unitData()->attack_power_mod_pos - unitData()->attack_power_mod_neg;
+#endif
+}
+
+void Unit::setAttackPowerMods(int32_t modifier)
+{
+#if VERSION_STRING != Cata
+    write(unitData()->attack_power_mods, modifier);
+#else
+    write(unitData()->attack_power_mod_neg, (modifier < 0 ? -modifier : 0));
+    write(unitData()->attack_power_mod_pos, (modifier > 0 ? modifier : 0));
+#endif
+}
+
+void Unit::modAttackPowerMods(int32_t modifier)
+{
+#if VERSION_STRING != Cata
+    int32_t currentModifier = getAttackPowerMods();
+    currentModifier += modifier;
+    setAttackPowerMods(currentModifier);
+#else
+    if (modifier == 0) { return; }
+#endif
+}
+
 float Unit::getAttackPowerMultiplier() const { return unitData()->attack_power_multiplier; }
 void Unit::setAttackPowerMultiplier(float multiplier) { write(unitData()->attack_power_multiplier, multiplier); }
 void Unit::modAttackPowerMultiplier(float multiplier)
