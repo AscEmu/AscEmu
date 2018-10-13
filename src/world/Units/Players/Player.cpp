@@ -137,8 +137,6 @@ uint32_t Player::getFreePrimaryProfessionPoints() const { return playerData()->c
 void Player::setFreePrimaryProfessionPoints(uint32_t points) { write(playerData()->character_points_1, points); }
 #endif
 
-void Player::setAttackPowerMultiplier(float val) { write(playerData()->attack_power_multiplier, val); }
-
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
     ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)

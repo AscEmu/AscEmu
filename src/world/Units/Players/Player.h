@@ -493,7 +493,6 @@ public:
     uint32_t getFreePrimaryProfessionPoints() const;
     void setFreePrimaryProfessionPoints(uint32_t points);
 
-    void setAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
 
     uint32_t getSelfResurrectSpell() const;
