@@ -429,6 +429,10 @@ public:
     void setPowerCostMultiplier(uint16_t school, float multiplier);
     void modPowerCostMultiplier(uint16_t school, float multiplier);
 
+    float getRangedAttackPowerMultiplier() const;
+    void setRangedAttackPowerMultiplier(float multiplier);
+    void modRangedAttackPowerMultiplier(float multiplier);
+
 #if VERSION_STRING >= WotLK
     float getHoverHeight() const;
     void setHoverHeight(float height);
@@ -1269,10 +1273,6 @@ public:
         if (amt == 0) { return; }
 #endif
     }
-
-    void SetRangedAttackPowerMultiplier(float amt) { setFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
-    float GetRangedAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
-    void ModRangedAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

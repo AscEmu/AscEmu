@@ -235,6 +235,15 @@ void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
     setPowerCostMultiplier(school, currentMultiplier);
 }
 
+float Unit::getRangedAttackPowerMultiplier() const { return unitData()->ranged_attack_power_multiplier; }
+void Unit::setRangedAttackPowerMultiplier(float multiplier) { write(unitData()->ranged_attack_power_multiplier, multiplier); }
+void Unit::modRangedAttackPowerMultiplier(float multiplier)
+{
+    float currentMultiplier = getRangedAttackPowerMultiplier();
+    currentMultiplier += multiplier;
+    setRangedAttackPowerMultiplier(currentMultiplier);
+}
+
 #if VERSION_STRING >= WotLK
 float Unit::getHoverHeight() const { return unitData()->hover_height; }
 void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height); }

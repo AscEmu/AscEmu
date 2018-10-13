@@ -7570,7 +7570,7 @@ void Aura::SpellAuraModRangedAttackPowerPct(bool apply)
 {
     if (m_target->isPlayer())
     {
-        m_target->ModRangedAttackPowerMultiplier(((apply) ? 1 : -1) * (float)mod->m_amount / 100);
+        m_target->modRangedAttackPowerMultiplier(((apply) ? 1 : -1) * (float)mod->m_amount / 100);
         m_target->CalcDamage();
     }
 }

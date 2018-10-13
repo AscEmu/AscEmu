@@ -12242,7 +12242,7 @@ int32 Unit::GetAP()
 int32 Unit::GetRAP()
 {
     int32 baseap = GetRangedAttackPower() + GetRangedAttackPowerMods();
-    float totalap = baseap * (GetRangedAttackPowerMultiplier() + 1);
+    float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);
     return	0;
