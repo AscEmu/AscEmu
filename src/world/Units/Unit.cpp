@@ -235,6 +235,15 @@ void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
     setPowerCostMultiplier(school, currentMultiplier);
 }
 
+float Unit::getAttackPowerMultiplier() const { return unitData()->attack_power_multiplier; }
+void Unit::setAttackPowerMultiplier(float multiplier) { write(unitData()->attack_power_multiplier, multiplier); }
+void Unit::modAttackPowerMultiplier(float multiplier)
+{
+    float currentMultiplier = getAttackPowerMultiplier();
+    currentMultiplier += multiplier;
+    setAttackPowerMultiplier(currentMultiplier);
+}
+
 float Unit::getRangedAttackPowerMultiplier() const { return unitData()->ranged_attack_power_multiplier; }
 void Unit::setRangedAttackPowerMultiplier(float multiplier) { write(unitData()->ranged_attack_power_multiplier, multiplier); }
 void Unit::modRangedAttackPowerMultiplier(float multiplier)

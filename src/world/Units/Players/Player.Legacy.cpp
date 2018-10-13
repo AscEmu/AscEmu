@@ -11436,7 +11436,7 @@ void Player::EventTalentHearthOfWildChange(bool apply)
     //increase attackpower if :
     else if (SS == FORM_CAT)
     {
-        SetAttackPowerMultiplier(getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + tval / 200.0f);
+        setAttackPowerMultiplier(getAttackPowerMultiplier() + tval / 200.0f);
         setRangedAttackPowerMultiplier(getRangedAttackPowerMultiplier() + tval / 200.0f);
         UpdateStats();
     }

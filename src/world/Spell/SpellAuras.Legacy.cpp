@@ -7558,10 +7558,10 @@ void Aura::SpellAuraModPAttackPower(bool apply)
     {
         if (apply)
         {
-            p_target->ModAttackPowerMultiplier((float)mod->m_amount / 100.0f);
+            p_target->modAttackPowerMultiplier((float)mod->m_amount / 100.0f);
         }
         else
-            p_target->ModAttackPowerMultiplier(-(float)mod->m_amount / 100.0f);
+            p_target->modAttackPowerMultiplier(-(float)mod->m_amount / 100.0f);
         p_target->CalcDamage();
     }
 }

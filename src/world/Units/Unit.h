@@ -429,6 +429,10 @@ public:
     void setPowerCostMultiplier(uint16_t school, float multiplier);
     void modPowerCostMultiplier(uint16_t school, float multiplier);
 
+    float getAttackPowerMultiplier() const;
+    void setAttackPowerMultiplier(float multiplier);
+    void modAttackPowerMultiplier(float multiplier);
+
     float getRangedAttackPowerMultiplier() const;
     void setRangedAttackPowerMultiplier(float multiplier);
     void modRangedAttackPowerMultiplier(float multiplier);
@@ -1233,10 +1237,6 @@ public:
         if (amt == 0) { return; }
 #endif
     }
-
-    void SetAttackPowerMultiplier(float amt) { setFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
-    float GetAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER); }
-    void ModAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
