@@ -249,8 +249,8 @@ void Unit::setAttackPowerMods(int32_t modifier)
 #if VERSION_STRING != Cata
     write(unitData()->attack_power_mods, modifier);
 #else
-    write(unitData()->attack_power_mod_neg, (modifier < 0 ? -modifier : 0));
-    write(unitData()->attack_power_mod_pos, (modifier > 0 ? modifier : 0));
+    write(unitData()->attack_power_mod_neg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
+    write(unitData()->attack_power_mod_pos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
 #endif
 }
 
@@ -288,8 +288,8 @@ void Unit::setRangedAttackPowerMods(int32_t modifier)
 #if VERSION_STRING != Cata
     write(unitData()->ranged_attack_power_mods, modifier);
 #else
-    write(unitData()->ranged_attack_power_mods_neg, (modifier < 0 ? -modifier : 0));
-    write(unitData()->ranged_attack_power_mods_pos, (modifier > 0 ? modifier : 0));
+    write(unitData()->ranged_attack_power_mods_neg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
+    write(unitData()->ranged_attack_power_mods_pos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
 #endif
 }
 
