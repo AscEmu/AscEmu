@@ -10205,12 +10205,12 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         case ATTACK_POWER:
         {
             modAttackPowerMods(val);
-            ModRangedAttackPowerMods(val);
+            modRangedAttackPowerMods(val);
         }
         break;
         case RANGED_ATTACK_POWER:
         {
-            ModRangedAttackPowerMods(val);
+            modRangedAttackPowerMods(val);
         }
         break;
         case FERAL_ATTACK_POWER:
@@ -10604,7 +10604,7 @@ void Player::CalcDamage()
 
         if (it->getItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
-            //                ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
+            //                ap_bonus = (GetRangedAttackPower()+(int32)getRangedAttackPowerMods())/14000.0;
             //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->getItemProperties()->Delay;

@@ -6937,10 +6937,10 @@ void Aura::SpellAuraModRangedAttackPower(bool apply)
             SetPositive();
         else
             SetNegative();
-        m_target->ModRangedAttackPowerMods(mod->m_amount);
+        m_target->modRangedAttackPowerMods(mod->m_amount);
     }
     else
-        m_target->ModRangedAttackPowerMods(-mod->m_amount);
+        m_target->modRangedAttackPowerMods(-mod->m_amount);
     m_target->CalcDamage();
 }
 
@@ -8735,10 +8735,10 @@ void Aura::SpellAuraIncreaseRAPbyStatPct(bool apply)
 
         uint8_t modValue = static_cast<uint8_t>(mod->m_miscValue);
         mod->fixed_amount[mod->m_effectIndex] = m_target->getStat(modValue) * mod->m_amount / 100;
-        m_target->ModRangedAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modRangedAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else
-        m_target->ModRangedAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modRangedAttackPowerMods(-mod->fixed_amount[mod->m_effectIndex]);
 
     m_target->CalcDamage();
 }

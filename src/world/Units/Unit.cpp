@@ -274,6 +274,36 @@ void Unit::modAttackPowerMultiplier(float multiplier)
     setAttackPowerMultiplier(currentMultiplier);
 }
 
+int32_t Unit::getRangedAttackPowerMods() const
+{
+#if VERSION_STRING != Cata
+    return unitData()->ranged_attack_power_mods;
+#else
+    return unitData()->ranged_attack_power_mods_pos - unitData()->ranged_attack_power_mods_neg;
+#endif
+}
+
+void Unit::setRangedAttackPowerMods(int32_t modifier)
+{
+#if VERSION_STRING != Cata
+    write(unitData()->ranged_attack_power_mods, modifier);
+#else
+    write(unitData()->ranged_attack_power_mods_neg, (modifier < 0 ? -modifier : 0));
+    write(unitData()->ranged_attack_power_mods_pos, (modifier > 0 ? modifier : 0));
+#endif
+}
+
+void Unit::modRangedAttackPowerMods(int32_t modifier)
+{
+#if VERSION_STRING != Cata
+    int32_t currentModifier = getRangedAttackPowerMods();
+    currentModifier += modifier;
+    setRangedAttackPowerMods(currentModifier);
+#else
+    if (modifier == 0) { return; }
+#endif
+}
+
 float Unit::getRangedAttackPowerMultiplier() const { return unitData()->ranged_attack_power_multiplier; }
 void Unit::setRangedAttackPowerMultiplier(float multiplier) { write(unitData()->ranged_attack_power_multiplier, multiplier); }
 void Unit::modRangedAttackPowerMultiplier(float multiplier)

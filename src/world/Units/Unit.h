@@ -437,6 +437,10 @@ public:
     void setAttackPowerMultiplier(float multiplier);
     void modAttackPowerMultiplier(float multiplier);
 
+    int32_t getRangedAttackPowerMods() const;
+    void setRangedAttackPowerMods(int32_t modifier);
+    void modRangedAttackPowerMods(int32_t modifier);
+
     float getRangedAttackPowerMultiplier() const;
     void setRangedAttackPowerMultiplier(float multiplier);
     void modRangedAttackPowerMultiplier(float multiplier);
@@ -1217,37 +1221,6 @@ public:
 
     void SetRangedAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
     int32 GetRangedAttackPower() { return getInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
-
-    //\todo fix this
-    void SetRangedAttackPowerMods(int32 amt)
-    {
-#if VERSION_STRING != Cata
-        setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
-#else
-        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG, (amt < 0 ? -amt : 0));
-        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, (amt > 0 ? amt : 0));
-#endif
-    }
-
-    //\todo fix this
-    int32 GetRangedAttackPowerMods()
-    {
-#if VERSION_STRING != Cata
-        return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
-#else
-        return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) - getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
-#endif
-    }
-
-    //\todo fix this - bad style
-    void ModRangedAttackPowerMods(int32 amt)
-    {
-#if VERSION_STRING != Cata
-        modUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
-#else
-        if (amt == 0) { return; }
-#endif
-    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
