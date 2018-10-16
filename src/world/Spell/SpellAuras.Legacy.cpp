@@ -3885,7 +3885,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
         }
     }
     else
-        m_target->ModMaxHealth(amt);
+        m_target->modMaxHealth(amt);
 }
 
 void Aura::SpellAuraModIncreaseEnergy(bool apply)
@@ -7021,7 +7021,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     if (apply)
     {
         mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount);
-        m_target->ModMaxHealth(mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modMaxHealth(mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(p_target->GetHealthFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
         //		else if (m_target->isPet())
@@ -7029,7 +7029,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     }
     else
     {
-        m_target->ModMaxHealth(-mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modMaxHealth(-mod->fixed_amount[mod->m_effectIndex]);
         if (m_target->getHealth() > m_target->getMaxHealth())
             m_target->setHealth(m_target->getMaxHealth());
         if (p_target != nullptr)
@@ -8944,12 +8944,12 @@ void Aura::SpellAuraAddHealth(bool apply)
     if (apply)
     {
         SetPositive();
-        m_target->ModMaxHealth(mod->m_amount);
+        m_target->modMaxHealth(mod->m_amount);
         m_target->modHealth(mod->m_amount);
     }
     else
     {
-        m_target->ModMaxHealth(-mod->m_amount);
+        m_target->modMaxHealth(-mod->m_amount);
         uint32 maxHealth = m_target->getMaxHealth();
         if (m_target->getHealth() > maxHealth)
             m_target->setMaxHealth(maxHealth);

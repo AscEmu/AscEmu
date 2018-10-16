@@ -10041,7 +10041,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case HEALTH:
         {
-            ModMaxHealth(val);
+            modMaxHealth(val);
             m_healthfromitems += val;
         }
         break;

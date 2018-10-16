@@ -282,6 +282,7 @@ public:
 
     uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
+    void modMaxHealth(int32_t maxHealth);
 
     void setMaxMana(uint32_t maxMana);
 
@@ -1224,9 +1225,6 @@ public:
     int32 GetRangedAttackPower() { return getInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    
-    void ModMaxHealth(int32 val) { modUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
 
     void SetPower(uint32 type, int32 value);
 

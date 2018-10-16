@@ -70,6 +70,12 @@ void Unit::modHealth(int32_t health)
 
 uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
 void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+void Unit::modMaxHealth(int32_t maxHealth)
+{
+    uint32_t currentHealth = getHealth();
+    currentHealth += maxHealth;
+    setHealth(currentHealth);
+}
 
 void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
 
