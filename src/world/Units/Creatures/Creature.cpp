@@ -2354,7 +2354,7 @@ void Creature::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool n
 
     GetAIInterface()->AttackReaction(pAttacker, damage, spellid);
 
-    ModHealth(-1 * static_cast<int32>(damage));
+    modHealth(-1 * static_cast<int32>(damage));
 }
 
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)

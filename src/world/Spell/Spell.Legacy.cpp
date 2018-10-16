@@ -6631,7 +6631,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         overheal = curHealth + amount - maxHealth;
     }
     else
-        unitTarget->ModHealth(amount);
+        unitTarget->modHealth(amount);
 
     SendHealSpellOnPlayer(m_caster, unitTarget, amount, critical, overheal, pSpellId ? pSpellId : GetSpellInfo()->getId());
 

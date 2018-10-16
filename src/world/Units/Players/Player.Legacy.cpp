@@ -13302,7 +13302,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         }
     }
 
-    ModHealth(-1 * static_cast<int32>(damage));
+    modHealth(-1 * static_cast<int32>(damage));
 }
 
 void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)

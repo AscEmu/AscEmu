@@ -1702,7 +1702,7 @@ public:
         Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
         {
-            Vashj->ModHealth(static_cast<int32>((Vashj->getMaxHealth() / 100) * 5));
+            Vashj->modHealth(static_cast<int32>((Vashj->getMaxHealth() / 100) * 5));
             Creature* channel = NULL;
             channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
             if (channel != NULL && channel->IsInWorld())

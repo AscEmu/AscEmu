@@ -278,6 +278,7 @@ public:
 
     uint32_t getHealth() const;
     void setHealth(uint32_t health);
+    void modHealth(int32_t health);
 
     uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
@@ -1224,7 +1225,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ModHealth(int32 val) { modUInt32Value(UNIT_FIELD_HEALTH, val); }
+    
     void ModMaxHealth(int32 val) { modUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
 
     void SetPower(uint32 type, int32 value);

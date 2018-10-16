@@ -2361,7 +2361,7 @@ void Pet::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_rem
 
     GetAIInterface()->AttackReaction(pAttacker, damage, spellid);
 
-    ModHealth(-1 * static_cast<int32>(damage));
+    modHealth(-1 * static_cast<int32>(damage));
 }
 
 void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)

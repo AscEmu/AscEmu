@@ -1864,7 +1864,7 @@ void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
     }
     else
     {
-        u_caster->ModHealth(amt);
+        u_caster->modHealth(amt);
     }
 }
 
@@ -4632,7 +4632,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
 
     SendHealSpellOnPlayer(m_caster, unitTarget, dif, false, 0, pSpellId ? pSpellId : GetSpellInfo()->getId());
 
-    unitTarget->ModHealth(dif);
+    unitTarget->modHealth(dif);
 
     if (u_caster != nullptr)
     {
@@ -6347,7 +6347,7 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
         overheal = newHealth - maxHealth;
     }
     else
-        unitTarget->ModHealth(modHealth);
+        unitTarget->modHealth(modHealth);
 
     SendHealSpellOnPlayer(m_caster, unitTarget, modHealth, false, overheal, pSpellId ? pSpellId : GetSpellInfo()->getId());
 }

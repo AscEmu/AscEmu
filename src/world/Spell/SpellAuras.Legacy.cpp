@@ -2406,7 +2406,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         over_heal = curHealth + add - maxHealth;
     }
     else
-        m_target->ModHealth(add);
+        m_target->modHealth(add);
 
     m_target->SendPeriodicHealAuraLog(m_casterGuid, m_target->GetNewGUID(), GetSpellId(), add, over_heal, is_critical);
 
@@ -3876,11 +3876,11 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
         static_cast< Player* >(m_target)->SetHealthFromSpell(static_cast< Player* >(m_target)->GetHealthFromSpell() + amt);
         static_cast< Player* >(m_target)->UpdateStats();
         if (apply)
-            m_target->ModHealth(amt);
+            m_target->modHealth(amt);
         else
         {
             if ((int32)m_target->getHealth() > -amt) //watch it on remove value is negative
-                m_target->ModHealth(amt);
+                m_target->modHealth(amt);
             else m_target->setHealth(1); //do not kill player but do strip him good
         }
     }
@@ -8945,7 +8945,7 @@ void Aura::SpellAuraAddHealth(bool apply)
     {
         SetPositive();
         m_target->ModMaxHealth(mod->m_amount);
-        m_target->ModHealth(mod->m_amount);
+        m_target->modHealth(mod->m_amount);
     }
     else
     {
