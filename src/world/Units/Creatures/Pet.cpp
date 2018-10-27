@@ -1011,7 +1011,7 @@ void Pet::InitializeMe(bool first)
     m_Owner->setSummonGuid(getGuid());
 
     setUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
-    setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
+    setPetNameTimestamp(static_cast<uint32_t>(UNIXTIME));
 
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
@@ -1647,7 +1647,7 @@ void Pet::Rename(std::string NewName)
     UpdatePetInfo(false);
 
     // update timestamp to force a re-query
-    setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
+    setPetNameTimestamp(static_cast<uint32>(UNIXTIME));
 
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)

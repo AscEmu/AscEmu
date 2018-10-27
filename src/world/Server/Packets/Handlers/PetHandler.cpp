@@ -219,7 +219,7 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (pet == nullptr)
         return;
 
-    SendPacket(SmsgPetNameQuery(srlPacket.petNumber, pet->GetName(), pet->getUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP), 0).serialise().get());
+    SendPacket(SmsgPetNameQuery(srlPacket.petNumber, pet->GetName(), pet->getPetNameTimestamp(), 0).serialise().get());
 }
 
 namespace PetStableResult
