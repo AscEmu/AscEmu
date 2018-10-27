@@ -4554,10 +4554,10 @@ public:
         {
             Player* plr = static_cast<Player*>(ptr);
             plr->RemoveAura(plr->m_MountSpellId);
-            plr->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+            plr->setMountDisplayId(0);
         }
         else
-            ptr->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+            ptr->setMountDisplayId(0);
         return 0;
     }
 
