@@ -170,6 +170,9 @@ uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.ani
 void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
 //bytes_1 end
 
+uint32_t Unit::getPetNumber() const { return unitData()->pet_number; }
+void Unit::setPetNumber(uint32_t timestamp) { write(unitData()->pet_number, timestamp); }
+
 uint32_t Unit::getPetNameTimestamp() const { return unitData()->pet_name_timestamp; }
 void Unit::setPetNameTimestamp(uint32_t timestamp) { write(unitData()->pet_name_timestamp, timestamp); }
 

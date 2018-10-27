@@ -1010,7 +1010,7 @@ void Pet::InitializeMe(bool first)
     m_Owner->AddSummon(this);
     m_Owner->setSummonGuid(getGuid());
 
-    setUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
+    setPetNumber(GetUIdFromGUID());
     setPetNameTimestamp(static_cast<uint32_t>(UNIXTIME));
 
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);

@@ -363,6 +363,9 @@ public:
     void setAnimationFlags(uint8_t animationFlags);
     //bytes_1 end
 
+    uint32_t getPetNumber() const;
+    void setPetNumber(uint32_t timestamp);
+
     uint32_t getPetNameTimestamp() const;
     void setPetNameTimestamp(uint32_t timestamp);
 
