@@ -914,7 +914,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     if (pi->type == WARLOCKPET)
     {
         SetNameForEntry(mPi->entry);
-        setUInt64Value(UNIT_CREATED_BY_SPELL, mPi->spellid);
+        setCreatedBySpellId(mPi->spellid);
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
         setSheathType(SHEATH_STATE_MELEE);
         setShapeShiftForm(FORM_TREE);   //\todo really?

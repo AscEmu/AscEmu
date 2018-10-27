@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 bool Spell::canAttackCreatureType(Creature* target)
 {
     // Skip check for Grounding Totem
-    if (target->getUInt32Value(UNIT_CREATED_BY_SPELL) == 8177)
+    if (target->getCreatedBySpellId() == 8177)
         return true;
 
     const auto typeMask = GetSpellInfo()->getTargetCreatureType();
@@ -302,7 +302,7 @@ SpellCastResult Spell::canCast(bool tolerate)
                 ///\ Appled's personal note: move this to effect check later
                 if (GetSpellInfo()->getMechanicsType() == MECHANIC_DISARMED)
                 {
-                    if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+                    if (target->getUnitFlags() & UNIT_FLAG_DISARMED)
                         return SPELL_FAILED_TARGET_NO_WEAPONS;
 
                     if (target->isPlayer())
