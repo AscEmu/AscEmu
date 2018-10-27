@@ -468,8 +468,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
-        setUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
-        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(level));
+        setPetExperience(0);
+        setPetNextLevelExperience(GetNextLevelXP(level));
         SetPower(POWER_TYPE_FOCUS, 100);                                                // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         setSheathType(SHEATH_STATE_MELEE);
@@ -930,8 +930,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
-        setUInt32Value(UNIT_FIELD_PETEXPERIENCE, mPi->xp);
-        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(mPi->level));
+        setPetExperience(mPi->xp);
+        setPetNextLevelExperience(GetNextLevelXP(mPi->level));
         setSheathType(SHEATH_STATE_MELEE);
         SetPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
@@ -1260,7 +1260,7 @@ bool Pet::CanGainXP()
 void Pet::GiveXP(uint32 xp)
 {
     xp += getPetExperience();
-    uint32 nxp = getUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP);
+    uint32 nxp = getPetNextLevelExperience();
 
     if (xp >= nxp)
     {
@@ -1268,7 +1268,7 @@ void Pet::GiveXP(uint32 xp)
         setLevel(1);
         xp -= nxp;
         nxp = GetNextLevelXP(getLevel());
-        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, nxp);
+        setPetNextLevelExperience(nxp);
         ApplyStatsForLevel();
         UpdateSpellList();
         SendTalentsToOwner();

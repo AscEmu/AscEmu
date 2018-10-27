@@ -173,6 +173,9 @@ void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_b
 uint32_t Unit::getPetExperience() const { return unitData()->pet_experience; }
 void Unit::setPetExperience(uint32_t experience) { write(unitData()->pet_experience, experience); }
 
+uint32_t Unit::getPetNextLevelExperience() const { return unitData()->pet_next_level_experience; }
+void Unit::setPetNextLevelExperience(uint32_t experience) { write(unitData()->pet_next_level_experience, experience); }
+
 uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
 void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }

@@ -366,6 +366,9 @@ public:
     uint32_t getPetExperience() const;
     void setPetExperience(uint32_t experience);
 
+    uint32_t getPetNextLevelExperience() const;
+    void setPetNextLevelExperience(uint32_t experience);
+
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
     void addDynamicFlags(uint32_t dynamicFlags);
