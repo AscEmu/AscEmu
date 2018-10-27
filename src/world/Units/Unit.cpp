@@ -238,6 +238,9 @@ void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_b
 uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
 void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
 
+int32_t Unit::getRangedAttackPower() const { return unitData()->ranged_attack_power; }
+void Unit::setRangedAttackPower(int32_t power) { write(unitData()->ranged_attack_power, power); }
+
 float Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
 void Unit::setMinRangedDamage(float damage) { write(unitData()->minimum_ranged_damage, damage); }
 

@@ -6341,7 +6341,7 @@ void Player::UpdateStats()
         AP = 0;
 
     setAttackPower(AP);
-    SetRangedAttackPower(RAP);
+    setRangedAttackPower(RAP);
 
     LevelInfo* levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
 
@@ -10604,7 +10604,7 @@ void Player::CalcDamage()
 
         if (it->getItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
-            //                ap_bonus = (GetRangedAttackPower()+(int32)getRangedAttackPowerMods())/14000.0;
+            //                ap_bonus = (getRangedAttackPower()+(int32)getRangedAttackPowerMods())/14000.0;
             //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->getItemProperties()->Delay;

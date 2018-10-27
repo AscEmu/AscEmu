@@ -997,7 +997,7 @@ void Creature::CalcStat(uint8_t type)
             //Ranged Attack Power (Does any creature use this?)
             int32 RAP = getLevel() + getStat(STAT_AGILITY) - 10;
             if (RAP < 0) RAP = 0;
-            SetRangedAttackPower(RAP);
+            setRangedAttackPower(RAP);
         }
         break;
         case STAT_STAMINA:

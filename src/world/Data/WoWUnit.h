@@ -132,7 +132,7 @@ struct WoWUnit : WoWObject
     uint32_t attack_power;
     int32_t attack_power_mods;
     float attack_power_multiplier;
-    uint32_t ranged_attack_power;
+    int32_t ranged_attack_power;
     int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
@@ -228,7 +228,7 @@ struct WoWUnit : WoWObject
     uint32_t attack_power;
     int32_t attack_power_mods;
     float attack_power_multiplier;
-    uint32_t ranged_attack_power;
+    int32_t ranged_attack_power;
     int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
@@ -317,7 +317,7 @@ struct WoWUnit : WoWObject
     uint32_t attack_power;
     int32_t attack_power_mods;
     float attack_power_multiplier;
-    uint32_t ranged_attack_power;
+    int32_t ranged_attack_power;
     int32_t ranged_attack_power_mods;
     float ranged_attack_power_multiplier;
     float minimum_ranged_damage;
@@ -406,7 +406,7 @@ struct WoWUnit : WoWObject
     uint32_t attack_power_mod_pos;
     uint32_t attack_power_mod_neg;
     float attack_power_multiplier;
-    uint32_t ranged_attack_power;
+    int32_t ranged_attack_power;
     uint32_t ranged_attack_power_mods_pos;
     uint32_t ranged_attack_power_mods_neg;
     float ranged_attack_power_multiplier;

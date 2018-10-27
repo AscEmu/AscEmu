@@ -427,6 +427,9 @@ public:
     uint32_t getAttackPower() const;
     void setAttackPower(uint32_t value);
 
+    int32_t getRangedAttackPower() const;
+    void setRangedAttackPower(int32_t power);
+
     float getMinRangedDamage() const;
     void setMinRangedDamage(float damage);
 
@@ -1222,15 +1225,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties
     //////////////////////////////////////////////////////////////////////////////////////////
-
-    
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetRangedAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
-    int32 GetRangedAttackPower() { return getInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void SetPower(uint32 type, int32 value);
 

@@ -147,7 +147,7 @@ bool ExplosiveShot(uint8_t effectIndex, Aura* a, bool apply)
 
     a->SetNegative();
     int32 dmg = a->GetModAmount(effectIndex);
-    dmg += float2int32(m_target->GetRangedAttackPower() * 0.16f);
+    dmg += float2int32(m_target->getRangedAttackPower() * 0.16f);
 
     a->EventPeriodicDamage(dmg);
 
