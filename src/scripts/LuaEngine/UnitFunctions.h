@@ -798,8 +798,8 @@ public:
     static int SetNPCFlags(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        int flags = static_cast<int>(luaL_checkinteger(L, 1));
-        ptr->setUInt32Value(UNIT_NPC_FLAGS, flags);
+        uint32_t flags = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        ptr->setNpcFlags(flags);
         return 0;
     }
     static int SetMount(lua_State* L, Unit* ptr)
@@ -2045,8 +2045,8 @@ public:
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = (uint32)luaL_checknumber(L, 1);
-        if (!unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-            unit->setUInt32Value(UNIT_NPC_FLAGS, unit->getUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
+        if (!unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER)
+            unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
 
@@ -2088,8 +2088,8 @@ public:
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = CHECK_ULONG(L, 1);
-        if (!unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-            unit->setUInt32Value(UNIT_NPC_FLAGS, unit->getUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
+        if (!unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER)
+            unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
 
@@ -5973,7 +5973,7 @@ public:
 
         Creature* c = ptr->GetMapMgr()->CreateCreature(cp->Id);
         c->Load(cp, v.x, v.y, v.z, v.o);
-        c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         c->PushToWorld(ptr->GetMapMgr());
 
         // Need to delay this a bit since first the client needs to see the vehicle
