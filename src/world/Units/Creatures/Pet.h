@@ -148,8 +148,6 @@ class SERVER_DECL Pet : public Creature
         void Update(unsigned long time_passed);
         void OnPushToWorld();
 
-        inline uint32 GetXP(void) { return getUInt32Value(UNIT_FIELD_PETEXPERIENCE); }
-
         void InitializeSpells();
         void InitializeMe(bool first);
         void SendSpellsToOwner();

@@ -1098,7 +1098,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 
     player_pet->name = GetName();
     player_pet->number = m_PetNumber;
-    player_pet->xp = GetXP();
+    player_pet->xp = getPetExperience();
     player_pet->level = getLevel();
     player_pet->happinessupdate = m_HappinessTimer;
 
@@ -1259,7 +1259,7 @@ bool Pet::CanGainXP()
 
 void Pet::GiveXP(uint32 xp)
 {
-    xp += GetXP();
+    xp += getPetExperience();
     uint32 nxp = getUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP);
 
     if (xp >= nxp)
@@ -1274,7 +1274,7 @@ void Pet::GiveXP(uint32 xp)
         SendTalentsToOwner();
     }
 
-    setUInt32Value(UNIT_FIELD_PETEXPERIENCE, xp);
+    setPetExperience(xp);
 }
 
 uint32 Pet::GetNextLevelXP(uint32 level)
