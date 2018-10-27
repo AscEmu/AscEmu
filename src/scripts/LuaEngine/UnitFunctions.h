@@ -2045,7 +2045,7 @@ public:
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = (uint32)luaL_checknumber(L, 1);
-        if (!unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER)
+        if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
             unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
@@ -2088,7 +2088,7 @@ public:
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = CHECK_ULONG(L, 1);
-        if (!unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER)
+        if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
             unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
