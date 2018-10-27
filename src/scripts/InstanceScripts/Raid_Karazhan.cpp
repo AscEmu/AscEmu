@@ -468,7 +468,7 @@ public:
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
                 pCreature->GetAIInterface()->setWayPointToMove(0);
-                pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->PlaySoundToSet(9357);
                 WayStartBBW[pCreature->GetInstanceID()] = 2;
                 Arcemu::Gossip::Menu::Complete(Plr);

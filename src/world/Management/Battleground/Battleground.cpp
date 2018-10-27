@@ -900,7 +900,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setChannelSpellId(22011);
     pCreature->setModCastSpeed(1.0f);
 
-    pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
+    pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
     pCreature->setSheathType(SHEATH_STATE_MELEE);
     pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
 

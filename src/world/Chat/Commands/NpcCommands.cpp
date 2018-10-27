@@ -408,7 +408,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     // flags
     GreenSystemMessage(m_session, "Flags ============================");
     std::string s = GetNpcFlagString(creature_target);
-    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getUInt32Value(UNIT_NPC_FLAGS), s.c_str());
+    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getNpcFlags(), s.c_str());
 
     uint8 pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
@@ -1256,8 +1256,8 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return false;
 
-    uint32 old_npc_flags = creature_target->getUInt32Value(UNIT_NPC_FLAGS);
-    creature_target->setUInt32Value(UNIT_NPC_FLAGS, npc_flags);
+    uint32 old_npc_flags = creature_target->getNpcFlags();
+    creature_target->addNpcFlags(npc_flags);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save = 1;

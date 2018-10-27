@@ -227,8 +227,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // remove spellclick flag if full
     if (!HasEmptySeat())
     {
-        owner->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-        owner->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
+        owner->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
+        owner->removeNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
 
     }
 
@@ -344,9 +344,9 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     if (HasEmptySeat())
     {
         if (owner->isPlayer())
-            owner->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
+            owner->addNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
         else
-            owner->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            owner->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     }
 
     if (passenger->isPlayer())

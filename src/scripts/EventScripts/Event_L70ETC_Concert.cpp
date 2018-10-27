@@ -334,7 +334,7 @@ class ThuAI : public CreatureAIScript
             case 200:
             {
                 getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01);
-                getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, 401);
+                getCreature()->setEmoteState(401);
                 break;
             }
             case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
@@ -381,7 +381,7 @@ class UndeadAI : public CreatureAIScript
     {
         switch (timer)
         {
-            case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+            case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
             case 280: getCreature()->Emote(EMOTE_ONESHOT_APPLAUD); break;
             case 281: getCreature()->Despawn(1000, 301000); break;
         }
@@ -427,7 +427,7 @@ class Undead2AI : public CreatureAIScript
     {
         switch (timer)
         {
-            case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+            case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
             case 280: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
             case 281: getCreature()->Despawn(1000, 301000); break;
         }
@@ -466,7 +466,7 @@ class Undead3AI : public CreatureAIScript
     {
         switch (timer)
         {
-            case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+            case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
             case 279: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
             case 280: getCreature()->Despawn(1000, 301000); break;
         }

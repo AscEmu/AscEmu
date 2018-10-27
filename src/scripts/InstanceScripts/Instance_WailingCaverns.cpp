@@ -259,7 +259,7 @@ public:
             } break;
             case 2: // Start Event
             {
-                pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->GetAIInterface()->StopMovement(0);
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);

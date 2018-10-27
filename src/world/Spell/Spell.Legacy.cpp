@@ -2837,7 +2837,7 @@ bool Spell::HasPower()
 {
     uint16_t powerField;
     if (u_caster != nullptr)
-        if (u_caster->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER))
+        if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
             return true;
 
     if (p_caster && p_caster->PowerCheat)
@@ -2988,7 +2988,7 @@ bool Spell::TakePower()
 {
     uint16_t powerField;
     if (u_caster != nullptr)
-        if (u_caster->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER))
+        if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
             return true;
 
     if (p_caster && p_caster->PowerCheat)

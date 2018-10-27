@@ -1020,7 +1020,7 @@ void Unit::Update(unsigned long time_passed)
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
-        if (this->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_DISABLE_REGEN))
+        if (this->getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
             return;
 
         if (time_passed >= m_H_regenTimer)

@@ -39,7 +39,7 @@ public:
         creat->PlaySoundToSet(10896);
         creat->CastSpell(creat, sSpellCustomizations.GetSpellInfo(36568), false);
 
-        creat->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 
         // Players can't interact with Sylvanas for 180000 ms.
         // Cast creat to an object because the EventSetUInt32Value method is in Object class.

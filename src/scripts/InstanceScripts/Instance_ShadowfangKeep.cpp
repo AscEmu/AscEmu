@@ -121,7 +121,7 @@ public:
                     {
                         if (pCreature->isAlive())
                         {
-                            pCreature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                            pCreature->addNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                             pCreature->SendScriptTextChatMessage(SAY_ADAMANT_BOSS_DEATH);
                         }
                     }
@@ -130,7 +130,7 @@ public:
                     {
                         if (pCreature->isAlive())
                         {
-                            pCreature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                            pCreature->addNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                             if (CreatureAIScript* pScript = pCreature->GetScript())
                             {
                                 // Say argument after 4 seconds
@@ -508,7 +508,7 @@ class AdamantAI : public CreatureAIScript
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
         // Remove Gossip
-        pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
@@ -617,7 +617,7 @@ public:
         {
             if (AdamantAI* pPrisoner = static_cast<AdamantAI*>(static_cast<Creature*>(pObject)->GetScript()))
             {
-                pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                pPrisoner->getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                 pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
                 pPrisoner->RegisterAIUpdateEvent(5000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
@@ -668,7 +668,7 @@ class AshcrombeAI : public CreatureAIScript
         stage = 0;
 
         // Remove Gossip
-        pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
@@ -784,7 +784,7 @@ public:
         {
             if (AshcrombeAI* pPrisoner = static_cast<AshcrombeAI*>(static_cast<Creature*>(pObject)->GetScript()))
             {
-                pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                pPrisoner->getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                 pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                 pPrisoner->RegisterAIUpdateEvent(4000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);

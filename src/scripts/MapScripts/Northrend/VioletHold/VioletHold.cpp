@@ -49,7 +49,7 @@ public:
             case 4:
             {
                 getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             } break;
             case 5:
             {
@@ -125,7 +125,7 @@ public:
             } break;
             case 2:
             {
-                static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 sinclari->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             } break;
             case 3:

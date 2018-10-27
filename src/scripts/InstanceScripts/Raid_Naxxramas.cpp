@@ -2208,7 +2208,7 @@ DeathKnightCavalierAI::DeathKnightCavalierAI(Creature* pCreature) : CreatureAISc
     auto deathCoil = addAISpell(DEATH_KNIGHT_CAVALIER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
     deathCoil->setMinMaxDistance(0.0f, 30.0f);
 
-    getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+    getCreature()->setMountDisplayId(25278);
 
     mChargerAI = NULL;
     mIsMounted = true;
@@ -2219,7 +2219,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
     if (mChargerAI != NULL)
     {
         if (isAlive() && getCreature()->getMountDisplayId() == 0)
-            getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+            getCreature()->setMountDisplayId(25278);
 
         mChargerAI->mDeathKnightAI = NULL;
         mChargerAI->despawn();
@@ -2232,10 +2232,10 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* /*pTarget*/)
 void DeathKnightCavalierAI::AIUpdate()
 {
     if (mIsMounted && getCreature()->getMountDisplayId() == 0)
-        getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+        getCreature()->setMountDisplayId(25278);
     if (mIsMounted && Util::getRandomUInt(99) < 2)
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
+        getCreature()->setMountDisplayId(0);
         _applyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
         mIsMounted = false;
     }

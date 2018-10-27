@@ -317,7 +317,7 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
 
-        if (pObject->getUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
+        if (static_cast<Creature*>(pObject)->getNpcFlags() & UNIT_NPC_FLAG_VENDOR)
             menu.AddItem(GOSSIP_ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
 
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);

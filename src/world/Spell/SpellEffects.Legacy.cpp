@@ -3060,7 +3060,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
         {
             s->setMoveRoot(true);
-            s->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            s->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         }
 
         int32 duration = static_cast<int32>(GetDuration());
@@ -3221,7 +3221,7 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
-    c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+    c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
 
     // Need to delay this a bit since first the client needs to see the vehicle

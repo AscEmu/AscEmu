@@ -5676,7 +5676,7 @@ void Aura::SpellAuraMounted(bool apply)
 
         p_target->m_MountSpellId = m_spellInfo->getId();
         p_target->flying_aura = 0;
-        m_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
+        m_target->setMountDisplayId(displayId);
         //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
         if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->getId())
@@ -5701,7 +5701,7 @@ void Aura::SpellAuraMounted(bool apply)
 #endif
 
             p_target->addUnitFlags(UNIT_FLAG_MOUNT);
-            p_target->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
+            p_target->addNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
 
             p_target->GetVehicleComponent()->InstallAccessories();
         }
@@ -5711,7 +5711,7 @@ void Aura::SpellAuraMounted(bool apply)
     {
         if (p_target->GetVehicleComponent() != nullptr)
         {
-            p_target->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
+            p_target->removeNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
             p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
 
             p_target->GetVehicleComponent()->RemoveAccessories();

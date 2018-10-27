@@ -143,7 +143,7 @@ class JainaProudmooreAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI);
     explicit JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 };
 
@@ -186,7 +186,7 @@ public:
                 break;
         }
 
-        pObject->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
     }
 };
 
@@ -195,7 +195,7 @@ class ThrallAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
     explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 };
 
@@ -234,7 +234,7 @@ public:
                 break;
         }
 
-        pObject->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
     }
 };
 

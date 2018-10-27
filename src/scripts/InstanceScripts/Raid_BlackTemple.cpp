@@ -2898,11 +2898,11 @@ public:
         switch (Id)
         {
             case 1:
-                pAIOwner->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pAIOwner->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pAI->ForceWaypointMove(1);
                 break;
             case 2:
-                pAIOwner->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pAIOwner->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pAI->ForceWaypointMove(17);
                 pAI->_setWieldWeapon(false);
                 break;
@@ -2938,7 +2938,7 @@ class AkamaAI : public CreatureAIScript
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToIllidan[i]));
         }
 
-        getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
         getCreature()->setDualWield(true);
 
         mUdaloAI = mOlumAI = NULL;
@@ -3090,7 +3090,7 @@ class AkamaAI : public CreatureAIScript
                 getCreature()->SetFacing(2.113512f);
                 break;
             case 17:
-                getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                 RemoveAIUpdateEvent();
 
                 mScenePart = 0;

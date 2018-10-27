@@ -409,7 +409,7 @@ class ArthasAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 getCreature()->GetAIInterface()->m_canMove = false;
-                getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             }
             break;
             case 1000://haxxed ;)
@@ -525,7 +525,7 @@ public:
         {
             case 1:
             {
-                static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 static_cast<Creature*>(pObject)->GetScript()->OnReachWP(1000, 0);
             }
             break;

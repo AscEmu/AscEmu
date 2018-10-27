@@ -117,7 +117,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
         s->p_caster->cannibalize = true;
         s->p_caster->cannibalizeCount = 0;
         sEventMgr.AddEvent(s->p_caster, &Player::EventCannibalize, uint32(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        s->p_caster->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_CANNIBALIZE);
+        s->p_caster->setEmoteState(EMOTE_STATE_CANNIBALIZE);
     }
 
     return true;

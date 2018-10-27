@@ -259,7 +259,7 @@ void Creature::OnRespawn(MapMgr* m)
     setDynamicFlags(0); // not tagging shit
     if (m_spawn)
     {
-        setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+        setNpcFlags(creature_properties->NPCFLags);
         setEmoteState(m_spawn->emote_state);
 
         // creature's death state
@@ -409,7 +409,7 @@ void Creature::SaveToDB()
         m_spawn->y = m_position.y;
         m_spawn->z = m_position.z;
         m_spawn->o = m_position.o;
-        m_spawn->emote_state = m_uint32Values[UNIT_NPC_EMOTESTATE];
+        m_spawn->emote_state = getEmoteState();
         m_spawn->flags = getUnitFlags();
         m_spawn->factionid = getFactionTemplate();
         m_spawn->bytes0 = m_uint32Values[UNIT_FIELD_BYTES_0];
@@ -420,7 +420,7 @@ void Creature::SaveToDB()
         m_spawn->channel_target_creature = 0;
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
-        m_spawn->MountedDisplayID = m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID];
+        m_spawn->MountedDisplayID = getMountDisplayId();
 
         m_spawn->Item1SlotEntry = 0;
         m_spawn->Item2SlotEntry = 0;
@@ -476,7 +476,7 @@ void Creature::SaveToDB()
         << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
         << m_uint32Values[UNIT_FIELD_BYTES_1] << ","
         << m_uint32Values[UNIT_FIELD_BYTES_2] << ","
-        << m_uint32Values[UNIT_NPC_EMOTESTATE] << ",0,";
+        << getEmoteState() << ",0,";
 
     ss << m_spawn->channel_spell << ","
         << m_spawn->channel_target_go << ","
@@ -486,7 +486,7 @@ void Creature::SaveToDB()
 
     ss << m_spawn->death_state << ",";
 
-    ss << m_uint32Values[UNIT_FIELD_MOUNTDISPLAYID] << ","
+    ss << getMountDisplayId() << ","
         << m_spawn->Item1SlotEntry << ","
         << m_spawn->Item2SlotEntry << ","
         << m_spawn->Item3SlotEntry << ",";
@@ -598,87 +598,87 @@ void Creature::SetQuestList(std::list<QuestRelation*>* qst_lst)
 
 uint32 Creature::isVendor() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR);
+    return getNpcFlags() & UNIT_NPC_FLAG_VENDOR;
 }
 
 uint32 Creature::isTrainer() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER);
+    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER;
 }
 
 uint32 Creature::isClass() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_CLASS);
+    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_CLASS;
 }
 
 uint32 Creature::isProf() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_PROF);
+    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_PROF;
 }
 
 uint32 Creature::isQuestGiver() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+    return getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER;
 }
 
 uint32 Creature::isGossip() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+    return getNpcFlags() & UNIT_NPC_FLAG_GOSSIP;
 }
 
 uint32 Creature::isTaxi() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR);
+    return getNpcFlags() & UNIT_NPC_FLAG_TAXIVENDOR;
 }
 
 uint32 Creature::isCharterGiver() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARENACHARTER);
+    return getNpcFlags() & UNIT_NPC_FLAG_ARENACHARTER;
 }
 
 uint32 Creature::isGuildBank() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUILD_BANK);
+    return getNpcFlags() & UNIT_NPC_FLAG_GUILD_BANK;
 }
 
 uint32 Creature::isBattleMaster() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON);
+    return getNpcFlags() & UNIT_NPC_FLAG_BATTLEFIELDPERSON;
 }
 
 uint32 Creature::isBanker() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER);
+    return getNpcFlags() & UNIT_NPC_FLAG_BANKER;
 }
 
 uint32 Creature::isInnkeeper() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER);
+    return getNpcFlags() & UNIT_NPC_FLAG_INNKEEPER;
 }
 
 uint32 Creature::isSpiritHealer() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER);
+    return getNpcFlags() & UNIT_NPC_FLAG_SPIRITHEALER;
 }
 
 uint32 Creature::isTabardDesigner() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDCHANGER);
+    return getNpcFlags() & UNIT_NPC_FLAG_TABARDCHANGER;
 }
 
 uint32 Creature::isAuctioner() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER);
+    return getNpcFlags() & UNIT_NPC_FLAG_AUCTIONEER;
 }
 
 uint32 Creature::isStableMaster() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_STABLEMASTER);
+    return getNpcFlags() & UNIT_NPC_FLAG_STABLEMASTER;
 }
 
 uint32 Creature::isArmorer() const
 {
-    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER);
+    return getNpcFlags() & UNIT_NPC_FLAG_ARMORER;
 }
 
 uint32 Creature::GetHealthFromSpell()
@@ -996,7 +996,9 @@ void Creature::CalcStat(uint8_t type)
         {
             //Ranged Attack Power (Does any creature use this?)
             int32 RAP = getLevel() + getStat(STAT_AGILITY) - 10;
-            if (RAP < 0) RAP = 0;
+            if (RAP < 0)
+                RAP = 0;
+
             setRangedAttackPower(RAP);
         }
         break;
@@ -1388,7 +1390,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         m_aiInterface->m_canRangedAttack = false;
 
     //SETUP NPC FLAGS
-    setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+    setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
         m_SellItems = objmgr.GetVendorList(getEntry());
@@ -1535,7 +1537,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
-        SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
 
@@ -1625,7 +1627,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         m_aiInterface->m_canRangedAttack = false;
 
     //SETUP NPC FLAGS
-    setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+    setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
         m_SellItems = objmgr.GetVendorList(getEntry());
@@ -1714,7 +1716,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     if (isVehicle())
     {
         AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
-        SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
 

@@ -39,7 +39,7 @@ public:
         creat->GetAIInterface()->StopMovement(3000);
         creat->GetAIInterface()->SetAllowedToEnterCombat(false);
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
-        creat->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 
     }
 };

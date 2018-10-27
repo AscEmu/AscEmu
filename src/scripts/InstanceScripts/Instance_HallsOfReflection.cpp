@@ -140,7 +140,7 @@ public:
         if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
             pJaina->StartInstance();
 
-        pObject->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
         Arcemu::Gossip::Menu::Complete(plr);
     }
 };

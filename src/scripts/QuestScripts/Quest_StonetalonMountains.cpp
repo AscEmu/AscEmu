@@ -25,7 +25,7 @@ public:
         creat->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
         creat->GetAIInterface()->StopMovement(10);
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
-        creat->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
         creat->GetAIInterface()->SetAllowedToEnterCombat(true);
         creat->SetFaction(1801);

@@ -39,7 +39,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    unit_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, modelid);
+    unit_target->setMountDisplayId(modelid);
 
     BlueSystemMessage(m_session, "Now mounted with model %d.", modelid);
     sGMLog.writefromsession(m_session, "used mount command to model %u", modelid);
@@ -63,7 +63,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
     if (unit_target->isPlayer())
         static_cast<Player*>(unit_target)->Dismount();
 
-    unit_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+    unit_target->setMountDisplayId(0);
 
     BlueSystemMessage(m_session, "Target is now unmounted.");
     return true;

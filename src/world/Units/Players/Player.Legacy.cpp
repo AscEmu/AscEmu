@@ -1264,7 +1264,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     UnSetTaxiPos();
     m_taxi_ride_time = 0;
 
-    setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+    setMountDisplayId(0);
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
@@ -7489,7 +7489,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     UnSetTaxiPos();
     m_taxi_ride_time = 0;
 
-    setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+    setMountDisplayId(0);
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
@@ -9164,7 +9164,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetTaxiPath(NULL);
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
-        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setMountDisplayId(0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
@@ -13421,7 +13421,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         }
 
         setSelfResurrectSpell(self_res_spell);
-        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setMountDisplayId(0);
     }
 
     // Wipe our attacker set on death
