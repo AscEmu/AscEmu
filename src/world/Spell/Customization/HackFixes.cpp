@@ -33,7 +33,6 @@
 #include "Spell/Definitions/CastInterruptFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
-#include "Spell/Definitions/SpellCoefficientsFlags.h"
 #include "Spell/Definitions/DispelType.h"
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
@@ -793,11 +792,6 @@ void ApplyNormalFixes()
 			}
         }
 
-        sp->casttime_coef = 0;
-        sp->fixed_dddhcoef = -1;
-        sp->fixed_hotdotcoef = -1;
-
-
         // DankoDJ: Refactoring session 16/02/2016 new functions
         Modify_EffectBasePoints(sp);
         Set_missing_spellLevel(sp);
@@ -1081,79 +1075,6 @@ void ApplyNormalFixes()
         if (sp == nullptr)
             continue;
 
-        //Setting Cast Time Coefficient
-        auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->getCastingTimeIndex());
-        float castaff = float(GetCastTime(spell_cast_time));
-        if (castaff < 1500)
-            castaff = 1500;
-        else if (castaff > 7000)
-            castaff = 7000;
-
-        sp->casttime_coef = castaff / 3500;
-
-        //Calculating fixed coeficients
-        //Channeled spells
-        if (sp->getChannelInterruptFlags() != 0)
-        {
-            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-            if (Duration < 1500)
-                Duration = 1500;
-            else if (Duration > 7000)
-                Duration = 7000;
-
-            sp->fixed_hotdotcoef = (Duration / 3500.0f);
-
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
-                sp->fixed_hotdotcoef *= 0.95f;
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
-                sp->fixed_hotdotcoef *= 0.5f;
-        }
-
-        //Standard spells
-        else if ((sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && !(sp->custom_spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
-        {
-            sp->fixed_dddhcoef = sp->casttime_coef;
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
-                sp->fixed_dddhcoef *= 0.95f;
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
-                sp->fixed_dddhcoef *= 0.5f;
-        }
-
-        //Over-time spells
-        else if (!(sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && (sp->custom_spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
-        {
-            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-            sp->fixed_hotdotcoef = (Duration / 15000.0f);
-
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
-                sp->fixed_hotdotcoef *= 0.95f;
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
-                sp->fixed_hotdotcoef *= 0.5f;
-
-        }
-
-        //Combined standard and over-time spells
-        else if (sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_DH_DOT_SPELL)
-        {
-            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-            float Portion_to_Over_Time = (Duration / 15000.0f) / ((Duration / 15000.0f) + sp->casttime_coef);
-            float Portion_to_Standard = 1.0f - Portion_to_Over_Time;
-
-            sp->fixed_dddhcoef = sp->casttime_coef * Portion_to_Standard;
-            sp->fixed_hotdotcoef = (Duration / 15000.0f) * Portion_to_Over_Time;
-
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
-            {
-                sp->fixed_dddhcoef *= 0.95f;
-                sp->fixed_hotdotcoef *= 0.95f;
-            }
-            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
-            {
-                sp->fixed_dddhcoef *= 0.5f;
-                sp->fixed_hotdotcoef *= 0.5f;
-            }
-        }
-
         // DankoDJ: This switch replaces the old NameHash overwrites
         switch (sp->getId())
         {
@@ -1286,51 +1207,8 @@ void ApplyNormalFixes()
             case 58799:
             case 64186:
             {
-                // Frostbrand Weapon - 10% spd coefficient
-                sp->fixed_dddhcoef = 0.1f;
                 // Attributes addition
                 sp->addAttributes(ATTRIBUTESEXC_NO_DONE_BONUS);
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_FIRE_NOVA
-            case 8349:      // Fire Nova
-            case 8502:
-            case 8503:
-            case 11306:
-            case 11307:
-            case 11969:
-            case 11970:
-            case 12470:
-            case 16079:
-            case 16635:
-            case 17366:
-            case 18432:
-            case 20203:
-            case 20602:
-            case 23462:
-            case 25535:
-            case 25537:
-            case 26073:
-            case 30941:
-            case 32167:
-            case 33132:
-            case 33775:
-            case 37371:
-            case 38728:
-            case 43464:
-            case 46551:
-            case 61163:
-            case 61650:
-            case 61654:
-            case 61655:
-            case 68969:
-            case 69667:
-            case 78723:
-            case 78724:
-            {
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1339,115 +1217,46 @@ void ApplyNormalFixes()
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(8349, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 8498:      //Fire Nova Rank 2
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(8502, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 8499:      //Fire Nova Rank 3
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(8503, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 11314:     //Fire Nova Rank 4
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(11306, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 11315:     //Fire Nova Rank 5
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(11307, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 25546:     //Fire Nova Rank 6
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(25535, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 25547:     //Fire Nova Rank 7
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(25537, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 61649:     //Fire Nova Rank 8
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(61650, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
             } break;
             case 61657:     //Fire Nova Rank 9
             {
                 sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
                 sp->setEffectTriggerSpell(61654, 1);
-                // Fire Nova - 0% spd coefficient
-                sp->fixed_dddhcoef = 0.0f;
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_ATTACK
-            case 3606:      // Attack
-            case 6350:
-            case 6351:
-            case 6352:
-            case 7389:
-            case 10435:
-            case 10436:
-            case 15037:
-            case 22048:
-            case 25530:
-            case 31992:
-            case 32969:
-            case 38296:
-            case 38584:
-            case 39592:
-            case 39593:
-            case 58700:
-            case 58701:
-            case 58702:
-            case 65998:
-            case 68106:
-            case 68107:
-            case 68108:
-            case 68866:
-            case 74413:
-            case 75100:
-            {
-                // Searing Totem - 8% spd coefficient
-                sp->fixed_dddhcoef = 0.08f;
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_HEALING_STREAM
-            case 5672:      // Healing Stream
-            case 6371:      // Healing Stream
-            case 6372:      // Healing Stream
-            case 10460:     // Healing Stream
-            case 10461:     // Healing Stream
-            case 25566:     // Healing Stream
-            case 58763:     // Healing Stream
-            case 58764:     // Healing Stream
-            case 58765:     // Healing Stream
-            case 65994:     // Healing Stream
-            case 68882:     // Healing Stream
-            {
-                // 8% healing coefficient
-                sp->OTspell_coef_override = 0.08f;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1491,57 +1300,6 @@ void ApplyNormalFixes()
         }
     }
     // END OF LOOP
-
-    //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
-    {
-        // get spellentry
-        sp = sSpellCustomizations.GetSpellInfo(it->first);
-        if (sp == nullptr)
-            continue;
-
-        SpellInfo* spz;
-
-        //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
-        for (uint8 i = 0; i < 3; ++i)
-        {
-            if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
-            {
-                spz = Spell::checkAndReturnSpellEntry(sp->getEffectTriggerSpell(i));
-                if (spz != NULL)
-                {
-                    if (sp->Dspell_coef_override >= 0)
-                        spz->Dspell_coef_override = sp->Dspell_coef_override;
-                    else
-                    {
-                        //we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
-                        if (sp->getChannelInterruptFlags() != 0)
-                        {
-                            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-                            float amp = float(sp->getEffectAmplitude(i));
-                            sp->fixed_dddhcoef = sp->fixed_hotdotcoef * amp / Duration;
-                        }
-                        spz->fixed_dddhcoef = sp->fixed_dddhcoef;
-                    }
-
-                    if (sp->OTspell_coef_override >= 0)
-                        spz->OTspell_coef_override = sp->OTspell_coef_override;
-                    else
-                    {
-                        //we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
-                        if (sp->getChannelInterruptFlags() != 0)
-                        {
-                            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-                            float amp = float(sp->getEffectAmplitude(i));
-                            sp->fixed_hotdotcoef *= amp / Duration;
-                        }
-                        spz->fixed_hotdotcoef = sp->fixed_hotdotcoef;
-                    }
-                    break;
-                }
-            }
-        }
-    }
 
     /////////////////////////////////////////////////////////////////
     //SPELL COEFFICIENT SETTINGS END
@@ -2638,23 +2396,6 @@ void ApplyNormalFixes()
         sp->setEffectMiscValue(SMT_DAMAGE_DONE, 2);
     }
 
-    // Magma Totem - 0% spd coefficient
-    sp = Spell::checkAndReturnSpellEntry(25550);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10581);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10580);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10579);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(8187);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.0f;
-
     ////////////////////////////////////////////////////////////
     //  Unleashed Rage - LordLeeCH
     sp = Spell::checkAndReturnSpellEntry(30802);
@@ -2893,29 +2634,6 @@ void ApplyNormalFixes()
     {
         sp->addAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
     }
-
-    //Ice Lances
-    sp = Spell::checkAndReturnSpellEntry(42914);
-    if (sp != nullptr)
-        sp->Dspell_coef_override = 0.1429f;
-
-    sp = Spell::checkAndReturnSpellEntry(42913);
-    if (sp != nullptr)
-        sp->Dspell_coef_override = 0.1429f;
-
-    sp = Spell::checkAndReturnSpellEntry(30455);
-    if (sp != nullptr)
-        sp->Dspell_coef_override = 0.1429f;
-
-    // Frostfire Bolts
-    sp = Spell::checkAndReturnSpellEntry(47610);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.8571f;
-
-    sp = Spell::checkAndReturnSpellEntry(44614);
-    if (sp != nullptr)
-        sp->fixed_dddhcoef = 0.8571f;
-
 
     //mage - Combustion
     sp = Spell::checkAndReturnSpellEntry(11129);
@@ -4072,15 +3790,6 @@ void ApplyNormalFixes()
     ///////////////////////////////////////////////////////////////
     // Trinket Fixes        Please keep nice and clean :)
     ///////////////////////////////////////////////////////////////
-
-    // Citrine Pendant of Golden Healing
-    sp = Spell::checkAndReturnSpellEntry(25608);        //    http://www.wowhead.com/?item=20976
-    if (sp != nullptr)
-    {
-        //Overrides any spell coefficient calculation - DBCStores.h
-        sp->Dspell_coef_override = 0;    //DD&DH
-        sp->OTspell_coef_override = 0;    //HOT&DOT
-    }
 
     //Figurine - Shadowsong Panther
     sp = Spell::checkAndReturnSpellEntry(46784);        //    http://www.wowhead.com/?item=35702

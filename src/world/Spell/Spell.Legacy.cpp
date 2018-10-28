@@ -998,7 +998,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
         // Handle instant and non-channeled spells instantly. Other spells will be handled in ::update on next tick.
         // First autorepeat casts are actually never casted, only set as current spell. Player::updateAutoRepeatSpell handles the shooting.
-        if (m_castTime == 0 && GetSpellInfo()->getChannelInterruptFlags() == 0 && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT))
+        if (m_castTime == 0 && GetSpellInfo()->getChannelInterruptFlags() == 0 && !GetSpellInfo()->isRangedAutoRepeat())
         {
             castMe(false);
         }
@@ -1828,7 +1828,7 @@ void Spell::Update(unsigned long time_passed)
                     m_timer -= time_passed;
             }
 
-            if (m_timer == 0 && !(GetSpellInfo()->getAttributes() & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT))
+            if (m_timer == 0 && !GetSpellInfo()->isOnNextMeleeAttack() && !GetSpellInfo()->isRangedAutoRepeat())
             {
                 // Skip checks for instant spells
                 castMe(m_castTime == 0);
@@ -6287,15 +6287,9 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 bonus += float2int32(p_caster->SpellHealDoneByAttribute[a][school] * p_caster->getStat(a));
         }
 
-        //Spell Coefficient
-        if (GetSpellInfo()->Dspell_coef_override >= 0)    //In case we have forced coefficients
-            bonus = float2int32(bonus * GetSpellInfo()->Dspell_coef_override);
-        else
-        {
-            //Bonus to DH part
-            if (GetSpellInfo()->fixed_dddhcoef >= 0)
-                bonus = float2int32(bonus * GetSpellInfo()->fixed_dddhcoef);
-        }
+        //Spell Coefficient, bonus to DH part
+        if (GetSpellInfo()->spell_coeff_direct > 0)
+            bonus = float2int32(bonus * GetSpellInfo()->spell_coeff_direct);
 
         critchance = float2int32(u_caster->spellcritperc + u_caster->SpellCritChanceSchool[school]);
 

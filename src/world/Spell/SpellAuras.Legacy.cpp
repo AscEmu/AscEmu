@@ -2300,23 +2300,17 @@ void Aura::EventPeriodicHeal(uint32 amount)
                 bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->getStat(a));
             }
         }
-        //Spell Coefficient
-        if (m_spellInfo->OTspell_coef_override >= 0)   //In case we have forced coefficients
-            bonus = float2int32(bonus * m_spellInfo->OTspell_coef_override);
-        else
+        //Spell Coefficient, bonus to HoT part
+        if (m_spellInfo->spell_coeff_overtime > 0)
         {
-            //Bonus to HoT part
-            if (m_spellInfo->fixed_hotdotcoef >= 0)
+            bonus = float2int32(bonus * m_spellInfo->spell_coeff_overtime);
+            //we did most calculations in world.cpp, but talents that increase DoT spells duration
+            //must be included now.
+            if (c->isPlayer())
             {
-                bonus = float2int32(bonus * m_spellInfo->fixed_hotdotcoef);
-                //we did most calculations in world.cpp, but talents that increase DoT spells duration
-                //must be included now.
-                if (c->isPlayer())
-                {
-                    int durmod = 0;
-                    spellModFlatIntValue(c->SM_FDur, &durmod, m_spellInfo->getSpellFamilyFlags());
-                    bonus += bonus * durmod / 15000;
-                }
+                int durmod = 0;
+                spellModFlatIntValue(c->SM_FDur, &durmod, m_spellInfo->getSpellFamilyFlags());
+                bonus += bonus * durmod / 15000;
             }
         }
 
@@ -9343,12 +9337,12 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
         spellModFlatIntValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->getSpellFamilyFlags());
         val += val * flat / 100;
 
-        //For spells Affected by Bonus Healing we use Dspell_coef_override.
-        if (GetSpellInfo()->Dspell_coef_override >= 0)
-            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getSchool()] * GetSpellInfo()->Dspell_coef_override);
-        //For spells Affected by Bonus Damage we use OTspell_coef_override.
-        else if (GetSpellInfo()->OTspell_coef_override >= 0)
-            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getSchool()) * GetSpellInfo()->OTspell_coef_override);
+        //For spells Affected by Bonus Healing we use spell_coeff_direct.
+        if (GetSpellInfo()->spell_coeff_direct > 0)
+            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getSchool()] * GetSpellInfo()->spell_coeff_direct);
+        //For spells Affected by Bonus Damage we use spell_coeff_overtime.
+        else if (GetSpellInfo()->spell_coeff_overtime > 0)
+            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getSchool()) * GetSpellInfo()->spell_coeff_overtime);
     }
 
     m_total_amount = val;

@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellFamily.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 
@@ -21,6 +22,79 @@ initialiseSingleton(SpellCustomizations);
 
 SpellCustomizations::SpellCustomizations() {}
 SpellCustomizations::~SpellCustomizations() {}
+
+// Helper function for spell coefficient calculation
+bool hasAdditionalEffects(SpellInfo const* sp)
+{
+    // TODO: is there more? -Appled
+    if (sp->hasEffectApplyAuraName(SPELL_AURA_MOD_DECREASE_SPEED) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_MOD_ROOT) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_MOD_HIT_CHANCE) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_MOD_HASTE))
+        return true;
+    return false;
+}
+
+// Helper function for spell coefficient calculation
+bool isAoESpell(SpellInfo const* sp)
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (sp->getEffect(i) == 0)
+            continue;
+        // TODO: is there more? -Appled
+        if (sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_ENEMY_IN_AREA ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_PARTY_AROUND_CASTER ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_IN_FRONT_OF_CASTER ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_FRIENDLY_IN_AREA ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ALL_PARTY ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_ENEMIES_IN_AREA_CHANNELED_WITH_EXCEPTIONS ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON ||
+            // Dunno if these are needed (custom parameters)
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_CUSTOM_PARTY_INJURED_MULTI ||
+            sp->getEffectImplicitTargetA(i) == EFF_TARGET_CONE_IN_FRONT)
+            return true;
+
+        if (sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_ENEMY_IN_AREA ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_PARTY_AROUND_CASTER ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_IN_FRONT_OF_CASTER ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_FRIENDLY_IN_AREA ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ALL_PARTY ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_ENEMIES_IN_AREA_CHANNELED_WITH_EXCEPTIONS ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON ||
+            // Dunno if these are needed (custom parameters)
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_CUSTOM_PARTY_INJURED_MULTI ||
+            sp->getEffectImplicitTargetB(i) == EFF_TARGET_CONE_IN_FRONT)
+            return true;
+    }
+    return false;
+}
+
+// Helper function for spell coefficient calculation
+bool hasChanneledEffect(SpellInfo const* sp)
+{
+    if (!sp->isChanneled())
+        return false;
+
+    if (sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL) ||
+        sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_LEECH))
+        return true;
+
+    return false;
+}
 
 void SpellCustomizations::LoadSpellInfoData()
 {
@@ -139,7 +213,7 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setStartRecoveryTime(dbc_spell_entry->StartRecoveryTime);
             spellInfo.setMaxTargetLevel(dbc_spell_entry->MaxTargetLevel);
             spellInfo.setSpellFamilyName(dbc_spell_entry->SpellFamilyName);
-#if VERSION_STRING == Classic
+#if VERSION_STRING != WotLK
             for (uint8_t j = 0; j < 2; ++j)
                 spellInfo.setSpellFamilyFlags(dbc_spell_entry->SpellFamilyFlags[j], j);
 #else
@@ -155,6 +229,10 @@ void SpellCustomizations::LoadSpellInfoData()
             for (uint8_t j = 0; j < MAX_SPELL_TOTEM_CATEGORIES; ++j)
                 spellInfo.setTotemCategory(dbc_spell_entry->TotemCategory[j], j);
             spellInfo.setRequiresAreaId(dbc_spell_entry->AreaGroupId);
+#endif
+#if VERSION_STRING == WotLK
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectBonusMultiplier(dbc_spell_entry->EffectBonusMultiplier[j], j);
 #endif
         }
     }
@@ -228,7 +306,7 @@ void SpellCustomizations::LoadSpellInfoData()
             if (dbc_spell_entry->SpellClassOptionsId && dbc_spell_entry->GetSpellClassOptions() != nullptr)
             {
                 spellInfo.setSpellFamilyName(dbc_spell_entry->GetSpellClassOptions()->SpellFamilyName);
-                for (auto j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
                     spellInfo.setSpellFamilyFlags(dbc_spell_entry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
             }
 
@@ -277,7 +355,7 @@ void SpellCustomizations::LoadSpellInfoData()
             // Data from SpellReagents.dbc
             if (dbc_spell_entry->SpellReagentsId && dbc_spell_entry->GetSpellReagents() != nullptr)
             {
-                for (auto j = 0; j < MAX_SPELL_REAGENTS; ++j)
+                for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
                 {
                     spellInfo.setReagent(dbc_spell_entry->GetSpellReagents()->Reagent[j], j);
                     spellInfo.setReagentCount(dbc_spell_entry->GetSpellReagents()->ReagentCount[j], j);
@@ -313,7 +391,7 @@ void SpellCustomizations::LoadSpellInfoData()
             // Data from SpellEffect.dbc
             for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                const auto spell_effect_entry = GetSpellEffectEntry(spell_id, SpellEffectIndex(j));
+                const auto spell_effect_entry = GetSpellEffectEntry(spell_id, j);
                 if (spell_effect_entry != nullptr)
                 {
                     spellInfo.setEffect(spell_effect_entry->Effect, j);
@@ -322,7 +400,7 @@ void SpellCustomizations::LoadSpellInfoData()
                     spellInfo.setEffectAmplitude(spell_effect_entry->EffectAmplitude, j);
                     spellInfo.setEffectBasePoints(spell_effect_entry->EffectBasePoints, j);
                     spellInfo.setEffectBonusMultiplier(spell_effect_entry->EffectBonusMultiplier, j);
-                    spellInfo.setEffectMultipleValue(spell_effect_entry->EffectDamageMultiplier, j);
+                    spellInfo.setEffectDamageMultiplier(spell_effect_entry->EffectDamageMultiplier, j);
                     spellInfo.setEffectChainTarget(spell_effect_entry->EffectChainTarget, j);
                     spellInfo.setEffectDieSides(spell_effect_entry->EffectDieSides, j);
                     spellInfo.setEffectItemType(spell_effect_entry->EffectItemType, j);
@@ -369,11 +447,16 @@ void SpellCustomizations::StartSpellCustomization()
 
     LoadSpellCustomOverride();
 
+    loadSpellCoefficientOverride();
+
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         auto spellentry = GetSpellInfo(it->first);
         if (spellentry != nullptr)
         {
+            // Calculate spell coefficient
+            setSpellCoefficient(spellentry);
+
             //Set spell overwrites (effect based)
             SetEffectAmplitude(spellentry);
             SetAuraFactoryFunc(spellentry);
@@ -420,14 +503,11 @@ void SpellCustomizations::LoadSpellCustomOverride()
                 if (fields[5].isSet())
                     spell_entry->custom_c_is_flags = fields[5].GetUInt32();
 
-                if (fields[6].isSet())
-                    spell_entry->custom_spell_coef_flags = fields[6].GetUInt32();
+                // fields[6] not used, todo remove this
 
-                if (fields[7].isSet())
-                    spell_entry->Dspell_coef_override = fields[7].GetFloat();
+                // fields[7] not used, todo remove this
 
-                if (fields[8].isSet())
-                    spell_entry->OTspell_coef_override = fields[8].GetFloat();
+                // fields[8] not used, todo remove this
 
                 //proc
 
@@ -482,6 +562,438 @@ void SpellCustomizations::LoadSpellCustomOverride()
         LOG_DETAIL("Loaded %u override values from spell_custom_override table", override_count);
     else
         LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : Your spell_custom_override table is empty!");
+}
+
+void SpellCustomizations::loadSpellCoefficientOverride()
+{
+    auto overridden_coeffs = 0;
+
+    //                                                      0           1                     2
+    if (const auto result = WorldDatabase.Query("SELECT spell_id, direct_coefficient, overtime_coefficient "
+                                          "FROM spell_coefficient_override WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING))
+    {
+        do
+        {
+            const auto fields = result->Fetch();
+            auto spellInfo = GetSpellInfo(fields[0].GetUInt32());
+            if (spellInfo == nullptr)
+            {
+                LOG_ERROR("Invalid spell entry (%u) in table `spell_coefficient_override`, skipped", fields[0].GetUInt32());
+                continue;
+            }
+
+            const auto direct_override = fields[1].GetFloat();
+            const auto overtime_override = fields[2].GetFloat();
+            // Coeff can be overridden to 0 when it won't receive any bonus from spell power (default value is -1)
+            if (direct_override >= 0)
+                spellInfo->spell_coeff_direct_override = direct_override;
+            if (overtime_override >= 0)
+                spellInfo->spell_coeff_overtime_override = overtime_override;
+            ++overridden_coeffs;
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (overridden_coeffs > 0)
+        LOG_DETAIL("Loaded %u coefficient overrides from spell_coefficient_override table", overridden_coeffs);
+    else
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::loadSpellCoefficientOverride : Your spell_coefficient_override table is empty!");
+}
+
+void SpellCustomizations::setSpellCoefficient(SpellInfo *sp)
+{
+    // note:
+    // dot and hot parts are stored as per tick, like in wotlk spell.dbc
+    // channeled spell coeffs are also stored in direct member, as per missile/tick
+
+    // override table notes:
+    // overriding a spell which trigger another spell (like channeled spell) won't alter coeff of the triggered spell
+    // dots, hots and channeled spells will have coeffs for full duration in table, following code divides it per tick
+
+    const auto baseDuration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
+    const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
+
+    // Get coefficient override from database if any is set
+    if (sp->spell_coeff_direct_override != -1)
+    {
+        sp->spell_coeff_direct = sp->spell_coeff_direct_override;
+
+        // Store coeff value as per missile for channeled spells
+        if (sp->isChanneled())
+        {
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+                {
+                    sp->spell_coeff_direct /= baseDuration / sp->getEffectAmplitude(i);
+                    break;
+                }
+            }
+        }
+    }
+    if (sp->spell_coeff_overtime_override != -1)
+    {
+        sp->spell_coeff_overtime = sp->spell_coeff_overtime_override;
+
+        // Store coeff value as per tick for over-time spells
+        if (isOverTimeSpell)
+        {
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+                {
+                    sp->spell_coeff_overtime /= baseDuration / sp->getEffectAmplitude(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    // If coefficients are already set, do not alter them
+    // this can happen if this spell is triggered by another spell or coefficients are overriden in database
+    if (sp->spell_coeff_direct != -1 || sp->spell_coeff_overtime != -1)
+        return;
+
+    // Skip non-magic spells
+    if (sp->getDmgClass() != SPELL_DMG_TYPE_MAGIC)
+        return;
+
+    // Skip calculation if spell family name isn't any of the player classes
+    // Note: some player spells may have generic spell family name but these spells can be added into the SQL table
+    if (sp->getSpellFamilyName() != SPELLFAMILY_MAGE &&
+        sp->getSpellFamilyName() != SPELLFAMILY_WARLOCK &&
+        sp->getSpellFamilyName() != SPELLFAMILY_PRIEST &&
+        sp->getSpellFamilyName() != SPELLFAMILY_DRUID &&
+        sp->getSpellFamilyName() != SPELLFAMILY_PALADIN &&
+        sp->getSpellFamilyName() != SPELLFAMILY_SHAMAN)
+        return;
+
+#if VERSION_STRING >= WotLK
+    // Load spell coefficient values from DBC
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        // If effect triggers another spell, ignore the coefficient value
+        // The spell to be triggered has the coefficient already and later it will be handled in direct spell check
+        if (sp->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL ||
+            sp->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE ||
+            sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+            sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+            continue;
+
+        if (sp->getEffectBonusMultiplier(i) > 0)
+        {
+            const auto coefficientValue = sp->getEffectBonusMultiplier(i);
+            // For channeled and over-time spells, the coefficient is already stored as per tick in DBC
+            if (sp->isChanneled() &&
+               (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH))
+                sp->spell_coeff_direct = coefficientValue;
+
+            else if (sp->isDamagingEffect(i) || sp->isHealingEffect(i) || sp->getEffect(i) == SPELL_EFFECT_HEALTH_LEECH)
+                sp->spell_coeff_direct = coefficientValue;
+
+            else if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                      sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                      sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+                sp->spell_coeff_overtime = coefficientValue;
+        }
+    }
+#else
+    // Calculate base spell coefficient
+    auto spellCastTime = float(GetCastTime(sSpellCastTimesStore.LookupEntry(sp->getCastingTimeIndex())));
+    if (spellCastTime < 1500)
+        spellCastTime = 1500;
+#if VERSION_STRING == Classic
+    // Classic has 100% spell coefficient cap
+    else if (spellCastTime > 3500)
+        spellCastTime = 3500;
+#else
+    else if (spellCastTime > 7000)
+        spellCastTime = 7000;
+#endif
+
+    // Leech spells (spells that deal damage and heal)
+    const auto hasLeechEffect = sp->hasEffect(SPELL_EFFECT_HEALTH_LEECH);
+    const auto hasLeechAura = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_LEECH);
+    const auto isLeechSpell = hasLeechEffect || hasLeechAura;
+
+    // Channeled spells
+    if (hasChanneledEffect(sp))
+    {
+        auto spellDuration = baseDuration;
+#if VERSION_STRING == Classic
+        // Classic has 100% spell coefficient cap
+        if (spellDuration > 3500)
+            spellDuration = 3500;
+#endif
+        sp->spell_coeff_direct = spellDuration / 3500;
+
+        // Spells with additional effects receive 5% penalty
+#if VERSION_STRING == Classic
+        if (hasAdditionalEffects(sp))
+            sp->spell_coeff_direct *= 0.95f;
+
+        // In Classic all Area of Effect spells receive 33% of the coefficient
+        if (isAoESpell(sp))
+            sp->spell_coeff_direct /= 3;
+#else
+        if (hasAdditionalEffects(sp))
+        {
+            sp->spell_coeff_direct *= 0.95f;
+            // In TBC, Area of Effect spells with additional effects receive 33% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_direct /= 3;
+        }
+        else
+        {
+            // and normal Area of Effect spells receive 50% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_direct /= 2;
+        }
+#endif
+
+        // Leech spells receive 50% of the coefficient
+        if (isLeechSpell)
+            sp->spell_coeff_direct /= 2;
+
+        // Spells below level 20 receive a significant penalty
+        if (sp->getBaseLevel() < 20)
+        {
+            const auto penalty = 1.0f - ((20.0f - float(sp->getBaseLevel())) * 0.0375f);
+            sp->spell_coeff_direct *= penalty;
+        }
+
+        // Store coeff value as per missile / tick
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+            {
+                sp->spell_coeff_direct /= baseDuration / sp->getEffectAmplitude(i);
+                // For channeled spells which trigger another spell on each "missile", set triggered spell's coeff to match master spell's coeff
+                if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+                {
+                    auto triggeredSpell = sSpellCustomizations.GetSpellInfo(sp->getEffectTriggerSpell(i));
+                    // But do not alter its coefficient if it's already overridden in database
+                    if (triggeredSpell != nullptr && triggeredSpell->spell_coeff_direct_override == -1)
+                        triggeredSpell->spell_coeff_direct = sp->spell_coeff_direct;
+                }
+                break;
+            }
+        }
+    }
+
+    // Hybrid spells (spells with direct and over-time damage or direct and over-time healing effect)
+    else if ((sp->hasDamagingEffect() && sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE)) ||
+             (sp->hasHealingEffect() && sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL)))
+    {
+        auto spellDuration = baseDuration;
+#if VERSION_STRING == Classic
+        // Classic has 100% spell coefficient cap
+        if (spellDuration > 15000)
+            spellDuration = 15000;
+#endif
+        const auto castTime = spellCastTime / 3500;
+        spellDuration /= 15000;
+
+        sp->spell_coeff_direct = (castTime * castTime) / (spellDuration + castTime);
+        sp->spell_coeff_overtime = (spellDuration * spellDuration) / (castTime + spellDuration);
+
+        // Spells with additional effects receive 5% penalty
+#if VERSION_STRING == Classic
+        if (hasAdditionalEffects(sp))
+        {
+            sp->spell_coeff_direct *= 0.95f;
+            sp->spell_coeff_overtime *= 0.95f;
+        }
+
+        // In Classic all Area of Effect spells receive 33% of the coefficient
+        if (isAoESpell(sp))
+        {
+            sp->spell_coeff_direct /= 3;
+            sp->spell_coeff_overtime /= 3;
+        }
+#else
+        if (hasAdditionalEffects(sp))
+        {
+            sp->spell_coeff_direct *= 0.95f;
+            sp->spell_coeff_overtime *= 0.95f;
+            // In TBC, Area of Effect spells with additional effects receive 33% of the coefficient
+            if (isAoESpell(sp))
+            {
+                sp->spell_coeff_direct /= 3;
+                sp->spell_coeff_overtime /= 3;
+            }
+        }
+        else
+        {
+            // and normal Area of Effect spells receive 50% of the coefficient
+            if (isAoESpell(sp))
+            {
+                sp->spell_coeff_direct /= 2;
+                sp->spell_coeff_overtime /= 2;
+            }
+        }
+#endif
+
+        // Leech spells receive 50% of the coefficient
+        if (isLeechSpell)
+        {
+            sp->spell_coeff_direct /= 2;
+            sp->spell_coeff_overtime /= 2;
+        }
+
+        // Spells below level 20 receive a significant penalty
+        if (sp->getBaseLevel() < 20)
+        {
+            const auto penalty = 1.0f - ((20.0f - float(sp->getBaseLevel())) * 0.0375f);
+            sp->spell_coeff_direct *= penalty;
+            sp->spell_coeff_overtime *= penalty;
+        }
+
+        // Store over-time coeff value as per tick
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+            {
+                /*
+                    If a spell has less than five ticks, each tick receives one-fifth of the bonus per tick.
+                    If an over time spell has 5 or more ticks, the spell receives full benefit, divided equally between the number of ticks.
+                */
+                const auto ticks = baseDuration / sp->getEffectAmplitude(i);
+                if (ticks < 5)
+                    sp->spell_coeff_overtime /= 5;
+                else
+                    sp->spell_coeff_overtime /= ticks;
+                break;
+            }
+        }
+    }
+
+    // Direct damage and healing spells
+    else if (!isOverTimeSpell && ((sp->hasDamagingEffect() && !sp->hasEffect(SPELL_EFFECT_POWER_BURN)) || (sp->hasHealingEffect() && !sp->hasEffect(SPELL_EFFECT_HEAL_MAX_HEALTH)) || hasLeechEffect))
+    {
+        sp->spell_coeff_direct = spellCastTime / 3500;
+
+        // Spells with additional effects receive 5% penalty
+#if VERSION_STRING == Classic
+        if (hasAdditionalEffects(sp))
+            sp->spell_coeff_direct *= 0.95f;
+
+        // In Classic all Area of Effect spells receive 33% of the coefficient
+        if (isAoESpell(sp))
+            sp->spell_coeff_direct /= 3;
+#else
+        if (hasAdditionalEffects(sp))
+        {
+            sp->spell_coeff_direct *= 0.95f;
+            // In TBC, Area of Effect spells with additional effects receive 33% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_direct /= 3;
+        }
+        else
+        {
+            // and normal Area of Effect spells receive 50% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_direct /= 2;
+        }
+#endif
+
+        // Leech spells receive 50% of the coefficient
+        if (isLeechSpell)
+            sp->spell_coeff_direct /= 2;
+
+        // Spells below level 20 receive a significant penalty
+        if (sp->getBaseLevel() < 20)
+        {
+            const auto penalty = 1.0f - ((20.0f - float(sp->getBaseLevel())) * 0.0375f);
+            sp->spell_coeff_direct *= penalty;
+        }
+    }
+
+    // Damage and healing over-time spells
+    else if ((isOverTimeSpell || hasLeechAura) && !sp->hasDamagingEffect() && !sp->hasHealingEffect() && !hasChanneledEffect(sp))
+    {
+        auto spellDuration = baseDuration;
+#if VERSION_STRING == Classic
+        // Classic has 100% spell coefficient cap
+        if (spellDuration > 15000)
+            spellDuration = 15000;
+#endif
+        sp->spell_coeff_overtime = spellDuration / 15000;
+
+        // Spells with additional effects receive 5% penalty
+#if VERSION_STRING == Classic
+        if (hasAdditionalEffects(sp))
+            sp->spell_coeff_overtime *= 0.95f;
+
+        // In Classic all Area of Effect spells receive 33% of the coefficient
+        if (isAoESpell(sp))
+            sp->spell_coeff_overtime /= 3;
+#else
+        if (hasAdditionalEffects(sp))
+        {
+            sp->spell_coeff_overtime *= 0.95f;
+            // In TBC, Area of Effect spells with additional effects receive 33% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_overtime /= 3;
+        }
+        else
+        {
+            // and normal Area of Effect spells receive 50% of the coefficient
+            if (isAoESpell(sp))
+                sp->spell_coeff_overtime /= 2;
+        }
+#endif
+
+        // Leech spells receive 50% of the coefficient
+        if (isLeechSpell)
+            sp->spell_coeff_overtime /= 2;
+
+        // Spells below level 20 receive a significant penalty
+        if (sp->getBaseLevel() < 20)
+        {
+            const auto penalty = 1.0f - ((20.0f - float(sp->getBaseLevel())) * 0.0375f);
+            sp->spell_coeff_overtime *= penalty;
+        }
+
+        // Store coeff value as per tick
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
+                sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
+            {
+                /*
+                    If a spell has less than five ticks, each tick receives one-fifth of the bonus per tick.
+                    If an over time spell has 5 or more ticks, the spell receives full benefit, divided equally between the number of ticks.
+                */
+                const auto ticks = baseDuration / sp->getEffectAmplitude(i);
+                if (ticks < 5)
+                    sp->spell_coeff_overtime /= 5;
+                else
+                    sp->spell_coeff_overtime /= ticks;
+                break;
+            }
+        }
+    }
+#endif
 }
 
 // Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero

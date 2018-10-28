@@ -9930,161 +9930,28 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
     // do not execute this if plus dmg is 0 or lower
     if (plus_damage > 0.0f)
     {
-        if (spellInfo->Dspell_coef_override >= 0.0f && !isdot)
-            plus_damage = plus_damage * spellInfo->Dspell_coef_override;
-        else if (spellInfo->OTspell_coef_override >= 0.0f && isdot)
-            plus_damage = plus_damage * spellInfo->OTspell_coef_override;
-        else
+        //Bonus to DD part
+        if (spellInfo->spell_coeff_direct > 0.0f && !isdot)
+            plus_damage = plus_damage * spellInfo->spell_coeff_direct;
+        //Bonus to DoT part
+        else if (spellInfo->spell_coeff_overtime > 0.0f && isdot)
         {
-            //Bonus to DD part
-            if (spellInfo->fixed_dddhcoef >= 0.0f && !isdot)
-                plus_damage = plus_damage * spellInfo->fixed_dddhcoef;
-            //Bonus to DoT part
-            else if (spellInfo->fixed_hotdotcoef >= 0.0f && isdot)
+            plus_damage = plus_damage * spellInfo->spell_coeff_overtime;
+            if (caster->isPlayer())
             {
-                plus_damage = plus_damage * spellInfo->fixed_hotdotcoef;
-                if (caster->isPlayer())
-                {
-                    int32 durmod = 0;
-                    spellModFlatIntValue(caster->SM_FDur, &durmod, spellInfo->getSpellFamilyFlags());
-                    plus_damage += static_cast<float>(plus_damage * durmod / 15000);
-                }
+                int32 durmod = 0;
+                spellModFlatIntValue(caster->SM_FDur, &durmod, spellInfo->getSpellFamilyFlags());
+                plus_damage += static_cast<float>(plus_damage * durmod / 15000);
             }
-            //In case we dont fit in previous cases do old thing
-            else
-            {
-                plus_damage = plus_damage * spellInfo->casttime_coef;
-                float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex())));
+        }
 
-                switch (spellInfo->getId())
-                {
-                    //SPELL_HASH_MOONFIRE
-                    case 563:
-                    case 8921:
-                    case 8924:
-                    case 8925:
-                    case 8926:
-                    case 8927:
-                    case 8928:
-                    case 8929:
-                    case 9833:
-                    case 9834:
-                    case 9835:
-                    case 15798:
-                    case 20690:
-                    case 21669:
-                    case 22206:
-                    case 23380:
-                    case 24957:
-                    case 26987:
-                    case 26988:
-                    case 27737:
-                    case 31270:
-                    case 31401:
-                    case 32373:
-                    case 32415:
-                    case 37328:
-                    case 43545:
-                    case 45821:
-                    case 45900:
-                    case 47072:
-                    case 48462:
-                    case 48463:
-                    case 52502:
-                    case 57647:
-                    case 59987:
-                    case 65856:
-                    case 67944:
-                    case 67945:
-                    case 67946:
-                    case 75329:
-                    //SPELL_HASH_PYROBLAST
-                    case 11366:
-                    case 12505:
-                    case 12522:
-                    case 12523:
-                    case 12524:
-                    case 12525:
-                    case 12526:
-                    case 17273:
-                    case 17274:
-                    case 18809:
-                    case 20228:
-                    case 24995:
-                    case 27132:
-                    case 29459:
-                    case 29978:
-                    case 31263:
-                    case 33938:
-                    case 33975:
-                    case 36277:
-                    case 36819:
-                    case 38535:
-                    case 41578:
-                    case 42890:
-                    case 42891:
-                    case 64698:
-                    case 70516:
-                    //SPELL_HASH_ICE_LANCE
-                    case 30455:
-                    case 31766:
-                    case 42913:
-                    case 42914:
-                    case 43427:
-                    case 43571:
-                    case 44176:
-                    case 45906:
-                    case 46194:
-                    case 49906:
-                    case 54261:
-                    //SPELL_HASH_IMMOLATE
-                    case 348:
-                    case 707:
-                    case 1094:
-                    case 2941:
-                    case 8981:
-                    case 9034:
-                    case 9275:
-                    case 9276:
-                    case 11665:
-                    case 11667:
-                    case 11668:
-                    case 11962:
-                    case 11984:
-                    case 12742:
-                    case 15505:
-                    case 15506:
-                    case 15570:
-                    case 15661:
-                    case 15732:
-                    case 15733:
-                    case 17883:
-                    case 18542:
-                    case 20294:
-                    case 20787:
-                    case 20800:
-                    case 20826:
-                    case 25309:
-                    case 27215:
-                    case 29928:
-                    case 36637:
-                    case 36638:
-                    case 37668:
-                    case 38805:
-                    case 38806:
-                    case 41958:
-                    case 44267:
-                    case 44518:
-                    case 46042:
-                    case 46191:
-                    case 47810:
-                    case 47811:
-                    case 75383:
-                        plus_damage = plus_damage * (1.0f - ((td / 15000.0f) / ((td / 15000.0f))));
-                    default:
-                        break;
-                }
-            }
+        // Downranking penalty
+        if (spellInfo->getMaxLevel() > 0 && caster->isPlayer())
+        {
+            auto penalty = float(spellInfo->getMaxLevel() + 5.0f) / float(caster->getLevel());
+            if (penalty > 1 || penalty < 0)
+                penalty = 1.0f;
+            plus_damage *= penalty;
         }
     }
 

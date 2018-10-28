@@ -1726,7 +1726,7 @@ void ObjectMgr::LoadTrainers()
                 ts.learnedSpell[0] = spell;
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    auto effect = spellInfo->GetSpellEffect(SpellEffectIndex(i));
+                    auto effect = spellInfo->GetSpellEffect(i);
                     if (effect == nullptr)
                         continue;
 
@@ -1745,7 +1745,7 @@ void ObjectMgr::LoadTrainers()
                         continue;
                     }
 
-                    ts.learnedSpell[i] = spellInfo->GetSpellEffect(SpellEffectIndex(i))->EffectTriggerSpell;
+                    ts.learnedSpell[i] = spellInfo->GetSpellEffect(i)->EffectTriggerSpell;
 
                     if (ts.learnedSpell[i])
                     {

@@ -151,7 +151,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check are we already casting this autorepeat spell
-    if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
+    if (spellInfo->isRangedAutoRepeat() && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
        && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
     {
         return;
@@ -244,7 +244,7 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
 
     // You can't cancel an aura which is from a channeled spell, unless you are currently channeling it
-    if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    if (spellInfo->isChanneled())
     {
         if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
         {

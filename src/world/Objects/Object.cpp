@@ -661,17 +661,17 @@ void Object::setCurrentSpell(Spell* curSpell)
 
     // Get current spell type
     CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
-    if (curSpell->GetSpellInfo()->getAttributes() & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2))
+    if (curSpell->GetSpellInfo()->isOnNextMeleeAttack())
     {
         // Melee spell
         spellType = CURRENT_MELEE_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT)
+    else if (curSpell->GetSpellInfo()->isRangedAutoRepeat())
     {
         // Autorepeat spells (Auto shot / Shoot (wand))
         spellType = CURRENT_AUTOREPEAT_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    else if (curSpell->GetSpellInfo()->isChanneled())
     {
         // Channeled spells
         spellType = CURRENT_CHANNELED_SPELL;

@@ -17,6 +17,12 @@ enum PowerType
     POWER_TYPE_RUNES       = 5,
     POWER_TYPE_RUNIC_POWER = 6,
 #endif
+#if VERSION_STRING >= Cata
+    POWER_TYPE_SOUL_SHARDS = 7,
+    POWER_TYPE_ECLIPSE     = 8,
+    POWER_TYPE_HOLY_POWER  = 9,
+    POWER_TYPE_ALTERNATIVE = 10,
+#endif
     POWER_TYPE_STEAM       = 61,
     POWER_TYPE_PYRITE      = 41,
     POWER_TYPE_HEAT        = 101,

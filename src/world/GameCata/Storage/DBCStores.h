@@ -46,7 +46,7 @@ inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
     return dur->Duration1;
 }
 
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, SpellEffectIndex effect);
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect);
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore;
