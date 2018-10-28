@@ -491,7 +491,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/Spec.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/SpellClickSpell.h"
-#include "Spell/Definitions/SpellCoefficientsFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
 #include "Spell/Definitions/SpellDidHitResult.h"
 #include "Spell/Definitions/SpellEffectTarget.h"

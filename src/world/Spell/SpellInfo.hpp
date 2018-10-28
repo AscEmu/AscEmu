@@ -29,6 +29,11 @@ public:
     bool isHealingSpell() const;
     int firstBeneficialEffect() const;
 
+    bool isDamagingEffect(uint8_t effIndex) const;
+    bool isHealingEffect(uint8_t effIndex) const;
+    bool hasDamagingEffect() const;
+    bool hasHealingEffect() const;
+
     // Checks if spell (in most cases an aura) affects another spell, based on spell group mask
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
 
@@ -45,6 +50,9 @@ public:
     bool isPrimaryProfessionSkill(uint32_t skill_id) const;
 
     bool isDeathPersistent() const;
+    bool isChanneled() const;
+    bool isRangedAutoRepeat() const;
+    bool isOnNextMeleeAttack() const;
 
     bool appliesAreaAura(uint32_t auraType) const;
     uint32_t getAreaAuraEffect() const;
@@ -507,7 +515,6 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
     void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    // todo: classic has only two mask fields while other versions have three mask fields
     uint32_t getSpellFamilyFlags(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
@@ -519,7 +526,6 @@ public:
         return SpellFamilyFlags;
     }
 
-    // todo: classic has only two mask fields while other versions have three mask fields
     void setSpellFamilyFlags(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
@@ -617,14 +623,8 @@ public:
     uint32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 
-    uint32_t getCustom_spell_coef_flags() const { return custom_spell_coef_flags; }
     float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }
     float getCone_width() const { return cone_width; }
-    float getCasttime_coef() const { return casttime_coef; }
-    float getFixed_dddhcoef() const { return fixed_dddhcoef; }
-    float getFixed_hotdotcoef() const { return fixed_hotdotcoef; }
-    float getDspell_coef_override() const { return Dspell_coef_override; }
-    float getOTspell_coef_override() const { return OTspell_coef_override; }
     int getAi_target_type() const { return ai_target_type; }
     bool getCustom_self_cast_only() const { return custom_self_cast_only; }
     bool getCustom_apply_on_shapeshift_change() const { return custom_apply_on_shapeshift_change; }
@@ -799,8 +799,21 @@ public:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Spell coefficients
+
+    // Direct damage or direct heal coefficient
+    float spell_coeff_direct;
+
+    // Damage or healing over-time coefficient (NOTE: This is per tick, not for full duration, unlike the SQL override variable)
+    float spell_coeff_overtime;
+
+    // SQL override coefficients (table spell_coefficient_override)
+    float spell_coeff_direct_override;
+    float spell_coeff_overtime_override;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
-    
+
     // from MySQL table spell_proc - 1887 spells
     uint32_t custom_proc_interval;
 
@@ -823,29 +836,11 @@ public:
     // from MySQL table ai_threattospellid - 118 spells
     float custom_ThreatForSpellCoef;
 
-    // from MySQL table spell_coef_flags - 16499 spells
-    uint32_t custom_spell_coef_flags;
-
     // set in HackFixes.cpp for all spells
     float custom_base_range_or_radius_sqr;
 
     // set in HackFixes.cpp - 1 spell (26029)
     float cone_width;
-
-    // set in HackFixes.cpp for all spells
-    float casttime_coef;
-
-    // set in HackFixes.cpp for most spells
-    float fixed_dddhcoef;
-
-    // set in HackFixes.cpp for most spells
-    float fixed_hotdotcoef;
-
-    // from MySQL table spell_coef_override - 151 spells
-    float Dspell_coef_override;
-
-    // from MySQL table spell_coef_override - 151 spells
-    float OTspell_coef_override;
 
     // set in HackFixes.cpp for all spells
     // check out SpellInfo::aiTargetType

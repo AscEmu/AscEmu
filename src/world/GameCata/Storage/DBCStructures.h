@@ -23,23 +23,7 @@ struct WMOAreaTableTripple
     int32_t adtId;
 };
 
-enum Powers
-{
-    POWER_MANA                          = 0,
-    POWER_RAGE                          = 1,
-    POWER_FOCUS                         = 2,
-    POWER_ENERGY                        = 3,
-    //POWER_HAPPINESS                     = 4,  unused 4.x.x
-    POWER_RUNE                          = 5,
-    POWER_RUNIC_POWER                   = 6,
-    POWER_SOUL_SHARDS                   = 7,
-    POWER_ECLIPSE                       = 8,
-    POWER_HOLY_POWER                    = 9,
-    POWER_ALTERNATIVE                   = 10,
-    MAX_POWERS                          = 11,
-    POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
-};
-
+///\ These will be verified and ported to Spell/Definitions/SpellEffectTarget.h when spell targeting is being rewritten -Appled
 enum Targets
 {
     TARGET_NONE                        = 0,
@@ -162,36 +146,6 @@ enum Targets
     TARGET_126                         = 126,
     TARGET_127                         = 127,
 };
-
-enum SpellEffectIndex
-{
-    EFFECT_INDEX_0 = 0,
-    EFFECT_INDEX_1 = 1,
-    EFFECT_INDEX_2 = 2
-};
-
-enum SpellFamily
-{
-    SPELLFAMILY_GENERIC     = 0,
-    SPELLFAMILY_UNK1        = 1,    // events, holidays
-    // 2 - unused
-    SPELLFAMILY_MAGE        = 3,
-    SPELLFAMILY_WARRIOR     = 4,
-    SPELLFAMILY_WARLOCK     = 5,
-    SPELLFAMILY_PRIEST      = 6,
-    SPELLFAMILY_DRUID       = 7,
-    SPELLFAMILY_ROGUE       = 8,
-    SPELLFAMILY_HUNTER      = 9,
-    SPELLFAMILY_PALADIN     = 10,
-    SPELLFAMILY_SHAMAN      = 11,
-    SPELLFAMILY_UNK2        = 12,   // 2 spells (silence resistance)
-    SPELLFAMILY_POTION      = 13,
-    // 14 - unused
-    SPELLFAMILY_DEATHKNIGHT = 15,
-    // 16 - unused
-    SPELLFAMILY_PET         = 17
-};
-
 
 #define MAX_DUNGEON_DIFFICULTY     2
 #define MAX_RAID_DIFFICULTY        4
@@ -1490,41 +1444,6 @@ namespace DBC
             uint32_t StartRecoveryCategory;     // 6
         };
 
-        struct ClassFamilyMask
-        {
-            uint64 Flags;
-            uint32_t Flags2;
-
-            ClassFamilyMask() : Flags(0), Flags2(0) {}
-            explicit ClassFamilyMask(uint64 familyFlags, uint32_t familyFlags2 = 0) : Flags(familyFlags), Flags2(familyFlags2) {}
-
-            bool Empty() const { return Flags == 0 && Flags2 == 0; }
-            bool operator! () const { return Empty(); }
-            operator void const* () const { return Empty() ? nullptr : this; }
-
-            bool IsFitToFamilyMask(uint64 familyFlags, uint32_t familyFlags2 = 0) const
-            {
-                return (Flags & familyFlags) || (Flags2 & familyFlags2);
-            }
-
-            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
-            {
-                return (Flags & mask.Flags) || (Flags2 & mask.Flags2);
-            }
-
-            uint64 operator& (uint64 mask) const
-            {
-                return Flags & mask;
-            }
-
-            ClassFamilyMask& operator|= (ClassFamilyMask const& mask)
-            {
-                Flags |= mask.Flags;
-                Flags2 |= mask.Flags2;
-                return *this;
-            }
-        };
-
         // SpellClassOptions.dbc
         struct SpellClassOptionsEntry
         {
@@ -1533,32 +1452,6 @@ namespace DBC
             uint32_t SpellFamilyFlags[MAX_SPELL_EFFECTS];   // 2 - 4
             uint32_t SpellFamilyName;                       // 5
             //char* Description;                            // 6
-            
-            // helpers
-            bool IsFitToFamilyMask(uint64 /*familyFlags*/, uint32_t /*familyFlags2*/ = 0) const
-            {
-                return true; // SpellFamilyFlags.IsFitToFamilyMask(familyFlags, familyFlags2);
-            }
-
-            bool IsFitToFamily(SpellFamily family, uint64 familyFlags, uint32_t familyFlags2 = 0) const
-            {
-                return SpellFamily(SpellFamilyName) == family && IsFitToFamilyMask(familyFlags, familyFlags2);
-            }
-
-            bool IsFitToFamilyMask(ClassFamilyMask const& /*mask*/) const
-            {
-                return true;// SpellFamilyFlags.IsFitToFamilyMask(mask);
-            }
-
-            bool IsFitToFamily(SpellFamily family, ClassFamilyMask const& mask) const
-            {
-                return SpellFamily(SpellFamilyName) == family && IsFitToFamilyMask(mask);
-            }
-
-        private:
-            // catch wrong uses
-            template<typename T>
-            bool IsFitToFamilyMask(SpellFamily family, T t) const;
         };
 
         // SpellCooldowns.dbc
@@ -1615,9 +1508,6 @@ namespace DBC
             uint32_t EffectSpellId;             // 24
             uint32_t EffectIndex;               // 25
             //uint32_t unk;                     // 26
-
-            // helpers
-            int32_t CalculateSimpleValue() const { return EffectBasePoints; }
 
             uint32_t GetRadiusIndex() const
             {
@@ -1765,7 +1655,7 @@ namespace DBC
             float coefBase;                     // 14
             uint32_t coefLevelBase;             // 15
 
-            bool IsScalableEffect(SpellEffectIndex i) const { return coeff1[i] != 0.0f; };
+            bool IsScalableEffect(uint8_t i) const { return coeff1[i] != 0.0f; };
         };
 
         // SpellShapeshift.dbc
@@ -1849,10 +1739,6 @@ namespace DBC
             uint32_t SpellTotemsId;                               // 46 SpellTotems.dbc
             //uint32_t ResearchProject;                           // 47 ResearchProject.dbc
 
-            // helpers
-            int32_t CalculateSimpleValue(SpellEffectIndex eff) const;
-            ClassFamilyMask const& GetEffectSpellClassMask(SpellEffectIndex eff) const;
-
             // struct access functions
             SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
             SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
@@ -1860,7 +1746,7 @@ namespace DBC
             SpellCategoriesEntry const* GetSpellCategories() const;
             SpellClassOptionsEntry const* GetSpellClassOptions() const;
             SpellCooldownsEntry const* GetSpellCooldowns() const;
-            SpellEffectEntry const* GetSpellEffect(SpellEffectIndex eff) const;
+            SpellEffectEntry const* GetSpellEffect(uint8_t eff) const;
             SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
             SpellInterruptsEntry const* GetSpellInterrupts() const;
             SpellLevelsEntry const* GetSpellLevels() const;
@@ -1882,7 +1768,7 @@ namespace DBC
             uint32_t GetStartRecoveryCategory() const;
             uint32_t GetSpellLevel() const;
             int32_t GetEquippedItemClass() const;
-            SpellFamily GetSpellFamilyName() const;
+            uint32_t GetSpellFamilyName() const;
             uint32_t GetDmgClass() const;
             uint32_t GetDispel() const;
             uint32_t GetMaxAffectedTargets() const;
@@ -1894,15 +1780,15 @@ namespace DBC
             uint32_t GetTargetAuraState() const;
             uint32_t GetManaPerSecond() const;
             uint32_t GetRequiresSpellFocus() const;
-            uint32_t GetSpellEffectIdByIndex(SpellEffectIndex index) const;
+            uint32_t GetSpellEffectIdByIndex(uint8_t index) const;
             uint32_t GetAuraInterruptFlags() const;
-            uint32_t GetEffectImplicitTargetAByIndex(SpellEffectIndex index) const;
+            uint32_t GetEffectImplicitTargetAByIndex(uint8_t index) const;
             int32_t GetAreaGroupId() const;
             uint32_t GetFacingCasterFlags() const;
             uint32_t GetBaseLevel() const;
             uint32_t GetInterruptFlags() const;
             uint32_t GetTargetCreatureType() const;
-            int32_t GetEffectMiscValue(SpellEffectIndex index) const;
+            int32_t GetEffectMiscValue(uint8_t index) const;
             uint32_t GetStances() const;
             uint32_t GetStancesNot() const;
             uint32_t GetProcFlags() const;
@@ -1910,50 +1796,11 @@ namespace DBC
             uint32_t GetManaCostPerLevel() const;
             uint32_t GetCasterAuraState() const;
             uint32_t GetTargets() const;
-            uint32_t GetEffectApplyAuraNameByIndex(SpellEffectIndex index) const;
-
-            bool IsFitToFamilyMask(uint64 familyFlags, uint32_t familyFlags2 = 0) const
-            {
-                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-                return classOpt && classOpt->IsFitToFamilyMask(familyFlags, familyFlags2);
-            }
-
-            bool IsFitToFamily(SpellFamily family, uint64 familyFlags, uint32_t familyFlags2 = 0) const
-            {
-                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-                return classOpt && classOpt->IsFitToFamily(family, familyFlags, familyFlags2);
-            }
-
-            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
-            {
-                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-                return classOpt && classOpt->IsFitToFamilyMask(mask);
-            }
-
-            bool IsFitToFamily(SpellFamily family, ClassFamilyMask const& mask) const
-            {
-                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-                return classOpt && classOpt->IsFitToFamily(family, mask);
-            }
-
-            inline bool HasAttribute(SpellAttributes attribute) const { return (Attributes & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesEx attribute) const { return (AttributesEx & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExB attribute) const { return (AttributesExB & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExC attribute) const { return (AttributesExC & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExD attribute) const { return (AttributesExD & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExE attribute) const { return (AttributesExE & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExF attribute) const { return (AttributesExF & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExG attribute) const { return (AttributesExG & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExH attribute) const { return (AttributesExH & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExI attribute) const { return (AttributesExI & attribute) != 0; }
-            inline bool HasAttribute(SpellAttributesExJ attribute) const { return (AttributesExJ & attribute) != 0; }
+            uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
 
         private:
 
             SpellEntry(SpellEntry const&);
-
-            template<typename T>
-            bool IsFitToFamilyMask(SpellFamily family, T t) const;
         };
 
         struct SpellShapeshiftFormEntry

@@ -26,6 +26,11 @@ public:
     // function for setting up custom vars from db
     void LoadSpellCustomOverride();
 
+    // Function for loading spell coefficient overrides from database
+    void loadSpellCoefficientOverride();
+
+    // Calculate spell coefficients
+    void setSpellCoefficient(SpellInfo* sp);
 
     void SetEffectAmplitude(SpellInfo* spell_entry);
     void SetAuraFactoryFunc(SpellInfo* spell_entry);

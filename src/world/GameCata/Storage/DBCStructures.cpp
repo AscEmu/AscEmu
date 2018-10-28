@@ -7,22 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DBCStructures.h"
 #include "../world/Storage/DBC/DBCStores.h"
 
-int32_t DBC::Structures::SpellEntry::CalculateSimpleValue(SpellEffectIndex eff) const
-{
-    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
-        return effectEntry->CalculateSimpleValue();
-    return 0;
-}
-
-DBC::Structures::ClassFamilyMask const& DBC::Structures::SpellEntry::GetEffectSpellClassMask(SpellEffectIndex /*eff*/) const
-{
-    /*if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
-        return effectEntry->EffectSpellClassMask;*/
-
-    static ClassFamilyMask const emptyCFM;
-
-    return emptyCFM;
-}
+#include "Spell/Definitions/SpellFamily.h"
 
 DBC::Structures::SpellAuraOptionsEntry const* DBC::Structures::SpellEntry::GetSpellAuraOptions() const
 {
@@ -54,7 +39,7 @@ DBC::Structures::SpellCooldownsEntry const* DBC::Structures::SpellEntry::GetSpel
     return SpellCooldownsId ? sSpellCooldownsStore.LookupEntry(SpellCooldownsId) : nullptr;
 }
 
-DBC::Structures::SpellEffectEntry const* DBC::Structures::SpellEntry::GetSpellEffect(SpellEffectIndex eff) const
+DBC::Structures::SpellEffectEntry const* DBC::Structures::SpellEntry::GetSpellEffect(uint8_t eff) const
 {
     return GetSpellEffectEntry(Id, eff);
 }
@@ -164,10 +149,10 @@ int32_t DBC::Structures::SpellEntry::GetEquippedItemClass() const
     return items ? items->EquippedItemClass : -1;
 }
 
-SpellFamily DBC::Structures::SpellEntry::GetSpellFamilyName() const
+uint32_t DBC::Structures::SpellEntry::GetSpellFamilyName() const
 {
     SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-    return classOpt ? SpellFamily(classOpt->SpellFamilyName) : SPELLFAMILY_GENERIC;
+    return classOpt ? classOpt->SpellFamilyName : SPELLFAMILY_GENERIC;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetDmgClass() const
@@ -236,10 +221,10 @@ uint32_t DBC::Structures::SpellEntry::GetRequiresSpellFocus() const
     return castReq ? castReq->RequiresSpellFocus : 0;
 }
 
-uint32_t DBC::Structures::SpellEntry::GetSpellEffectIdByIndex(SpellEffectIndex index) const
+uint32_t DBC::Structures::SpellEntry::GetSpellEffectIdByIndex(uint8_t index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->Effect : 0; // SPELL_EFFECT_NULL;
+    return effect ? effect->Effect : 0;
 }
 
 uint32_t DBC::Structures::SpellEntry::GetAuraInterruptFlags() const
@@ -248,7 +233,7 @@ uint32_t DBC::Structures::SpellEntry::GetAuraInterruptFlags() const
     return interrupt ? interrupt->AuraInterruptFlags : 0;
 }
 
-uint32_t DBC::Structures::SpellEntry::GetEffectImplicitTargetAByIndex(SpellEffectIndex index) const
+uint32_t DBC::Structures::SpellEntry::GetEffectImplicitTargetAByIndex(uint8_t index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
     return effect ? effect->EffectImplicitTargetA : TARGET_NONE;
@@ -284,7 +269,7 @@ uint32_t DBC::Structures::SpellEntry::GetTargetCreatureType() const
     return target ? target->TargetCreatureType : 0;
 }
 
-int32_t DBC::Structures::SpellEntry::GetEffectMiscValue(SpellEffectIndex index) const
+int32_t DBC::Structures::SpellEntry::GetEffectMiscValue(uint8_t index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
     return effect ? effect->EffectMiscValue : 0;
@@ -332,7 +317,7 @@ uint32_t DBC::Structures::SpellEntry::GetTargets() const
     return target ? target->Targets : 0;
 }
 
-uint32_t DBC::Structures::SpellEntry::GetEffectApplyAuraNameByIndex(SpellEffectIndex index) const
+uint32_t DBC::Structures::SpellEntry::GetEffectApplyAuraNameByIndex(uint8_t index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
     return effect ? effect->EffectApplyAuraName : 0;

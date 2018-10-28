@@ -100,6 +100,7 @@ SpellInfo::SpellInfo()
 #endif
         SpellFamilyFlags[i] = 0;
         EffectDamageMultiplier[i] = 0;
+        EffectBonusMultiplier[i] = 0;
     }
     SpellVisual = 0;
     spellIconID = 0;
@@ -140,6 +141,11 @@ SpellInfo::SpellInfo()
     SpellTargetRestrictionsId = 0;
     SpellTotemsId = 0;
 #endif
+    // Coefficient values
+    spell_coeff_direct = -1;
+    spell_coeff_overtime = -1;
+    spell_coeff_direct_override = -1;
+    spell_coeff_overtime_override = -1;
 
     // Custom values
     custom_proc_interval = 0;
@@ -149,14 +155,8 @@ SpellInfo::SpellInfo()
     custom_NameHash = 0;
     custom_ThreatForSpell = 0;
     custom_ThreatForSpellCoef = 0;
-    custom_spell_coef_flags = 0;
     custom_base_range_or_radius_sqr = 0;
     cone_width = 0;
-    casttime_coef = 0;
-    fixed_dddhcoef = 0;
-    fixed_hotdotcoef = 0;
-    Dspell_coef_override = -1;
-    OTspell_coef_override = -1;
     ai_target_type = 0;
 
     custom_self_cast_only = false;
@@ -190,7 +190,7 @@ bool SpellInfo::hasEffectApplyAuraName(uint32_t auraType) const
 {
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == auraType)
+        if ((Effect[i] == SPELL_EFFECT_APPLY_AURA || Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA) && EffectApplyAuraName[i] == auraType)
             return true;
     }
 
@@ -210,20 +210,18 @@ bool SpellInfo::hasCustomFlagForEffect(uint32_t effectIndex, uint32_t flag) cons
 
 bool SpellInfo::isDamagingSpell() const
 {
-    if (hasEffect(SPELL_EFFECT_SCHOOL_DAMAGE)          ||
-        hasEffect(SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)   ||
-        hasEffect(SPELL_EFFECT_HEALTH_LEECH)           ||
-        hasEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL) ||
+    if (hasDamagingEffect())
+        return true;
+
+    if (hasEffect(SPELL_EFFECT_HEALTH_LEECH)           ||
         hasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS)      ||
-        hasEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)  ||
-        hasEffect(SPELL_EFFECT_POWER_BURN)             ||
         hasEffect(SPELL_EFFECT_ATTACK))
         return true;
 
-    if (appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE)         ||
-        appliesAreaAura(SPELL_AURA_PROC_TRIGGER_DAMAGE)     ||
-        appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        appliesAreaAura(SPELL_AURA_POWER_BURN))
+    if (hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE)         ||
+        hasEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_DAMAGE)     ||
+        hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
+        hasEffectApplyAuraName(SPELL_AURA_POWER_BURN))
         return true;
 
     return false;
@@ -231,69 +229,11 @@ bool SpellInfo::isDamagingSpell() const
 
 bool SpellInfo::isHealingSpell() const
 {
-    if (firstBeneficialEffect() != -1)
+    if (hasHealingEffect())
         return true;
 
-    switch (Id)
-    {
-        case 635:   // Holy Light Rank 1
-        case 639:   // Holy Light Rank 2
-        case 647:   // Holy Light Rank 3
-        case 1026:  // Holy Light Rank 4
-        case 1042:  // Holy Light Rank 5
-        case 3472:  // Holy Light Rank 6
-        case 10328: // Holy Light Rank 7
-        case 10329: // Holy Light Rank 8
-        case 13952:
-        case 15493:
-        case 25263:
-        case 25292: // Holy Light Rank 9
-        case 27135: // Holy Light Rank 10
-        case 27136: // Holy Light Rank 11
-        case 29383:
-        case 29427:
-        case 29562:
-        case 31713:
-        case 32769:
-        case 37979:
-        case 43451:
-        case 44479:
-        case 46029:
-        case 48781: // Holy Light Rank 12
-        case 48782: // Holy Light Rank 13
-        case 52444:
-        case 56539: // Holy Light Rank 13
-        case 58053: // Holy Light Rank 13
-        case 66112: // Holy Light Rank 13
-        case 68011: // Holy Light Rank 13
-        case 68012: // Holy Light Rank 13
-        case 68013: // Holy Light Rank 13
-        case 19750: // Flash of Light Rank 1
-        case 19939: // Flash of Light Rank 2
-        case 19940: // Flash of Light Rank 3
-        case 19941: // Flash of Light Rank 4
-        case 19942: // Flash of Light Rank 5
-        case 19943: // Flash of Light Rank 6
-        case 25514:
-        case 27137: // Flash of Light Rank 7
-        case 33641:
-        case 37249:
-        case 37254:
-        case 37257:
-        case 48784: // Flash of Light Rank 8
-        case 48785: // Flash of Light Rank 9
-        case 57766:
-        case 59997:
-        case 66113: // Flash of Light Rank 9
-        case 66922:
-        case 68008: // Flash of Light Rank 9
-        case 68009: // Flash of Light Rank 9
-        case 68010: // Flash of Light Rank 9
-        case 71930:
-            return true;
-        default:
-            break;
-    }
+    if (firstBeneficialEffect() != -1)
+        return true;
 
     return false;
 }
@@ -328,6 +268,76 @@ int SpellInfo::firstBeneficialEffect() const
     }
 
     return -1;
+}
+
+bool SpellInfo::isDamagingEffect(uint8_t effIndex) const
+{
+    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
+
+    if (getEffect(effIndex) == SPELL_EFFECT_SCHOOL_DAMAGE ||
+        getEffect(effIndex) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
+        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL ||
+        getEffect(effIndex) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE ||
+        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE ||
+        getEffect(effIndex) == SPELL_EFFECT_POWER_BURN)
+        return true;
+    return false;
+}
+
+bool SpellInfo::isHealingEffect(uint8_t effIndex) const
+{
+    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
+
+    if (getEffect(effIndex) == SPELL_EFFECT_HEAL ||
+        getEffect(effIndex) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
+        getEffect(effIndex) == SPELL_EFFECT_HEAL_MECHANICAL)
+        return true;
+
+#if VERSION_STRING == Classic
+    // In classic these spells have SPELL_EFFECT_SCRIPT_EFFECT instead of heal effect
+    switch (Id)
+    {
+        case 635:   // Holy Light Rank 1
+        case 639:   // Holy Light Rank 2
+        case 647:   // Holy Light Rank 3
+        case 1026:  // Holy Light Rank 4
+        case 1042:  // Holy Light Rank 5
+        case 3472:  // Holy Light Rank 6
+        case 10328: // Holy Light Rank 7
+        case 10329: // Holy Light Rank 8
+        case 25292: // Holy Light Rank 9
+        case 19750: // Flash of Light Rank 1
+        case 19939: // Flash of Light Rank 2
+        case 19940: // Flash of Light Rank 3
+        case 19941: // Flash of Light Rank 4
+        case 19942: // Flash of Light Rank 5
+        case 19943: // Flash of Light Rank 6
+            return true;
+        default:
+            break;
+    }
+#endif
+    return false;
+}
+
+bool SpellInfo::hasDamagingEffect() const
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (isDamagingEffect(i))
+            return true;
+    }
+    return false;
+}
+
+bool SpellInfo::hasHealingEffect() const
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (isHealingEffect(i))
+            return true;
+    }
+    return false;
 }
 
 bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
@@ -525,6 +535,21 @@ bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
 bool SpellInfo::isDeathPersistent() const
 {
     return (AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD) != 0;
+}
+
+bool SpellInfo::isChanneled() const
+{
+    return (AttributesEx & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2)) != 0;
+}
+
+bool SpellInfo::isRangedAutoRepeat() const
+{
+    return (AttributesExB & ATTRIBUTESEXB_AUTOREPEAT) != 0;
+}
+
+bool SpellInfo::isOnNextMeleeAttack() const
+{
+    return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
 }
 
 bool SpellInfo::appliesAreaAura(uint32_t auraType) const

@@ -18,12 +18,12 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/Spec.h
     ${PATH_PREFIX}/SpellCastTargetFlags.h
     ${PATH_PREFIX}/SpellClickSpell.h
-    ${PATH_PREFIX}/SpellCoefficientsFlags.h
     ${PATH_PREFIX}/SpellDamageType.h
     ${PATH_PREFIX}/SpellDidHitResult.h
     ${PATH_PREFIX}/SpellEffects.h
     ${PATH_PREFIX}/SpellEffectTarget.h
     ${PATH_PREFIX}/SpellFailure.h
+    ${PATH_PREFIX}/SpellFamily.h
     ${PATH_PREFIX}/SpellGoFlags.h
     ${PATH_PREFIX}/SpellInFrontStatus.h
     ${PATH_PREFIX}/SpellIsFlags.h

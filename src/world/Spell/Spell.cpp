@@ -86,7 +86,7 @@ SpellCastResult Spell::canCast(bool tolerate)
             // No need to check for other interrupt flags, client does that for us
             // Also don't cast first ranged autorepeat spell if we're moving but activate it
             // TODO: Missing cata checks, in cata you can cast some spells while moving
-            if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT || GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            if (GetSpellInfo()->isRangedAutoRepeat() || GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                 return SPELL_FAILED_MOVING;
         }
     }

@@ -268,17 +268,6 @@ bool LoadDBCs()
     {
         if (DBC::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.LookupEntry(i))
         {
-            switch (spellEffect->EffectApplyAuraName)
-            {
-                case SPELL_AURA_MOD_INCREASE_ENERGY:
-                case SPELL_AURA_MOD_INCREASE_ENERGY_PERCENT:
-                case SPELL_AURA_PERIODIC_MANA_LEECH:
-                case SPELL_AURA_PERIODIC_ENERGIZE:
-                case SPELL_AURA_POWER_BURN:
-                    ARCEMU_ASSERT(spellEffect->EffectMiscValue >= 0 && spellEffect->EffectMiscValue < MAX_POWERS);
-                    break;
-            }
-
             sSpellEffectMap[spellEffect->EffectSpellId].effects[spellEffect->EffectIndex] = spellEffect;
         }
     }
@@ -376,7 +365,7 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     return iter->second;
 }
 
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, SpellEffectIndex effect)
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect)
 {
     DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
     if (itr == sSpellEffectMap.end())
