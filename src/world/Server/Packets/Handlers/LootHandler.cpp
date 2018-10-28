@@ -245,7 +245,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     if (lootItem != nullptr)
         loot->items[srlPacket.slot].looted = true;
 
-    if (lootGameObject->getEntry() == GO_FISHING_BOBBER)
+    if (lootGameObject && lootGameObject->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
         for (const auto& lootItem : loot->items)
