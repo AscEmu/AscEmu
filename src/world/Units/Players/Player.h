@@ -646,6 +646,9 @@ public:
 
     void sendTalentResetConfirmPacket();
     void sendPetUnlearnConfirmPacket();
+    void sendDungeonDifficultyPacket();
+    void sendRaidDifficultyPacket();
+    void sendInstanceDifficultyPacket(uint8_t difficulty);
 
 public:
     //MIT End
@@ -761,9 +764,7 @@ public:
         bool ok_to_remove;
         void OnLogin();//custom stuff on player login.
         void SendMeetingStoneQueue(uint32 DungeonId, uint8 Status);
-        void SendDungeonDifficulty();
-        void SendRaidDifficulty();
-        void SendInstanceDifficulty(uint8 difficulty);
+        
         void SendExploreXP(uint32 areaid, uint32 xp);
         void SendDestroyObject(uint64 GUID);
         void SendEquipmentSetList();

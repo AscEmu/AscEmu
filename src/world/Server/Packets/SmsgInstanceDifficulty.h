@@ -21,24 +21,24 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgInstanceDifficulty(uint32_t difficulty) :
-            ManagedPacket(SMSG_INSTANCE_DIFFICULTY, sizeof(uint32_t) * 2),
+            ManagedPacket(SMSG_INSTANCE_DIFFICULTY, 0),
             difficulty(difficulty),
             unk1(0)
         {
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return 4 + 4;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
-            // All versions share same implementation
             packet << difficulty << unk1;
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override
-        {
-            packet >> difficulty >> unk1;
-            return true;
-        }
+        bool internalDeserialise(WorldPacket& packet) override { return false; }
     };
 }}

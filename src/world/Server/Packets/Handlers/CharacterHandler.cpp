@@ -735,8 +735,8 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
     // dungeon and raid setup
 #if VERSION_STRING > TBC
-    player->SendDungeonDifficulty();
-    player->SendRaidDifficulty();
+    player->sendDungeonDifficultyPacket();
+    player->sendRaidDifficultyPacket();
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////
 

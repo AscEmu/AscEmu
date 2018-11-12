@@ -1264,7 +1264,7 @@ void Group::SetDungeonDifficulty(uint8 diff)
             if ((*itr)->m_loggedInPlayer)
             {
                 (*itr)->m_loggedInPlayer->SetDungeonDifficulty(diff);
-                (*itr)->m_loggedInPlayer->SendDungeonDifficulty();
+                (*itr)->m_loggedInPlayer->sendDungeonDifficultyPacket();
             }
         }
     }
@@ -1284,7 +1284,7 @@ void Group::SetRaidDifficulty(uint8 diff)
             if ((*itr)->m_loggedInPlayer)
             {
                 (*itr)->m_loggedInPlayer->SetRaidDifficulty(diff);
-                (*itr)->m_loggedInPlayer->SendRaidDifficulty();
+                (*itr)->m_loggedInPlayer->sendRaidDifficultyPacket();
             }
         }
     }

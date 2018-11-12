@@ -4605,7 +4605,7 @@ void Player::AddToWorld()
         m_session->SetInstance(m_mapMgr->GetInstanceID());
 
 #if VERSION_STRING > TBC
-    SendInstanceDifficulty(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
 #endif
 }
 
@@ -4642,7 +4642,7 @@ void Player::AddToWorld(MapMgr* pMapMgr)
         m_session->SetInstance(m_mapMgr->GetInstanceID());
 
 #if VERSION_STRING > TBC
-    SendInstanceDifficulty(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
 #endif
 }
 
@@ -14794,26 +14794,6 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
     m_session->SendPacket(&data);
 }
 
-void Player::SendDungeonDifficulty()
-{
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
-}
-
-void Player::SendRaidDifficulty()
-{
-#if VERSION_STRING > TBC
-    m_session->SendPacket(MsgSetRaidDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
-#endif
-}
-
-void Player::SendInstanceDifficulty(uint8 difficulty)
-{
-    WorldPacket data(SMSG_INSTANCE_DIFFICULTY, 8);
-    data << uint32(difficulty);
-    data << uint32(0);
-
-    m_session->SendPacket(&data);
-}
 
 void Player::SendNewDrunkState(uint32 state, uint32 itemid)
 {

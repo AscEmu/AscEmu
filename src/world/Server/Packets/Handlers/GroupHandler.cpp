@@ -63,7 +63,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         {
             group->AddMember(_player->m_playerInfo);
             _player->iInstanceType = group->m_difficulty;
-            _player->SendDungeonDifficulty();
+            _player->sendDungeonDifficultyPacket();
             return;
         }
         else
@@ -73,7 +73,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
             group->AddMember(group_inviter->m_playerInfo);
             group->AddMember(_player->m_playerInfo);
             _player->iInstanceType = group->m_difficulty;
-            _player->SendDungeonDifficulty();
+            _player->sendDungeonDifficultyPacket();
 
             Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
             if (instance != nullptr && instance->m_creatorGuid == group_inviter->getGuidLow())
@@ -535,7 +535,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
         group->AddMember(_player->getPlayerInfo());
         group->m_difficulty = player->iInstanceType;
         _player->iInstanceType = player->iInstanceType;
-        _player->SendDungeonDifficulty();
+        _player->sendDungeonDifficultyPacket();
 
         const auto instance = sInstanceMgr.GetInstanceByIds(player->GetMapId(), player->GetInstanceID());
         if (instance && instance->m_creatorGuid == player->getGuidLow())
@@ -550,7 +550,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     {
         group->AddMember(_player->getPlayerInfo());
         _player->iInstanceType = group->m_difficulty;
-        _player->SendDungeonDifficulty();
+        _player->sendDungeonDifficultyPacket();
     }
 }
 

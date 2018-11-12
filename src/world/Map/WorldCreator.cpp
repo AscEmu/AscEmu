@@ -199,7 +199,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     if (inf->type == INSTANCE_NONRAID && plr->GetDungeonDifficulty() == MODE_HEROIC)
     {
         plr->SetDungeonDifficulty(MODE_NORMAL);
-        plr->SendDungeonDifficulty();
+        plr->sendDungeonDifficultyPacket();
 
         Group* grp = plr->GetGroup();
         if (grp != NULL)
@@ -250,7 +250,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
             {
 
                 plr->SetRaidDifficulty(newtype);
-                plr->SendRaidDifficulty();
+                plr->sendRaidDifficultyPacket();
 
                 Group* grp = plr->GetGroup();
                 if (grp != nullptr)

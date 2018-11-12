@@ -27,6 +27,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
+#include "Server/Packets/MsgSetDungeonDifficulty.h"
+#include "Server/Packets/MsgSetRaidDifficulty.h"
+#include "Server/Packets/SmsgInstanceDifficulty.h"
 
 using namespace AscEmu::Packets;
 
@@ -1296,4 +1299,21 @@ void Player::sendPetUnlearnConfirmPacket()
         return;
 
     m_session->SendPacket(SmsgPetUnlearnConfirm(GetSummon()->getGuid(), GetSummon()->GetUntrainCost()).serialise().get());
+}
+
+void Player::sendDungeonDifficultyPacket()
+{
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
+}
+
+void Player::sendRaidDifficultyPacket()
+{
+#if VERSION_STRING > TBC
+    m_session->SendPacket(MsgSetRaidDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
+#endif
+}
+
+void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
+{
+    m_session->SendPacket(SmsgInstanceDifficulty(difficulty).serialise().get());
 }
