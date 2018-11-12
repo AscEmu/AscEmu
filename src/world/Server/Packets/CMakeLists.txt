@@ -356,6 +356,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
    ${PATH_PREFIX}/SmsgStableResult.h
    ${PATH_PREFIX}/SmsgStandstateUpdate.h
+   ${PATH_PREFIX}/SmsgStopMirrorTimer.h
    ${PATH_PREFIX}/SmsgTaxinodeStatus.h
    ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTotemCreated.h

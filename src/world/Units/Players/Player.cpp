@@ -36,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEquipmentSetUseResult.h"
 #include "Server/Packets/SmsgTotemCreated.h"
 #include "Server/Packets/SmsgGossipPoi.h"
+#include "Server/Packets/SmsgStopMirrorTimer.h"
 
 using namespace AscEmu::Packets;
 
@@ -1359,4 +1360,9 @@ void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t durati
 void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name)
 {
     m_session->SendPacket(SmsgGossipPoi(flags, posX, posY, icon, data, name).serialise().get());
+}
+
+void Player::sendStopMirrorTimerPacket(MirrorTimerTypes type)
+{
+    m_session->SendPacket(SmsgStopMirrorTimer(type).serialise().get());
 }

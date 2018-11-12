@@ -32,12 +32,12 @@ namespace AscEmu { namespace Packets
     protected:
         size_t expectedSize() const override
         {
-            return 1 + ourName.lenth() + enemyName.lenth();
+            return 1 + ourName.length() + enemyName.length();
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << reclaimTime << ourName.c_str() << enemyName.c_str();
+            packet << winnerCondition << ourName.c_str() << enemyName.c_str();
             return true;
         }
 

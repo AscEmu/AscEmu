@@ -76,6 +76,7 @@
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDuelWinner.h"
+#include "Server/Packets/SmsgStopMirrorTimer.h"
 
 using namespace AscEmu::Packets;
 
@@ -1170,7 +1171,7 @@ void Player::Update(unsigned long time_passed)
             if (m_UnderwaterTime >= m_UnderwaterMaxTime)
             {
                 m_UnderwaterTime = m_UnderwaterMaxTime;
-                StopMirrorTimer(MIRROR_TYPE_BREATH);
+                sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
             }
         }
     }
@@ -5406,9 +5407,9 @@ void Player::BuildPlayerRepop()
         sp->prepare(&tgt);
     }
 
-    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
-    StopMirrorTimer(MIRROR_TYPE_BREATH);
-    StopMirrorTimer(MIRROR_TYPE_FIRE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
 
     addPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
@@ -5583,9 +5584,9 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     setMoveRoot(true);
-    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
-    StopMirrorTimer(MIRROR_TYPE_BREATH);
-    StopMirrorTimer(MIRROR_TYPE_FIRE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
 
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
     //\note remove all dynamic flags
@@ -9008,7 +9009,7 @@ void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, 
     if (int(max) == -1)
     {
         if (int(current) != -1)
-            StopMirrorTimer(Type);
+            sendStopMirrorTimerPacket(Type);
         return;
     }
     WorldPacket data(SMSG_START_MIRROR_TIMER, 21);
@@ -9018,13 +9019,6 @@ void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, 
     data << int32(regen);
     data << uint8(0);
     data << uint32(0);                   // spell id
-    GetSession()->SendPacket(&data);
-}
-
-void Player::StopMirrorTimer(MirrorTimerTypes Type)
-{
-    WorldPacket data(SMSG_STOP_MIRROR_TIMER, 4);
-    data << (uint32)Type;
     GetSession()->SendPacket(&data);
 }
 

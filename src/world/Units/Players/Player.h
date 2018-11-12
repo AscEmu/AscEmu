@@ -656,6 +656,7 @@ public:
     void sendEquipmentSetUseResultPacket(uint8_t result);
     void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
     void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
+    void sendStopMirrorTimerPacket(MirrorTimerTypes type);
 
 public:
     //MIT End
@@ -1639,7 +1640,7 @@ public:
         bool m_Autojoin;
         bool m_AutoAddMem;
         void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
-        void StopMirrorTimer(MirrorTimerTypes Type);
+        
         BGScore m_bgScore;
         uint32 m_bgTeam;
         void UpdateChanceFields();

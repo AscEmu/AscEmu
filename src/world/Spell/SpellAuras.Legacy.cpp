@@ -5397,7 +5397,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
 #endif
             p_target->removeUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->removeDynamicFlags(U_DYN_FLAG_DEAD);
-            p_target->StopMirrorTimer(MIRROR_TYPE_FIRE);
+            p_target->sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
         }
     }
 }
@@ -7532,7 +7532,7 @@ void Aura::SpellAuraWaterBreathing(bool apply)
         if (apply)
         {
             SetPositive();
-            p_target->StopMirrorTimer(MIRROR_TYPE_BREATH);
+            p_target->sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
             p_target->m_UnderwaterState = 0;
         }
 
