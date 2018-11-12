@@ -5581,8 +5581,8 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             owner->GetSession()->OutPacket(MSG_CORPSE_QUERY, 1, "\x00");
         }
 
-        if (corpse->getUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS) != 1)
-            corpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
+        if (corpse->getDynamicFlags() != 1)
+            corpse->setDynamicFlags(1); // sets it so you can loot the plyr
 
         // remove skinnable flag
         corpse->setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);

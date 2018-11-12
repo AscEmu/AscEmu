@@ -605,7 +605,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     else if (srlPacket.guid.isCorpse())
     {
         if (auto corpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow()))
-            corpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
+            corpse->setDynamicFlags(0);
     }
     else if (srlPacket.guid.isPlayer())
     {

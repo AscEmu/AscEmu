@@ -220,7 +220,7 @@ void DynamicObject::UpdateTargets()
         Unit* target;
         Aura* pAura;
 
-        float radius = getFloatValue(DYNAMICOBJECT_RADIUS) * getFloatValue(DYNAMICOBJECT_RADIUS);
+        float radius = getRadius() * getRadius();
 
         // Looking for targets in the Object set
         for (const auto& itr : getInRangeObjectsSet())

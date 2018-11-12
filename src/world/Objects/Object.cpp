@@ -1131,7 +1131,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
     uint8_t flags = 0, flags2 = 0, update_type = UPDATETYPE_CREATE_OBJECT;
     if (m_objectTypeId == TYPEID_CORPSE)
-        if (m_uint32Values[CORPSE_FIELD_DISPLAY_ID] == 0)
+        if (static_cast<Corpse*>(this)->getDisplayId() == 0)
             return 0;
 
     switch (m_objectTypeId)
@@ -1764,7 +1764,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         }
         else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
-            if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_BYTES_1] == GAMEOBJECT_TYPE_MO_TRANSPORT)
+            if (flags & UPDATEFLAG_TRANSPORT &&  static_cast<GameObject*>(this)->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
                 *data << float(0);
                 *data << float(0);

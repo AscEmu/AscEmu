@@ -99,6 +99,9 @@ public:
     uint32_t getFlags() const;
     void setFlags(uint32_t flags);
 
+    uint32_t getDynamicFlags() const;
+    void setDynamicFlags(uint32_t flags);
+
 // MIT End
 // AGPL Start
         Corpse(uint32 high, uint32 low);

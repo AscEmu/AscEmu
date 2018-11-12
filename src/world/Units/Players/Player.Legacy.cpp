@@ -5653,7 +5653,7 @@ void Player::CreateCorpse()
         pCorpse->generateLoot();
         if (bShouldHaveLootableOnCorpse)
         {
-            pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
+            pCorpse->setDynamicFlags(1); // sets it so you can loot the plyr
         }
         else
         {
@@ -5697,8 +5697,8 @@ void Player::SpawnCorpseBody()
     {
         if (!pCorpse->IsInWorld())
         {
-            if (bShouldHaveLootableOnCorpse && pCorpse->getUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS) != 1)
-                pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
+            if (bShouldHaveLootableOnCorpse && pCorpse->getDynamicFlags() != 1)
+                pCorpse->setDynamicFlags(1); // sets it so you can loot the plyr
 
             if (m_mapMgr == nullptr)
                 pCorpse->AddToWorld();

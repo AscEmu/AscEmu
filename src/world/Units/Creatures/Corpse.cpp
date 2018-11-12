@@ -70,6 +70,9 @@ void Corpse::setFacialFeatures(uint8_t feature) { write(corpseData()->corpse_byt
 uint32_t Corpse::getFlags() const { return corpseData()->corpse_flags; }
 void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags); }
 
+uint32_t Corpse::getDynamicFlags() const { return corpseData()->dynamic_flags; }
+void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags, flags); }
+
  // MIT End
  // AGPL Start
 Corpse::Corpse(uint32 high, uint32 low)
