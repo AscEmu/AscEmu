@@ -657,6 +657,7 @@ public:
     void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
     void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
     void sendStopMirrorTimerPacket(MirrorTimerTypes type);
+    void sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status);
 
 public:
     //MIT End
@@ -771,8 +772,7 @@ public:
         //! Okay to remove from world
         bool ok_to_remove;
         void OnLogin();//custom stuff on player login.
-        void SendMeetingStoneQueue(uint32 DungeonId, uint8 Status);
-        
+ 
         void SendExploreXP(uint32 areaid, uint32 xp);
         
         void SendEquipmentSetList();

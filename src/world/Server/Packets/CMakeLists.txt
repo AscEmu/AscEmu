@@ -321,6 +321,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLootMoneyNotify.h
    ${PATH_PREFIX}/SmsgLootReleaseResponse.h
    ${PATH_PREFIX}/SmsgLootRemoved.h
+   ${PATH_PREFIX}/SmsgMeetingstoneSetQueue.h
    ${PATH_PREFIX}/SmsgMessageChat.h
    ${PATH_PREFIX}/SmsgMountspecialAnim.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
