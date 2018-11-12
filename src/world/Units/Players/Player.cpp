@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GuildMgr.h"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
+#include "Server/Packets/SmsgPetUnlearnConfirm.h"
 
 using namespace AscEmu::Packets;
 
@@ -1287,4 +1288,12 @@ int32_t Player::getMyCorpseInstanceId() const
 void Player::sendTalentResetConfirmPacket()
 {
     m_session->SendPacket(MsgTalentWipeConfirm(getGuid(), CalcTalentResetCost(GetTalentResetTimes())).serialise().get());
+}
+
+void Player::sendPetUnlearnConfirmPacket()
+{
+    if (GetSummon() == nullptr)
+        return;
+
+    m_session->SendPacket(SmsgPetUnlearnConfirm(GetSummon()->getGuid(), GetSummon()->GetUntrainCost()).serialise().get());
 }

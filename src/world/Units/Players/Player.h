@@ -645,6 +645,7 @@ public:
     int32_t getMyCorpseInstanceId() const;
 
     void sendTalentResetConfirmPacket();
+    void sendPetUnlearnConfirmPacket();
 
 public:
     //MIT End
@@ -1358,8 +1359,6 @@ public:
 
         uint32 CalcTalentResetCost(uint32 resetnum);
         
-        void SendPetUntrainConfirm();
-
         uint32 GetTalentResetTimes() { return m_talentresettimes; }
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
 

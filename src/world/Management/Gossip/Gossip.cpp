@@ -617,7 +617,7 @@ void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, ui
     else
     {
         Gossip::Menu::Complete(Plr);
-        Plr->SendPetUntrainConfirm();
+        Plr->sendPetUnlearnConfirmPacket();
     }
 
 }

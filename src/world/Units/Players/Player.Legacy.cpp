@@ -14624,21 +14624,6 @@ void Player::SetMover(Unit* target)
 //////////////////////////////////////////////////////////////////////////////////////////
 // old functions from PlayerPacketWrapper.cpp
 
-void Player::SendPetUntrainConfirm()
-{
-    Pet* pPet = GetSummon();
-
-    if (pPet == NULL)
-        return;
-
-    WorldPacket data(SMSG_PET_UNLEARN_CONFIRM, 12);
-
-    data << uint64(pPet->getGuid());
-    data << uint32(pPet->GetUntrainCost());
-
-    m_session->SendPacket(&data);
-}
-
 void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
 {
     WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
