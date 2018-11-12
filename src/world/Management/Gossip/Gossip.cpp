@@ -718,7 +718,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             break;
         case 3:
             Gossip::Menu::Complete(Plr);
-            Plr->SendTalentResetConfirm();
+            Plr->sendTalentResetConfirmPacket();
             break;
         case 4:
             purchaseconfirm = Plr->GetSession()->LocalizedWorldSrv(Gossip::SURE_TO_PURCHASE_DTS);

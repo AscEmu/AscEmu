@@ -644,6 +644,8 @@ public:
 
     int32_t getMyCorpseInstanceId() const;
 
+    void sendTalentResetConfirmPacket();
+
 public:
     //MIT End
     //AGPL Start
@@ -1355,7 +1357,7 @@ public:
         void SetManaFromSpell(uint32 value) { m_manafromspell = value;}
 
         uint32 CalcTalentResetCost(uint32 resetnum);
-        void SendTalentResetConfirm();
+        
         void SendPetUntrainConfirm();
 
         uint32 GetTalentResetTimes() { return m_talentresettimes; }

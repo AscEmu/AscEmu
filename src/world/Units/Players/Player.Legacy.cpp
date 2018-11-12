@@ -7771,7 +7771,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         if (IsInWorld())
             RemoveFromWorld();
 
-        m_session->SendPacket(AscEmu::Packets::SmsgNewWorld(mapid, v).serialise().get());
+        m_session->SendPacket(SmsgNewWorld(mapid, v).serialise().get());
 
         SetMapId(mapid);
 
@@ -9383,7 +9383,7 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     data << mgr->GetMapId();
     GetSession()->SendPacket(&data);
 
-    GetSession()->SendPacket(AscEmu::Packets::SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
+    GetSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
 
     SetPlayerStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = vec;
@@ -14623,18 +14623,6 @@ void Player::SetMover(Unit* target)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // old functions from PlayerPacketWrapper.cpp
-
-using namespace AscEmu::Packets;
-
-void Player::SendTalentResetConfirm()
-{
-    WorldPacket data(MSG_TALENT_WIPE_CONFIRM, 12);
-
-    data << uint64(getGuid());
-    data << uint32(CalcTalentResetCost(GetTalentResetTimes()));
-
-    m_session->SendPacket(&data);
-}
 
 void Player::SendPetUntrainConfirm()
 {

@@ -25,6 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Management/GuildMgr.h"
 #include "Management/ItemInterface.h"
+#include "Server/Packets/MsgTalentWipeConfirm.h"
+
+using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
@@ -1279,4 +1282,9 @@ bool Player::hasOffHandWeapon()
 int32_t Player::getMyCorpseInstanceId() const
 {
     return myCorpseInstanceId;
+}
+
+void Player::sendTalentResetConfirmPacket()
+{
+    m_session->SendPacket(MsgTalentWipeConfirm(getGuid(), CalcTalentResetCost(GetTalentResetTimes())).serialise().get());
 }
