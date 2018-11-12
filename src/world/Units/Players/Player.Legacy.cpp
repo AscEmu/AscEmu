@@ -10930,12 +10930,12 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         if (prof1->itemclass == 4)
         {
             armor_proficiency |= prof1->subclass;
-            SendSetProficiency(prof1->itemclass, armor_proficiency);
+            sendSetProficiencyPacket(prof1->itemclass, armor_proficiency);
         }
         else
         {
             weapon_proficiency |= prof1->subclass;
-            SendSetProficiency(prof1->itemclass, weapon_proficiency);
+            sendSetProficiencyPacket(prof1->itemclass, weapon_proficiency);
         }
     }
     _LearnSkillSpells(SkillLine, Curr_sk);
@@ -14773,15 +14773,6 @@ void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, boo
 
 }
 
-void Player::SendSetProficiency(uint8 ItemClass, uint32 Proficiency)
-{
-    WorldPacket data(SMSG_SET_PROFICIENCY, 40);
-    data << uint8(ItemClass);
-    data << uint32(Proficiency);
-
-    m_session->SendPacket(&data);
-}
-
 void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float O)
 {
     WorldPacket data(SMSG_LOGIN_VERIFY_WORLD, 20);
@@ -15145,8 +15136,8 @@ void Player::SendInitialLogonPackets()
     m_session->SendPacket(&data);
 
     //Proficiencies
-    SendSetProficiency(4, armor_proficiency);
-    SendSetProficiency(2, weapon_proficiency);
+    sendSetProficiencyPacket(4, armor_proficiency);
+    sendSetProficiencyPacket(2, weapon_proficiency);
 
     //Tutorial Flags
     WorldPacket datab(SMSG_TUTORIAL_FLAGS, 4 * 8);
