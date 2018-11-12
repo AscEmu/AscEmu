@@ -35,6 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPartyKillLog.h"
 #include "Server/Packets/SmsgEquipmentSetUseResult.h"
 #include "Server/Packets/SmsgTotemCreated.h"
+#include "Server/Packets/SmsgGossipPoi.h"
 
 using namespace AscEmu::Packets;
 
@@ -1353,4 +1354,9 @@ void Player::sendEquipmentSetUseResultPacket(uint8_t result)
 void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId)
 {
     m_session->SendPacket(SmsgTotemCreated(slot, guid, duration, spellId).serialise().get());
+}
+
+void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name)
+{
+    m_session->SendPacket(SmsgGossipPoi(flags, posX, posY, icon, data, name).serialise().get());
 }

@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint64_t playerGuid;
-        uint32_t killedGuid;
+        uint64_t killedGuid;
 
         SmsgPartyKillLog() : SmsgPartyKillLog(0, 0)
         {

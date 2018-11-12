@@ -655,6 +655,7 @@ public:
     void sendDestroyObjectPacket(uint64_t destroyedGuid);
     void sendEquipmentSetUseResultPacket(uint8_t result);
     void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
+    void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
 
 public:
     //MIT End
@@ -1973,7 +1974,7 @@ public:
         void SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool type);
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
         void SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast, uint32 Extra);
-        void Gossip_SendPOI(float X, float Y, uint32 Icon, uint32 Flags, uint32 Data, const char* Name);
+        
         void Gossip_SendSQLPOI(uint32 id);
         void SendSpellCooldownEvent(uint32 SpellId);
         void SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct);

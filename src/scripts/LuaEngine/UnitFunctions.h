@@ -135,7 +135,7 @@ public:
         int data = static_cast<int>(luaL_checkinteger(L, 5));
         const char * name = luaL_checkstring(L, 6);
 
-        plr->Gossip_SendPOI(x, y, icon, flags, data, name);
+        plr->sendGossipPoiPacket(x, y, icon, flags, data, name);
 
         return 0;
     }

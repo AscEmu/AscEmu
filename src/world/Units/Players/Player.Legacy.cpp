@@ -14246,7 +14246,7 @@ void Player::Gossip_SendSQLPOI(uint32 id)
 {
     MySQLStructure::PointsOfInterest const* pPOI = sMySQLStore.getPointOfInterest(id);
     if (pPOI != nullptr)
-        Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->iconName.c_str());
+        sendGossipPoiPacket(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->iconName);
 }
 
 void Player::ResetTimeSync()
@@ -14630,29 +14630,6 @@ void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
 
     data << uint32(WorldState);
     data << uint32(Value);
-
-    m_session->SendPacket(&data);
-}
-
-void Player::Gossip_SendPOI(float X, float Y, uint32 Icon, uint32 Flags, uint32 Data, const char* Name)
-{
-    size_t namelen = 0;
-
-    if (Name != NULL)
-        namelen = strlen(Name);
-
-    WorldPacket data(SMSG_GOSSIP_POI, 21 + namelen);
-
-    data << uint32(Flags);
-    data << float(X);
-    data << float(Y);
-    data << uint32(Icon);
-    data << uint32(Data);
-
-    if (namelen == 0)
-        data << uint8(0);
-    else
-        data.append((const uint8*)Name, namelen + 1);
 
     m_session->SendPacket(&data);
 }

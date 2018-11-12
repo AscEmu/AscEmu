@@ -110,7 +110,7 @@ namespace luaItem
         uint32 data = static_cast<uint32>(luaL_checkinteger(L, 6));
         const char* name = luaL_checkstring(L, 7);
 
-        plr->Gossip_SendPOI(x, y, icon, flags, data, name);
+        plr->sendGossipPoiPacket(x, y, icon, flags, data, name);
         return 1;
     }
 
