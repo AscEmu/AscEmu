@@ -6731,7 +6731,7 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 
     UpdateVisibility();
 
-    SendNewDrunkState(newDrunkenState, itemId);
+    sendNewDrunkStatePacket(newDrunkenState, itemId);
 }
 
 void Player::LoadTaxiMask(const char* data)
@@ -14792,17 +14792,6 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
     data << float(O);
 
     m_session->SendPacket(&data);
-}
-
-
-void Player::SendNewDrunkState(uint32 state, uint32 itemid)
-{
-    WorldPacket data(SMSG_CROSSED_INEBRIATION_THRESHOLD, (8 + 4 + 4));
-    data << getGuid();
-    data << uint32(state);
-    data << uint32(itemid);
-
-    SendMessageToSet(&data, true);
 }
 
 /*Loot type MUST be

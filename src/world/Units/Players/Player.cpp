@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
 #include "Server/Packets/MsgSetRaidDifficulty.h"
 #include "Server/Packets/SmsgInstanceDifficulty.h"
+#include "Server/Packets/SmsgCrossedInebriationThreshold.h"
 
 using namespace AscEmu::Packets;
 
@@ -1316,4 +1317,9 @@ void Player::sendRaidDifficultyPacket()
 void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
 {
     m_session->SendPacket(SmsgInstanceDifficulty(difficulty).serialise().get());
+}
+
+void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemid)
+{
+    SendMessageToSet(SmsgCrossedInebriationThreshold(getGuid(), state, itemid).serialise().get(), true);
 }
