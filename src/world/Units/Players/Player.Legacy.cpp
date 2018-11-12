@@ -77,6 +77,7 @@
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgStopMirrorTimer.h"
+#include "Server/Packets/SmsgSummonRequest.h"
 
 using namespace AscEmu::Packets;
 
@@ -10862,11 +10863,7 @@ void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32
     m_summoner = Requestor;
     m_summonMapId = MapID;
 
-    WorldPacket data(SMSG_SUMMON_REQUEST, 16);
-    data << uint64(Requestor);
-    data << ZoneID;
-    data << uint32(120000);        // 2 minutes
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgSummonRequest(Requestor, ZoneID, 120000).serialise().get());
 }
 
 void Player::RemoveFromBattlegroundQueue()
