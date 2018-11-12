@@ -324,6 +324,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgNewWorld.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
+   ${PATH_PREFIX}/SmsgPartyKillLog.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
    ${PATH_PREFIX}/SmsgPetitionQueryResponse.h

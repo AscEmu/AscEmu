@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgInstanceDifficulty.h"
 #include "Server/Packets/SmsgCrossedInebriationThreshold.h"
 #include "Server/Packets/SmsgSetProficiency.h"
+#include "Server/Packets/SmsgPartyKillLog.h"
 
 using namespace AscEmu::Packets;
 
@@ -1328,4 +1329,9 @@ void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemId)
 void Player::sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency)
 {
     m_session->SendPacket(SmsgSetProficiency(itemClass, proficiency).serialise().get());
+}
+
+void Player::sendPartyKillLogPacket(uint64_t killedGuid)
+{
+    SendMessageToSet(SmsgPartyKillLog(getGuid(), killedGuid).serialise().get(), true);
 }

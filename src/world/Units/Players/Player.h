@@ -651,6 +651,7 @@ public:
     void sendInstanceDifficultyPacket(uint8_t difficulty);
     void sendNewDrunkStatePacket(uint32_t state, uint32_t itemId);
     void sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency);
+    void sendPartyKillLogPacket(uint64_t killedGuid);
 
 public:
     //MIT End
@@ -1234,7 +1235,7 @@ public:
         void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
         void SendLootUpdate(Object* o);
         void TagUnit(Object* o);
-        void SendPartyKillLog(uint64 GUID);
+        
         // loot variables
         uint64 m_lootGuid;
         uint64 m_currentLoot;

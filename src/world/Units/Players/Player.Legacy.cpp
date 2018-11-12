@@ -13107,7 +13107,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         EventAttackStop();
 
-        SendPartyKillLog(pVictim->getGuid());
+        sendPartyKillLogPacket(pVictim->getGuid());
 
         if (pVictim->IsPvPFlagged())
         {
@@ -15276,15 +15276,6 @@ void Player::TagUnit(Object* o)
 
         SendUpdateDataToSet(&buf1, &buf, true);
     }
-}
-
-void Player::SendPartyKillLog(uint64 GUID)
-{
-    WorldPacket data(SMSG_PARTYKILLLOG, 16);
-    data << getGuid();
-    data << GUID;
-
-    SendMessageToSet(&data, true);
 }
 
 void Player::SendDestroyObject(uint64 GUID)
