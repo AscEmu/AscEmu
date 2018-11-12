@@ -74,6 +74,7 @@
 #include "Server/Packets/SmsgFriendStatus.h"
 #include "Management/GuildMgr.h"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
+#include "Server/Packets/SmsgCorpseReclaimDelay.h"
 
 using namespace AscEmu::Packets;
 
@@ -5517,10 +5518,8 @@ void Player::RepopRequestedPlayer()
         // Send Spirit Healer Location
         m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
 
-        /* Corpse reclaim delay */
-        WorldPacket data2(SMSG_CORPSE_RECLAIM_DELAY, 4);
-        data2 << uint32(CORPSE_RECLAIM_TIME_MS);
-        m_session->SendPacket(&data2);
+        // Corpse reclaim delay
+        m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
     }
 
 }
@@ -9925,9 +9924,8 @@ void Player::CompleteLoading()
             Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
             if (myCorpse != nullptr)
                 myCorpse->ResetDeathClock();
-            WorldPacket SendCounter(SMSG_CORPSE_RECLAIM_DELAY, 4);
-            SendCounter << (uint32)(CORPSE_RECLAIM_TIME_MS);
-            GetSession()->SendPacket(&SendCounter);
+
+            GetSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }
         //RepopRequestedPlayer();
         //sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_CHECKFORCHEATS, 2000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

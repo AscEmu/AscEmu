@@ -281,6 +281,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgComplainResult.h
+   ${PATH_PREFIX}/SmsgCorpseReclaimDelay.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgCrossedInebriationThreshold.h
    ${PATH_PREFIX}/SmsgDeathReleaseLoc.h
