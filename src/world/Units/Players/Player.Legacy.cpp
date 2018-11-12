@@ -75,6 +75,7 @@
 #include "Management/GuildMgr.h"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
+#include "Server/Packets/SmsgDuelWinner.h"
 
 using namespace AscEmu::Packets;
 
@@ -8920,12 +8921,9 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith->m_duelState = DUEL_STATE_FINISHED;
 
     //Announce Winner
-    WorldPacket data(SMSG_DUEL_WINNER, 500);
-    data << uint8(WinCondition);
-    data << getName().c_str() << DuelingWith->getName().c_str();
-    SendMessageToSet(&data, true);
+    SendMessageToSet(SmsgDuelWinner(WinCondition, getName(), DuelingWith->getName()).serialise().get(), true);
 
-    data.Initialize(SMSG_DUEL_COMPLETE);
+    WorldPacket data(SMSG_DUEL_COMPLETE, 1);
     data << uint8(1);
     SendMessageToSet(&data, true);
 
