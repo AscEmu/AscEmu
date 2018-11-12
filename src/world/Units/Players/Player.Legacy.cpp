@@ -78,6 +78,7 @@
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgStopMirrorTimer.h"
 #include "Server/Packets/SmsgSummonRequest.h"
+#include "Server/Packets/SmsgTitleEarned.h"
 
 using namespace AscEmu::Packets;
 
@@ -12416,10 +12417,7 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     else
         setUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
 
-    WorldPacket data(SMSG_TITLE_EARNED, 8);
-    data << uint32(title);
-    data << uint32(set ? 1 : 0);
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
 }
 
 uint32 Player::GetInitialFactionId()
