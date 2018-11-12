@@ -658,6 +658,7 @@ public:
     void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
     void sendStopMirrorTimerPacket(MirrorTimerTypes type);
     void sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status);
+    void sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId);
 
 public:
     //MIT End
@@ -2152,7 +2153,6 @@ public:
         uint32 m_tradeSequence;
         bool m_changingMaps;
 
-        void PlaySoundToPlayer(uint64_t from_guid, uint32_t sound_id);
         void PlaySound(uint32 sound_id);
 
         void SendGuildMOTD();

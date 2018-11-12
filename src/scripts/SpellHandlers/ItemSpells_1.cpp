@@ -210,7 +210,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     // Remove Zzz aura
     c_target->RemoveAllAuras();
 
-    pSpell->p_caster->PlaySoundToPlayer(c_target->getGuid(), 6197);
+    pSpell->p_caster->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
 
     // send chat message
     char msg[100];

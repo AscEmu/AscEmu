@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGossipPoi.h"
 #include "Server/Packets/SmsgStopMirrorTimer.h"
 #include "Server/Packets/SmsgMeetingstoneSetQueue.h"
+#include "Server/Packets/SmsgPlayObjectSound.h"
 
 using namespace AscEmu::Packets;
 
@@ -1371,4 +1372,9 @@ void Player::sendStopMirrorTimerPacket(MirrorTimerTypes type)
 void Player::sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status)
 {
     m_session->SendPacket(SmsgMeetingstoneSetQueue(dungeonId, status).serialise().get());
+}
+
+void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
+{
+    SendMessageToSet(SmsgPlayObjectSound(soundId, objectGuid).serialise().get(), true);
 }

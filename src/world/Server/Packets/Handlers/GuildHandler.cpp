@@ -875,7 +875,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
         else
         {
-            _player->PlaySoundToPlayer(srlPacket.creatureGuid, 6594);
+            _player->sendPlayObjectSoundPacket(srlPacket.creatureGuid, 6594);
 
             Item* item = objmgr.CreateItem(CharterEntry::Guild, _player);
 

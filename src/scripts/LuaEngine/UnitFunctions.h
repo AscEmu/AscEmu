@@ -1204,7 +1204,7 @@ public:
         TEST_PLAYER();
         uint32 soundid = static_cast<uint32>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        plr->PlaySoundToPlayer(plr->getGuid(), soundid);
+        plr->sendPlayObjectSoundPacket(plr->getGuid(), soundid);
         return 0;
     }
 
