@@ -652,6 +652,8 @@ public:
     void sendNewDrunkStatePacket(uint32_t state, uint32_t itemId);
     void sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency);
     void sendPartyKillLogPacket(uint64_t killedGuid);
+    void sendDestroyObjectPacket(uint64_t destroyedGuid);
+    void sendEquipmentSetUseResultPacket(uint8_t result);
 
 public:
     //MIT End
@@ -769,10 +771,10 @@ public:
         void SendMeetingStoneQueue(uint32 DungeonId, uint8 Status);
         
         void SendExploreXP(uint32 areaid, uint32 xp);
-        void SendDestroyObject(uint64 GUID);
+        
         void SendEquipmentSetList();
         void SendEquipmentSetSaved(uint32 setID, uint32 setGUID);
-        void SendEquipmentSetUseResult(uint8 result);
+        
         void SendEmptyPetSpellList();
 
 

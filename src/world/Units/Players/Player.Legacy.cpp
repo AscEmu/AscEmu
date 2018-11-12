@@ -15278,12 +15278,6 @@ void Player::TagUnit(Object* o)
     }
 }
 
-void Player::SendDestroyObject(uint64 GUID)
-{
-    m_session->SendPacket(SmsgDestroyObject(GUID).serialise().get());
-}
-
-
 void Player::SendEquipmentSetList()
 {
 #if VERSION_STRING > TBC
@@ -15306,18 +15300,6 @@ void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
     m_session->SendPacket(&data);
 
     LOG_DEBUG("Sent SMSG_EQUIPMENT_SET_SAVED.");
-#endif
-}
-
-void Player::SendEquipmentSetUseResult(uint8 result)
-{
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_EQUIPMENT_SET_USE_RESULT, 1);
-    data << uint8(result);
-
-    m_session->SendPacket(&data);
-
-    LOG_DEBUG("SMSG_EQUIPMENT_SET_USE_RESULT sent.");
 #endif
 }
 

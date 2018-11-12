@@ -2807,7 +2807,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 
     }
 
-    _player->SendEquipmentSetUseResult(result);
+    _player->sendEquipmentSetUseResultPacket(result);
 }
 
 void WorldSession::handleEquipmentSetSave(WorldPacket& data)

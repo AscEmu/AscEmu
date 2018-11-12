@@ -12145,7 +12145,7 @@ void Unit::UpdateVisibility()
                 {
                     if (is_visible)
                     {
-                        plr->SendDestroyObject(pObj->getGuid());
+                        plr->sendDestroyObjectPacket(pObj->getGuid());
                         plr->RemoveVisibleObject(pObj->getGuid());
                     }
                 }
@@ -12169,7 +12169,7 @@ void Unit::UpdateVisibility()
                     {
                         if (is_visible)
                         {
-                            pl->SendDestroyObject(plr->getGuid());
+                            pl->sendDestroyObjectPacket(plr->getGuid());
                             pl->RemoveVisibleObject(plr->getGuid());
                         }
                     }
@@ -12190,7 +12190,7 @@ void Unit::UpdateVisibility()
                 {
                     if (is_visible)
                     {
-                        p->SendDestroyObject(getGuid());
+                        p->sendDestroyObjectPacket(getGuid());
                         p->RemoveVisibleObject(getGuid());
                     }
                 }

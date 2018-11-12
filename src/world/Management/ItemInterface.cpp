@@ -105,14 +105,14 @@ void ItemInterface::m_DestroyForPlayer()        // 100%
                     Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
                     if (pItem)
                     {
-                        m_pOwner->SendDestroyObject(pItem->getGuid());
+                        m_pOwner->sendDestroyObjectPacket(pItem->getGuid());
                     }
                 }
-                m_pOwner->SendDestroyObject(m_pItems[i]->getGuid());
+                m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
             }
             else
             {
-                m_pOwner->SendDestroyObject(m_pItems[i]->getGuid());
+                m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
             }
         }
     }
@@ -2754,7 +2754,7 @@ void ItemInterface::EmptyBuyBack()
     {
         if (m_pBuyBack[j] != nullptr)
         {
-            m_pOwner->SendDestroyObject(m_pBuyBack[j]->getGuid());
+            m_pOwner->sendDestroyObjectPacket(m_pBuyBack[j]->getGuid());
             m_pBuyBack[j]->DeleteFromDB();
 
             if (m_pBuyBack[j]->isContainer())
@@ -2788,7 +2788,7 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
     {
         if (m_pBuyBack[0] != nullptr)
         {
-            m_pOwner->SendDestroyObject(m_pBuyBack[0]->getGuid());
+            m_pOwner->sendDestroyObjectPacket(m_pBuyBack[0]->getGuid());
             m_pBuyBack[0]->DeleteFromDB();
 
             if (m_pBuyBack[0]->isContainer())

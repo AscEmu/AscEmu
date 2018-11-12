@@ -689,7 +689,7 @@ public:
         void SendAIReaction(uint32 reaction = 2);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        //void SendDestroyObject()
+        //void sendDestroyObjectPacket()
         // Destroys this Object for the players' clients that are nearby
         // (removes object from the scene)
         //

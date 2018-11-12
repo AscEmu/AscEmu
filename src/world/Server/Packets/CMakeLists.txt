@@ -287,6 +287,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgEmote.h
+   ${PATH_PREFIX}/SmsgEquipmentSetUseResult.h
    ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
    ${PATH_PREFIX}/SmsgFriendStatus.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h

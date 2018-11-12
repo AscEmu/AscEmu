@@ -531,7 +531,7 @@ void Item::RemoveFromWorld()
 {
     // if we have an owner->send destroy
     if (m_owner != NULL)
-        m_owner->SendDestroyObject(getGuid());
+        m_owner->sendDestroyObjectPacket(getGuid());
 
     if (!IsInWorld())
         return;
