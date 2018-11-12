@@ -283,6 +283,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgComplainResult.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
    ${PATH_PREFIX}/SmsgCrossedInebriationThreshold.h
+   ${PATH_PREFIX}/SmsgDeathReleaseLoc.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h

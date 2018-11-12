@@ -73,6 +73,7 @@
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgFriendStatus.h"
 #include "Management/GuildMgr.h"
+#include "Server/Packets/SmsgDeathReleaseLoc.h"
 
 using namespace AscEmu::Packets;
 
@@ -5513,13 +5514,8 @@ void Player::RepopRequestedPlayer()
                 myCorpse->ResetDeathClock();
         }
 
-        /* Send Spirit Healer Location */
-        WorldPacket data(SMSG_DEATH_RELEASE_LOC, 16);
-
-        data << m_mapId;
-        data << m_position;
-
-        m_session->SendPacket(&data);
+        // Send Spirit Healer Location
+        m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
 
         /* Corpse reclaim delay */
         WorldPacket data2(SMSG_CORPSE_RECLAIM_DELAY, 4);
