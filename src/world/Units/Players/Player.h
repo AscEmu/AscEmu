@@ -660,6 +660,7 @@ public:
     void sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status);
     void sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId);
     void sendPlaySoundPacket(uint32_t soundId);
+    void sendExploreExperiencePacket(uint32_t areaId, uint32_t experience);
 
 public:
     //MIT End
@@ -774,9 +775,7 @@ public:
         //! Okay to remove from world
         bool ok_to_remove;
         void OnLogin();//custom stuff on player login.
- 
-        void SendExploreXP(uint32 areaid, uint32 xp);
-        
+
         void SendEquipmentSetList();
         void SendEquipmentSetSaved(uint32 setID, uint32 setGUID);
         

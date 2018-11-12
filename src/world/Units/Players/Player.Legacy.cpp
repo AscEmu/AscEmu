@@ -1628,12 +1628,12 @@ void Player::_EventExploration()
 
         if (getLevel() < getMaxLevel() && explore_xp > 0)
         {
-            SendExploreXP(at->id, explore_xp);
+            sendExploreExperiencePacket(at->id, explore_xp);
             GiveXP(explore_xp, 0, false);
         }
         else
         {
-            SendExploreXP(at->id, 0);
+            sendExploreExperiencePacket(at->id, 0);
         }
     }
 }
@@ -12662,14 +12662,6 @@ void Player::RemoveSanctuaryFlag()
     {
         (*itr)->RemoveSanctuaryFlag();
     }
-}
-
-void Player::SendExploreXP(uint32 areaid, uint32 xp)
-{
-    WorldPacket data(SMSG_EXPLORATION_EXPERIENCE, 8);
-    data << uint32(areaid);
-    data << uint32(xp);
-    m_session->SendPacket(&data);
 }
 
 void Player::HandleSpellLoot(uint32 itemid)

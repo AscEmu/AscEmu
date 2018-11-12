@@ -40,6 +40,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMeetingstoneSetQueue.h"
 #include "Server/Packets/SmsgPlayObjectSound.h"
 #include "Server/Packets/SmsgPlaySound.h"
+#include "Server/Packets/SmsgExplorationExperience.h"
 
 using namespace AscEmu::Packets;
 
@@ -1383,4 +1384,9 @@ void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
 void Player::sendPlaySoundPacket(uint32_t soundId)
 {
     m_session->SendPacket(SmsgPlaySound(soundId).serialise().get());
+}
+
+void Player::sendExploreExperiencePacket(uint32_t areaId, uint32_t experience)
+{
+    m_session->SendPacket(SmsgExplorationExperience(areaId, experience).serialise().get());
 }

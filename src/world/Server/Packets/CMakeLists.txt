@@ -291,6 +291,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelWinner.h
    ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgEquipmentSetUseResult.h
+   ${PATH_PREFIX}/SmsgExplorationExperience.h
    ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
    ${PATH_PREFIX}/SmsgFriendStatus.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
