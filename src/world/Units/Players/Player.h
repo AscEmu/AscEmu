@@ -654,6 +654,7 @@ public:
     void sendPartyKillLogPacket(uint64_t killedGuid);
     void sendDestroyObjectPacket(uint64_t destroyedGuid);
     void sendEquipmentSetUseResultPacket(uint8_t result);
+    void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
 
 public:
     //MIT End
@@ -776,22 +777,6 @@ public:
         void SendEquipmentSetSaved(uint32 setID, uint32 setGUID);
         
         void SendEmptyPetSpellList();
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // void SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid)
-        // Notifies the client about the creation of a Totem/Summon
-        // (client will show a right-clickable icon with a timer that can cancel the summon)
-        //
-        // \param uint8 slot       -  Summon slot number
-        // \param uint64 GUID      -  GUID of the summon
-        // \param uint32 duration  -  Duration of the summon (the timer of the icon)
-        // \param uint32 spellid   -  ID of the spell that created this summon
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
-        void SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid);
 
         void SendInitialWorldstates();
 

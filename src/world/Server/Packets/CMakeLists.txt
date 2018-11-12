@@ -354,6 +354,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgStandstateUpdate.h
    ${PATH_PREFIX}/SmsgTaxinodeStatus.h
    ${PATH_PREFIX}/SmsgTextEmote.h
+   ${PATH_PREFIX}/SmsgTotemCreated.h
    ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTrainerBuySucceeded.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h

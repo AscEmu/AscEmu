@@ -15303,16 +15303,6 @@ void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
 #endif
 }
 
-void Player::SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid)
-{
-    WorldPacket data(SMSG_TOTEM_CREATED, 17);
-    data << uint8(slot);
-    data << uint64(GUID);
-    data << uint32(duration);
-    data << uint32(spellid);
-    m_session->SendPacket(&data);
-}
-
 void Player::SendInitialWorldstates()
 {
 #if VERSION_STRING < Cata

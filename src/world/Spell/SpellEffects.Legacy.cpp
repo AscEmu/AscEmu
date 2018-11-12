@@ -3054,7 +3054,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         s->PushToWorld(u_caster->GetMapMgr());
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
-            p_caster->SendTotemCreated(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
+            p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
 
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
@@ -3138,7 +3138,7 @@ void Spell::SpellEffectSummonTotem(uint32 /*i*/, DBC::Structures::SummonProperti
     s->PushToWorld(u_caster->GetMapMgr());
 
     if (p_caster != nullptr)
-        p_caster->SendTotemCreated(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
+        p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
 
     int32 duration = static_cast<int32>(GetDuration());
     if (duration > 0)

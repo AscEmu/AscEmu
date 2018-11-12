@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetProficiency.h"
 #include "Server/Packets/SmsgPartyKillLog.h"
 #include "Server/Packets/SmsgEquipmentSetUseResult.h"
+#include "Server/Packets/SmsgTotemCreated.h"
 
 using namespace AscEmu::Packets;
 
@@ -1347,4 +1348,9 @@ void Player::sendEquipmentSetUseResultPacket(uint8_t result)
 #if VERSION_STRING > TBC
     m_session->SendPacket(SmsgEquipmentSetUseResult(result).serialise().get());
 #endif
+}
+
+void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId)
+{
+    m_session->SendPacket(SmsgTotemCreated(slot, guid, duration, spellId).serialise().get());
 }
