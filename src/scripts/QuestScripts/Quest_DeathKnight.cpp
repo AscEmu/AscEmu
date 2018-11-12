@@ -108,13 +108,13 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
     {
         // Play first sound
-        mTarget->PlaySound(14734);
+        mTarget->sendPlaySoundPacket(14734);
 
         // Play second sound after 22.5 seconds
-        sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(mTarget, &Player::sendPlaySoundPacket, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         // Play third sound after 48.5 seconds
-        sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(mTarget, &Player::sendPlaySoundPacket, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 };
 

@@ -659,6 +659,7 @@ public:
     void sendStopMirrorTimerPacket(MirrorTimerTypes type);
     void sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status);
     void sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId);
+    void sendPlaySoundPacket(uint32_t soundId);
 
 public:
     //MIT End
@@ -2152,8 +2153,6 @@ public:
         bool m_passOnLoot;
         uint32 m_tradeSequence;
         bool m_changingMaps;
-
-        void PlaySound(uint32 sound_id);
 
         void SendGuildMOTD();
 

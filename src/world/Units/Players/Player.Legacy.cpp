@@ -12297,13 +12297,6 @@ void Player::RemoveTempEnchantsOnArena()
     }
 }
 
-void Player::PlaySound(uint32 sound_id)
-{
-    WorldPacket data(SMSG_PLAY_SOUND, 4);
-    data << sound_id;
-    GetSession()->SendPacket(&data);
-}
-
 void Player::UpdatePowerAmm()
 {
 #if VERSION_STRING > TBC
