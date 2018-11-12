@@ -48,6 +48,7 @@
 #include "Data/WoWPlayer.h"
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgDestoyObject.h"
+#include "Server/Packets/SmsgPlaySound.h"
 
 // MIT Start
 
@@ -3457,10 +3458,7 @@ void Object::SetZoneId(uint32 newZone)
 
 void Object::PlaySoundToSet(uint32 sound_entry)
 {
-    WorldPacket data(SMSG_PLAY_SOUND, 4);
-    data << sound_entry;
-
-    SendMessageToSet(&data, true);
+    SendMessageToSet(AscEmu::Packets::SmsgPlaySound(sound_entry).serialise().get(), true);
 }
 
 bool Object::IsInBg()

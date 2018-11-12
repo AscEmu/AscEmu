@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "World.Legacy.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Management/GuildMgr.h"
+#include "Packets/SmsgPlaySound.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -1044,16 +1045,13 @@ void World::saveAllPlayersToDb()
 
 void World::playSoundToAllPlayers(uint32_t soundId)
 {
-    WorldPacket data(SMSG_PLAY_SOUND, 4);
-    data << uint32_t(soundId);
-
     mSessionLock.AcquireWriteLock();
 
     for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         WorldSession* worldSession = itr->second;
         if ((worldSession->GetPlayer() != nullptr) && worldSession->GetPlayer()->IsInWorld())
-            worldSession->SendPacket(&data);
+            worldSession->SendPacket(AscEmu::Packets::SmsgPlaySound(soundId).serialise().get());
     }
 
     mSessionLock.ReleaseWriteLock();

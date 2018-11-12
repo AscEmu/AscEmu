@@ -27,6 +27,7 @@
 #include "Map/MapMgr.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
+#include "Server/Packets/SmsgPlaySound.h"
 
 uint32 CBattleground::GetId()
 {
@@ -604,16 +605,12 @@ void CBattleground::DistributePacketToTeam(WorldPacket* packet, uint32 Team)
 
 void CBattleground::PlaySoundToAll(uint32 Sound)
 {
-    WorldPacket data(SMSG_PLAY_SOUND, 4);
-    data << Sound;
-    DistributePacketToAll(&data);
+    DistributePacketToAll(AscEmu::Packets::SmsgPlaySound(Sound).serialise().get());
 }
 
 void CBattleground::PlaySoundToTeam(uint32 Team, uint32 Sound)
 {
-    WorldPacket data(SMSG_PLAY_SOUND, 4);
-    data << Sound;
-    DistributePacketToTeam(&data, Team);
+    DistributePacketToTeam(AscEmu::Packets::SmsgPlaySound(Sound).serialise().get(), Team);
 }
 
 void CBattleground::RemovePlayer(Player* plr, bool logout)
