@@ -390,9 +390,7 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     m_canDualWield = false;
     for (auto i = 0; i < 3; ++i)
-    {
         m_attackTimer[i] = 0;
-    }
 
     m_ignoreArmorPctMaceSpec = 0;
     m_ignoreArmorPct = 0;
@@ -421,9 +419,8 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     //DK:modifiers
     PctRegenModifier = 0;
     for (i = 0; i < 4; i++)
-    {
         PctPowerRegenModifier[i] = 1;
-    }
+
     m_speedModifier = 0;
     m_slowdown = 0;
     m_mountedspeedModifier = 0;
@@ -972,9 +969,7 @@ Unit::~Unit()
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
         if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
-        {
             interruptSpellWithSpellType(CurrentSpellType(i));
-        }
     }
 
     if (m_damageSplitTarget)
@@ -986,6 +981,7 @@ Unit::~Unit()
     // reflects not created by auras need to be deleted manually
     for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end(); ++i)
         delete *i;
+
     m_reflectSpellSchool.clear();
 
     for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
@@ -999,10 +995,12 @@ Unit::~Unit()
     // delete auras which did not get added to unit yet
     for (std::map<uint32, Aura*>::iterator i = tmpAura.begin(); i != tmpAura.end(); ++i)
         delete i->second;
+
     tmpAura.clear();
 
     for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
         delete *itr;
+
     m_procSpells.clear();
 
     m_singleTargetAura.clear();
@@ -1171,11 +1169,10 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     int total_level = 0;
     float xp_mod = 1.0f;
 
-    GroupMembersSet::iterator itr;
     pGroup->Lock();
     for (uint32 i = 0; i < pGroup->GetSubGroupCount(); i++)
     {
-        for (itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+        for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
             pGroupGuy = (*itr)->m_loggedInPlayer;
             if (pGroupGuy && pGroupGuy->isAlive() && /* PlayerInGroup->GetInstanceID()==pGroupGuy->GetInstanceID() &&*/
@@ -1277,10 +1274,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         return 0;
     }
 
-    std::list<SpellProc*>::iterator itr, itr2;
-    for (itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
+    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
     {
-        itr2 = itr;
+        std::list<SpellProc*>::iterator itr2 = itr;
         ++itr;
 
         SpellProc* spell_proc = *itr2;
@@ -6707,11 +6703,9 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = true;
     //charges are already removed in handleproc
     WorldPacket data(24);
-    std::list<DamageProc>::iterator i;
-    std::list<DamageProc>::iterator i2;
-    for (i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
+    for (std::list<DamageProc>::iterator i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
     {
-        i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
+        std::list<DamageProc>::iterator i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
         if ((flag & (*i2).m_flags))
         {
             if (PROC_MISC & (*i2).m_flags)
@@ -8325,10 +8319,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     {
         m_extrastriketarget = true;
 
-        std::list<ExtraStrike*>::iterator itx, itx2;
-        for (itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
+        for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
         {
-            itx2 = itx++;
+            std::list<ExtraStrike*>::iterator itx2 = itx++;
             ExtraStrike* ex = *itx2;
 
             for (const auto& itr : getInRangeObjectsSet())
@@ -8456,18 +8449,25 @@ uint8 Unit::FindVisualSlot(uint32 SpellId, bool IsPos)
     }
     //check for already visual same aura
     for (uint32 i = from; i < to; i++)
+    {
         if (m_auravisuals[i] == SpellId)
         {
             visualslot = static_cast<uint8>(i);
             break;
         }
+    }
+
     if (visualslot == 0xFF)
+    {
         for (uint32 i = from; i < to; i++)
+        {
             if (m_auravisuals[i] == 0)
             {
                 visualslot = static_cast<uint8>(i);
                 break;
             }
+        }
+    }
     return visualslot;
 }
 
@@ -8922,22 +8922,26 @@ void Unit::AddAura(Aura* aur)
         {
             //these auras stack to infinite and with anything. Don't ask me why there is no better solution for them :P
             for (uint32 x = StartCheck; x < CheckLimit; x++)
+            {
                 if (!m_auras[x])
                 {
                     AuraSlot = static_cast<uint16>(x);
                     break;
                 }
+            }
         }
     }
     else
     {
         //talents just get applied always. Maybe we should check stack for these as well?
         for (uint32 x = MAX_PASSIVE_AURAS_START; x < MAX_PASSIVE_AURAS_END; x++)
+        {
             if (!m_auras[x])
             {
                 AuraSlot = static_cast<uint16>(x);
                 break;
             }
+        }
         //			else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
     }
 
@@ -9495,22 +9499,26 @@ void Unit::AddAura(Aura* aur)
         {
             //these auras stack to infinite and with anything. Don't ask me why there is no better solution for them :P
             for (uint32 x = StartCheck; x < CheckLimit; x++)
+            {
                 if (!m_auras[x])
                 {
                     AuraSlot = static_cast<uint16>(x);
                     break;
                 }
+            }
         }
     }
     else
     {
         //talents just get applied always. Maybe we should check stack for these as well?
         for (uint32 x = MAX_PASSIVE_AURAS_START; x < MAX_PASSIVE_AURAS_END; x++)
+        {
             if (!m_auras[x])
             {
                 AuraSlot = static_cast<uint16>(x);
                 break;
             }
+        }
         //			else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
     }
 
@@ -9662,11 +9670,13 @@ bool Unit::RemoveAura(uint32 spellId)
 {
     //this can be speed up, if we know passive \pos neg
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    {
         if (m_auras[x] && m_auras[x]->GetSpellId() == spellId)
         {
             m_auras[x]->Remove();
             return true;  // sky: yes, only one, see bug charges/auras queues
         }
+    }
     return false;
 }
 
@@ -9845,13 +9855,16 @@ void Unit::RemoveNegativeAuras()
 void Unit::RemoveAllAuras()
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    {
         if (m_auras[x])
             m_auras[x]->Remove();
+    }
 }
 
 void Unit::RemoveAllNonPersistentAuras()
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    {
         if (m_auras[x])
         {
             if (m_auras[x]->GetSpellInfo()->isDeathPersistent())
@@ -9859,6 +9872,7 @@ void Unit::RemoveAllNonPersistentAuras()
             else
                 m_auras[x]->Remove();
         }
+    }
 }
 
 //ex:to remove morph spells
@@ -10444,9 +10458,7 @@ bool Unit::HasAura(uint32 spellid)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x] && m_auras[x]->GetSpellId() == spellid)
-        {
             return true;
-        }
 
     return false;
 }
@@ -10455,9 +10467,7 @@ Aura* Unit::GetAuraWithSlot(uint32 slot)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x] && m_auras[x]->m_visualSlot == (uint16)slot)
-        {
             return m_auras[x];
-        }
 
     return NULL;
 }
@@ -10474,6 +10484,7 @@ uint16 Unit::GetAuraStackCount(uint32 spellid)
 void Unit::DropAurasOnDeath()
 {
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
+    {
         if (m_auras[x])
         {
             if (m_auras[x] && m_auras[x]->GetSpellInfo()->isDeathPersistent())
@@ -10481,6 +10492,7 @@ void Unit::DropAurasOnDeath()
             else
                 m_auras[x]->Remove();
         }
+    }
 }
 
 void Unit::UpdateSpeed()
@@ -10829,6 +10841,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     //zack: should relocate new events to new eventmanager and not to -1
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
         if (m_auras[x] != 0)
         {
             if (m_auras[x]->m_deleted)
@@ -10838,6 +10851,7 @@ void Unit::RemoveFromWorld(bool free_guid)
             }
             m_auras[x]->RelocateEvents();
         }
+    }
 
     m_aiInterface->WipeReferences();
 }
@@ -11774,10 +11788,8 @@ bool Unit::HasAuraWithName(uint32 name)
 {
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
         if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->appliesAreaAura(name))
             return true;
-    }
 
     return false;
 }
@@ -11787,10 +11799,8 @@ uint32 Unit::GetAuraCountWithName(uint32 name)
     uint32 count = 0;
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
         if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->appliesAreaAura(name))
             ++count;
-    }
 
     return count;
 }
@@ -11798,11 +11808,9 @@ uint32 Unit::GetAuraCountWithName(uint32 name)
 bool Unit::HasAuraWithMechanics(uint32 mechanic)
 {
     for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-    {
         if (m_auras[x] && m_auras[x]->m_spellInfo)
             if (Spell::GetMechanic(m_auras[x]->m_spellInfo) == mechanic)
                 return true;
-    }
 
     return false;
 }
@@ -12085,12 +12093,14 @@ void Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
 void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
         if (m_auras[x]
             && m_auras[x]->GetSpellInfo()->getSchool() == School
             && (!m_auras[x]->IsPositive() || Positive)
             && (!Immune && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             )
             m_auras[x]->Remove();
+    }
 }
 
 bool Unit::IsDazed()
@@ -12101,6 +12111,7 @@ bool Unit::IsDazed()
         {
             if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
+
             for (uint8_t y = 0; y < 3; y++)
                 if (m_auras[x]->GetSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
                     return true;
@@ -12253,8 +12264,8 @@ bool Unit::GetSpeedDecrease()
     int32 before = m_speedModifier;
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
-    std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
-    for (; itr != speedReductionMap.end(); ++itr)
+    
+    for (std::map<uint32, int32>::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr)
         m_slowdown = (int32)std::min(m_slowdown, itr->second);
 
     if (m_slowdown < -100)
@@ -12358,12 +12369,9 @@ float Unit::get_chance_to_daze(Unit* target)
 
 void CombatStatusHandler::ClearMyHealers()
 {
-    // this is where we check all our healers
-    HealedSet::iterator i;
-    Player* pt;
-    for (i = m_healers.begin(); i != m_healers.end(); ++i)
+    for (HealedSet::iterator i = m_healers.begin(); i != m_healers.end(); ++i)
     {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*i);
+        Player* pt = m_Unit->GetMapMgr()->GetPlayer(*i);
         if (pt != NULL)
             pt->CombatStatus.RemoveHealed(m_Unit);
     }
@@ -12671,13 +12679,10 @@ void CombatStatusHandler::TryToClearAttackTargets()
 
 void CombatStatusHandler::AttackersForgetHate()
 {
-    AttackerMap::iterator i, i2;
-    Unit* pt;
-
-    for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
+    for (AttackerMap::iterator i = m_attackTargets.begin(); i != m_attackTargets.end();)
     {
-        i2 = i++;
-        pt = m_Unit->GetMapMgr()->GetUnit(*i2);
+        AttackerMap::iterator i2 = i++;
+        Unit* pt = m_Unit->GetMapMgr()->GetUnit(*i2);
         if (pt == NULL)
         {
             m_attackTargets.erase(i2);
@@ -12711,10 +12716,8 @@ bool CombatStatusHandler::IsInCombat() const
         {
             std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
             for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-            {
                 if ((*itr)->GetPetOwner() == m_Unit && (*itr)->CombatStatus.IsInCombat())
                     return true;
-            }
 
             return m_lastStatus;
         }
@@ -13314,10 +13317,9 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
 
 void Unit::RemoveExtraStrikeTarget(SpellInfo* spell_info)
 {
-    ExtraStrike* es;
     for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
-        es = *i;
+        ExtraStrike* es = *i;
         if (spell_info == es->spell_info)
         {
             m_extrastriketargetc--;
@@ -13562,27 +13564,21 @@ void Unit::AddGarbagePet(Pet* pet)
 
 void Unit::RemoveGarbage()
 {
-    std::list<Aura*>::iterator itr1;
-    for (itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
+    for (std::list<Aura*>::iterator itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
     {
         Aura* aur = *itr1;
-
         delete aur;
     }
 
-    std::list<Spell*>::iterator itr2;
-    for (itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
+    for (std::list<Spell*>::iterator itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
     {
         Spell* sp = *itr2;
-
         delete sp;
     }
 
-    std::list<Pet*>::iterator itr3;
-    for (itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
+    for (std::list<Pet*>::iterator itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
     {
         Pet* pet = *itr3;
-
         delete pet;
     }
 
