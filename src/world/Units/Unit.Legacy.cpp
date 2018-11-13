@@ -48,6 +48,9 @@
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/SmsgEmote.h"
+#include "Server/Packets/SmsgAttackStart.h"
+
+using namespace AscEmu::Packets;
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -8411,11 +8414,8 @@ void Unit::smsg_AttackStop(uint64 victimGuid)
 
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
-    // Send out ATTACKSTART
-    WorldPacket data(SMSG_ATTACKSTART, 16);
-    data << getGuid();
-    data << pVictim->getGuid();
-    SendMessageToSet(&data, false);
+    SendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
+
     LOG_DEBUG("WORLD: Sent SMSG_ATTACKSTART");
 
     // FLAGS changed so other players see attack animation
