@@ -541,10 +541,11 @@ class SERVER_DECL WorldSession
         // ItemHandler.cpp
     public:
         void sendInventoryList(Creature* pCreature);
-#if VERSION_STRING >= WotLK
-        void sendRefundInfo(uint64_t guid);
         void sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error);
         void sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error);
+
+#if VERSION_STRING >= WotLK
+        void sendRefundInfo(uint64_t guid);
 
     protected:
         void handleItemRefundInfoOpcode(WorldPacket& recvPacket);

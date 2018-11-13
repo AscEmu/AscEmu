@@ -520,8 +520,10 @@ public:
     float getModDamageDonePct(uint8_t shool) const;
     void setModDamageDonePct(float damagePct, uint8_t shool);
 
+#if VERSION_STRING > TBC
     uint32_t getGlyphsEnabled() const;
     void setGlyphsEnabled(uint32_t glyphs);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement

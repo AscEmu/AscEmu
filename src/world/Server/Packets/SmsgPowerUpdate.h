@@ -12,6 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class SmsgPowerUpdate : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         uint8_t powerType;
@@ -47,5 +48,6 @@ namespace AscEmu { namespace Packets
         }
 
         bool internalDeserialise(WorldPacket& packet) override { return false; }
+#endif
     };
 }}

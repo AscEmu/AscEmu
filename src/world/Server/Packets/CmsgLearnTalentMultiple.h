@@ -20,6 +20,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgLearnTalentMultiple : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t talentCount;
         std::vector<MultipleTalents> multipleTalents;
@@ -55,5 +56,6 @@ namespace AscEmu { namespace Packets
             }
             return true;
         }
+#endif
     };
 }}

@@ -270,8 +270,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_coinage;
     uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    // Listed as an int... but this seems like it would be a float? TODO: Verify
-    uint32_t field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_healing_done;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;

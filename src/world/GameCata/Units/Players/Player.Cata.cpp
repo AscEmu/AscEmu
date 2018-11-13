@@ -176,7 +176,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, GetDrunkenstateByValue(GetDrunkValue()), 0);
         }
 
-        SendEnvironmentalDamageLog(getGuid(), DAMAGE_FALL, health_loss);
+        sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_FALL, health_loss);
         DealDamage(this, health_loss, 0, 0, 0);
     }
 

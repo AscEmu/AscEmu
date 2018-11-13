@@ -14,6 +14,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgSearchLfgLeave : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t entry;
 
@@ -38,5 +39,6 @@ namespace AscEmu { namespace Packets
             packet >> entry;
             return true;
         }
+#endif
     };
 }}

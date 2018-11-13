@@ -58,6 +58,7 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING != Cata
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgLearnTalentMultiple srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -68,6 +69,7 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
         _player->learnTalent(learnTalent.talentId, learnTalent.talentRank);
 
     _player->smsg_TalentsInfo(false);
+#endif
 }
 #else	
 void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
