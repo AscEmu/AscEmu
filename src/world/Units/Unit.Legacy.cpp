@@ -9862,11 +9862,9 @@ void Unit::RemoveAllAuraType(uint32 auratype)
 
 void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
 {
-    Aura* aura;
-
     for (uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
     {
-        aura = m_auras[i];
+        Aura* aura = m_auras[i];
         if (aura == NULL || !aura->IsPositive())
             continue;
 
@@ -10406,10 +10404,9 @@ bool Unit::IsSitting()
 
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)
 {
-    Aura* a;
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
-        a = m_auras[x];
+        Aura* a = m_auras[x];
         if (a == NULL)
             continue;
 
@@ -10544,7 +10541,8 @@ uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, bool triggered)
 uint8 Unit::CastSpell(Unit* Target, uint32 SpellID, bool triggered)
 {
     SpellInfo* ent = sSpellCustomizations.GetSpellInfo(SpellID);
-    if (ent == NULL) return SPELL_FAILED_UNKNOWN;
+    if (ent == NULL)
+        return SPELL_FAILED_UNKNOWN;
 
     return CastSpell(Target, ent, triggered);
 }
@@ -10562,7 +10560,8 @@ uint8 Unit::CastSpell(uint64 targetGuid, SpellInfo* Sp, bool triggered)
 uint8 Unit::CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered)
 {
     SpellInfo* ent = sSpellCustomizations.GetSpellInfo(SpellID);
-    if (ent == NULL) return SPELL_FAILED_UNKNOWN;
+    if (ent == NULL)
+        return SPELL_FAILED_UNKNOWN;
 
     return CastSpell(targetGuid, ent, triggered);
 }
@@ -10671,18 +10670,16 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* /*caster*/)
 
     uint32 name_hash = proto->custom_NameHash;
     uint32 rank = proto->custom_RankNumber;
-    Aura* aura;
-    SpellInfo* aura_sp;
 
     // look for spells with same namehash
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
-        aura = m_auras[x];
+        Aura* aura = m_auras[x];
         if (aura != NULL && aura->GetSpellInfo()->custom_NameHash == name_hash)
         {
             // we've got an aura with the same name as the one we're trying to apply
             // but first we check if it has the same effects
-            aura_sp = aura->GetSpellInfo();
+            SpellInfo* aura_sp = aura->GetSpellInfo();
 
             if ((aura_sp->getEffect(0) == proto->getEffect(0) && (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA ||
                 aura_sp->getEffectApplyAuraName(0) == proto->getEffectApplyAuraName(0))) &&
@@ -10841,11 +10838,10 @@ void Unit::Deactivate(MapMgr* mgr)
 
 void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 {
-    Aura* a;
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
-        a = m_auras[x];
-        if (a == 0)
+        Aura* a = m_auras[x];
+        if (a == nullptr)
             continue;
 
         //some spells do not get removed all the time only at specific intervals
@@ -12104,18 +12100,15 @@ void Unit::UpdateVisibility()
     uint32 count;
     bool can_see;
     bool is_visible;
-    Player* pl;
-    Object* pObj;
-    Player* plr;
 
     if (isPlayer())
     {
-        plr = static_cast<Player*>(this);
+        Player* plr = static_cast<Player*>(this);
         for (const auto& itr2 : getInRangeObjectsSet())
         {
             if (itr2)
             {
-                pObj = itr2;
+                Object* pObj = itr2;
 
                 can_see = plr->canSee(pObj);
                 is_visible = plr->IsVisible(pObj->getGuid());
@@ -12140,7 +12133,7 @@ void Unit::UpdateVisibility()
 
                 if (pObj->isPlayer())
                 {
-                    pl = static_cast<Player*>(pObj);
+                    Player* pl = static_cast<Player*>(pObj);
                     can_see = pl->canSee(plr);
                     is_visible = pl->IsVisible(plr->getGuid());
                     if (can_see)
@@ -12633,16 +12626,13 @@ void Unit::CombatStatusHandler_UpdatePvPTimeout()
 
 void CombatStatusHandler::TryToClearAttackTargets()
 {
-    AttackerMap::iterator i, i2;
-    Unit* pt;
-
     if (m_Unit->isPlayer())
         static_cast<Player*>(m_Unit)->removePlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
 
-    for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
+    for (AttackerMap::iterator i = m_attackTargets.begin(); i != m_attackTargets.end();)
     {
-        i2 = i++;
-        pt = m_Unit->GetMapMgr()->GetUnit(*i2);
+        AttackerMap::iterator i2 = i++;
+        Unit* pt = m_Unit->GetMapMgr()->GetUnit(*i2);
         if (pt == NULL)
         {
             m_attackTargets.erase(i2);
@@ -13054,7 +13044,6 @@ void Unit::InheritSMMods(Unit* inherit_from)
 void Unit::EventStopChanneling(bool abort)
 {
     Spell* spell = getCurrentSpell(CURRENT_CHANNELED_SPELL);
-
     if (spell == nullptr)
         return;
 
@@ -13329,18 +13318,16 @@ void Unit::AddExtraStrikeTarget(SpellInfo* spell_info, uint32 charges)
 
 uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
 {
-    Unit* splittarget;
-    uint32 splitdamage, tmpsplit;
     DamageSplitTarget* ds = m_damageSplitTarget;
 
-    splittarget = (GetMapMgr() != NULL) ? GetMapMgr()->GetUnit(ds->m_target) : NULL;
+    Unit* splittarget = (GetMapMgr() != NULL) ? GetMapMgr()->GetUnit(ds->m_target) : NULL;
     if (splittarget != NULL && res > 0)
     {
         // calculate damage
-        tmpsplit = ds->m_flatDamageSplit;
+        uint32 tmpsplit = ds->m_flatDamageSplit;
         if (tmpsplit > res)
             tmpsplit = res; // prevent <0 damage
-        splitdamage = tmpsplit;
+        uint32 splitdamage = tmpsplit;
         res -= tmpsplit;
         tmpsplit = float2int32(ds->m_pctDamageSplit * res);
         if (tmpsplit > res)
@@ -13379,6 +13366,7 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
 void Unit::RemoveReflect(uint32 spellid, bool apply)
 {
     for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end();)
+    {
         if (spellid == (*i)->spellId)
         {
             delete *i;
@@ -13387,6 +13375,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
         }
         else
             ++i;
+    }
 
 
     if (apply && spellid == 23920 && isPlayer())
@@ -13587,8 +13576,8 @@ bool Unit::IsTaggable()
 {
     if (!isPet() && !Tagged)
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 uint64 Unit::GetTaggerGUID()
@@ -13606,8 +13595,8 @@ bool Unit::isLootable()
 
         return true;
     }
-    else
-        return false;
+    
+    return false;
 }
 
 SpellProc* Unit::AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
@@ -13615,6 +13604,7 @@ SpellProc* Unit::AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, ui
     SpellProc* sp = NULL;
     if (spell != NULL)
         sp = GetProcTriggerSpell(spell->getId(), caster);
+
     if (sp != NULL && !sp->mDeleted)
         return sp;
 
@@ -13675,7 +13665,6 @@ void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 
 void Unit::SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, uint32 Flags, bool is_critical)
 {
-
     WorldPacket data(SMSG_PERIODICAURALOG, 47);
 
     data << TargetGUID;             // target guid
@@ -14140,9 +14129,9 @@ Unit* Unit::GetVehicleBase()
 {
     if (currentvehicle != NULL)
         return currentvehicle->GetOwner();
-    else
-        if (vehicle != NULL)
-            return this;
+
+    if (vehicle != NULL)
+        return this;
 
     return NULL;
 }
@@ -14150,7 +14139,6 @@ Unit* Unit::GetVehicleBase()
 void Unit::SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage)
 {
     WorldPacket data(SMSG_ENVIRONMENTALDAMAGELOG, 20);
-
     data << uint64(guid);
     data << uint8(type);
     data << uint32(damage);
