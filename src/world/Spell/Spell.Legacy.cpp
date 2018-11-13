@@ -1910,7 +1910,7 @@ void Spell::finish(bool successful)
         if (hasAttribute(ATTRIBUTES_STOP_ATTACK) && p_caster->IsAttacking())
         {
             p_caster->EventAttackStop();
-            p_caster->smsg_AttackStop(p_caster->GetSelection());
+            p_caster->smsg_AttackStop(p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection()));
             p_caster->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
         }
 

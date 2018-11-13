@@ -5910,7 +5910,7 @@ public:
     static int StopPlayerAttack(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER();
-        static_cast<Player*>(ptr)->smsg_AttackStop(static_cast<Player*>(ptr)->GetSelection());
+        ptr->smsg_AttackStop(ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->GetSelection()));
         return 0;
     }
     static int GetQuestObjectiveCompletion(lua_State* L, Unit* ptr)

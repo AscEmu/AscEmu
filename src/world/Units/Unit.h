@@ -703,7 +703,6 @@ public:
     uint32 ManaShieldAbsorb(uint32 dmg);
     void smsg_AttackStart(Unit* pVictim);
     void smsg_AttackStop(Unit* pVictim);
-    void smsg_AttackStop(uint64 victimGuid);
 
     bool IsDazed();
     //this function is used for creatures to get chance to daze for another unit

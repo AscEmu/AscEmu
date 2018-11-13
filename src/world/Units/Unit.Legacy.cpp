@@ -8402,16 +8402,6 @@ void Unit::smsg_AttackStop(Unit* pVictim)
     }
 }
 
-void Unit::smsg_AttackStop(uint64 victimGuid)
-{
-    WorldPacket data(20);
-    data.Initialize(SMSG_ATTACKSTOP);
-    data << GetNewGUID();
-    FastGUIDPack(data, victimGuid);
-    data << uint32(0);
-    SendMessageToSet(&data, isPlayer());
-}
-
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
     SendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
