@@ -81,6 +81,7 @@
 #include "Server/Packets/SmsgTitleEarned.h"
 #include "Server/Packets/SmsgSetPctSpellModifier.h"
 #include "Server/Packets/SmsgSetFlatSpellModifier.h"
+#include "Server/Packets/SmsgPowerUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -12303,11 +12304,7 @@ void Player::RemoveTempEnchantsOnArena()
 void Player::UpdatePowerAmm()
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_POWER_UPDATE, 5);
-    FastGUIDPack(data, getGuid());
-    data << uint8(getPowerType());
-    data << getUInt32Value(UNIT_FIELD_POWER1 + getPowerType());
-    SendMessageToSet(&data, true);
+    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), getPowerType(), getUInt32Value(UNIT_FIELD_POWER1 + getPowerType())).serialise().get(), true);
 #endif
 }
 

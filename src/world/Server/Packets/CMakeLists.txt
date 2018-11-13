@@ -348,6 +348,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgPlayObjectSound.h
    ${PATH_PREFIX}/SmsgPlaySound.h
+   ${PATH_PREFIX}/SmsgPowerUpdate.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
