@@ -934,7 +934,7 @@ void Aura::Remove()
     {
         Player* p = static_cast< Player* >(caster);
 
-        p->SendSpellCooldownEvent(m_spellInfo->getId());
+        p->sendSpellCooldownEventPacket(m_spellInfo->getId());
     }
 
     if (caster != nullptr && caster->isPlayer() && caster->IsInWorld() && caster->getUInt32Value(PLAYER_FARSIGHT) != 0)
@@ -3030,7 +3030,7 @@ void Aura::SpellAuraModStealth(bool apply)
                 if (p_target != nullptr)
                 {
                     p_target->setPlayerFieldBytes2(0x2000);
-                    p_target->SendSpellCooldownEvent(m_spellInfo->getId());
+                    p_target->sendSpellCooldownEventPacket(m_spellInfo->getId());
 
                     if (p_target->m_outStealthDamageBonusPeriod && p_target->m_outStealthDamageBonusPct)
                         p_target->m_outStealthDamageBonusTimer = (uint32)UNIXTIME + p_target->m_outStealthDamageBonusPeriod;
@@ -4067,7 +4067,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         {
             if (apply)
             {
-                static_cast< Player* >(m_target)->SendSpellCooldownEvent(m_spellInfo->getId());
+                static_cast< Player* >(m_target)->sendSpellCooldownEventPacket(m_spellInfo->getId());
             }
             spellId = 49868;
         }

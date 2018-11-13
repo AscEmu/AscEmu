@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPlayObjectSound.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgExplorationExperience.h"
+#include "Server/Packets/SmsgCooldownEvent.h"
 
 using namespace AscEmu::Packets;
 
@@ -1389,4 +1390,9 @@ void Player::sendPlaySoundPacket(uint32_t soundId)
 void Player::sendExploreExperiencePacket(uint32_t areaId, uint32_t experience)
 {
     m_session->SendPacket(SmsgExplorationExperience(areaId, experience).serialise().get());
+}
+
+void Player::sendSpellCooldownEventPacket(uint32_t spellId)
+{
+    m_session->SendPacket(SmsgCooldownEvent(spellId, getGuid()).serialise().get());
 }

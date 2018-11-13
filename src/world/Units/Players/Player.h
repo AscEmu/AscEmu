@@ -661,6 +661,7 @@ public:
     void sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId);
     void sendPlaySoundPacket(uint32_t soundId);
     void sendExploreExperiencePacket(uint32_t areaId, uint32_t experience);
+    void sendSpellCooldownEventPacket(uint32_t spellId);
 
 public:
     //MIT End
@@ -1978,7 +1979,7 @@ public:
         void SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast, uint32 Extra);
         
         void Gossip_SendSQLPOI(uint32 id);
-        void SendSpellCooldownEvent(uint32 SpellId);
+        
         void SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct);
         void SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem,  uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack);
         void SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float O);
