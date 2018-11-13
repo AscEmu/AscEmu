@@ -8106,16 +8106,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
         if (isPlayer() && static_cast<Player*>(this)->m_onStrikeSpellDmg.size())
         {
-            std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin();
-            std::map<uint32, OnHitSpell>::iterator itr;
-            uint32 range, dmg2;
-            for (; it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
+            for (std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
             {
-                itr = it2;
+                std::map<uint32, OnHitSpell>::iterator itr = it2;
                 ++it2;
 
-                dmg2 = itr->second.mindmg;
-                range = itr->second.maxdmg - itr->second.mindmg;
+                uint32 dmg2 = itr->second.mindmg;
+                uint32 range = itr->second.maxdmg - itr->second.mindmg;
                 if (range != 0)
                     dmg2 += Util::getRandomUInt(range);
 
@@ -9147,7 +9144,6 @@ void Unit::AddAura(Aura* aur)
             SpellInfo* info = aur->GetSpellInfo();
             //uint32 flag3 = aur->GetSpellProto()->Flags3;
 
-            AuraCheckResponse acr;
             WorldPacket data(21);
             bool deleteAur = false;
 
@@ -9188,7 +9184,7 @@ void Unit::AddAura(Aura* aur)
                         // Check for auras with the same name and a different rank.
                         else
                         {
-                            acr = AuraCheck(info, m_auras[x], aur->GetCaster());
+                            AuraCheckResponse acr = AuraCheck(info, m_auras[x], aur->GetCaster());
                             if (acr.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
                             {
                                 deleteAur = true;
@@ -9662,13 +9658,12 @@ bool Unit::RemoveAuras(uint32* SpellIds)
     if (!SpellIds || *SpellIds == 0)
         return false;
 
-    uint32 x, y;
     bool res = false;
-    for (x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         if (m_auras[x])
         {
-            for (y = 0; SpellIds[y] != 0; y++)
+            for (uint32 y = 0; SpellIds[y] != 0; y++)
             {
                 if (m_auras[x] && m_auras[x]->GetSpellId() == SpellIds[y])
                 {
@@ -9736,7 +9731,6 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; i++)
     {
         Aura* aura = m_auras[i];
-
         if (aura == NULL)
             continue;
 
@@ -9755,7 +9749,6 @@ void Unit::ClearAllAreaAuraTargets()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         Aura* a = m_auras[x];
-
         if (a == NULL)
             continue;
 
@@ -9772,7 +9765,6 @@ void Unit::RemoveAllAreaAuraByOther()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         Aura* a = m_auras[x];
-
         if (a == NULL)   // empty slot
             continue;
 
@@ -9846,8 +9838,8 @@ void Unit::RemoveAllNonPersistentAuras()
         {
             if (m_auras[x]->GetSpellInfo()->isDeathPersistent())
                 continue;
-            else
-                m_auras[x]->Remove();
+
+            m_auras[x]->Remove();
         }
     }
 }
@@ -9888,7 +9880,6 @@ bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
 {
     Aura* aur = getAuraWithId(spellId);
-
     if (!aur)
         return false;
 
@@ -10256,7 +10247,6 @@ void Unit::MoveToWaypoint(uint32 wp_id)
         else
         {
             LOG_ERROR("Invalid waypoint specified.");
-            return;
         }
     }
 }
@@ -10269,17 +10259,14 @@ void Unit::CalcDamage()
     {
         if (isPet())
             static_cast<Pet*>(this)->UpdateAP();
-        float r;
-        float delta;
-        float mult;
 
         float ap_bonus = GetAP() / 14000.0f;
 
         float bonus = ap_bonus * (getBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
 
-        delta = float(static_cast<Creature*>(this)->ModDamageDone[0]);
-        mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
-        r = (BaseDamage[0] + bonus) * mult + delta;
+        float delta = float(static_cast<Creature*>(this)->ModDamageDone[0]);
+        float mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
+        float r = (BaseDamage[0] + bonus) * mult + delta;
         // give some diversity to pet damage instead of having a 77-78 damage range (as an example)
         setMinDamage(r > 0 ? (isPet() ? r * 0.9f : r) : 0);
         r = (BaseDamage[1] + bonus) * mult + delta;
@@ -10290,7 +10277,7 @@ void Unit::CalcDamage()
     }
 }
 
-/// returns absorbed dmg
+// returns absorbed dmg
 uint32 Unit::ManaShieldAbsorb(uint32 dmg)
 {
     if (!m_manashieldamt)
@@ -10425,6 +10412,7 @@ bool Unit::HasAuraVisual(uint32 visualid)
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
         if (m_auras[x] && m_auras[x]->GetSpellInfo()->getSpellVisual() == visualid)
             return true;
+
     return false;
 }
 
@@ -10452,6 +10440,7 @@ uint16 Unit::GetAuraStackCount(uint32 spellid)
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x] && m_auras[x]->GetSpellId() == spellid)
             count++;
+
     return count;
 }
 
@@ -10463,8 +10452,8 @@ void Unit::DropAurasOnDeath()
         {
             if (m_auras[x] && m_auras[x]->GetSpellInfo()->isDeathPersistent())
                 continue;
-            else
-                m_auras[x]->Remove();
+
+            m_auras[x]->Remove();
         }
     }
 }
@@ -10554,6 +10543,7 @@ uint8 Unit::CastSpell(uint64 targetGuid, SpellInfo* Sp, bool triggered)
 
     SpellCastTargets targets(targetGuid);
     Spell* newSpell = sSpellFactoryMgr.NewSpell(this, Sp, triggered, 0);
+
     return newSpell->prepare(&targets);
 }
 
@@ -10642,7 +10632,9 @@ void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 s
             && m_auras[x]->GetSpellId() != skip // make sure to not do self removes in case aura will stack
             && (!sguid || (sguid && m_auras[x]->m_casterGuid == sguid)) // we either remove everything or just buffs from us
             )
+        {
             m_auras[x]->Remove();
+        }
     }
 }
 
@@ -10787,8 +10779,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     {
         setCritterGuid(0);
 
-        Unit* u = m_mapMgr->GetUnit(getCritterGuid());
-        if (u != NULL)
+        if (Unit* u = m_mapMgr->GetUnit(getCritterGuid()))
             u->Delete();
     }
 #endif
@@ -10800,8 +10791,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     {
         if (m_ObjectSlots[i] != 0)
         {
-            GameObject* obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]);
-            if (obj)
+            if (GameObject* obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]))
                 obj->ExpireAndDelete();
 
             m_ObjectSlots[i] = 0;
@@ -11809,8 +11799,7 @@ void Unit::SendFullAuraUpdate()
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        Aura* aur = m_auras[i];
-        if (aur != NULL)
+        if (Aura* aur = m_auras[i])
         {
             uint8 Flags = uint8(aur->GetAuraFlags());
 
@@ -12072,7 +12061,9 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
             && (!m_auras[x]->IsPositive() || Positive)
             && (!Immune && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             )
+        {
             m_auras[x]->Remove();
+        }
     }
 }
 
@@ -12235,8 +12226,8 @@ bool Unit::GetSpeedDecrease()
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
     
-    for (std::map<uint32, int32>::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr)
-        m_slowdown = (int32)std::min(m_slowdown, itr->second);
+    for (auto& itr : speedReductionMap)
+        m_slowdown = static_cast<int32>(std::min(m_slowdown, itr.second));
 
     if (m_slowdown < -100)
         m_slowdown = 100; //do not walk backwards !
@@ -12245,6 +12236,7 @@ bool Unit::GetSpeedDecrease()
     //save bandwidth :P
     if (m_speedModifier != before)
         return true;
+
     return false;
 }
 
@@ -12426,8 +12418,7 @@ void CombatStatusHandler::ClearPrimaryAttackTarget()
     //printf("ClearPrimaryAttackTarget for " I64FMT "\n", m_Unit->getGuid());
     if (m_primaryAttackTarget != 0)
     {
-        Unit* pt = m_Unit->GetMapMgr()->GetUnit(m_primaryAttackTarget);
-        if (pt != NULL)
+        if (Unit* pt = m_Unit->GetMapMgr()->GetUnit(m_primaryAttackTarget))
         {
             // remove from their attacker set. (if we have no longer got any DoT's, etc)
             if (!IsAttacking(pt))
@@ -12469,15 +12460,12 @@ void CombatStatusHandler::RemoveAttackTarget(Unit* pTarget)
 
    if (!IsAttacking(pTarget))
     {
-        //printf("Removing attack target " I64FMT " on " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());
         m_attackTargets.erase(itr);
         if (m_primaryAttackTarget == pTarget->getGuid())
             m_primaryAttackTarget = 0;
 
         UpdateFlag();
     }
-    /*else
-        printf("Cannot remove attack target " I64FMT " from " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());*/
 }
 
 void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
@@ -12488,20 +12476,14 @@ void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
 
     if ((!pAttacker) || (!pAttacker->CombatStatus.IsAttacking(m_Unit)))
     {
-        //printf("Removing attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->getGuid());
         m_attackers.erase(itr);
         UpdateFlag();
     }
-    /*else
-    {
-    printf("Cannot remove attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->getGuid());
-    }*/
 }
 
 void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
 {
     // we added an aura, or dealt some damage to a target. they need to have us as an attacker, and they need to be our attack target if not.
-    //printf("OnDamageDealt to " I64FMT " from " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());
     if (pTarget == m_Unit)
         return;
 
@@ -12535,11 +12517,9 @@ void CombatStatusHandler::ClearAttackers()
     //and m_attackers should be empty. If it's not, something wrong happened.
 
     // this is a FORCED function, only use when the reference will be destroyed.
-    AttackerMap::iterator itr = m_attackTargets.begin();
-    Unit* pt;
-    for (; itr != m_attackTargets.end(); ++itr)
+    for (AttackerMap::iterator itr = m_attackTargets.begin(); itr != m_attackTargets.end(); ++itr)
     {
-        pt = m_Unit->GetMapMgr()->GetUnit(*itr);
+        Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
             pt->CombatStatus.m_attackers.erase(m_Unit->getGuid());
@@ -12547,9 +12527,9 @@ void CombatStatusHandler::ClearAttackers()
         }
     }
 
-    for (itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
+    for (AttackerMap::iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
     {
-        pt = m_Unit->GetMapMgr()->GetUnit(*itr);
+        Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
             pt->CombatStatus.m_attackTargets.erase(m_Unit->getGuid());
@@ -12567,12 +12547,9 @@ void CombatStatusHandler::ClearHealers()
 {
     //If we are not in world, CombatStatusHandler::OnRemoveFromWorld() would have been already called so m_healed should
     //be empty. If it's not, something wrong happened.
-
-    HealedSet::iterator itr = m_healed.begin();
-    Player* pt;
-    for (; itr != m_healed.end(); ++itr)
+    for (HealedSet::iterator itr = m_healed.begin(); itr != m_healed.end(); ++itr)
     {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
+        Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
             pt->CombatStatus.m_healers.erase(m_Unit->getGuidLow());
@@ -12580,9 +12557,9 @@ void CombatStatusHandler::ClearHealers()
         }
     }
 
-    for (itr = m_healers.begin(); itr != m_healers.end(); ++itr)
+    for (HealedSet::iterator itr = m_healers.begin(); itr != m_healers.end(); ++itr)
     {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
+        Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
             pt->CombatStatus.m_healed.erase(m_Unit->getGuidLow());
@@ -12675,10 +12652,9 @@ bool CombatStatusHandler::IsInCombat() const
                 return true;
             else if (m_Unit->isPet())
                 return m_lastStatus;
-            else
-                return m_Unit->GetAIInterface()->getAITargetsCount() == 0 ? false : true;
+
+            return m_Unit->GetAIInterface()->getAITargetsCount() == 0 ? false : true;
         }
-        break;
         case TYPEID_PLAYER:
         {
             std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
@@ -12688,7 +12664,6 @@ bool CombatStatusHandler::IsInCombat() const
 
             return m_lastStatus;
         }
-        break;
         default:
             return false;
     }
@@ -12733,7 +12708,9 @@ void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
             amount += (mh - ch);
         }
         else
+        {
             target->setHealth(ch);
+        }
 
         Spell::SendHealSpellOnPlayer(this, target, amount, false, overheal, SpellId);
 
@@ -13063,7 +13040,7 @@ void Unit::DispelAll(bool positive)
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
         if (m_auras[i] != NULL)
-            if ((m_auras[i]->IsPositive() && positive) || !m_auras[i]->IsPositive())
+            if (m_auras[i]->IsPositive() && positive || !m_auras[i]->IsPositive())
                 m_auras[i]->Remove();
     }
 }
@@ -13161,13 +13138,9 @@ void Unit::EventModelChange()
 
     //\todo if has mount, grab mount model and add the z value of attachment 0
     if (displayBoundingBox != nullptr)
-    {
         m_modelhalfsize = displayBoundingBox->high[2] / 2;
-    }
     else
-    {
         m_modelhalfsize = 1.0f;
-    }
 }
 
 void Unit::RemoveFieldSummon()
@@ -13177,9 +13150,7 @@ void Unit::RemoveFieldSummon()
     {
         Creature* summon = static_cast<Creature*>(GetMapMgr()->GetUnit(guid));
         if (summon)
-        {
             summon->RemoveFromWorld(false, true);
-        }
         setSummonGuid(0);
     }
 }
@@ -13192,9 +13163,7 @@ void Unit::AggroPvPGuards()
         {
             Unit* tmpUnit = static_cast<Unit*>(i);
             if (tmpUnit->GetAIInterface() && tmpUnit->GetAIInterface()->m_isNeutralGuard && CalcDistance(tmpUnit) <= (50.0f * 50.0f))
-            {
                 tmpUnit->GetAIInterface()->AttackReaction(this, 1, 0);
-            }
         }
     }
 }
@@ -13236,6 +13205,7 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
             targets.m_unitTarget = proc_target->getGuid();
         else
             targets.m_unitTarget = getGuid();
+
         spell->prepare(&targets);
     }
 }
@@ -13264,7 +13234,6 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
             return;
 
         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(t_trigger_on_chill);
-
         if (!spellInfo)
             return;
 
@@ -13277,6 +13246,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
             targets.m_unitTarget = proc_target->getGuid();
         else
             targets.m_unitTarget = getGuid();
+
         spell->prepare(&targets);
     }
 }
@@ -13309,7 +13279,6 @@ void Unit::AddExtraStrikeTarget(SpellInfo* spell_info, uint32 charges)
     }
 
     ExtraStrike* es = new ExtraStrike;
-
     es->spell_info = spell_info;
     es->charges = charges;
     m_extraStrikeTargets.push_back(es);
@@ -13327,11 +13296,13 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
         uint32 tmpsplit = ds->m_flatDamageSplit;
         if (tmpsplit > res)
             tmpsplit = res; // prevent <0 damage
+
         uint32 splitdamage = tmpsplit;
         res -= tmpsplit;
         tmpsplit = float2int32(ds->m_pctDamageSplit * res);
         if (tmpsplit > res)
             tmpsplit = res;
+
         splitdamage += tmpsplit;
         res -= tmpsplit;
 
@@ -13343,7 +13314,6 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
             if (melee_dmg)
             {
                 dealdamage sdmg;
-
                 sdmg.full_damage = splitdamage;
                 sdmg.resisted_damage = 0;
                 sdmg.school_type = school_type;
@@ -13374,7 +13344,9 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             //break; better check all list elements
         }
         else
+        {
             ++i;
+        }
     }
 
 
@@ -13392,7 +13364,6 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
         {
             Player* pPlayer = static_cast<Player*>(this);
             Group* pGroup = pPlayer->GetGroup();
-
             if (pGroup != NULL)
             {
                 int32 targets = 0;
@@ -13426,7 +13397,6 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
     {
         Player* pPlayer = static_cast<Player*>(this);
         Group* pGroup = pPlayer->GetGroup();
-
         if (pGroup != NULL)
         {
             pGroup->Lock();
