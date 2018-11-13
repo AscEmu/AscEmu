@@ -49,6 +49,7 @@
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/SmsgEmote.h"
 #include "Server/Packets/SmsgAttackStart.h"
+#include "Server/Packets/SmsgAttackStop.h"
 
 using namespace AscEmu::Packets;
 
@@ -8362,42 +8363,28 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
-    if (!pVictim)
-        return;
-
-    WorldPacket data(SMSG_ATTACKSTOP, 24);
-    if (isPlayer())
-    {
-        data << pVictim->GetNewGUID();
-        data << uint8(0);
-        data << uint32(0);
-        static_cast<Player*>(this)->GetSession()->SendPacket(&data);
-        data.clear();
-    }
-
-    data << GetNewGUID();
-    data << pVictim->GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
-    // stop swinging, reset pvp timeout
-
-    if (pVictim->isPlayer())
-    {
-        pVictim->CombatStatusHandler_ResetPvPTimeout();
-        CombatStatusHandler_ResetPvPTimeout();
-    }
+    if (pVictim)
+        SendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
     else
+        SendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
+
+    if (pVictim)
     {
-        if (!isPlayer() || getClass() == ROGUE)
+        if (pVictim->isPlayer())
         {
-            m_cTimer = Util::getMSTime() + 8000;
-            sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
-            sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            if (pVictim->isCreatureOrPlayer())   // there could be damage coming from objects/enviromental
-                sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
+            pVictim->CombatStatusHandler_ResetPvPTimeout();
+            CombatStatusHandler_ResetPvPTimeout();
         }
         else
         {
+            if (!isPlayer() || getClass() == ROGUE)
+            {
+                m_cTimer = Util::getMSTime() + 8000;
+                sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
+                sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                if (pVictim->isCreatureOrPlayer())   // there could be damage coming from objects/enviromental
+                    sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
+            }
         }
     }
 }
