@@ -79,6 +79,7 @@
 #include "Server/Packets/SmsgStopMirrorTimer.h"
 #include "Server/Packets/SmsgSummonRequest.h"
 #include "Server/Packets/SmsgTitleEarned.h"
+#include "Server/Packets/SmsgSetPctSpellModifier.h"
 
 using namespace AscEmu::Packets;
 
@@ -14645,12 +14646,17 @@ void Player::SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast,
 
 void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct)
 {
-    WorldPacket data((uint16)(is_pct ? SMSG_SET_PCT_SPELL_MODIFIER : SMSG_SET_FLAT_SPELL_MODIFIER), 48);
-    data << uint8(spellgroup);
-    data << uint8(spelltype);
-    data << uint32(v);
+    if (is_pct)
+        m_session->SendPacket(SmsgSetPctSpellModifier(spellgroup, spelltype, v).serialise().get());
+    else
+    {
+        WorldPacket data(SMSG_SET_FLAT_SPELL_MODIFIER, 48);
+        data << uint8(spellgroup);
+        data << uint8(spelltype);
+        data << uint32(v);
 
-    m_session->SendPacket(&data);
+        m_session->SendPacket(&data);
+    }
 }
 
 void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem, uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack)
