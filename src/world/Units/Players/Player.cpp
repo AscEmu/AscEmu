@@ -42,6 +42,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgExplorationExperience.h"
 #include "Server/Packets/SmsgCooldownEvent.h"
+#include "Server/Packets/SmsgSetFlatSpellModifier.h"
+#include "Server/Packets/SmsgSetPctSpellModifier.h"
 
 using namespace AscEmu::Packets;
 
@@ -1395,4 +1397,12 @@ void Player::sendExploreExperiencePacket(uint32_t areaId, uint32_t experience)
 void Player::sendSpellCooldownEventPacket(uint32_t spellId)
 {
     m_session->SendPacket(SmsgCooldownEvent(spellId, getGuid()).serialise().get());
+}
+
+void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct)
+{
+    if (isPct)
+        m_session->SendPacket(SmsgSetPctSpellModifier(spellGroup, spellType, modifier).serialise().get());
+    else
+        m_session->SendPacket(SmsgSetFlatSpellModifier(spellGroup, spellType, modifier).serialise().get());
 }

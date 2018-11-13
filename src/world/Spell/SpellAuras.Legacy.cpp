@@ -6566,7 +6566,7 @@ void Aura::SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pc
                 if (!m_target->isPlayer())
                     continue;
 
-                static_cast<Player*>(m_target)->SendSpellModifier(static_cast<uint8>(bit), type, v, pct);
+                static_cast<Player*>(m_target)->sendSpellModifierPacket(static_cast<uint8>(bit), type, v, pct);
             }
             else
                 (*m)[bit] = 0;
@@ -6589,7 +6589,7 @@ void Aura::SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pc
                 if (!m_target->isPlayer())
                     continue;
 
-                static_cast<Player*>(m_target)->SendSpellModifier(bit, type, (*m)[bit], pct);
+                static_cast<Player*>(m_target)->sendSpellModifierPacket(bit, type, (*m)[bit], pct);
             }
         }
     }
@@ -6626,7 +6626,7 @@ void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* sp
             if (p_target == nullptr)
                 continue;
 
-            p_target->SendSpellModifier(bit, type, v, pct);
+            p_target->sendSpellModifierPacket(bit, type, v, pct);
         }
     }
 }
