@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCooldownEvent.h"
 #include "Server/Packets/SmsgSetFlatSpellModifier.h"
 #include "Server/Packets/SmsgSetPctSpellModifier.h"
+#include "Server/Packets/SmsgLoginVerifyWorld.h"
 
 using namespace AscEmu::Packets;
 
@@ -1166,7 +1167,7 @@ void Player::setLoginPosition()
         position_z = GetPositionZ();
     }
 
-    SendLoginVerifyWorld(mapId, position_x, position_y, position_z, orientation);
+    sendLoginVerifyWorldPacket(mapId, position_x, position_y, position_z, orientation);
 }
 
 void Player::setPlayerInfoIfNeeded()
@@ -1405,4 +1406,9 @@ void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int3
         m_session->SendPacket(SmsgSetPctSpellModifier(spellGroup, spellType, modifier).serialise().get());
     else
         m_session->SendPacket(SmsgSetFlatSpellModifier(spellGroup, spellType, modifier).serialise().get());
+}
+
+void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation)
+{
+    m_session->SendPacket(SmsgLoginVerifyWorld(mapId, LocationVector(posX, posY, posZ, orientation)).serialise().get());
 }

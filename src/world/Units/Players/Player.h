@@ -663,6 +663,7 @@ public:
     void sendExploreExperiencePacket(uint32_t areaId, uint32_t experience);
     void sendSpellCooldownEventPacket(uint32_t spellId);
     void sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct);
+    void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
 
 public:
     //MIT End
@@ -1983,8 +1984,6 @@ public:
         
         
         void SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem,  uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack);
-        void SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float O);
-
         /////////////////////////////////////////////////////////////////////////////////////////
         // End of SpellPacket wrapper
         /////////////////////////////////////////////////////////////////////////////////////////

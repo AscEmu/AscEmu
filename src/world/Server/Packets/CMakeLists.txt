@@ -318,6 +318,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLfgRoleChosen.h
    ${PATH_PREFIX}/SmsgLfgTeleportDenied.h
    ${PATH_PREFIX}/SmsgLfgUpdateSearch.h
+   ${PATH_PREFIX}/SmsgLoginVerifyWorld.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
    ${PATH_PREFIX}/SmsgLootMasterList.h
    ${PATH_PREFIX}/SmsgLootMoneyNotify.h

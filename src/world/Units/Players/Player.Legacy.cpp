@@ -14681,18 +14681,6 @@ void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, boo
 
 }
 
-void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float O)
-{
-    WorldPacket data(SMSG_LOGIN_VERIFY_WORLD, 20);
-    data << uint32(MapId);
-    data << float(X);
-    data << float(Y);
-    data << float(Z);
-    data << float(O);
-
-    m_session->SendPacket(&data);
-}
-
 /*Loot type MUST be
 1-corpse, go
 2-skinning/herbalism/minning
