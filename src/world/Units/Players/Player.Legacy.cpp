@@ -1158,7 +1158,7 @@ void Player::Update(unsigned long time_passed)
             {
                 uint32 damage = getMaxHealth() / 10;
 
-                SendEnvironmentalDamageLog(getGuid(), uint8(DAMAGE_DROWNING), damage);
+                sendEnvironmentalDamageLogPacket(getGuid(), uint8(DAMAGE_DROWNING), damage);
                 DealDamage(this, damage, 0, 0, 0);
                 m_UnderwaterLastDmg = mstime + 1000;
             }
@@ -1188,7 +1188,7 @@ void Player::Update(unsigned long time_passed)
         {
             uint32 damage = getMaxHealth() / 5;
 
-            SendEnvironmentalDamageLog(getGuid(), uint8(DAMAGE_LAVA), damage);
+            sendEnvironmentalDamageLogPacket(getGuid(), uint8(DAMAGE_LAVA), damage);
             DealDamage(this, damage, 0, 0, 0);
             m_UnderwaterLastDmg = mstime + 1000;
         }

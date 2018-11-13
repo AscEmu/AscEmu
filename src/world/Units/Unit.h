@@ -626,6 +626,8 @@ public:
     bool isAttackReady(WeaponDamageType type) const;
     void resetAttackTimers();
 
+    void sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk = 0);
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -1355,8 +1357,6 @@ public:
     bool m_noFallDamage;
     float z_axisposition;
     int32 m_safeFall;
-
-    void SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage);
 
     void BuildHeartBeatMsg(WorldPacket* data);
 

@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/SmsgEnvironmentalDamageLog.h"
+
+using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -1942,4 +1945,9 @@ void Unit::resetAttackTimers()
     {
         setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
     }
+}
+
+void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)
+{
+    SendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
 }

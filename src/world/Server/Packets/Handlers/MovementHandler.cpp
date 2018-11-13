@@ -379,7 +379,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, fall_distance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
                 }
 #endif
-                mover->SendEnvironmentalDamageLog(mover->getGuid(), DAMAGE_FALL, health_lost);
+                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_lost);
                 mover->DealDamage(mover, health_lost, 0, 0, 0);
             }
 
@@ -866,7 +866,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
                 }
 #endif
 
-                mover->SendEnvironmentalDamageLog(mover->getGuid(), DAMAGE_FALL, health_loss);
+                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_loss);
                 mover->DealDamage(mover, health_loss, 0, 0, 0);
 
                 //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
@@ -1250,7 +1250,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
         //            }
 
-        //            mover->SendEnvironmentalDamageLog(mover->GetGUID(), DAMAGE_FALL, health_loss);
+        //            mover->sendEnvironmentalDamageLogPacket(mover->GetGUID(), DAMAGE_FALL, health_loss);
         //            mover->DealDamage(mover, health_loss, 0, 0, 0);
 
         //            //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
