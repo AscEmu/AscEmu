@@ -46,7 +46,7 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING != Cata
             packet << guid << time << cos << sin << horizontal << vertical;
 #else
-            ObjectGuid objectGuid = guid;
+            ObjectGuid objectGuid = guid.GetOldGuid();
 
             WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
             data.WriteByteMask(objectGuid[0]);
