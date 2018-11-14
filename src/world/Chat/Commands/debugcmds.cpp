@@ -27,6 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/SmsgMoveKnockBack.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
 {
@@ -415,14 +416,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_sessi
 
     float z = f * 0.66f;
 
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
-    data << m_session->GetPlayer()->GetNewGUID();
-    data << Util::getMSTime();
-    data << dy;
-    data << dx;
-    data << f;
-    data << z;
-    m_session->SendPacket(&data);
+    m_session->SendPacket(AscEmu::Packets::SmsgMoveKnockBack(m_session->GetPlayer()->GetNewGUID(), Util::getMSTime(), dy, dx, f, z).serialise().get());
     return true;
 }
 

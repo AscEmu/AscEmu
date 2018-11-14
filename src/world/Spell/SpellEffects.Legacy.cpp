@@ -62,6 +62,7 @@
 #include "Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
+#include "Server/Packets/SmsgMoveKnockBack.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -3255,14 +3256,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         if (playerTarget == nullptr)  //let client handle this for players
             return;
 
-        WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
-        data << playerTarget->GetNewGUID();
-        data <<Util::getMSTime();
-        data << cosf(playerTarget->GetOrientation());
-        data << sinf(playerTarget->GetOrientation());
-        data << radius;
-        data << float(-10.0f);
-        playerTarget->GetSession()->SendPacket(&data);
+        playerTarget->GetSession()->SendPacket(SmsgMoveKnockBack(playerTarget->GetNewGUID(), Util::getMSTime(), cosf(playerTarget->GetOrientation()), sinf(playerTarget->GetOrientation()), radius, -10.0f).serialise().get());
     }
 }
 

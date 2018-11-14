@@ -82,6 +82,7 @@
 #include "Server/Packets/SmsgSetPctSpellModifier.h"
 #include "Server/Packets/SmsgSetFlatSpellModifier.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
+#include "Server/Packets/SmsgMoveKnockBack.h"
 
 using namespace AscEmu::Packets;
 
@@ -13418,44 +13419,7 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
-#if VERSION_STRING != Cata
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
-
-    data << GetNewGUID();
-    data << uint32(Util::getMSTime());
-    data << float(cos);
-    data << float(sin);
-    data << float(horizontal);
-    data << float(-vertical);
-
-    GetSession()->SendPacket(&data);
-#else
-    ObjectGuid guid = getGuid();
-
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
-    data.WriteByteMask(guid[0]);
-    data.WriteByteMask(guid[3]);
-    data.WriteByteMask(guid[6]);
-    data.WriteByteMask(guid[7]);
-    data.WriteByteMask(guid[2]);
-    data.WriteByteMask(guid[5]);
-    data.WriteByteMask(guid[1]);
-    data.WriteByteMask(guid[4]);
-
-    data.WriteByteSeq(guid[1]);
-    data << float(sin);
-    data << uint32(0);
-    data.WriteByteSeq(guid[6]);
-    data.WriteByteSeq(guid[7]);
-    data << float(horizontal);
-    data.WriteByteSeq(guid[4]);
-    data.WriteByteSeq(guid[5]);
-    data.WriteByteSeq(guid[3]);
-    data << float(-vertical);
-    data << float(cos);
-    data.WriteByteSeq(guid[2]);
-    data.WriteByteSeq(guid[0]);
-#endif
+    GetSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
 
     blinked = true;
     SpeedCheatDelay(10000);
