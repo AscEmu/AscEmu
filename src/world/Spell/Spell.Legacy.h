@@ -155,7 +155,6 @@ class SERVER_DECL Spell : public EventableObject
         // Send Packet functions
         void SetExtraCastResult(SpellExtraError result);
         void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
-        void WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError);
         void SendCastResult(uint8 result);
         void SendSpellStart();
         void SendSpellGo();

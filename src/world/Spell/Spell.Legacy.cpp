@@ -2217,62 +2217,55 @@ void Spell::finish(bool successful)
     DecRef();
 }
 
-void Spell::WriteCastResult(WorldPacket& data, Player* /*caster*/, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError)
-{
-    data << uint8(castCount);       // cast count
-    data << uint32(spellInfo);      // Spell ID
-    data << uint8(result);          // The problem
-    switch (result)
-    {
-        case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-            data << uint32(GetSpellInfo()->getRequiresSpellFocus());
-            break;
-
-#if VERSION_STRING > TBC
-        case SPELL_FAILED_REQUIRES_AREA:
-            if (GetSpellInfo()->getRequiresAreaId() > 0)
-            {
-                auto area_group = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
-                auto area = p_caster->GetArea();
-                for (uint8 i = 0; i < 6; i++)
-                {
-                    if (area_group->AreaId[i] != 0 && area_group->AreaId[i] != area->id)
-                    {
-                        data << uint32(area_group->AreaId[i]);
-                        break;
-                    }
-                    else
-                        data << uint32(0);
-                }
-            }
-            break;
-#endif
-        case SPELL_FAILED_TOTEMS:
-            if (GetSpellInfo()->getTotem(0))
-                data << uint32(GetSpellInfo()->getTotem(0));
-            if (GetSpellInfo()->getTotem(1))
-                data << uint32(GetSpellInfo()->getTotem(1));
-            break;
-        case SPELL_FAILED_ONLY_SHAPESHIFT:
-            data << uint32(GetSpellInfo()->getRequiredShapeShift());
-            break;
-        case SPELL_FAILED_CUSTOM_ERROR:
-            data << uint32(extraError);
-            break;
-        default:
-            break;
-    }
-}
-
 void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError)
 {
-    uint32 spellInfo = GetSpellInfo()->getId();
+    uint32 spellId = GetSpellInfo()->getId();
 
     if (caster != nullptr)
     {
-        WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
-        WriteCastResult(data, caster, spellInfo, castCount, result, extraError);
-        caster->GetSession()->SendPacket(&data);
+        uint32_t extraError1 = extraError;
+        switch (result)
+        {
+            case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
+                extraError1 = GetSpellInfo()->getRequiresSpellFocus();
+                break;
+
+#if VERSION_STRING > TBC
+            case SPELL_FAILED_REQUIRES_AREA:
+                if (GetSpellInfo()->getRequiresAreaId() > 0)
+                {
+                    auto area_group = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
+                    auto area = p_caster->GetArea();
+                    for (uint8 i = 0; i < 6; i++)
+                    {
+                        if (area_group->AreaId[i] != 0 && area_group->AreaId[i] != area->id)
+                        {
+                            extraError1 = area_group->AreaId[i];
+                            break;
+                        }
+                    }
+                }
+                break;
+#endif
+            case SPELL_FAILED_TOTEMS:
+                if (GetSpellInfo()->getTotem(0))
+                    extraError1 = GetSpellInfo()->getTotem(0);
+
+                if (GetSpellInfo()->getTotem(1))
+                    extraError1 = GetSpellInfo()->getTotem(1);
+
+                break;
+            case SPELL_FAILED_ONLY_SHAPESHIFT:
+                extraError1 = GetSpellInfo()->getRequiredShapeShift();
+                break;
+            case SPELL_FAILED_CUSTOM_ERROR:
+                extraError1 = extraError;
+                break;
+            default:
+                break;
+        }
+
+        caster->sendCastFailedPacket(spellId, result, castCount, extraError1);
     }
 }
 
