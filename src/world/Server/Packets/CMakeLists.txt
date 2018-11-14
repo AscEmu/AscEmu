@@ -329,6 +329,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLootRemoved.h
    ${PATH_PREFIX}/SmsgMeetingstoneSetQueue.h
    ${PATH_PREFIX}/SmsgMessageChat.h
+   ${PATH_PREFIX}/SmsgMountResult.h
    ${PATH_PREFIX}/SmsgMountspecialAnim.h
    ${PATH_PREFIX}/SmsgMoveKnockBack.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h

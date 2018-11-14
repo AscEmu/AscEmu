@@ -14488,13 +14488,6 @@ GameObject* Player::GetSelectedGo()
     return nullptr;
 }
 
-void Player::SendMountResult(uint32 result)
-{
-    WorldPacket data(SMSG_MOUNTRESULT, 4);
-    data << (uint32)result;
-    GetSession()->SendPacket(&data);
-}
-
 bool Player::IsMounted()
 {
     if (m_MountSpellId != 0)

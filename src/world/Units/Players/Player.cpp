@@ -45,6 +45,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetFlatSpellModifier.h"
 #include "Server/Packets/SmsgSetPctSpellModifier.h"
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
+#include "Server/Packets/SmsgMountResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -1412,4 +1413,9 @@ void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int3
 void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation)
 {
     m_session->SendPacket(SmsgLoginVerifyWorld(mapId, LocationVector(posX, posY, posZ, orientation)).serialise().get());
+}
+
+void Player::SendMountResult(uint32 result)
+{
+    m_session->SendPacket(SmsgMountResult(result).serialise().get());
 }
