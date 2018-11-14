@@ -666,6 +666,8 @@ public:
     void sendSpellCooldownEventPacket(uint32_t spellId);
     void sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct);
     void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
+    void sendMountResultPacket(uint32_t result);
+    void sendDismountResultPacket(uint32_t result);
 
 public:
     //MIT End
@@ -1555,10 +1557,6 @@ public:
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
 
         void RemoveVehicleComponent();
-
-        void SendMountResult(uint32 result);
-
-        void SendDismountResult(uint32 result);
 
         bool bHasBindDialogOpen;
         uint32 TrackingSpell;

@@ -289,6 +289,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCrossedInebriationThreshold.h
    ${PATH_PREFIX}/SmsgDeathReleaseLoc.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
+   ${PATH_PREFIX}/SmsgDismountResult.h
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgDuelWinner.h

@@ -14496,13 +14496,6 @@ bool Player::IsMounted()
         return false;
 }
 
-void Player::SendDismountResult(uint32 result)
-{
-    WorldPacket data(SMSG_DISMOUNTRESULT, 4);
-    data << (uint32)result;
-    GetSession()->SendPacket(&data);
-}
-
 #if VERSION_STRING != Cata
 Player* Player::GetTradeTarget()
 {

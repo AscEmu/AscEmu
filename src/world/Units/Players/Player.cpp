@@ -46,6 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetPctSpellModifier.h"
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Packets/SmsgMountResult.h"
+#include "Server/Packets/SmsgDismountResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -1415,7 +1416,12 @@ void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, 
     m_session->SendPacket(SmsgLoginVerifyWorld(mapId, LocationVector(posX, posY, posZ, orientation)).serialise().get());
 }
 
-void Player::SendMountResult(uint32 result)
+void Player::sendMountResultPacket(uint32_t result)
 {
     m_session->SendPacket(SmsgMountResult(result).serialise().get());
+}
+
+void Player::sendDismountResultPacket(uint32_t result)
+{
+    m_session->SendPacket(SmsgDismountResult(result).serialise().get());
 }
