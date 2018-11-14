@@ -6920,7 +6920,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (fail > 0)  // && fail != SPELL_FAILED_OUT_OF_RANGE)
     {
-        SendCastResult(autoshot ? 75 : spellid, fail, 0, 0);
+        sendCastFailedPacket(autoshot ? 75 : spellid, fail, 0, 0);
 
         if (fail != SPELL_FAILED_OUT_OF_RANGE)
         {
@@ -14549,20 +14549,6 @@ void Player::SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0,
     data << uint32(Stat2);
     data << uint32(Stat3);
     data << uint32(Stat4);
-
-    m_session->SendPacket(&data);
-}
-
-void Player::SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast, uint32 Extra)
-{
-    WorldPacket data(SMSG_CAST_FAILED, 80);
-
-    data << uint8(MultiCast);
-    data << uint32(SpellId);
-    data << uint8(ErrorMessage);
-
-    if (Extra)
-        data << uint32(Extra);
 
     m_session->SendPacket(&data);
 }

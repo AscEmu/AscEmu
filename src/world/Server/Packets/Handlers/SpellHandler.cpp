@@ -160,7 +160,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     // TODO: move this check to new Spell::prepare() and clean it
     if (_player->isCastingSpell(true, true, spellInfo->getId() == 75))
     {
-        _player->SendCastResult(srlPacket.spell_id, SPELL_FAILED_SPELL_IN_PROGRESS, srlPacket.cast_count, 0);
+        _player->sendCastFailedPacket(srlPacket.spell_id, SPELL_FAILED_SPELL_IN_PROGRESS, srlPacket.cast_count, 0);
         return;
     }
 

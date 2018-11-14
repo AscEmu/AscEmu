@@ -272,6 +272,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgBuyBankSlotResult.h
    ${PATH_PREFIX}/SmsgBuyFailed.h
    ${PATH_PREFIX}/SmsgBuyItem.h
+   ${PATH_PREFIX}/SmsgCastFailed.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgCharacterLoginFailed.h
    ${PATH_PREFIX}/SmsgCharCreate.h

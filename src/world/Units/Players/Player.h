@@ -669,6 +669,7 @@ public:
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
     void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
+    void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0);
 
 public:
     //MIT End
@@ -1978,7 +1979,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0, uint32 Stat1, uint32 Stat2, uint32 Stat3, uint32 Stat4);
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
-        void SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast, uint32 Extra);
         
         void Gossip_SendSQLPOI(uint32 id);
         

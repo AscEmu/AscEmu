@@ -1376,7 +1376,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
         if (!p_caster->HasQuest(tamequest->id))
         {
-            p_caster->SendCastResult(triggerspell->getId(), SPELL_FAILED_BAD_TARGETS, 0, 0);
+            p_caster->sendCastFailedPacket(triggerspell->getId(), SPELL_FAILED_BAD_TARGETS, 0, 0);
         }
         else if (!a->GetTimeLeft())
         {
@@ -1411,7 +1411,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
             }
             else
             {
-                p_caster->SendCastResult(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
+                p_caster->sendCastFailedPacket(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
             }*/
         }
     }

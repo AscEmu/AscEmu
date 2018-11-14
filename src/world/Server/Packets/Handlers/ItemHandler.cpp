@@ -252,7 +252,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         {
             if (targets.m_unitTarget != _player->getGuid())
             {
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
+                _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
             }
         }
@@ -260,7 +260,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         {
             if (!_player->GetSummon() || _player->GetSummon()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
             {
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
+                _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
             }
         }

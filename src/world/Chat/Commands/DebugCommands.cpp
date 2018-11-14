@@ -502,7 +502,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;
     }
-    selected_player->SendCastResult(1, (uint8)fail, 0, 0);
+    selected_player->sendCastFailedPacket(1, (uint8)fail, 0, 0);
 
     return true;
 }

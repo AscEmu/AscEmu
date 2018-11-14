@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMountResult.h"
 #include "Server/Packets/SmsgDismountResult.h"
 #include "Server/Packets/SmsgLogXpGain.h"
+#include "Server/Packets/SmsgCastFailed.h"
 
 using namespace AscEmu::Packets;
 
@@ -510,7 +511,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (objmgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
-            SendCastResult(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
+            sendCastFailedPacket(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
         return;
     }
 
@@ -1430,4 +1431,9 @@ void Player::sendDismountResultPacket(uint32_t result)
 void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
 {
     m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
+}
+
+void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
+{
+    m_session->SendPacket(SmsgCastFailed(multiCast, spellId, errorMessage, extra1, extra2).serialise().get());
 }
