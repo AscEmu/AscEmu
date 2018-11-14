@@ -47,6 +47,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Packets/SmsgMountResult.h"
 #include "Server/Packets/SmsgDismountResult.h"
+#include "Server/Packets/SmsgLogXpGain.h"
 
 using namespace AscEmu::Packets;
 
@@ -1424,4 +1425,9 @@ void Player::sendMountResultPacket(uint32_t result)
 void Player::sendDismountResultPacket(uint32_t result)
 {
     m_session->SendPacket(SmsgDismountResult(result).serialise().get());
+}
+
+void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
+{
+    m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
 }

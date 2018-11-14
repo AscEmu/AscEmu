@@ -324,6 +324,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLfgUpdateSearch.h
    ${PATH_PREFIX}/SmsgLoginVerifyWorld.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
+   ${PATH_PREFIX}/SmsgLogXpGain.h
    ${PATH_PREFIX}/SmsgLootMasterList.h
    ${PATH_PREFIX}/SmsgLootMoneyNotify.h
    ${PATH_PREFIX}/SmsgLootReleaseResponse.h

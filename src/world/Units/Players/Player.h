@@ -668,6 +668,7 @@ public:
     void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
+    void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
 
 public:
     //MIT End
@@ -1976,12 +1977,10 @@ public:
         // Spell Packet wrapper Please keep this separated
         /////////////////////////////////////////////////////////////////////////////////////////
         void SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0, uint32 Stat1, uint32 Stat2, uint32 Stat3, uint32 Stat4);
-        void SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool type);
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
         void SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast, uint32 Extra);
         
         void Gossip_SendSQLPOI(uint32 id);
-        
         
         void SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem,  uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack);
         /////////////////////////////////////////////////////////////////////////////////////////
