@@ -627,12 +627,7 @@ void World::sendMessageToAll(const std::string& message, WorldSession* sendToSel
 
 void World::sendAreaTriggerMessage(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 256);
-    data << uint32_t(0);
-    data << message.c_str();
-    data << uint8_t(0);
-
-    sendGlobalMessage(&data, sendToSelf);
+    sendGlobalMessage(AscEmu::Packets::SmsgAreaTriggerMessage(0, message.c_str(), 0).serialise().get(), sendToSelf);
 }
 
 void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/)
