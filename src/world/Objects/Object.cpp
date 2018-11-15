@@ -3137,7 +3137,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     }
 
     //special states
-    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.GodModeCheat == true)
     {
         res = static_cast<float>(dmg.full_damage);
         dmg.resisted_damage = dmg.full_damage;

@@ -202,7 +202,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
     if (DstSlot < 0 || DstSlot >= (int8)m_itemProperties->ContainerSlots)
         return;
 
-    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
+    uint32 destMaxCount = (m_owner->m_cheats.ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->getStackCount() + m_Slot[DstSlot]->getStackCount();

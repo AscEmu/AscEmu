@@ -397,6 +397,19 @@ class TradeData
 };
 #endif
 
+struct PlayerCheat
+{
+    bool TaxiCheat;
+    bool CooldownCheat;
+    bool CastTimeCheat;
+    bool GodModeCheat;
+    bool PowerCheat;
+    bool FlyCheat;
+    bool AuraStackCheat;
+    bool ItemStackCheat;
+    bool TriggerpassCheat;
+};
+
 struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
@@ -627,6 +640,10 @@ public:
     bool hasLanguage(uint32_t language);
     bool hasSkilledSkill(uint32_t skill);
 #endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Cheats
+    PlayerCheat m_cheats;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -1599,16 +1616,6 @@ public:
         // Cheat section
         void SpeedCheatDelay(uint32 ms_delay);
         void SpeedCheatReset();
-
-        bool TaxiCheat;
-        bool CooldownCheat;
-        bool CastTimeCheat;
-        bool GodModeCheat;
-        bool PowerCheat;
-        bool FlyCheat;
-        bool ItemStackCheat;
-        bool AuraStackCheat;
-        bool TriggerpassCheat;
 
         bool SaveAllChangesCommand;
 

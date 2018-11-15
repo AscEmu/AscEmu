@@ -8038,7 +8038,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             dmg.resisted_damage = 0;
         }
     }
-    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.GodModeCheat == true)
     {
         dmg.resisted_damage = dmg.full_damage; //godmode
     }
@@ -8538,7 +8538,7 @@ void Unit::AddAura(Aura* aur)
                 }
                 maxStack = charges;
             }
-            if (isPlayer() && static_cast<Player*>(this)->AuraStackCheat)
+            if (isPlayer() && static_cast<Player*>(this)->m_cheats.AuraStackCheat)
                 maxStack = 999;
 
             SpellInfo* info = aur->GetSpellInfo();
@@ -9139,7 +9139,7 @@ void Unit::AddAura(Aura* aur)
                 }
                 maxStack = charges;
             }
-            if (isPlayer() && static_cast<Player*>(this)->AuraStackCheat)
+            if (isPlayer() && static_cast<Player*>(this)->m_cheats.AuraStackCheat)
                 maxStack = 999;
 
             SpellInfo* info = aur->GetSpellInfo();
@@ -10323,7 +10323,7 @@ uint32 Unit::AbsorbDamage(uint32 School, uint32* dmg)
         dmg_absorbed += aur->AbsorbDamage(School, dmg);
     }
 
-    if (isPlayer() && static_cast<Player*>(this)->GodModeCheat)
+    if (isPlayer() && static_cast<Player*>(this)->m_cheats.GodModeCheat)
     {
         dmg_absorbed += *dmg;
         *dmg = 0;

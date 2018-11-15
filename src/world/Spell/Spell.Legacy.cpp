@@ -682,7 +682,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         return SPELL_DID_HIT_IMMUNE;
 
     /* Check if player target has god mode */
-    if (p_victim && p_victim->GodModeCheat)
+    if (p_victim && p_victim->m_cheats.GodModeCheat)
     {
         return SPELL_DID_HIT_IMMUNE;
     }
@@ -857,7 +857,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     chaindamage = 0;
     m_targets = *targets;
 
-    if (!m_triggeredSpell && p_caster != nullptr && p_caster->CastTimeCheat)
+    if (!m_triggeredSpell && p_caster != nullptr && p_caster->m_cheats.CastTimeCheat)
         m_castTime = 0;
     else
     {
@@ -962,7 +962,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         SendSpellStart();
 
         // start cooldown handler
-        if (p_caster != nullptr && !p_caster->CastTimeCheat && !m_triggeredSpell)
+        if (p_caster != nullptr && !p_caster->m_cheats.CastTimeCheat && !m_triggeredSpell)
         {
             AddStartCooldown();
         }
@@ -2165,7 +2165,7 @@ void Spell::finish(bool successful)
     // moved this from ::prepare()
     // With preparing got ClearCooldownForspell, it makes too early for player client.
     // Now .cheat cooldown works perfectly.
-    if (!m_triggeredSpell && p_caster != nullptr && p_caster->CooldownCheat)
+    if (!m_triggeredSpell && p_caster != nullptr && p_caster->m_cheats.CooldownCheat)
         p_caster->ClearCooldownForSpell(GetSpellInfo()->getId());
 
     // Send Spell cast info to QuestMgr
@@ -2833,7 +2833,7 @@ bool Spell::HasPower()
         if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
             return true;
 
-    if (p_caster && p_caster->PowerCheat)
+    if (p_caster && p_caster->m_cheats.PowerCheat)
         return true;
 
     //Items do not use owner's power
@@ -2984,7 +2984,7 @@ bool Spell::TakePower()
         if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
             return true;
 
-    if (p_caster && p_caster->PowerCheat)
+    if (p_caster && p_caster->m_cheats.PowerCheat)
         return true;
 
     //Items do not use owner's power

@@ -1014,7 +1014,7 @@ bool AIInterface::isFlying()
         return m_Unit->m_movementManager.isFlying();
 
     if (m_Unit->isPlayer())
-        return static_cast<Player*>(m_Unit)->FlyCheat;
+        return static_cast<Player*>(m_Unit)->m_cheats.FlyCheat;
 
     return false;
 }

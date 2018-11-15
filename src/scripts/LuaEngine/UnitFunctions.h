@@ -3765,7 +3765,7 @@ public:
     {
         TEST_PLAYER()
             bool enabled = CHECK_BOOL(L, 1);
-        static_cast<Player*>(ptr)->FlyCheat = enabled;
+        static_cast<Player*>(ptr)->m_cheats.FlyCheat = enabled;
         return 0;
     }
 

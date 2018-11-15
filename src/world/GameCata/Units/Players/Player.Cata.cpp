@@ -163,7 +163,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
         falldistance = 1;
     }
 
-    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
+    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!m_cheats.GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
     {
         auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
 
@@ -202,7 +202,7 @@ bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
 
 void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
 {
-    if (!worldConfig.server.enableBreathing || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
+    if (!worldConfig.server.enableBreathing || m_cheats.FlyCheat || m_bUnlimitedBreath || !isAlive() || m_cheats.GodModeCheat)
     {
         if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
             m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;

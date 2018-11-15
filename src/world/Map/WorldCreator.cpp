@@ -181,17 +181,17 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
 
     if (pGroup == NULL &&
         inf->type == INSTANCE_RAID &&
-        !plr->TriggerpassCheat)
+        !plr->m_cheats.TriggerpassCheat)
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
     if (pGroup == NULL &&
         (inf->type == INSTANCE_NONRAID && plr->iInstanceType == MODE_HEROIC) &&
-        !plr->TriggerpassCheat)
+        !plr->m_cheats.TriggerpassCheat)
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
 
     // players without raid groups cannot enter raid instances
-    if (pGroup != NULL && pGroup->getGroupType() != GROUP_TYPE_RAID && inf->type == INSTANCE_RAID && !plr->TriggerpassCheat)
+    if (pGroup != NULL && pGroup->getGroupType() != GROUP_TYPE_RAID && inf->type == INSTANCE_RAID && !plr->m_cheats.TriggerpassCheat)
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
     // We deny transfer if we requested a heroic instance of a map that has no heroic mode

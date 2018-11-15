@@ -748,7 +748,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
+            uint32 itemMaxStack = (item->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
             if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
             {
                 return item;
@@ -766,7 +766,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
                 Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    uint32 itemMaxStack = (item2->getOwner()->ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
+                    uint32 itemMaxStack = (item2->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
                     if ((item2->getItemProperties()->ItemId == itemid && item2->wrapped_item_id == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
                     {
                         return item2;
@@ -782,7 +782,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
+            uint32 itemMaxStack = (item->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
             if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
             {
                 return item;
@@ -797,7 +797,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
             Item* item = GetInventoryItem(static_cast<int16>(i));
             if (item)
             {
-                uint32 itemMaxStack = (item->getOwner()->ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
+                uint32 itemMaxStack = (item->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
                 if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
                 {
                     return item;
@@ -816,7 +816,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
                     Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2)
                     {
-                        uint32 itemMaxStack = (item2->getOwner()->ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
+                        uint32 itemMaxStack = (item2->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
                         if ((item2->getItemProperties()->ItemId == itemid && item2->wrapped_item_id == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
                         {
                             return item2;
@@ -1623,7 +1623,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             for (i = CURRENCYTOKEN_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
             {
                 if (m_pItems[i])
-                    itemMaxStack = (p->ItemStackCheat) ? 0x7fffffff : m_pItems[i]->getItemProperties()->MaxCount;
+                    itemMaxStack = (p->m_cheats.ItemStackCheat) ? 0x7fffffff : m_pItems[i]->getItemProperties()->MaxCount;
 
                 if (m_pItems[i] == nullptr)
                 {
@@ -1679,7 +1679,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
     for (i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
     {
         if (m_pItems[i])
-            itemMaxStack = (p->ItemStackCheat) ? 0x7fffffff : m_pItems[i]->getItemProperties()->MaxCount;
+            itemMaxStack = (p->m_cheats.ItemStackCheat) ? 0x7fffffff : m_pItems[i]->getItemProperties()->MaxCount;
         if (m_pItems[i] == nullptr)
         {
             result3 = SafeAddItem(item, INVENTORY_SLOT_NOT_SET, static_cast<int16>(i));
@@ -1720,7 +1720,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             {
                 Item* item2 = (static_cast<Container*>(m_pItems[i]))->GetItem(static_cast<int16>(j));
                 if (item2)
-                    itemMaxStack = (p->ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
+                    itemMaxStack = (p->m_cheats.ItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
                 if (item2 == nullptr)
                 {
                     result3 = SafeAddItem(item, static_cast<int8>(i), static_cast<int16>(j));
@@ -2905,7 +2905,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     uint32 srcItemMaxStack, dstItemMaxStack;
     if (SrcItem != nullptr)
     {
-        if (srcslot < INVENTORY_SLOT_BAG_END || !(SrcItem->getOwner()->ItemStackCheat))
+        if (srcslot < INVENTORY_SLOT_BAG_END || !(SrcItem->getOwner()->m_cheats.ItemStackCheat))
         {
             srcItemMaxStack = SrcItem->getItemProperties()->MaxCount;
         }
@@ -2920,7 +2920,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     }
     if (DstItem != nullptr)
     {
-        if (dstslot < INVENTORY_SLOT_BAG_END || !(DstItem->getOwner()->ItemStackCheat))
+        if (dstslot < INVENTORY_SLOT_BAG_END || !(DstItem->getOwner()->m_cheats.ItemStackCheat))
         {
             dstItemMaxStack = DstItem->getItemProperties()->MaxCount;
         }
@@ -3948,7 +3948,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         return false;
     }
 
-    uint32 maxStack = chr->ItemStackCheat ? 0x7fffffff : it->MaxCount;
+    uint32 maxStack = chr->m_cheats.ItemStackCheat ? 0x7fffffff : it->MaxCount;
     uint32 toadd;
     bool freeslots = true;
 
@@ -4230,8 +4230,8 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
     else
     {
         //Check for stacking
-        uint32 srcItemMaxStack = (SrcItem->getOwner()->ItemStackCheat) ? 0x7fffffff : SrcItem->getItemProperties()->MaxCount;
-        uint32 dstItemMaxStack = (DstItem) ? ((DstItem->getOwner()->ItemStackCheat) ? 0x7fffffff : DstItem->getItemProperties()->MaxCount) : 0;
+        uint32 srcItemMaxStack = (SrcItem->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : SrcItem->getItemProperties()->MaxCount;
+        uint32 dstItemMaxStack = (DstItem) ? ((DstItem->getOwner()->m_cheats.ItemStackCheat) ? 0x7fffffff : DstItem->getItemProperties()->MaxCount) : 0;
         if (DstItem && SrcItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
         {
             uint32 total = SrcItem->getStackCount() + DstItem->getStackCount();

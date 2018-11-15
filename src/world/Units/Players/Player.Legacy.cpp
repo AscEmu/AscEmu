@@ -210,15 +210,7 @@ Player::Player(uint32 guid)
     m_CurrentCharm(0),
     // gm stuff
     //m_invincible(false),
-    TaxiCheat(false),
-    CooldownCheat(false),
-    CastTimeCheat(false),
-    GodModeCheat(false),
-    PowerCheat(false),
-    FlyCheat(false),
-    AuraStackCheat(false),
-    ItemStackCheat(false),
-    TriggerpassCheat(false),
+    m_cheats { false },
     SaveAllChangesCommand(false),
     m_Autojoin(false),
     m_AutoAddMem(false),
@@ -2419,23 +2411,23 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     // active cheats
     uint32 active_cheats = PLAYER_CHEAT_NONE;
-    if (CooldownCheat)
+    if (m_cheats.CooldownCheat)
         active_cheats |= PLAYER_CHEAT_COOLDOWN;
-    if (CastTimeCheat)
+    if (m_cheats.CastTimeCheat)
         active_cheats |= PLAYER_CHEAT_CAST_TIME;
-    if (GodModeCheat)
+    if (m_cheats.GodModeCheat)
         active_cheats |= PLAYER_CHEAT_GOD_MODE;
-    if (PowerCheat)
+    if (m_cheats.PowerCheat)
         active_cheats |= PLAYER_CHEAT_POWER;
-    if (FlyCheat)
+    if (m_cheats.FlyCheat)
         active_cheats |= PLAYER_CHEAT_FLY;
-    if (AuraStackCheat)
+    if (m_cheats.AuraStackCheat)
         active_cheats |= PLAYER_CHEAT_AURA_STACK;
-    if (ItemStackCheat)
+    if (m_cheats.ItemStackCheat)
         active_cheats |= PLAYER_CHEAT_ITEM_STACK;
-    if (TriggerpassCheat)
+    if (m_cheats.TriggerpassCheat)
         active_cheats |= PLAYER_CHEAT_TRIGGERPASS;
-    if (TaxiCheat)
+    if (m_cheats.TaxiCheat)
         active_cheats |= PLAYER_CHEAT_TAXI;
 
     std::stringstream ss;
@@ -3038,23 +3030,23 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Load active cheats
     uint32 active_cheats = get_next_field.GetUInt32();
     if (active_cheats & PLAYER_CHEAT_COOLDOWN)
-        CooldownCheat = true;
+        m_cheats.CooldownCheat = true;
     if (active_cheats & PLAYER_CHEAT_CAST_TIME)
-        CastTimeCheat = true;
+        m_cheats.CastTimeCheat = true;
     if (active_cheats & PLAYER_CHEAT_GOD_MODE)
-        GodModeCheat = true;
+        m_cheats.GodModeCheat = true;
     if (active_cheats & PLAYER_CHEAT_POWER)
-        PowerCheat = true;
+        m_cheats.PowerCheat = true;
     if (active_cheats & PLAYER_CHEAT_FLY)
-        FlyCheat = true;
+        m_cheats.FlyCheat = true;
     if (active_cheats & PLAYER_CHEAT_AURA_STACK)
-        AuraStackCheat = true;
+        m_cheats.AuraStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_ITEM_STACK)
-        ItemStackCheat = true;
+        m_cheats.ItemStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
-        TriggerpassCheat = true;
+        m_cheats.TriggerpassCheat = true;
     if (active_cheats & PLAYER_CHEAT_TAXI)
-        TaxiCheat = true;
+        m_cheats.TaxiCheat = true;
 
     // Process exploration data.
     LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);
@@ -3780,23 +3772,23 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Load active cheats
     uint32 active_cheats = get_next_field.GetUInt32();
     if (active_cheats & PLAYER_CHEAT_COOLDOWN)
-        CooldownCheat = true;
+        m_cheats.CooldownCheat = true;
     if (active_cheats & PLAYER_CHEAT_CAST_TIME)
-        CastTimeCheat = true;
+        m_cheats.CastTimeCheat = true;
     if (active_cheats & PLAYER_CHEAT_GOD_MODE)
-        GodModeCheat = true;
+        m_cheats.GodModeCheat = true;
     if (active_cheats & PLAYER_CHEAT_POWER)
-        PowerCheat = true;
+        m_cheats.PowerCheat = true;
     if (active_cheats & PLAYER_CHEAT_FLY)
-        FlyCheat = true;
+        m_cheats.FlyCheat = true;
     if (active_cheats & PLAYER_CHEAT_AURA_STACK)
-        AuraStackCheat = true;
+        m_cheats.AuraStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_ITEM_STACK)
-        ItemStackCheat = true;
+        m_cheats.ItemStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
-        TriggerpassCheat = true;
+        m_cheats.TriggerpassCheat = true;
     if (active_cheats & PLAYER_CHEAT_TAXI)
-        TaxiCheat = true;
+        m_cheats.TaxiCheat = true;
 
     // Process exploration data.
     LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);
@@ -4682,7 +4674,7 @@ void Player::OnPushToWorld()
     // set fly if cheat is active
     // TODO Validate that this isn't breaking logon by messaging player without delay
 #ifndef AE_TBC
-    setMoveCanFly(FlyCheat);
+    setMoveCanFly(m_cheats.FlyCheat);
 #endif
 
     // Update PVP Situation
@@ -4800,7 +4792,7 @@ void Player::OnPushToWorld()
     delayedPackets.add(data);
 
     // set fly if cheat is active
-    setMoveCanFly(FlyCheat);
+    setMoveCanFly(m_cheats.FlyCheat);
 
     // Update PVP Situation
     LoginPvPSetup();
@@ -11753,7 +11745,7 @@ bool Player::Cooldown_CanCast(SpellInfo* pSpell)
             m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr);
     }
 
-    if (pSpell->getStartRecoveryTime() && m_globalCooldown && !this->CooldownCheat /* cebernic:GCD also cheat :D */)            /* gcd doesn't affect spells without a cooldown it seems */
+    if (pSpell->getStartRecoveryTime() && m_globalCooldown && !this->m_cheats.CooldownCheat /* cebernic:GCD also cheat :D */)            /* gcd doesn't affect spells without a cooldown it seems */
     {
         if (mstime < m_globalCooldown)
             return false;
@@ -12924,7 +12916,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->m_cheats.GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;

@@ -15,32 +15,32 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    if (player_target->CooldownCheat || player_target->CastTimeCheat ||
-        player_target->GodModeCheat || player_target->PowerCheat ||
-        player_target->FlyCheat || player_target->AuraStackCheat ||
-        player_target->ItemStackCheat || player_target->TriggerpassCheat ||
+    if (player_target->m_cheats.CooldownCheat || player_target->m_cheats.CastTimeCheat ||
+        player_target->m_cheats.GodModeCheat || player_target->m_cheats.PowerCheat ||
+        player_target->m_cheats.FlyCheat || player_target->m_cheats.AuraStackCheat ||
+        player_target->m_cheats.ItemStackCheat || player_target->m_cheats.TriggerpassCheat ||
         player_target->m_isGmInvisible || player_target->bInvincible
         )
     {
         SystemMessage(m_session, "Player %s has the following cheats activated:", player_target->getName().c_str());
 
-        if (player_target->CooldownCheat)
+        if (player_target->m_cheats.CooldownCheat)
             SystemMessage(m_session, "-- Cooldown is active.");
-        if (player_target->CastTimeCheat)
+        if (player_target->m_cheats.CastTimeCheat)
             SystemMessage(m_session, "-- CastTime is active.");
-        if (player_target->GodModeCheat)
+        if (player_target->m_cheats.GodModeCheat)
             SystemMessage(m_session, "-- GodMode is active.");
-        if (player_target->PowerCheat)
+        if (player_target->m_cheats.PowerCheat)
             SystemMessage(m_session, "-- PowerCheat is active.");
-        if (player_target->FlyCheat)
+        if (player_target->m_cheats.FlyCheat)
             SystemMessage(m_session, "-- FlyCheat is active.");
-        if (player_target->AuraStackCheat)
+        if (player_target->m_cheats.AuraStackCheat)
             SystemMessage(m_session, "-- AuraStack is active.");
-        if (player_target->ItemStackCheat)
+        if (player_target->m_cheats.ItemStackCheat)
             SystemMessage(m_session, "-- ItemStack is active.");
-        if (player_target->TriggerpassCheat)
+        if (player_target->m_cheats.TriggerpassCheat)
             SystemMessage(m_session, "-- TriggerPass is active.");
-        if (player_target->TaxiCheat)
+        if (player_target->m_cheats.TaxiCheat)
             SystemMessage(m_session, "-- TaxiCheat is active.");
         if (player_target->m_isGmInvisible)
             SystemMessage(m_session, "-- Invisibility is active.");
@@ -65,7 +65,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->TaxiCheat)
+    if (!player_target->m_cheats.TaxiCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -79,7 +79,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
 
         }
 
-        player_target->TaxiCheat = true;
+        player_target->m_cheats.TaxiCheat = true;
     }
     else
     {
@@ -94,7 +94,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
             sGMLog.writefromsession(m_session, "has deactivated TaxiCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->TaxiCheat = false;
+        player_target->m_cheats.TaxiCheat = false;
     }
 
     return true;
@@ -107,7 +107,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->CooldownCheat)
+    if (!player_target->m_cheats.CooldownCheat)
     {
         for (SpellSet::const_iterator itr = player_target->mSpells.begin(); itr != player_target->mSpells.end(); ++itr)
             player_target->ClearCooldownForSpell((*itr));
@@ -123,7 +123,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
             sGMLog.writefromsession(m_session, "has activated CooldownCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->CooldownCheat = true;
+        player_target->m_cheats.CooldownCheat = true;
     }
     else
     {
@@ -138,7 +138,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
             sGMLog.writefromsession(m_session, "has deactivated CooldownCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->CooldownCheat = false;
+        player_target->m_cheats.CooldownCheat = false;
     }
 
     return true;
@@ -151,7 +151,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->CastTimeCheat)
+    if (!player_target->m_cheats.CastTimeCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -164,7 +164,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
             sGMLog.writefromsession(m_session, "has activated CastTimeCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->CastTimeCheat = true;
+        player_target->m_cheats.CastTimeCheat = true;
     }
     else
     {
@@ -179,7 +179,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
             sGMLog.writefromsession(m_session, "has deactivated CastTimeCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->CastTimeCheat = false;
+        player_target->m_cheats.CastTimeCheat = false;
     }
 
     return true;
@@ -192,7 +192,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->PowerCheat)
+    if (!player_target->m_cheats.PowerCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -205,7 +205,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
             sGMLog.writefromsession(m_session, "has activated PowerCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->PowerCheat = true;
+        player_target->m_cheats.PowerCheat = true;
     }
     else
     {
@@ -220,7 +220,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
             sGMLog.writefromsession(m_session, "has deactivated PowerCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->PowerCheat = false;
+        player_target->m_cheats.PowerCheat = false;
     }
 
     return true;
@@ -233,7 +233,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->GodModeCheat)
+    if (!player_target->m_cheats.GodModeCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -246,7 +246,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has activated GodCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->GodModeCheat = true;
+        player_target->m_cheats.GodModeCheat = true;
     }
     else
     {
@@ -261,7 +261,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has deactivated GodCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->GodModeCheat = false;
+        player_target->m_cheats.GodModeCheat = false;
     }
 
     return true;
@@ -274,7 +274,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->FlyCheat)
+    if (!player_target->m_cheats.FlyCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -287,7 +287,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has activated FlyCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->FlyCheat = true;
+        player_target->m_cheats.FlyCheat = true;
     }
     else
     {
@@ -302,10 +302,10 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has deactivated FlyCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->FlyCheat = false;
+        player_target->m_cheats.FlyCheat = false;
     }
 
-    player_target->setMoveCanFly(player_target->FlyCheat);
+    player_target->setMoveCanFly(player_target->m_cheats.FlyCheat);
 
     return true;
 }
@@ -317,7 +317,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->AuraStackCheat)
+    if (!player_target->m_cheats.AuraStackCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -330,7 +330,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
             sGMLog.writefromsession(m_session, "has activated AuraStack on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->AuraStackCheat = true;
+        player_target->m_cheats.AuraStackCheat = true;
     }
     else
     {
@@ -345,7 +345,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
             sGMLog.writefromsession(m_session, "has deactivated AuraStack on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->AuraStackCheat = false;
+        player_target->m_cheats.AuraStackCheat = false;
     }
 
     return true;
@@ -358,7 +358,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->ItemStackCheat)
+    if (!player_target->m_cheats.ItemStackCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -371,7 +371,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
             sGMLog.writefromsession(m_session, "has activated ItemStack on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->ItemStackCheat = true;
+        player_target->m_cheats.ItemStackCheat = true;
     }
     else
     {
@@ -386,7 +386,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
             sGMLog.writefromsession(m_session, "has deactivated ItemStack on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->ItemStackCheat = false;
+        player_target->m_cheats.ItemStackCheat = false;
     }
 
     return true;
@@ -399,7 +399,7 @@ bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSessi
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->TriggerpassCheat)
+    if (!player_target->m_cheats.TriggerpassCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -412,7 +412,7 @@ bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSessi
             sGMLog.writefromsession(m_session, "has activated TriggerpassCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->TriggerpassCheat = true;
+        player_target->m_cheats.TriggerpassCheat = true;
     }
     else
     {
@@ -427,7 +427,7 @@ bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSessi
             sGMLog.writefromsession(m_session, "has deactivated TriggerpassCheat on Player: %s", player_target->getName().c_str());
         }
 
-        player_target->TriggerpassCheat = false;
+        player_target->m_cheats.TriggerpassCheat = false;
     }
 
     return true;
