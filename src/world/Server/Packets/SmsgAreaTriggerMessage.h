@@ -23,7 +23,7 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgAreaTriggerMessage(uint32_t unknown1, const char* text, uint8_t unknown2) :
-            ManagedPacket(SMSG_AREA_TRIGGER_MESSAGE, 50),
+            ManagedPacket(SMSG_AREA_TRIGGER_MESSAGE, 0),
             unknown1(unknown1),
             text(text),
             unknown2(unknown2)
@@ -31,7 +31,10 @@ namespace AscEmu { namespace Packets
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
+        size_t expectedSize() const override
+        {
+            return 4 + strlen(text) + 1 + 1;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {

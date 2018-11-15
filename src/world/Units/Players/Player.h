@@ -317,13 +317,9 @@ class PlayerSpec
         {
             std::map<uint32, uint8>::iterator itr = talents.find(talentid);
             if (itr != talents.end())
-            {
                 return itr->second == rankid;
-            }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         std::map<uint32, uint8> talents;
@@ -900,10 +896,9 @@ public:
         bool HasQuests()
         {
             for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
-            {
                 if (m_questlog[i] != nullptr)
                     return true;
-            }
+
             return false;
         }
 
@@ -1020,7 +1015,7 @@ public:
             return getModDamageDonePct(static_cast<uint8_t>(school));
         }
 
-        uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
+        uint32 GetMainMeleeDamage(uint32 AP_owerride);          // I need this for windfury
 
         const uint64 & GetSelection() const { return m_curSelection; }
         const uint64 & GetTarget() const { return m_curTarget; }
@@ -1198,8 +1193,8 @@ public:
         {
             if (!m_Summons.empty())
                 return m_Summons.front();
-            else
-                return nullptr;
+
+            return nullptr;
         }
         std::list<Pet*> GetSummons() { return m_Summons; }
 
@@ -1212,8 +1207,8 @@ public:
             std::map<uint32, PlayerPet*>::iterator itr = m_Pets.find(idx);
             if (itr != m_Pets.end())
                 return itr->second;
-            else
-                return nullptr;
+
+            return nullptr;
         }
         void SpawnPet(uint32 pet_number);
         void SpawnActivePet();
@@ -1327,7 +1322,7 @@ public:
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool m_isMoving;            /// moving + strafing + jumping
+        bool m_isMoving;            // moving + strafing + jumping
         bool moving;
         bool strafing;
         bool isTurning;
@@ -1569,6 +1564,7 @@ public:
         {
             if (mountvehicleid != 0)
                 return true;
+
             return false;
         }
 
@@ -1633,7 +1629,6 @@ public:
 
             m_playerInfo->savedInstanceIdsLock.Acquire();
             PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-
             if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
             {
                 m_playerInfo->savedInstanceIdsLock.Release();
@@ -1743,14 +1738,17 @@ public:
         {
             setUInt32Value(PLAYER_FIELD_COINAGE, coins);
         }
+
         void ModGold(int32 coins)
         {
             modUInt32Value(PLAYER_FIELD_COINAGE, coins);
         }
+
         uint32 GetGold()
         {
             return getUInt32Value(PLAYER_FIELD_COINAGE);
         }
+
         bool HasGold(uint32 coins)
         {
             return (getUInt32Value(PLAYER_FIELD_COINAGE) >= coins);
@@ -2041,7 +2039,7 @@ public:
         void _EventExploration();
         void CastSpellArea();
 
-        /// Water level related stuff
+        // Water level related stuff
         void SetNoseLevel();
 
         /////////////////////////////////////////////////////////////////////////////////////////
