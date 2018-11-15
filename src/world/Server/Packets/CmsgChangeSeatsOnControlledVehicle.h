@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 #if VERSION_STRING == WotLK
-#include <GameWotLK/Data/MovementInfoWotLK.h>
+#include "Data/MovementInfo.h"
 #endif
 
 namespace AscEmu { namespace Packets

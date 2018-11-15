@@ -1,6 +1,5 @@
 # Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
-include(GameClassic/Data/CMakeLists.txt)
 include(GameClassic/Network/CMakeLists.txt)
 include(GameClassic/Storage/CMakeLists.txt)
 

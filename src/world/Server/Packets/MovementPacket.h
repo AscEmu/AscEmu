@@ -10,13 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING != Cata
 
-#if VERSION_STRING == Classic
-#include "GameClassic/Data/MovementInfoClassic.h"
-#elif VERSION_STRING == TBC
-#include "GameTBC/Data/MovementInfoTBC.h"
-#elif VERSION_STRING == WotLK
-#include "GameWotLK/Data/MovementInfoWotLK.h"
-#endif
+#include "Data/MovementInfo.h"
 
 namespace AscEmu { namespace Packets
 {

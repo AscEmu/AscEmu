@@ -13,6 +13,7 @@ set(SRC_DATA_FILES
    ${PATH_PREFIX}/WoWObject.h
    ${PATH_PREFIX}/WoWPlayer.h
    ${PATH_PREFIX}/WoWUnit.h
+   ${PATH_PREFIX}/MovementInfo.h
 )
 
 source_group(Data FILES ${SRC_DATA_FILES})

@@ -44,13 +44,10 @@
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 
-#if VERSION_STRING == Classic
-#include "GameClassic/Data/MovementInfoClassic.h"
-#elif VERSION_STRING == TBC
-#include "GameTBC/Data/MovementInfoTBC.h"
-#elif VERSION_STRING == WotLK
-#include "GameWotLK/Data/MovementInfoWotLK.h"
+#if VERSION_STRING != Cata
+#include "Data/MovementInfo.h"
 #endif
+
 
 struct WoWObject;
 

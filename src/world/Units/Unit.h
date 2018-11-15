@@ -34,12 +34,8 @@
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
-#if VERSION_STRING == Classic
-#include "GameClassic/Data/MovementInfoClassic.h"
-#elif VERSION_STRING == TBC
-#include "GameTBC/Data/MovementInfoTBC.h"
-#elif VERSION_STRING == WotLK
-#include "GameWotLK/Data/MovementInfoWotLK.h"
+#if VERSION_STRING != Cata
+#include "Data/MovementInfo.h"
 #endif
 
 class AIInterface;
