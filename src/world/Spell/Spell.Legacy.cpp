@@ -2315,7 +2315,6 @@ enum SpellStartFlags
     //0x8000
 };
 
-#if VERSION_STRING != Cata
 void Spell::SendSpellStart()
 {
     // no need to send this on passive spells
@@ -2424,9 +2423,7 @@ void Spell::SendSpellStart()
 #endif
     m_caster->SendMessageToSet(&data, true);
 }
-#endif
 
-#if VERSION_STRING != Cata
 void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
@@ -2618,7 +2615,6 @@ void Spell::SendSpellGo()
     //if (flags != 0x120 && GetProto()->Attributes & 16) // not ranged and flag 5
     //SendLogExecute(0,m_targets.m_unitTarget);
 }
-#endif
 
 void Spell::writeSpellGoTargets(WorldPacket* data)
 {
@@ -2778,7 +2774,6 @@ void Spell::SendChannelUpdate(uint32 time)
     p_caster->SendMessageToSet(&data, true);
 }
 
-#if VERSION_STRING != Cata
 void Spell::SendChannelStart(uint32 duration)
 {
     if (!m_caster->isGameObject())
@@ -2803,7 +2798,6 @@ void Spell::SendChannelStart(uint32 duration)
         sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
-#endif
 
 void Spell::SendResurrectRequest(Player* target)
 {

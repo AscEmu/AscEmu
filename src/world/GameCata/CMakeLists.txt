@@ -5,7 +5,6 @@ include(GameCata/Management/CMakeLists.txt)
 include(GameCata/Movement/CMakeLists.txt)
 include(GameCata/Network/CMakeLists.txt)
 include(GameCata/Storage/CMakeLists.txt)
-include(GameCata/Spell/CMakeLists.txt)
 
 set(PATH_PREFIX GameCata)
 
