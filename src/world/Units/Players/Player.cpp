@@ -49,6 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDismountResult.h"
 #include "Server/Packets/SmsgLogXpGain.h"
 #include "Server/Packets/SmsgCastFailed.h"
+#include "Server/Packets/SmsgLevelupInfo.h"
 
 using namespace AscEmu::Packets;
 
@@ -2005,4 +2006,9 @@ void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t rest
 void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
 {
     m_session->SendPacket(SmsgCastFailed(multiCast, spellId, errorMessage, extra1, extra2).serialise().get());
+}
+
+void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4)
+{
+    m_session->SendPacket(SmsgLevelupInfo(level, hp, mana, stat0, stat1, stat2, stat3, stat4).serialise().get());
 }

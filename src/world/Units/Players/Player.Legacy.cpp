@@ -1709,7 +1709,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         CalculateBaseStats();
 
         // Generate Level Info Packet and Send to client
-        SendLevelupInfo(
+        sendLevelupInfoPacket(
             level,
             lvlinfo->HP - oldlevel->HP,
             lvlinfo->Mana - oldlevel->Mana,
@@ -14286,26 +14286,6 @@ void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
 
     data << uint32(WorldState);
     data << uint32(Value);
-
-    m_session->SendPacket(&data);
-}
-
-void Player::SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0, uint32 Stat1, uint32 Stat2, uint32 Stat3, uint32 Stat4)
-{
-    WorldPacket data(SMSG_LEVELUP_INFO, 14 * 4);
-
-    data << uint32(level);
-    data << uint32(Hp);
-    data << uint32(Mana);
-
-    for (uint8 i = 0; i < 6; ++i)
-        data << uint32(0);
-
-    data << uint32(Stat0);
-    data << uint32(Stat1);
-    data << uint32(Stat2);
-    data << uint32(Stat3);
-    data << uint32(Stat4);
 
     m_session->SendPacket(&data);
 }

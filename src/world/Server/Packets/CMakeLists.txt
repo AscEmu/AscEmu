@@ -319,6 +319,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgInventoryChangeFailure.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
    ${PATH_PREFIX}/SmsgLearnedDanceMoves.h
+   ${PATH_PREFIX}/SmsgLevelupInfo.h
    ${PATH_PREFIX}/SmsgLfgOfferContinue.h
    ${PATH_PREFIX}/SmsgLfgRoleChosen.h
    ${PATH_PREFIX}/SmsgLfgTeleportDenied.h

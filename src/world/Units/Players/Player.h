@@ -683,6 +683,7 @@ public:
     void sendDismountResultPacket(uint32_t result);
     void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
     void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0);
+    void sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4);
 
 public:
     //MIT End
@@ -1982,7 +1983,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Spell Packet wrapper Please keep this separated
         /////////////////////////////////////////////////////////////////////////////////////////
-        void SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0, uint32 Stat1, uint32 Stat2, uint32 Stat3, uint32 Stat4);
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
         
         void Gossip_SendSQLPOI(uint32 id);
