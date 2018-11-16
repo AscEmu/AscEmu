@@ -13913,13 +13913,6 @@ void Player::RemoveVehicleComponent()
     vehicle = nullptr;
 }
 
-void Player::Gossip_SendSQLPOI(uint32 id)
-{
-    MySQLStructure::PointsOfInterest const* pPOI = sMySQLStore.getPointOfInterest(id);
-    if (pPOI != nullptr)
-        sendGossipPoiPacket(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->iconName);
-}
-
 void Player::ResetTimeSync()
 {
     m_timeSyncCounter = 0;

@@ -1945,6 +1945,12 @@ void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t
     m_session->SendPacket(SmsgGossipPoi(flags, posX, posY, icon, data, name).serialise().get());
 }
 
+void Player::sendPoiById(uint32_t id)
+{
+    if (const auto pPoi = sMySQLStore.getPointOfInterest(id))
+        sendGossipPoiPacket(pPoi->x, pPoi->y, pPoi->icon, pPoi->flags, pPoi->data, pPoi->iconName);
+}
+
 void Player::sendStopMirrorTimerPacket(MirrorTimerTypes type)
 {
     m_session->SendPacket(SmsgStopMirrorTimer(type).serialise().get());

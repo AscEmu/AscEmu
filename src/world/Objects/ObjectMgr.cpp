@@ -1621,14 +1621,14 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
 
                 // one submenu menu sends a poi
                 if (itr->second.pointOfInterest != 0)
-                    player->Gossip_SendSQLPOI(itr->second.pointOfInterest);
+                    player->sendPoiById(itr->second.pointOfInterest);
             }
             else
             {
                 createGuardGossipMenuForPlayer(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
                 if (itr->second.pointOfInterest != 0)
-                    player->Gossip_SendSQLPOI(itr->second.pointOfInterest);
+                    player->sendPoiById(itr->second.pointOfInterest);
             }
         }
     }

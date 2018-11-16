@@ -670,7 +670,10 @@ public:
     void sendDestroyObjectPacket(uint64_t destroyedGuid);
     void sendEquipmentSetUseResultPacket(uint8_t result);
     void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
+
     void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
+    void sendPoiById(uint32_t id);
+
     void sendStopMirrorTimerPacket(MirrorTimerTypes type);
     void sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status);
     void sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId);
@@ -1984,9 +1987,7 @@ public:
         // Spell Packet wrapper Please keep this separated
         /////////////////////////////////////////////////////////////////////////////////////////
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
-        
-        void Gossip_SendSQLPOI(uint32 id);
-        
+
         void SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem,  uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack);
         /////////////////////////////////////////////////////////////////////////////////////////
         // End of SpellPacket wrapper
