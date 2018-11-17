@@ -4047,7 +4047,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         {
             SlotResult* lr = LastSearchResult();
 
-            chr->SendItemPushResult(false, true, false, true, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+            chr->sendItemPushResultPacket(false, true, false, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 #if VERSION_STRING > TBC
             chr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, itemid, 1, 0);
 #endif

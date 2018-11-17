@@ -50,6 +50,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLogXpGain.h"
 #include "Server/Packets/SmsgCastFailed.h"
 #include "Server/Packets/SmsgLevelupInfo.h"
+#include "Server/Packets/SmsgItemPushResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -2017,4 +2018,18 @@ void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_
 void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4)
 {
     m_session->SendPacket(SmsgLevelupInfo(level, hp, mana, stat0, stat1, stat2, stat3, stat4).serialise().get());
+}
+
+void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
+{
+    const std::unique_ptr<WorldPacket>::pointer data = SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot,
+                                                                    entry, suffix, randomprop, count,
+                                                                    stack).serialise().get();
+
+
+    if (sendtoset && InGroup())
+        GetGroup()->SendPacketToAll(data);
+    else
+        m_session->SendPacket(data);
+
 }

@@ -1797,7 +1797,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
             return;
     }
 
-    _player->SendItemPushResult(false, true, false, pItem != oldItem, bagslot, slot,
+    _player->sendItemPushResultPacket(false, true, false, bagslot, pItem != oldItem ? slot : 0,
         amount * ci.amount, pItem->getEntry(), pItem->getPropertySeed(),
         pItem->getRandomPropertiesId(), pItem->getStackCount());
 
@@ -1929,7 +1929,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                 {
                     item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8_t>(INVENTORY_SLOT_NOT_SET),
+                _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(INVENTORY_SLOT_NOT_SET),
                     slotResult.Result, srlPacket.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(),
                     item->getRandomPropertiesId(), item->getStackCount());
             }
@@ -1948,7 +1948,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                     {
                         item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                     }
-                    _player->SendItemPushResult(false, true, false, true, slotResult.ContainerSlot,
+                    _player->sendItemPushResultPacket(false, true, false, slotResult.ContainerSlot,
                         slotResult.Result, 1, item->getEntry(), item->getPropertySeed(),
                         item->getRandomPropertiesId(), item->getStackCount());
                 }
@@ -1959,8 +1959,8 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     {
         addItem->modStackCount(srlPacket.amount * creature_item.amount);
         addItem->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false,
-            static_cast<uint8_t>(_player->GetItemInterface()->GetBagSlotByGuid(addItem->getGuid())), 1,
+        _player->sendItemPushResultPacket(false, true, false, 
+            static_cast<uint8_t>(_player->GetItemInterface()->GetBagSlotByGuid(addItem->getGuid())), 0,
             srlPacket.amount * creature_item.amount, addItem->getEntry(), addItem->getPropertySeed(),
             addItem->getRandomPropertiesId(), addItem->getStackCount());
     }

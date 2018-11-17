@@ -687,6 +687,8 @@ public:
     void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
     void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0);
     void sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4);
+    void sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack);
+
 
 public:
     //MIT End
@@ -1988,7 +1990,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
 
-        void SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem,  uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack);
         /////////////////////////////////////////////////////////////////////////////////////////
         // End of SpellPacket wrapper
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -96,7 +96,7 @@ public:
                 }
                 else
                 {
-                    plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
+                    plr->sendItemPushResultPacket(false, true, false, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
                         plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
                         item->getRandomPropertiesId(), item->getStackCount());
 

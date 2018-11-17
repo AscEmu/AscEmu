@@ -817,7 +817,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             {
                 SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
                 SlotResult* le = player->GetItemInterface()->LastSearchResult();
-                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                player->sendItemPushResultPacket(false, true, false, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 ++itemset_items_count;
             }
 

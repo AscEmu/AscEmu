@@ -182,9 +182,8 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
         if (_player->GetItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
         {
             sQuestMgr.OnPlayerItemPickup(_player, item);
-            _player->SendItemPushResult(
+            _player->sendItemPushResultPacket(
                 false,
-                true,
                 true,
                 true,
                 slotResult.ContainerSlot,
@@ -208,13 +207,12 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(_player, add);
-        _player->SendItemPushResult(
+        _player->sendItemPushResultPacket(
             false,
             false,
             true,
-            false,
             static_cast<uint8_t>(_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid())),
-            0xFFFFFFFF,
+            0,
             amt,
             add->getEntry(),
             add->getPropertySeed(),
@@ -748,7 +746,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (player->GetItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
     {
-        player->SendItemPushResult(false, true, true, true, slotResult.ContainerSlot, slotResult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+        player->sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->getEntry(), 1, 0);

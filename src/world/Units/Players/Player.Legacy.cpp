@@ -13497,7 +13497,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
                 item->DeleteMe();
             }
             else
-                SendItemPushResult(false, true, false, true,
+                sendItemPushResultPacket(false, true, false,
                 m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
                 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         }
@@ -14281,42 +14281,6 @@ void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
     data << uint32(Value);
 
     m_session->SendPacket(&data);
-}
-
-void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem, uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack)
-{
-    WorldPacket data(SMSG_ITEM_PUSH_RESULT, 8 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4);
-    data << uint64(getGuid());
-
-    if (recieved)
-        data << uint32(1);
-    else
-        data << uint32(0);
-
-    if (created)
-        data << uint32(1);
-    else
-        data << uint32(0);
-
-    data << uint32(1);
-    data << uint8(destbagslot);
-
-    if (newitem)
-        data << uint32(destslot);
-    else
-        data << uint32(-1);
-
-    data << uint32(entry);
-    data << uint32(suffix);
-    data << uint32(randomprop);
-    data << uint32(count);
-    data << uint32(stack);
-
-    if (sendtoset && InGroup())
-        GetGroup()->SendPacketToAll(&data);
-    else
-        m_session->SendPacket(&data);
-
 }
 
 /*Loot type MUST be

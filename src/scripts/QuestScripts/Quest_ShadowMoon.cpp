@@ -366,7 +366,7 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     }
     else
     {
-        Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
+        Plr->sendItemPushResultPacket(false, true, false, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
             Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
             item->getRandomPropertiesId(), item->getStackCount());
     }

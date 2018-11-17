@@ -951,7 +951,7 @@ public:
 
             item_add->setStackCount(count);
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
-                player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
+                player->sendItemPushResultPacket(false, true, false, player->GetItemInterface()->LastSearchItemBagSlot(),
                 player->GetItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->getPropertySeed(),
                 item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
@@ -959,8 +959,8 @@ public:
         {
             item_add->modStackCount(count);
             item_add->SetDirty();
-            player->SendItemPushResult(false, true, false, false,
-                                       static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0xFFFFFFFF,
+            player->sendItemPushResultPacket(false, true, false, 
+                                       static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
                                        count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
         PUSH_ITEM(L, item_add);

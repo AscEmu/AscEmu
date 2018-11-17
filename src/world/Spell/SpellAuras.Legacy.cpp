@@ -6065,7 +6065,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     }
                     SlotResult* lr = pCaster->GetItemInterface()->LastSearchResult();
 
-                    pCaster->SendItemPushResult(true, false, true, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                    pCaster->sendItemPushResultPacket(true, false, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 }
             }
         }

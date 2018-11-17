@@ -827,7 +827,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             charter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(),
+            _player->sendItemPushResultPacket(false, true, false, _player->GetItemInterface()->LastSearchItemBagSlot(),
                 _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->ModGold(-static_cast<int32_t>(costs[arena_type]));
@@ -901,7 +901,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             guildCharter->SaveToDB();
 
-            _player->SendItemPushResult(false, true, false, true, _player->GetItemInterface()->LastSearchItemBagSlot(),
+            _player->sendItemPushResultPacket(false, true, false, _player->GetItemInterface()->LastSearchItemBagSlot(),
                 _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
