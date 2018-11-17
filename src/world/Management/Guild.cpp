@@ -501,7 +501,7 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
     else
     {
         m_motd = motd;
-        CharacterDatabase.Execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", motd.c_str(), m_id);
+        CharacterDatabase.Execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", CharacterDatabase.EscapeString(motd).c_str(), m_id);
         broadcastEvent(GE_MOTD, 0, { motd });
     }
 }
@@ -1463,7 +1463,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     member->saveGuildMembersToDB(false);
 
-    CharacterDatabase.Execute("INSERT INTO guild_members_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0)", m_id);
+    CharacterDatabase.Execute("INSERT INTO guild_members_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_id);
 
     updateAccountsNumber();
 
