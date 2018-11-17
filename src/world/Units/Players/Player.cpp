@@ -52,6 +52,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLevelupInfo.h"
 #include "Server/Packets/SmsgItemPushResult.h"
 #include "Server/Packets/SmsgClientControlUpdate.h"
+#include "Server/Packets/SmsgGuildEvent.h"
 
 using namespace AscEmu::Packets;
 
@@ -2039,4 +2040,12 @@ void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
 
     if (target == this)
         SetMover(this);
+}
+
+void Player::sendGuildMotd()
+{
+    if (!GetGuild())
+        return;
+
+    SendPacket(SmsgGuildEvent(GE_MOTD, { GetGuild()->getMOTD() }, 0).serialise().get());
 }

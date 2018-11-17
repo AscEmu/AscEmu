@@ -14130,22 +14130,6 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
 		pet->ResetAuraUpdateMaskForRaid();
 }
 
-void Player::SendGuildMOTD()
-{
-    if (!GetGuild())
-        return;
-
-    WorldPacket data(SMSG_GUILD_EVENT, 50);
-#if VERSION_STRING != Cata
-    data << uint8(GE_MOTD);
-#else
-    data << uint8(255);
-#endif
-    data << uint8(1);
-    data << GetGuild()->getMOTD();
-    SendPacket(&data);
-}
-
 void Player::SendCinematicCamera(uint32 id)
 {
     GetMapMgr()->ChangeObjectLocation(this);

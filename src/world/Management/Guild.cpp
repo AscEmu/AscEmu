@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/SmsgGuildInvite.h"
+#include "Server/Packets/SmsgGuildEvent.h"
 
 using namespace AscEmu::Packets;
 
@@ -176,7 +177,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
 
 void Guild::disband()
 {
-    broadcastEvent(GE_DISBANDED, 0);
+    broadcastEvent(GE_DISBANDED, 0, {});
     while (!_guildMembersStore.empty())
     {
         GuildMembersStore::const_iterator itr = _guildMembersStore.begin();
@@ -501,7 +502,7 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
     {
         m_motd = motd;
         CharacterDatabase.Execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", motd.c_str(), m_id);
-        broadcastEvent(GE_MOTD, 0, motd.c_str());
+        broadcastEvent(GE_MOTD, 0, { motd });
     }
 }
 
@@ -552,7 +553,7 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
         {
             setLeaderGuid(newGuildMaster);
             oldGuildMaster->changeRank(GR_INITIATE);
-            broadcastEvent(GE_LEADER_CHANGED, 0, session->GetPlayer()->getName().c_str(), name.c_str());
+            broadcastEvent(GE_LEADER_CHANGED, 0, { session->GetPlayer()->getName(), name });
         }
     }
 }
@@ -567,7 +568,7 @@ void Guild::handleSetBankTabInfo(WorldSession* session, uint8_t tabId, std::stri
     }
 
     tab->setInfo(name, icon);
-    broadcastEvent(GE_BANK_TAB_UPDATED, 0, std::to_string(tabId).c_str(), name.c_str(), icon.c_str());
+    broadcastEvent(GE_BANK_TAB_UPDATED, 0, { std::to_string(tabId), name, icon });
 }
 
 void Guild::handleSetMemberNote(WorldSession* session, std::string const& note, uint64_t guid, bool isPublic)
@@ -604,7 +605,7 @@ void Guild::handleSetRankInfo(WorldSession* session, uint8_t rankId, std::string
         for (GuildBankRightsAndSlotsVec::const_iterator itr = rightsAndSlots.begin(); itr != rightsAndSlots.end(); ++itr)
             setRankBankTabRightsAndSlots(rankId, *itr);
 
-        broadcastEvent(GE_RANK_UPDATED, 0, std::to_string(rankId).c_str(), name.c_str());
+        broadcastEvent(GE_RANK_UPDATED, 0, { std::to_string(rankId), name });
     }
 }
 
@@ -637,7 +638,7 @@ void Guild::handleBuyBankTab(WorldSession* session, uint8_t tabId)
     }
 
     createNewBankTab();
-    broadcastEvent(GE_BANK_TAB_PURCHASED, 0);
+    broadcastEvent(GE_BANK_TAB_PURCHASED, 0, {});
     sendPermissions(session);
 }
 
@@ -668,7 +669,7 @@ void Guild::handleLeaveMember(WorldSession* session)
         deleteMember(player->getGuid(), false, false);
 
         logEvent(GE_LOG_LEAVE_GUILD, player->getGuidLow());
-        broadcastEvent(GE_LEFT, player->getGuid(), player->getName().c_str());
+        broadcastEvent(GE_LEFT, player->getGuid(), { player->getName() });
 
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, m_name, GC_ERROR_SUCCESS).serialise().get());
     }
@@ -701,7 +702,7 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
             {
                 deleteMember(guid, false, true);
                 logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(guid));
-                broadcastEvent(GE_REMOVED, 0, name.c_str(), player->getName().c_str());
+                broadcastEvent(GE_REMOVED, 0, { name, player->getName() });
                 session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS).serialise().get());
             }
         }
@@ -756,7 +757,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         member->changeRank(static_cast<uint8_t>(newRankId));
 
         logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(member->getGUID()), static_cast<uint8_t>(newRankId));
-        broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, player->getName().c_str(), name.c_str(), getRankName(static_cast<uint8_t>(newRankId)).c_str());
+        broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, { player->getName(), name, getRankName(static_cast<uint8_t>(newRankId)) });
     }
 }
 
@@ -799,9 +800,9 @@ void Guild::handleAddNewRank(WorldSession* session, std::string const& name)
         if (createRank(name, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK))
         {
 #if VERSION_STRING == Cata
-            broadcastEvent(GE_RANK_CREATED, 0);
+            broadcastEvent(GE_RANK_CREATED, 0, {});
 #else
-            broadcastEvent(GE_RANK_UPDATED, 0);
+            broadcastEvent(GE_RANK_UPDATED, 0, {});
 #endif
         }
     }
@@ -823,7 +824,7 @@ void Guild::handleRemoveRank(WorldSession* session, uint8_t rankId)
 
     _guildRankInfoStore.erase(_guildRankInfoStore.begin() + rankId);
 
-    broadcastEvent(GE_RANK_DELETED, rankId);
+    broadcastEvent(GE_RANK_DELETED, rankId, {});
 }
 
 void Guild::handleMemberDepositMoney(WorldSession* session, uint64_t amount, bool cashFlow)
@@ -837,7 +838,7 @@ void Guild::handleMemberDepositMoney(WorldSession* session, uint64_t amount, boo
     logBankEvent(cashFlow ? GB_LOG_CASH_FLOW_DEPOSIT : GB_LOG_DEPOSIT_MONEY, uint8_t(0), player->getGuidLow(), static_cast<uint32_t>(amount));
 
     std::string aux = Util::ByteArrayToHexString(reinterpret_cast<uint8_t*>(&amount), 8, true);
-    broadcastEvent(GE_BANK_TAB_AND_MONEY_UPDATED, 0, aux.c_str());
+    broadcastEvent(GE_BANK_TAB_AND_MONEY_UPDATED, 0, { aux });
 }
 
 bool Guild::handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bool repair)
@@ -863,7 +864,7 @@ bool Guild::handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bo
     logBankEvent(repair ? GB_LOG_REPAIR_MONEY : GB_LOG_WITHDRAW_MONEY, uint8_t(0), player->getGuidLow(), static_cast<uint32_t>(amount));
 
     std::string aux = Util::ByteArrayToHexString(reinterpret_cast<uint8_t*>(&amount), 8, true);
-    broadcastEvent(GE_BANK_TAB_AND_MONEY_UPDATED, 0, aux.c_str());
+    broadcastEvent(GE_BANK_TAB_AND_MONEY_UPDATED, 0, { aux });
 
     return true;
 }
@@ -877,7 +878,7 @@ void Guild::handleMemberLogout(WorldSession* session)
         member->updateLogoutTime();
         member->resetFlags();
     }
-    broadcastEvent(GE_SIGNED_OFF, player->getGuid(), player->getName().c_str());
+    broadcastEvent(GE_SIGNED_OFF, player->getGuid(), { player->getName() });
 
     saveGuildToDB();
 }
@@ -1054,11 +1055,7 @@ void Guild::sendMoneyInfo(WorldSession* session) const
 
 void Guild::sendLoginInfo(WorldSession* session)
 {
-    WorldPacket data(SMSG_GUILD_EVENT, 1 + 1 + m_motd.size() + 1);
-    data << uint8_t(GE_MOTD);
-    data << uint8_t(1);
-    data << m_motd;
-    session->SendPacket(&data);
+    session->SendPacket(SmsgGuildEvent(GE_MOTD, { m_motd }, 0).serialise().get());
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT %s MOTD", session->GetPlayer()->getName().c_str());
 
@@ -1068,7 +1065,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     sendBankList(session, 0, false, true);
 
     handleRoster(session);
-    broadcastEvent(GE_SIGNED_ON, player->getGuid(), player->getName().c_str());
+    broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
     if (GuildMember* member = getMember(player->getGuid()))
     {
@@ -1077,14 +1074,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     }
 #else
     sendGuildRankInfo(session);
-    broadcastEvent(GE_SIGNED_ON, player->getGuid(), player->getName().c_str());
-
-    data.Initialize(SMSG_GUILD_EVENT, 1 + 1 + player->getName().size() + 8);
-    data << uint8_t(GE_SIGNED_ON);
-    data << uint8_t(1);
-    data << player->getName().c_str();
-    data << uint64_t(player->getGuid());
-    session->SendPacket(&data);
+    broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
     data.Initialize(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
     session->SendPacket(&data);
@@ -1478,7 +1468,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     updateAccountsNumber();
 
     logEvent(GE_LOG_JOIN_GUILD, lowguid);
-    broadcastEvent(GE_JOINED, guid, name.c_str());
+    broadcastEvent(GE_JOINED, guid, { name });
 #if VERSION_STRING == Cata
     sGuildFinderMgr.removeAllMembershipRequestsFromPlayer(lowguid);
 #endif
@@ -1517,8 +1507,8 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 
         if (oldLeader)
         {
-            broadcastEvent(GE_LEADER_CHANGED, 0, oldLeader->getName().c_str(), newLeader->getName().c_str());
-            broadcastEvent(GE_LEFT, guid, oldLeader->getName().c_str());
+            broadcastEvent(GE_LEADER_CHANGED, 0, { oldLeader->getName(), newLeader->getName() });
+            broadcastEvent(GE_LEFT, guid, { oldLeader->getName() });
         }
     }
 
@@ -1835,36 +1825,9 @@ void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32
     pLog->addEvent(new GuildBankEventLogEntry(m_id, pLog->getNextGUID(), eventType, dbTabId, lowguid, itemOrMoney, itemStackCount, destTabId));
 }
 
-void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, const char* var_1, const char* var_2, const char* var_3) const
+void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<std::string> vars) const
 {
-    uint8_t count = !var_3 ? (!var_2 ? (!var_1 ? 0 : 1) : 2) : 3;
-
-    WorldPacket data(SMSG_GUILD_EVENT, 1 + 1 + count + (guid ? 8 : 0));
-    data << uint8_t(guildEvent);
-    data << uint8_t(count);
-
-    if (var_3)
-    {
-        data << var_1;
-        data << var_2;
-        data << var_3;
-    }
-    else if (var_2)
-    {
-        data << var_1;
-        data << var_2;
-    }
-    else if (var_1)
-    {
-        data << var_1;
-    }
-
-    if (guid)
-    {
-        data << uint64_t(guid);
-    }
-
-    broadcastPacket(&data);
+    broadcastPacket(SmsgGuildEvent(guildEvent, vars, guid).serialise().get());
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT: %s (%u)", _GetGuildEventString(guildEvent).c_str(), guildEvent);
 }

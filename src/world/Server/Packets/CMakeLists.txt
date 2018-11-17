@@ -313,6 +313,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGuildBankMoneyWithdrawn.h
    ${PATH_PREFIX}/SmsgGuildBankQueryTextResult.h
    ${PATH_PREFIX}/SmsgGuildCommandResult.h
+   ${PATH_PREFIX}/SmsgGuildEvent.h
    ${PATH_PREFIX}/SmsgGuildInfo.h
    ${PATH_PREFIX}/SmsgGuildInvite.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
