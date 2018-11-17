@@ -2008,10 +2008,8 @@ void Aura::SpellAuraModConfuse(bool apply)
         if (p_target)
         {
             // this is a hackfix to stop player from moving -> see AIInterface::_UpdateMovement() Wander AI for more info
-            WorldPacket data1(9);
-            data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            data1 << m_target->GetNewGUID() << uint8(0x00);
-            p_target->GetSession()->SendPacket(&data1);
+            p_target->sendClientControlPacket(m_target, 0);
+
             p_target->SpeedCheatDelay(GetDuration());
         }
     }
@@ -2027,10 +2025,7 @@ void Aura::SpellAuraModConfuse(bool apply)
         if (p_target)
         {
             // re-enable movement
-            WorldPacket data1(9);
-            data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            data1 << m_target->GetNewGUID() << uint8(0x01);
-            p_target->GetSession()->SendPacket(&data1);
+            p_target->sendClientControlPacket(m_target, 1);
 
             m_target->setAItoUse(false);
 
@@ -2152,10 +2147,8 @@ void Aura::SpellAuraModFear(bool apply)
         if (p_target)
         {
             // this is a hackfix to stop player from moving -> see AIInterface::_UpdateMovement() Fear AI for more info
-            WorldPacket data1(9);
-            data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            data1 << m_target->GetNewGUID() << uint8(0x00);
-            p_target->GetSession()->SendPacket(&data1);
+            p_target->sendClientControlPacket(m_target, 0);
+
             p_target->SpeedCheatDelay(GetDuration());
         }
     }
@@ -2173,10 +2166,7 @@ void Aura::SpellAuraModFear(bool apply)
             if (p_target)
             {
                 // re-enable movement
-                WorldPacket data1(9);
-                data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-                data1 << m_target->GetNewGUID() << uint8(0x01);
-                p_target->GetSession()->SendPacket(&data1);
+                p_target->sendClientControlPacket(m_target, 1);
 
                 m_target->setAItoUse(false);
 

@@ -192,7 +192,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         {
             pack.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
             pack << owner->GetNewGUID() << uint8(1);
-            passenger->SendPacket(&pack);
+            static_cast<Player*>(passenger)->sendClientControlPacket(owner, 1);
 
             passenger->setCharmGuid(owner->getGuid());
             owner->setCharmedByGuid(passenger->getGuid());
@@ -306,13 +306,9 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
         if (passenger->isPlayer())
         {
-
             owner->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
-            WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 16);
-            ack << owner->GetNewGUID();
-            ack << uint8(0);
-            passenger->SendPacket(&ack);
+            static_cast<Player*>(passenger)->sendClientControlPacket(owner, 0);
 
             // send null spells if needed
             static_cast<Player*>(passenger)->SendEmptyPetSpellList();

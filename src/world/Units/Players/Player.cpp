@@ -51,6 +51,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCastFailed.h"
 #include "Server/Packets/SmsgLevelupInfo.h"
 #include "Server/Packets/SmsgItemPushResult.h"
+#include "Server/Packets/SmsgClientControlUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -2026,10 +2027,16 @@ void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtose
                                                                     entry, suffix, randomprop, count,
                                                                     stack).serialise().get();
 
-
     if (sendtoset && InGroup())
         GetGroup()->SendPacketToAll(data);
     else
         m_session->SendPacket(data);
+}
 
+void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
+{
+    SendPacket(SmsgClientControlUpdate(target->GetNewGUID(), allowMove).serialise().get());
+
+    if (target == this)
+        SetMover(this);
 }

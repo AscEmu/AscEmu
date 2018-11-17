@@ -4614,24 +4614,18 @@ public:
     static int SetPlayerLock(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            bool lock = CHECK_BOOL(L, 1);
+        bool lock = CHECK_BOOL(L, 1);
         if (lock)
         {
             ptr->m_pacified = 1;
             ptr->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
-            WorldPacket data1(9);
-            data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            data1 << ptr->GetNewGUID() << uint8(0x00);
-            static_cast<Player*>(ptr)->GetSession()->SendPacket(&data1);
+            static_cast<Player*>(ptr)->sendClientControlPacket(ptr, 0);
         }
         else
         {
             ptr->m_pacified = 0;
             ptr->removeUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
-            WorldPacket data1(9);
-            data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            data1 << ptr->GetNewGUID() << uint8(0x01);
-            static_cast<Player*>(ptr)->GetSession()->SendPacket(&data1);
+            static_cast<Player*>(ptr)->sendClientControlPacket(ptr, 1);
         }
         return 0;
     }

@@ -14146,17 +14146,6 @@ void Player::SendGuildMOTD()
     SendPacket(&data);
 }
 
-void Player::SetClientControl(Unit* target, uint8 allowMove)
-{
-    WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 200);
-    ack << target->GetNewGUID();
-    ack << uint8(allowMove);
-    SendPacket(&ack);
-
-    if (target == this)
-        SetMover(this);
-}
-
 void Player::SendCinematicCamera(uint32 id)
 {
     GetMapMgr()->ChangeObjectLocation(this);

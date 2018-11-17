@@ -14346,7 +14346,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     // send "switch mover" packet
-    pThis->SetClientControl(pTarget, 1);
+    pThis->sendClientControlPacket(pTarget, 1);
 
     // update target faction set
     pTarget->updateInRangeOppositeFactionSet();
@@ -14400,7 +14400,7 @@ void Unit::UnPossess()
     pTarget->updateInRangeOppositeFactionSet();
 
     // send "switch mover" packet
-    pThis->SetClientControl(pTarget, 0);
+    pThis->sendClientControlPacket(pTarget, 0);
 
     if (!(pTarget->isPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
         pThis->SendEmptyPetSpellList();
