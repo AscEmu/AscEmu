@@ -165,7 +165,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
     if (ret)
     {
 #if VERSION_STRING == Cata
-        broadcastEvent(GE_FOUNDER, 0);
+        broadcastEvent(GE_FOUNDER, 0, {});
 #endif
         sHookInterface.OnGuildCreate(pLeader, this);
     }
@@ -1076,6 +1076,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     sendGuildRankInfo(session);
     broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
+    WorldPacket data;
     data.Initialize(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
     session->SendPacket(&data);
 
