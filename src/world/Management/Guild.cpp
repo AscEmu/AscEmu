@@ -525,13 +525,13 @@ void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
     {
         session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTGUILDMASTER).serialise().get());
     }
-    else if (!player->HasGold(uint64_t(EMBLEM_PRICE)))
+    else if (!player->hasEnoughCoinage(uint64_t(EMBLEM_PRICE)))
     {
         session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTENOUGHMONEY).serialise().get());
     }
     else
     {
-        player->ModGold(-int64_t(EMBLEM_PRICE));
+        player->modCoinage(-int64_t(EMBLEM_PRICE));
         m_emblemInfo = emblemInfo;
         m_emblemInfo.saveEmblemInfoToDB(m_id);
 
@@ -631,10 +631,10 @@ void Guild::handleBuyBankTab(WorldSession* session, uint8_t tabId)
         if (tabCost == 0)
             return;
 
-        if (player->HasGold(uint64_t(tabCost)) == false)
+        if (!player->hasEnoughCoinage(tabCost))
             return;
 
-        player->ModGold(-int64_t(tabCost));
+        player->modCoinage(-int64_t(tabCost));
     }
 
     createNewBankTab();
@@ -833,7 +833,7 @@ void Guild::handleMemberDepositMoney(WorldSession* session, uint64_t amount, boo
 
     modifyBankMoney(amount, true);
     if (!cashFlow)
-        player->ModGold(-int32_t(amount));
+        player->modCoinage(-int32_t(amount));
 
     logBankEvent(cashFlow ? GB_LOG_CASH_FLOW_DEPOSIT : GB_LOG_DEPOSIT_MONEY, uint8_t(0), player->getGuidLow(), static_cast<uint32_t>(amount));
 
@@ -856,7 +856,7 @@ bool Guild::handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bo
         return false;
 
     if (!repair)
-        player->ModGold(int32_t(amount));
+        player->modCoinage(int32_t(amount));
 
     member->updateBankWithdrawValue(MAX_GUILD_BANK_TABS, static_cast<uint32_t>(amount));
     modifyBankMoney(amount, false);

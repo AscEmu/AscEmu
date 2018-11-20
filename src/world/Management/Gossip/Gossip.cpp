@@ -725,7 +725,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_DUALSPECPURCHASE, Plr, 5, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedWorldSrv(Gossip::PURCHASE_DTS), 10000000, purchaseconfirm);
             break;
         case 5:
-            if (!Plr->HasGold(10000000))
+            if (!Plr->hasEnoughCoinage(10000000))
             {
                 Gossip::Menu::Complete(Plr);
                 Plr->GetSession()->SendNotification(Plr->GetSession()->LocalizedWorldSrv(Gossip::NOT_ENOUGH_MONEY_DTS)); // I know this is not correct
@@ -733,7 +733,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             else
             {
                 Gossip::Menu::Complete(Plr);
-                Plr->ModGold(-10000000);
+                Plr->modCoinage(-10000000);
                 Plr->m_talentSpecsCount = 2;
                 Plr->CastSpell(Plr, 63624, true); // Show activate spec buttons
                 Plr->CastSpell(Plr, 63706, true); // Allow primary spec to be activated

@@ -168,7 +168,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
         return;
 
-    _player->ModGold(-static_cast<int32_t>(trainerSpell->spellCost));
+    _player->modCoinage(-static_cast<int32_t>(trainerSpell->spellCost));
 
     if (trainerSpell->IsCastable())
     {
@@ -186,7 +186,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     // teach the spell
-    _player->ModGold(-static_cast<int32>(trainerSpell->Cost));
+    _player->modCoinage(-static_cast<int32>(trainerSpell->Cost));
     if (trainerSpell->pCastSpell)
     {
         _player->CastSpell(_player, trainerSpell->pCastSpell->getId(), true);
@@ -472,7 +472,7 @@ uint8_t WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
 
     if ((trainerSpell->RequiredLevel && _player->getLevel() < trainerSpell->RequiredLevel)
         || (trainerSpell->RequiredSpell && !_player->HasSpell(trainerSpell->RequiredSpell))
-        || (trainerSpell->Cost && !_player->HasGold(trainerSpell->Cost))
+        || (trainerSpell->Cost && !_player->hasEnoughCoinage(trainerSpell->Cost))
         || (trainerSpell->RequiredSkillLine && _player->_GetSkillLineCurrent(trainerSpell->RequiredSkillLine, true) < trainerSpell->RequiredSkillLineValue)
         || (trainerSpell->IsProfession && _player->getFreePrimaryProfessionPoints() == 0)
         )
@@ -779,14 +779,14 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     }
 
     const auto price = bank_bag_slot_prices->Price;
-    if (!_player->HasGold(price))
+    if (!_player->hasEnoughCoinage(price))
     {
         SendPacket(SmsgBuyBankSlotResult(BankslotError::InsufficientFunds).serialise().get());
         return;
     }
 
     _player->setBankSlots(slots + 1);
-    _player->ModGold(-static_cast<int32_t>(price));
+    _player->modCoinage(-static_cast<int32_t>(price));
 #if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
 #endif

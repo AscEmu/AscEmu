@@ -264,7 +264,7 @@ void WorldSession::handleSetTradeGold(WorldPacket& recvPacket)
 
     if (_player->mTradeGold != srlPacket.tradeGoldAmount)
     {
-        _player->mTradeGold = srlPacket.tradeGoldAmount > _player->GetGold() ? _player->GetGold() : srlPacket.tradeGoldAmount;
+        _player->mTradeGold = srlPacket.tradeGoldAmount > _player->getCoinage() ? _player->getCoinage() : srlPacket.tradeGoldAmount;
         _player->SendTradeUpdate();
     }
 }
@@ -401,27 +401,27 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
             if (targetPlayer->mTradeGold)
             {
-                if (worldConfig.player.isGoldCapEnabled && (_player->GetGold() + targetPlayer->mTradeGold) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (_player->getCoinage() + targetPlayer->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
                     _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    _player->ModGold(targetPlayer->mTradeGold);
-                    targetPlayer->ModGold(-static_cast<int32_t>(targetPlayer->mTradeGold));
+                    _player->modCoinage(targetPlayer->mTradeGold);
+                    targetPlayer->modCoinage(-static_cast<int32_t>(targetPlayer->mTradeGold));
                 }
             }
 
             if (_player->mTradeGold)
             {
-                if (worldConfig.player.isGoldCapEnabled && (targetPlayer->GetGold() + _player->mTradeGold) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (targetPlayer->getCoinage() + _player->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
                     targetPlayer->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    targetPlayer->ModGold(_player->mTradeGold);
-                    _player->ModGold(-static_cast<int32_t>(_player->mTradeGold));
+                    targetPlayer->modCoinage(_player->mTradeGold);
+                    _player->modCoinage(-static_cast<int32_t>(_player->mTradeGold));
                 }
             }
 
@@ -767,7 +767,7 @@ void TradeData::setMoney(uint64_t money)
     if (m_money == money)
         return;
 
-    if (money > m_player->GetGold())
+    if (money > m_player->getCoinage())
     {
         m_player->GetSession()->sendTradeResult(TRADE_STATUS_CLOSE_WINDOW);
         return;
@@ -873,13 +873,13 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
 
     trade_data->setAccepted(true);
 
-    if (trade_data->getMoney() > _player->GetGold())
+    if (trade_data->getMoney() > _player->getCoinage())
     {
         trade_data->setAccepted(false, true);
         return;
     }
 
-    if (target_trade_data->getMoney() > trade_target->GetGold())
+    if (target_trade_data->getMoney() > trade_target->getCoinage())
     {
         target_trade_data->setAccepted(false, true);
         return;
@@ -949,28 +949,28 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
         // Trade Gold
         if (target_trade_data->getMoney())
         {
-            if (sWorld.settings.player.isGoldCapEnabled && (_player->GetGold() + target_trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
+            if (sWorld.settings.player.isGoldCapEnabled && (_player->getCoinage() + target_trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
-                _player->ModGold(static_cast<int32_t>(target_trade_data->getMoney()));
-                trade_target->ModGold(-(int32_t)target_trade_data->getMoney());
+                _player->modCoinage(static_cast<int32_t>(target_trade_data->getMoney()));
+                trade_target->modCoinage(-(int32_t)target_trade_data->getMoney());
             }
         }
 
         if (trade_data->getMoney())
         {
             // Check they don't have more than the max gold
-            if (sWorld.settings.player.isGoldCapEnabled && (trade_target->GetGold() + trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
+            if (sWorld.settings.player.isGoldCapEnabled && (trade_target->getCoinage() + trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
                 trade_target->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
-                trade_target->ModGold(static_cast<int32_t>(trade_data->getMoney()));
-                _player->ModGold(-static_cast<int32_t>(trade_data->getMoney()));
+                trade_target->modCoinage(static_cast<int32_t>(trade_data->getMoney()));
+                _player->modCoinage(-static_cast<int32_t>(trade_data->getMoney()));
             }
         }
 

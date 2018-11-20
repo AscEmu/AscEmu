@@ -205,8 +205,8 @@ void AuctionHouse::RemoveAuction(Auction* auct)
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = objmgr.GetPlayer(auct->Owner);
-            if (cut && plr && plr->HasGold(cut))
-                plr->ModGold(-(int32)cut);
+            if (cut && plr && plr->hasEnoughCoinage(cut))
+                plr->modCoinage(-(int32)cut);
 
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
@@ -753,8 +753,8 @@ void AuctionHouse::RemoveAuction(Auction* auct)
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = objmgr.GetPlayer(auct->Owner);
-            if (cut && plr && plr->HasGold(cut))
-                plr->ModGold(-(int32)cut);
+            if (cut && plr && plr->hasEnoughCoinage(cut))
+                plr->modCoinage(-(int32)cut);
 
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 

@@ -29,9 +29,9 @@ public:
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         // turning xp gains on/off costs 10g each time
-        if (plr->HasGold(100000))
+        if (plr->hasEnoughCoinage(100000))
         {
-            plr->ModGold(-100000);
+            plr->modCoinage(-100000);
             plr->ToggleXpGain();
         }
         Arcemu::Gossip::Menu::Complete(plr);

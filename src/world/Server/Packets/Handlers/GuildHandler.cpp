@@ -375,7 +375,7 @@ void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
         return;
 
     //\todo HasGold requires an uint32_t
-    if (srlPacket.money && _player->HasGold(static_cast<uint32_t>(srlPacket.money)))
+    if (srlPacket.money && _player->hasEnoughCoinage(srlPacket.money))
         if (Guild* guild = _player->GetGuild())
             guild->handleMemberDepositMoney(this, srlPacket.money);
 }
@@ -779,7 +779,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         static uint32_t item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
         static uint32_t costs[] = { worldConfig.charterCost._2V2, worldConfig.charterCost._3V3, worldConfig.charterCost._5V5 };
 
-        if (!_player->HasGold(costs[arena_type]))
+        if (!_player->hasEnoughCoinage(costs[arena_type]))
         {
             SendNotification("You do not have enough gold to purchase this charter");
             return;
@@ -830,14 +830,14 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             _player->sendItemPushResultPacket(false, true, false, _player->GetItemInterface()->LastSearchItemBagSlot(),
                 _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
-            _player->ModGold(-static_cast<int32_t>(costs[arena_type]));
+            _player->modCoinage(-static_cast<int32_t>(costs[arena_type]));
             _player->m_charters[srlPacket.arenaIndex] = charter;
             _player->SaveToDB(false);
         }
     }
     else
     {
-        if (!_player->HasGold(1000))
+        if (!_player->hasEnoughCoinage(1000))
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_NOT_ENOUGH_MONEY);
             return;
@@ -905,7 +905,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
                 _player->GetItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
-            _player->ModGold(-1000);
+            _player->modCoinage(-1000);
             _player->SaveToDB(false);
         }
     }

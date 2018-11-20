@@ -47,11 +47,11 @@ void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
 void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
 {
     const uint32_t resetPrice = _player->CalcTalentResetCost(_player->GetTalentResetTimes());
-    if (!_player->HasGold(resetPrice))
+    if (!_player->hasEnoughCoinage(resetPrice))
         return;
 
     _player->SetTalentResetTimes(_player->GetTalentResetTimes() + 1);
-    _player->ModGold(-static_cast<int32_t>(resetPrice));
+    _player->modCoinage(-static_cast<int32_t>(resetPrice));
     _player->resetTalents();
 }
 

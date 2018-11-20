@@ -198,6 +198,30 @@ void Player::setMaxLevel(uint32_t level)
 #endif 
 }
 
+#if VERSION_STRING < Cata
+uint32_t Player::getCoinage() const { return playerData()->field_coinage; }
+void Player::setCoinage(uint32_t coinage) { write(playerData()->field_coinage, coinage); }
+bool Player::hasEnoughCoinage(uint32_t coinage) const { return getCoinage() >= coinage; }
+void Player::modCoinage(int32_t coinage)
+{
+    if (coinage < 0)
+        setCoinage(getCoinage() - coinage);
+    else
+        setCoinage(getCoinage() + coinage);
+}
+#else
+uint64_t Player::getCoinage() const { return playerData()->field_coinage; }
+void Player::setCoinage(uint64_t coinage) { write(playerData()->field_coinage, coinage); }
+bool Player::hasEnoughCoinage(uint64_t coinage) const { return getCoinage() >= coinage; }
+void Player::modCoinage(int64_t coinage)
+{
+    if (coinage < 0)
+        setCoinage(getCoinage() - coinage);
+    else
+        setCoinage(getCoinage() + coinage);
+}
+#endif
+
 float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
 void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
 

@@ -852,12 +852,16 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
     uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
     uint32 copper = int32abs2uint32(total) % 100;
 
-    int32 newgold = player_target->GetGold() + total;
-    if (newgold < 0)
+#if VERSION_STRING < Cata
+    uint32_t newgold = player_target->getCoinage() + total;
+#else
+    uint64_t newgold = player_target->getCoinage() + total;
+#endif
+
+    if (newgold == 0)
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->getName().c_str());
         GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->getName().c_str());
-        newgold = 0;
     }
     else
     {
@@ -865,9 +869,9 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
         {
             if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
+                if ((player_target->getCoinage() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->getCoinage() / 10000));
                     return true;
                 }
             }
@@ -884,7 +888,7 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
         }
     }
 
-    player_target->SetGold(newgold);
+    player_target->setCoinage(newgold);
 
     return true;
 }
@@ -908,8 +912,13 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
     uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
     uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
 
-    int32 newgold = player_target->GetGold() + total;
-    if (newgold < 0)
+#if VERSION_STRING < Cata
+    uint32_t newgold = player_target->getCoinage() + total;
+#else
+    uint64_t newgold = player_target->getCoinage() + total;
+#endif
+
+    if (newgold == 0)
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->getName().c_str());
         GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->getName().c_str());
@@ -921,9 +930,9 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
         {
             if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
+                if ((player_target->getCoinage() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->getCoinage() / 10000));
                     return true;
                 }
             }
@@ -940,7 +949,7 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
         }
     }
 
-    player_target->SetGold(newgold);
+    player_target->setCoinage(newgold);
 
     return true;
 }
@@ -963,8 +972,13 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
 
     uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
 
-    int32 newgold = player_target->GetGold() + total;
-    if (newgold < 0)
+#if VERSION_STRING < Cata
+    uint32_t newgold = player_target->getCoinage() + total;
+#else
+    uint64_t newgold = player_target->getCoinage() + total;
+#endif
+
+    if (newgold == 0)
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->getName().c_str());
         GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->getName().c_str());
@@ -976,9 +990,9 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
         {
             if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
+                if ((player_target->getCoinage() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->getName().c_str(), (player_target->getCoinage() / 10000));
                     return true;
                 }
             }
@@ -995,7 +1009,7 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    player_target->SetGold(newgold);
+    player_target->setCoinage(newgold);
 
     return true;
 }

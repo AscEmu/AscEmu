@@ -3953,14 +3953,14 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        int32 debt = static_cast<int32>(luaL_checkinteger(L, 1));
+        uint32 debt = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (debt < 0)
             return 0;
-        if (!plr->HasGold(debt))
+        if (!plr->hasEnoughCoinage(debt))
             lua_pushboolean(L, 0);
         else
         {
-            plr->ModGold(-debt);
+            plr->modCoinage(-(int32)debt);
             lua_pushboolean(L, 1);
         }
         return 1;
@@ -3970,7 +3970,7 @@ public:
     {
         TEST_PLAYER()
             uint32 profit = CHECK_ULONG(L, 1);
-        static_cast<Player*>(ptr)->ModGold(profit);
+        static_cast<Player*>(ptr)->modCoinage(profit);
         return 0;
     }
 
@@ -4721,7 +4721,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        lua_pushinteger(L, plr->GetGold());
+        lua_pushinteger(L, plr->getCoinage());
         return 1;
     }
 

@@ -1350,7 +1350,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     if (newFacial != oldFacial)
         cost += static_cast<uint32_t>(gtBarberShopCostBaseEntry->cost * 0.75f);
 
-    if (!_player->HasGold(cost))
+    if (!_player->hasEnoughCoinage(cost))
     {
         SendPacket(SmsgBarberShopResult(BarberShopResult::NoMoney).serialise().get());
         return;
@@ -1364,7 +1364,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     if (barberShopSkinColor)
         _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hair_id));
 
-    _player->ModGold(-static_cast<int32_t>(cost));
+    _player->modCoinage(-static_cast<int32_t>(cost));
 
     _player->setStandState(STANDSTATE_STAND);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);

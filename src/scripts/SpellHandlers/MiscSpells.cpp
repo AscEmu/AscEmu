@@ -167,14 +167,14 @@ bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->GetPlayerTarget() != NULL)
     {
-        if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->GetGold() + 50000000) > worldConfig.player.limitGoldAmount)
+        if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->getCoinage() + 50000000) > worldConfig.player.limitGoldAmount)
         {
-            s->GetPlayerTarget()->SetGold(worldConfig.player.limitGoldAmount);
+            s->GetPlayerTarget()->setCoinage(worldConfig.player.limitGoldAmount);
             s->GetPlayerTarget()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         }
         else
         {
-            s->GetPlayerTarget()->ModGold(50000000);
+            s->GetPlayerTarget()->modCoinage(50000000);
         }
     }
     else

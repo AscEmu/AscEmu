@@ -982,7 +982,7 @@ bool Player::Create(CharCreate& charCreateContent)
     setMaxLevel(worldConfig.player.playerLevelCap);
 
     // Gold Starting Amount
-    SetGold(worldConfig.player.startGoldAmount);
+    setCoinage(worldConfig.player.startGoldAmount);
 
     for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
         setModDamageDonePct(1.00f, x);
@@ -1251,7 +1251,7 @@ void Player::Update(unsigned long time_passed)
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
 {
-    ModGold(-(int32)money);
+    modCoinage(-(int32)money);
 
     if (money > 0 && m_fallDisabledUntil < time(nullptr) + 5)
         m_fallDisabledUntil = time(nullptr) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
@@ -7348,7 +7348,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     if (!pathnode)
         return;
 
-    ModGold(-(int32)path->GetPrice());
+    modCoinage(-(int32)path->GetPrice());
 
     SetTaxiState(false);
     SetTaxiPath(nullptr);

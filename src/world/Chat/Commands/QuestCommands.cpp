@@ -458,9 +458,9 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             {
                 // Money reward
                 // Check they don't have more than the max gold
-                if (worldConfig.player.isGoldCapEnabled && (plr->GetGold() + qst->reward_money) <= worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (plr->getCoinage() + qst->reward_money) <= worldConfig.player.limitGoldAmount)
                 {
-                    plr->ModGold(qst->reward_money);
+                    plr->modCoinage(qst->reward_money);
                 }
 #if VERSION_STRING > TBC
                 plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);

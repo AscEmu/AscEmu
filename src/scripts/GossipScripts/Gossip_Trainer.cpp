@@ -24,7 +24,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        uint32 textid = 0;
+        uint32 textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
@@ -37,14 +37,14 @@ public:
                 textid = 20004;
             else
             {
-                if (!plr->HasGold(600))
+                if (!plr->hasEnoughCoinage(600))
                     textid = 20005;
                 else
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    static_cast<Creature*>(pObject)->CastSpell(plr, 39099, true);
-                    plr->ModGold(-600);
+                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39099, true);
+                    plr->modCoinage(-600);
                 }
             }
         }
@@ -52,11 +52,9 @@ public:
         {
             if (!plr->HasSpell(17040))
                 textid = 20007;
-
-            else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65) 
-                  || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                         textid = 20008;
-
+            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+                textid = 20008;
             else
             {
                 int32 unlearnGold = 0;
@@ -67,7 +65,7 @@ public:
                 if (plr->getLevel() > 65)
                     unlearnGold = 1000000;
 
-                plr->ModGold(-unlearnGold);
+                plr->modCoinage(-unlearnGold);
                 plr->removeSpell(17040, false, false, 0);
                 textid = 20009;
             }
@@ -93,30 +91,27 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        uint32 textid = 0;
+        uint32 textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
                 textid = 20001;
-
             else if (!plr->HasSpell(9787))
                 textid = 20002;
-
             else if (plr->HasSpell(17039))
                 textid = 20003;
-
             else if (plr->HasSpell(17041) || plr->HasSpell(17040) || plr->HasSpell(9788))
                 textid = 20004;
             else
             {
-                if (!plr->HasGold(600))
+                if (!plr->hasEnoughCoinage(600))
                     textid = 20005;
                 else
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    static_cast<Creature*>(pObject)->CastSpell(plr, 39097, true);
-                    plr->ModGold(-600);
+                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39097, true);
+                    plr->modCoinage(-600);
                 }
             }
         }
@@ -124,10 +119,9 @@ public:
         {
             if (!plr->HasSpell(17039))
                 textid = 20007;
-
-            else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                  || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                         textid = 20008;
+            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+                textid = 20008;
             else
             {
                 int32 unlearnGold = 0;
@@ -138,7 +132,7 @@ public:
                 if (plr->getLevel() > 65)
                     unlearnGold = 1000000;
 
-                plr->ModGold(-unlearnGold);
+                plr->modCoinage(-unlearnGold);
                 plr->removeSpell(17039, false, false, 0);
                 textid = 20009;
             }
@@ -161,31 +155,27 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        uint32 textid = 0;
+        uint32 textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
                 textid = 20001;
-
             else if (!plr->HasSpell(9787))
                 textid = 20002;
-
             else if (plr->HasSpell(17041))
                 textid = 20003;
-
             else if (plr->HasSpell(17039) || plr->HasSpell(17040) || plr->HasSpell(9788))
                 textid = 20004;
             else
             {
-                if (!plr->HasGold(600))
+                if (!plr->hasEnoughCoinage(600))
                     textid = 20005;
-
                 else
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    static_cast<Creature*>(pObject)->CastSpell(plr, 39098, true);
-                    plr->ModGold(-600);
+                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39098, true);
+                    plr->modCoinage(-600);
                 }
             }
         }
@@ -193,10 +183,9 @@ public:
         {
             if (!plr->HasSpell(17041))
                 textid = 20007;
-
-            else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                  || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                         textid = 20008;
+            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+                textid = 20008;
             else
             {
                 int32 unlearnGold = 0;
@@ -207,9 +196,9 @@ public:
                 if (plr->getLevel() > 65)
                     unlearnGold = 1000000;
 
-                    plr->ModGold(-unlearnGold);
-                    plr->removeSpell(17041, false, false, 0);
-                    textid = 20009;
+                plr->modCoinage(-unlearnGold);
+                plr->removeSpell(17041, false, false, 0);
+                textid = 20009;
             }
         }
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);

@@ -509,7 +509,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
                 _player->GetItemInterface()->AddItemById(43308, itemExtendedCostEntry->honor_points, 0);
                 _player->GetItemInterface()->AddItemById(43307, itemExtendedCostEntry->arena_points, 0);
-                _player->ModGold(itemProperties->BuyPrice);
+                _player->modCoinage(itemProperties->BuyPrice);
 
                 _player->GetItemInterface()->RemoveItemAmtByGuid(srlPacket.itemGuid, 1);
 
@@ -1489,7 +1489,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 
         // Check for gold
         uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + srlPacket.buybackSlot));
-        if (!_player->HasGold(cost))
+        if (!_player->hasEnoughCoinage(cost))
         {
             sendBuyFailed(srlPacket.buybackSlot, itemid, 2);
             return;
@@ -1505,7 +1505,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
         }
 
         int32_t coins = cost * -1;
-        _player->ModGold(coins);
+        _player->modCoinage(coins);
         _player->GetItemInterface()->RemoveBuyBackItem(srlPacket.buybackSlot);
 
         if (!add)
@@ -1610,14 +1610,14 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     // Check they don't have more than the max gold
     if (worldConfig.player.isGoldCapEnabled)
     {
-        if (_player->GetGold() + price > worldConfig.player.limitGoldAmount)
+        if (_player->getCoinage() + price > worldConfig.player.limitGoldAmount)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
         }
     }
 
-    _player->ModGold(price);
+    _player->modCoinage(price);
 
     if (quantity < stackcount)
     {

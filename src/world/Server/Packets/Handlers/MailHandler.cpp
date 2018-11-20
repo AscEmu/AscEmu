@@ -81,14 +81,14 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 
     if (worldConfig.player.isGoldCapEnabled)
     {
-        if (_player->GetGold() + mailMessage->money > worldConfig.player.limitGoldAmount)
+        if (_player->getCoinage() + mailMessage->money > worldConfig.player.limitGoldAmount)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
         }
     }
 
-    _player->ModGold(mailMessage->money);
+    _player->modCoinage(mailMessage->money);
     mailMessage->money = 0;
 
     CharacterDatabase.WaitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", mailMessage->message_id);
@@ -362,7 +362,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 
     if (mailMessage->cod > 0)
     {
-        if (!_player->HasGold(mailMessage->cod))
+        if (!_player->hasEnoughCoinage(mailMessage->cod))
         {
             SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
             return;
@@ -408,7 +408,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 
     if (mailMessage->cod > 0)
     {
-        _player->ModGold(-static_cast<int32_t>(mailMessage->cod));
+        _player->modCoinage(-static_cast<int32_t>(mailMessage->cod));
         std::string subject = "COD Payment: ";
         subject += mailMessage->subject;
 
@@ -497,7 +497,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
         cost += srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;;
 
-    if (!_player->HasGold(cost))
+    if (!_player->hasEnoughCoinage(cost))
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
         return;
@@ -553,9 +553,9 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     sMailSystem.DeliverMessage(playerReceiverInfo->guid, &msg);
 
     // charge and save gold
-    _player->ModGold(-static_cast<int32_t>(cost));
+    _player->modCoinage(-static_cast<int32_t>(cost));
 
-    CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->GetGold(), _player->m_playerInfo->guid);
+    CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->getCoinage(), _player->m_playerInfo->guid);
 
     SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }

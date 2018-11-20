@@ -2017,9 +2017,9 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (worldConfig.player.isGoldCapEnabled && (player->GetGold() + qReward->reward_money) <= worldConfig.player.limitGoldAmount)
+            if (worldConfig.player.isGoldCapEnabled && (player->getCoinage() + qReward->reward_money) <= worldConfig.player.limitGoldAmount)
             {
-                player->ModGold(qReward->reward_money);
+                player->modCoinage(qReward->reward_money);
             }
 #if VERSION_STRING > TBC
             player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
@@ -2112,9 +2112,9 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (worldConfig.player.isGoldCapEnabled && (player->GetGold() + qReward->reward_money) <= worldConfig.player.limitGoldAmount)
+            if (worldConfig.player.isGoldCapEnabled && (player->getCoinage() + qReward->reward_money) <= worldConfig.player.limitGoldAmount)
             {
-                player->ModGold(qReward->reward_money);
+                player->modCoinage(qReward->reward_money);
             }
 #if VERSION_STRING > TBC
             player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);

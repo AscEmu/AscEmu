@@ -2460,10 +2460,10 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
     if (item->BuyPrice)
     {
         uint32 itemprice = GetBuyPriceForItem(item, total_amount, m_pOwner, pVendor);
-        if (!m_pOwner->HasGold(itemprice))
-            m_pOwner->SetGold(0);
+        if (!m_pOwner->hasEnoughCoinage(itemprice))
+            m_pOwner->setCoinage(0);
         else
-            m_pOwner->ModGold(-(int32)itemprice);
+            m_pOwner->modCoinage(-(int32)itemprice);
     }
     auto item_extended_cost = pVendor->GetItemExtendedCostByItemId(item->ItemId);
     if (item_extended_cost != nullptr)
@@ -2511,8 +2511,8 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
 
     if (item->BuyPrice)
     {
-        int32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor) * amount;
-        if (!m_pOwner->HasGold(price))
+        uint32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor) * amount;
+        if (!m_pOwner->hasEnoughCoinage(price))
         {
             return INV_ERR_NOT_ENOUGH_MONEY;
         }

@@ -318,13 +318,13 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
         stable_cost = stableSlotPrices->Price;
 #endif
 
-    if (!_player->HasGold(stable_cost))
+    if (!_player->hasEnoughCoinage(stable_cost))
     {
         SendPacket(SmsgStableResult(PetStableResult::NotEnoughMoney).serialise().get());
         return;
     }
 
-    _player->ModGold(-static_cast<int32_t>(stable_cost));
+    _player->modCoinage(-static_cast<int32_t>(stable_cost));
 
     SendPacket(SmsgStableResult(PetStableResult::BuySuccess).serialise().get());
 
@@ -418,12 +418,12 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
         return;
 
     const uint32_t untrainCost = pet->GetUntrainCost();
-    if (!_player->HasGold(untrainCost))
+    if (!_player->hasEnoughCoinage(untrainCost))
     {
         sendBuyFailed(_player->getGuid(), 0, 2);
         return;
     }
-    _player->ModGold(-static_cast<int32_t>(untrainCost));
+    _player->modCoinage(-static_cast<int32_t>(untrainCost));
 
     pet->WipeTalents();
     pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));

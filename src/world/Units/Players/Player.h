@@ -513,6 +513,19 @@ public:
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
 
+    //\brief: the playerfield coinage is an uint64_t since cata
+#if VERSION_STRING < Cata
+    uint32_t getCoinage() const;
+    void setCoinage(uint32_t coinage);
+    bool hasEnoughCoinage(uint32_t coinage) const;
+    void modCoinage(int32_t coinage);
+#else
+    uint64_t getCoinage() const;
+    void setCoinage(uint64_t coinage);
+    bool hasEnoughCoinage(uint64_t coinage) const;
+    void modCoinage(int64_t coinage);
+#endif
+
     // playerfieldbytes start
     uint32_t getPlayerFieldBytes() const;
     void setPlayerFieldBytes(uint32_t bytes);
@@ -1746,29 +1759,6 @@ public:
         bool IsSanctuaryFlagged() override;
         void SetSanctuaryFlag() override;
         void RemoveSanctuaryFlag() override;
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Player gold
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void SetGold(int32 coins)
-        {
-            setUInt32Value(PLAYER_FIELD_COINAGE, coins);
-        }
-
-        void ModGold(int32 coins)
-        {
-            modUInt32Value(PLAYER_FIELD_COINAGE, coins);
-        }
-
-        uint32 GetGold()
-        {
-            return getUInt32Value(PLAYER_FIELD_COINAGE);
-        }
-
-        bool HasGold(uint32 coins)
-        {
-            return (getUInt32Value(PLAYER_FIELD_COINAGE) >= coins);
-        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC

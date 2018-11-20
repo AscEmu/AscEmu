@@ -342,13 +342,13 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
     {
         if (money)
         {
-            if (worldConfig.player.isGoldCapEnabled && (_player->GetGold() + money) > worldConfig.player.limitGoldAmount)
+            if (worldConfig.player.isGoldCapEnabled && (_player->getCoinage() + money) > worldConfig.player.limitGoldAmount)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
-                _player->ModGold(money);
+                _player->modCoinage(money);
 #if VERSION_STRING > TBC
                 _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
 #endif
@@ -387,13 +387,13 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
             for (auto& player : groupMembers)
             {
-                if (worldConfig.player.isGoldCapEnabled && (player->GetGold() + sharedMoney) > worldConfig.player.limitGoldAmount)
+                if (worldConfig.player.isGoldCapEnabled && (player->getCoinage() + sharedMoney) > worldConfig.player.limitGoldAmount)
                 {
                     player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    player->ModGold(sharedMoney);
+                    player->modCoinage(sharedMoney);
                     player->GetSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney).serialise().get());
 
 #if VERSION_STRING > TBC
