@@ -564,6 +564,18 @@ public:
     void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
     bool isTransferPending() const;
+
+    virtual bool isClassMage();
+    virtual bool isClassDeathKnight();
+    virtual bool isClassPriest();
+    virtual bool isClassRogue();
+    virtual bool isClassShaman();
+    virtual bool isClassHunter();
+    virtual bool isClassWarlock();
+    virtual bool isClassWarrior();
+    virtual bool isClassPaladin();
+    virtual bool isClassDruid();
+
     void toggleAfk();
     void toggleDnd();
 
@@ -706,16 +718,7 @@ public:
         ~Player();
     PlayerCache* m_cache;
 
-        virtual bool IsMage() { return false; }
-        virtual bool IsDeathKnight() { return false; }
-        virtual bool IsPriest() { return false; }
-        virtual bool IsRogue() { return false; }
-        virtual bool IsShaman() { return false; }
-        virtual bool IsHunter() { return false; }
-        virtual bool IsWarlock() { return false; }
-        virtual bool IsWarrior() { return false; }
-        virtual bool IsPaladin() { return false; }
-        virtual bool IsDruid() { return false; }
+        
 
         void HandleUpdateFieldChanged(uint32 index)
         {

@@ -236,7 +236,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     }
 
     //create rune avail snapshot
-    if (p_caster && p_caster->IsDeathKnight())
+    if (p_caster && p_caster->isClassDeathKnight())
         m_rune_avail_before = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
     else
         m_rune_avail_before = 0;
@@ -2483,7 +2483,7 @@ void Spell::SendSpellGo()
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
-    if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
+    if (p_caster && p_caster->isClassDeathKnight())   //send our rune updates ^^
     {
         if (GetSpellInfo()->getRuneCostID() && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
             flags |= SPELL_GO_FLAGS_ITEM_CASTER | SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;

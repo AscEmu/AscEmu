@@ -6582,7 +6582,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
 
 void Spell::SpellEffectActivateRunes(uint8_t effectIndex)
 {
-    if (p_caster == nullptr || !p_caster->IsDeathKnight())
+    if (p_caster == nullptr || !p_caster->isClassDeathKnight())
         return;
 
     DeathKnight* dk = static_cast<DeathKnight*>(p_caster);

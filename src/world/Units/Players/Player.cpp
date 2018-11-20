@@ -975,6 +975,17 @@ bool Player::isTransferPending() const
     return GetPlayerStatus() == TRANSFER_PENDING;
 }
 
+bool Player::isClassMage() { return false; }
+bool Player::isClassDeathKnight() { return false; }
+bool Player::isClassPriest() { return false; }
+bool Player::isClassRogue() { return false; }
+bool Player::isClassShaman() { return false; }
+bool Player::isClassHunter() { return false; }
+bool Player::isClassWarlock() { return false; }
+bool Player::isClassWarrior() { return false; }
+bool Player::isClassPaladin() { return false; }
+bool Player::isClassDruid() { return false; }
+
 void Player::toggleAfk()
 {
     if (hasPlayerFlags(PLAYER_FLAG_AFK))

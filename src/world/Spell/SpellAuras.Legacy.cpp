@@ -9383,7 +9383,7 @@ uint32 AbsorbAura::AbsorbDamage(uint32 School, uint32* dmg)
 
 void Aura::SpellAuraConvertRune(bool apply)
 {
-    if (p_target == nullptr || !p_target->IsDeathKnight())
+    if (p_target == nullptr || !p_target->isClassDeathKnight())
         return;
 
     DeathKnight* dk = static_cast<DeathKnight*>(p_target);

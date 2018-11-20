@@ -53,7 +53,7 @@ public:
         }
     }
 
-    bool IsDeathKnight() override { return true; }
+    bool isClassDeathKnight() override { return true; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Runes
@@ -76,7 +76,7 @@ public:
 
     explicit Druid(uint32_t guid) : Player(guid) {}
 
-    bool IsDruid() override { return true; }
+    bool isClassDruid() override { return true; }
 };
 
 class Rogue : public Player
@@ -85,7 +85,7 @@ public:
 
     explicit Rogue(uint32_t guid) : Player(guid) {}
 
-    bool IsRogue() override { return true; }
+    bool isClassRogue() override { return true; }
 };
 
 class Priest : public Player
@@ -94,7 +94,7 @@ public:
 
     explicit Priest(uint32_t guid) : Player(guid) {}
 
-    bool IsPriest() override { return true; }
+    bool isClassPriest() override { return true; }
 };
 
 class Paladin : public Player
@@ -103,7 +103,7 @@ public:
 
     explicit Paladin(uint32_t guid) : Player(guid) {}
 
-    bool IsPaladin() override { return true; }
+    bool isClassPaladin() override { return true; }
 };
 
 class Warrior : public Player
@@ -112,7 +112,7 @@ public:
 
     explicit Warrior(uint32_t guid) : Player(guid) {}
 
-    bool IsWarrior() override { return true; }
+    bool isClassWarrior() override { return true; }
 };
 
 class Warlock : public Player
@@ -121,7 +121,7 @@ public:
 
     explicit Warlock(uint32_t guid) : Player(guid) {}
 
-    bool IsWarlock() override { return true; }
+    bool isClassWarlock() override { return true; }
 };
 
 class Mage : public Player
@@ -130,7 +130,7 @@ public:
 
     explicit Mage(uint32_t guid) : Player(guid) {}
 
-    bool IsMage() override { return true; }
+    bool isClassMage() override { return true; }
 };
 
 class Hunter : public Player
@@ -139,7 +139,7 @@ public:
 
     explicit Hunter(uint32_t guid) : Player(guid) {}
 
-    bool IsHunter() override { return true; }
+    bool isClassHunter() override { return true; }
 };
 
 class Shaman : public Player
@@ -148,5 +148,5 @@ public:
 
     explicit Shaman(uint32_t guid) : Player(guid) {}
 
-    bool IsShaman() override { return true; }
+    bool isClassShaman() override { return true; }
 };
