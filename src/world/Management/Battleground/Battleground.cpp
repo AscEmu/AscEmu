@@ -343,8 +343,8 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     plr->m_pendingBattleground = nullptr;
     plr->m_bg = this;
 
-    if (!plr->IsPvPFlagged())
-        plr->SetPvPFlag();
+    if (!plr->isPvpFlagSet())
+        plr->setPvpFlag();
 
     plr->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_PVP_ENTER);
 

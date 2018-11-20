@@ -40,8 +40,8 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
     m_aiInterface->setMeleeDisabled(true);
     bInvincible = true;
 
-    RemovePvPFlag();
-    RemoveFFAPvPFlag();
+    removePvpFlag();
+    removeFfaPvpFlag();
 }
 
 void CompanionSummon::OnPushToWorld()

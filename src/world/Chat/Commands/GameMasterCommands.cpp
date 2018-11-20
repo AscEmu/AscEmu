@@ -35,7 +35,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
         BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_GM);
         player->SetFaction(35);
-        player->RemovePvPFlag();
+        player->removePvpFlag();
         player->UpdateVisibility();
     }
     return true;

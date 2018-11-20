@@ -624,6 +624,18 @@ public:
 
     void sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk = 0);
 
+    virtual bool isPvpFlagSet();
+    virtual void setPvpFlag();
+    virtual void removePvpFlag();
+
+    virtual bool isFfaPvpFlagSet();
+    virtual void setFfaPvpFlag();
+    virtual void removeFfaPvpFlag();
+
+    virtual bool isSanctuaryFlagSet();
+    virtual void setSanctuaryFlag();
+    virtual void removeSanctuaryFlag();
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -647,18 +659,6 @@ public:
     virtual void OnPushToWorld();
 
     virtual void Deactivate(MapMgr* mgr);
-
-    virtual bool IsPvPFlagged() = 0;
-    virtual void SetPvPFlag() = 0;
-    virtual void RemovePvPFlag() = 0;
-
-    virtual bool IsFFAPvPFlagged() = 0;
-    virtual void SetFFAPvPFlag() = 0;
-    virtual void RemoveFFAPvPFlag() = 0;
-
-    virtual bool IsSanctuaryFlagged() = 0;
-    virtual void SetSanctuaryFlag() = 0;
-    virtual void RemoveSanctuaryFlag() = 0;
 
     bool  canReachWithAttack(Unit* pVictim);
 

@@ -2077,52 +2077,52 @@ bool Creature::HasItems()
     return ((m_SellItems != NULL) ? true : false);
 }
 
-bool Creature::IsPvPFlagged()
+bool Creature::isPvpFlagSet()
 {
     return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
 }
 
-void Creature::SetPvPFlag()
+void Creature::setPvpFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
     summonhandler.SetPvPFlags();
 }
 
-void Creature::RemovePvPFlag()
+void Creature::removePvpFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
     summonhandler.RemovePvPFlags();
 }
 
-bool Creature::IsFFAPvPFlagged()
+bool Creature::isFfaPvpFlagSet()
 {
     return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
 }
 
-void Creature::SetFFAPvPFlag()
+void Creature::setFfaPvpFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
     summonhandler.SetFFAPvPFlags();
 }
 
-void Creature::RemoveFFAPvPFlag()
+void Creature::removeFfaPvpFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
     summonhandler.RemoveFFAPvPFlags();
 }
 
-bool Creature::IsSanctuaryFlagged()
+bool Creature::isSanctuaryFlagSet()
 {
     return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
 }
 
-void Creature::SetSanctuaryFlag()
+void Creature::setSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
     summonhandler.SetSanctuaryFlags();
 }
 
-void Creature::RemoveSanctuaryFlag()
+void Creature::removeSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
     summonhandler.RemoveSanctuaryFlags();
@@ -2293,13 +2293,13 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
 
     pVictim->setStandState(STANDSTATE_STAND);
 
-    if (pVictim->IsPvPFlagged())
+    if (pVictim->isPvpFlagSet())
     {
         Player* p = static_cast< Player* >(GetPlayerOwner());
 
         if (p != NULL)
         {
-            if (!p->IsPvPFlagged())
+            if (!p->isPvpFlagSet())
                 p->PvPToggle();
             p->AggroPvPGuards();
         }

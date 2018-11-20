@@ -5980,7 +5980,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     if (playerTarget != nullptr && p_caster != nullptr && p_caster != playerTarget)
     {
-        if (playerTarget->IsPvPFlagged())
+        if (playerTarget->isPvpFlagSet())
             p_caster->PvPToggle();
     }
 

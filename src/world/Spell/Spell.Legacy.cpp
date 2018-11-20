@@ -3329,12 +3329,12 @@ void Spell::HandleAddAura(uint64 guid)
     // self casting doesn't flag himself.
     if (Target->isPlayer() && p_caster && p_caster != static_cast<Player*>(Target))
     {
-        if (static_cast<Player*>(Target)->IsPvPFlagged())
+        if (static_cast<Player*>(Target)->isPvpFlagSet())
         {
-            if (p_caster->isPlayer() && !p_caster->IsPvPFlagged())
+            if (p_caster->isPlayer() && !p_caster->isPvpFlagSet())
                 static_cast<Player*>(p_caster)->PvPToggle();
             else
-                p_caster->SetPvPFlag();
+                p_caster->setPvpFlag();
         }
     }
 
@@ -6253,12 +6253,12 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     if (p_caster != nullptr && playerTarget != nullptr && p_caster != playerTarget)
     {
         // Healing a flagged target will flag you.
-        if (playerTarget->IsPvPFlagged())
+        if (playerTarget->isPvpFlagSet())
         {
-            if (!p_caster->IsPvPFlagged())
+            if (!p_caster->isPvpFlagSet())
                 p_caster->PvPToggle();
             else
-                p_caster->SetPvPFlag();
+                p_caster->setPvpFlag();
         }
     }
 

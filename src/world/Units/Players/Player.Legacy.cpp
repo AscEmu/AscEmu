@@ -1203,7 +1203,7 @@ void Player::Update(unsigned long time_passed)
     {
         if (time_passed >= m_pvpTimer)
         {
-            RemovePvPFlag();
+            removePvpFlag();
             m_pvpTimer = 0;
         }
         else
@@ -2060,20 +2060,20 @@ void Player::SpawnPet(uint32 pet_number)
     Pet* pPet = objmgr.CreatePet(itr->second->entry);
     pPet->LoadFromDB(this, itr->second);
 
-    if (this->IsPvPFlagged())
-        pPet->SetPvPFlag();
+    if (this->isPvpFlagSet())
+        pPet->setPvpFlag();
     else
-        pPet->RemovePvPFlag();
+        pPet->removePvpFlag();
 
-    if (this->IsFFAPvPFlagged())
-        pPet->SetFFAPvPFlag();
+    if (this->isFfaPvpFlagSet())
+        pPet->setFfaPvpFlag();
     else
-        pPet->RemoveFFAPvPFlag();
+        pPet->removeFfaPvpFlag();
 
-    if (this->IsSanctuaryFlagged())
-        pPet->SetSanctuaryFlag();
+    if (this->isSanctuaryFlagSet())
+        pPet->setSanctuaryFlag();
     else
-        pPet->RemoveSanctuaryFlag();
+        pPet->removeSanctuaryFlag();
 
     pPet->SetFaction(this->getFactionTemplate());
 
@@ -9263,12 +9263,12 @@ void Player::UpdatePvPArea()
 
     if (hasPlayerFlags(PLAYER_FLAG_GM))
     {
-        if (IsPvPFlagged())
-            RemovePvPFlag();
+        if (isPvpFlagSet())
+            removePvpFlag();
         else
             StopPvPTimer();
 
-        RemoveFFAPvPFlag();
+        removeFfaPvpFlag();
         return;
     }
 
@@ -9288,8 +9288,8 @@ void Player::UpdatePvPArea()
         {
             if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
             {
-                if (!IsPvPFlagged())
-                    SetPvPFlag();
+                if (!isPvpFlagSet())
+                    setPvpFlag();
                 else
                     StopPvPTimer();
                 return;
@@ -9314,8 +9314,8 @@ void Player::UpdatePvPArea()
             {
                 if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
                 {
-                    if (!IsPvPFlagged())
-                        SetPvPFlag();
+                    if (!isPvpFlagSet())
+                        setPvpFlag();
                     else
                         StopPvPTimer();
                     return;
@@ -9327,25 +9327,25 @@ void Player::UpdatePvPArea()
         // Force remove flag me if I'm not already.
         if (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY)
         {
-            if (IsPvPFlagged())
-                RemovePvPFlag();
+            if (isPvpFlagSet())
+                removePvpFlag();
             else
                 StopPvPTimer();
 
-            RemoveFFAPvPFlag();
-            SetSanctuaryFlag();
+            removeFfaPvpFlag();
+            setSanctuaryFlag();
         }
         else
         {
             // if we are not in a sanctuary we don't need this flag
-            RemoveSanctuaryFlag();
+            removeSanctuaryFlag();
 
             //contested territory
             if (worldConfig.getRealmType() == REALM_PVP)
             {
                 //automatically sets pvp flag on contested territories.
-                if (!IsPvPFlagged())
-                    SetPvPFlag();
+                if (!isPvpFlagSet())
+                    setPvpFlag();
                 else
                     StopPvPTimer();
             }
@@ -9354,10 +9354,10 @@ void Player::UpdatePvPArea()
             {
                 if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
                 {
-                    if (!IsPvPFlagged())
-                        SetPvPFlag();
+                    if (!isPvpFlagSet())
+                        setPvpFlag();
                 }
-                else if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && IsPvPFlagged() && !m_pvpTimer)
+                else if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && isPvpFlagSet() && !m_pvpTimer)
                 {
                     ResetPvPTimer();
                 }
@@ -9365,14 +9365,14 @@ void Player::UpdatePvPArea()
 
             if (at->flags & AREA_PVP_ARENA)            /* ffa pvp arenas will come later */
             {
-                if (!IsPvPFlagged())
-                    SetPvPFlag();
+                if (!isPvpFlagSet())
+                    setPvpFlag();
 
-                SetFFAPvPFlag();
+                setFfaPvpFlag();
             }
             else
             {
-                RemoveFFAPvPFlag();
+                removeFfaPvpFlag();
             }
         }
     }
@@ -9421,12 +9421,12 @@ void Player::PvPToggle()
             addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
             removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
-            if (!IsPvPFlagged())
-                SetPvPFlag();
+            if (!isPvpFlagSet())
+                setPvpFlag();
         }
         else
         {
-            if (IsPvPFlagged())
+            if (isPvpFlagSet())
             {
                 auto at = this->GetArea();
                 if (at && (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY))
@@ -9455,7 +9455,7 @@ void Player::PvPToggle()
                 removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                 StopPvPTimer();
-                SetPvPFlag();
+                setPvpFlag();
             }
         }
     }
@@ -9476,12 +9476,12 @@ void Player::PvPToggle()
                 addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
                 removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
-                if (!IsPvPFlagged())
-                    SetPvPFlag();
+                if (!isPvpFlagSet())
+                    setPvpFlag();
             }
             else
             {
-                if (IsPvPFlagged())
+                if (isPvpFlagSet())
                 {
                     // Start the "cooldown" timer.
                     ResetPvPTimer();
@@ -9496,7 +9496,7 @@ void Player::PvPToggle()
                     removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                     StopPvPTimer();
-                    SetPvPFlag();
+                    setPvpFlag();
                 }
             }
         }
@@ -9515,12 +9515,12 @@ void Player::PvPToggle()
                         addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
                         removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
-                        if (!IsPvPFlagged())
-                            SetPvPFlag();
+                        if (!isPvpFlagSet())
+                            setPvpFlag();
                     }
                     else
                     {
-                        if (IsPvPFlagged())
+                        if (isPvpFlagSet())
                         {
                             // Start the "cooldown" timer.
                             ResetPvPTimer();
@@ -9535,7 +9535,7 @@ void Player::PvPToggle()
                             removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
                             StopPvPTimer();
-                            SetPvPFlag();
+                            setPvpFlag();
                         }
                     }
                     return;
@@ -12345,120 +12345,6 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
     }
 }
 
-bool Player::IsPvPFlagged()
-{
-#if VERSION_STRING > TBC
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
-#else
-    return getUnitFlags() & UNIT_FLAG_PVP;
-#endif
-}
-
-void Player::SetPvPFlag()
-{
-    StopPvPTimer();
-
-#if VERSION_STRING > TBC
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
-#else
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
-#endif
-
-    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-    summonhandler.SetPvPFlags();
-
-    // flagging the pet too for PvP, if we have one
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->SetPvPFlag();
-
-    if (CombatStatus.IsInCombat())
-        addPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
-}
-
-void Player::RemovePvPFlag()
-{
-    StopPvPTimer();
-
-#if VERSION_STRING > TBC
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
-#else
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
-#endif
-
-    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-    summonhandler.RemovePvPFlags();
-
-    // If we have a pet we will remove the pvp flag from that too
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->RemovePvPFlag();
-}
-
-bool Player::IsFFAPvPFlagged()
-{
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
-}
-
-void Player::SetFFAPvPFlag()
-{
-    StopPvPTimer();
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
-    addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
-
-    summonhandler.SetFFAPvPFlags();
-
-    // flagging the pet too for FFAPvP, if we have one
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->SetFFAPvPFlag();
-}
-
-void Player::RemoveFFAPvPFlag()
-{
-    StopPvPTimer();
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
-    removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
-
-    summonhandler.RemoveFFAPvPFlags();
-
-    // If we have a pet we will remove the FFA pvp flag from that too
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->RemoveFFAPvPFlag();
-}
-
-bool Player::IsSanctuaryFlagged()
-{
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
-}
-
-void Player::SetSanctuaryFlag()
-{
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
-
-    summonhandler.SetSanctuaryFlags();
-
-    // flagging the pet too for sanctuary, if we have one
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->SetSanctuaryFlag();
-}
-
-void Player::RemoveSanctuaryFlag()
-{
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
-
-    summonhandler.RemoveSanctuaryFlags();
-
-    // If we have a pet we will remove the sanctuary flag from that too
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->RemoveSanctuaryFlag();
-}
-
 void Player::HandleSpellLoot(uint32 itemid)
 {
     Loot loot1;
@@ -12728,9 +12614,9 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         CombatStatus.OnDamageDealt(pVictim);
 
-        if (pVictim->IsPvPFlagged())
+        if (pVictim->isPvpFlagSet())
         {
-            if (!IsPvPFlagged())
+            if (!isPvpFlagSet())
                 PvPToggle();
 
             AggroPvPGuards();
@@ -12845,7 +12731,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         sendPartyKillLogPacket(pVictim->getGuid());
 
-        if (pVictim->IsPvPFlagged())
+        if (pVictim->isPvpFlagSet())
         {
             uint32 team = getTeam();
             if (team == TEAM_ALLIANCE)
@@ -14096,13 +13982,13 @@ void Player::AddGroupUpdateFlag(uint32 flag)
 uint16 Player::GetGroupStatus()
 {
     uint16 status = MEMBER_STATUS_ONLINE;
-    if (IsPvPFlagged())
+    if (isPvpFlagSet())
         status |= MEMBER_STATUS_PVP;
     if (getDeathState() == CORPSE)
         status |= MEMBER_STATUS_DEAD;
     else if (IsDead())
         status |= MEMBER_STATUS_GHOST;
-    if (IsFFAPvPFlagged())
+    if (isFfaPvpFlagSet())
         status |= MEMBER_STATUS_PVP_FFA;
     if (hasPlayerFlags(PLAYER_FLAG_AFK))
         status |= MEMBER_STATUS_AFK;

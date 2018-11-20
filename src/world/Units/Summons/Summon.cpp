@@ -43,20 +43,20 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
     setCreatedBySpellId(spellid);
     this->summonslot = pSummonslot;
 
-    if (pOwner->IsPvPFlagged())
-        SetPvPFlag();
+    if (pOwner->isPvpFlagSet())
+        setPvpFlag();
     else
-        RemovePvPFlag();
+        removePvpFlag();
 
-    if (pOwner->IsFFAPvPFlagged())
-        SetFFAPvPFlag();
+    if (pOwner->isFfaPvpFlagSet())
+        setFfaPvpFlag();
     else
-        RemoveFFAPvPFlag();
+        removeFfaPvpFlag();
 
-    if (pOwner->IsSanctuaryFlagged())
-        SetSanctuaryFlag();
+    if (pOwner->isSanctuaryFlagSet())
+        setSanctuaryFlag();
     else
-        RemoveSanctuaryFlag();
+        removeSanctuaryFlag();
 
     setCreatedByGuid(pOwner->getGuid());
 

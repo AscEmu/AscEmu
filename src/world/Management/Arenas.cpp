@@ -239,7 +239,7 @@ void Arena::OnAddPlayer(Player* plr)
     Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);
     plr->AddAura(aura);
 
-    plr->SetFFAPvPFlag();
+    plr->setFfaPvpFlag();
 
     m_playersAlive.insert(plr->getGuidLow());
 }
@@ -255,7 +255,7 @@ void Arena::OnRemovePlayer(Player* plr)
     HookOnPlayerDeath(plr);
 
     plr->RemoveAura(plr->getInitialTeam() ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam());
-    plr->RemoveFFAPvPFlag();
+    plr->removeFfaPvpFlag();
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
     plr->ResetAllCooldowns();

@@ -2100,3 +2100,97 @@ void Player::sendGuildMotd()
 
     SendPacket(SmsgGuildEvent(GE_MOTD, { GetGuild()->getMOTD() }, 0).serialise().get());
 }
+
+bool Player::isPvpFlagSet()
+{
+#if VERSION_STRING > TBC
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
+#else
+    return getUnitFlags() & UNIT_FLAG_PVP;
+#endif
+}
+
+void Player::setPvpFlag()
+{
+    StopPvPTimer();
+#if VERSION_STRING > TBC
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+#else
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+#endif
+
+    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+    summonhandler.SetPvPFlags();
+    for (auto& summon : GetSummons())
+        summon->setPvpFlag();
+
+    if (CombatStatus.IsInCombat())
+        addPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
+}
+
+void Player::removePvpFlag()
+{
+    StopPvPTimer();
+#if VERSION_STRING > TBC
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
+#else
+    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+#endif
+
+    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+    summonhandler.RemovePvPFlags();
+    for (auto& summon : GetSummons())
+        summon->removePvpFlag();
+}
+
+bool Player::isFfaPvpFlagSet()
+{
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
+}
+
+void Player::setFfaPvpFlag()
+{
+    StopPvPTimer();
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
+    addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
+
+    summonhandler.SetFFAPvPFlags();
+    for (auto& summon : GetSummons())
+        summon->setFfaPvpFlag();
+}
+
+void Player::removeFfaPvpFlag()
+{
+    StopPvPTimer();
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
+    removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
+
+    summonhandler.RemoveFFAPvPFlags();
+    for (auto& summon : GetSummons())
+        summon->removeFfaPvpFlag();
+}
+
+bool Player::isSanctuaryFlagSet()
+{
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
+}
+
+void Player::setSanctuaryFlag()
+{
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
+
+    summonhandler.SetSanctuaryFlags();
+    for (auto& summon : GetSummons())
+        summon->setSanctuaryFlag();
+}
+
+void Player::removeSanctuaryFlag()
+{
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
+
+    summonhandler.RemoveSanctuaryFlags();
+    for (auto& summon : GetSummons())
+        summon->removeSanctuaryFlag();
+}

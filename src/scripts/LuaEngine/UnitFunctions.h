@@ -4294,8 +4294,8 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        if (plr != NULL && plr->IsPvPFlagged())
-            plr->RemovePvPFlag();
+        if (plr != NULL && plr->isPvpFlagSet())
+            plr->removePvpFlag();
         return 0;
     }
 
@@ -4729,7 +4729,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        plr->SetPvPFlag();
+        plr->setPvpFlag();
         return 0;
     }
 
@@ -5131,14 +5131,14 @@ public:
     static int IsPvPFlagged(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            lua_pushboolean(L, static_cast<Player*>(ptr)->IsPvPFlagged() ? 1 : 0);
+            lua_pushboolean(L, static_cast<Player*>(ptr)->isPvpFlagSet() ? 1 : 0);
         return 1;
     }
 
     static int IsFFAPvPFlagged(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            lua_pushboolean(L, static_cast<Player*>(ptr)->IsFFAPvPFlagged() ? 1 : 0);
+            lua_pushboolean(L, static_cast<Player*>(ptr)->isFfaPvpFlagSet() ? 1 : 0);
         return 1;
     }
 
@@ -5797,9 +5797,9 @@ public:
         TEST_UNITPLAYER();
         bool set = CHECK_BOOL(L, 1);
         if (set)
-            ptr->SetFFAPvPFlag();
+            ptr->setFfaPvpFlag();
         else
-            ptr->RemoveFFAPvPFlag();
+            ptr->removeFfaPvpFlag();
         return 0;
     }
     static int TeleportCreature(lua_State* L, Unit* ptr)

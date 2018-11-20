@@ -1951,3 +1951,15 @@ void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_
 {
     SendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
 }
+
+bool Unit::isPvpFlagSet() { return false; }
+void Unit::setPvpFlag() {}
+void Unit::removePvpFlag() {}
+
+bool Unit::isFfaPvpFlagSet() { return false; }
+void Unit::setFfaPvpFlag() {}
+void Unit::removeFfaPvpFlag() {}
+
+bool Unit::isSanctuaryFlagSet() { return false; }
+void Unit::setSanctuaryFlag() {}
+void Unit::removeSanctuaryFlag() {}

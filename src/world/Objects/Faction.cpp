@@ -116,7 +116,7 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
 
         if (hostile)
         {
-            if (!b->IsSanctuaryFlagged() && (b->IsPvPFlagged() || b->IsFFAPvPFlagged()))
+            if (!b->isSanctuaryFlagSet() && (b->isPvpFlagSet() || b->isFfaPvpFlagSet()))
                 return true;
             else
                 return false;
@@ -171,14 +171,14 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         if ((a->DuelingWith == b) && (a->GetDuelState() == DUEL_STATE_STARTED))
             return true;
 
-        if (b->IsSanctuaryFlagged())
+        if (b->isSanctuaryFlagSet())
             return false;
 
         //players in same group should not attack each other. Required for arenas with mixed groups
         if ((a->GetGroup() != NULL) && (a->GetGroup() == b->GetGroup()))
             return false;
 
-        if (a->IsFFAPvPFlagged() && b->IsFFAPvPFlagged())
+        if (a->isFfaPvpFlagSet() && b->isFfaPvpFlagSet())
             return true;
     }
 

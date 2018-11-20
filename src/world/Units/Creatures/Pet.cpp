@@ -478,20 +478,20 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     }
     SetFaction(owner->getFactionTemplate());
 
-    if (owner->IsPvPFlagged())
-        this->SetPvPFlag();
+    if (owner->isPvpFlagSet())
+        this->setPvpFlag();
     else
-        this->RemovePvPFlag();
+        this->removePvpFlag();
 
-    if (owner->IsFFAPvPFlagged())
-        this->SetFFAPvPFlag();
+    if (owner->isFfaPvpFlagSet())
+        this->setFfaPvpFlag();
     else
-        this->RemoveFFAPvPFlag();
+        this->removeFfaPvpFlag();
 
-    if (owner->IsSanctuaryFlagged())
-        this->SetSanctuaryFlag();
+    if (owner->isSanctuaryFlagSet())
+        this->setSanctuaryFlag();
     else
-        this->RemoveSanctuaryFlag();
+        this->removeSanctuaryFlag();
 
     BaseDamage[0] = 0;
     BaseDamage[1] = 0;
@@ -2127,9 +2127,9 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
     pVictim->setStandState(STANDSTATE_STAND);
 
-    if (pVictim->IsPvPFlagged())
+    if (pVictim->isPvpFlagSet())
     {
-        if (!IsPvPFlagged())
+        if (!isPvpFlagSet())
             m_Owner->PvPToggle();
 
         m_Owner->AggroPvPGuards();
@@ -2219,7 +2219,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
             }
         }
 
-        if (pVictim->IsPvPFlagged())
+        if (pVictim->isPvpFlagSet())
         {
             uint32 team = m_Owner->getTeam();
 

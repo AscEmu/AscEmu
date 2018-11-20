@@ -382,20 +382,20 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
 
     ARCEMU_ASSERT(pet->GetPetOwner() != nullptr);
 
-    if (pet->GetPetOwner()->IsPvPFlagged())
-        pet->SetPvPFlag();
+    if (pet->GetPetOwner()->isPvpFlagSet())
+        pet->setPvpFlag();
     else
-        pet->RemovePvPFlag();
+        pet->removePvpFlag();
 
-    if (pet->GetPetOwner()->IsFFAPvPFlagged())
-        pet->SetFFAPvPFlag();
+    if (pet->GetPetOwner()->isFfaPvpFlagSet())
+        pet->setFfaPvpFlag();
     else
-        pet->RemoveFFAPvPFlag();
+        pet->removeFfaPvpFlag();
 
-    if (pet->GetPetOwner()->IsSanctuaryFlagged())
-        pet->SetSanctuaryFlag();
+    if (pet->GetPetOwner()->isSanctuaryFlagSet())
+        pet->setSanctuaryFlag();
     else
-        pet->RemoveSanctuaryFlag();
+        pet->removeSanctuaryFlag();
 }
 
 void WorldSession::handlePetAbandon(WorldPacket& /*recvPacket*/)

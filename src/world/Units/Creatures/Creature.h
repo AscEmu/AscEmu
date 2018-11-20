@@ -53,6 +53,18 @@ public:
 
     GameEvent * mEvent = nullptr;
 
+    bool isPvpFlagSet() override;
+    void setPvpFlag() override;
+    void removePvpFlag() override;
+
+    bool isFfaPvpFlagSet() override;
+    void setFfaPvpFlag() override;
+    void removeFfaPvpFlag() override;
+
+    bool isSanctuaryFlagSet() override;
+    void setSanctuaryFlag() override;
+    void removeSanctuaryFlag() override;
+
  //MIT end
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
@@ -93,18 +105,6 @@ public:
         {
             DeleteMe();
         }
-
-        bool IsPvPFlagged() override;
-        void SetPvPFlag() override;
-        void RemovePvPFlag() override;
-
-        bool IsFFAPvPFlagged() override;
-        void SetFFAPvPFlag() override;
-        void RemoveFFAPvPFlag() override;
-
-        bool IsSanctuaryFlagged() override;
-        void SetSanctuaryFlag() override;
-        void RemoveSanctuaryFlag() override;
 
         int32 GetSlotByItemId(uint32 itemid);
 

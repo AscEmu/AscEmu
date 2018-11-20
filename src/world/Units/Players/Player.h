@@ -730,6 +730,18 @@ public:
     void sendClientControlPacket(Unit* target, uint8_t allowMove);
     void sendGuildMotd();
 
+    bool isPvpFlagSet() override;
+    void setPvpFlag() override;
+    void removePvpFlag() override;
+
+    bool isFfaPvpFlagSet() override;
+    void setFfaPvpFlag() override;
+    void removeFfaPvpFlag() override;
+
+    bool isSanctuaryFlagSet() override;
+    void setSanctuaryFlag() override;
+    void removeSanctuaryFlag() override;
+
 public:
     //MIT End
     //AGPL Start
@@ -1748,17 +1760,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         uint32 m_pvpTimer;
 
-        bool IsPvPFlagged() override;
-        void SetPvPFlag() override;
-        void RemovePvPFlag() override;
-
-        bool IsFFAPvPFlagged() override;
-        void SetFFAPvPFlag() override;
-        void RemoveFFAPvPFlag() override;
-
-        bool IsSanctuaryFlagged() override;
-        void SetSanctuaryFlag() override;
-        void RemoveSanctuaryFlag() override;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
