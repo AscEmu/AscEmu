@@ -111,7 +111,7 @@ public:
         if (!spawnsCreated())
         {
             // setup only the npcs with the correct team...
-            switch (player->GetTeam())
+            switch (player->getTeam())
             {
                 case TEAM_ALLIANCE:
                     for (uint8 i = 0; i < 13; i++)

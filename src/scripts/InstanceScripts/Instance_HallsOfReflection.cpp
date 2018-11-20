@@ -23,7 +23,7 @@ public:
         pPlayer->SafeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), 5260.970f, 1956.850f, 707.692f, 1.08f);
         if (!spawnsCreated())
         {
-            if (pPlayer->GetTeam() == TEAM_ALLIANCE)
+            if (pPlayer->getTeam() == TEAM_ALLIANCE)
             {
                 spawnCreature(CN_JAINA_PROUDMOORE, 5266.77f, 1953.52f, 707.69f, 0.74f, 35);
                 spawnCreature(CN_ARCHMAGE_KORELN, 5264.26f, 1953.36f, 707.69f, 0.74f, 35);

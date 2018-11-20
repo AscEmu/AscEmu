@@ -1445,7 +1445,7 @@ void Spell::castMe(bool check)
                     case 66:		// Invisibility
                         if (p_caster->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
                         {
-                            if (p_caster->GetTeam() == 0)
+                            if (p_caster->getTeam() == 0)
                                 p_caster->RemoveAura(23333);	// ally player drop horde flag if they have it
                             else
                                 p_caster->RemoveAura(23335); 	// horde player drop ally flag if they have it

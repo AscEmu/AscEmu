@@ -739,7 +739,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
 
             SetSelectedDungeons(guid, dungeons);
         }
-        AddToQueue(guid, uint8(player->GetTeam()));
+        AddToQueue(guid, uint8(player->getTeam()));
     }
     LOG_DEBUG("%u joined with %u members. dungeons: %u", guid, grp ? grp->MemberCount() : 1, uint8(dungeons.size()));
 }
@@ -1200,7 +1200,7 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
             continue;
         }
 
-        team = uint8(plrg->GetTeam());
+        team = uint8(plrg->getTeam());
         if (!sendRoleChosen)
             plrg->GetSession()->sendLfgRoleChosen(guid, roles);
         plrg->GetSession()->sendLfgRoleCheckUpdate(roleCheck);
@@ -1610,7 +1610,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         if (!player)
             continue;
 
-        team = uint8(player->GetTeam());
+        team = uint8(player->getTeam());
         player->GetSession()->sendLfgUpdateProposal(itProposal->first, pProposal);
 
         Group* grp = player->GetGroup();

@@ -1559,7 +1559,7 @@ void Player::_EventExploration()
     if (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY)
     {
         // check faction
-        if (at->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance() || (at->team == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+        if (at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
             rest_on = true;
         else if (at->team != AREAC_ALLIANCE_TERRITORY && at->team != AREAC_HORDE_TERRITORY)
             rest_on = true;
@@ -1572,7 +1572,7 @@ void Player::_EventExploration()
             auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
             if (at2 && (at2->flags & AREA_CITY_AREA || at2->flags & AREA_CITY))
             {
-                if (at2->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance() || (at2->team == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+                if (at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
                     rest_on = true;
                 else if (at2->team != AREAC_ALLIANCE_TERRITORY && at2->team != AREAC_HORDE_TERRITORY)
                     rest_on = true;
@@ -5687,7 +5687,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
         for (MySQLDataStore::GraveyardsContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
         {
             pGrave = sMySQLStore.getGraveyard(itr->second.id);
-            if (pGrave->mapId == mapid && (pGrave->factionId == GetTeam() || pGrave->factionId == 3))
+            if (pGrave->mapId == mapid && (pGrave->factionId == getTeam() || pGrave->factionId == 3))
             {
                 temp.ChangeCoords(pGrave->position_x, pGrave->position_y, pGrave->position_z);
                 float dist = src.distanceSquare(temp);
@@ -9273,7 +9273,7 @@ void Player::UpdatePvPArea()
     }
 
     // This is where all the magic happens :P
-    if ((at->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+    if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
     {
         if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
         {
@@ -9286,7 +9286,7 @@ void Player::UpdatePvPArea()
         //Enemy city check
         if (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY)
         {
-            if ((at->team == AREAC_ALLIANCE_TERRITORY && IsTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && IsTeamAlliance()))
+            if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
             {
                 if (!IsPvPFlagged())
                     SetPvPFlag();
@@ -9300,7 +9300,7 @@ void Player::UpdatePvPArea()
         if (at->zone)
         {
             auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-            if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && IsTeamHorde())))
+            if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
             {
                 if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
                 {
@@ -9312,7 +9312,7 @@ void Player::UpdatePvPArea()
             //enemy territory check
             if (at2 && (at2->flags & AREA_CITY_AREA || at2->flags & AREA_CITY))
             {
-                if ((at2->team == AREAC_ALLIANCE_TERRITORY && IsTeamHorde()) || (at2->team == AREAC_HORDE_TERRITORY && IsTeamAlliance()))
+                if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
                 {
                     if (!IsPvPFlagged())
                         SetPvPFlag();
@@ -9404,7 +9404,7 @@ void Player::LoginPvPSetup()
 
     auto at = this->GetArea();
 
-    if (at != nullptr && isAlive() && (at->team == AREAC_CONTESTED || (IsTeamAlliance() && at->team == AREAC_HORDE_TERRITORY) || (IsTeamHorde() && at->team == AREAC_ALLIANCE_TERRITORY)))
+    if (at != nullptr && isAlive() && (at->team == AREAC_CONTESTED || (isTeamAlliance() && at->team == AREAC_HORDE_TERRITORY) || (isTeamHorde() && at->team == AREAC_ALLIANCE_TERRITORY)))
         CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
 
 }
@@ -9431,7 +9431,7 @@ void Player::PvPToggle()
                 auto at = this->GetArea();
                 if (at && (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY))
                 {
-                    if ((at->team == AREAC_ALLIANCE_TERRITORY && IsTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && IsTeamAlliance()))
+                    if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
                     {
                     }
                     else
@@ -9466,7 +9466,7 @@ void Player::PvPToggle()
             return;
 
         // This is where all the magic happens :P
-        if ((at->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+        if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
         {
             if (m_pvpTimer > 0)
             {
@@ -9505,7 +9505,7 @@ void Player::PvPToggle()
             if (at->zone)
             {
                 auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-                if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && IsTeamHorde())))
+                if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
                 {
                     if (m_pvpTimer > 0)
                     {
@@ -10089,7 +10089,7 @@ bool Player::CanSignCharter(Charter* charter, Player* requester)
         return false;
 #endif
 
-    if (m_charters[charter->CharterType] || requester->GetTeam() != GetTeam() || this == requester)
+    if (m_charters[charter->CharterType] || requester->getTeam() != getTeam() || this == requester)
         return false;
     else
         return true;
@@ -10495,11 +10495,6 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
 void Player::EventPortToGM(Player* p)
 {
     SafeTeleport(p->GetMapId(), p->GetInstanceID(), p->GetPosition());
-}
-
-PlayerTeam Player::GetTeam()
-{
-    return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE;
 }
 
 void Player::AddComboPoints(uint64 target, int8 count)
@@ -11758,7 +11753,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     }
 
     // team check
-    if (playerInfo->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
+    if (playerInfo->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, playerInfo->guid).serialise().get());
         if (playerCache != nullptr)
@@ -12618,7 +12613,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
 
     if (myteam_only)
     {
-        uint32 myteam = GetTeam();
+        uint32 myteam = getTeam();
 
         if (data->GetOpcode() != SMSG_MESSAGECHAT)
         {
@@ -12630,7 +12625,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
                     if (gminvis && ((p->GetSession() == nullptr) || (p->GetSession()->GetPermissionCount() <= 0)))
                         continue;
 
-                    if (p->GetTeam() == myteam && (p->GetPhase() & myphase) != 0 && p->IsVisible(getGuid()))
+                    if (p->getTeam() == myteam && (p->GetPhase() & myphase) != 0 && p->IsVisible(getGuid()))
                         p->SendPacket(data);
                 }
             }
@@ -12642,7 +12637,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
                 if (itr)
                 {
                     Player* p = static_cast<Player*>(itr);
-                    if (p->GetSession() && p->GetTeam() == myteam && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & myphase) != 0)
+                    if (p->GetSession() && p->getTeam() == myteam && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & myphase) != 0)
                         p->SendPacket(data);
                 }
             }
@@ -12852,7 +12847,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         if (pVictim->IsPvPFlagged())
         {
-            uint32 team = GetTeam();
+            uint32 team = getTeam();
             if (team == TEAM_ALLIANCE)
                 team = TEAM_HORDE;
             else
@@ -14137,17 +14132,6 @@ void Player::SendCinematicCamera(uint32 id)
     GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);
 }
 
-uint32 Player::GetTeamInitial()
-{
-    return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
-}
-
-void Player::ResetTeam()
-{
-    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
-    m_bgTeam = m_team;
-}
-
 bool Player::IsBanned()
 {
     if (m_banned)
@@ -14374,10 +14358,10 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                 continue;
 
         // team check
-        if (itemProto->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && IsTeamAlliance())
+        if (itemProto->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && isTeamAlliance())
             continue;
 
-        if (itemProto->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && IsTeamHorde())
+        if (itemProto->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && isTeamHorde())
             continue;
 
         //quest items check. type 4/5

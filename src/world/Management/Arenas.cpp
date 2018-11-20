@@ -228,7 +228,7 @@ void Arena::OnAddPlayer(Player* plr)
         if (!m_started  && plr->IsInWorld())
             plr->CastSpell(plr, ARENA_PREPARATION, true);
 
-        m_playersCount[plr->GetTeam()]++;
+        m_playersCount[plr->getTeam()]++;
         UpdatePlayerCounts();
     }
     // If they're still queued for the arena, remove them from the queue
@@ -236,7 +236,7 @@ void Arena::OnAddPlayer(Player* plr)
         plr->m_bgIsQueued = false;
 
     // Add the green/gold team flag
-    Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo((plr->GetTeamInitial()) ? 35775 - plr->m_bgTeam : 32725 - plr->m_bgTeam), -1, plr, plr, true);
+    Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);
     plr->AddAura(aura);
 
     plr->SetFFAPvPFlag();
@@ -254,7 +254,7 @@ void Arena::OnRemovePlayer(Player* plr)
     // Player has left arena, call HookOnPlayerDeath as if he died
     HookOnPlayerDeath(plr);
 
-    plr->RemoveAura(plr->GetTeamInitial() ? 35775 - plr->m_bgTeam : 32725 - plr->m_bgTeam);
+    plr->RemoveAura(plr->getInitialTeam() ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam());
     plr->RemoveFFAPvPFlag();
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
@@ -291,7 +291,7 @@ void Arena::HookOnPlayerDeath(Player* plr)
 
     if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
     {
-        m_playersCount[plr->GetTeam()]--;
+        m_playersCount[plr->getTeam()]--;
         UpdatePlayerCounts();
         m_playersAlive.erase(plr->getGuidLow());
     }
@@ -401,7 +401,7 @@ uint32 Arena::GetTeamFaction(uint32 team)
 {
     std::set< Player* >::iterator itr = m_players[team].begin();
     Player* p = *itr;
-    return p->GetTeam();
+    return p->getTeam();
 }
 
 LocationVector Arena::GetStartingCoords(uint32 /*Team*/)

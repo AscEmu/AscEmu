@@ -584,8 +584,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        if ((achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && GetPlayer()->IsTeamHorde() == false) ||
-            (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && GetPlayer()->IsTeamAlliance() == false))
+        if ((achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && GetPlayer()->isTeamHorde() == false) ||
+            (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && GetPlayer()->isTeamAlliance() == false))
         {
             // achievement requires a faction of which the player is not a member
             continue;
@@ -1233,8 +1233,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
         auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement  //|| IsCompletedCriteria(achievementCriteria)
             || (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
-            || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->IsTeamHorde())
-            || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !m_player->IsTeamAlliance()))
+            || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->isTeamHorde())
+            || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !m_player->isTeamAlliance()))
         {
             continue;
         }
@@ -1779,7 +1779,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         return;
 
     //Reward Titel
-    if (GetPlayer()->GetTeam() == TEAM_ALLIANCE)
+    if (GetPlayer()->getTeam() == TEAM_ALLIANCE)
     {
         if (Reward->titel_A)
         {
@@ -1788,7 +1788,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
                 GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
-    if (GetPlayer()->GetTeam() == TEAM_HORDE)
+    if (GetPlayer()->getTeam() == TEAM_HORDE)
     {
         if (Reward->titel_H)
         {
@@ -1871,8 +1871,8 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
             {
                 if (!(ach->flags & ACHIEVEMENT_FLAG_COUNTER))
                 {
-                    if ((ach->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->IsTeamHorde()) ||
-                        (ach->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !m_player->IsTeamAlliance()))
+                    if ((ach->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->isTeamHorde()) ||
+                        (ach->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !m_player->isTeamAlliance()))
                     {
                         continue;
                     }

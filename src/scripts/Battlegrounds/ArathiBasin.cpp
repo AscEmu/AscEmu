@@ -483,7 +483,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
-            uint32 fact = (*itr)->IsTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
+            uint32 fact = (*itr)->isTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
             (*itr)->ModStanding(fact, 10);
         }
         m_lastRepGainResources[Team] += resourcesToGainBR;
@@ -609,14 +609,14 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 
         case 3948:            // alliance exits
         {
-            if (plr->GetTeam() != TEAM_ALLIANCE)
+            if (plr->getTeam() != TEAM_ALLIANCE)
                 plr->SendAreaTriggerMessage("Only The Alliance can use that portal");
             else
                 RemovePlayer(plr, false);
         }break;
         case 3949:           // horde exits
         {
-            if (plr->GetTeam() != TEAM_HORDE)
+            if (plr->getTeam() != TEAM_HORDE)
                 plr->SendAreaTriggerMessage("Only The Horde can use that portal");
             else
                 RemovePlayer(plr, false);
@@ -658,17 +658,17 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 bool ArathiBasin::HookHandleRepop(Player* plr)
 {
     // our uber leet ab graveyard handler
-    LocationVector dest(NoBaseGYLocations[plr->m_bgTeam][0], NoBaseGYLocations[plr->m_bgTeam][1], NoBaseGYLocations[plr->m_bgTeam][2], 0.0f);
+    LocationVector dest(NoBaseGYLocations[plr->getBgTeam()][0], NoBaseGYLocations[plr->getBgTeam()][1], NoBaseGYLocations[plr->getBgTeam()][2], 0.0f);
     float current_distance = 999999.0f;
     float dist;
 
     for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
-        if (m_basesOwnedBy[2] == static_cast<int32>(plr->m_bgTeam))
+        if (m_basesOwnedBy[2] == static_cast<int32>(plr->getBgTeam()))
         {
             dest.ChangeCoords(GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2]);
         }
-        else if (m_basesOwnedBy[i] == static_cast<int32>(plr->m_bgTeam))
+        else if (m_basesOwnedBy[i] == static_cast<int32>(plr->getBgTeam()))
         {
             dist = plr->GetPositionV()->Distance2DSq(GraveyardLocations[i][0], GraveyardLocations[i][1]);
             if (dist < current_distance)
@@ -781,7 +781,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     }
 #endif
 
-    uint32 Team = pPlayer->m_bgTeam;
+    uint32 Team = pPlayer->getBgTeam();
     uint32 Owner;
 
     pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;

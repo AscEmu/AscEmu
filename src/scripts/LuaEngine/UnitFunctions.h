@@ -4583,7 +4583,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        lua_pushinteger(L, plr->GetTeam());
+        lua_pushinteger(L, plr->getTeam());
         return 1;
     }
 

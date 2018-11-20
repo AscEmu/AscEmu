@@ -84,7 +84,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->GetTeam() != _player->GetTeam() && !HasGMPermissions())
+    if (player->getTeam() != _player->getTeam() && !HasGMPermissions())
     {
         SystemMessage("That player is a member of a different faction.");
         return;

@@ -132,7 +132,7 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
         Player* plr = itr->second;
         if (plr->GetSession() && plr->IsInWorld())
         {
-            if (faction > -1 && plr->GetTeam() == static_cast<uint32>(faction))
+            if (faction > -1 && plr->getTeam() == static_cast<uint32>(faction))
             {
                 plr->SummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
                 ++summon_count;

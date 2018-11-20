@@ -19,7 +19,7 @@ public:
     {
         if (!spawnsCreated())
         {
-            if (player->GetTeam() == TEAM_ALLIANCE)
+            if (player->getTeam() == TEAM_ALLIANCE)
             {
                 spawnCreature(CN_JAINA_PROUDMOORE, 4900.08f, 2208.45f, 638.73f, 5.48f, 35);
                 spawnCreature(CN_ARCHMAGE_ELANDRA, 4899.95f, 2206.149f, 638.73f, 5.37f, 35);

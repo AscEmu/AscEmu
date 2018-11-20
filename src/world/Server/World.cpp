@@ -687,7 +687,7 @@ void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
         Player* player = activeSessions->second->GetPlayer();
         if (player != nullptr && player->IsInWorld())
         {
-            if (player->GetTeam() == teamId)
+            if (player->getTeam() == teamId)
                 activeSessions->second->SendPacket(&data);
         }
     }

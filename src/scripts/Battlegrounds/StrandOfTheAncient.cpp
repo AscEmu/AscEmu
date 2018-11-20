@@ -431,7 +431,7 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
     // Let's find the closests GY
     for (uint8 i = SOTA_GY_EAST; i < NUM_SOTA_GRAVEYARDS; i++)
     {
-        if (graveyard[i].faction == plr->GetTeam())
+        if (graveyard[i].faction == plr->getTeam())
         {
             if (graveyard[i].spiritguide == NULL)
                 continue;

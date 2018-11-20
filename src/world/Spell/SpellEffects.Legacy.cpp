@@ -5907,7 +5907,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
 
     uint32 modelid = 0;
 
-    if (playerTarget->IsTeamHorde())
+    if (playerTarget->isTeamHorde())
     {
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
         if (!ci)

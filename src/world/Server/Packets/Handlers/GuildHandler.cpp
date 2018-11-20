@@ -519,7 +519,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
+    if (pTarget == nullptr || pTarget->getTeam() != _player->getTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
         return;
@@ -1283,7 +1283,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
     Player* player = _player;
 
     LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
-    LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeam());
+    LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->getTeam());
     uint32_t guildCount = static_cast<uint32_t>(guildList.size());
 
     if (guildCount == 0)
@@ -1643,7 +1643,7 @@ void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
             return;
     }
 
-    LFGuildSettings settings(listed, player->GetTeam(), player->getGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
+    LFGuildSettings settings(listed, player->getTeam(), player->getGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
     sGuildFinderMgr.setGuildSettings(player->getGuildId(), settings);
 }
 

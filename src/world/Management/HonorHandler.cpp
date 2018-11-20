@@ -72,7 +72,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
     if (pPlayer->m_bg)
     {
-        if (pVictim->m_bgTeam == pPlayer->m_bgTeam)
+        if (pVictim->getBgTeam() == pPlayer->getBgTeam())
             return;
 
         // patch 2.4, players killed >50 times in battlegrounds won't be worth honor for the rest of that bg
@@ -81,7 +81,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
     }
     else
     {
-        if (pPlayer->GetTeam() == pVictim->GetTeam())
+        if (pPlayer->getTeam() == pVictim->getTeam())
             return;
     }
 
@@ -98,7 +98,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
             // hackfix for battlegrounds (since the groups there are disabled, we need to do this manually)
             std::vector<Player*> toadd;
-            uint32 t = pPlayer->m_bgTeam;
+            uint32 t = pPlayer->getBgTeam();
             toadd.reserve(15);        // shouldn't have more than this
             std::set<Player*> * s = &pPlayer->m_bg->m_players[t];
 
@@ -212,23 +212,23 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 if (pAffectedPlayer->GetZoneId() == 3518)
                 {
                     // Add Halaa Battle Token
-                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->IsTeamHorde() ? 33004 : 33005);
+                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->isTeamHorde() ? 33004 : 33005);
                     pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
                 // If we are in Hellfire Peninsula <http://www.wowwiki.com/Hellfire_Peninsula#World_PvP_-_Hellfire_Fortifications>
                 if (pAffectedPlayer->GetZoneId() == 3483)
                 {
                     // Hellfire Horde Controlled Towers
-                    /*if (pAffectedPlayer->GetMapMgr()->GetWorldState(2478) != 3 && pAffectedPlayer->GetTeam() == TEAM_HORDE)
+                    /*if (pAffectedPlayer->GetMapMgr()->GetWorldState(2478) != 3 && pAffectedPlayer->getTeam() == TEAM_HORDE)
                         return;
 
                         // Hellfire Alliance Controlled Towers
-                        if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->GetTeam() == TEAM_ALLIANCE)
+                        if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->getTeam() == TEAM_ALLIANCE)
                         return;
                         */
 
                     // Add Mark of Thrallmar/Honor Hold
-                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->IsTeamHorde() ? 32158 : 32155);
+                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->isTeamHorde() ? 32158 : 32155);
                     pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
             }

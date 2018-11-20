@@ -2853,7 +2853,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
 
 bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
 {
-    uint32 team = pPlayer->GetTeam();
+    uint32 team = pPlayer->getTeam();
 
     if (!pVictim->isCreature())
         return false;

@@ -83,7 +83,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
 
-    uint32_t team = _player->GetTeam();
+    uint32_t team = _player->getTeam();
 
     uint32_t sent_count = 0;
     uint32_t total_count = 0;
@@ -110,7 +110,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         }
 
         // Team check
-        if (!HasGMPermissions() && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+        if (!HasGMPermissions() && plr->getTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
             continue;
 
         ++total_count;
@@ -1240,7 +1240,7 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
-    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
+    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
     {
         WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());

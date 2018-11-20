@@ -471,7 +471,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         isInterfactionMailAllowed = true;
     }
 
-    if (playerReceiverInfo->team != _player->GetTeam() && !isInterfactionMailAllowed)
+    if (playerReceiverInfo->team != _player->getTeam() && !isInterfactionMailAllowed)
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_YOUR_ALLIANCE).serialise().get());
         return;

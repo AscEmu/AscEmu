@@ -115,7 +115,7 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 
 uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
 {
-    if (player->IsTeamHorde())
+    if (player->isTeamHorde())
     {
         const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->horde_mount);
         if (creatureProperties != nullptr)

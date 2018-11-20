@@ -333,7 +333,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->Social_TellFriendsOffline();
 
         // Decrement the global player count
-        sWorld.decrementPlayerCount(_player->GetTeam());
+        sWorld.decrementPlayerCount(_player->getTeam());
 
         if (_player->m_bgIsQueued)
             BattlegroundManager.RemovePlayerFromQueues(_player);

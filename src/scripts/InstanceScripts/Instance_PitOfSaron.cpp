@@ -19,7 +19,7 @@ public:
     {
         if (!spawnsCreated())
         {
-            if (player->GetTeam() == TEAM_ALLIANCE)
+            if (player->getTeam() == TEAM_ALLIANCE)
             {
                 spawnCreature(CN_JAINA_PROUDMOORE, 441.39f, 213.32f, 528.71f, 0.10f, 35);
                 spawnCreature(CN_ARCHMAGE_ELANDRA, 439.26f, 215.89f, 528.71f, 0.02f, 35);
@@ -416,7 +416,7 @@ class KrickAI : public CreatureAIScript
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
 
-            if (pTarget->IsTeamHorde())
+            if (pTarget->isTeamHorde())
                 JainaOrSylvanas = spawnCreatureAndGetAIScript(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f);
             else
                 JainaOrSylvanas = spawnCreatureAndGetAIScript(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f);
@@ -436,7 +436,7 @@ class KrickAI : public CreatureAIScript
                 case 2:
                     if (JainaOrSylvanas)
                     {
-                        if (pTarget->IsTeamAlliance())
+                        if (pTarget->isTeamAlliance())
                             JainaOrSylvanas->sendDBChatMessage(8776); // SAY_JAYNA_OUTRO_2
                         else
                             JainaOrSylvanas->sendDBChatMessage(8777); // SAY_SYLVANAS_OUTRO_2
@@ -450,7 +450,7 @@ class KrickAI : public CreatureAIScript
                 case 4:
                     if (JainaOrSylvanas)
                     {
-                        if (pTarget->IsTeamAlliance())
+                        if (pTarget->isTeamAlliance())
                             JainaOrSylvanas->sendDBChatMessage(8779); // SAY_JAYNA_OUTRO_4
                         else
                             JainaOrSylvanas->sendDBChatMessage(8780); // SAY_SYLVANAS_OUTRO_4
@@ -484,7 +484,7 @@ class KrickAI : public CreatureAIScript
                 case 10:
                     if (JainaOrSylvanas)
                     {
-                        if (pTarget->IsTeamAlliance() && JainaOrSylvanas)
+                        if (pTarget->isTeamAlliance() && JainaOrSylvanas)
                             JainaOrSylvanas->sendDBChatMessage(8785); // SAY_JAYNA_OUTRO_10
                         else
                             JainaOrSylvanas->sendDBChatMessage(8786); // SAY_SYLVANAS_OUTRO_10

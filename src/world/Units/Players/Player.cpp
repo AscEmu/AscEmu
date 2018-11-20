@@ -1015,6 +1015,22 @@ void Player::toggleDnd()
         addPlayerFlags(PLAYER_FLAG_DND);
 }
 
+PlayerTeam Player::getTeam() const { return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+void Player::setTeam(uint32_t team) { m_team = team; m_bgTeam = team; }
+void Player::setBgTeam(uint32_t team) { m_bgTeam = team; }
+
+uint32_t Player::getInitialTeam() const { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+
+void Player::resetTeam()
+{
+    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+    m_bgTeam = m_team;
+}
+
+bool Player::isTeamHorde() const { return getTeam() == TEAM_HORDE; }
+bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 void Player::updateAutoRepeatSpell()
@@ -1667,7 +1683,7 @@ void Player::logIntoBattleground()
     if (mapMgr && mapMgr->m_battleground)
     {
         const auto battleground = mapMgr->m_battleground;
-        if (battleground->HasEnded() && battleground->HasFreeSlots(GetTeamInitial(), battleground->GetType()))
+        if (battleground->HasEnded() && battleground->HasFreeSlots(getInitialTeam(), battleground->GetType()))
         {
             if (!IS_INSTANCE(m_bgEntryPointMap))
             {
@@ -1773,7 +1789,7 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->lastOnline = UNIXTIME;
         playerInfo->lastZone = GetZoneId();
         playerInfo->race = getRace();
-        playerInfo->team = GetTeam();
+        playerInfo->team = getTeam();
         playerInfo->guildRank = GUILD_RANK_NONE;
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;

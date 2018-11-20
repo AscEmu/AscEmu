@@ -287,7 +287,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_WHISPER:
             if (const auto player_cache = objmgr.GetPlayerCache(srlPacket.destination.c_str(), false))
             {
-                const auto target_is_our_faction = _player->GetTeamInitial() == player_cache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM);
+                const auto target_is_our_faction = _player->getInitialTeam() == player_cache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM);
                 const auto target_is_gm_flagged = player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM);
                 const auto we_are_gm_flagged = _player->isGMFlagSet();
                 if (target_is_our_faction
@@ -362,7 +362,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!_player->m_bg)
                 break;
 
-            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), _player->GetTeam());
+            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), _player->getTeam());
             break;
     }
 }
@@ -723,7 +723,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 break;
             }
 
-            if (_player->GetTeamInitial() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !worldConfig.player.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->isGMFlagSet())
+            if (_player->getInitialTeam() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !worldConfig.player.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->isGMFlagSet())
             {
                 WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
                 response << to;
@@ -836,7 +836,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (_player->m_bg != nullptr)
             {
                 data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->getGuid());
-                _player->m_bg->DistributePacketToTeam(data, _player->GetTeam());
+                _player->m_bg->DistributePacketToTeam(data, _player->getTeam());
                 delete data;
             }
         }

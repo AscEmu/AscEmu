@@ -30,7 +30,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->IsTeamHorde())
+        if (player->isTeamHorde())
             player->AddQuestKill(5098, 0, 0);
         else
             player->AddQuestKill(5097, 0, 0);
@@ -46,7 +46,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->IsTeamHorde())
+        if (player->isTeamHorde())
             player->AddQuestKill(5098, 1, 0);
         else
             player->AddQuestKill(5097, 1, 0);
@@ -62,7 +62,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->IsTeamHorde())
+        if (player->isTeamHorde())
             player->AddQuestKill(5098, 2, 0);
         else
             player->AddQuestKill(5097, 2, 0);
@@ -78,7 +78,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->IsTeamHorde())
+        if (player->isTeamHorde())
             player->AddQuestKill(5098, 3, 0);
         else
             player->AddQuestKill(5097, 3, 0);

@@ -41,7 +41,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (pPlayer->IsTeamHorde() && SpawnBaronAquanis == true) // Horde
+        if (pPlayer->isTeamHorde() && SpawnBaronAquanis == true) // Horde
         {
             // Spawn Baron Aquanis
             _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
@@ -84,7 +84,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
     void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
-        if (pPlayer->IsTeamAlliance())
+        if (pPlayer->isTeamAlliance())
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
         else
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);

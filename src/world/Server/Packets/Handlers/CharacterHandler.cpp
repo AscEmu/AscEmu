@@ -498,7 +498,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     const auto realmType = sLogonCommHandler.getRealmType();
     if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)
     {
-        if ((newPlayer->IsTeamAlliance() && _side == 1) || (newPlayer->IsTeamHorde() && _side == 0))
+        if ((newPlayer->isTeamAlliance() && _side == 1) || (newPlayer->isTeamHorde() && _side == 0))
         {
             newPlayer->ok_to_remove = true;
             delete newPlayer;
@@ -542,7 +542,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->m_Group = nullptr;
     playerInfo->subGroup = 0;
     playerInfo->m_loggedInPlayer = nullptr;
-    playerInfo->team = newPlayer->GetTeam();
+    playerInfo->team = newPlayer->getTeam();
     playerInfo->m_guild = 0;
     playerInfo->guildRank = GUILD_RANK_NONE;
     playerInfo->lastOnline = UNIXTIME;
@@ -717,7 +717,7 @@ void WorldSession::fullLogin(Player* player)
     // set db, time and count - our db now knows that we are online.
     CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", player->getGuidLow());
     LOG_DEBUG("Player %s logged in.", player->getName().c_str());
-    sWorld.incrementPlayerCount(player->GetTeam());
+    sWorld.incrementPlayerCount(player->getTeam());
 
     player->m_playedtime[2] = uint32_t(UNIXTIME);
     //////////////////////////////////////////////////////////////////////////////////////////

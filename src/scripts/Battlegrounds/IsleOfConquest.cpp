@@ -686,7 +686,7 @@ void IsleOfConquest::HookOnPlayerDeath(Player* plr)
 {
     plr->m_bgScore.Deaths++;
     UpdatePvPData();
-    RemoveReinforcements(plr->GetTeam(), IOC_POINTS_ON_KILL);
+    RemoveReinforcements(plr->getTeam(), IOC_POINTS_ON_KILL);
 }
 
 void IsleOfConquest::HookOnPlayerResurrect(Player *player)
@@ -694,7 +694,7 @@ void IsleOfConquest::HookOnPlayerResurrect(Player *player)
     ControlPointTypes refinerystate = controlpoint[IOC_CONTROL_POINT_REFINERY].state;
     ControlPointTypes quarrystate = controlpoint[IOC_CONTROL_POINT_QUARRY].state;
 
-    if (player->GetTeam() == TEAM_ALLIANCE)
+    if (player->getTeam() == TEAM_ALLIANCE)
     {
         if (refinerystate == IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED)
             player->CastSpell(player, IOC_REFINERY_BONUS, false);
@@ -702,7 +702,7 @@ void IsleOfConquest::HookOnPlayerResurrect(Player *player)
             player->CastSpell(player, IOC_QUARRY_BONUS, false);
     }
     else
-        if (player->GetTeam() == TEAM_HORDE)
+        if (player->getTeam() == TEAM_HORDE)
         {
             if (refinerystate == IOC_SPAWN_TYPE_HORDE_CONTROLLED)
                 player->CastSpell(player, IOC_REFINERY_BONUS, false);
@@ -741,7 +741,7 @@ void IsleOfConquest::OnAddPlayer(Player *plr)
     ControlPointTypes refinerystate = controlpoint[IOC_CONTROL_POINT_REFINERY].state;
     ControlPointTypes quarrystate = controlpoint[IOC_CONTROL_POINT_QUARRY].state;
 
-    if (plr->GetTeam() == TEAM_ALLIANCE)
+    if (plr->getTeam() == TEAM_ALLIANCE)
     {
         if (refinerystate == IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED)
             plr->CastSpell(plr, IOC_REFINERY_BONUS, false);
@@ -749,7 +749,7 @@ void IsleOfConquest::OnAddPlayer(Player *plr)
             plr->CastSpell(plr, IOC_QUARRY_BONUS, false);
     }
     else
-        if (plr->GetTeam() == TEAM_HORDE)
+        if (plr->getTeam() == TEAM_HORDE)
         {
             if (refinerystate == IOC_SPAWN_TYPE_HORDE_CONTROLLED)
                 plr->CastSpell(plr, IOC_REFINERY_BONUS, false);
@@ -894,7 +894,7 @@ void IsleOfConquest::HookOnHK(Player* plr)
 void IsleOfConquest::AssaultControlPoint(Player *player, uint32 id)
 {
     ControlPointTypes state = controlpoint[id].state;
-    uint32 team = player->GetTeam();
+    uint32 team = player->getTeam();
 
     if (state > IOC_SPAWN_TYPE_HORDE_CONTROLLED)
     {
@@ -940,10 +940,10 @@ void IsleOfConquest::AssaultControlPoint(Player *player, uint32 id)
             break;
     }
 
-    if (player->GetTeam() == TEAM_ALLIANCE)
+    if (player->getTeam() == TEAM_ALLIANCE)
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "%s has assaulted the %s! If it remains uncontested, the alliance will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
     else
-        if (player->GetTeam() == TEAM_HORDE)
+        if (player->getTeam() == TEAM_HORDE)
             SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "%s has assaulted the %s! If it remains uncontested, the horde will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
 
     sEventMgr.AddEvent(this, &IsleOfConquest::CaptureControlPoint, id, EVENT_IOC_CAPTURE_CP_1 + id, 60 * 1 * 1000, 1, 0);
@@ -986,7 +986,7 @@ bool IsleOfConquest::HookHandleRepop(Player* plr)
     // Let's find the closests GY
     for (uint8 i = IOC_GY_DOCKS; i < IOC_NUM_GRAVEYARDS; i++)
     {
-        if (graveyards[i].owner == plr->GetTeam())
+        if (graveyards[i].owner == plr->getTeam())
         {
             if (graveyards[i].spiritguide == NULL)
                 continue;

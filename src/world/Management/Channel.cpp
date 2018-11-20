@@ -974,7 +974,7 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
     ChannelList* cl = &Channels[0];
     Channel* chn;
     if (seperatechannels && p != NULL && stricmp(name, worldConfig.getGmClientChannelName().c_str()))
-        cl = &Channels[p->GetTeam()];
+        cl = &Channels[p->getTeam()];
 
     lock.Acquire();
     for (itr = cl->begin(); itr != cl->end(); ++itr)
@@ -998,7 +998,7 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
         }
     }
 
-    chn = new Channel(name, (seperatechannels && p != NULL) ? p->GetTeam() : TEAM_ALLIANCE, type_id);
+    chn = new Channel(name, (seperatechannels && p != NULL) ? p->getTeam() : TEAM_ALLIANCE, type_id);
     m_confSettingLock.Release();//Channel::Channel() reads configs so we release the lock after we create the Channel.
     cl->insert(make_pair(chn->m_name, chn));
     lock.Release();
@@ -1010,7 +1010,7 @@ Channel* ChannelMgr::GetChannel(const char* name, Player* p)
     ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels && stricmp(name, worldConfig.getGmClientChannelName().c_str()))
-        cl = &Channels[p->GetTeam()];
+        cl = &Channels[p->getTeam()];
 
     lock.Acquire();
     for (itr = cl->begin(); itr != cl->end(); ++itr)

@@ -556,6 +556,9 @@ private:
 
     std::string m_name;
 
+    uint32_t m_team;
+    uint32_t m_bgTeam;
+
 public:
 
     std::string getName() const;
@@ -575,6 +578,17 @@ public:
     virtual bool isClassWarrior();
     virtual bool isClassPaladin();
     virtual bool isClassDruid();
+
+    PlayerTeam getTeam() const;
+    PlayerTeam getBgTeam() const;
+    void setTeam(uint32_t team);
+    void setBgTeam(uint32_t team);
+
+    uint32_t getInitialTeam() const;
+
+    void resetTeam();
+    bool isTeamHorde() const;
+    bool isTeamAlliance() const;
 
     void toggleAfk();
     void toggleDnd();
@@ -987,14 +1001,6 @@ public:
         std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
-
-        PlayerTeam GetTeam();
-        uint32 GetTeamInitial();
-        void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
-
-        void ResetTeam();
-        bool IsTeamHorde() { return GetTeam() == TEAM_HORDE; }
-        bool IsTeamAlliance() { return GetTeam() == TEAM_ALLIANCE; }
 
         bool IsInFeralForm()
         {
@@ -1660,7 +1666,7 @@ public:
         void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         
         BGScore m_bgScore;
-        uint32 m_bgTeam;
+        
         void UpdateChanceFields();
         //Honor Variables
         time_t m_fallDisabledUntil;
@@ -2145,8 +2151,6 @@ public:
         uint32 m_lastHonorResetTime;
         uint32 _fields[PLAYER_END];
         int hearth_of_wild_pct;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
-
-        uint32 m_team;
 
         uint32 m_indoorCheckTimer;
         void RemovePendingPlayer();

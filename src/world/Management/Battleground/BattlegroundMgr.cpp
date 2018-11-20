@@ -331,7 +331,7 @@ void CBattlegroundManager::HandleGetBattlegroundQueueCommand(WorldSession* m_ses
                         continue;
                     }
 
-                    if (plr->IsTeamAlliance())
+                    if (plr->isTeamAlliance())
                         ally++;
                     else
                         horde++;
@@ -440,7 +440,7 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint
             if (bg->HasFreeSlots(nteam, bg->GetType()))
             {
                 bg->AddPlayer(plr, nteam);
-                plr->SetTeam(nteam);
+                plr->setTeam(nteam);
             }
         }
     }
@@ -474,7 +474,7 @@ void CBattlegroundManager::AddPlayerToBg(CBattleground* bg, std::deque<uint32> *
     {
         if (bg->CanPlayerJoin(plr, bg->GetType()))
         {
-            bg->AddPlayer(plr, plr->GetTeam());
+            bg->AddPlayer(plr, plr->getTeam());
             ErasePlayerFromList(plr->getGuidLow(), &m_queuedPlayers[i][j]);
         }
         else
@@ -499,7 +499,7 @@ void CBattlegroundManager::AddPlayerToBgTeam(CBattleground* bg, std::deque<uint3
         Player* plr = objmgr.GetPlayer(plrguid);
         if (plr)
         {
-            plr->m_bgTeam = Team;
+            plr->setBgTeam(Team);
             bg->AddPlayer(plr, Team);
         }
         ErasePlayerFromList(plrguid, &m_queuedPlayers[i][j]);
@@ -572,16 +572,16 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     bg = iitr->second;
                     if (bg->CanPlayerJoin(plr, bg->GetType()))
                     {
-                        bg->AddPlayer(plr, plr->GetTeam());
+                        bg->AddPlayer(plr, plr->getTeam());
                         m_queuedPlayers[i][j].erase(it4);
                     }
                 }
                 else
                 {
                     if (isArena(i))
-                        tempPlayerVec[plr->GetTeam()].push_back(plrguid);
+                        tempPlayerVec[plr->getTeam()].push_back(plrguid);
                     else if (!plr->HasAura(BG_DESERTER))
-                        tempPlayerVec[plr->GetTeam()].push_back(plrguid);
+                        tempPlayerVec[plr->getTeam()].push_back(plrguid);
                 }
             }
 
@@ -624,7 +624,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                             plr = objmgr.GetPlayer(plrguid);
                             if (plr)
                             {
-                                plr->m_bgTeam = team;
+                                plr->setBgTeam(team);
                                 arena->AddPlayer(plr, team);
                                 team = arena->GetFreeTeam();
                             }
@@ -723,8 +723,8 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                             if (plr == NULL)
                                 continue;
 
-                            plr->m_bgTeam = localeTeam;
-                            arena->AddPlayer(plr, plr->m_bgTeam);
+                            plr->setBgTeam(localeTeam);
+                            arena->AddPlayer(plr, plr->getBgTeam());
                             // remove from the main queue (painful!)
                             ErasePlayerFromList(plr->getGuidLow(), &m_queuedPlayers[i][j]);
                         }
@@ -921,7 +921,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     }
 
     plr->m_bgIsQueued = false;
-    plr->m_bgTeam = plr->GetTeam();
+    plr->setBgTeam(plr->getTeam());
     plr->m_pendingBattleground = nullptr;
     SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     m_queueLock.Release();

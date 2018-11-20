@@ -100,8 +100,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if ((itemProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->GetTeam() != TEAM_HORDE ||
-        (itemProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->GetTeam() != TEAM_ALLIANCE)
+    if ((itemProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->getTeam() != TEAM_HORDE ||
+        (itemProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->getTeam() != TEAM_ALLIANCE)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
         return;
@@ -2058,10 +2058,10 @@ void WorldSession::sendInventoryList(Creature* unit)
                     if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
                         continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !_player->IsTeamHorde())
+                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !_player->isTeamHorde())
                         continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !_player->IsTeamAlliance())
+                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !_player->isTeamAlliance())
                         continue;
                 }
 

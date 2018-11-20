@@ -199,7 +199,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
                 bs = &(*itr)->m_bgScore;
                 *data << bs->KillingBlows;
 
-                *data << uint8((*itr)->m_bgTeam);
+                *data << uint8((*itr)->getBgTeam());
 
                 *data << bs->DamageDone;
                 *data << bs->HealingDone;
@@ -271,12 +271,12 @@ void CBattleground::RemovePendingPlayer(Player* plr)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    m_pendPlayers[plr->m_bgTeam].erase(plr->getGuidLow());
+    m_pendPlayers[plr->getBgTeam()].erase(plr->getGuidLow());
 
     /* send a null bg update (so they don't join) */
     BattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     plr->m_pendingBattleground = nullptr;
-    plr->m_bgTeam = plr->GetTeam();
+    plr->setBgTeam(plr->getTeam());
 }
 
 void CBattleground::OnPlayerPushed(Player* plr)
@@ -289,7 +289,7 @@ void CBattleground::OnPlayerPushed(Player* plr)
     if (plr->GetGroup() == nullptr)
     {
         if (plr->m_isGmInvisible == false)    //do not join invisible gm's into bg groups.
-            m_groups[plr->m_bgTeam]->AddMember(plr->getPlayerInfo());
+            m_groups[plr->getBgTeam()]->AddMember(plr->getPlayerInfo());
     }
 }
 
@@ -310,26 +310,26 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
         return;
     }
 
-    m_pendPlayers[plr->m_bgTeam].erase(plr->getGuidLow());
-    if (m_players[plr->m_bgTeam].find(plr) != m_players[plr->m_bgTeam].end())
+    m_pendPlayers[plr->getBgTeam()].erase(plr->getGuidLow());
+    if (m_players[plr->getBgTeam()].find(plr) != m_players[plr->getBgTeam()].end())
     {
         return;
     }
 
     plr->FullHPMP();
-    plr->SetTeam(plr->m_bgTeam);
+    plr->setTeam(plr->getBgTeam());
     if (plr->m_isGmInvisible == false)
     {
         //Do not let everyone know an invisible gm has joined.
         WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
         data << plr->getGuid();
-        DistributePacketToTeam(&data, plr->m_bgTeam);
+        DistributePacketToTeam(&data, plr->getBgTeam());
     }
     else
     {
         ++m_invisGMs;
     }
-    m_players[plr->m_bgTeam].insert(plr);
+    m_players[plr->getBgTeam()].insert(plr);
 
     /* remove from any auto queue remove events */
     sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
@@ -373,7 +373,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     if (!skip_teleport)
     {
         /* This is where we actually teleport the player to the battleground. */
-        plr->SafeTeleport(m_mapMgr, GetStartingCoords(plr->m_bgTeam));
+        plr->SafeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
         BattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->GetMapId(), Rated());     // Elapsed time is the last argument
     }
     else
@@ -635,15 +635,15 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     // Clean-up
     plr->m_bg = nullptr;
     plr->FullHPMP();
-    m_players[plr->m_bgTeam].erase(plr);
+    m_players[plr->getBgTeam()].erase(plr);
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 
     /* are we in the group? */
-    if (plr->GetGroup() == m_groups[plr->m_bgTeam])
+    if (plr->GetGroup() == m_groups[plr->getBgTeam()])
         plr->GetGroup()->RemovePlayer(plr->getPlayerInfo());
 
     // reset team
-    plr->ResetTeam();
+    plr->resetTeam();
 
     /* revive the player if he is dead */
     if (!plr->isAlive())
@@ -691,7 +691,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         this->Close();
     }
 
-    plr->m_bgTeam = plr->GetTeam();
+    plr->setBgTeam(plr->getTeam());
 }
 
 void CBattleground::SendPVPData(Player* plr)
@@ -1011,7 +1011,7 @@ void CBattleground::EventResurrectPlayers()
 
 bool CBattleground::CanPlayerJoin(Player* plr, uint32 type)
 {
-    return HasFreeSlots(plr->m_bgTeam, type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->HasAura(BG_DESERTER));
+    return HasFreeSlots(plr->getBgTeam(), type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->HasAura(BG_DESERTER));
 }
 
 bool CBattleground::CreateCorpse(Player* /*plr*/)

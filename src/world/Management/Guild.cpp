@@ -80,7 +80,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
         return;
     }
 
-    if (invitedPlayer->GetTeam() != session->GetPlayer()->GetTeam() && session->GetPlayer()->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && session->GetPlayer()->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
     {
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
         return;
@@ -646,7 +646,7 @@ void Guild::handleAcceptMember(WorldSession* session)
 {
     Player* player = session->GetPlayer();
     Player* leader = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(getLeaderGUID()));
-    if (worldConfig.player.isInterfactionGuildEnabled == false && player->GetTeam() != leader->GetTeam())
+    if (worldConfig.player.isInterfactionGuildEnabled == false && player->getTeam() != leader->getTeam())
         return;
 
     addMember(player->getGuid());

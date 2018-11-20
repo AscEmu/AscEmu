@@ -242,7 +242,7 @@ class BloodmaulQAI : public CreatureAIScript
 
         Player* pPlayer = static_cast<Player*>(mKiller);
 
-        if (pPlayer->IsTeamHorde())
+        if (pPlayer->isTeamHorde())
             pPlayer->AddQuestKill(10505, 0, 0);
         else
             pPlayer->AddQuestKill(10502, 0, 0);

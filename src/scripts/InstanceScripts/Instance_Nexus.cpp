@@ -623,7 +623,7 @@ public:
         if (!spawnsCreated())
         {
             // team spawns
-            if (player->GetTeam() == TEAM_ALLIANCE)
+            if (player->getTeam() == TEAM_ALLIANCE)
             {
                 for (uint8 i = 0; i < 18; i++)
                     spawnCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
@@ -637,7 +637,7 @@ public:
             // difficulty spawns
             if (player->GetDungeonDifficulty() == MODE_NORMAL)
             {
-                switch (player->GetTeam())
+                switch (player->getTeam())
                 {
                     case TEAM_ALLIANCE:
                         spawnCreature(CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
@@ -649,7 +649,7 @@ public:
             }
             else    // MODE_HEROIC
             {
-                switch (player->GetTeam())
+                switch (player->getTeam())
                 {
                     case TEAM_ALLIANCE:
                         spawnCreature(H_CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);

@@ -54,7 +54,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    if (playerTarget->getTeam() != _player->getTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
     {
         playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_WRONG_FACTION, 0).serialise().get());
         return;
@@ -703,7 +703,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (player_target->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.settings.player.isInterfactionTradeEnabled)
+    if (player_target->getTeam() != _player->getTeam() && GetPermissionCount() == 0 && !sWorld.settings.player.isInterfactionTradeEnabled)
     {
         sendTradeResult(TRADE_STATUS_WRONG_FACTION);
         return;

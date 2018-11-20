@@ -1119,7 +1119,7 @@ bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
     int entry;
 
-    if (pPlayer->IsTeamHorde())
+    if (pPlayer->isTeamHorde())
         entry = 12236;
     else
         entry = 12249;
@@ -1143,7 +1143,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
     int entry;
 
-    if (pPlayer->IsTeamHorde())
+    if (pPlayer->isTeamHorde())
     {
         entry = 11257;
     }
@@ -1504,7 +1504,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     }
     else
     {
-        if (pPlayer->IsTeamAlliance())
+        if (pPlayer->isTeamAlliance())
             pPlayer->AddQuestKill(10563, 2, 0);
         else
             pPlayer->AddQuestKill(10596, 2, 0);

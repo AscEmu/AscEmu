@@ -2221,7 +2221,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
         if (pVictim->IsPvPFlagged())
         {
-            uint32 team = m_Owner->GetTeam();
+            uint32 team = m_Owner->getTeam();
 
             if (team == TEAM_ALLIANCE)
                 team = TEAM_HORDE;

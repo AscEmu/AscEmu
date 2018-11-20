@@ -1696,9 +1696,9 @@ bool Unit::canSee(Object* const obj)
 
                 // If object is only visible to either faction
                 if (unitObj->GetAIInterface()->faction_visibility == 1)
-                    return static_cast<Player*>(this)->IsTeamHorde() ? true : false;
+                    return static_cast<Player*>(this)->isTeamHorde() ? true : false;
                 if (unitObj->GetAIInterface()->faction_visibility == 2)
-                    return static_cast<Player*>(this)->IsTeamHorde() ? false : true;
+                    return static_cast<Player*>(this)->isTeamHorde() ? false : true;
             }
             break;
         }

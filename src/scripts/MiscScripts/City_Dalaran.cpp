@@ -23,7 +23,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
         return;
 
         //Don't do anything with alliance players
-        if (player->IsTeamAlliance())
+        if (player->isTeamAlliance())
             return;
 
         float player_x = player->GetPositionX();
@@ -68,7 +68,7 @@ class SunreaversMageGuard : public CreatureAIScript
             return;
 
         //Don't do anything with horde players
-        if (player->IsTeamHorde())
+        if (player->isTeamHorde())
             return;
 
         float player_x = player->GetPositionX();
