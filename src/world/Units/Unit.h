@@ -636,6 +636,12 @@ public:
     virtual void setSanctuaryFlag();
     virtual void removeSanctuaryFlag();
 
+    bool isAlive() const;
+    bool justDied() const;
+    bool isDead() const;
+    virtual void setDeathState(DeathState state);
+    DeathState getDeathState() const;
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -784,16 +790,6 @@ public:
 
     void GiveGroupXP(Unit* pVictim, Player* PlayerInGroup);
 
-    /// Combat / Death Status
-    bool isAlive() { return m_deathState == ALIVE; };
-    bool justDied() const;
-    bool IsDead() { return  m_deathState != ALIVE; };
-    virtual void setDeathState(DeathState s)
-    {
-        m_deathState = s;
-        if (m_deathState == JUST_DIED) DropAurasOnDeath();
-    };
-    DeathState getDeathState() { return m_deathState; }
     void OnDamageTaken();
 
     //caller is the caster

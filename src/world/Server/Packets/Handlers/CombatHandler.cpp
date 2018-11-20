@@ -20,14 +20,14 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_ATTACKSWING: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->IsDead())
+    if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->isDead())
         return;
 
     const auto unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.guid.GetOldGuid());
     if (unitTarget == nullptr)
         return;
 
-    if (!isAttackable(_player, unitTarget, false) || unitTarget->IsDead())
+    if (!isAttackable(_player, unitTarget, false) || unitTarget->isDead())
         return;
 
     _player->smsg_AttackStart(unitTarget);

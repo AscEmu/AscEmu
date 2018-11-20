@@ -61,7 +61,7 @@ bool MastersCall(uint8_t effectIndex, Spell* pSpell)
         return true;
 
     Pet* Summon = caster->GetSummon();
-    if (Summon == NULL || Summon->IsDead())
+    if (Summon == NULL || Summon->isDead())
         return true;
 
     switch (effectIndex)

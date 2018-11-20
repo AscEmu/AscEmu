@@ -1507,7 +1507,7 @@ bool Player::HasAreaExplored(::DBC::Structures::AreaTableEntry const* at)
 
 void Player::_EventExploration()
 {
-    if (IsDead())
+    if (isDead())
         return;
 
     if (!IsInWorld())
@@ -1738,7 +1738,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         }
 
         // Small chance you die and levelup at the same time, and you enter a weird state.
-        if (IsDead())
+        if (isDead())
             ResurrectPlayer();
 
         //set full hp and mana
@@ -6715,7 +6715,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         return SPELL_FAILED_INTERRUPTED;
 
     // Check if target is already dead
-    if (target->IsDead())
+    if (target->isDead())
         return SPELL_FAILED_TARGETS_DEAD;
 
     // Check if in line of sight (need collision detection).
@@ -9744,7 +9744,7 @@ void Player::CompleteLoading()
         }
     }
 
-    if (IsDead())
+    if (isDead())
     {
         if (myCorpseInstanceId != 0)
         {
@@ -9814,7 +9814,7 @@ void Player::OnWorldPortAck()
     if (pMapinfo)
     {
         //only resurrect if player is porting to a instance portal
-        if (IsDead() && pMapinfo->type != INSTANCE_NULL)
+        if (isDead() && pMapinfo->type != INSTANCE_NULL)
             ResurrectPlayer();
 
         WorldPacket data(4);
@@ -10531,7 +10531,7 @@ void Player::UpdateComboPoints()
     if (m_comboTarget != 0)
     {
         Unit* target = (m_mapMgr != nullptr) ? m_mapMgr->GetUnit(m_comboTarget) : NULL;
-        if (!target || target->IsDead() || GetSelection() != m_comboTarget)
+        if (!target || target->isDead() || GetSelection() != m_comboTarget)
         {
             buffer[0] = buffer[1] = 0;
         }
@@ -12058,7 +12058,7 @@ uint32 Player::GetMaxPersonalRating()
 
 void Player::FullHPMP()
 {
-    if (IsDead())
+    if (isDead())
         ResurrectPlayer();
 
     setHealth(getMaxHealth());
@@ -13986,7 +13986,7 @@ uint16 Player::GetGroupStatus()
         status |= MEMBER_STATUS_PVP;
     if (getDeathState() == CORPSE)
         status |= MEMBER_STATUS_DEAD;
-    else if (IsDead())
+    else if (isDead())
         status |= MEMBER_STATUS_GHOST;
     if (isFfaPvpFlagSet())
         status |= MEMBER_STATUS_PVP_FFA;

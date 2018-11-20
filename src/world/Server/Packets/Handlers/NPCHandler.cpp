@@ -640,7 +640,7 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell
 
 void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (!_player->IsDead())
+    if (!_player->isDead())
         return;
 
     _player->DeathDurabilityLoss(0.25);

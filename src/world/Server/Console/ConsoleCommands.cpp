@@ -389,7 +389,7 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
         return true;
     }
 
-    if (player->IsDead())
+    if (player->isDead())
     {
         player->RemoteRevive();
         baseConsole->Write("Revived player %s.\r\n", player->getName().c_str());

@@ -428,7 +428,7 @@ public:
 
             Object* obj = itr;
             // Object Isn't a Unit, Unit is Dead
-            if (!obj->isCreatureOrPlayer() || static_cast<Unit*>(obj)->IsDead())
+            if (!obj->isCreatureOrPlayer() || static_cast<Unit*>(obj)->isDead())
                 continue;
 
             if (!isFriendly(obj, ptr))
@@ -5362,7 +5362,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        if (plr->IsDead())
+        if (plr->isDead())
             plr->RepopRequestedPlayer();
         return 0;
     }

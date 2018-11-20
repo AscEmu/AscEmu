@@ -2309,7 +2309,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->isDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
@@ -5460,7 +5460,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
             // unit resurrection handler
             if (unitTarget)
             {
-                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->IsDead())
+                if (unitTarget->isCreature() && unitTarget->isPet() && unitTarget->isDead())
                 {
                     uint32 hlth = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->getMaxHealth()) ? unitTarget->getMaxHealth() : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
                     uint32 mana = ((uint32)GetSpellInfo()->getEffectBasePoints(effectIndex) > unitTarget->GetMaxPower(POWER_TYPE_MANA)) ? unitTarget->GetMaxPower(POWER_TYPE_MANA) : (uint32)GetSpellInfo()->getEffectBasePoints(effectIndex);
@@ -5534,7 +5534,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
 
     if (playerTarget && !corpse)
     {
-        if (!playerTarget->m_bg || !playerTarget->IsDead())
+        if (!playerTarget->m_bg || !playerTarget->isDead())
             return;
 
         // Set all the lootable stuff on the player. If he repops before we've looted, we'll set the flags

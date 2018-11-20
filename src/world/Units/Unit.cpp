@@ -1963,3 +1963,16 @@ void Unit::removeFfaPvpFlag() {}
 bool Unit::isSanctuaryFlagSet() { return false; }
 void Unit::setSanctuaryFlag() {}
 void Unit::removeSanctuaryFlag() {}
+
+bool Unit::isAlive() const { return m_deathState == ALIVE; }
+bool Unit::isDead() const { return  m_deathState != DEAD; }
+bool Unit::justDied() const { return m_deathState == JUST_DIED; }
+
+void Unit::setDeathState(DeathState state)
+{
+    m_deathState = state;
+    if (state == JUST_DIED)
+        DropAurasOnDeath();
+}
+
+DeathState Unit::getDeathState() const { return m_deathState; }

@@ -42,7 +42,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->IsDead())
+    if (playerTarget->isDead())
     {
         playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_DEAD, 0).serialise().get());
         return;
@@ -679,7 +679,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (_player->IsDead())
+    if (_player->isDead())
     {
         sendTradeResult(TRADE_STATUS_YOU_DEAD);
         return;
@@ -697,7 +697,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (player_target->IsDead())
+    if (player_target->isDead())
     {
         sendTradeResult(TRADE_STATUS_TARGET_DEAD);
         return;

@@ -6022,7 +6022,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
             if (m_target->isCreature() && static_cast<Creature*>(m_target)->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER)
                 return;
 
-            if (m_target->IsDead())
+            if (m_target->isDead())
             {
                 Player* pCaster = m_target->GetMapMgr()->GetPlayer((uint32)m_casterGuid);
                 if (!pCaster)
@@ -8558,7 +8558,7 @@ void Aura::SpellAuraIncreaseRating(bool apply)
 
 void Aura::EventPeriodicRegenManaStatPct(uint32 perc, uint32 stat)
 {
-    if (m_target->IsDead())
+    if (m_target->isDead())
         return;
 
     uint32 mana = m_target->GetPower(POWER_TYPE_MANA) + (m_target->getStat(static_cast<uint8_t>(stat)) * perc) / 100;

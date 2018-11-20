@@ -72,7 +72,7 @@ bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (unitTarget == NULL || unitTarget->IsDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
+    if (unitTarget == NULL || unitTarget->isDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
         return false;
 
     uint32 gain = (uint32)(unitTarget->GetMaxPower(POWER_TYPE_MANA) * 0.06);

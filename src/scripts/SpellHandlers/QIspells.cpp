@@ -1067,7 +1067,7 @@ bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (target == nullptr || target->getEntry() != 29392 || target->IsDead() == false)
+    if (target == nullptr || target->getEntry() != 29392 || target->isDead() == false)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -1113,7 +1113,7 @@ bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->getEntry() != 26633 || !target->IsDead())
+    if (!target || target->getEntry() != 26633 || !target->isDead())
         return true;
 
     Player* pPlayer = pSpell->p_caster;
@@ -1135,7 +1135,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->getEntry() != 23657 && target->getEntry() != 23661 && target->getEntry() != 23662 && target->getEntry() != 23663 && target->getEntry() != 23664 && target->getEntry() != 23665 && target->getEntry() != 23666 && target->getEntry() != 23667 && target->getEntry() != 23668 && target->getEntry() != 23669 && target->getEntry() != 23670) || !target->IsDead())
+    if (!target || (target->getEntry() != 23657 && target->getEntry() != 23661 && target->getEntry() != 23662 && target->getEntry() != 23663 && target->getEntry() != 23664 && target->getEntry() != 23665 && target->getEntry() != 23666 && target->getEntry() != 23667 && target->getEntry() != 23668 && target->getEntry() != 23669 && target->getEntry() != 23670) || !target->isDead())
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 300000);
@@ -1227,7 +1227,7 @@ bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || (target->getEntry() != 29974 && target->getEntry() != 30144 && target->getEntry() != 30135) || !target->IsDead())
+    if (!target || (target->getEntry() != 29974 && target->getEntry() != 30144 && target->getEntry() != 30135) || !target->isDead())
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -1269,7 +1269,7 @@ bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     Unit* target = pSpell->GetUnitTarget();
-    if (!target || target->getEntry() != 25753 || !target->IsDead())
+    if (!target || target->getEntry() != 25753 || !target->isDead())
     {
         return true;
     }

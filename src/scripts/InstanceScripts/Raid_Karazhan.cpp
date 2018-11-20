@@ -2777,7 +2777,7 @@ class DorotheeAI : public CreatureAIScript
         Creature* Roar = getNearestCreature(-10891.115f, -1756.4898f, 90.476f, 17546);//Roar
         Creature* Tinman = getNearestCreature(-10884.501f, -1757.3249f, 90.476f, 17547); //Tinman
 
-        if ((Dorothee == NULL || Dorothee->IsDead()) && (Strawman == NULL || Strawman->IsDead()) && (Roar == NULL || Roar->IsDead()) && (Tinman == NULL || Tinman->IsDead()))
+        if ((Dorothee == NULL || Dorothee->isDead()) && (Strawman == NULL || Strawman->isDead()) && (Roar == NULL || Roar->isDead()) && (Tinman == NULL || Tinman->isDead()))
         {
             spawnCreature(18168, -10884.501f, -1757.3249f, 90.476f, 0.0f);
         }
@@ -2905,7 +2905,7 @@ class StrawmanAI : public CreatureAIScript
         Creature* Roar = getNearestCreature(-10891.115f, -1756.4898f, 90.476f, 17546);    //Roar
         Creature* Tinman = getNearestCreature(-10884.501f, -1757.3249f, 90.476f, 17547);    //Tinman
 
-        if ((Dorothee == NULL || Dorothee->IsDead()) && (Strawman == NULL || Strawman->IsDead()) && (Roar == NULL || Roar->IsDead()) && (Tinman == NULL || Tinman->IsDead()))
+        if ((Dorothee == NULL || Dorothee->isDead()) && (Strawman == NULL || Strawman->isDead()) && (Roar == NULL || Roar->isDead()) && (Tinman == NULL || Tinman->isDead()))
         {
             spawnCreature(18168, -10884.501f, -1757.3249f, 90.476f, 0.0f);
         }
@@ -2964,7 +2964,7 @@ class TinheadAI : public CreatureAIScript
         Creature* Roar = getNearestCreature(-10891.115f, -1756.4898f, 90.476f, 17546);    //Roar
         Creature* Tinman = getNearestCreature(-10884.501f, -1757.3249f, 90.476f, 17547);    //Tinman
 
-        if ((Dorothee == NULL || Dorothee->IsDead()) && (Strawman == NULL || Strawman->IsDead()) && (Roar == NULL || Roar->IsDead()) && (Tinman == NULL || Tinman->IsDead()))
+        if ((Dorothee == NULL || Dorothee->isDead()) && (Strawman == NULL || Strawman->isDead()) && (Roar == NULL || Roar->isDead()) && (Tinman == NULL || Tinman->isDead()))
         {
             spawnCreature(18168, -10884.501f, -1757.3249f, 90.476f, 0.0f);
         }
@@ -3004,7 +3004,7 @@ class RoarAI : public CreatureAIScript
         Creature* Roar = getNearestCreature(-10891.115f, -1756.4898f, 90.476f, 17546);//Roar
         Creature* Tinman = getNearestCreature(-10884.501f, -1757.3249f, 90.476f, 17547); //Tinman
 
-        if ((Dorothee == NULL || Dorothee->IsDead()) && (Strawman == NULL || Strawman->IsDead()) && (Roar == NULL || Roar->IsDead()) && (Tinman == NULL || Tinman->IsDead()))
+        if ((Dorothee == NULL || Dorothee->isDead()) && (Strawman == NULL || Strawman->isDead()) && (Roar == NULL || Roar->isDead()) && (Tinman == NULL || Tinman->isDead()))
         {
             spawnCreature(18168, -10884.501f, -1757.3249f, 90.476f, 0.0f);
         }

@@ -5157,7 +5157,7 @@ uint8 Spell::CanCast(bool tolerate)
     if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET && p_caster != nullptr)
     {
         Pet* pPet = p_caster->GetSummon();
-        if (pPet != nullptr && !pPet->IsDead())
+        if (pPet != nullptr && !pPet->isDead())
             return SPELL_FAILED_TARGET_NOT_DEAD;
     }
 

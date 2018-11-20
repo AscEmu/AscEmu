@@ -1739,7 +1739,7 @@ bool Player::logOntoTransport()
 #endif
         if (transporter)
         {
-            if (IsDead())
+            if (isDead())
             {
                 ResurrectPlayer();
                 setHealth(getMaxHealth());

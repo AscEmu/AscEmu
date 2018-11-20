@@ -800,7 +800,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     }
 
     // swap items
-    if (_player->IsDead())
+    if (_player->isDead())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(srcItem, nullptr, INV_ERR_YOU_ARE_DEAD);
         return;

@@ -608,7 +608,7 @@ class FrostTombAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (plr == nullptr || plr->IsDead() || !plr->HasAura(FROST_TOMB_SPELL))
+        if (plr == nullptr || plr->isDead() || !plr->HasAura(FROST_TOMB_SPELL))
             despawn();
     }
 

@@ -2072,7 +2072,7 @@ void AIInterface::SetUnitToFollowBackup(Unit* un)
 
 void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
-    if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
+    if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->isDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
         return;
 
     if ((pUnit->isPlayer() && m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT)) || (pUnit->isCreature() && m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT)))
@@ -2274,7 +2274,7 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr == nullptr)
                 continue;
 
-            if (tmpPlr->IsDead())
+            if (tmpPlr->isDead())
                 continue;
 
             if (tmpPlr->isOnTaxi())
@@ -4345,7 +4345,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     if (isAiState(AI_STATE_EVADE))
         return;
 
-    if (pUnit == nullptr || pUnit->IsDead() || m_Unit->IsDead())
+    if (pUnit == nullptr || pUnit->isDead() || m_Unit->isDead())
         return;
 
     // set the target first
@@ -4443,7 +4443,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
 
     if (pUnit->isCreature())
     {
-        if (pUnit->IsDead())
+        if (pUnit->isDead())
             pUnit->RemoveAllAuras();
         else
             pUnit->RemoveNegativeAuras();

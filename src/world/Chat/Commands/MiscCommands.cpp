@@ -323,7 +323,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
         auto named_player = objmgr.GetPlayer(args, false);
         if (named_player != nullptr)
         {
-            if (named_player->IsDead())
+            if (named_player->isDead())
             {
                 named_player->RemoteRevive();
                 GreenSystemMessage(m_session, "Player %s revived.", args);
@@ -350,7 +350,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
             return true;
         }
 
-        if (player_target->IsDead())
+        if (player_target->isDead())
         {
             player_target->setMoveRoot(false);
             player_target->ResurrectPlayer();

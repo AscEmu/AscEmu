@@ -1019,7 +1019,7 @@ void Unit::Update(unsigned long time_passed)
 
     RemoveGarbage();
 
-    if (!IsDead())
+    if (!isDead())
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
@@ -9889,11 +9889,6 @@ bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
     sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, duration);
 
     return true;
-}
-
-bool Unit::justDied() const
-{
-    return m_deathState == JUST_DIED;
 }
 
 int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot)

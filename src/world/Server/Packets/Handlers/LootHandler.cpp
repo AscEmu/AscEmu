@@ -413,7 +413,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (_player->IsDead())
+    if (_player->isDead())
         return;
 
     if (_player->isStealthed())

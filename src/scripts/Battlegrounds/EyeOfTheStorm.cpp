@@ -239,7 +239,7 @@ void EyeOfTheStorm::RepopPlayersOfTeam(int32 team, Creature* sh)
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
         {
             Player* r_plr = m_mapMgr->GetPlayer(*it2);
-            if (r_plr != NULL && (team < 0 || (int32)r_plr->getTeam() == team) && r_plr->IsDead())
+            if (r_plr != NULL && (team < 0 || (int32)r_plr->getTeam() == team) && r_plr->isDead())
                 HookHandleRepop(r_plr);
         }
     }
@@ -317,7 +317,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
             break;
     }
 
-    if (plr->IsDead())        // on ne buff pas les joueurs morts ;)
+    if (plr->isDead())        // on ne buff pas les joueurs morts ;)
         return;
 
     if (bonusid > -1)
