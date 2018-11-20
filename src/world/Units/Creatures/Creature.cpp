@@ -42,6 +42,89 @@
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
 
+//MIT start
+
+bool Creature::isVendor() const { return getNpcFlags() & UNIT_NPC_FLAG_VENDOR; }
+bool Creature::isTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRAINER; }
+bool Creature::isClassTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_CLASS; }
+bool Creature::isProfessionTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_PROF; }
+bool Creature::isQuestGiver() const { return getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER; }
+bool Creature::isGossip() const{ return getNpcFlags() & UNIT_NPC_FLAG_GOSSIP; }
+bool Creature::isTaxi() const { return getNpcFlags() & UNIT_NPC_FLAG_TAXIVENDOR; }
+bool Creature::isCharterGiver() const { return getNpcFlags() & UNIT_NPC_FLAG_ARENACHARTER; }
+bool Creature::isGuildBank() const { return getNpcFlags() & UNIT_NPC_FLAG_GUILD_BANK; }
+bool Creature::isBattleMaster() const { return getNpcFlags() & UNIT_NPC_FLAG_BATTLEFIELDPERSON; }
+bool Creature::isBanker() const { return getNpcFlags() & UNIT_NPC_FLAG_BANKER; }
+bool Creature::isInnkeeper() const { return getNpcFlags() & UNIT_NPC_FLAG_INNKEEPER; }
+bool Creature::isSpiritHealer() const { return getNpcFlags() & UNIT_NPC_FLAG_SPIRITHEALER; }
+bool Creature::isTabardDesigner() const { return getNpcFlags() & UNIT_NPC_FLAG_TABARDCHANGER; }
+bool Creature::isAuctioneer() const { return getNpcFlags() & UNIT_NPC_FLAG_AUCTIONEER; }
+bool Creature::isStableMaster() const { return getNpcFlags() & UNIT_NPC_FLAG_STABLEMASTER; }
+bool Creature::isArmorer() const { return getNpcFlags() & UNIT_NPC_FLAG_ARMORER; }
+
+bool Creature::isVehicle() const
+{
+    return creature_properties->vehicleid != 0;
+}
+
+bool Creature::isTrainingDummy()
+{
+    return creature_properties->isTrainingDummy;
+}
+
+bool Creature::isPvpFlagSet()
+{
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
+}
+
+void Creature::setPvpFlag()
+{
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+    summonhandler.SetPvPFlags();
+}
+
+void Creature::removePvpFlag()
+{
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
+    summonhandler.RemovePvPFlags();
+}
+
+bool Creature::isFfaPvpFlagSet()
+{
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
+}
+
+void Creature::setFfaPvpFlag()
+{
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
+    summonhandler.SetFFAPvPFlags();
+}
+
+void Creature::removeFfaPvpFlag()
+{
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
+    summonhandler.RemoveFFAPvPFlags();
+}
+
+bool Creature::isSanctuaryFlagSet()
+{
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
+}
+
+void Creature::setSanctuaryFlag()
+{
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
+    summonhandler.SetSanctuaryFlags();
+}
+
+void Creature::removeSanctuaryFlag()
+{
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
+    summonhandler.RemoveSanctuaryFlags();
+}
+
+//MIT end
+
 Creature::Creature(uint64 guid)
 {
     m_valuesCount = UNIT_END;
@@ -594,91 +677,6 @@ std::list<QuestRelation*>::iterator Creature::QuestsEnd()
 void Creature::SetQuestList(std::list<QuestRelation*>* qst_lst)
 {
     m_quests = qst_lst;
-}
-
-uint32 Creature::isVendor() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_VENDOR;
-}
-
-uint32 Creature::isTrainer() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER;
-}
-
-uint32 Creature::isClass() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_CLASS;
-}
-
-uint32 Creature::isProf() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_PROF;
-}
-
-uint32 Creature::isQuestGiver() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER;
-}
-
-uint32 Creature::isGossip() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_GOSSIP;
-}
-
-uint32 Creature::isTaxi() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_TAXIVENDOR;
-}
-
-uint32 Creature::isCharterGiver() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_ARENACHARTER;
-}
-
-uint32 Creature::isGuildBank() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_GUILD_BANK;
-}
-
-uint32 Creature::isBattleMaster() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_BATTLEFIELDPERSON;
-}
-
-uint32 Creature::isBanker() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_BANKER;
-}
-
-uint32 Creature::isInnkeeper() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_INNKEEPER;
-}
-
-uint32 Creature::isSpiritHealer() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_SPIRITHEALER;
-}
-
-uint32 Creature::isTabardDesigner() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_TABARDCHANGER;
-}
-
-uint32 Creature::isAuctioner() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_AUCTIONEER;
-}
-
-uint32 Creature::isStableMaster() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_STABLEMASTER;
-}
-
-uint32 Creature::isArmorer() const
-{
-    return getNpcFlags() & UNIT_NPC_FLAG_ARMORER;
 }
 
 uint32 Creature::GetHealthFromSpell()
@@ -1398,10 +1396,10 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (isQuestGiver())
         _LoadQuests();
 
-    if (isTrainer() | isProf())
+    if (isTrainer() | isProfessionTrainer())
         mTrainer = objmgr.GetTrainer(getEntry());
 
-    if (isAuctioner())
+    if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
@@ -1635,10 +1633,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     if (isQuestGiver())
         _LoadQuests();
 
-    if (isTrainer() | isProf())
+    if (isTrainer() | isProfessionTrainer())
         mTrainer = objmgr.GetTrainer(getEntry());
 
-    if (isAuctioner())
+    if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
@@ -2077,57 +2075,6 @@ bool Creature::HasItems()
     return ((m_SellItems != NULL) ? true : false);
 }
 
-bool Creature::isPvpFlagSet()
-{
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
-}
-
-void Creature::setPvpFlag()
-{
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
-    summonhandler.SetPvPFlags();
-}
-
-void Creature::removePvpFlag()
-{
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
-    summonhandler.RemovePvPFlags();
-}
-
-bool Creature::isFfaPvpFlagSet()
-{
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
-}
-
-void Creature::setFfaPvpFlag()
-{
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
-    summonhandler.SetFFAPvPFlags();
-}
-
-void Creature::removeFfaPvpFlag()
-{
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
-    summonhandler.RemoveFFAPvPFlags();
-}
-
-bool Creature::isSanctuaryFlagSet()
-{
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
-}
-
-void Creature::setSanctuaryFlag()
-{
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
-    summonhandler.SetSanctuaryFlags();
-}
-
-void Creature::removeSanctuaryFlag()
-{
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
-    summonhandler.RemoveSanctuaryFlags();
-}
-
 int32 Creature::GetSlotByItemId(uint32 itemid)
 {
     uint32 slot = 0;
@@ -2264,14 +2211,6 @@ bool Creature::IsExotic()
 bool Creature::isCritter()
 {
     if (creature_properties->Type == UNIT_TYPE_CRITTER)
-        return true;
-    else
-        return false;
-}
-
-bool Creature::isTrainingDummy()
-{
-    if (creature_properties->isTrainingDummy)
         return true;
     else
         return false;
@@ -2654,13 +2593,6 @@ Object* Creature::GetPlayerOwner()
     return NULL;
 }
 
-bool Creature::isVehicle() const
-{
-    if (creature_properties->vehicleid != 0)
-        return true;
-    else
-        return false;
-}
 
 void Creature::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {

@@ -297,7 +297,7 @@ Gossip::Script* Gossip::Script::GetInterface(Creature* creature)
         return &sScriptMgr.innkeeperScript_;
     else if (creature->isBanker())
         return &sScriptMgr.bankerScript_;
-    else if (creature->isClass())
+    else if (creature->isClassTrainer())
         return &sScriptMgr.classtrainerScript_;
     else if (creature->isTrainer())
     {
@@ -319,7 +319,7 @@ Gossip::Script* Gossip::Script::GetInterface(Creature* creature)
         return &sScriptMgr.stablemasterScript_;
     else if (creature->isBattleMaster())
         return &sScriptMgr.battlemasterScript_;
-    else if (creature->isAuctioner())
+    else if (creature->isAuctioneer())
         return &sScriptMgr.auctioneerScript_;
     else if (creature->isCharterGiver())
         return &sScriptMgr.chartergiverScript_;

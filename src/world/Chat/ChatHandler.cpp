@@ -711,7 +711,7 @@ std::string ChatHandler::GetNpcFlagString(Creature* creature)
         s.append(" (Battlemaster)");
     if (creature->isTrainer())
         s.append(" (Trainer)");
-    if (creature->isProf())
+    if (creature->isProfessionTrainer())
         s.append(" (Profession Trainer)");
     if (creature->isQuestGiver())
         s.append(" (Quests)");
@@ -729,7 +729,7 @@ std::string ChatHandler::GetNpcFlagString(Creature* creature)
         s.append(" (Innkeeper)");
     if (creature->isTabardDesigner())
         s.append(" (Tabard Designer)");
-    if (creature->isAuctioner())
+    if (creature->isAuctioneer())
         s.append(" (Auctioneer)");
     if (creature->isStableMaster())
         s.append(" (Stablemaster)");

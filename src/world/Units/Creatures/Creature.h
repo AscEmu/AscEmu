@@ -53,6 +53,30 @@ public:
 
     GameEvent * mEvent = nullptr;
 
+    // npc flag helper
+    bool isVendor() const;
+    bool isTrainer() const;
+    bool isClassTrainer() const;
+    bool isProfessionTrainer() const;
+    bool isQuestGiver() const;
+    bool isGossip() const;
+    bool isTaxi() const;
+    bool isCharterGiver() const;
+    bool isGuildBank() const;
+    bool isBattleMaster() const;
+    bool isBanker() const;
+    bool isInnkeeper() const;
+    bool isSpiritHealer() const;
+    bool isTabardDesigner() const;
+    bool isAuctioneer() const;
+    bool isStableMaster() const;
+    bool isArmorer() const;
+
+    //type helper
+    bool isVehicle() const override;
+    bool isTrainingDummy() override;
+
+    //pvp helper
     bool isPvpFlagSet() override;
     void setPvpFlag() override;
     void removePvpFlag() override;
@@ -71,9 +95,6 @@ public:
 
         Creature(uint64 guid);
         virtual ~Creature();
-
-        // For derived subclasses of Creature
-        bool isVehicle() const override;
 
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
@@ -151,40 +172,6 @@ public:
         std::list<QuestRelation*>::iterator QuestsBegin();
         std::list<QuestRelation*>::iterator QuestsEnd();
         void SetQuestList(std::list<QuestRelation*>* qst_lst);
-
-        uint32 isVendor() const;
-
-        uint32 isTrainer() const;
-
-        uint32 isClass() const;
-
-        uint32 isProf() const;
-
-        uint32 isQuestGiver() const;
-
-        uint32 isGossip() const;
-
-        uint32 isTaxi() const;
-
-        uint32 isCharterGiver() const;
-
-        uint32 isGuildBank() const;
-
-        uint32 isBattleMaster() const;
-
-        uint32 isBanker() const;
-
-        uint32 isInnkeeper() const;
-
-        uint32 isSpiritHealer() const;
-
-        uint32 isTabardDesigner() const;
-
-        uint32 isAuctioner() const;
-
-        uint32 isStableMaster() const;
-
-        uint32 isArmorer() const;
 
         uint32 GetHealthFromSpell();
 
@@ -290,7 +277,6 @@ public:
 
 
         bool isCritter() override;
-        bool isTrainingDummy() override;
 
         void FormationLinkUp(uint32 SqlId);
         void ChannelLinkUpGO(uint32 SqlId);
