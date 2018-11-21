@@ -9611,7 +9611,11 @@ void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
 *  \todo Validate whether this function is unsafe to call while not in world */
 void Player::UpdateArenaPoints()
 {
-    this->SetArenaCurrency(this->m_arenaPoints);
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    this->setArenaCurrency(this->m_arenaPoints);
+#endif
+#endif
 
     this->UpdateKnownCurrencies(43307, true);
 }

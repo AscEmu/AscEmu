@@ -2479,11 +2479,16 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
             m_pOwner->ModHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
             m_pOwner->m_honorPoints -= int32(item_extended_cost->honor_points * total_amount);
         }
-        if (m_pOwner->GetArenaCurrency() >= (item_extended_cost->arena_points * total_amount))
+
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+        if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
         {
-            m_pOwner->ModArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
+            m_pOwner->modArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
             m_pOwner->m_arenaPoints -= int32(item_extended_cost->arena_points * total_amount);
         }
+#endif
+#endif
     }
 }
 
@@ -2503,8 +2508,13 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
 
         if (m_pOwner->GetHonorCurrency() < (item_extended_cost->honor_points * amount))
             return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
-        if (m_pOwner->GetArenaCurrency() < (item_extended_cost->arena_points * amount))
+
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+        if (m_pOwner->getArenaCurrency() < item_extended_cost->arena_points * amount)
             return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
+#endif
+#endif
         if (m_pOwner->GetMaxPersonalRating() < item_extended_cost->personalrating)
             return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
     }

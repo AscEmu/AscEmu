@@ -547,6 +547,14 @@ public:
     void setGlyphsEnabled(uint32_t glyphs);
 #endif
 
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    uint32_t getArenaCurrency() const;
+    void setArenaCurrency(uint32_t amount);
+    void modArenaCurrency(int32_t value);
+#endif
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
@@ -1850,36 +1858,6 @@ public:
 
         void AddHonor(uint32 honorPoints, bool sendUpdate);
         void UpdateHonor();
-
-        //\todo fix this
-        void SetArenaCurrency(uint32 value)
-        {
-#if VERSION_STRING == Cata
-            if (value == 0) { return; }
-#elif VERSION_STRING == Classic
-#else
-            setUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
-#endif
-        }
-        void ModArenaCurrency(uint32 value)
-        {
-#if VERSION_STRING == Cata
-            if (value == 0) { return; }
-#elif VERSION_STRING == Classic
-#else
-            modUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
-#endif
-        }
-        uint32 GetArenaCurrency()
-        {
-#if VERSION_STRING == Cata
-            return 0;
-#elif VERSION_STRING == Classic
-            return 0;
-#else
-            return getUInt32Value(PLAYER_FIELD_ARENA_CURRENCY);
-#endif
-        }
 
         void AddArenaPoints(uint32 arenaPoints, bool sendUpdate);
         void UpdateArenaPoints();

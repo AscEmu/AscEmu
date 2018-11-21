@@ -1942,9 +1942,7 @@ bool Unit::isAttackReady(WeaponDamageType type) const
 void Unit::resetAttackTimers()
 {
     for (int8_t i = MELEE; i <= RANGED; ++i)
-    {
         setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
-    }
 }
 
 void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)
@@ -1963,6 +1961,15 @@ void Unit::removeFfaPvpFlag() {}
 bool Unit::isSanctuaryFlagSet() { return false; }
 void Unit::setSanctuaryFlag() {}
 void Unit::removeSanctuaryFlag() {}
+
+bool Unit::isSitting() const
+{
+    const auto standState = getStandState();
+    return
+        standState == STANDSTATE_SIT_CHAIR || standState == STANDSTATE_SIT_LOW_CHAIR ||
+        standState == STANDSTATE_SIT_MEDIUM_CHAIR || standState == STANDSTATE_SIT_HIGH_CHAIR ||
+        standState == STANDSTATE_SIT;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death

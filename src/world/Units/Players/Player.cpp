@@ -238,6 +238,17 @@ uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled;
 void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
 #endif
 
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+uint32_t Player::getArenaCurrency() const { return playerData()->field_arena_currency; }
+void Player::setArenaCurrency(uint32_t amount) { write(playerData()->field_arena_currency, amount); }
+void Player::modArenaCurrency(int32_t value)
+{
+    setArenaCurrency(getArenaCurrency() + value);
+}
+#endif
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

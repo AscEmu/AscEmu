@@ -267,7 +267,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     // TODO: move this to rewritten canCast() and castMe()
-    if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
+    if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !_player->isSitting())
     {
         if (_player->CombatStatus.IsInCombat() || _player->IsMounted())
         {

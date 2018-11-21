@@ -10375,16 +10375,6 @@ int32 Unit::getDetectRangeMod(uint64 guid)
     return 0;
 }
 
-bool Unit::IsSitting()
-{
-    auto s = getStandState();
-    return
-        s == STANDSTATE_SIT_CHAIR        || s == STANDSTATE_SIT_LOW_CHAIR  ||
-        s == STANDSTATE_SIT_MEDIUM_CHAIR || s == STANDSTATE_SIT_HIGH_CHAIR ||
-        s == STANDSTATE_SIT;
-}
-
-
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)

@@ -636,6 +636,8 @@ public:
     virtual void setSanctuaryFlag();
     virtual void removeSanctuaryFlag();
 
+    bool isSitting() const;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Death
 protected:
@@ -1041,8 +1043,6 @@ public:
         }
     }
     void EventChill(Unit* proc_target, bool is_victim = false);
-
-    bool IsSitting();
 
     void SetFaction(uint32 factionId)
     {
