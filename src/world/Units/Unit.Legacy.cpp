@@ -14074,8 +14074,8 @@ Unit* Unit::GetVehicleBase()
 
 void Unit::BuildMovementPacket(ByteBuffer* data)
 {
-    *data << uint32(GetUnitMovementFlags());            // movement flags
-    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
+    *data << uint32(getUnitMovementFlags());            // movement flags
+    *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
     *data << uint32(Util::getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
@@ -14084,7 +14084,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
 #if VERSION_STRING != Cata
     // 0x00000200
-    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         if (isPlayer())
         {
@@ -14107,39 +14107,39 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         *data << GetTransSeat();
 
         // TODO what is this in BC?
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transport_time2);
+        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << uint32(getMovementInfo()->transport_time2);
 #endif
     }
 
     // 0x02200000
-    if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
-        || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)GetMovementInfo()->pitch;
+    if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
+        || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+        *data << (float)getMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->fall_time;
+    *data << (uint32)getMovementInfo()->fall_time;
 #endif
     // 0x00001000
 #if VERSION_STRING != Cata
-    if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)GetMovementInfo()->redirect_velocity;
-        *data << (float)GetMovementInfo()->redirect_sin;
-        *data << (float)GetMovementInfo()->redirect_cos;
-        *data << (float)GetMovementInfo()->redirect_2d_speed;
+        *data << (float)getMovementInfo()->redirect_velocity;
+        *data << (float)getMovementInfo()->redirect_sin;
+        *data << (float)getMovementInfo()->redirect_cos;
+        *data << (float)getMovementInfo()->redirect_2d_speed;
     }
 
     // 0x04000000
-    if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->spline_elevation;
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+        *data << (float)getMovementInfo()->spline_elevation;
 #endif
 }
 
 
 void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o)
 {
-    *data << uint32(GetUnitMovementFlags());            // movement flags
-    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
+    *data << uint32(getUnitMovementFlags());            // movement flags
+    *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
     *data << uint32(Util::getMSTime());                       // time / counter
     *data << x;
     *data << y;
@@ -14148,7 +14148,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 
 #if VERSION_STRING != Cata
     // 0x00000200
-    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         // Code left commented for reference
         // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
@@ -14165,31 +14165,31 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 #ifdef FT_VEHICLES
         *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transport_time2);
+        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << uint32(getMovementInfo()->transport_time2);
 #endif
     }
 
     // 0x02200000
-    if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
-        || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)GetMovementInfo()->pitch;
+    if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
+        || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+        *data << (float)getMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->fall_time;
+    *data << (uint32)getMovementInfo()->fall_time;
 #endif
     // 0x00001000
 #if VERSION_STRING != Cata
-    if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)GetMovementInfo()->redirect_velocity;
-        *data << (float)GetMovementInfo()->redirect_sin;
-        *data << (float)GetMovementInfo()->redirect_cos;
-        *data << (float)GetMovementInfo()->redirect_2d_speed;
+        *data << (float)getMovementInfo()->redirect_velocity;
+        *data << (float)getMovementInfo()->redirect_sin;
+        *data << (float)getMovementInfo()->redirect_cos;
+        *data << (float)getMovementInfo()->redirect_2d_speed;
     }
 
     // 0x04000000
-    if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->spline_elevation;
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+        *data << (float)getMovementInfo()->spline_elevation;
 #endif
 }
 

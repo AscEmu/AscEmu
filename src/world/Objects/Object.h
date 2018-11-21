@@ -99,21 +99,21 @@ class SERVER_DECL MovementInfo
 {
     public:
 
-        MovementInfo() : move_flags(MOVEFLAG_NONE), move_flags2(MOVEFLAG2_NONE), update_time(0),
+        MovementInfo() : flags(MOVEFLAG_NONE), flags2(MOVEFLAG2_NONE), update_time(0),
             transport_time(0), transport_seat(-1), transport_time2(0), pitch_rate(0.0f), fall_time(0), spline_elevation(0.0f), byte_parameter(0) {}
 
         ObjectGuid const& getGuid() const { return guid; }
         ObjectGuid const& getGuid2() const { return guid2; }
 
-        MovementFlags getMovementFlags() const { return MovementFlags(move_flags); }
-        void addMovementFlag(MovementFlags flags) { move_flags |= flags; }
-        void setMovementFlags(MovementFlags flags) { move_flags = flags; }
-        bool hasMovementFlag(MovementFlags flags) const { return (move_flags & flags) != 0; }
-        void removeMovementFlag(MovementFlags flags) { move_flags &= ~flags; }
+        MovementFlags getMovementFlags() const { return MovementFlags(flags); }
+        void addMovementFlag(MovementFlags _flags) { flags |= _flags; }
+        void setMovementFlags(MovementFlags _flags) { flags = _flags; }
+        bool hasMovementFlag(MovementFlags _flags) const { return (flags & _flags) != 0; }
+        void removeMovementFlag(MovementFlags _flags) { flags &= ~_flags; }
 
-        MovementFlags2 getMovementFlags2() const { return MovementFlags2(move_flags2); }
-        void addMovementFlags2(MovementFlags2 flags2) { move_flags2 |= flags2; }
-        bool hasMovementFlag2(MovementFlags2 flags2) const { return (move_flags2 & flags2) != 0; }
+        MovementFlags2 getMovementFlags2() const { return MovementFlags2(flags2); }
+        void addMovementFlags2(MovementFlags2 _flags2) { flags2 |= _flags2; }
+        bool hasMovementFlag2(MovementFlags2 _flags2) const { return (flags2 & _flags2) != 0; }
 
         void setUpdateTime(uint32_t time) { update_time = time; }
         uint32_t getUpdateTime() { return update_time; }
@@ -191,13 +191,13 @@ class SERVER_DECL MovementInfo
         void readMovementInfo(ByteBuffer& data, uint16_t opcode);
         void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f) const;
 
+        uint32_t flags;
+        uint16_t flags2;
+
     private:
 
         ObjectGuid guid;
         ObjectGuid guid2;
-
-        uint32_t move_flags;
-        uint16_t move_flags2;
 
         uint32_t update_time;
 

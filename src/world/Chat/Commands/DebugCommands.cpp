@@ -192,7 +192,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "=== Misc ===");
     SystemMessage(m_session, "Attackers count: %u", attackerscount);
     SystemMessage(m_session, "=== UnitMovementFlags ===");
-    SystemMessage(m_session, "MovementFlags: %u", selected_unit->GetUnitMovementFlags());
+    SystemMessage(m_session, "MovementFlags: %u", selected_unit->getUnitMovementFlags());
 
     return true;
 }
@@ -204,7 +204,7 @@ bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session
     if (selected_unit == nullptr)
         return false;
 
-    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_HOVER))
+    if (selected_unit->hasUnitMovementFlag(MOVEFLAG_HOVER))
     {
         GreenSystemMessage(m_session, "Unset Hover for target.");
         selected_unit->setMoveHover(false);
@@ -237,7 +237,7 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
     if (selected_creature == nullptr)
         return false;
 
-    if (selected_creature->HasUnitMovementFlag(MOVEFLAG_SWIMMING))
+    if (selected_creature->hasUnitMovementFlag(MOVEFLAG_SWIMMING))
     {
         GreenSystemMessage(m_session, "Unset Swim for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
         selected_creature->setMoveSwim(false);
@@ -258,7 +258,7 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
     if (selected_creature == nullptr)
         return false;
 
-    if (selected_creature->HasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+    if (selected_creature->hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
     {
         GreenSystemMessage(m_session, "Unset Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
         selected_creature->GetAIInterface()->unsetSplineFlying();
@@ -281,7 +281,7 @@ bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* 
     if (selected_unit == nullptr)
         return false;
 
-    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+    if (selected_unit->hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
     {
         GreenSystemMessage(m_session, "Enable Gravity for target.");
         selected_unit->setMoveDisableGravity(false);
@@ -302,7 +302,7 @@ bool ChatHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_ses
     if (selected_unit == nullptr)
         return false;
 
-    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_WATER_WALK))
+    if (selected_unit->hasUnitMovementFlag(MOVEFLAG_WATER_WALK))
     {
         GreenSystemMessage(m_session, "Disable WaterWalking for target.");
         selected_unit->setMoveLandWalk();
@@ -323,7 +323,7 @@ bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_s
     if (selected_unit == nullptr)
         return false;
 
-    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_FEATHER_FALL))
+    if (selected_unit->hasUnitMovementFlag(MOVEFLAG_FEATHER_FALL))
     {
         GreenSystemMessage(m_session, "Disable FeatherFall for target.");
         selected_unit->setMoveNormalFall();

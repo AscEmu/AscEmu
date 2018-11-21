@@ -4974,7 +4974,7 @@ uint8 Spell::CanCast(bool tolerate)
                     case 67251:
                     case 71550:
                     {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_STUN | UNIT_STATE_CONFUSE) || u_caster->HasUnitMovementFlag(MOVEFLAG_ROOTED))
+                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_STUN | UNIT_STATE_CONFUSE) || u_caster->hasUnitMovementFlag(MOVEFLAG_ROOTED))
                             break;
                     } break;
 

@@ -420,7 +420,7 @@ void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
 
 void Unit::setMoveWaterWalk()
 {
-    AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
+    addUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
     if (isPlayer())
     {
@@ -448,7 +448,7 @@ void Unit::setMoveWaterWalk()
 
 void Unit::setMoveLandWalk()
 {
-    RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
+    removeUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
     if (isPlayer())
     {
@@ -476,7 +476,7 @@ void Unit::setMoveLandWalk()
 
 void Unit::setMoveFeatherFall()
 {
-    AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+    addUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
     if (isPlayer())
     {
@@ -504,7 +504,7 @@ void Unit::setMoveFeatherFall()
 
 void Unit::setMoveNormalFall()
 {
-    RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+    removeUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
     if (isPlayer())
     {
@@ -536,7 +536,7 @@ void Unit::setMoveHover(bool set_hover)
     {
         if (set_hover)
         {
-            AddUnitMovementFlag(MOVEFLAG_HOVER);
+            addUnitMovementFlag(MOVEFLAG_HOVER);
 
             WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
 #if VERSION_STRING != Cata
@@ -549,7 +549,7 @@ void Unit::setMoveHover(bool set_hover)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_HOVER);
+            removeUnitMovementFlag(MOVEFLAG_HOVER);
 
             WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
 #if VERSION_STRING != Cata
@@ -567,7 +567,7 @@ void Unit::setMoveHover(bool set_hover)
     {
         if (set_hover)
         {
-            AddUnitMovementFlag(MOVEFLAG_HOVER);
+            addUnitMovementFlag(MOVEFLAG_HOVER);
 
             setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
 
@@ -581,7 +581,7 @@ void Unit::setMoveHover(bool set_hover)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_HOVER);
+            removeUnitMovementFlag(MOVEFLAG_HOVER);
 
             setAnimationFlags(getAnimationFlags() &~UNIT_BYTE1_FLAG_HOVER);
 
@@ -602,10 +602,10 @@ void Unit::setMoveCanFly(bool set_fly)
     {
         if (set_fly)
         {
-            AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            addUnitMovementFlag(MOVEFLAG_CAN_FLY);
 
             // Remove falling flag if set
-            RemoveUnitMovementFlag(MOVEFLAG_FALLING);
+            removeUnitMovementFlag(MOVEFLAG_FALLING);
 
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
@@ -619,9 +619,9 @@ void Unit::setMoveCanFly(bool set_fly)
         else
         {
             // Remove all fly related moveflags
-            RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
-            RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
-            RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
+            removeUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            removeUnitMovementFlag(MOVEFLAG_DESCENDING);
+            removeUnitMovementFlag(MOVEFLAG_ASCENDING);
 
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
@@ -638,10 +638,10 @@ void Unit::setMoveCanFly(bool set_fly)
     {
         if (set_fly)
         {
-            AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            addUnitMovementFlag(MOVEFLAG_CAN_FLY);
 
             // Remove falling flag if set
-            RemoveUnitMovementFlag(MOVEFLAG_FALLING);
+            removeUnitMovementFlag(MOVEFLAG_FALLING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 10);
 #if VERSION_STRING != Cata
@@ -654,9 +654,9 @@ void Unit::setMoveCanFly(bool set_fly)
         else
         {
             // Remove all fly related moveflags
-            RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
-            RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
-            RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
+            removeUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            removeUnitMovementFlag(MOVEFLAG_DESCENDING);
+            removeUnitMovementFlag(MOVEFLAG_ASCENDING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 10);
 #if VERSION_STRING != Cata
@@ -675,7 +675,7 @@ void Unit::setMoveRoot(bool set_root)
     {
         if (set_root)
         {
-            AddUnitMovementFlag(MOVEFLAG_ROOTED);
+            addUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING != Cata
@@ -688,7 +688,7 @@ void Unit::setMoveRoot(bool set_root)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+            removeUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING != Cata
@@ -710,7 +710,7 @@ void Unit::setMoveRoot(bool set_root)
             m_aiInterface->m_canMove = false;
             m_aiInterface->StopMovement(100);
 
-            AddUnitMovementFlag(MOVEFLAG_ROOTED);
+            addUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
 #if VERSION_STRING != Cata
@@ -724,7 +724,7 @@ void Unit::setMoveRoot(bool set_root)
         {
             m_aiInterface->m_canMove = true;
 
-            RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+            removeUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
 #if VERSION_STRING != Cata
@@ -739,7 +739,7 @@ void Unit::setMoveRoot(bool set_root)
 
 bool Unit::isRooted() const
 {
-    return HasUnitMovementFlag(MOVEFLAG_ROOTED);
+    return hasUnitMovementFlag(MOVEFLAG_ROOTED);
 }
 
 void Unit::setMoveSwim(bool set_swim)
@@ -748,7 +748,7 @@ void Unit::setMoveSwim(bool set_swim)
     {
         if (set_swim)
         {
-            AddUnitMovementFlag(MOVEFLAG_SWIMMING);
+            addUnitMovementFlag(MOVEFLAG_SWIMMING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_START_SWIM, 10);
 #if VERSION_STRING != Cata
@@ -760,7 +760,7 @@ void Unit::setMoveSwim(bool set_swim)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_SWIMMING);
+            removeUnitMovementFlag(MOVEFLAG_SWIMMING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_STOP_SWIM, 10);
 #if VERSION_STRING != Cata
@@ -780,7 +780,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
     {
         if (disable_gravity)
         {
-            AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+            addUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
 #if VERSION_STRING != Cata
@@ -793,7 +793,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+            removeUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
 #if VERSION_STRING != Cata
@@ -810,7 +810,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
     {
         if (disable_gravity)
         {
-            AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+            addUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_DISABLE, 10);
 #if VERSION_STRING != Cata
@@ -822,7 +822,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+            removeUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_ENABLE, 10);
 #if VERSION_STRING != Cata
@@ -844,7 +844,7 @@ void Unit::setMoveWalk(bool set_walk)
     {
         if (set_walk)
         {
-            AddUnitMovementFlag(MOVEFLAG_WALK);
+            addUnitMovementFlag(MOVEFLAG_WALK);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_WALK_MODE, 10);
 #if VERSION_STRING != Cata
@@ -856,7 +856,7 @@ void Unit::setMoveWalk(bool set_walk)
         }
         else
         {
-            RemoveUnitMovementFlag(MOVEFLAG_WALK);
+            removeUnitMovementFlag(MOVEFLAG_WALK);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_RUN_MODE, 10);
 #if VERSION_STRING != Cata
@@ -1964,8 +1964,10 @@ bool Unit::isSanctuaryFlagSet() { return false; }
 void Unit::setSanctuaryFlag() {}
 void Unit::removeSanctuaryFlag() {}
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Death
 bool Unit::isAlive() const { return m_deathState == ALIVE; }
-bool Unit::isDead() const { return  m_deathState != DEAD; }
+bool Unit::isDead() const { return  m_deathState != ALIVE; }
 bool Unit::justDied() const { return m_deathState == JUST_DIED; }
 
 void Unit::setDeathState(DeathState state)
@@ -1976,3 +1978,19 @@ void Unit::setDeathState(DeathState state)
 }
 
 DeathState Unit::getDeathState() const { return m_deathState; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Movement
+
+MovementInfo* Unit::getMovementInfo() { return &movement_info; }
+
+uint32_t Unit::getUnitMovementFlags() const { return movement_info.flags; }   //checked
+void Unit::setUnitMovementFlags(uint32_t f) { movement_info.flags = f; }
+void Unit::addUnitMovementFlag(uint32_t f) { movement_info.flags |= f; }
+void Unit::removeUnitMovementFlag(uint32_t f) { movement_info.flags &= ~f; }
+bool Unit::hasUnitMovementFlag(uint32_t f) const { return (movement_info.flags & f) != 0; }
+
+//\brief: this is not uint16_t on version < wotlk
+uint16_t Unit::getExtraUnitMovementFlags() const { return movement_info.flags2; }
+void Unit::addExtraUnitMovementFlag(uint16_t f2) { movement_info.flags2 |= f2; }
+bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (movement_info.flags2 & f2) != 0; }

@@ -1612,9 +1612,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
 
             // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
-        if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+        if (pThis && pThis->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             flags2 |= MOVEFLAG_TRANSPORT;
-        else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+        else if (uThis && uThis->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             flags2 |= MOVEFLAG_TRANSPORT;
 
         if ((pThis != nullptr) && pThis->isRooted())
@@ -4065,11 +4065,11 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         {
             case MSEFlags:
                 if (hasMovementFlags)
-                    move_flags = data.readBits(30);
+                    flags = data.readBits(30);
                 break;
             case MSEFlags2:
                 if (hasMovementFlags2)
-                    move_flags2 = static_cast<uint16_t>(data.readBits(12));
+                    flags2 = static_cast<uint16_t>(data.readBits(12));
                 break;
             case MSEHasUnknownBit:
                 data.readBit();
@@ -4251,18 +4251,18 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, float cu
         switch (element)
         {
             case MSEHasMovementFlags:
-                data.writeBit(!move_flags);
+                data.writeBit(!flags);
                 break;
             case MSEHasMovementFlags2:
-                data.writeBit(!move_flags2);
+                data.writeBit(!flags2);
                 break;
             case MSEFlags:
-                if (move_flags)
-                    data.writeBits(move_flags, 30);
+                if (flags)
+                    data.writeBits(flags, 30);
                 break;
             case MSEFlags2:
-                if (move_flags2)
-                    data.writeBits(move_flags2, 12);
+                if (flags2)
+                    data.writeBits(flags2, 12);
                 break;
             case MSETimestamp:
                 if (status_info.hasTimeStamp)

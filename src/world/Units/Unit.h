@@ -636,11 +636,35 @@ public:
     virtual void setSanctuaryFlag();
     virtual void removeSanctuaryFlag();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Death
+protected:
+    DeathState m_deathState;
+
+public:
     bool isAlive() const;
     bool justDied() const;
     bool isDead() const;
     virtual void setDeathState(DeathState state);
     DeathState getDeathState() const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement
+
+    MovementInfo movement_info;
+
+    MovementInfo* getMovementInfo();
+
+    uint32_t getUnitMovementFlags() const;
+    void setUnitMovementFlags(uint32_t f);
+    void addUnitMovementFlag(uint32_t f);
+    void removeUnitMovementFlag(uint32_t f);
+    bool hasUnitMovementFlag(uint32_t f) const;
+
+    //\brief: this is not uint16_t on version < wotlk
+    uint16_t getExtraUnitMovementFlags() const;
+    void addExtraUnitMovementFlag(uint16_t f2);
+    bool hasExtraUnitMovementFlag(uint16_t f2) const;
 
     // Do not alter anything below this line
     // -------------------------------------
@@ -1288,9 +1312,6 @@ protected:
     std::list<Spell*> m_GarbageSpells;
     std::list<Pet*> m_GarbagePets;
 
-    /// Combat
-    DeathState m_deathState;
-
     // DK:pet
 
     // AI
@@ -1355,30 +1376,6 @@ public:
     void BuildMovementPacket(ByteBuffer* data);
     void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
 
-    MovementInfo* GetMovementInfo() { return &movement_info; }
 
-#if VERSION_STRING != Cata
-    uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
-    void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
-    void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
-    void RemoveUnitMovementFlag(uint32 f) { movement_info.flags &= ~f; }
-    bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) != 0; }
-
-    uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
-    void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
-    bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
-#else
-    MovementFlags GetUnitMovementFlags() const { return movement_info.getMovementFlags(); }   //checked
-    void SetUnitMovementFlags(MovementFlags f) { movement_info.setMovementFlags(f); }
-    void AddUnitMovementFlag(MovementFlags f) { movement_info.addMovementFlag(f); }
-    void RemoveUnitMovementFlag(MovementFlags f) { movement_info.removeMovementFlag(f); }
-    bool HasUnitMovementFlag(MovementFlags f) const { return (movement_info.getMovementFlags() & f) != 0; }
-
-    MovementFlags2 GetExtraUnitMovementFlags() const { return movement_info.getMovementFlags2(); }
-    void AddExtraUnitMovementFlag(MovementFlags2 f2) { movement_info.addMovementFlags2(f2); }
-    bool HasExtraUnitMovementFlag(MovementFlags2 f2) const { return (movement_info.getMovementFlags2() & f2) != 0; }
-#endif
-
-    MovementInfo movement_info;
     // AGPL End
 };
