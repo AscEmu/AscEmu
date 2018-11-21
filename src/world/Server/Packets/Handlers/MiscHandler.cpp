@@ -1497,7 +1497,9 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         if (_player->getLevel() < itemProperties->RequiredLevel)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-            _player->SetAmmoId(0);
+#if VERSION_STRING < Cata
+            _player->setAmmoId(0);
+#endif
             _player->CalcDamage();
             return;
         }
@@ -1507,7 +1509,9 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
         {
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-            _player->SetAmmoId(0);
+#if VERSION_STRING < Cata
+            _player->setAmmoId(0);
+#endif
             _player->CalcDamage();
             return;
         }
@@ -1517,7 +1521,9 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
             if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-                _player->SetAmmoId(0);
+#if VERSION_STRING < Cata
+                _player->setAmmoId(0);
+#endif
                 _player->CalcDamage();
                 return;
             }
@@ -1535,11 +1541,15 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         case DEATHKNIGHT:
 #endif
             _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
-            _player->SetAmmoId(0);
+#if VERSION_STRING < Cata
+            _player->setAmmoId(0);
+#endif
             _player->CalcDamage();
             return;
         default:
-            _player->SetAmmoId(ammoId);
+#if VERSION_STRING < Cata
+            _player->setAmmoId(ammoId);
+#endif
             _player->CalcDamage();
             break;
     }

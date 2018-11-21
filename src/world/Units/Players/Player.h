@@ -534,6 +534,11 @@ public:
     void setActionBarId(uint8_t actionBarId);
     // playerfieldbytes end
 
+#if VERSION_STRING < Cata
+    uint32_t getAmmoId() const;
+    void setAmmoId(uint32_t id);
+#endif
+
     // playerfieldbytes2 start
     uint32_t getPlayerFieldBytes2() const;
     void setPlayerFieldBytes2(uint32_t bytes);
@@ -1804,24 +1809,6 @@ public:
         {
 #if VERSION_STRING > Classic
             return getUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS);
-#else
-            return 0;
-#endif
-        }
-
-        //\todo fix this
-        void SetAmmoId(uint32 id)
-        {
-#if VERSION_STRING < Cata
-            setUInt32Value(PLAYER_AMMO_ID, id);
-#else
-            if (id == 0) { return; }
-#endif
-        }
-        uint32 GetAmmoId()
-        {
-#if VERSION_STRING < Cata
-            return getUInt32Value(PLAYER_AMMO_ID);
 #else
             return 0;
 #endif

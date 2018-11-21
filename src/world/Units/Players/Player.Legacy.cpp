@@ -6693,8 +6693,9 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         return SPELL_FAILED_NOT_SHAPESHIFT;
 
     // Check ammo
+#if VERSION_STRING < Cata
     auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = sMySQLStore.getItemProperties(GetAmmoId());
+    auto item_proto = sMySQLStore.getItemProperties(getAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
 
@@ -6709,6 +6710,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
+#endif
 
     // Player has clicked off target. Fail spell.
     if (m_curSelection != getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_targets.m_unitTarget)
@@ -6758,12 +6760,14 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         fail = SPELL_FAILED_UNIT_NOT_INFRONT;
 
     // Check ammo count
+#if VERSION_STRING < Cata
     if (!m_requiresNoAmmo && item_proto && item->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
     {
         uint32 ammocount = GetItemInterface()->GetItemCount(item_proto->ItemId);
         if (ammocount == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
+#endif
 
     // Check for too close
     if (spellid != SPELL_RANGED_WAND)  //no min limit for wands
@@ -6782,11 +6786,13 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         fail = SPELL_FAILED_OUT_OF_RANGE;
     }
 
+#if VERSION_STRING < Cata
     if (spellid == SPELL_RANGED_THROW)
     {
         if (GetItemInterface()->GetItemCount(item->getItemProperties()->ItemId) == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
+#endif
 
     if (fail > 0)  // && fail != SPELL_FAILED_OUT_OF_RANGE)
     {
@@ -10417,6 +10423,7 @@ void Player::CalcDamage()
             }
         }
 
+#if VERSION_STRING < Cata
         if (it->getItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
             //                ap_bonus = (getRangedAttackPower()+(int32)getRangedAttackPowerMods())/14000.0;
@@ -10424,16 +10431,18 @@ void Player::CalcDamage()
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->getItemProperties()->Delay;
 
-            if (GetAmmoId() && !m_requiresNoAmmo)
+            if (getAmmoId() && !m_requiresNoAmmo)
             {
-                ItemProperties const* xproto = sMySQLStore.getItemProperties(GetAmmoId());
+                ItemProperties const* xproto = sMySQLStore.getItemProperties(getAmmoId());
                 if (xproto)
                 {
                     bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->getItemProperties()->Delay) / 2000.0f;
                 }
             }
         }
-        else bonus = 0;
+        else
+#endif
+            bonus = 0;
 
         r = BaseRangedDamage[0] + delta + bonus;
         r *= tmp;

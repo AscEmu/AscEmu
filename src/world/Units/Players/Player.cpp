@@ -231,6 +231,11 @@ void Player::setPlayerFieldBytes(uint32_t bytes) { write(playerData()->player_fi
 uint8_t Player::getActionBarId() const { return playerData()->player_field_bytes.s.actionBarId; }
 void Player::setActionBarId(uint8_t actionBarId) { write(playerData()->player_field_bytes.s.actionBarId, actionBarId); }
 
+#if VERSION_STRING < Cata
+uint32_t Player::getAmmoId() const { return playerData()->ammo_id; }
+void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
+#endif
+
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
 #if VERSION_STRING > TBC
