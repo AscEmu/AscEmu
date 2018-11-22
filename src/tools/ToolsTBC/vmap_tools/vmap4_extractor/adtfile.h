@@ -52,8 +52,8 @@ struct triangle
 
 typedef struct
 {
-    float v9[16*8+1][16*8+1];
-    float v8[16*8][16*8];
+    float v9[16 * 8 + 1][16 * 8 + 1];
+    float v8[16 * 8][16 * 8];
 }Cell;
 
 typedef struct
