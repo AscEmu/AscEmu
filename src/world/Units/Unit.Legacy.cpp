@@ -7293,7 +7293,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         // mobs can dodge attacks from behind
         if (weapon_damage_type != RANGED && pVictim->m_stunned <= 0)
         {
-            dodge = pVictim->getUInt32Value(UNIT_FIELD_STAT1) / 14.5f;
+            dodge = pVictim->getStat(STAT_AGILITY) / 14.5f;
             dodge += pVictim->GetDodgeFromSpell();
         }
 

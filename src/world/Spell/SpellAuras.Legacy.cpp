@@ -2498,9 +2498,10 @@ void Aura::SpellAuraModAttackSpeed(bool apply)
     {
         if (apply)
         {
-            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + MELEE, mod->m_amount);
-            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + OFFHAND, mod->m_amount);
-            mod->fixed_amount[2] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + RANGED, mod->m_amount);
+            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
+            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
+            mod->fixed_amount[2] = m_target->getBaseAttackTime(RANGED) * mod->m_amount / 100;
+
             m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
             m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
             m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[2]);
@@ -8591,7 +8592,7 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
         for (uint32 x = 1; x < 7; x++)
         m_target->HealDoneMod[x] += mod->realamount;*/
 
-        mod->realamount = ((m_target->getUInt32Value(UNIT_FIELD_STAT4) * mod->m_amount) / 100);
+        mod->realamount = ((m_target->getStat(STAT_SPIRIT) * mod->m_amount) / 100);
 
         static_cast<Player*>(m_target)->ModifyBonuses(CRITICAL_STRIKE_RATING, mod->realamount, true);
         static_cast<Player*>(m_target)->UpdateChances();

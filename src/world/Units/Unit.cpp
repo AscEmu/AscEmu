@@ -98,9 +98,9 @@ uint32_t Unit::getPower(uint16_t index) const
 
 void Unit::setPower(uint16_t index, uint32_t value)
 {
-    uint32 maxpower = getMaxPower(index);
-    if (value > maxpower)
-        value = maxpower;
+    const uint32_t maxPower = getMaxPower(index);
+    if (value > maxPower)
+        value = maxPower;
 
     switch (index)
     {

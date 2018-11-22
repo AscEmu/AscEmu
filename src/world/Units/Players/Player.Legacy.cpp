@@ -6215,7 +6215,7 @@ void Player::UpdateStats()
     }
 
     /* modifiers */
-    RAP += m_rap_mod_pct * m_uint32Values[UNIT_FIELD_STAT3] / 100;
+    RAP += m_rap_mod_pct * getStat(STAT_INTELLECT) / 100;
 
     if (RAP < 0)
         RAP = 0;
@@ -6243,7 +6243,7 @@ void Player::UpdateStats()
     uint32 hp = getBaseHealth();
 
 #if VERSION_STRING != Classic
-    int32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
+    int32 stat_bonus = getPosStat(STAT_STAMINA) - getNegStat(STAT_STAMINA);
 #else
     int32 stat_bonus = 0;
 #endif
@@ -6293,7 +6293,7 @@ void Player::UpdateStats()
         // MP
         uint32 mana = getBaseMana();
 #if VERSION_STRING != Classic
-        stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3);
+        stat_bonus = getPosStat(STAT_INTELLECT) - getNegStat(STAT_INTELLECT);
 #endif
         if (stat_bonus < 0)
             stat_bonus = 0; // Avoid of having negative mana
@@ -7028,14 +7028,14 @@ void Player::CalcResistance(uint8_t type)
     neg += FlatResistanceModifierNeg[type];
     int32 res = BaseResistance[type] + pos - neg;
     if (type == 0)
-        res += m_uint32Values[UNIT_FIELD_STAT1] * 2; //fix armor from agi
+        res += getStat(STAT_AGILITY) * 2; //fix armor from agi
     if (res < 0)
         res = 0;
     pos += (res * ResistanceModPctPos[type]) / 100;
     neg += (res * ResistanceModPctNeg[type]) / 100;
     res = pos - neg + BaseResistance[type];
     if (type == 0)
-        res += m_uint32Values[UNIT_FIELD_STAT1] * 2; //fix armor from agi
+        res += getStat(STAT_AGILITY) * 2; //fix armor from agi
 
     // Dynamic aura 285 application, removing bonus
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
@@ -7497,7 +7497,7 @@ void Player::RegenerateHealth(bool inCombat)
         HPRegen = sGtOCTRegenHPStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
 #endif
 
-    uint32 basespirit = m_uint32Values[UNIT_FIELD_STAT4];
+    uint32 basespirit = getStat(STAT_SPIRIT);
     uint32 extraspirit = 0;
 
     if (basespirit > 50)
