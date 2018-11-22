@@ -19,6 +19,7 @@
 
 #ifndef WMO_H
 #define WMO_H
+
 #define TILESIZE (533.33333f)
 #define CHUNKSIZE ((TILESIZE) / 16.0f)
 
@@ -27,7 +28,7 @@
 #include "vec3d.h"
 #include "mpqfile.h"
 
- // MOPY flags
+// MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01
 #define WMO_MATERIAL_DETAIL          0x02
 #define WMO_MATERIAL_NO_COLLISION    0x04
@@ -40,7 +41,7 @@ class WMOInstance;
 class WMOManager;
 class MPQFile;
 
-/* for whatever reason a certain company just can't stick to one coordinate system... */
+// for whatever reason a certain company just can't stick to one coordinate system...
 static inline Vec3D fixCoords(const Vec3D &v) {
     return Vec3D(v.z, v.x, v.y);
 }

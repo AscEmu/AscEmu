@@ -27,10 +27,10 @@ bool reverse_pointer_back_to_string(char ** ptr, char * str)
         }
 
         for(i = 0; i < slen; ++i)
-            if((*ptr)[i] != str[i])
+            if ((*ptr)[i] != str[i])
                 break;
 
-        if(i == slen)
+        if (i == slen)
             return true;
         else
             (*ptr)--;
@@ -52,19 +52,19 @@ int find_string_in_buffer(char * str, size_t str_len, char * buf, size_t buf_len
             ++p;
         }
 
-        if(p == p_end)
+        if (p == p_end)
             break;
 
-        if(remaining < str_len)
+        if (remaining < str_len)
             break;
 
         for(i = 0; i < str_len; ++i)
         {
-            if(p[i] != str[i])
+            if (p[i] != str[i])
                 break;
         }
 
-        if(i == str_len)
+        if (i == str_len)
             return (int)(p - buf);
 
         *p++;
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     FILE * in = fopen( Executable, "rb");
     FILE * out = fopen( OutputFile, "w");
 
-    if( in == NULL ){
+    if ( in == NULL ){
         printf("ERROR: Couldn't open %s for reading!\n", Executable );
         printf("Exiting.\n");
         fclose(in);
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if( out == NULL ){
+    if ( out == NULL ){
         printf("ERROR: Couldn't open %s for writing!\n", OutputFile );
         printf("Exiting.\n");
         fclose(in);
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     fseek(in, 0, SEEK_SET);
 
     char * buffer = (char*)malloc(len);
-    if(!buffer)
+    if (!buffer)
     {
         fclose(in);
         flose(out);
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
         return 2;
     }
 
-    if(fread(buffer, 1, len, in) != len)
+    if (fread(buffer, 1, len, in) != len)
     {
         fclose(in);
         flose(out);
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
     printf("Searching for `%s`...", SEARCH_TEXT);
     size_t offset = find_string_in_buffer(SEARCH_TEXT, strlen(SEARCH_TEXT), buffer, len);
     printf(" at %d.\n", offset);
-    if(offset < 0)
+    if (offset < 0)
     {
         fclose(in);
         flose(out);
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
     do
     {
         // This is a terrible hack, it will most likely be incorrect later
-        if( index == INDEX_CANTDO ){
+        if ( index == INDEX_CANTDO ){
             fprintf(out, "\t%-60s = %d,\n", "SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW",index);
             index++;
             continue;
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
         name = p;
         fprintf(out, "\t%-60s = %d,\n", name,index);
         --p;
-        if(p<endp)
+        if (p<endp)
             break;
         ++index;
         reverse_pointer_back_to_string(&p, "SPELL_FAILED");
@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
         name = p;
         fprintf(out, "\t%-60s = %d,\n", name,index);
         --p;
-        if(p<endp)
+        if (p<endp)
             break;
         ++index;
         reverse_pointer_back_to_string(&p, "PETTAME");
