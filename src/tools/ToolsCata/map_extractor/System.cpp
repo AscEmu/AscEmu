@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
-
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <stdio.h>
@@ -28,10 +26,11 @@
 #include <cstring>
 
 #ifdef _WIN32
-#include "direct.h"
+    #include "direct.h"
 #else
-#include <sys/stat.h>
-#include <unistd.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #include "StormLib.h"
@@ -52,9 +51,9 @@
 #endif
 
 #ifdef O_LARGEFILE
-#define OPEN_FLAGS (O_RDONLY | O_BINARY | O_LARGEFILE)
+    #define OPEN_FLAGS (O_RDONLY | O_BINARY | O_LARGEFILE)
 #else
-#define OPEN_FLAGS (O_RDONLY | O_BINARY)
+    #define OPEN_FLAGS (O_RDONLY | O_BINARY)
 #endif
 
 HANDLE WorldMpq = NULL;
@@ -305,7 +304,7 @@ uint32 ReadMapDBC()
 
     SFileCloseFile(dbcFile);
     printf("Done! (%u maps loaded)\n", uint32(map_count));
-    return map_count;
+    return static_cast<uint32_t>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -326,7 +325,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    maxAreaId = dbc.getMaxId();
+    size_t maxAreaId = dbc.getMaxId();
     areas = new uint16[maxAreaId + 1];
 
     for (uint32 x = 0; x < area_count; ++x)

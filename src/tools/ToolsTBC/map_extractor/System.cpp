@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
-
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "../../src/world/WorldConf.h"
@@ -29,10 +27,11 @@
 #include <cstdlib>
 
 #ifdef _WIN32
-#include "direct.h"
+    #include "direct.h"
 #else
-#include <sys/stat.h>
-#include <unistd.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #include "dbcfile.h"
@@ -129,7 +128,7 @@ void CreateDir(std::string const& path)
 bool FileExists( const char* FileName )
 {
     int fp = _open(FileName, OPEN_FLAGS);
-    if(fp != -1)
+    if (fp != -1)
     {
         _close(fp);
         return true;
@@ -160,7 +159,7 @@ void HandleArgs(int argc, char * arg[])
         // e - extract only MAP(1)/DBC(2) - standard both(3)
         // f - use float to int conversion
         // h - limit minimum height
-        if(arg[c][0] != '-')
+        if (arg[c][0] != '-')
             Usage(arg[0]);
 
         switch(arg[c][1])
@@ -184,16 +183,16 @@ void HandleArgs(int argc, char * arg[])
                     Usage(arg[0]);
                 break;
             case 'f':
-                if(c + 1 < argc)                            // all ok
+                if (c + 1 < argc)                            // all ok
                     CONF_allow_float_to_int=atoi(arg[(c++) + 1])!=0;
                 else
                     Usage(arg[0]);
                 break;
             case 'e':
-                if(c + 1 < argc)                            // all ok
+                if (c + 1 < argc)                            // all ok
                 {
                     CONF_extract=atoi(arg[(c++) + 1]);
-                    if(!(CONF_extract > 0 && CONF_extract < 4))
+                    if (!(CONF_extract > 0 && CONF_extract < 4))
                         Usage(arg[0]);
                 }
                 else
@@ -210,7 +209,7 @@ uint32 ReadBuild(int locale)
     //printf("Read %s file... ", filename.c_str());
 
     MPQFile m(filename.c_str());
-    if(m.isEof())
+    if (m.isEof())
     {
         printf("Fatal error: Not found %s file!\n", filename.c_str());
         exit(1);
@@ -245,7 +244,7 @@ uint32 ReadMapDBC()
     printf("Read Map.dbc file... ");
     DBCFile dbc("DBFilesClient\\Map.dbc");
 
-    if(!dbc.open())
+    if (!dbc.open())
     {
         printf("Fatal error: Invalid Map.dbc file format!\n");
         exit(1);
@@ -277,7 +276,7 @@ void ReadAreaTableDBC()
     printf("Read AreaTable.dbc file...");
     DBCFile dbc("DBFilesClient\\AreaTable.dbc");
 
-    if(!dbc.open())
+    if (!dbc.open())
     {
         printf("Fatal error: Invalid AreaTable.dbc file format!\n");
         exit(1);
@@ -300,7 +299,7 @@ void ReadLiquidTypeTableDBC()
 {
     printf("Read LiquidType.dbc file...");
     DBCFile dbc("DBFilesClient\\LiquidType.dbc");
-    if(!dbc.open())
+    if (!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
         exit(1);
@@ -444,9 +443,9 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
         {
             adt_MCNK * cell = cells->getMCNK(i,j);
             uint32 areaid = cell->areaid;
-            if(areaid && areaid <= maxAreaId)
+            if (areaid && areaid <= maxAreaId)
             {
-                if(areas[areaid] != 0xffff)
+                if (areas[areaid] != 0xffff)
                 {
                     area_flags[i][j] = areas[areaid];
                     continue;
@@ -465,7 +464,7 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
     {
         for(int x=0;x<ADT_CELLS_PER_GRID;x++)
         {
-            if(area_flags[y][x]!=areaflag)
+            if (area_flags[y][x]!=areaflag)
             {
                 fullAreaData = true;
                 break;
@@ -1015,13 +1014,13 @@ void ExtractMapsFromMpq(uint32 build)
 bool ExtractFile( char const* mpq_name, std::string const& filename )
 {
     FILE *output = fopen(filename.c_str(), "wb");
-    if(!output)
+    if (!output)
     {
         printf("Can't create the output file '%s'\n", filename.c_str());
         return false;
     }
     MPQFile m(mpq_name);
-    if(!m.isEof())
+    if (!m.isEof())
         fwrite(m.getPointer(), 1, m.getSize(), output);
 
     fclose(output);
@@ -1047,7 +1046,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     std::string path = output_path;
     path += "/dbc/";
     CreateDir(path);
-    if(!basicLocale)
+    if (!basicLocale)
     {
         path += Locales[locale];
         path += "/";
@@ -1069,7 +1068,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
         std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
 
-        if(FileExists(filename.c_str()))
+        if (FileExists(filename.c_str()))
             continue;
 
         if (ExtractFile(iter->c_str(), filename))
@@ -1088,11 +1087,11 @@ void LoadLocaleMPQFiles(int const locale)
     for(int i = 1; i < 5; ++i)
     {
         char ext[3] = "";
-        if(i > 1)
+        if (i > 1)
             sprintf(ext, "-%i", i);
 
         sprintf(filename,"%s/Data/%s/patch-%s%s.MPQ", input_path, Locales[locale], Locales[locale], ext);
-        if(FileExists(filename))
+        if (FileExists(filename))
             new MPQArchive(filename);
     }
 }
@@ -1104,7 +1103,7 @@ void LoadCommonMPQFiles()
     for(int i = 0; i < count; ++i)
     {
         sprintf(filename, "%s/Data/%s", input_path, CONF_mpq_list[i]);
-        if(FileExists(filename))
+        if (FileExists(filename))
             new MPQArchive(filename);
     }
 }
@@ -1136,7 +1135,7 @@ int main(int argc, char * arg[])
             //Open MPQs
             LoadLocaleMPQFiles(i);
 
-            if((CONF_extract & EXTRACT_DBC) == 0)
+            if ((CONF_extract & EXTRACT_DBC) == 0)
             {
                 FirstLocale = i;
                 build = ReadBuild(FirstLocale);
@@ -1145,7 +1144,7 @@ int main(int argc, char * arg[])
             }
 
             //Extract DBC files
-            if(FirstLocale < 0)
+            if (FirstLocale < 0)
             {
                 FirstLocale = i;
                 build = ReadBuild(FirstLocale);
@@ -1160,7 +1159,7 @@ int main(int argc, char * arg[])
         }
     }
 
-    if(FirstLocale < 0)
+    if (FirstLocale < 0)
     {
         printf("No locales detected\n");
         return 0;
