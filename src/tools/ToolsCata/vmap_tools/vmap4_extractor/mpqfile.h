@@ -73,7 +73,7 @@ class MPQFile
     void operator=(const MPQFile &f);
 
 public:
-    MPQFile(HANDLE mpq, const char* filename, bool warnNoExist = true);    // filenames are not case sensitive
+    MPQFile(HANDLE mpq, const char* filename, bool warnNoExist = true); // filenames are not case sensitive
     ~MPQFile() {
         close();
     }

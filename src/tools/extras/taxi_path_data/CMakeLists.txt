@@ -3,7 +3,7 @@
 file(GLOB taxi_path_data_sources *.cpp *.h)
 
 set(taxi_path_SRCS
-  ${taxi_path_data_sources}
+    ${taxi_path_data_sources}
 )
 
 if(NOT WIN32 AND NOT IS_64BIT)
@@ -11,8 +11,8 @@ if(NOT WIN32 AND NOT IS_64BIT)
 endif()
 
 include_directories(
-   ${LOADLIB_PATH}
-   )
+    ${LOADLIB_PATH}
+    )
 
 add_executable(taxi_path_data ${taxi_path_SRCS})
 target_link_libraries(taxi_path_data ${ZLIB_LIBRARIES})

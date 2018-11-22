@@ -80,7 +80,7 @@ bool WDTFile::init(char* /*map_id*/, unsigned int mapID)
                 WDT.read(buf, size);
                 char *p = buf;
                 int q = 0;
-                gWmoInstansName = new string[size];
+                gWmoInstansName = new std::string[size];
                 while (p < buf + size)
                 {
                     char* s = wdtGetPlainName(p);
@@ -123,7 +123,7 @@ WDTFile::~WDTFile(void)
 
 ADTFile* WDTFile::GetMap(int x, int z)
 {
-    if (!(x >= 0 && z >= 0 && x<64 && z<64))
+    if (!(x >= 0 && z >= 0 && x < 64 && z < 64))
         return NULL;
 
     char name[512];
