@@ -2510,7 +2510,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
                     //null check was made before like 2 times already :P
                     if (ospinfo)
-                        dmg_overwrite[0] = (ospinfo->getEffectBasePoints(2) + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
+                        dmg_overwrite[0] = (ospinfo->getEffectBasePoints(2) + 1) * getMaxPower(POWER_TYPE_MANA) / 100;
                 }
                 break;
                 // warlock - Unstable Affliction
@@ -6783,7 +6783,7 @@ void Unit::RegeneratePower(bool isinterrupted)
         uint8_t powertype = getPowerType();
         float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
-        SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
+        setPower(powertype, static_cast<int32>(getPower(powertype) + amount));
     }
 
     //druids regen every tick, which is every 100ms, at one energy, as of 3.0.2
@@ -6837,23 +6837,21 @@ void Unit::RegeneratePower(bool isinterrupted)
             case POWER_TYPE_FOCUS:
             {
                 m_P_regenTimer = 350; // This seems to be the exact Blizzlike timer
-                uint32 cur = GetPower(POWER_TYPE_FOCUS);
-                uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
+                uint32 cur = getPower(POWER_TYPE_FOCUS);
+                uint32 mm = getMaxPower(POWER_TYPE_FOCUS);
                 if (cur >= mm)
                     return;
                 cur += 2;
-                SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
+                setPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
             }
             break;
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK
             case POWER_TYPE_RUNIC_POWER:
             {
                 if (!CombatStatus.IsInCombat())
                 {
-#if VERSION_STRING == WotLK
                     uint32 cur = getUInt32Value(UNIT_FIELD_POWER7);
-                    SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
-#endif
+                    setPower(POWER_TYPE_RUNIC_POWER, cur - 20);
                 }
             }
             break;
@@ -8125,7 +8123,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
-            uint32 amount = static_cast<uint32>(owner->GetMaxPower(POWER_TYPE_MANA) * 0.05f);
+            uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
             if (owner != NULL)
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
@@ -8293,9 +8291,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         //float p = (1 + (TO<Player*>(this)->rageFromDamageDealt / 100.0f));
         //LOG_DEBUG("Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val);
 
-        ModPower(POWER_TYPE_RAGE, (int32)val);
-        if (GetPower(POWER_TYPE_RAGE) > 1000)
-            ModPower(POWER_TYPE_RAGE, 1000 - GetPower(POWER_TYPE_RAGE));
+        modPower(POWER_TYPE_RAGE, (int32)val);
+        if (getPower(POWER_TYPE_RAGE) > 1000)
+            modPower(POWER_TYPE_RAGE, 1000 - getPower(POWER_TYPE_RAGE));
 
     }
 
@@ -10280,7 +10278,7 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
         return 0;
     //mana shield group->16. the only
 
-    uint32 mana = GetPower(POWER_TYPE_MANA);
+    uint32 mana = getPower(POWER_TYPE_MANA);
     int32 effectbonus = SM_PEffectBonus ? SM_PEffectBonus[16] : 0;
 
     int32 potential = (mana * 50) / ((100 + effectbonus));
@@ -12710,13 +12708,13 @@ void Unit::Energize(Unit* target, uint32 SpellId, uint32 amount, uint32 type)
     if (!target || !SpellId || !amount)
         return;
 
-    uint32 cur = target->GetPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
-    uint32 max = target->GetMaxPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
+    uint32 cur = target->getPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
+    uint32 max = target->getMaxPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
 
     if (cur + amount > max)
         amount = max - cur;
 
-    target->SetPower(POWER_TYPE_MANA + type, cur + amount);
+    target->setPower(POWER_TYPE_MANA + type, cur + amount);
 
     Spell::SendHealManaSpellOnPlayer(this, target, amount, type, SpellId);
 }
@@ -13400,18 +13398,6 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             pGroup->Unlock();
         }
     }
-}
-
-void Unit::SetPower(uint32 type, int32 value)
-{
-    uint32 maxpower = getUInt32Value(static_cast<uint16_t>(UNIT_FIELD_MAXPOWER1 + type));
-
-    if (value < 0)
-        value = 0;
-    else if (value > (int32)maxpower)
-        value = maxpower;
-
-    setUInt32Value(static_cast<uint16_t>(UNIT_FIELD_POWER1 + type), value);
 }
 
 void Unit::SendPowerUpdate(bool self)

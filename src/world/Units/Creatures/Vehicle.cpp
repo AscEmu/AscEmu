@@ -92,14 +92,14 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
         case POWER_TYPE_OOZE:
         case POWER_TYPE_WRATH:
             vehicleOwner->setPowerType(POWER_TYPE_ENERGY);
-            vehicleOwner->SetMaxPower(POWER_TYPE_ENERGY, 100);
-            vehicleOwner->SetPower(POWER_TYPE_ENERGY, 100);
+            vehicleOwner->setMaxPower(POWER_TYPE_ENERGY, 100);
+            vehicleOwner->setPower(POWER_TYPE_ENERGY, 100);
             break;
 
         case POWER_TYPE_PYRITE:
             vehicleOwner->setPowerType(POWER_TYPE_ENERGY);
-            vehicleOwner->SetMaxPower(POWER_TYPE_ENERGY, 50);
-            vehicleOwner->SetPower(POWER_TYPE_ENERGY, 50);
+            vehicleOwner->setMaxPower(POWER_TYPE_ENERGY, 50);
+            vehicleOwner->setPower(POWER_TYPE_ENERGY, 50);
             break;
     }
 

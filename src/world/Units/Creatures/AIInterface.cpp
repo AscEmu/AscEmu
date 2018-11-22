@@ -3164,12 +3164,12 @@ AI_Spell* AIInterface::getSpell()
                         {
                             case POWER_TYPE_MANA:
                             {
-                                if (m_Unit->GetPower(POWER_TYPE_MANA) < sp->spell->getManaCost())
+                                if (m_Unit->getPower(POWER_TYPE_MANA) < sp->spell->getManaCost())
                                     continue;
                             } break;
                             case POWER_TYPE_FOCUS:
                             {
-                                if (m_Unit->GetPower(POWER_TYPE_FOCUS) < sp->spell->getManaCost())
+                                if (m_Unit->getPower(POWER_TYPE_FOCUS) < sp->spell->getManaCost())
                                     continue;
                             } break;
                         }
@@ -4926,9 +4926,9 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->setMaxHealth(health);
             m_Unit->setBaseHealth(health);
 
-            m_Unit->SetMaxPower(POWER_TYPE_MANA, properties_difficulty->Mana);
+            m_Unit->setMaxPower(POWER_TYPE_MANA, properties_difficulty->Mana);
             m_Unit->setBaseMana(properties_difficulty->Mana);
-            m_Unit->SetPower(POWER_TYPE_MANA, properties_difficulty->Mana);
+            m_Unit->setPower(POWER_TYPE_MANA, properties_difficulty->Mana);
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 

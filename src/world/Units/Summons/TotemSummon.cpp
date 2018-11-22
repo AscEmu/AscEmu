@@ -45,8 +45,8 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
         displayID = creature_properties->Male_DisplayID;
 
     // Set up the creature.
-    SetMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
-    SetPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
+    setMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
+    setPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
     setLevel(pOwner->getLevel());
     setRace(0);
     setClass(1);

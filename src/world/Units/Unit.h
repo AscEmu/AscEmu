@@ -276,11 +276,19 @@ public:
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
 
+    uint32_t getPower(uint16_t index) const;
+    void setPower(uint16_t index, uint32_t value);
+    void modPower(uint16_t index, int32_t value);
+
     uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
     void modMaxHealth(int32_t maxHealth);
 
     void setMaxMana(uint32_t maxMana);
+
+    uint32_t getMaxPower(uint16_t index) const;
+    void setMaxPower(uint16_t index, uint32_t value);
+    void modMaxPower(uint16_t index, int32_t value);
 
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
@@ -1068,10 +1076,10 @@ public:
 
     int GetManaPct()
     {
-        if (GetPower(0) == 0 || GetMaxPower(0) == 0)  //POWER_TYPE_MANA
+        if (getPower(0) == 0 || getMaxPower(0) == 0)  //POWER_TYPE_MANA
             return 0;
 
-        return (int)(GetPower(0) * 100 / GetMaxPower(0));
+        return (int)(getPower(0) * 100 / getMaxPower(0));
     };
 
     //In-Range
@@ -1244,36 +1252,6 @@ public:
     void SetDodgeFromSpell(float value) { m_dodgefromspell = value; }
 
     void AggroPvPGuards();
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Unit properties
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-    void SetPower(uint32 type, int32 value);
-
-    void ModPower(uint16_t index, int32 value)
-    {
-        int32 power = static_cast<int32>(getUInt32Value(UNIT_FIELD_POWER1 + index));
-        int32 maxpower = static_cast<int32>(getUInt32Value(UNIT_FIELD_MAXPOWER1 + index));
-
-        if (value <= power)
-            setUInt32Value(UNIT_FIELD_POWER1 + index, 0);
-        else
-            setUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
-
-        if ((value + power) > maxpower)
-            setUInt32Value(UNIT_FIELD_POWER1 + index, maxpower);
-        else
-            setUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
-    }
-
-    uint32 GetPower(uint16_t index) { return getUInt32Value(UNIT_FIELD_POWER1 + index); }
-
-    void SetMaxPower(uint16_t index, uint32 value) { setUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
-
-    void ModMaxPower(uint16_t index, int32 value) { modUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
-
-    uint32 GetMaxPower(uint16_t index) { return getUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

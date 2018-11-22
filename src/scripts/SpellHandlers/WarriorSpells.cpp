@@ -34,7 +34,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     Player* Caster = pSpell->p_caster;
     Unit* Target = pSpell->GetUnitTarget();
 
-    uint32 rage = Caster->GetPower(POWER_TYPE_RAGE);
+    uint32 rage = Caster->getPower(POWER_TYPE_RAGE);
 
     if (Caster->HasAura(58367))     // Glyph of Execution: Your Execute ability deals damage as if you had 10 additional rage.
     {
@@ -146,7 +146,7 @@ bool Charge(uint8_t effectIndex, Spell* s)
     }
 
     // Add the rage to the caster
-    s->u_caster->ModPower(POWER_TYPE_RAGE, rage_to_gen);
+    s->u_caster->modPower(POWER_TYPE_RAGE, rage_to_gen);
 
     return true;
 }

@@ -1032,7 +1032,7 @@ void Creature::CalcStat(uint8_t type)
                 uint32 res = mana + bonus;
 
                 if (res < mana) res = mana;
-                SetMaxPower(POWER_TYPE_MANA, res);
+                setMaxPower(POWER_TYPE_MANA, res);
             }
 #endif
         }
@@ -1074,8 +1074,8 @@ void Creature::RegenerateMana()
     if (m_interruptRegen)
         return;
 
-    uint32 cur = GetPower(POWER_TYPE_MANA);
-    uint32 mm = GetMaxPower(POWER_TYPE_MANA);
+    uint32 cur = getPower(POWER_TYPE_MANA);
+    uint32 mm = getMaxPower(POWER_TYPE_MANA);
     if (cur >= mm)return;
     amt = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
 
@@ -1087,9 +1087,9 @@ void Creature::RegenerateMana()
         cur += (uint32)amt;
 
     if (cur >= mm)
-        SetPower(POWER_TYPE_MANA, mm);
+        setPower(POWER_TYPE_MANA, mm);
     else
-        SetPower(POWER_TYPE_MANA, cur);
+        setPower(POWER_TYPE_MANA, cur);
 }
 
 void Creature::RegenerateFocus()
@@ -1097,13 +1097,13 @@ void Creature::RegenerateFocus()
     if (m_interruptRegen)
         return;
 
-    uint32 cur = GetPower(POWER_TYPE_FOCUS);
-    uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
+    uint32 cur = getPower(POWER_TYPE_FOCUS);
+    uint32 mm = getMaxPower(POWER_TYPE_FOCUS);
     if (cur >= mm)return;
     float regenrate = worldConfig.getFloatRate(RATE_POWER3);
     float amt = 25.0f * PctPowerRegenModifier[POWER_TYPE_FOCUS] * regenrate;
     cur += (uint32)amt;
-    SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
+    setPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
 }
 
 void Creature::CallScriptUpdate()
@@ -1318,9 +1318,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setMaxHealth(health);
     setBaseHealth(health);
 
-    SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
+    setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
     setBaseMana(creature_properties->Mana);
-    SetPower(POWER_TYPE_MANA, creature_properties->Mana);
+    setPower(POWER_TYPE_MANA, creature_properties->Mana);
 
 
     setDisplayId(spawn->displayid);
@@ -1578,9 +1578,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setMaxHealth(health);
     setBaseHealth(health);
 
-    SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
+    setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
     setBaseMana(creature_properties->Mana);
-    SetPower(POWER_TYPE_MANA, creature_properties->Mana);
+    setPower(POWER_TYPE_MANA, creature_properties->Mana);
 
     uint32 model = 0;
     uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&model);

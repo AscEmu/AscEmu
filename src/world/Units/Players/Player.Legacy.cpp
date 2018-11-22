@@ -879,21 +879,21 @@ bool Player::Create(CharCreate& charCreateContent)
     //setScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     setScale(1.0f);
     setHealth(info->health);
-    SetPower(POWER_TYPE_MANA, info->mana);
-    SetPower(POWER_TYPE_RAGE, 0);
-    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-    SetPower(POWER_TYPE_ENERGY, info->energy);
+    setPower(POWER_TYPE_MANA, info->mana);
+    setPower(POWER_TYPE_RAGE, 0);
+    setPower(POWER_TYPE_FOCUS, info->focus); // focus
+    setPower(POWER_TYPE_ENERGY, info->energy);
 
     setMaxHealth(info->health);
-    SetMaxPower(POWER_TYPE_MANA, info->mana);
-    SetMaxPower(POWER_TYPE_RAGE, info->rage);
-    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
+    setMaxPower(POWER_TYPE_MANA, info->mana);
+    setMaxPower(POWER_TYPE_RAGE, info->rage);
+    setMaxPower(POWER_TYPE_FOCUS, info->focus);
+    setMaxPower(POWER_TYPE_ENERGY, info->energy);
 
-#if VERSION_STRING >= WotLK
-    SetPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+#if VERSION_STRING == WotLK
+    setPower(POWER_TYPE_RUNES, 8);
+    setMaxPower(POWER_TYPE_RUNES, 8);
+    setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
 #endif
 
     //THIS IS NEEDED
@@ -1105,7 +1105,7 @@ bool Player::Create(CharCreate& charCreateContent)
 
     sHookInterface.OnCharacterCreate(this);
     load_health = getHealth();
-    load_mana = GetPower(POWER_TYPE_MANA);
+    load_mana = getPower(POWER_TYPE_MANA);
     return true;
 }
 
@@ -1743,7 +1743,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
         //set full hp and mana
         setHealth(getMaxHealth());
-        SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
+        setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
 
         // if warlock has summoned pet, increase its level too
         if (info->class_ == WARLOCK)
@@ -3109,11 +3109,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setScale(1.0f);
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
-    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-    SetPower(POWER_TYPE_ENERGY, info->energy);
-    SetMaxPower(POWER_TYPE_RAGE, info->rage);
-    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
+    setPower(POWER_TYPE_FOCUS, info->focus); // focus
+    setPower(POWER_TYPE_ENERGY, info->energy);
+    setMaxPower(POWER_TYPE_RAGE, info->rage);
+    setMaxPower(POWER_TYPE_FOCUS, info->focus);
+    setMaxPower(POWER_TYPE_ENERGY, info->energy);
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
@@ -3855,14 +3855,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
-    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-    SetPower(POWER_TYPE_ENERGY, info->energy);
-    SetPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RAGE, info->rage);
-    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
-    SetMaxPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+    setPower(POWER_TYPE_FOCUS, info->focus); // focus
+    setPower(POWER_TYPE_ENERGY, info->energy);
+#if VERSION_STRING == WotLK
+    setPower(POWER_TYPE_RUNES, 8);
+#endif
+    setMaxPower(POWER_TYPE_RAGE, info->rage);
+    setMaxPower(POWER_TYPE_FOCUS, info->focus);
+    setMaxPower(POWER_TYPE_ENERGY, info->energy);
+#if VERSION_STRING == WotLK
+    setMaxPower(POWER_TYPE_RUNES, 8);
+    setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+#endif
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
@@ -4691,7 +4695,7 @@ void Player::OnPushToWorld()
     sWeatherMgr.SendWeather(this);
 
     setHealth((load_health > getMaxHealth() ? getMaxHealth() : load_health));
-    SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
+    setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
         GetItemInterface()->CheckAreaItems();
@@ -4797,7 +4801,7 @@ void Player::OnPushToWorld()
     sWeatherMgr.SendWeather(this);
 
     setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
-    SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
+    setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
         GetItemInterface()->CheckAreaItems();
@@ -4832,7 +4836,7 @@ void Player::RemoveFromWorld()
         event_RemoveEvents(EVENT_PLAYER_EJECT_FROM_INSTANCE);
 
     load_health = getHealth();
-    load_mana = GetPower(POWER_TYPE_MANA);
+    load_mana = getPower(POWER_TYPE_MANA);
 
     if (m_bg)
         m_bg->RemovePlayer(this, true);
@@ -5454,7 +5458,7 @@ void Player::ResurrectPlayer()
     if (m_resurrectHealth)
         setHealth((uint32)std::min(m_resurrectHealth, getMaxHealth()));
     if (m_resurrectMana)
-        SetPower(POWER_TYPE_MANA, m_resurrectMana);
+        setPower(POWER_TYPE_MANA, m_resurrectMana);
 
     m_resurrectHealth = m_resurrectMana = 0;
 
@@ -5512,10 +5516,10 @@ void Player::KillPlayer()
     setDynamicFlags(0);
 
     if (getClass() == WARRIOR)   // Rage resets on death
-        SetPower(POWER_TYPE_RAGE, 0);
-#if VERSION_STRING > TBC
+        setPower(POWER_TYPE_RAGE, 0);
+#if VERSION_STRING == WotLK
     else if (getClass() == DEATHKNIGHT)
-        SetPower(POWER_TYPE_RUNIC_POWER, 0);
+        setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
 
     summonhandler.RemoveAllSummons();
@@ -6313,10 +6317,10 @@ void Player::UpdateStats()
             else // no disconnect, set it to the cap instead
                 res = worldConfig.limit.maxManaCap;
         }
-        SetMaxPower(POWER_TYPE_MANA, res);
+        setMaxPower(POWER_TYPE_MANA, res);
 
-        if (GetPower(POWER_TYPE_MANA) > res)
-            SetPower(POWER_TYPE_MANA, res);
+        if (getPower(POWER_TYPE_MANA) > res)
+            setPower(POWER_TYPE_MANA, res);
 
         uint32 level = getLevel();
         if (level > DBC_PLAYER_LEVEL_CAP)
@@ -7435,8 +7439,8 @@ void Player::CalcStat(uint8_t type)
 
 void Player::RegenerateMana(bool is_interrupted)
 {
-    uint32 cur = GetPower(POWER_TYPE_MANA);
-    uint32 mm = GetMaxPower(POWER_TYPE_MANA);
+    uint32 cur = getPower(POWER_TYPE_MANA);
+    uint32 mm = getMaxPower(POWER_TYPE_MANA);
     if (cur >= mm)
         return;
 
@@ -7459,15 +7463,15 @@ void Player::RegenerateMana(bool is_interrupted)
     else
         cur += float2int32(amt);
 
-    //    Unit::SetPower() will call Object::SetUInt32Value(), which will (for players) call SendPowerUpdate(),
+    //    Unit::setPower() will call Object::SetUInt32Value(), which will (for players) call SendPowerUpdate(),
     //    which can be slightly out-of-sync with client regeneration [with latency] (and wastes packets since client can handle this on its own)
     if (wrate != 1.0) // our config has custom regen rate, so send new amount to player's client
     {
-        SetPower(POWER_TYPE_MANA, cur);
+        setPower(POWER_TYPE_MANA, cur);
     }
     else // let player's own client handle normal regen rates.
     {
-        SetPower(POWER_TYPE_MANA, ((cur >= mm) ? mm : cur));
+        setPower(POWER_TYPE_MANA, ((cur >= mm) ? mm : cur));
         SendPowerUpdate(false); // send update to other in-range players
     }
 }
@@ -7540,7 +7544,7 @@ void Player::LooseRage(int32 decayValue)
 {
     //Rage is lost at a rate of 3 rage every 3 seconds.
     //The Anger Management talent changes this to 2 rage every 3 seconds.
-    uint32 cur = GetPower(POWER_TYPE_RAGE);
+    uint32 cur = getPower(POWER_TYPE_RAGE);
     uint32 newrage = ((int)cur <= decayValue) ? 0 : cur - decayValue;
     if (newrage > 1000)
         newrage = 1000;
@@ -7549,14 +7553,14 @@ void Player::LooseRage(int32 decayValue)
     // which can be slightly out-of-sync with client rage loss
     // config file rage rate is rage gained, not lost, so we don't need that here
     //    SetUInt32Value(UNIT_FIELD_POWER2,newrage);
-    SetPower(POWER_TYPE_RAGE, newrage);
+    setPower(POWER_TYPE_RAGE, newrage);
     SendPowerUpdate(false); // send update to other in-range players
 }
 
 void Player::RegenerateEnergy()
 {
-    uint32 cur = GetPower(POWER_TYPE_ENERGY);
-    uint32 mh = GetMaxPower(POWER_TYPE_ENERGY);
+    uint32 cur = getPower(POWER_TYPE_ENERGY);
+    uint32 mh = getMaxPower(POWER_TYPE_ENERGY);
     if (cur >= mh)
         return;
 
@@ -7571,7 +7575,7 @@ void Player::RegenerateEnergy()
     //    which can be slightly out-of-sync with client regeneration [latency] (and wastes packets since client can handle this on its own)
     if (wrate != 1.0f) // our config has custom regen rate, so send new amount to player's client
     {
-        SetPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
+        setPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
     }
     else // let player's own client handle normal regen rates.
     {
@@ -7579,7 +7583,7 @@ void Player::RegenerateEnergy()
         SendPowerUpdate(false); // send update to other in-range players
     }
 #elif VERSION_STRING == TBC
-    SetPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
+    setPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
 #endif
 }
 
@@ -8632,8 +8636,8 @@ void Player::DuelCountdown()
     if (m_duelCountdownTimer == 0)
     {
         // Start Duel.
-        SetPower(POWER_TYPE_RAGE, 0);
-        DuelingWith->SetPower(POWER_TYPE_RAGE, 0);
+        setPower(POWER_TYPE_RAGE, 0);
+        DuelingWith->setPower(POWER_TYPE_RAGE, 0);
 
         //Give the players a Team
         DuelingWith->setDuelTeam(1);  // Duel Requester
@@ -8908,8 +8912,8 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     // Set health / mana
     setHealth(Info->HP);
     setMaxHealth(Info->HP);
-    SetMaxPower(POWER_TYPE_MANA, Info->Mana);
-    SetPower(POWER_TYPE_MANA, Info->Mana);
+    setMaxPower(POWER_TYPE_MANA, Info->Mana);
+    setPower(POWER_TYPE_MANA, Info->Mana);
 
     if (Level > PreviousLevel)
     {
@@ -9860,7 +9864,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
     {
         case POWER:
         {
-            ModMaxPower(POWER_TYPE_MANA, val);
+            modMaxPower(POWER_TYPE_MANA, val);
             m_manafromitems += val;
         }
         break;
@@ -12075,8 +12079,8 @@ void Player::FullHPMP()
         ResurrectPlayer();
 
     setHealth(getMaxHealth());
-    SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
-    SetPower(POWER_TYPE_ENERGY, GetMaxPower(POWER_TYPE_ENERGY));
+    setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+    setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
 }
 
 /**********************************************
@@ -12891,13 +12895,13 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         float c = 0.0091107836f * level * level + 3.225598133f * level + 4.2652911f;
 
         float val = 2.5f * damage / c;
-        uint32 rage = GetPower(POWER_TYPE_RAGE);
+        uint32 rage = getPower(POWER_TYPE_RAGE);
 
         if (rage + float2int32(val) > 1000)
-            val = 1000.0f - static_cast<float>(GetPower(POWER_TYPE_RAGE));
+            val = 1000.0f - static_cast<float>(getPower(POWER_TYPE_RAGE));
 
         val *= 10.0;
-        ModPower(POWER_TYPE_RAGE, static_cast<int32>(val));
+        modPower(POWER_TYPE_RAGE, static_cast<int32>(val));
     }
 
     // Cannibalize, when we are hit we need to stop munching that nice fresh corpse

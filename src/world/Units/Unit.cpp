@@ -71,6 +71,78 @@ void Unit::modHealth(int32_t health)
     setHealth(currentHealth);
 }
 
+uint32_t Unit::getPower(uint16_t index) const
+{
+    switch (index)
+    {
+        case POWER_TYPE_MANA:
+            return unitData()->power_1;
+        case POWER_TYPE_RAGE:
+            return unitData()->power_2;
+        case POWER_TYPE_FOCUS:
+            return unitData()->power_3;
+        case POWER_TYPE_ENERGY:
+            return unitData()->power_4;
+        case POWER_TYPE_HAPPINESS:
+            return unitData()->power_5;
+#if VERSION_STRING == WotLK
+        case POWER_TYPE_RUNES :
+            return unitData()->power_6;
+        case POWER_TYPE_RUNIC_POWER:
+            return unitData()->power_7;
+#endif
+        default:
+            return 0;
+    }
+}
+
+void Unit::setPower(uint16_t index, uint32_t value)
+{
+    uint32 maxpower = getMaxPower(index);
+    if (value > maxpower)
+        value = maxpower;
+
+    switch (index)
+    {
+        case POWER_TYPE_MANA:
+            write(unitData()->power_1, value);
+        case POWER_TYPE_RAGE:
+            write(unitData()->power_2, value);
+        case POWER_TYPE_FOCUS:
+            write(unitData()->power_3, value);
+        case POWER_TYPE_ENERGY:
+            write(unitData()->power_4, value);
+        case POWER_TYPE_HAPPINESS:
+            write(unitData()->power_5, value);
+#if VERSION_STRING == WotLK
+        case POWER_TYPE_RUNES:
+            write(unitData()->power_6, value);
+        case POWER_TYPE_RUNIC_POWER:
+            write(unitData()->power_7, value);
+#endif
+    }
+}
+
+void Unit::modPower(uint16_t index, int32_t value)
+{
+    const int32_t power = static_cast<int32_t>(getPower(index));
+    const int32_t maxPower = static_cast<int32_t>(getMaxPower(index));
+
+    uint32_t newValue;
+    if (value <= power)
+        newValue = 0;
+    else
+        newValue = power + value;
+
+    if (value + power > maxPower)
+        newValue = maxPower;
+    else
+        newValue = power + value;
+
+    setPower(index, newValue);
+}
+
+
 uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
 void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
 void Unit::modMaxHealth(int32_t maxHealth)
@@ -81,6 +153,65 @@ void Unit::modMaxHealth(int32_t maxHealth)
 }
 
 void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
+
+uint32_t Unit::getMaxPower(uint16_t index) const
+{
+    switch (index)
+    {
+        case POWER_TYPE_MANA:
+            return unitData()->max_power_1;
+        case POWER_TYPE_RAGE:
+            return unitData()->max_power_2;
+        case POWER_TYPE_FOCUS:
+            return unitData()->max_power_3;
+        case POWER_TYPE_ENERGY:
+            return unitData()->max_power_4;
+        case POWER_TYPE_HAPPINESS:
+            return unitData()->max_power_5;
+#if VERSION_STRING == WotLK
+        case POWER_TYPE_RUNES:
+            return unitData()->max_power_6;
+        case POWER_TYPE_RUNIC_POWER:
+            return unitData()->max_power_7;
+#endif
+        default:
+            return 0;
+    }
+}
+
+void Unit::setMaxPower(uint16_t index, uint32_t value)
+{
+    switch (index)
+    {
+        case POWER_TYPE_MANA:
+            write(unitData()->max_power_1, value);
+        case POWER_TYPE_RAGE:
+            write(unitData()->max_power_2, value);
+        case POWER_TYPE_FOCUS:
+            write(unitData()->max_power_3, value);
+        case POWER_TYPE_ENERGY:
+            write(unitData()->max_power_4, value);
+        case POWER_TYPE_HAPPINESS:
+            write(unitData()->max_power_5, value);
+#if VERSION_STRING == WotLK
+        case POWER_TYPE_RUNES:
+            write(unitData()->max_power_6, value);
+        case POWER_TYPE_RUNIC_POWER:
+            write(unitData()->max_power_7, value);
+#endif
+    }
+}
+
+void Unit::modMaxPower(uint16_t index, int32_t value)
+{
+    int32_t newValue = getMaxPower(index);
+    newValue += value;
+
+    if (newValue < 0)
+        newValue = 0;
+
+    setMaxPower(index, newValue);
+}
 
 uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)

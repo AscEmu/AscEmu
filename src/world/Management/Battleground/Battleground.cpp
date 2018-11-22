@@ -865,14 +865,14 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setScale(1.0f);
 
     pCreature->setMaxHealth(10000);
-    pCreature->SetMaxPower(POWER_TYPE_MANA, 4868);
-    pCreature->SetMaxPower(POWER_TYPE_FOCUS, 200);
-    pCreature->SetMaxPower(POWER_TYPE_HAPPINESS, 2000000);
+    pCreature->setMaxPower(POWER_TYPE_MANA, 4868);
+    pCreature->setMaxPower(POWER_TYPE_FOCUS, 200);
+    pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
 
     pCreature->setHealth(100000);
-    pCreature->SetPower(POWER_TYPE_MANA, 4868);
-    pCreature->SetPower(POWER_TYPE_FOCUS, 200);
-    pCreature->SetPower(POWER_TYPE_HAPPINESS, 2000000);
+    pCreature->setPower(POWER_TYPE_MANA, 4868);
+    pCreature->setPower(POWER_TYPE_FOCUS, 200);
+    pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
 
     pCreature->setLevel(60);
     pCreature->SetFaction(84 - horde);
@@ -999,8 +999,8 @@ void CBattleground::EventResurrectPlayers()
 
                 plr->ResurrectPlayer();
                 plr->setHealth(plr->getMaxHealth());
-                plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
-                plr->SetPower(POWER_TYPE_ENERGY, plr->GetMaxPower(POWER_TYPE_ENERGY));
+                plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
+                plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
                 plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);
             }
         }

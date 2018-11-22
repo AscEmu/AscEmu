@@ -334,7 +334,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (powertype <= 6)
     {
         SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
-        SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->GetPower(powertype), creature_target->GetMaxPower(powertype));
+        SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
     }
 
     SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->getMinDamage(), creature_target->getMaxDamage());

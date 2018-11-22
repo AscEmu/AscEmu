@@ -255,7 +255,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
 Spell::~Spell()
 {
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK
     // If this spell deals with rune power, send spell_go to update client
     // For instance, when Dk cast Empower Rune Weapon, if we don't send spell_go, the client won't update
     if (GetSpellInfo()->getSchool() && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
@@ -2477,7 +2477,7 @@ void Spell::SendSpellGo()
     if (ModeratedTargets.size() > 0)
         flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK
     if (p_caster != NULL && GetSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
         flags |= SPELL_GO_FLAGS_POWER_UPDATE;
 
@@ -2530,7 +2530,7 @@ void Spell::SendSpellGo()
 
 #if VERSION_STRING >= WotLK
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
-        data << (uint32)p_caster->GetPower(static_cast<uint16_t>(GetSpellInfo()->getPowerType()));
+        data << (uint32)p_caster->getPower(static_cast<uint16_t>(GetSpellInfo()->getPowerType()));
 #endif
 
     // er why handle it being null inside if if you can't get into if if its null
@@ -2574,7 +2574,7 @@ void Spell::SendSpellGo()
     //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
     //.text:00401110                 mov     eax, [ecx+14h] -> them
     //.text:00401115                 cmp     eax, [ecx+10h] -> us
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK
     if (flags & SPELL_GO_FLAGS_RUNE_UPDATE)
     {
         data << uint8(m_rune_avail_before);
@@ -2866,9 +2866,7 @@ bool Spell::HasPower()
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
-#endif
 
-#if VERSION_STRING > TBC
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->getRuneCostID() && p_caster)
@@ -3017,8 +3015,7 @@ bool Spell::TakePower()
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
-#endif
-#if VERSION_STRING > TBC
+
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->getRuneCostID() && p_caster)
@@ -3037,9 +3034,9 @@ bool Spell::TakePower()
                 {
                     if (u_caster != nullptr)
                     {
-                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
+                        auto caster_runic_power = u_caster->getPower(POWER_TYPE_RUNIC_POWER);
                         auto spell_rune_gain = spell_rune_cost->runePowerGain;
-                        u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                        u_caster->setPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
                     }
                 }
             }
@@ -5638,8 +5635,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
             {
-                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
-                p_caster->SetPower(POWER_TYPE_ENERGY, 0);
+                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->getPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
+                p_caster->setPower(POWER_TYPE_ENERGY, 0);
             }
         } break;
 
@@ -6000,7 +5997,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             case 61782:
             {
                 if (p_caster != nullptr && i == 0 && target != nullptr)
-                    value = int32(0.002 * target->GetMaxPower(POWER_TYPE_MANA));
+                    value = int32(0.002 * target->getMaxPower(POWER_TYPE_MANA));
                 break;
             }
             default:

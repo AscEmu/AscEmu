@@ -466,12 +466,12 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setCombatReach(created_from_creature->getCombatReach());
 
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
-        SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
-        SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
+        setPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
+        setMaxPower(POWER_TYPE_HAPPINESS, 1000000);
         setPetExperience(0);
         setPetNextLevelExperience(GetNextLevelXP(level));
-        SetPower(POWER_TYPE_FOCUS, 100);                                                // Focus
-        SetMaxPower(POWER_TYPE_FOCUS, 100);
+        setPower(POWER_TYPE_FOCUS, 100);                                                // Focus
+        setMaxPower(POWER_TYPE_FOCUS, 100);
         setSheathType(SHEATH_STATE_MELEE);
         setPetFlags(PET_RENAME_ALLOWED);    // 0x3 -> Enable pet rename.
         setPowerType(POWER_TYPE_FOCUS);
@@ -596,7 +596,7 @@ void Pet::Update(unsigned long time_passed)
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
             if (CombatStatus.IsInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
-            ModPower(POWER_TYPE_HAPPINESS, -burn);
+            modPower(POWER_TYPE_HAPPINESS, -burn);
             m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;  // reset timer
         }
         else if (!IsInBg())
@@ -928,13 +928,13 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setBoundingRadius(creature_properties->BoundingRadius);
         setCombatReach(creature_properties->CombatReach);
         setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
-        SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
-        SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
+        setPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
+        setMaxPower(POWER_TYPE_HAPPINESS, 1000000);
         setPetExperience(mPi->xp);
         setPetNextLevelExperience(GetNextLevelXP(mPi->level));
         setSheathType(SHEATH_STATE_MELEE);
-        SetPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
-        SetMaxPower(POWER_TYPE_FOCUS, 100);
+        setPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
+        setMaxPower(POWER_TYPE_FOCUS, 100);
         setPowerType(POWER_TYPE_FOCUS);
     }
 
@@ -965,9 +965,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     ApplyStatsForLevel();
 
     setPetTalentPoints(static_cast<uint8>(mPi->talentpoints));
-    SetPower(getPowerType(), mPi->current_power);
+    setPower(getPowerType(), mPi->current_power);
     setHealth(mPi->current_hp);
-    SetPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
+    setPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
 
     if (mPi->renamable == 0)
         setPetFlags(getPetFlags() | PET_RENAME_NOT_ALLOWED);
@@ -1121,10 +1121,10 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->reset_time = reset_time;
     player_pet->petstate = m_State;
     player_pet->alive = isAlive();
-    player_pet->current_power = GetPower(getPowerType());
+    player_pet->current_power = getPower(getPowerType());
     player_pet->talentpoints = getPetTalentPoints();
     player_pet->current_hp = getHealth();
-    player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
+    player_pet->current_happiness = getPower(POWER_TYPE_HAPPINESS);
 
     if (getPetFlags() == PET_RENAME_ALLOWED)
         player_pet->renamable = 1;
@@ -1794,7 +1794,7 @@ void Pet::ApplySummonLevelAbilities()
     setBaseHealth((uint32)(health));
     setMaxHealth((uint32)(health));
     setBaseMana((uint32)(mana));
-    SetMaxPower(POWER_TYPE_MANA, (uint32)(mana));
+    setMaxPower(POWER_TYPE_MANA, (uint32)(mana));
 
     for (uint8_t x = 0; x < 5; ++x)
         CalcStat(x);
@@ -1878,8 +1878,8 @@ void Pet::ApplyStatsForLevel()
 
     // Apply health fields.
     setHealth(getMaxHealth());
-    SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));   // mana
-    SetPower(POWER_TYPE_FOCUS, GetMaxPower(POWER_TYPE_FOCUS));   // focus
+    setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));   // mana
+    setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));   // focus
 }
 
 void Pet::LoadPetAuras(int32 id)
@@ -1971,7 +1971,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         if ((*itr)->autocast_type == AUTOCAST_EVENT_ATTACK)
         {
             // spells still spammed, I think the cooldowntime is being set incorrectly somewhere else
-            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && GetPower(static_cast<uint16_t>((*itr)->spell->getPowerType())) >= (*itr)->spell->getManaCost())
+            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && getPower(static_cast<uint16_t>((*itr)->spell->getPowerType())) >= (*itr)->spell->getManaCost())
             {
                 return *itr;
             }
@@ -2445,7 +2445,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         // dying pet looses 1 happiness level (not in BG)
         if (!pPet->IsSummonedPet() && !pPet->IsInBg())
         {
-            pPet->ModPower(POWER_TYPE_HAPPINESS, -PET_HAPPINESS_UPDATE_VALUE);
+            pPet->modPower(POWER_TYPE_HAPPINESS, -PET_HAPPINESS_UPDATE_VALUE);
         }
         pPet->DelayedRemove(false);
     }   //////////////////////////////////////////////////////////////////////////////////////////

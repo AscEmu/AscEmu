@@ -1625,7 +1625,7 @@ void Player::activateTalentSpec(uint8_t specId)
     GetSession()->SendPacket(&data);
 
     // Reset power
-    SetPower(getPowerType(), 0);
+    setPower(getPowerType(), 0);
     SendPowerUpdate(false);
 
     // Check offhand
@@ -1759,7 +1759,7 @@ bool Player::logOntoTransport()
             {
                 ResurrectPlayer();
                 setHealth(getMaxHealth());
-                SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
+                setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             }
 
             const float c_tposx = transporter->GetPositionX() + GetTransPositionX();

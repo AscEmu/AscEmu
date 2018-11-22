@@ -85,10 +85,10 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
 
     s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->getId());
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
-    if (playerTarget->GetPower(POWER_TYPE_MANA) + damage > playerTarget->GetMaxPower(POWER_TYPE_MANA))
-        playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetMaxPower(POWER_TYPE_MANA));
+    if (playerTarget->getPower(POWER_TYPE_MANA) + damage > playerTarget->getMaxPower(POWER_TYPE_MANA))
+        playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getMaxPower(POWER_TYPE_MANA));
     else
-        playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetPower(POWER_TYPE_MANA) + damage);
+        playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getPower(POWER_TYPE_MANA) + damage);
     s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetSpellInfo()->getId());
 
     return true;

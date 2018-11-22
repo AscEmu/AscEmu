@@ -54,8 +54,8 @@ namespace AscEmu { namespace Packets
                 packet << uint32_t(player->getHealth());
                 packet << uint32_t(player->getMaxHealth());
                 packet << uint8_t(player->getPowerType());
-                packet << uint16_t(player->GetPower(player->getPowerType()));
-                packet << uint16_t(player->GetMaxPower(player->getPowerType()));
+                packet << uint16_t(player->getPower(player->getPowerType()));
+                packet << uint16_t(player->getMaxPower(player->getPowerType()));
                 packet << uint16_t(player->getLevel());
                 packet << uint16_t(player->GetZoneId());
                 packet << uint16_t(player->GetPositionX());
@@ -84,8 +84,8 @@ namespace AscEmu { namespace Packets
                     packet << uint32_t(playerPet->getHealth());
                     packet << uint32_t(playerPet->getMaxHealth());
                     packet << uint8_t(petPowerType);
-                    packet << uint16_t(playerPet->GetPower(petPowerType));
-                    packet << uint16_t(playerPet->GetMaxPower(petPowerType));
+                    packet << uint16_t(playerPet->getPower(petPowerType));
+                    packet << uint16_t(playerPet->getMaxPower(petPowerType));
 
                     uint64_t petauramask = 0;
                     const auto petMaskPos = packet.wpos();

@@ -94,9 +94,9 @@ class SelinFireheartAI : public CreatureAIScript
 
         // Mana Rage giving of mana doesnt work so we give 10%(3231) / AIUpdate() Event.
         _castAISpell(ManaRageTrigger);
-        uint32 mana = getCreature()->GetPower(POWER_TYPE_MANA) + 3231;
-        if (mana >= getCreature()->GetMaxPower(POWER_TYPE_MANA))
-            mana = getCreature()->GetMaxPower(POWER_TYPE_MANA);
+        uint32 mana = getCreature()->getPower(POWER_TYPE_MANA) + 3231;
+        if (mana >= getCreature()->getMaxPower(POWER_TYPE_MANA))
+            mana = getCreature()->getMaxPower(POWER_TYPE_MANA);
 
         getCreature()->setUInt32Value(UNIT_FIELD_POWER1, mana);
 
@@ -136,7 +136,7 @@ class SelinFireheartAI : public CreatureAIScript
         _castAISpell(FelExplosion);
 
         // No Idea why the mana isnt taken when the spell is cast so had to manually take it -_-
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetPower(POWER_TYPE_MANA) - 3231);
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getPower(POWER_TYPE_MANA) - 3231);
     }
 
     SpellInfo* ManaRage;

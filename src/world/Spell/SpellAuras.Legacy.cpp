@@ -3196,11 +3196,11 @@ void Aura::EventPeriodicManaPct(float RegenPct)
     if (!m_target->isAlive())
         return;
 
-    uint32 add = static_cast<uint32>(m_target->GetMaxPower(POWER_TYPE_MANA) * (RegenPct / 100.0f));
+    uint32 add = static_cast<uint32>(m_target->getMaxPower(POWER_TYPE_MANA) * (RegenPct / 100.0f));
 
-    uint32 newPower = m_target->GetPower(POWER_TYPE_MANA) + add;
+    uint32 newPower = m_target->getPower(POWER_TYPE_MANA) + add;
 
-    if (newPower <= m_target->GetMaxPower(POWER_TYPE_MANA))
+    if (newPower <= m_target->getMaxPower(POWER_TYPE_MANA))
     {
         if (GetSpellInfo()->getId() != 60069)
             m_target->Energize(m_target, m_spellInfo->getId(), add, POWER_TYPE_MANA);
@@ -3208,7 +3208,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
             m_target->Energize(m_target, 49766, add, POWER_TYPE_MANA);
     }
     else
-        m_target->SetPower(POWER_TYPE_MANA, m_target->GetMaxPower(POWER_TYPE_MANA));
+        m_target->setPower(POWER_TYPE_MANA, m_target->getMaxPower(POWER_TYPE_MANA));
 
     // CAPT
     ///\todo sniff it or disasm wow.exe to find the mana flag
@@ -3361,7 +3361,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
             {
                 sEventMgr.AddEvent(this, &Aura::EventPeriodicHealPct, 10.0f , EVENT_AURA_PERIODIC_HEALPERC, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-                if (caster->GetMaxPower(POWER_TYPE_MANA))
+                if (caster->getMaxPower(POWER_TYPE_MANA))
                 {
                     sEventMgr.AddEvent(this, &Aura::EventPeriodicManaPct, 10.0f, EVENT_AURA_PERIOCIC_MANA, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 }
@@ -3904,8 +3904,8 @@ void Aura::SpellAuraModIncreaseEnergy(bool apply)
 
     int32 amount = apply ? mod->m_amount : -mod->m_amount;
     uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
-    m_target->ModMaxPower(modValue, amount);
-    m_target->ModPower(modValue, amount);
+    m_target->modMaxPower(modValue, amount);
+    m_target->modPower(modValue, amount);
 
     if (modValue == 0 && m_target->isPlayer())
     {
@@ -3952,8 +3952,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
             if (apply)
             {
                 m_target->setPowerType(POWER_TYPE_ENERGY);
-                m_target->SetMaxPower(POWER_TYPE_ENERGY, 100);  //100 Energy
-                m_target->SetPower(POWER_TYPE_ENERGY, 0);  //0 Energy
+                m_target->setMaxPower(POWER_TYPE_ENERGY, 100);  //100 Energy
+                m_target->setPower(POWER_TYPE_ENERGY, 0);  //0 Energy
                 if (m_target->getRace() != RACE_NIGHTELF)//TAUREN
                     modelId = 8571;
 
@@ -3999,8 +3999,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
             if (apply)
             {
                 m_target->setPowerType(POWER_TYPE_RAGE);
-                m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
-                m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
+                m_target->setMaxPower(POWER_TYPE_RAGE, 1000);
+                m_target->setPower(POWER_TYPE_RAGE, 0); //0 rage
 
                 if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
                     modelId = 2289;
@@ -4029,8 +4029,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
             if (apply)
             {
                 m_target->setPowerType(POWER_TYPE_RAGE);
-                m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
-                m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
+                m_target->setMaxPower(POWER_TYPE_RAGE, 1000);
+                m_target->setPower(POWER_TYPE_RAGE, 0); //0 rage
                 if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
                     modelId = 2289;
             }
@@ -4131,8 +4131,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
     {
         if (p_target != nullptr)
         {
-            if (p_target->getClass() == WARRIOR && p_target->GetPower(POWER_TYPE_RAGE) > p_target->m_retainedrage)
-                p_target->SetPower(POWER_TYPE_RAGE, p_target->m_retainedrage);
+            if (p_target->getClass() == WARRIOR && p_target->getPower(POWER_TYPE_RAGE) > p_target->m_retainedrage)
+                p_target->setPower(POWER_TYPE_RAGE, p_target->m_retainedrage);
 
             if (m_target->getClass() == DRUID)
             {
@@ -5253,13 +5253,13 @@ void Aura::SpellAuraPeriodicManaLeech(bool apply)
         uint32 amt = mod->m_amount;
         uint32 mult = amt;
 
-        amt = mult * m_target->GetMaxPower(POWER_TYPE_MANA) / 100;
+        amt = mult * m_target->getMaxPower(POWER_TYPE_MANA) / 100;
 
         Unit* caster = GetUnitCaster();
         if (caster != nullptr)
         {
-            if (amt > caster->GetMaxPower(POWER_TYPE_MANA) * (mult << 1) / 100)
-                amt = caster->GetMaxPower(POWER_TYPE_MANA) * (mult << 1) / 100;
+            if (amt > caster->getMaxPower(POWER_TYPE_MANA) * (mult << 1) / 100)
+                amt = caster->getMaxPower(POWER_TYPE_MANA) * (mult << 1) / 100;
         }
         sEventMgr.AddEvent(this, &Aura::EventPeriodicManaLeech, amt,
                            EVENT_AURA_PERIODIC_LEECH, GetSpellInfo()->getEffectAmplitude(mod->m_effectIndex), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -5274,14 +5274,14 @@ void Aura::EventPeriodicManaLeech(uint32 amount)
     if (m_target->isAlive() && m_caster->isAlive())
     {
 
-        int32 amt = (int32)std::min(amount, m_target->GetPower(POWER_TYPE_MANA));
-        uint32 cm = m_caster->GetPower(POWER_TYPE_MANA) + amt;
-        uint32 mm = m_caster->GetMaxPower(POWER_TYPE_MANA);
+        int32 amt = (int32)std::min(amount, m_target->getPower(POWER_TYPE_MANA));
+        uint32 cm = m_caster->getPower(POWER_TYPE_MANA) + amt;
+        uint32 mm = m_caster->getMaxPower(POWER_TYPE_MANA);
         if (cm <= mm)
-            m_caster->SetPower(POWER_TYPE_MANA, cm);
+            m_caster->setPower(POWER_TYPE_MANA, cm);
         else
-            m_caster->SetPower(POWER_TYPE_MANA, mm);
-        m_target->ModPower(POWER_TYPE_MANA, -amt);
+            m_caster->setPower(POWER_TYPE_MANA, mm);
+        m_target->modPower(POWER_TYPE_MANA, -amt);
     }
 }
 
@@ -5952,12 +5952,12 @@ void Aura::EventPeriodicEnergizeVariable(uint32 amount, uint32 type)
 
 void Aura::EventPeriodicDrink(uint32 amount)
 {
-    uint32 v = m_target->GetPower(POWER_TYPE_MANA) + amount;
+    uint32 v = m_target->getPower(POWER_TYPE_MANA) + amount;
 
-    if (v > m_target->GetMaxPower(POWER_TYPE_MANA))
-        v = m_target->GetMaxPower(POWER_TYPE_MANA);
+    if (v > m_target->getMaxPower(POWER_TYPE_MANA))
+        v = m_target->getMaxPower(POWER_TYPE_MANA);
 
-    m_target->SetPower(POWER_TYPE_MANA, v);
+    m_target->setPower(POWER_TYPE_MANA, v);
 }
 
 void Aura::EventPeriodicHeal1(uint32 amount)
@@ -6993,13 +6993,13 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
     if (apply)
     {
         mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_MAXPOWER1 + modValue, mod->m_amount);
-        m_target->ModMaxPower(modValue, mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modMaxPower(modValue, mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr && mod->m_miscValue == POWER_TYPE_MANA)
             p_target->SetManaFromSpell(p_target->GetManaFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
     }
     else
     {
-        m_target->ModMaxPower(modValue, -mod->fixed_amount[mod->m_effectIndex]);
+        m_target->modMaxPower(modValue, -mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr && mod->m_miscValue == POWER_TYPE_MANA)
             p_target->SetManaFromSpell(p_target->GetManaFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
     }
@@ -7484,8 +7484,8 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
         if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
             return;
 
-        uint32 Amount = (uint32)std::min(amount, m_target->GetPower(static_cast<uint16_t>(misc)));
-        uint32 newHealth = m_target->GetPower(static_cast<uint16_t>(misc)) - Amount;
+        uint32 Amount = (uint32)std::min(amount, m_target->getPower(static_cast<uint16_t>(misc)));
+        uint32 newHealth = m_target->getPower(static_cast<uint16_t>(misc)) - Amount;
 
         m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
         m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->getId());
@@ -8561,12 +8561,12 @@ void Aura::EventPeriodicRegenManaStatPct(uint32 perc, uint32 stat)
     if (m_target->isDead())
         return;
 
-    uint32 mana = m_target->GetPower(POWER_TYPE_MANA) + (m_target->getStat(static_cast<uint8_t>(stat)) * perc) / 100;
+    uint32 mana = m_target->getPower(POWER_TYPE_MANA) + (m_target->getStat(static_cast<uint8_t>(stat)) * perc) / 100;
 
-    if (mana <= m_target->GetMaxPower(POWER_TYPE_MANA))
-        m_target->SetPower(POWER_TYPE_MANA, mana);
+    if (mana <= m_target->getMaxPower(POWER_TYPE_MANA))
+        m_target->setPower(POWER_TYPE_MANA, mana);
     else
-        m_target->SetPower(POWER_TYPE_MANA, m_target->GetMaxPower(POWER_TYPE_MANA));
+        m_target->setPower(POWER_TYPE_MANA, m_target->getMaxPower(POWER_TYPE_MANA));
 }
 
 void Aura::SpellAuraRegenManaStatPCT(bool apply)

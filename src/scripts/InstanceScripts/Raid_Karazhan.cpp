@@ -866,7 +866,7 @@ class CuratorAI : public CreatureAIScript
                 break;
         }
 
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetPower(POWER_TYPE_MANA) - (getCreature()->GetMaxPower(POWER_TYPE_MANA) / 10));
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getPower(POWER_TYPE_MANA) - (getCreature()->getMaxPower(POWER_TYPE_MANA) / 10));
         float dX = getCreature()->GetPositionX();
         float dY = getCreature()->GetPositionY();
         Creature* AstralFlare = NULL;
@@ -1106,7 +1106,7 @@ class ShadeofAranAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetMaxPower(POWER_TYPE_MANA));
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getMaxPower(POWER_TYPE_MANA));
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)

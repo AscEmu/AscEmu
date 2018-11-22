@@ -3188,7 +3188,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             {
                 Player* pl = static_cast<Player*>(pVictim);
 
-                uint32 maxmana = pl->GetMaxPower(POWER_TYPE_MANA);
+                uint32 maxmana = pl->getMaxPower(POWER_TYPE_MANA);
                 uint32 amount = static_cast<uint32>(maxmana * pl->m_RegenManaOnSpellResist);
 
                 pVictim->Energize(pVictim, 29442, amount, POWER_TYPE_MANA);

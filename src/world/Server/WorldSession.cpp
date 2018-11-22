@@ -358,7 +358,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         // Save HP/Mana
         _player->load_health = _player->getHealth();
-        _player->load_mana = _player->GetPower(POWER_TYPE_MANA);
+        _player->load_mana = _player->getPower(POWER_TYPE_MANA);
 
 
         _player->summonhandler.RemoveAllSummons();
