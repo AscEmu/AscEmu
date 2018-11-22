@@ -31,7 +31,7 @@ char const* GetPlainName(char const* FileName)
 {
     const char * szTemp;
 
-    if((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != NULL)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -40,7 +40,7 @@ char* GetPlainName(char* FileName)
 {
     char * szTemp;
 
-    if((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != NULL)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -63,7 +63,7 @@ void fixname2(char* name, size_t len)
 {
     for (size_t i=0; i<len-3; i++)
     {
-        if(name[i] == ' ')
+        if (name[i] == ' ')
         name[i] = '_';
     }
 }
@@ -75,14 +75,14 @@ char* GetExtension(char* FileName)
     return NULL;
 }
 
-ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(NULL), ModelInstansName(NULL)
+ADTFile::ADTFile(char* filename) : ADT(filename), nWMO(0), nMDX(0), WmoInstansName(NULL), ModelInstansName(NULL)
 {
     Adtfilename.append(filename);
 }
 
 bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 {
-    if(ADT.isEof ())
+    if (ADT.isEof())
         return false;
 
     uint32 size;
@@ -100,7 +100,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
     FILE *dirfile;
     dirfile = fopen(dirname.c_str(), "ab");
-    if(!dirfile)
+    if (!dirfile)
     {
         printf("Can't open dirfile!'%s'\n", dirname.c_str());
         return false;
@@ -109,20 +109,20 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
     while (!ADT.isEof())
     {
         char fourcc[5];
-        ADT.read(&fourcc,4);
+        ADT.read(&fourcc, 4);
         ADT.read(&size, 4);
         flipcc(fourcc);
         fourcc[4] = 0;
 
         size_t nextpos = ADT.getPos() + size;
 
-        if (!strcmp(fourcc,"MCIN"))
+        if (!strcmp(fourcc, "MCIN"))
         {
         }
-        else if (!strcmp(fourcc,"MTEX"))
+        else if (!strcmp(fourcc, "MTEX"))
         {
         }
-        else if (!strcmp(fourcc,"MMDX"))
+        else if (!strcmp(fourcc, "MMDX"))
         {
             if (size)
             {
@@ -147,7 +147,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 delete[] buf;
             }
         }
-        else if (!strcmp(fourcc,"MWMO"))
+        else if (!strcmp(fourcc, "MWMO"))
         {
             if (size)
             {
@@ -168,7 +168,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
             }
         }
         //======================
-        else if (!strcmp(fourcc,"MDDF"))
+        else if (!strcmp(fourcc, "MDDF"))
         {
             if (size)
             {
@@ -183,7 +183,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 ModelInstansName = NULL;
             }
         }
-        else if (!strcmp(fourcc,"MODF"))
+        else if (!strcmp(fourcc, "MODF"))
         {
             if (size)
             {
