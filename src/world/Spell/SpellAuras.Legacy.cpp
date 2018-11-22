@@ -7170,8 +7170,8 @@ void Aura::SpellAuraModHaste(bool apply)
     {
         if (apply)
         {
-            mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
-            mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
+            mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
+            mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
 
             if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[mod->m_effectIndex])
                 mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE);    //watch it, a negative timer might be bad ;)
@@ -8273,8 +8273,8 @@ void Aura::SpellAuraMeleeHaste(bool apply)
     {
         if (apply)
         {
-            mod->fixed_amount[0] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + MELEE, mod->m_amount);
-            mod->fixed_amount[1] = m_target->getPercentModUInt32Value(UNIT_FIELD_BASEATTACKTIME + OFFHAND, mod->m_amount);
+            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
+            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
 
             if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[0])
                 mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE);

@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
+#include "Spell/Definitions/PowerType.h"
 
 using namespace AscEmu::Packets;
 

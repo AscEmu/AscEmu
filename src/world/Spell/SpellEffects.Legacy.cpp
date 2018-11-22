@@ -3291,13 +3291,13 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
             break;
         case 57669:
         {
-            modEnergy = float2int32(0.01f * unitTarget->getUInt32Value(UNIT_FIELD_BASE_MANA));
+            modEnergy = float2int32(0.01f * unitTarget->getBaseMana());
         }
         break;
         case 31930:
         {
             if (u_caster)
-                modEnergy = float2int32(0.25f * unitTarget->getUInt32Value(UNIT_FIELD_BASE_MANA));
+                modEnergy = float2int32(0.25f * unitTarget->getBaseMana());
         }
         break;
         case 2687: // Improved Bloodrage, dirty fix
