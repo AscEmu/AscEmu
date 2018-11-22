@@ -264,7 +264,7 @@ void ReadLiquidTypeTableDBC()
     printf("Read LiquidType.dbc file...");
 
     DBCFile dbc(LocaleMpq, "DBFilesClient\\LiquidType.dbc");
-    if(!dbc.open())
+    if (!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
         exit(1);
@@ -340,13 +340,13 @@ bool ExtractSingleWmo(std::string& fname)
     bool file_ok = true;
     std::cout << "Extracting " << fname << std::endl;
     WMORoot froot(fname);
-    if(!froot.open())
+    if (!froot.open())
     {
         printf("Couldn't open RootWmo!!!\n");
         return true;
     }
     FILE *output = fopen(szLocalFile,"wb");
-    if(!output)
+    if (!output)
     {
         printf("couldn't open %s for writing!\n", szLocalFile);
         return false;
@@ -367,7 +367,7 @@ bool ExtractSingleWmo(std::string& fname)
 
             std::string s = groupFileName;
             WMOGroup fgroup(s);
-            if(!fgroup.open())
+            if (!fgroup.open())
             {
                 printf("Could not open all Group file for: %s\n", plain_name);
                 file_ok = false;
@@ -398,7 +398,7 @@ void ParsMapFiles()
         sprintf(id, "%04u", map_ids[i].id);
         sprintf(fn,"World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
         WDTFile WDT(fn,map_ids[i].name);
-        if(WDT.init(id, map_ids[i].id))
+        if (WDT.init(id, map_ids[i].id))
         {
             printf("Processing Map %u\n[", map_ids[i].id);
             for (int x=0; x<64; ++x)
@@ -437,13 +437,13 @@ bool processArgv(int argc, char ** argv, const char *versionString)
 
     for(int i = 1; i < argc; ++i)
     {
-        if(strcmp("-s",argv[i]) == 0)
+        if (strcmp("-s",argv[i]) == 0)
         {
             preciseVectorData = false;
         }
-        else if(strcmp("-d",argv[i]) == 0)
+        else if (strcmp("-d",argv[i]) == 0)
         {
-            if((i+1)<argc)
+            if ((i+1)<argc)
             {
                 hasInputPathParam = true;
                 strcpy(input_path, argv[i+1]);
@@ -456,15 +456,15 @@ bool processArgv(int argc, char ** argv, const char *versionString)
                 result = false;
             }
         }
-        else if(strcmp("-?",argv[1]) == 0)
+        else if (strcmp("-?",argv[1]) == 0)
         {
             result = false;
         }
-        else if(strcmp("-l",argv[i]) == 0)
+        else if (strcmp("-l",argv[i]) == 0)
         {
             preciseVectorData = true;
         }
-        else if(strcmp("-b",argv[i]) == 0)
+        else if (strcmp("-b",argv[i]) == 0)
         {
             if (i + 1 < argc)                            // all ok
                 CONF_TargetBuild = atoi(argv[i++ + 1]);
@@ -476,7 +476,7 @@ bool processArgv(int argc, char ** argv, const char *versionString)
         }
     }
 
-    if(!result)
+    if (!result)
     {
         printf("Extract %s.\n",versionString);
         printf("%s [-?][-s][-l][-d <path>]\n", argv[0]);
@@ -487,7 +487,7 @@ bool processArgv(int argc, char ** argv, const char *versionString)
         printf("   -? : This message.\n");
     }
 
-    if(!hasInputPathParam)
+    if (!hasInputPathParam)
         getGamePath();
 
     return result;
@@ -570,9 +570,9 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=dbc->getRecordCount ();
-        map_ids=new map_id[map_count];
-        for (unsigned int x=0;x<map_count;++x)
+        map_count = static_cast<uint32_t>(dbc->getRecordCount());
+        map_ids = new map_id[map_count];
+        for (unsigned int x = 0; x < map_count; ++x)
         {
             map_ids[x].id=dbc->getRecord (x).getUInt(0);
             strcpy(map_ids[x].name,dbc->getRecord(x).getString(1));
