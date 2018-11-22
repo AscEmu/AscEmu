@@ -10,20 +10,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "wdt.h"
 
-u_map_fcc MWMOMagic = { {'O', 'M', 'W', 'M'} };
-u_map_fcc MPHDMagic = { {'D', 'H', 'P', 'M'} };
-u_map_fcc MAINMagic = { {'N', 'I', 'A', 'M'} };
+u_map_fcc MWMOMagic = { { 'O', 'M', 'W', 'M' } };
+u_map_fcc MPHDMagic = { { 'D', 'H', 'P', 'M' } };
+u_map_fcc MAINMagic = { { 'N', 'I', 'A', 'M' } };
 
 bool wdt_MWMO::prepareLoadedData()
 {

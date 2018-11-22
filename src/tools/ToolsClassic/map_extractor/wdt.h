@@ -10,11 +10,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef WDT_H
@@ -29,8 +29,10 @@
 
 #pragma pack(push, 1)
 
-class wdt_MWMO{
-    union{
+class wdt_MWMO
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
@@ -39,8 +41,10 @@ public:
     bool prepareLoadedData();
 };
 
-class wdt_MPHD{
-    union{
+class wdt_MPHD
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
@@ -55,28 +59,32 @@ public:
     uint32 data6;
     uint32 data7;
     uint32 data8;
-    bool   prepareLoadedData();
+    bool prepareLoadedData();
 };
 
-class wdt_MAIN{
-    union{
+class wdt_MAIN
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
 public:
     uint32 size;
 
-    struct adtData{
+    struct adtData
+    {
         uint32 exist;
         uint32 data1;
     } adt_list[64][64];
 
-    bool   prepareLoadedData();
+    bool prepareLoadedData();
 };
 
-class WDT_file : public FileLoader{
+class WDT_file : public FileLoader
+{
 public:
-    bool   prepareLoadedData();
+    bool prepareLoadedData();
 
     WDT_file();
     ~WDT_file();
