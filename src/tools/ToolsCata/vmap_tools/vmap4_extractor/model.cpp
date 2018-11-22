@@ -53,7 +53,7 @@ bool Model::open()
         f.seekRelative(header.ofsBoundingVertices);
         vertices = new Vec3D[header.nBoundingVertices];
         f.read(vertices, header.nBoundingVertices * 12);
-        for (uint32 i = 0; i<header.nBoundingVertices; i++)
+        for (uint32 i = 0; i < header.nBoundingVertices; i++)
             vertices[i] = fixCoordSystem(vertices[i]);
         f.seek(0);
         f.seekRelative(header.ofsBoundingTriangles);
@@ -117,7 +117,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
     wsize = sizeof(int) + sizeof(float) * 3 * nVertices;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&nVertices, sizeof(int), 1, output);
-    if (nVertices >0)
+    if (nVertices > 0)
     {
         for (uint32 vpos = 0; vpos < nVertices; ++vpos)
         {
@@ -171,7 +171,7 @@ ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-    int count = fread(&nVertices, sizeof(int), 1, input);
+    const auto count = fread(&nVertices, sizeof(int), 1, input);
     fclose(input);
 
     if (count != 1 || nVertices == 0)
@@ -192,7 +192,7 @@ ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID
     fwrite(&pos, sizeof(float), 3, pDirfile);
     fwrite(&rot, sizeof(float), 3, pDirfile);
     fwrite(&sc, sizeof(float), 1, pDirfile);
-    uint32 nlen = strlen(ModelInstName);
+    const auto nlen = static_cast<uint32_t>(strlen(ModelInstName));
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(ModelInstName, sizeof(char), nlen, pDirfile);
 

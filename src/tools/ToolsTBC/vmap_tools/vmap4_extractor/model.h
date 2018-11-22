@@ -52,7 +52,9 @@ public:
     bool ConvertToVMAPModel(char const* outfilename);
 
     Model(std::string& filename);
-    ~Model() { _unload(); }
+    ~Model() {
+        _unload();
+    }
 };
 
 class ModelInstance
