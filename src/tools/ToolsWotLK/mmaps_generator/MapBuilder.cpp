@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        int maxTiles = static_cast<int>(tiles->size());
+        const auto maxTiles = static_cast<int>(tiles->size());
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        int count = static_cast<int>(fread(&header, sizeof(MmapTileHeader), 1, file));
+        const auto count = fread(&header, sizeof(MmapTileHeader), 1, file);
         fclose(file);
         if (count != 1)
             return false;
