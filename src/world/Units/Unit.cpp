@@ -50,6 +50,9 @@ uint32_t Unit::getChannelSpellId() const { return unitData()->channel_spell; };
 void Unit::setChannelSpellId(uint32_t spell_id) { write(unitData()->channel_spell, spell_id); }
 
 //bytes_0 begin
+uint32_t Unit::getBytes0() const { return unitData()->field_bytes_0.raw; }
+void Unit::setBytes0(uint32_t bytes) { write(unitData()->field_bytes_0.raw, bytes); }
+
 uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
 
@@ -292,6 +295,9 @@ float Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_dam
 void Unit::setMaxOffhandDamage(float damage) { write(unitData()->maximum_offhand_damage, damage); }
 
 //bytes_1 begin
+uint32_t Unit::getBytes1() const { return unitData()->field_bytes_1.raw; }
+void Unit::setBytes1(uint32_t bytes) { write(unitData()->field_bytes_1.raw, bytes); }
+
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
 
@@ -363,6 +369,9 @@ uint32_t Unit::getBaseHealth() const { return unitData()->base_health; }
 void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
 
 //byte_2 begin
+uint32_t Unit::getBytes2() const { return unitData()->field_bytes_2.raw; }
+void Unit::setBytes2(uint32_t bytes) { write(unitData()->field_bytes_2.raw, bytes); }
+
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
 

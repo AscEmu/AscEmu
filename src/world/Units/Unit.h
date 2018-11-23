@@ -257,6 +257,9 @@ public:
     void setChannelSpellId(uint32_t spell_id);
 
     //bytes_0 begin
+    uint32_t getBytes0() const;
+    void setBytes0(uint32_t bytes);
+
     uint8_t getRace() const;
     void setRace(uint8_t race);
     uint32_t getRaceMask() { return 1 << (getRace() - 1); }
@@ -354,6 +357,9 @@ public:
     void setMaxOffhandDamage(float damage);
 
     //bytes_1 begin
+    uint32_t getBytes1() const;
+    void setBytes1(uint32_t bytes);
+
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
 
@@ -420,6 +426,9 @@ public:
     void setBaseHealth(uint32_t baseHealth);
 
     //byte_2 begin
+    uint32_t getBytes2() const;
+    void setBytes2(uint32_t bytes);
+
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
 
