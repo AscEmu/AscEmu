@@ -20,6 +20,7 @@ set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/InstanceCommands.cpp
    ${PATH_PREFIX}/LookupCommands.cpp
    ${PATH_PREFIX}/MiscCommands.cpp
+   ${PATH_PREFIX}/ModifyCommands.cpp
    ${PATH_PREFIX}/NpcCommands.cpp
    ${PATH_PREFIX}/PetCommands.cpp
    ${PATH_PREFIX}/QuestCommands.cpp
