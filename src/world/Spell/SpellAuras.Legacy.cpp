@@ -4747,7 +4747,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
             if (itx == auras.end())
             {
                 std::set<uint32> *ids = new std::set<uint32>;
-                auras.insert(make_pair(aura->GetCasterGUID(), ids));
+                auras.insert(std::make_pair(aura->GetCasterGUID(), ids));
                 itx = auras.find(aura->GetCasterGUID());
             }
 

@@ -590,7 +590,6 @@ enum EmoteType
     EMOTE_STATE_READ_CHRISTMAS          = 518
 };
 
-
 enum UnitStates
 {
     UNIT_STATE_NONE      = 0x0000,
