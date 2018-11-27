@@ -102,7 +102,7 @@ class ZerekethAI : public CreatureAIScript
         float vzZ = random_target->GetPositionZ();
 
         Creature* VoidZone = spawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ, 0.0f);
-        VoidZone->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        VoidZone->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         VoidZone->m_noRespawn = true;
         if (!VoidZone->IsInWorld())
         {

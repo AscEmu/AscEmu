@@ -210,7 +210,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passenger->SetCurrentVehicle(this);
 
     if (seats[seatid]->HidesPassenger())
-        passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
+        passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
 
     passengercount++;
     freeseats--;
@@ -332,7 +332,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     passenger->setMoveRoot(false);
     seats[seatid]->RemovePassenger();
     passenger->SetCurrentVehicle(nullptr);
-    passenger->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
+    passenger->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
 
     passengercount--;
     freeseats++;

@@ -618,7 +618,7 @@ class FlameStrikeAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
         RemoveAIUpdateEvent();
         despawn(8500);

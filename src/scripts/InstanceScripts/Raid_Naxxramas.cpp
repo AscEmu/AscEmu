@@ -2039,7 +2039,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
     CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
     if (Ghost != nullptr)
     {
-        Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
     }
 
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
@@ -2111,7 +2111,7 @@ void PortalOfShadowsAI::AIUpdate()
             CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
             if (Ghost != nullptr)
             {
-                Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
             }
 
             _resetTimer(mSpawnTimer, 15000);

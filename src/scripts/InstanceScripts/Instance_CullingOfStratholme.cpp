@@ -200,7 +200,7 @@ class MalganisAI : public CreatureAIScript
         if (getCreature()->GetHealthPct() < 2)
         {
             getCreature()->setMoveRoot(true);
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
             for (uint8 i = 0; i < 7; ++i)
                 getCreature()->SchoolImmunityList[i] = 1;
 

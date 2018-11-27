@@ -516,7 +516,7 @@ class BarrageAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
     explicit BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->CastSpell(getCreature(), SPELL_EXPLODING_ORB, false);
         getCreature()->CastSpell(getCreature(), SPELL_AUTO_GROW, false);
 

@@ -716,7 +716,7 @@ enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
     //                                            Hex    Bit     Decimal  Comments
     UNIT_FLAG_NONE                       = 0x00000000, //              0 
     UNIT_FLAG_SERVER_CONTROLLED          = 0x00000001, // 1            1
-    UNIT_FLAG_NOT_ATTACKABLE_2           = 0x00000002, // 2            2  client won't let you attack them
+    UNIT_FLAG_NON_ATTACKABLE             = 0x00000002, // 2            2  client won't let you attack them
     UNIT_FLAG_LOCK_PLAYER                = 0x00000004, // 3            4  ? does nothing to client (probably wrong) - only taxi code checks this
     UNIT_FLAG_PVP_ATTACKABLE             = 0x00000008, // 4            8  makes players and NPCs attackable / not attackable
     UNIT_FLAG_UNKNOWN_5                  = 0x00000010, // 5           16  ? some NPCs have this
@@ -724,7 +724,7 @@ enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
     UNIT_FLAG_PLUS_MOB                   = 0x00000040, // 7           64  ? some NPCs have this (Rare/Elite/Boss?)
     UNIT_FLAG_IGNORE_CREATURE_COMBAT     = 0x00000080, // 8          128  unit will not enter combat with creatures
     UNIT_FLAG_IGNORE_PLAYER_COMBAT       = 0x00000100, // 9          256  unit will not enter combat with players
-    UNIT_FLAG_UNKNOWN_10                 = 0x00000200, // 10         512  ? some NPCs have this
+    UNIT_FLAG_IGNORE_PLAYER_NPC          = 0x00000200, // 10         512  disables combat with non-players
     UNIT_FLAG_LOOTING                    = 0x00000400, // 11        1024
     UNIT_FLAG_SELF_RES                   = 0x00000800, // 12        2048  ? some NPCs have this
     UNIT_FLAG_PVP                        = 0x00001000, // 13        4096  sets PvP flag
@@ -891,7 +891,7 @@ static const char* POWERTYPE[] =
 static const UnitFlagNames UnitFlagToName[] =
 {
     { UNIT_FLAG_SERVER_CONTROLLED, "UNIT_FLAG_SERVER_CONTROLLED" },
-    { UNIT_FLAG_NOT_ATTACKABLE_2, "UNIT_FLAG_NOT_ATTACKABLE_2" },
+    { UNIT_FLAG_NON_ATTACKABLE, "UNIT_FLAG_NON_ATTACKABLE" },
     { UNIT_FLAG_LOCK_PLAYER, "UNIT_FLAG_LOCK_PLAYER" },
     { UNIT_FLAG_PVP_ATTACKABLE, "UNIT_FLAG_PVP_ATTACKABLE" },
     { UNIT_FLAG_UNKNOWN_5, "UNIT_FLAG_UNKNOWN_5" },
@@ -899,7 +899,7 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_PLUS_MOB, "UNIT_FLAG_PLUS_MOB" },
     { UNIT_FLAG_IGNORE_CREATURE_COMBAT, "UNIT_FLAG_IGNORE_CREATURE_COMBAT" },
     { UNIT_FLAG_IGNORE_PLAYER_COMBAT, "UNIT_FLAG_IGNORE_PLAYER_COMBAT" },
-    { UNIT_FLAG_UNKNOWN_10, "UNIT_FLAG_UNKNOWN_10" },
+    { UNIT_FLAG_IGNORE_PLAYER_NPC, "UNIT_FLAG_IGNORE_PLAYER_NPC" },
     { UNIT_FLAG_LOOTING, "UNIT_FLAG_LOOTING" },
     { UNIT_FLAG_SELF_RES, "UNIT_FLAG_SELF_RES" },
     { UNIT_FLAG_PVP, "UNIT_FLAG_PVP" },

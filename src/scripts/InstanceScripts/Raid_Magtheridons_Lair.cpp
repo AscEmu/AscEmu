@@ -356,7 +356,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                             Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                         }
 
-                        Magtheridon->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                        Magtheridon->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                         Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                         Magtheridon->RemoveAura(BANISHMENT);
                     }
@@ -369,7 +369,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     if (Magtheridon)
                     {
                         Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                        Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                        Magtheridon->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                     }
 
                     Phase = 2;
@@ -798,7 +798,7 @@ class MagtheridonAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2))
+        if (getCreature()->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         GameObject* Gate = NULL;

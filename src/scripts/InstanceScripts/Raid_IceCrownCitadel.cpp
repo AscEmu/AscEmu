@@ -335,7 +335,7 @@ class BoneSpikeAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
     explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);  // On wowhead they said "kill them not just looking at them".
         getCreature()->Despawn(8000, 0);
     }
 };
