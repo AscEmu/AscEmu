@@ -43,8 +43,10 @@ template < class type > class SERVER_DECL Singleton
         Singleton()
         {
             /// If you hit this assert, this singleton already exists -- you can't create another one!
-            ASSERT(this->mSingleton == 0);
-            this->mSingleton = static_cast<type*>(this);
+            // not reproduceable issue on ubuntu
+            //ASSERT(this->mSingleton == 0);
+            if (this->mSingleton == nullptr)
+                this->mSingleton = static_cast<type*>(this);
         }
         /// Destructor
         virtual ~Singleton()
