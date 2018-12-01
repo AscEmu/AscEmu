@@ -1,22 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2008-2011 <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "../../StdAfx.h"
 #include "Units/Summons/TotemSummon.h"
@@ -27,38 +12,24 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-// MIT START
-//Group* TotemSummon::GetGroup()
-//{
-//    if (getUnitOwner() != nullptr)
-//        return getUnitOwner()->GetGroup();
-//
-//    return nullptr;
-//}
+TotemSummon::TotemSummon(uint64_t guid) : Summon(guid) {}
 
-// MIT END
+TotemSummon::~TotemSummon() {}
 
-TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
-{}
-
-TotemSummon::~TotemSummon()
-{}
-
-void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
+void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
 {
-    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
-    uint32 displayID = 0;
+    Summon::Load(creatureProperties, unitOwner, position, spellId, summonSlot);
+    uint32_t displayId;
 
-    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(pOwner->getRace(), creature_properties->Male_DisplayID);
-    if (totemdisplay != nullptr)
-        displayID = totemdisplay->race_specific_id;
+    const auto displayIds = sMySQLStore.getTotemDisplayId(unitOwner->getRace(), creature_properties->Male_DisplayID);
+    if (displayIds != nullptr)
+        displayId = displayIds->race_specific_id;
     else
-        displayID = creature_properties->Male_DisplayID;
+        displayId = creature_properties->Male_DisplayID;
 
-    // Set up the creature.
-    setMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
-    setPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
-    setLevel(pOwner->getLevel());
+    setMaxPower(POWER_TYPE_FOCUS, unitOwner->getLevel() * 30);
+    setPower(POWER_TYPE_FOCUS, unitOwner->getLevel() * 30);
+    setLevel(unitOwner->getLevel());
     setRace(0);
     setClass(1);
     setGender(2);
@@ -67,24 +38,25 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setBaseAttackTime(OFFHAND, 2000);
     setBoundingRadius(1.0f);
     setCombatReach(1.0f);
-    setDisplayId(displayID);
+    setDisplayId(displayId);
     setNativeDisplayId(creature_properties->Male_DisplayID);
     setModCastSpeed(1.0f);
-    //\note remove all dynamic flags
     setDynamicFlags(0);
 
-    InheritSMMods(pOwner);
+    InheritSMMods(unitOwner);
 
-    for (uint8 school = 0; school < SCHOOL_COUNT; school++)
+    for (uint8_t school = 0; school < SCHOOL_COUNT; school++)
     {
-        ModDamageDone[school] = pOwner->GetDamageDoneMod(school);
-        HealDoneMod[school] = pOwner->HealDoneMod[school];
+        ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);
+        HealDoneMod[school] = unitOwner->HealDoneMod[school];
     }
 
-    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, pOwner);
+    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, unitOwner);
     DisableAI();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Override Object functions
 void TotemSummon::OnPushToWorld()
 {
     Summon::OnPushToWorld();
@@ -97,58 +69,62 @@ void TotemSummon::OnPreRemoveFromWorld()
     Summon::OnPreRemoveFromWorld();
 }
 
+bool TotemSummon::isTotem() const { return true; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Override Unit functions
+void TotemSummon::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
+{
+    Despawn(1, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
 void TotemSummon::SetupSpells()
 {
-    if (getUnitOwner() == NULL)
+    if (getUnitOwner() == nullptr)
         return;
 
-    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());
-    SpellInfo* TotemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
-
-    if (TotemSpell == NULL)
+    const auto creatorSpell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());
+    const auto totemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
+    if (totemSpell == nullptr)
     {
         LOG_DEBUG("Totem %u does not have any spells to cast", creature_properties->Id);
         return;
     }
 
     // Set up AI, depending on our spells.
-    bool castingtotem = true;
+    bool isCastingTotem = true;
 
-    if (TotemSpell->hasEffect(SPELL_EFFECT_SUMMON) ||
-        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
-        TotemSpell->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
-        TotemSpell->hasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
-        (TotemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
-        castingtotem = false;
+    if (totemSpell->hasEffect(SPELL_EFFECT_SUMMON) ||
+        totemSpell->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
+        totemSpell->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
+        totemSpell->hasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
+        totemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && totemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
+        isCastingTotem = false;
 
-    if (!castingtotem)
+    if (!isCastingTotem)
     {
         // We're an area aura. Simply cast the spell.
+        m_aiInterface->totemspell = creatorSpell;
 
-        m_aiInterface->totemspell = creatorspell;
-
-        Spell* pSpell = sSpellFactoryMgr.NewSpell(this, TotemSpell, true, 0);
+        auto spell = sSpellFactoryMgr.NewSpell(this, totemSpell, true, nullptr);
         SpellCastTargets targets;
 
-        if (!TotemSpell->hasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
+        if (!totemSpell->hasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
         {
             targets.setDestination(GetPosition());
             targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
         }
-        pSpell->prepare(&targets);
+        spell->prepare(&targets);
 
     }
     else
     {
         // We're a casting totem. Switch AI on, and tell it to cast this spell.
         EnableAI();
-        m_aiInterface->totemspell = TotemSpell;
+        m_aiInterface->totemspell = totemSpell;
         m_aiInterface->m_totemspelltimer = 0;
         m_aiInterface->m_totemspelltime = 3 * MSTIME_SECOND;
     }
-}
-
-void TotemSummon::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
-{
-    Despawn(1, 0);
 }
