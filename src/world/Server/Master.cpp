@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20181006-00_spell_custom_override";
+static const char* REQUIRED_WORLD_DB_VERSION = "20181201-01_gameobject_quest_starter_ender";
 
 void Master::_OnSignal(int s)
 {

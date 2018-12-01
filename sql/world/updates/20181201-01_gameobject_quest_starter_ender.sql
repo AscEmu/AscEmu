@@ -13,3 +13,5 @@ ADD COLUMN `max_build` INT(6) NOT NULL DEFAULT 12340 AFTER `min_build`,
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`id`,`quest`,`min_build`),
 ADD UNIQUE KEY `unique_index` (`id`, `quest`,`min_build`) USING BTREE;
+
+INSERT INTO `world_db_version` VALUES ('40', '20181201-01_gameobject_quest_starter_ender');
