@@ -2121,10 +2121,9 @@ void QuestMgr::LoadExtraQuestStuff()
     uint32 pos = 0;
     uint32 total = 0;
 
-    for (auto tableiterator = CreatureQuestStarterTables.begin(); tableiterator != CreatureQuestStarterTables.end(); ++tableiterator)
+    for (auto tableName : CreatureQuestStarterTables)
     {
-        std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
         if (pResult)
         {
             total = pResult->GetRowCount();
@@ -2137,7 +2136,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2148,10 +2147,9 @@ void QuestMgr::LoadExtraQuestStuff()
         }
     }
 
-    for (auto tableiterator = CreatureQuestFinisherTables.begin(); tableiterator != CreatureQuestFinisherTables.end(); ++tableiterator)
+    for (auto tableName : CreatureQuestFinisherTables)
     {
-        std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
         pos = 0;
         if (pResult)
         {
@@ -2165,7 +2163,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2176,10 +2174,9 @@ void QuestMgr::LoadExtraQuestStuff()
         }
     }
 
-    for (auto tableiterator = GameObjectQuestStarterTables.begin(); tableiterator != GameObjectQuestStarterTables.end(); ++tableiterator)
+    for (auto tableName : GameObjectQuestStarterTables)
     {
-        std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
         pos = 0;
         if (pResult)
         {
@@ -2193,7 +2190,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2204,10 +2201,9 @@ void QuestMgr::LoadExtraQuestStuff()
         }
     }
 
-    for (auto tableiterator = GameObjectQuestFinisherTables.begin(); tableiterator != GameObjectQuestFinisherTables.end(); ++tableiterator)
+    for (auto tableName : GameObjectQuestFinisherTables)
     {
-        std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
         pos = 0;
         if (pResult)
         {
@@ -2221,7 +2217,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %u in table %s.", creature, quest, table_name.c_str());
+                    LogDebugFlag(LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
