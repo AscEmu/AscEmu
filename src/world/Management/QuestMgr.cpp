@@ -2176,7 +2176,7 @@ void QuestMgr::LoadExtraQuestStuff()
         }
     }
 
-    pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_starter");
+    pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     pos = 0;
     if (pResult)
     {
@@ -2201,7 +2201,7 @@ void QuestMgr::LoadExtraQuestStuff()
         delete pResult;
     }
 
-    pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_finisher");
+    pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     pos = 0;
     if (pResult)
     {

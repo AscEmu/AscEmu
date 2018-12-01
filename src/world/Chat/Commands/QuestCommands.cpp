@@ -292,7 +292,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
                 else
                 {
-                    QueryResult* objectResult = WorldDatabase.Query("SELECT id FROM gameobject_quest_starter WHERE quest = %u", quest_id);
+                    QueryResult* objectResult = WorldDatabase.Query("SELECT id FROM gameobject_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
                     if (objectResult)
                     {
                         Field* objectFields = objectResult->Fetch();
@@ -631,8 +631,8 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         SendMultilineMessage(m_session, recout.c_str());
     }
 
-    std::string my_query2 = "SELECT id FROM gameobject_quest_starter WHERE quest = " + std::string(args);
-    QueryResult* objectResult2 = WorldDatabase.Query(my_query2.c_str());
+    std::string my_query2 = "SELECT id FROM gameobject_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult2 = WorldDatabase.Query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (objectResult2)
     {
@@ -1217,8 +1217,8 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         SendMultilineMessage(m_session, recout.c_str());
     }
 
-    std::string my_query2 = "SELECT id FROM gameobject_quest_finisher WHERE quest = " + std::string(args);
-    QueryResult* objectResult2 = WorldDatabase.Query(my_query2.c_str());
+    std::string my_query2 = "SELECT id FROM gameobject_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult2 = WorldDatabase.Query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (objectResult2)
     {
