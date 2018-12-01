@@ -2057,14 +2057,14 @@ public:
         uint32 quest_giver = unit->getEntry();
 
         char my_query1[200];
-        sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d", quest_giver, quest_id);
+        sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
         QueryResult* selectResult1 = WorldDatabase.Query(my_query1);
         if (selectResult1)
             delete selectResult1; //already has quest
         else
         {
             char my_insert1[200];
-            sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d)", quest_giver, quest_id);
+            sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
             WorldDatabase.Execute(my_insert1);
         }
         sQuestMgr.LoadExtraQuestStuff();
@@ -2100,7 +2100,7 @@ public:
         uint32 quest_giver = unit->getEntry();
 
         char my_query1[200];
-        sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d", quest_giver, quest_id);
+        sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
         QueryResult* selectResult1 = WorldDatabase.Query(my_query1);
         if (selectResult1)
         {
@@ -2109,7 +2109,7 @@ public:
         else
         {
             char my_insert1[200];
-            sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest) VALUES (%d,%d)", quest_giver, quest_id);
+            sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
             WorldDatabase.Execute(my_insert1);
         }
         sQuestMgr.LoadExtraQuestStuff();

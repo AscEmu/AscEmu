@@ -282,7 +282,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (IsPlrOnQuest)
             {
                 uint32 giver_id = 0;
-                QueryResult* creatureResult = WorldDatabase.Query("SELECT id FROM creature_quest_starter WHERE quest = %u", quest_id);
+                QueryResult* creatureResult = WorldDatabase.Query("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
 
                 if (creatureResult)
                 {
@@ -576,8 +576,8 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
 
     std::string recout;
 
-    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args);
-    QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (objectResult1)
     {
@@ -732,7 +732,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
     if (quest_giver != 0)
     {
-        QueryResult* creatureResult = WorldDatabase.Query("SELECT quest FROM creature_quest_starter WHERE id = %u", quest_giver);
+        QueryResult* creatureResult = WorldDatabase.Query("SELECT quest FROM creature_quest_starter WHERE id = %u AND min_build <= %u AND max_build >= %u", quest_giver, VERSION_STRING, VERSION_STRING);
 
         if (!creatureResult)
         {
@@ -827,8 +827,8 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 
     std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
-    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
     {
         delete selectResult1;
@@ -836,8 +836,8 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     }
     else
     {
-        std::string my_insert1 = "INSERT INTO creature_quest_starter (id, quest) VALUES (" + quest_giver + "," + std::string(args) + ")";
-        QueryResult* insertResult1 = WorldDatabase.Query(my_insert1.c_str());
+        std::string my_insert1 = "INSERT INTO creature_quest_starter (id, quest, min_build, max_build) VALUES (" + quest_giver + "," + std::string(args) + " %u, %u)";
+        QueryResult* insertResult1 = WorldDatabase.Query(my_insert1.c_str(), VERSION_STRING, VERSION_STRING);
         if (insertResult1)
             delete insertResult1;
     }
@@ -914,8 +914,8 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 
     std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
-    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
     {
         delete selectResult1;
@@ -923,8 +923,8 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     }
     else
     {
-        std::string my_insert1 = "INSERT INTO creature_quest_finisher (id, quest) VALUES (" + quest_giver + "," + std::string(args) + ")";
-        QueryResult* insertResult1 = WorldDatabase.Query(my_insert1.c_str());
+        std::string my_insert1 = "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (" + quest_giver + "," + std::string(args) + ", %u, %u)";
+        QueryResult* insertResult1 = WorldDatabase.Query(my_insert1.c_str(), VERSION_STRING, VERSION_STRING);
         if (insertResult1)
             delete insertResult1;
     }
@@ -1014,8 +1014,8 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 
     std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
-    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
         delete selectResult1;
     else
@@ -1024,8 +1024,8 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    std::string my_delete1 = "DELETE FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* deleteResult1 = WorldDatabase.Query(my_delete1.c_str());
+    std::string my_delete1 = "DELETE FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* deleteResult1 = WorldDatabase.Query(my_delete1.c_str(), VERSION_STRING, VERSION_STRING);
     if (deleteResult1)
         delete deleteResult1;
 
@@ -1099,8 +1099,8 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 
     std::string quest_giver = MyConvertIntToString(unit->getEntry());
 
-    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
         delete selectResult1;
     else
@@ -1109,8 +1109,8 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    std::string my_delete1 = "DELETE FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args);
-    QueryResult* deleteResult1 = WorldDatabase.Query(my_delete1.c_str());
+    std::string my_delete1 = "DELETE FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* deleteResult1 = WorldDatabase.Query(my_delete1.c_str(), VERSION_STRING, VERSION_STRING);
     if (deleteResult1)
         delete deleteResult1;
 
@@ -1162,8 +1162,8 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
 
     std::string recout;
 
-    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args);
-    QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str());
+    std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
 
     if (objectResult1)
     {
@@ -1281,8 +1281,8 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
 
     std::string recout;
 
-    std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args);
-    QueryResult* objectResult = WorldDatabase.Query(my_query.c_str());
+    std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult = WorldDatabase.Query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
 
     std::string starterId;
     if (objectResult)
@@ -1352,8 +1352,8 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
 
     std::string recout;
 
-    std::string my_query = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args);
-    QueryResult* objectResult = WorldDatabase.Query(my_query.c_str());
+    std::string my_query = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
+    QueryResult* objectResult = WorldDatabase.Query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
 
     std::string finisherId;
     if (objectResult)

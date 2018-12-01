@@ -2124,7 +2124,7 @@ void QuestMgr::LoadExtraQuestStuff()
     for (auto tableiterator = CreatureQuestStarterTables.begin(); tableiterator != CreatureQuestStarterTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
         if (pResult)
         {
             total = pResult->GetRowCount();
@@ -2151,7 +2151,7 @@ void QuestMgr::LoadExtraQuestStuff()
     for (auto tableiterator = CreatureQuestFinisherTables.begin(); tableiterator != CreatureQuestFinisherTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
-        pResult = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
+        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", table_name.c_str(), VERSION_STRING, VERSION_STRING);
         pos = 0;
         if (pResult)
         {
