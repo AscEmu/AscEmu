@@ -15,6 +15,8 @@ SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
+SERVER_DECL std::set<std::string> GameObjectQuestStarterTables;
+SERVER_DECL std::set<std::string> GameObjectQuestFinisherTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> ItemPropertiesTables;
@@ -56,6 +58,8 @@ void MySQLDataStore::loadAdditionalTableConfig()
     CreatureQuestStarterTables.insert(std::string("creature_quest_starter"));
     CreatureQuestFinisherTables.insert(std::string("creature_quest_finisher"));
     CreatureSpawnsTables.insert(std::string("creature_spawns"));
+    GameObjectQuestStarterTables.insert(std::string("gameobject_quest_starter"));
+    GameObjectQuestFinisherTables.insert(std::string("gameobject_quest_finisher"));
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
     GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
     ItemPropertiesTables.insert(std::string("item_properties"));
@@ -93,6 +97,12 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (target_table.compare("creature_spawns") == 0)
             CreatureSpawnsTables.insert(additional_table);
+
+        if (target_table.compare("gameobject_quest_starter") == 0)
+            GameObjectQuestStarterTables.insert(additional_table);
+
+        if (target_table.compare("gameobject_quest_finisher") == 0)
+            GameObjectQuestFinisherTables.insert(additional_table);
 
         if (target_table.compare("gameobject_spawns") == 0)
             GameObjectSpawnsTables.insert(additional_table);

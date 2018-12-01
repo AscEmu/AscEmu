@@ -16,6 +16,8 @@ extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 extern SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
+extern SERVER_DECL std::set<std::string> GameObjectQuestStarterTables;
+extern SERVER_DECL std::set<std::string> GameObjectQuestFinisherTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
