@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20181201-04_gameobject_quest_starter";
+static const char* REQUIRED_WORLD_DB_VERSION = "20181201-05_gameobject_quest_finisher";
 
 void Master::_OnSignal(int s)
 {
