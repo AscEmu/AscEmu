@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgMonsterMoveTransport.h"
+#include "Map/MapMgr.h"
+#include "Units/Creatures/Vehicle.h"
 
 using namespace AscEmu::Packets;
 
