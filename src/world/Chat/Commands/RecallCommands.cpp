@@ -28,7 +28,7 @@
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {
     QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall "
-        "WHERE min_build <= %u AND max_build >= %u  ORDER BY name", getAEVersion(), getAEVersion());
+        "WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
 
     if (result == NULL)
         return false;
@@ -121,7 +121,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall");
+    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
     if (!result)
         return false;
     do
@@ -143,8 +143,10 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 
     std::string rc_locname = std::string(args);
 
-    ss << "INSERT INTO recall (name, mapid, positionX, positionY, positionZ, Orientation) VALUES ('"
+    ss << "INSERT INTO recall (name, min_build, max_build, mapid, positionX, positionY, positionZ, Orientation) VALUES ('"
         << WorldDatabase.EscapeString(rc_locname).c_str() << "' , "
+        << getAEVersion() << ", "
+        << getAEVersion() << ", "
         << plr->GetMapId() << ", "
         << plr->GetPositionX() << ", "
         << plr->GetPositionY() << ", "
@@ -166,7 +168,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT id,name FROM recall");
+    QueryResult* result = WorldDatabase.Query("SELECT id, name FROM recall WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
     if (!result)
         return false;
 
@@ -196,13 +198,13 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
 {
-    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE name LIKE '%s%c' ORDER BY name", args, '%');
+    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE name LIKE '%s%c' AND min_build <= %u AND max_build >= %u ORDER BY name", args, '%', getAEVersion(), getAEVersion());
     if (!result)
         return false;
-    std::string recout;
+
     uint32 count = 0;
 
-    recout = MSG_COLOR_GREEN;
+    std::string recout = MSG_COLOR_GREEN;
     recout += "Recall locations|r:\n\n";
     do
     {
@@ -234,9 +236,10 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
         return false;
 
     Player* plr = objmgr.GetPlayer(player, false);
-    if (!plr) return false;
+    if (!plr)
+        return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM recall ORDER BY name");
+    QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
     if (!result)
         return false;
 
