@@ -29,6 +29,10 @@
 class TotemSummon : public Summon
 {
     public:
+    // MIT START
+        //Group* GetGroup();
+
+    // MIT END
 
         TotemSummon(uint64 GUID);
         ~TotemSummon();
@@ -40,8 +44,6 @@ class TotemSummon : public Summon
         void OnPreRemoveFromWorld();
 
         bool isTotem() const override { return true; }
-
-        Group* GetGroup();
 
         //\brief: Sets up the spells the totem will cast. This code was almost directly copied
         //        from SpellEffects.cpp, it requires further refactoring!

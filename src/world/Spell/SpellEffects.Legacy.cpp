@@ -574,11 +574,11 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
             //TO< Pet* >(u_caster)->Dismiss(true);
 
             SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
-            if (static_cast< Pet* >(u_caster)->GetPetOwner() == nullptr)
+            if (static_cast< Pet* >(u_caster)->getPlayerOwner() == nullptr)
                 return;
 
             SpellCastTargets targets(u_caster->getGuid());
-            Spell* sp = sSpellFactoryMgr.NewSpell(static_cast< Pet* >(u_caster)->GetPetOwner(), se, true, nullptr);
+            Spell* sp = sSpellFactoryMgr.NewSpell(static_cast< Pet* >(u_caster)->getPlayerOwner(), se, true, nullptr);
             sp->prepare(&targets);
             return;
         } break;
@@ -6319,7 +6319,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
 {
     if (!unitTarget || !unitTarget->isPet() ||
-        !static_cast< Pet* >(unitTarget)->GetPetOwner() || static_cast< Pet* >(unitTarget)->GetPetOwner()->getClass() != HUNTER)
+        !static_cast< Pet* >(unitTarget)->getPlayerOwner() || dynamic_cast<Player*>(static_cast< Pet* >(unitTarget)->getPlayerOwner())->getClass() != HUNTER)
         return;
 
     unitTarget->setPetFlags(unitTarget->getPetFlags() | PET_RENAME_ALLOWED);

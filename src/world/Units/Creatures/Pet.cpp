@@ -49,6 +49,11 @@
 #define SPIRITWOLF              29264
 #define DANCINGRUNEWEAPON       27893
 
+//MIT START
+Object* Pet::getPlayerOwner() { return m_Owner; }
+
+//MIT END
+
 uint32 Pet::GetAutoCastTypeForSpell(SpellInfo* ent)
 {
     switch (ent->getId())
@@ -373,17 +378,12 @@ void Pet::SetNameForEntry(uint32 entry)
 bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
     if (ci == nullptr || owner == nullptr)
-    {
-        return false;//the caller will delete us.
-    }
+        return false;                       //the caller will delete us.
 
     if (dismiss_old_pet)
-    {
         owner->DismissActivePets();
-    }
 
     m_Owner = owner;
-    m_OwnerGuid = m_Owner->getGuid();
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->GeneratePetNumber();
     creature_properties = ci;
@@ -532,7 +532,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     return true;
 }
 
-Pet::Pet(uint64 guid) : Creature(guid)
+Pet::Pet(uint64 guid) : Creature(guid), m_Owner(nullptr)
 {
     Summon = false;
     memset(ActionBar, 0, sizeof(uint32) * 10);
@@ -557,14 +557,13 @@ Pet::Pet(uint64 guid) : Creature(guid)
     m_AISpellStore.clear();
     mSpells.clear();
     mPi = NULL;
-    m_Owner = NULL;
-    m_OwnerGuid = 0;
 }
 
 Pet::~Pet()
 {
     for (std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
         delete itr->second;
+
     m_AISpellStore.clear();
 
     for (uint8 i = 0; i < AUTOCAST_EVENT_COUNT; i++)
@@ -576,7 +575,9 @@ Pet::~Pet()
 void Pet::Update(unsigned long time_passed)
 {
     if (Summon)
+    {
         Creature::Update(time_passed);  // passthrough
+    }
     else
     {
         Unit::Update(time_passed);      //Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
@@ -596,6 +597,7 @@ void Pet::Update(unsigned long time_passed)
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
             if (CombatStatus.IsInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
+
             modPower(POWER_TYPE_HAPPINESS, -burn);
             m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;  // reset timer
         }
@@ -615,7 +617,8 @@ void Pet::Update(unsigned long time_passed)
             Remove(false, true);        // remove
             return;
         }
-        else if (time_passed > m_ExpireTime)
+
+        if (time_passed > m_ExpireTime)
             m_ExpireTime = 0;
         else
             m_ExpireTime -= time_passed;
@@ -719,7 +722,6 @@ void Pet::SendTalentsToOwner()
         if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
-
         for (uint32 t_id = 1; t_id < sTalentStore.GetNumRows(); t_id++)
         {
             // get talent entries for our talent tree
@@ -768,6 +770,7 @@ void Pet::SendActionFeedback(PetActionFeedback value)
 {
     if (m_Owner == NULL || m_Owner->GetSession() == NULL)
         return;
+
     m_Owner->GetSession()->OutPacket(SMSG_PET_ACTION_FEEDBACK, 1, &value);
 }
 
@@ -776,7 +779,6 @@ void Pet::InitializeSpells()
     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         SpellInfo* info = itr->first;
-
         // Check that the spell isn't passive
         if (info->isPassive())
         {
@@ -812,6 +814,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     if (sp->maxrange < sqrt(info->custom_base_range_or_radius_sqr))
         sp->maxrange = sqrt(info->custom_base_range_or_radius_sqr);
+
     sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     sp->Misc2 = 0;
     sp->procChance = 0;
@@ -819,12 +822,16 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->cooldown = objmgr.GetPetSpellCooldown(info->getId());
     if (sp->cooldown == 0)
         sp->cooldown = info->getRecoveryTime();          //still 0 ?
+
     if (sp->cooldown == 0)
         sp->cooldown = info->getCategoryRecoveryTime();
+
     if (sp->cooldown == 0)
         sp->cooldown = info->getStartRecoveryTime();     //avoid spell spamming
+
     if (sp->cooldown == 0)
         sp->cooldown = PET_SPELL_SPAM_COOLDOWN;     //omg, avoid spamming at least
+
     sp->cooldowntime = 0;
 
     if (/* info->Effect[0] == SPELL_EFFECT_APPLY_AURA || */
@@ -840,13 +847,13 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->autocast_type = GetAutoCastTypeForSpell(info);
     sp->procCount = 0;
     m_AISpellStore[info->getId()] = sp;
+
     return sp;
 }
 
 void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 {
     m_Owner = owner;
-    m_OwnerGuid = m_Owner->getGuid();
     m_phase = m_Owner->GetPhase();
     mPi = pi;
     creature_properties = sMySQLStore.getCreatureProperties(mPi->entry);
@@ -862,7 +869,6 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     Summon = false;
     setEntry(mPi->entry);
     setLevel(mPi->level);
-
 
     m_HappinessTimer = mPi->happinessupdate;
     reset_time = mPi->reset_time;
@@ -1065,9 +1071,7 @@ void Pet::InitializeMe(bool first)
     InitializeSpells();
 
     if (first)
-    {
         SetDefaultActionbar();      // Set up default actionbar
-    }
 
     UpdateSpellList(false);
     SendSpellsToOwner();
@@ -1167,8 +1171,7 @@ void Pet::RemoveFromWorld(bool free_guid)
 void Pet::OnRemoveFromWorld()
 {
     std::list<Pet*> ownerSummons = m_Owner->GetSummons();
-    std::list<Pet*>::iterator itr;
-    for (itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+    for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
         //m_Owner MUST NOT have a reference to us anymore
         ARCEMU_ASSERT((*itr)->getGuid() != getGuid());
@@ -1214,6 +1217,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     {
         if (!bExpires)
             UpdatePetInfo(bSetOffline);
+
         if (!IsSummonedPet())
             m_Owner->_SavePet(NULL);
     }
@@ -1244,6 +1248,7 @@ void Pet::setDeathState(DeathState s)
         //we can't dimiss the summon now now since it's still needed in DealDamage()
         sEventMgr.AddEvent(this, &Pet::Dismiss, EVENT_UNK, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
+
     if (mPi != NULL)
         mPi->alive = isAlive();
 }
@@ -1253,8 +1258,8 @@ bool Pet::CanGainXP()
     // only hunter pets which are below owner level can gain experience
     if (Summon || !m_Owner || getLevel() >= m_Owner->getLevel())
         return false;
-    else
-        return true;
+
+    return true;
 }
 
 void Pet::GiveXP(uint32 xp)
@@ -1292,7 +1297,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (creature_properties->spelldataid != 0)
     {
-        auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creature_properties->spelldataid);
+        const auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creature_properties->spelldataid);
 
         for (uint8 i = 0; i < 3; ++i)
         {
@@ -1300,7 +1305,6 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                 continue;
 
             uint32 spellid = creature_spell_data->Spells[i];
-
             if (spellid != 0)
             {
                 SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
@@ -1323,35 +1327,31 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (GetCreatureProperties()->Family == 0 && Summon)
     {
-        std::map<uint32, std::set<uint32> >::iterator it1;
-        std::set<uint32>::iterator it2;
-        it1 = m_Owner->SummonSpells.find(getEntry());       // Get spells from the owner
+        std::map<uint32, std::set<uint32>>::iterator it1 = m_Owner->SummonSpells.find(getEntry());       // Get spells from the owner
         if (it1 != m_Owner->SummonSpells.end())
         {
-            it2 = it1->second.begin();
+            std::set<uint32>::iterator it2 = it1->second.begin();
             for (; it2 != it1->second.end(); ++it2)
-            {
                 AddSpell(sSpellCustomizations.GetSpellInfo(*it2), true, showLearnSpells);
-            }
+
         }
         return;
     }
-    else
+
+    // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
+    DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
+    if (f)
     {
-        // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
-        DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
-        if (f)
-        {
-            s = f->skilline;
-            s2 = f->tameable;
-        }
+        s = f->skilline;
+        s2 = f->tameable;
     }
+
 
     if (s || s2)
     {
         for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
-            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            const auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
             if (skill_line_ability == nullptr)
                 continue;
 
@@ -1576,6 +1576,7 @@ void Pet::WipeTalents()
             if (talent->RankID[j] != 0 && HasSpell(talent->RankID[j]))
                 RemoveSpell(talent->RankID[j]);
     }
+
     SendSpellsToOwner();
 }
 
@@ -1587,16 +1588,16 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
     {
         if (itr->second->autocast_type != AUTOCAST_EVENT_NONE)
         {
-            std::list<AI_Spell*>::iterator it3;
             for (std::list<AI_Spell*>::iterator it2 = m_autoCastSpells[itr->second->autocast_type].begin(); it2 != m_autoCastSpells[itr->second->autocast_type].end();)
             {
-                it3 = it2++;
+                std::list<AI_Spell*>::iterator it3 = it2++;
                 if ((*it3) == itr->second)
                 {
                     m_autoCastSpells[itr->second->autocast_type].erase(it3);
                 }
             }
         }
+
         for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it) == itr->second)
@@ -1652,7 +1653,8 @@ void Pet::Rename(std::string NewName)
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)
     {
-        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->getGuidLow(), getEntry());
+        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", 
+            m_name.data(), m_Owner->getGuidLow(), getEntry());
     }
 
     m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
@@ -1870,6 +1872,7 @@ void Pet::ApplyStatsForLevel()
         float scale_diff = float(myFamily->maxsize - myFamily->minsize);
         float factor = scale_diff / level_diff;
         float scale = factor * pet_level + myFamily->minsize;
+
         if (myFamily->ID == 23) // Imps have strange values set into CreatureFamily.dbc,
             setScale(1.0f);    // they always will be set to be 0.5f. But that's not right.
         else
@@ -1929,8 +1932,10 @@ void Pet::UpdateAP()
     uint32 AP = (str * 2 - 20);
     if (m_Owner)
         AP += m_Owner->GetRAP() * 22 / 100;
+
     if (static_cast<int32>(AP) < 0)
         AP = 0;
+
     setAttackPower(AP);
 }
 
@@ -1948,23 +1953,22 @@ HappinessState Pet::GetHappinessState()
     uint32 pts = getUInt32Value(UNIT_FIELD_POWER5);
     if (pts < PET_HAPPINESS_UPDATE_VALUE)
         return UNHAPPY;
-    else if (pts >= PET_HAPPINESS_UPDATE_VALUE << 1)
+
+    if (pts >= PET_HAPPINESS_UPDATE_VALUE << 1)
         return HAPPY;
-    else
-        return CONTENT;
+
+    return CONTENT;
 }
 
 AI_Spell* Pet::HandleAutoCastEvent()
 {
-    std::list<AI_Spell*>::iterator itr, itr2;
     bool chance = true;
-    uint32 size = 0;
 
-    for (itr2 = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr2 != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end();)
+    for (std::list<AI_Spell*>::iterator itr2 = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr2 != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end();)
     {
-        itr = itr2;
+        std::list<AI_Spell*>::iterator itr = itr2;
         ++itr2;
-        size = (uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
+        uint32 size = (uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
         if (size > 1)
             chance = Rand(100.0f / size);
 
@@ -2108,6 +2112,7 @@ Group* Pet::GetGroup()
 {
     if (m_Owner)
         return m_Owner->GetGroup();
+
     return nullptr;
 }
 
@@ -2263,8 +2268,8 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                 if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
-                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->GetPlayerOwner())
-                    player_tagger = static_cast<Player*>(unit_tagger->GetPlayerOwner());
+                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->getPlayerOwner())
+                    player_tagger = static_cast<Player*>(unit_tagger->getPlayerOwner());
 
                 if (player_tagger != nullptr)
                 {
@@ -2390,10 +2395,8 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     {
 
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
-
         if (spl != nullptr)
         {
-
             for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
@@ -2407,7 +2410,8 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140)
+                interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
     }
 
@@ -2452,9 +2456,4 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     if (m_mapMgr->m_battleground != NULL)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
-}
-
-Object* Pet::GetPlayerOwner()
-{
-    return m_Owner;
 }

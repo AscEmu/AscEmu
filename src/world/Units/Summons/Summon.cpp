@@ -22,6 +22,17 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
+// MIT START
+Object* Summon::getPlayerOwner()
+{
+    if (owner)
+        if (owner->isPlayer())
+            return owner;
+
+    return nullptr;
+}
+
+// MIT END
 Summon::Summon(uint64 GUID) : Creature(GUID)
 {
     summonslot = -1;
@@ -101,18 +112,6 @@ void Summon::OnPreRemoveFromWorld()
 
     SendDestroyObject();
 
-}
-
-Object* Summon::GetPlayerOwner()
-{
-    // pOwner is nulled on death
-    if (owner == NULL)
-        return NULL;
-
-    if (owner->isPlayer())
-        return owner;
-    else
-        return NULL;
 }
 
 void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)

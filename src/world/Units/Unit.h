@@ -706,6 +706,12 @@ public:
     void sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat);
     void sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Unit Owner
+
+    bool isUnitOwnerInParty(Unit* unit);
+    bool isUnitOwnerInRaid(Unit* unit);
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -1355,11 +1361,8 @@ protected:
 
 public:
 
-    
-
     virtual Group* GetGroup() { return nullptr; }
-    bool InParty(Unit* u);
-    bool InRaid(Unit* u);
+    
     const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
 
     bool m_noFallDamage;

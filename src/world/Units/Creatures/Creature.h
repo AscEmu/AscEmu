@@ -89,6 +89,10 @@ public:
     void setSanctuaryFlag() override;
     void removeSanctuaryFlag() override;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Owner
+    Object* getPlayerOwner() override;
+
  //MIT end
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
@@ -247,8 +251,6 @@ public:
 
         void SetEnslaveSpell(uint32 spellId);
         bool RemoveEnslave();
-
-        Object* GetPlayerOwner() override;
 
         Group* GetGroup() override;
 

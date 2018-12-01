@@ -123,6 +123,10 @@ void Creature::removeSanctuaryFlag()
     summonhandler.RemoveSanctuaryFlags();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Owner
+Object* Creature::getPlayerOwner() { return nullptr; }
+
 //MIT end
 
 Creature::Creature(uint64 guid)
@@ -911,7 +915,7 @@ void Creature::CalcResistance(uint8_t type)
 
     if (isPet() && isAlive() && IsInWorld())
     {
-        Player* owner = static_cast<Pet*>(this)->GetPetOwner();
+        Player* owner = dynamic_cast<Player*>(static_cast<Pet*>(this)->getPlayerOwner());
         if (type == 0 && owner)
             pos += int32(0.35f * owner->getResistance(type));
         else if (owner)
@@ -950,7 +954,7 @@ void Creature::CalcStat(uint8_t type)
 
     if (isPet())
     {
-        Player* owner = static_cast< Pet* >(this)->GetPetOwner();
+        Player* owner = dynamic_cast<Player*>(static_cast<Pet*>(this)->getPlayerOwner());
         if (type == STAT_STAMINA && owner)
             pos += int32(0.45f * owner->getStat(STAT_STAMINA));
         else if (type == STAT_INTELLECT && owner && getCreatedBySpellId())
@@ -2234,12 +2238,11 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
 
     if (pVictim->isPvpFlagSet())
     {
-        Player* p = static_cast< Player* >(GetPlayerOwner());
-
-        if (p != NULL)
+        if (auto p = static_cast<Player*>(getPlayerOwner()))
         {
             if (!p->isPvpFlagSet())
                 p->PvPToggle();
+
             p->AggroPvPGuards();
         }
     }
@@ -2247,7 +2250,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
     // Bg dmg counter
     if (pVictim != this)
     {
-        Player* p = static_cast< Player* >(GetPlayerOwner());
+        Player* p = static_cast< Player* >(getPlayerOwner());
         if (p != NULL)
         {
             if (p->m_bg != NULL && GetMapMgr() == pVictim->GetMapMgr())
@@ -2587,12 +2590,6 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     // cooldowns
     data << uint8(0);
 }
-
-Object* Creature::GetPlayerOwner()
-{
-    return NULL;
-}
-
 
 void Creature::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {

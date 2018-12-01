@@ -2219,3 +2219,48 @@ void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*
 
     SendMessageToSet(&data, true);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Unit Owner
+bool Unit::isUnitOwnerInParty(Unit* unit)
+{
+    if (unit)
+    {
+        Player* playOwner = static_cast<Player*>(getPlayerOwner());
+        Player* playerOwnerFromUnit = static_cast<Player*>(unit->getPlayerOwner());
+        if (playOwner == nullptr || playerOwnerFromUnit == nullptr)
+            return false;
+
+        if (playOwner == playerOwnerFromUnit)
+            return true;
+
+        if (playOwner->GetGroup() != nullptr
+            && playerOwnerFromUnit->GetGroup() != nullptr
+            && playOwner->GetGroup() == playerOwnerFromUnit->GetGroup()
+            && playOwner->GetSubGroup() == playerOwnerFromUnit->GetSubGroup())
+            return true;
+    }
+
+    return false;
+}
+
+bool Unit::isUnitOwnerInRaid(Unit* unit)
+{
+    if (unit)
+    {
+        Player* playerOwner = static_cast<Player*>(getPlayerOwner());
+        Player* playerOwnerFromUnit = static_cast<Player*>(unit->getPlayerOwner());
+        if (playerOwner == nullptr || playerOwnerFromUnit == nullptr)
+            return false;
+
+        if (playerOwner == playerOwnerFromUnit)
+            return true;
+
+        if (playerOwner->GetGroup() != nullptr
+            && playerOwnerFromUnit->GetGroup() != nullptr
+            && playerOwner->GetGroup() == playerOwnerFromUnit->GetGroup())
+            return true;
+    }
+
+    return false;
+}

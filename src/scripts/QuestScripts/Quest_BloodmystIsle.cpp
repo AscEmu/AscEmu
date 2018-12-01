@@ -161,8 +161,8 @@ class WebbedCreature : public CreatureAIScript
         Player* QuestHolder = NULL;
         if (pKiller->isPlayer())
             QuestHolder = static_cast<Player*>(pKiller);
-        else if (pKiller->isPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
-            QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();
+        else if (pKiller->isPet() && static_cast<Pet*>(pKiller)->getPlayerOwner() != nullptr)
+            QuestHolder = dynamic_cast<Player*>(static_cast<Pet*>(pKiller)->getPlayerOwner());
 
         if (QuestHolder == NULL)
             return;

@@ -12643,7 +12643,7 @@ bool CombatStatusHandler::IsInCombat() const
         {
             std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
             for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-                if ((*itr)->GetPetOwner() == m_Unit && (*itr)->CombatStatus.IsInCombat())
+                if ((*itr)->getPlayerOwner() == m_Unit && (*itr)->CombatStatus.IsInCombat())
                     return true;
 
             return m_lastStatus;
@@ -13436,7 +13436,7 @@ void Unit::AddGarbageSpell(Spell* sp)
 
 void Unit::AddGarbagePet(Pet* pet)
 {
-    ARCEMU_ASSERT(pet->GetPetOwner()->getGuid() == getGuid() && !pet->IsInWorld());
+    ARCEMU_ASSERT(pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld());
     m_GarbagePets.push_back(pet);
 }
 
@@ -13623,38 +13623,6 @@ void Unit::Phase(uint8 command, uint32 newphase)
     }
 
     UpdateVisibility();
-}
-
-bool Unit::InParty(Unit* u)
-{
-    Player* p = static_cast<Player*>(GetPlayerOwner());
-    Player* uFrom = static_cast<Player*>(u->GetPlayerOwner());
-    if (p == NULL || uFrom == NULL)
-        return false;
-
-    if (p == uFrom)
-        return true;
-
-    if (p->GetGroup() != NULL && uFrom->GetGroup() != NULL && p->GetGroup() == uFrom->GetGroup() && p->GetSubGroup() == uFrom->GetSubGroup())
-        return true;
-
-    return false;
-}
-
-bool Unit::InRaid(Unit* u)
-{
-    Player* p = static_cast<Player*>(GetPlayerOwner());
-    Player* uFrom = static_cast<Player*>(u->GetPlayerOwner());
-    if (p == NULL || uFrom == NULL)
-        return false;
-
-    if (p == uFrom)
-        return true;
-
-    if (p->GetGroup() != NULL && uFrom->GetGroup() != NULL && p->GetGroup() == uFrom->GetGroup())
-        return true;
-
-    return false;
 }
 
 bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
@@ -14087,11 +14055,11 @@ void Unit::UpdateAuraForGroup(uint8 slot)
             player->SetAuraUpdateMaskForRaid(slot);
         }
     }
-    else if (GetPlayerOwner())
+    else if (getPlayerOwner())
     {
-        if (GetPlayerOwner())
+        if (getPlayerOwner())
         {
-            Player* owner = static_cast<Player*>(GetPlayerOwner());
+            Player* owner = static_cast<Player*>(getPlayerOwner());
             if (owner->GetGroup())
             {
                 owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
@@ -14111,9 +14079,9 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
 
     if (isPlayer())
         player = static_cast<Player*>(this);
-    else if (GetPlayerOwner())
+    else if (getPlayerOwner())
     {
-        player = static_cast<Player*>(GetPlayerOwner());
+        player = static_cast<Player*>(getPlayerOwner());
         pet = true;
     }
 

@@ -140,7 +140,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             i_caster = nullptr;
             p_caster = nullptr;
             u_caster = static_cast<Unit*>(Caster);
-            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->GetPetOwner() != nullptr && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() != nullptr && dynamic_cast<Player*>(static_cast<Pet*>(u_caster)->getPlayerOwner())->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
         }
         break;
@@ -6898,7 +6898,7 @@ bool Spell::DuelSpellNoMoreValid() const
 {
     if (duelSpell && (
         (p_caster != nullptr && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
-        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->GetPetOwner() && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && dynamic_cast<Player*>(static_cast<Pet*>(u_caster)->getPlayerOwner())->GetDuelState() != DUEL_STATE_STARTED)))
         return true;
     else
         return false;

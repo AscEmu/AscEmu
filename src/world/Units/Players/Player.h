@@ -2227,7 +2227,7 @@ public:
         bool CanBuyAt(MySQLStructure::VendorRestrictions const* vendor);
         bool CanTrainAt(Trainer*);
 
-        Object* GetPlayerOwner() { return this; };
+        Object* getPlayerOwner() { return this; };
 
         void SetRoles(uint8 role) { m_roles = role; }
 		uint8 GetRoles() { return m_roles; }

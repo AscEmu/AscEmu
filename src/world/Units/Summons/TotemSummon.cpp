@@ -27,6 +27,17 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
+// MIT START
+//Group* TotemSummon::GetGroup()
+//{
+//    if (getUnitOwner() != nullptr)
+//        return getUnitOwner()->GetGroup();
+//
+//    return nullptr;
+//}
+
+// MIT END
+
 TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 {}
 
@@ -86,17 +97,9 @@ void TotemSummon::OnPreRemoveFromWorld()
     Summon::OnPreRemoveFromWorld();
 }
 
-Group* TotemSummon::GetGroup()
-{
-    if (GetOwner() != NULL)
-        return GetOwner()->GetGroup();
-    else
-        return NULL;
-}
-
 void TotemSummon::SetupSpells()
 {
-    if (GetOwner() == NULL)
+    if (getUnitOwner() == NULL)
         return;
 
     SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());

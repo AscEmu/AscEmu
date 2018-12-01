@@ -152,7 +152,7 @@ class SeaforiumDepthCharge : public CreatureAIScript
         if (!getCreature()->isSummon())
             return;
 
-        Unit* summoner = static_cast<Summon*>(getCreature())->GetOwner();
+        Unit* summoner = static_cast<Summon*>(getCreature())->getUnitOwner();
 
         if (summoner != NULL)
         {

@@ -380,19 +380,19 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     pet->setSheathType(SHEATH_STATE_MELEE);
     pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
 
-    ARCEMU_ASSERT(pet->GetPetOwner() != nullptr);
+    ARCEMU_ASSERT(pet->getPlayerOwner() != nullptr);
 
-    if (pet->GetPetOwner()->isPvpFlagSet())
+    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isPvpFlagSet())
         pet->setPvpFlag();
     else
         pet->removePvpFlag();
 
-    if (pet->GetPetOwner()->isFfaPvpFlagSet())
+    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isFfaPvpFlagSet())
         pet->setFfaPvpFlag();
     else
         pet->removeFfaPvpFlag();
 
-    if (pet->GetPetOwner()->isSanctuaryFlagSet())
+    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isSanctuaryFlagSet())
         pet->setSanctuaryFlag();
     else
         pet->removeSanctuaryFlag();
@@ -461,7 +461,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
         return;
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
-    if (creature != nullptr && (creature->GetPlayerOwner() == _player || _player->getCurrentVehicle() && _player->getCurrentVehicle()->IsControler(_player)))
+    if (creature != nullptr && (creature->getPlayerOwner() == _player || _player->getCurrentVehicle() && _player->getCurrentVehicle()->IsControler(_player)))
         creature->RemoveAura(srlPacket.spellId);
 }
 

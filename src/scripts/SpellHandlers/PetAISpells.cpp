@@ -38,14 +38,13 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
     void OnLoad()
     {
-
         RegisterAIUpdateEvent(200);
 
         if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
 
-            float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
+            float parent_bonus = s->getUnitOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
             s->setMinDamage(s->getMinDamage() + parent_bonus);
             s->setMaxDamage(s->getMaxDamage() + parent_bonus);
@@ -72,7 +71,7 @@ class ShadowFiendAI : public CreatureAIScript
         if (getCreature()->isPet())
         {
             Pet* s = static_cast<Pet*>(getCreature());
-            Player* owner = s->GetPetOwner();
+            Player* owner = dynamic_cast<Player*>(s->getPlayerOwner());
 
             float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
             s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
@@ -104,7 +103,7 @@ class MirrorImageAI : public CreatureAIScript
         if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
-            Unit* owner = s->GetOwner();
+            Unit* owner = s->getUnitOwner();
 
             owner->CastSpell(getCreature(), 45204, true);   // clone me
             owner->CastSpell(getCreature(), 58838, true);   // inherit threat list
@@ -181,7 +180,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
         if (getCreature()->isSummon())
         {
             Summon* s = static_cast<Summon*>(getCreature());
-            Unit* owner = s->GetOwner();
+            Unit* owner = s->getUnitOwner();
 
             if (owner->isPlayer())
             {

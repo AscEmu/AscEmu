@@ -1021,6 +1021,10 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
     mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), obj), mInRangeSameFactionSet.end());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Owner
+//\ brief: is this really important in this class? Move it to class Unit otherwise
+Object* Object::getPlayerOwner() { return nullptr; }
 
 // MIT End
 
@@ -3875,11 +3879,6 @@ DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
     wowGuid.Init(guid);
 
     return GetMapMgr()->GetDynamicObject(wowGuid.getGuidLowPart());
-}
-
-Object* Object::GetPlayerOwner()
-{
-    return nullptr;
 }
 
 MapCell* Object::GetMapCell() const

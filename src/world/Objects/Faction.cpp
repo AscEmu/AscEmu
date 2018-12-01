@@ -103,10 +103,10 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're
     // on the opposite team we'll already know :p
-    if ((objA->GetPlayerOwner() != NULL) && (objB->GetPlayerOwner() != NULL))
+    if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
     {
-        Player* a = reinterpret_cast< Player* >(objA->GetPlayerOwner());
-        Player* b = reinterpret_cast< Player* >(objB->GetPlayerOwner());
+        Player* a = reinterpret_cast< Player* >(objA->getPlayerOwner());
+        Player* b = reinterpret_cast< Player* >(objB->getPlayerOwner());
 
         auto atA = a->GetArea();
         auto atB = b->GetArea();
@@ -163,10 +163,10 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return false;
     }
 
-    if ((objA->GetPlayerOwner() != NULL) && (objB->GetPlayerOwner() != NULL))
+    if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
     {
-        Player* a = static_cast< Player* >(objA->GetPlayerOwner());
-        Player* b = static_cast< Player* >(objB->GetPlayerOwner());
+        Player* a = static_cast< Player* >(objA->getPlayerOwner());
+        Player* b = static_cast< Player* >(objB->getPlayerOwner());
 
         if ((a->DuelingWith == b) && (a->GetDuelState() == DUEL_STATE_STARTED))
             return true;

@@ -1054,10 +1054,7 @@ void Aura::UpdateModifiers()
 
 void Aura::EventUpdateGroupAA(float r)
 {
-    Player* owner = nullptr;
-
-    owner = static_cast< Player* >(m_target->GetPlayerOwner());
-
+    Player* owner = static_cast<Player*>(m_target->getPlayerOwner());
     if (owner == nullptr)
     {
         targets.clear();
@@ -1160,12 +1157,12 @@ void Aura::EventUpdateGroupAA(float r)
 
 void Aura::EventUpdateRaidAA(float r)
 {
-    Player* owner = nullptr;
+    Player* owner;
 
     if (m_target->isPlayer())
         owner = static_cast< Player* >(m_target);
     else
-        owner = static_cast< Player* >(m_target->GetPlayerOwner());
+        owner = static_cast< Player* >(m_target->getPlayerOwner());
 
     if (owner == nullptr)
     {
@@ -1459,7 +1456,7 @@ void Aura::EventUpdateOwnerAA(float r)
         return;
 
     Unit* ou = nullptr;
-    ou = static_cast< Summon* >(c)->GetOwner();
+    ou = static_cast< Summon* >(c)->getUnitOwner();
 
     if (ou == nullptr)
         return;
@@ -9420,7 +9417,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
     {
         Summon* s = static_cast< Summon* >(m_target);
 
-        s->setDisplayId(s->GetOwner()->getDisplayId());
+        s->setDisplayId(s->getUnitOwner()->getDisplayId());
 #if VERSION_STRING != Classic
         s->addUnitFlags2(UNIT_FLAG2_MIRROR_IMAGE);
 #endif

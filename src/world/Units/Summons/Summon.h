@@ -27,7 +27,15 @@
 // Base class for Summoned creatures
 class Summon : public Creature
 {
-    public:
+    // MIT START
+private:
+    Unit* owner;
+
+public:
+    Unit* getUnitOwner() { return owner; }
+    Object* getPlayerOwner() override;
+
+    // MIT END
 
         Summon(uint64 GUID);
         ~Summon();
@@ -54,15 +62,13 @@ class Summon : public Creature
         }
         bool isSummon() const override { return true; }
 
-        Unit* GetOwner() { return owner; }
-        Object* GetPlayerOwner();
+        
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
         void onRemoveInRangeObject(Object* object);
 
     private:
 
         int32 summonslot;  // Summon slot of the creature in the owner's summonhandler, -1 means no slot
-        Unit* owner;       // Summoner of the creature
 };
 
 #endif      // SUMMON_HPP_

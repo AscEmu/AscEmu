@@ -456,7 +456,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     Unit* unit_owner = nullptr;
     bool owner_header_set = false;
     if (creature_target->isSummon())
-        unit_owner = static_cast<Summon*>(creature_target)->GetOwner();
+        unit_owner = static_cast<Summon*>(creature_target)->getUnitOwner();
 
     if (unit_owner != nullptr)
     {

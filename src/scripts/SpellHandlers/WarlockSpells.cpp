@@ -566,7 +566,7 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 
     if (m_target->isPet())
     {
-        Player* PetOwner = static_cast<Pet*>(m_target)->GetPetOwner();
+        Player* PetOwner = dynamic_cast<Player*>(static_cast<Pet*>(m_target)->getPlayerOwner());
         if (PetOwner != nullptr)
         {
             uint32 val1 = m_target->getStat(STAT_STAMINA);

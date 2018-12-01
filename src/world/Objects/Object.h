@@ -443,6 +443,11 @@ public:
     void addInRangeSameFaction(Object* obj);
     void removeObjectFromInRangeSameFactionSet(Object* obj);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Owner
+
+    virtual Object* getPlayerOwner();
+
     // MIT End
 
         Object();
@@ -824,7 +829,6 @@ public:
         bool m_loadedFromDB;
 
         // Andy's crap
-        virtual Object* GetPlayerOwner();
         std::set<Spell*> m_pendingSpells;
 
         bool GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath = false);

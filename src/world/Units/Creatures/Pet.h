@@ -133,7 +133,18 @@ class SERVER_DECL Pet : public Creature
     friend class Creature;
     friend class WorldSession;
 
-    public:
+    // MIT START
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Owner
+protected:
+    Player* m_Owner;
+
+public:
+    
+    Object* getPlayerOwner() override;
+
+    // MIT END
 
         Pet(uint64 guid);
         ~Pet();
@@ -191,8 +202,6 @@ class SERVER_DECL Pet : public Creature
         void DelayedRemove(bool bTime, bool dismiss = false, uint32 delay = PET_DELAYED_REMOVAL_TIME);
         void Despawn(uint32 delay, uint32 respawntime);
 
-        inline Player* GetPetOwner() { return m_Owner; }
-        inline void ClearPetOwner() { m_Owner = NULL; }
         bool CanGainXP();
         void GiveXP(uint32 xp);
         uint32 GetNextLevelXP(uint32 currentlevel);
@@ -266,11 +275,8 @@ class SERVER_DECL Pet : public Creature
         void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
 
-        Object* GetPlayerOwner() override;
-
     protected:
 
-        Player* m_Owner;
         PetSpellMap mSpells;
         PlayerPet* mPi;
         uint32 ActionBar[10];       /// 10 slots
@@ -285,7 +291,6 @@ class SERVER_DECL Pet : public Creature
         uint32 m_State;
         uint32 m_ExpireTime;
         uint32 m_Diet;
-        uint64 m_OwnerGuid;
         time_t reset_time;
         uint32 reset_cost;
         bool bExpires;

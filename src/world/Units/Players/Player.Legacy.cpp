@@ -1882,7 +1882,7 @@ void Player::_SavePet(QueryBuffer* buf)
         buf->AddQuery("DELETE FROM playerpets WHERE ownerguid = %u", getGuidLow());
 
     Pet* summon = GetSummon();
-    if (summon && summon->IsInWorld() && summon->GetPetOwner() == this)    // update PlayerPets array with current pet's info
+    if (summon && summon->IsInWorld() && summon->getPlayerOwner() == this)    // update PlayerPets array with current pet's info
     {
         PlayerPet* pPet = GetPlayerPet(summon->m_PetNumber);
         if (!pPet || pPet->active == false)
@@ -12792,8 +12792,8 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
                 if (unit_tagger->isPlayer())
                     player_tagger = static_cast<Player*>(unit_tagger);
 
-                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->GetPlayerOwner())
-                    player_tagger = static_cast<Player*>(unit_tagger->GetPlayerOwner());
+                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->getPlayerOwner())
+                    player_tagger = static_cast<Player*>(unit_tagger->getPlayerOwner());
 
                 if (player_tagger != nullptr)
                 {
