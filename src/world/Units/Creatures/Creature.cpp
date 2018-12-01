@@ -1534,7 +1534,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     if (isVehicle())
     {
-        AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
@@ -1713,7 +1713,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     if (isVehicle())
     {
-        AddVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
@@ -2300,18 +2300,18 @@ void Creature::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool n
 
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    if (GetVehicleComponent() != NULL)
+    if (getVehicleComponent() != NULL)
     {
-        GetVehicleComponent()->RemoveAccessories();
-        GetVehicleComponent()->EjectAllPassengers();
+        getVehicleComponent()->RemoveAccessories();
+        getVehicleComponent()->EjectAllPassengers();
     }
 
     if (GetAIInterface()->isFlying())
         GetAIInterface()->splineMoveFalling(GetPositionX(), GetPositionY(), GetMapMgr()->GetADTLandHeight(GetPositionX(), GetPositionY()), 0);
 
     // Creature falls off vehicle on death
-    if ((currentvehicle != NULL))
-        currentvehicle->EjectPassenger(this);
+    if ((m_currentVehicle != NULL))
+        m_currentVehicle->EjectPassenger(this);
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))
@@ -2594,20 +2594,20 @@ Object* Creature::GetPlayerOwner()
 }
 
 
-void Creature::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
+void Creature::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
-    if (vehicle != nullptr)
+    if (m_vehicle != nullptr)
     {
         LOG_ERROR("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
         return;
     }
 
-    vehicle = new Vehicle();
-    vehicle->Load(this, creature_entry, vehicleid);
+    m_vehicle = new Vehicle();
+    m_vehicle->Load(this, creature_entry, vehicleid);
 }
 
-void Creature::RemoveVehicleComponent()
+void Creature::removeVehicleComponent()
 {
-    delete vehicle;
-    vehicle = nullptr;
+    delete m_vehicle;
+    m_vehicle = nullptr;
 }

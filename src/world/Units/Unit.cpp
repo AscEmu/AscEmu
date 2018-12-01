@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Server/Packets/SmsgMonsterMoveTransport.h"
 
 using namespace AscEmu::Packets;
 
@@ -2142,3 +2143,77 @@ bool Unit::hasUnitMovementFlag(uint32_t f) const { return (movement_info.flags &
 uint16_t Unit::getExtraUnitMovementFlags() const { return movement_info.flags2; }
 void Unit::addExtraUnitMovementFlag(uint16_t f2) { movement_info.flags2 |= f2; }
 bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (movement_info.flags2 & f2) != 0; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Vehicle
+
+Vehicle* Unit::getCurrentVehicle() const { return m_currentVehicle; }
+
+void Unit::setCurrentVehicle(Vehicle* vehicle) { m_currentVehicle = vehicle; }
+
+void Unit::addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay)
+{
+    if (delay > 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::addPassengerToVehicle, vehicleGuid, uint32_t(0), 0, delay, 1, 0);
+        return;
+    }
+
+    if (const auto unit = m_mapMgr->GetUnit(vehicleGuid))
+    {
+        if (unit->getVehicleComponent() == nullptr)
+            return;
+
+        if (m_currentVehicle != nullptr)
+            return;
+
+        unit->getVehicleComponent()->AddPassenger(this);
+    }
+}
+
+Vehicle* Unit::getVehicleComponent() const
+{
+    return m_vehicle;
+}
+
+Unit* Unit::getVehicleBase()
+{
+    if (m_currentVehicle != nullptr)
+        return m_currentVehicle->GetOwner();
+
+    if (m_vehicle != nullptr)
+        return this;
+
+    return nullptr;
+}
+
+void Unit::sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat)
+{
+    SendMessageToSet(SmsgMonsterMoveTransport(GetNewGUID(), vehicleOwner->GetNewGUID(), static_cast<uint8_t>(seat), GetPosition()).serialise().get(), true);
+}
+
+void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/)
+{
+    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
+    data << GetNewGUID();
+
+    if (isPlayer())
+        data << uint8(1);
+    else
+        data << uint8(0);
+
+    data << float(GetPositionX());
+    data << float(GetPositionY());
+    data << float(GetPositionZ());
+    data << uint32(Util::getMSTime());
+    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
+    data << float(GetOrientation());             // guess
+    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
+    data << uint32(0);                           // Time in between points
+    data << uint32(1);                           // 1 single waypoint
+    data << float(vehicleOwner->GetPositionX());
+    data << float(vehicleOwner->GetPositionY());
+    data << float(vehicleOwner->GetPositionZ());
+
+    SendMessageToSet(&data, true);
+}

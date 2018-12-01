@@ -5526,8 +5526,8 @@ void Player::KillPlayer()
     DismissActivePets();
 
     // Player falls off vehicle on death
-    if (currentvehicle != nullptr)
-        currentvehicle->EjectPassenger(this);
+    if (m_currentVehicle != nullptr)
+        m_currentVehicle->EjectPassenger(this);
 
     sHookInterface.OnDeath(this);
 }
@@ -7191,8 +7191,8 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
 
     Dismount();
 
-    if (currentvehicle != nullptr)
-        currentvehicle->EjectPassenger(this);
+    if (m_currentVehicle != nullptr)
+        m_currentVehicle->EjectPassenger(this);
 
     //also remove morph spells
     if (getDisplayId() != getNativeDisplayId())
@@ -9042,8 +9042,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     // Exit vehicle before teleporting
-    if (GetVehicleBase() != NULL)
-        GetVehicleBase()->GetVehicleComponent()->EjectPassenger(this);
+    if (getVehicleBase() != NULL)
+        getVehicleBase()->getVehicleComponent()->EjectPassenger(this);
 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
@@ -9131,8 +9131,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     // Exit vehicle before teleporting
-    if (GetVehicleBase() != nullptr)
-        GetVehicleBase()->GetVehicleComponent()->EjectPassenger(this);
+    if (getVehicleBase() != nullptr)
+        getVehicleBase()->getVehicleComponent()->EjectPassenger(this);
 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
@@ -12934,10 +12934,10 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
 
 void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    if (GetVehicleComponent() != nullptr)
+    if (getVehicleComponent() != nullptr)
     {
-        GetVehicleComponent()->RemoveAccessories();
-        GetVehicleComponent()->EjectAllPassengers();
+        getVehicleComponent()->RemoveAccessories();
+        getVehicleComponent()->EjectAllPassengers();
     }
 
 #if VERSION_STRING > TBC
@@ -13787,7 +13787,7 @@ void Player::BuildPetSpellList(WorldPacket & data)
     data << uint64(0);
 }
 
-void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
+void Player::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (mountvehicleid == 0)
     {
@@ -13795,20 +13795,20 @@ void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
         return;
     }
 
-    if (vehicle != nullptr)
+    if (m_vehicle != nullptr)
     {
         LOG_ERROR("Tried to add a vehicle component, but there's already one for player %u (%s)", getGuidLow(), getName().c_str());
         return;
     }
 
-    vehicle = new Vehicle();
-    vehicle->Load(this, creature_entry, vehicleid);
+    m_vehicle = new Vehicle();
+    m_vehicle->Load(this, creature_entry, vehicleid);
 }
 
-void Player::RemoveVehicleComponent()
+void Player::removeVehicleComponent()
 {
-    delete vehicle;
-    vehicle = nullptr;
+    delete m_vehicle;
+    m_vehicle = nullptr;
 }
 
 void Player::ResetTimeSync()

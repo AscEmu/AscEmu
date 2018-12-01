@@ -46,8 +46,8 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     // TODO: investigate vehicles more, is this necessary? vehicle enter is handled in ::HandleEnterVehicle() anyway... -Appled
     if (creatureTarget->isVehicle())
     {
-        if (creatureTarget->GetVehicleComponent() != nullptr)
-            creatureTarget->GetVehicleComponent()->AddPassenger(_player);
+        if (creatureTarget->getVehicleComponent() != nullptr)
+            creatureTarget->getVehicleComponent()->AddPassenger(_player);
 
         return;
     }

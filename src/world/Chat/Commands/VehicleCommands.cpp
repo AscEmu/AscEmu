@@ -31,13 +31,13 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == nullptr)
+    if (u->getVehicleComponent() == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
 
-    u->GetVehicleComponent()->EjectPassengerFromSeat(seat);
+    u->getVehicleComponent()->EjectPassengerFromSeat(seat);
     return true;
 }
 
@@ -56,12 +56,12 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == NULL)
+    if (u->getVehicleComponent() == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    u->GetVehicleComponent()->EjectAllPassengers();
+    u->getVehicleComponent()->EjectAllPassengers();
     return true;
 }
 
@@ -80,12 +80,12 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == NULL)
+    if (u->getVehicleComponent() == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    u->GetVehicleComponent()->InstallAccessories();
+    u->getVehicleComponent()->InstallAccessories();
     return true;
 }
 
@@ -104,12 +104,12 @@ bool ChatHandler::HandleVehicleRemoveAccessoriesCommand(const char* /*args*/, Wo
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == NULL)
+    if (u->getVehicleComponent() == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    u->GetVehicleComponent()->RemoveAccessories();
+    u->getVehicleComponent()->RemoveAccessories();
     return true;
 }
 
@@ -135,12 +135,12 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == NULL)
+    if (u->getVehicleComponent() == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (!u->GetVehicleComponent()->HasEmptySeat())
+    if (!u->getVehicleComponent()->HasEmptySeat())
     {
         RedSystemMessage(session, "That vehicle has no more empty seats.");
         return false;
@@ -155,6 +155,6 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
     c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
     c->PushToWorld(u->GetMapMgr());
-    c->EnterVehicle(u->getGuid(), 1);
+    c->addPassengerToVehicle(u->getGuid(), 1);
     return true;
 }

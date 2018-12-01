@@ -149,8 +149,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     if (passenger->isPlayer())
         static_cast<Player*>(passenger)->DismissActivePets();
 
-    if (passenger->GetCurrentVehicle() != nullptr)
-        passenger->GetCurrentVehicle()->EjectPassenger(passenger);
+    if (passenger->getCurrentVehicle() != nullptr)
+        passenger->getCurrentVehicle()->EjectPassenger(passenger);
 
     // set moveflags
     // set movement info
@@ -161,7 +161,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     WorldPacket ack(SMSG_CONTROL_VEHICLE);
     passenger->SendPacket(&ack);
 
-    passenger->SendHopOnVehicle(owner, seatid);
+    passenger->sendHopOnVehicle(owner, seatid);
 
     LocationVector v(owner->GetPosition());
     v.x += seats[seatid]->GetSeatInfo()->attachmentOffsetX;
@@ -207,7 +207,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     }
 
     seats[seatid]->AddPassenger(passenger->getGuid());
-    passenger->SetCurrentVehicle(this);
+    passenger->setCurrentVehicle(this);
 
     if (seats[seatid]->HidesPassenger())
         passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -262,10 +262,10 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
 void Vehicle::EjectPassenger(Unit* passenger)
 {
-    if (passenger->GetCurrentVehicle() == nullptr)
+    if (passenger->getCurrentVehicle() == nullptr)
         return;
 
-    if (passenger->GetCurrentVehicle() != this)
+    if (passenger->getCurrentVehicle() != this)
         return;
 
     // find the seat the passenger is on
@@ -327,11 +327,11 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     // despawn vehicle if it was spawned by spell?
     LocationVector landposition(owner->GetPosition());
 
-    passenger->SendHopOffVehicle(owner, landposition);
+    passenger->sendHopOffVehicle(owner, landposition);
     passenger->SetPosition(landposition);
     passenger->setMoveRoot(false);
     seats[seatid]->RemovePassenger();
-    passenger->SetCurrentVehicle(nullptr);
+    passenger->setCurrentVehicle(nullptr);
     passenger->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
 
     passengercount--;
@@ -388,8 +388,8 @@ void Vehicle::EjectAllPassengers()
                 continue;
             }
 
-            if (u->GetVehicleComponent() != nullptr)
-                u->GetVehicleComponent()->EjectAllPassengers();
+            if (u->getVehicleComponent() != nullptr)
+                u->getVehicleComponent()->EjectAllPassengers();
             else
                 EjectPassengerFromSeat(i);
         }
@@ -528,10 +528,10 @@ uint32 Vehicle::GetPassengerCount() const{
             if (passenger == nullptr)
                 continue;
 
-            if (passenger->GetVehicleComponent() == nullptr)
+            if (passenger->getVehicleComponent() == nullptr)
                 count++;
             else
-                count += passenger->GetVehicleComponent()->GetPassengerCount();
+                count += passenger->getVehicleComponent()->GetPassengerCount();
         }
     }
 
@@ -605,8 +605,8 @@ void Vehicle::RemoveAccessories()
         if (u == nullptr)
             continue;
 
-        if (u->GetVehicleComponent() != nullptr)
-            u->GetVehicleComponent()->EjectAllPassengers();
+        if (u->getVehicleComponent() != nullptr)
+            u->getVehicleComponent()->EjectAllPassengers();
 
         EjectPassenger(u);
         u->Delete();

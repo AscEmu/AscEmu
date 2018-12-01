@@ -41,7 +41,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     {
         auto bad_packet = true;
 #if VERSION_STRING >= TBC
-        if (const auto vehicle = _player->GetCurrentVehicle())
+        if (const auto vehicle = _player->getCurrentVehicle())
             if (const auto owner = vehicle->GetOwner())
                 if (owner->getGuid() == srlPacket.guid.GetOldGuid())
                     bad_packet = false;

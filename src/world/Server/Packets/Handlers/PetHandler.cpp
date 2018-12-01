@@ -461,7 +461,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
         return;
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
-    if (creature != nullptr && (creature->GetPlayerOwner() == _player || _player->GetCurrentVehicle() && _player->GetCurrentVehicle()->IsControler(_player)))
+    if (creature != nullptr && (creature->GetPlayerOwner() == _player || _player->getCurrentVehicle() && _player->getCurrentVehicle()->IsControler(_player)))
         creature->RemoveAura(srlPacket.spellId);
 }
 

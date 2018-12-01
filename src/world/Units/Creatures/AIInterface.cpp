@@ -2831,7 +2831,7 @@ void AIInterface::SendMoveToPacket()
 
 bool AIInterface::StopMovement(uint32 time)
 {
-    if (m_Unit->GetCurrentVehicle() != nullptr)
+    if (m_Unit->getCurrentVehicle() != nullptr)
     {
         return true;
     }
@@ -5006,7 +5006,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             if (m_Unit->isVehicle())
             {
-                m_Unit->AddVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
+                m_Unit->addVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
                 m_Unit->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
                 m_Unit->setAItoUse(false);
             }

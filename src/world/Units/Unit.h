@@ -685,6 +685,27 @@ public:
     void addExtraUnitMovementFlag(uint16_t f2);
     bool hasExtraUnitMovementFlag(uint16_t f2) const;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Vehicle
+protected:
+    Vehicle* m_currentVehicle;    // The vehicle the unit is attached to
+    Vehicle* m_vehicle;           // The Unit's own vehicle component
+
+public:
+
+    Vehicle* getCurrentVehicle() const;
+    void setCurrentVehicle(Vehicle* vehicle);
+    void addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay);
+
+    Vehicle* getVehicleComponent() const;
+    Unit* getVehicleBase();
+
+    virtual void addVehicleComponent(uint32 /*creatureEntry*/, uint32 /*vehicleId*/) {}
+    virtual void removeVehicleComponent() {}
+
+    void sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat);
+    void sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/);
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -1329,25 +1350,12 @@ protected:
     float m_parryfromspell;
     uint32 m_BlockModPct;       // is % but does not need float and does not need /100!
 
-    Vehicle* currentvehicle;    // The vehicle the unit is attached to
-    Vehicle* vehicle;           // The Unit's own vehicle component
+    
     uint64 m_auraRaidUpdateMask;
 
 public:
 
-    void SetCurrentVehicle(Vehicle* v) { currentvehicle = v; }
-    void EnterVehicle(uint64 guid, uint32 delay);
-    Vehicle* GetCurrentVehicle();
-
-    Vehicle* GetVehicleComponent();
-
-    virtual void AddVehicleComponent(uint32 /*creatureEntry*/, uint32 /*vehicleId*/) {}
-    virtual void RemoveVehicleComponent() {}
-
-    void SendHopOnVehicle(Unit* vehicleowner, uint32 seat);
-    void SendHopOffVehicle(Unit* vehicleowner, LocationVector &landposition);
-
-    Unit* GetVehicleBase();
+    
 
     virtual Group* GetGroup() { return nullptr; }
     bool InParty(Unit* u);

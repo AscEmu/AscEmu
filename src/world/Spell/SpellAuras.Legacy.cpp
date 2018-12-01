@@ -5679,7 +5679,7 @@ void Aura::SpellAuraMounted(bool apply)
 
         if (p_target->mountvehicleid != 0)
         {
-            p_target->AddVehicleComponent(ci->Id, ci->vehicleid);
+            p_target->addVehicleComponent(ci->Id, ci->vehicleid);
 
 #if VERSION_STRING > TBC
             WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
@@ -5694,19 +5694,19 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->addUnitFlags(UNIT_FLAG_MOUNT);
             p_target->addNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
 
-            p_target->GetVehicleComponent()->InstallAccessories();
+            p_target->getVehicleComponent()->InstallAccessories();
         }
 
     }
     else
     {
-        if (p_target->GetVehicleComponent() != nullptr)
+        if (p_target->getVehicleComponent() != nullptr)
         {
             p_target->removeNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
             p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
 
-            p_target->GetVehicleComponent()->RemoveAccessories();
-            p_target->GetVehicleComponent()->EjectAllPassengers();
+            p_target->getVehicleComponent()->RemoveAccessories();
+            p_target->getVehicleComponent()->EjectAllPassengers();
 
 #if VERSION_STRING > TBC
             WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
@@ -5715,7 +5715,7 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->SendMessageToSet(&data, true);
 #endif
 
-            p_target->RemoveVehicleComponent();
+            p_target->removeVehicleComponent();
         }
 
         p_target->mountvehicleid = 0;
@@ -8890,14 +8890,14 @@ void Aura::HandleAuraControlVehicle(bool apply)
 
     if (apply)
     {
-        if (m_target->GetVehicleComponent()->HasEmptySeat())
-            m_target->GetVehicleComponent()->AddPassenger(caster);
+        if (m_target->getVehicleComponent()->HasEmptySeat())
+            m_target->getVehicleComponent()->AddPassenger(caster);
 
     }
     else
     {
-        if ((caster->GetCurrentVehicle() != nullptr) && (caster->GetCurrentVehicle() == m_target->GetVehicleComponent()))
-            m_target->GetVehicleComponent()->EjectPassenger(caster);
+        if ((caster->getCurrentVehicle() != nullptr) && (caster->getCurrentVehicle() == m_target->getVehicleComponent()))
+            m_target->getVehicleComponent()->EjectPassenger(caster);
     }
 
 }

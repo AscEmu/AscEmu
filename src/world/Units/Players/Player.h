@@ -1623,9 +1623,9 @@ public:
         }
 
 
-        void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
+        void addVehicleComponent(uint32 creature_entry, uint32 vehicleid);
 
-        void RemoveVehicleComponent();
+        void removeVehicleComponent();
 
         bool bHasBindDialogOpen;
         uint32 TrackingSpell;

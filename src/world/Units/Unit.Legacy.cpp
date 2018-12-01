@@ -679,8 +679,8 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     m_singleTargetAura.clear();
 
-    vehicle = NULL;
-    currentvehicle = NULL;
+    m_vehicle = NULL;
+    m_currentVehicle = NULL;
 
     m_noFallDamage = false;
     z_axisposition = 0.0f;
@@ -10736,8 +10736,8 @@ void Unit::OnPushToWorld()
     }
 
 #if VERSION_STRING >= WotLK
-    if (GetVehicleComponent() != NULL)
-        GetVehicleComponent()->InstallAccessories();
+    if (getVehicleComponent() != NULL)
+        getVehicleComponent()->InstallAccessories();
 
     z_axisposition = 0.0f;
 #endif
@@ -10746,16 +10746,16 @@ void Unit::OnPushToWorld()
 //! Remove Unit from world
 void Unit::RemoveFromWorld(bool free_guid)
 {
-    if (GetCurrentVehicle() != NULL)
-        GetCurrentVehicle()->EjectPassenger(this);
+    if (getCurrentVehicle() != NULL)
+        getCurrentVehicle()->EjectPassenger(this);
 
-    if (GetVehicleComponent() != NULL)
+    if (getVehicleComponent() != NULL)
     {
-        GetVehicleComponent()->RemoveAccessories();
-        GetVehicleComponent()->EjectAllPassengers();
+        getVehicleComponent()->RemoveAccessories();
+        getVehicleComponent()->EjectAllPassengers();
     }
 
-    RemoveVehicleComponent();
+    removeVehicleComponent();
 
     CombatStatus.OnRemoveFromWorld();
 #if VERSION_STRING > TBC
@@ -13952,102 +13952,6 @@ void Unit::CastOnMeleeSpell()
     SetOnMeleeSpell(0);
 }
 
-void Unit::SendHopOnVehicle(Unit* vehicleowner, uint32 seat)
-{
-    WorldPacket data(SMSG_MONSTER_MOVE_TRANSPORT, 50);
-    data << GetNewGUID();
-    data << vehicleowner->GetNewGUID();
-    data << uint8(seat);
-
-    if (isPlayer())
-        data << uint8(1);
-    else
-        data << uint8(0);
-
-    data << float(GetPositionX());
-    data << float(GetPositionY());
-    data << float(GetPositionZ());
-    data <<Util::getMSTime();
-    data << uint8(4);                // splinetype_facing_angle
-    data << float(0.0f);             // facing angle
-    data << uint32(0x00800000);      // splineflag transport
-    data << uint32(0);               // movetime
-    data << uint32(1);               // wp count
-    data << float(0.0f);             // x
-    data << float(0.0f);             // y
-    data << float(0.0f);             // z
-
-    SendMessageToSet(&data, true);
-}
-
-void Unit::SendHopOffVehicle(Unit* vehicleowner, LocationVector& /*landposition*/)
-{
-    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
-    data << GetNewGUID();
-
-    if (isPlayer())
-        data << uint8(1);
-    else
-        data << uint8(0);
-
-    data << float(GetPositionX());
-    data << float(GetPositionY());
-    data << float(GetPositionZ());
-    data << uint32(Util::getMSTime());
-    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
-    data << float(GetOrientation());             // guess
-    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
-    data << uint32(0);                           // Time in between points
-    data << uint32(1);                           // 1 single waypoint
-    data << float(vehicleowner->GetPositionX());
-    data << float(vehicleowner->GetPositionY());
-    data << float(vehicleowner->GetPositionZ());
-
-    SendMessageToSet(&data, true);
-}
-
-void Unit::EnterVehicle(uint64 guid, uint32 delay)
-{
-    if (delay != 0)
-    {
-        sEventMgr.AddEvent(this, &Unit::EnterVehicle, guid, uint32(0), 0, delay, 1, 0);
-        return;
-    }
-
-    Unit* u = m_mapMgr->GetUnit(guid);
-    if (u == NULL)
-        return;
-
-    if (u->GetVehicleComponent() == NULL)
-        return;
-
-    if (currentvehicle != NULL)
-        return;
-
-    u->GetVehicleComponent()->AddPassenger(this);
-}
-
-Vehicle* Unit::GetCurrentVehicle()
-{
-    return currentvehicle;
-}
-
-Vehicle* Unit::GetVehicleComponent()
-{
-    return vehicle;
-}
-
-Unit* Unit::GetVehicleBase()
-{
-    if (currentvehicle != NULL)
-        return currentvehicle->GetOwner();
-
-    if (vehicle != NULL)
-        return this;
-
-    return NULL;
-}
-
 void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(getUnitMovementFlags());            // movement flags
@@ -14070,7 +13974,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
                 obj_movement_info.transport_data.transportGuid = plr->obj_movement_info.transport_data.transportGuid;
             }
         }
-        if (Unit* u = GetVehicleBase())
+        if (Unit* u = getVehicleBase())
             obj_movement_info.transport_data.transportGuid = u->getGuid();
         *data << obj_movement_info.transport_data.transportGuid;
         *data << obj_movement_info.transport_data.transportGuid;
@@ -14130,7 +14034,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
         /*if (isPlayer() && static_cast<Player*>(this)->m_transport)
             obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->getGuid();
-        if (Unit* u = GetVehicleBase())
+        if (Unit* u = getVehicleBase())
             obj_movement_info.transporter_info.guid = u->getGuid();*/
         *data << obj_movement_info.transport_data.transportGuid;
         *data << GetTransPositionX();

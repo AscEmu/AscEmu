@@ -1579,8 +1579,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (isVehicle())
     {
         Unit* u = static_cast<Unit*>(this);
-        if (u->GetVehicleComponent() != nullptr)
-            moveflags2 |= u->GetVehicleComponent()->GetMoveFlags2();
+        if (u->getVehicleComponent() != nullptr)
+            moveflags2 |= u->getVehicleComponent()->GetMoveFlags2();
 
         if (isCreature())
         {
@@ -2439,8 +2439,8 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     if (isCreatureOrPlayer())
     {
         Unit* u = static_cast<Unit*>(this);
-        if (u->GetVehicleComponent() != nullptr)
-            u->GetVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
+        if (u->getVehicleComponent() != nullptr)
+            u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
     }
 
     return result;

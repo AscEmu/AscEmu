@@ -96,8 +96,8 @@ public:
         Creature(uint64 guid);
         virtual ~Creature();
 
-        void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
-        void RemoveVehicleComponent();
+        void addVehicleComponent(uint32 creature_entry, uint32 vehicleid);
+        void removeVehicleComponent();
 
         bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);

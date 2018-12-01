@@ -3226,7 +3226,7 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->PushToWorld(u_caster->GetMapMgr());
 
     // Need to delay this a bit since first the client needs to see the vehicle
-    u_caster->EnterVehicle(c->getGuid(), 1 * 1000);
+    u_caster->addPassengerToVehicle(c->getGuid(), 1 * 1000);
 }
 
 void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
@@ -5018,7 +5018,7 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
     uint32 spellDamage = m_spellInfo->getEffectBasePoints(effectIndex) + 1;
     Unit* controller = nullptr;
 
-    if (u_caster->GetVehicleComponent() != nullptr)
+    if (u_caster->getVehicleComponent() != nullptr)
         controller = u_caster->GetMapMgr()->GetUnit(u_caster->getCharmedByGuid());
 
     if (controller == nullptr)

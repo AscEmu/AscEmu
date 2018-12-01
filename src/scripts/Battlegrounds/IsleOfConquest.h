@@ -189,12 +189,12 @@ struct IOCVehicle
             return true;
         }
 
-        if (creature->GetVehicleComponent() == nullptr)
+        if (creature->getVehicleComponent() == nullptr)
         {
             return true;
         }
 
-        if (creature->GetVehicleComponent()->GetPassengerCount() > 0)
+        if (creature->getVehicleComponent()->GetPassengerCount() > 0)
         {
             return false;
         }
