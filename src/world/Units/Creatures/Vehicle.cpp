@@ -186,7 +186,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
         passenger->addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
-        static_cast<Player*>(passenger)->SetFarsightTarget(owner->getGuid());
+        static_cast<Player*>(passenger)->setFarsightGuid(owner->getGuid());
 
         if (seats[seatid]->Controller())
         {
@@ -317,7 +317,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     }
 
     if (passenger->isPlayer())
-        static_cast<Player*>(passenger)->SetFarsightTarget(0);
+        static_cast<Player*>(passenger)->setFarsightGuid(0);
 
     // if we are on a flying vehicle, add a parachute!
     if (owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT) || owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT2))

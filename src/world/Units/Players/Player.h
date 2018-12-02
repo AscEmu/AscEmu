@@ -488,6 +488,9 @@ public:
     uint32_t getGuildTimestamp() const;
     void setGuildTimestamp(uint32_t timestamp);
 
+    uint64_t getFarsightGuid() const;
+    void setFarsightGuid(uint64_t farsightGuid);
+
 #if VERSION_STRING > Classic
     uint32_t getChosenTitle() const;
     void setChosenTitle(uint32_t title);
@@ -1784,9 +1787,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
 
         void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
-
-        void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
-        uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
         //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)

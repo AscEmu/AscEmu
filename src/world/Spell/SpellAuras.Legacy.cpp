@@ -937,7 +937,7 @@ void Aura::Remove()
         p->sendSpellCooldownEventPacket(m_spellInfo->getId());
     }
 
-    if (caster != nullptr && caster->isPlayer() && caster->IsInWorld() && caster->getUInt32Value(PLAYER_FARSIGHT) != 0)
+    if (caster != nullptr && caster->isPlayer() && caster->IsInWorld() && dynamic_cast<Player*>(caster)->getFarsightGuid() != 0)
     {
         uint8 j;
         for (j = 0; j < 3; ++j)
@@ -946,7 +946,7 @@ void Aura::Remove()
 
         if (j != 3)
         {
-            static_cast<Player*>(caster)->SetFarsightTarget(0);
+            static_cast<Player*>(caster)->setFarsightGuid(0);
         }
     }
 
@@ -1653,9 +1653,9 @@ void Aura::SpellAuraBindSight(bool apply)
         return;
 
     if (apply)
-        caster->SetFarsightTarget(m_target->getGuid());
+        caster->setFarsightGuid(m_target->getGuid());
     else
-        caster->SetFarsightTarget(0);
+        caster->setFarsightGuid(0);
 }
 
 void Aura::SpellAuraModPossess(bool apply)

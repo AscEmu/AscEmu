@@ -148,6 +148,9 @@ void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); 
 uint32_t Player::getGuildTimestamp() const { return playerData()->guild_timestamp; }
 void Player::setGuildTimestamp(uint32_t timestamp) { write(playerData()->guild_timestamp, timestamp); }
 
+uint64_t Player::getFarsightGuid() const { return playerData()->farsight_guid; }
+void Player::setFarsightGuid(uint64_t farsightGuid) { write(playerData()->farsight_guid, farsightGuid); }
+
 #if VERSION_STRING > Classic
 uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
 void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }

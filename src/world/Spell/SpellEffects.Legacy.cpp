@@ -4780,7 +4780,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
     dynObj->Create(u_caster, this, lv, GetDuration(), GetRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
-    p_caster->SetFarsightTarget(dynObj->getGuid());
+    p_caster->setFarsightGuid(dynObj->getGuid());
 
     p_caster->GetMapMgr()->ChangeFarsightLocation(p_caster, dynObj);
 }

@@ -14181,7 +14181,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     setCharmGuid(pTarget->getGuid());
     pTarget->setCharmedByGuid(getGuid());
     pTarget->SetCharmTempVal(pTarget->getFactionTemplate());
-    pThis->SetFarsightTarget(pTarget->getGuid());
+    pThis->setFarsightGuid(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
     pTarget->SetFaction(getFactionTemplate());
     pTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -14231,7 +14231,7 @@ void Unit::UnPossess()
     }
 
     m_noInterrupt--;
-    pThis->SetFarsightTarget(0);
+    pThis->setFarsightGuid(0);
     pThis->mControledUnit = this;
     setCharmGuid(0);
     pTarget->setCharmedByGuid(0);
