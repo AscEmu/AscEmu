@@ -1273,7 +1273,7 @@ void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
     if (srlPacket.glyphNumber > 5)
         return;
 
-    const uint32_t glyphId = _player->GetGlyph(srlPacket.glyphNumber);
+    const uint32_t glyphId = _player->getGlyph(srlPacket.glyphNumber);
     if (glyphId == 0)
         return;
 
@@ -1281,7 +1281,7 @@ void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
     if (!glyphPropertiesEntry)
         return;
 
-    _player->SetGlyph(srlPacket.glyphNumber, 0);
+    _player->setGlyph(srlPacket.glyphNumber, 0);
     _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
     _player->m_specs[_player->m_talentActiveSpec].glyphs[srlPacket.glyphNumber] = 0;
     _player->smsg_TalentsInfo(false);

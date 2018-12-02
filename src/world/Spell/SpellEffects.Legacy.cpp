@@ -4803,7 +4803,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         return;
     }
 
-    uint32 glyph_old = p_caster->GetGlyph(static_cast<uint16_t>(m_glyphslot));
+    uint32 glyph_old = p_caster->getGlyph(static_cast<uint16_t>(m_glyphslot));
     if (glyph_old)
     {
         if (glyph_old == glyph_new)
@@ -4826,7 +4826,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
             SendCastResult(SPELL_FAILED_INVALID_GLYPH);
             return;
         }
-        p_caster->SetGlyph(static_cast<uint8_t>(m_glyphslot), glyph_new);
+        p_caster->setGlyph(static_cast<uint8_t>(m_glyphslot), glyph_new);
         p_caster->CastSpell(p_caster, glyph_prop_new->SpellID, true);
         p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(glyph_new);
         p_caster->smsg_TalentsInfo(false);

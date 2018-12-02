@@ -4245,7 +4245,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
-        SetGlyph(i, m_specs[m_talentActiveSpec].glyphs[i]);
+        setGlyph(i, m_specs[m_talentActiveSpec].glyphs[i]);
     }
 #endif
     //class fixes

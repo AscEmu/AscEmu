@@ -243,6 +243,12 @@ void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
 
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
+
+#if VERSION_STRING > TBC
+uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
+void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
+#endif
+
 #if VERSION_STRING > TBC
 uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled; }
 void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
