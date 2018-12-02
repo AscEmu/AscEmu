@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
@@ -25,97 +9,91 @@
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 
-bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
+bool GetRecallLocation(const char* location, uint32_t& mapId, LocationVector& position)
 {
     QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall "
         "WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
 
-    if (result == NULL)
+    if (!result)
         return false;
 
     do
     {
         Field* fields = result->Fetch();
-        const char* locname = fields[1].GetString();
-        uint32 locmap = fields[2].GetUInt32();
+        std::string locname = fields[1].GetString();
+        uint32_t locMap = fields[2].GetUInt32();
         float x = fields[3].GetFloat();
         float y = fields[4].GetFloat();
         float z = fields[5].GetFloat();
         float o = fields[6].GetFloat();
 
-        if (strnicmp(const_cast<char*>(location), locname, strlen(location)) == 0)
+        std::string searchLocation(location);
+
+        Util::StringToLowerCase(locname);
+        Util::StringToLowerCase(searchLocation);
+
+        if (locname == searchLocation)
         {
-            map = locmap;
-            v.x = x;
-            v.y = y;
-            v.z = z;
-            v.o = o;
+            mapId = locMap;
+            position.x = x;
+            position.y = y;
+            position.z = z;
+            position.o = o;
+
             delete result;
             return true;
         }
-
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     delete result;
     return false;
-
 }
 
+//.recall port
 bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)
 {
-    if (args == NULL)
-        return false;
-
     if (!*args)
         return false;
 
-    if (m_session == NULL)
-        return false;
-
-    uint32 map;
-    LocationVector v;
-    if (GetRecallLocation(args, map, v))
+    uint32_t mapId;
+    LocationVector position;
+    if (GetRecallLocation(args, mapId, position))
     {
-        if (m_session->GetPlayer() != NULL)
+        if (m_session->GetPlayer() != nullptr)
         {
-            m_session->GetPlayer()->SafeTeleport(map, 0, v);
+            m_session->GetPlayer()->SafeTeleport(mapId, 0, position);
             return true;
         }
-        return false;
     }
+
     return false;
 }
 
+//.recall portus
 bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_session)
 {
-    if (args == NULL)
-        return false;
-
     if (!*args)
         return false;
 
-    if (m_session == NULL)
-        return false;
+    uint32_t mapId;
+    LocationVector position;
 
-    uint32 map;
-    LocationVector v;
     Player* player = m_session->GetPlayer();
-    if (GetRecallLocation(args, map, v))
+    if (GetRecallLocation(args, mapId, position))
     {
-        Player* target = objmgr.GetPlayer((uint32)m_session->GetPlayer()->GetSelection());
+        Player* target = GetSelectedPlayer(m_session, true, false);
         if (!target)
-        {
-            SystemMessage(m_session, "Select a player first.");
             return true;
-        }
-        player->SafeTeleport(map, 0, v);
-        target->SafeTeleport(map, 0, v);
+
+        player->SafeTeleport(mapId, 0, position);
+        target->SafeTeleport(mapId, 0, position);
         return true;
     }
+
     return false;
 }
 
+//.recall add
 bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
@@ -127,42 +105,47 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
     do
     {
         Field* fields = result->Fetch();
-        const char* locname = fields[0].GetString();
-        if (strncmp((char*)args, locname, strlen(locname)) == 0)
+        std::string locname = fields[0].GetString();
+
+        std::string searchLocation(args);
+
+        Util::StringToLowerCase(locname);
+        Util::StringToLowerCase(searchLocation);
+
+        if (locname == searchLocation)
         {
             RedSystemMessage(m_session, "Name in use, please use another name for your location.");
             delete result;
             return true;
         }
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
     delete result;
 
-    Player* plr = m_session->GetPlayer();
+    Player* player = m_session->GetPlayer();
     std::stringstream ss;
 
-    std::string rc_locname = std::string(args);
-
     ss << "INSERT INTO recall (name, min_build, max_build, mapid, positionX, positionY, positionZ, Orientation) VALUES ('"
-        << WorldDatabase.EscapeString(rc_locname).c_str() << "' , "
+        << WorldDatabase.EscapeString(args) << "' , "
         << getAEVersion() << ", "
         << getAEVersion() << ", "
-        << plr->GetMapId() << ", "
-        << plr->GetPositionX() << ", "
-        << plr->GetPositionY() << ", "
-        << plr->GetPositionZ() << ", "
-        << plr->GetOrientation() << ");";
+        << player->GetMapId() << ", "
+        << player->GetPositionX() << ", "
+        << player->GetPositionY() << ", "
+        << player->GetPositionZ() << ", "
+        << player->GetOrientation() << ");";
     WorldDatabase.Execute(ss.str().c_str());
 
     char buf[256];
-    snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f, O: %f",
-             (unsigned int)plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation());
+    snprintf((char*)buf, 256, "Added location to DB with MapID: %u, X: %f, Y: %f, Z: %f, O: %f",
+             player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
     GreenSystemMessage(m_session, buf);
-    sGMLog.writefromsession(m_session, "used recall add, added \'%s\' location to database.", rc_locname.c_str());
+
+    sGMLog.writefromsession(m_session, "used recall add, added \'%s\' location to database.", args);
 
     return true;
 }
 
+//.recall del
 bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
@@ -175,43 +158,49 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
     do
     {
         Field* fields = result->Fetch();
-        float id = fields[0].GetFloat();
-        const char* locname = fields[1].GetString();
+        uint32_t id = fields[0].GetUInt32();
+        std::string locName = fields[1].GetString();
 
-        if (strnicmp((char*)args, locname, strlen(locname)) == 0)
+        std::string searchLocation(args);
+
+        Util::StringToLowerCase(locName);
+        Util::StringToLowerCase(searchLocation);
+
+        if (locName == searchLocation)
         {
-            std::stringstream ss;
-            ss << "DELETE FROM recall WHERE id = " << (int)id << ";";
-            WorldDatabase.Execute(ss.str().c_str());
+            WorldDatabase.Execute("DELETE FROM recall WHERE id = %u;", id);
+
             GreenSystemMessage(m_session, "Recall location removed.");
             sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);
+
             delete result;
             return true;
         }
-
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     delete result;
     return false;
 }
 
+//.recall list
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
 {
     QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE name LIKE '%s%c' AND min_build <= %u AND max_build >= %u ORDER BY name", args, '%', getAEVersion(), getAEVersion());
     if (!result)
         return false;
 
-    uint32 count = 0;
+    uint32_t count = 0;
 
     std::string recout = MSG_COLOR_GREEN;
     recout += "Recall locations|r:\n\n";
+
     do
     {
         Field* fields = result->Fetch();
-        const char* locname = fields[0].GetString();
+        std::string locName = fields[0].GetString();
+
         recout += MSG_COLOR_LIGHTBLUE;
-        recout += locname;
+        recout += locName;
         recout += "|r, ";
         count++;
 
@@ -220,23 +209,24 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
             recout += "\n";
             count = 0;
         }
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
+
     SendMultilineMessage(m_session, recout.c_str());
 
     delete result;
     return true;
 }
 
+//.recall portplayer
 bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session)
 {
     char location[255];
-    char player[255];
-    if (sscanf(args, "%s %s", player, location) != 2)
+    char playerName[255];
+    if (sscanf(args, "%s %s", playerName, location) != 2)
         return false;
 
-    Player* plr = objmgr.GetPlayer(player, false);
-    if (!plr)
+    Player* player = objmgr.GetPlayer(playerName, false);
+    if (!player)
         return false;
 
     QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
@@ -246,29 +236,34 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
     do
     {
         Field* fields = result->Fetch();
-        const char* locname = fields[1].GetString();
-        uint32 locmap = fields[2].GetUInt32();
+        std::string locName = fields[1].GetString();
+        uint32_t locMap = fields[2].GetUInt32();
         float x = fields[3].GetFloat();
         float y = fields[4].GetFloat();
         float z = fields[5].GetFloat();
         float o = fields[6].GetFloat();
 
-        if (strnicmp((char*)location, locname, strlen(args)) == 0)
-        {
-            sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", plr->getName().c_str(), locname, locmap, x, y, z, o);
-            if (plr->GetSession() && (plr->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
-                plr->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), locname);
+        std::string searchLocation(location);
 
-            if (plr->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
-                sEventMgr.AddEvent(plr, &Player::EventSafeTeleport, locmap, uint32(0), LocationVector(x, y, z, o), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        Util::StringToLowerCase(locName);
+        Util::StringToLowerCase(searchLocation);
+
+        if (locName == searchLocation)
+        {
+            sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", player->getName().c_str(), locName.c_str(), locMap, x, y, z, o);
+            if (player->GetSession() && (player->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
+                player->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), locName.c_str());
+
+            if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
+                sEventMgr.AddEvent(player, &Player::EventSafeTeleport, locMap, uint32_t(0), LocationVector(x, y, z, o), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             else
-                plr->SafeTeleport(locmap, 0, LocationVector(x, y, z, o));
+                player->SafeTeleport(locMap, 0, LocationVector(x, y, z, o));
+
             delete result;
             return true;
         }
 
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     delete result;
     return false;
