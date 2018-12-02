@@ -3104,7 +3104,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
                 pctmod = 0.15f;
 
             uint32 hp = static_cast<uint32>(0.05f * pl->getMaxHealth());
-            uint32 spellpower = static_cast<uint32>(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
+            uint32 spellpower = static_cast<uint32>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
 
             if (spellpower > hp)
                 spellpower = hp;

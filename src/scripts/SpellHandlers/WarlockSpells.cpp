@@ -582,7 +582,7 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
                 val = (int32)-dmginc;
 
             for (uint16_t x = 0; x < 7; x++)
-                PetOwner->ModPosDamageDoneMod(x, val);
+                PetOwner->modModDamageDonePositive(x, val);
 
             PetOwner->CalcDamage();
         }

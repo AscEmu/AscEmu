@@ -5875,7 +5875,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 Item* mit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mit != nullptr)
-                    value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
+                    value = (p_caster->GetAP() * 22 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
             }
         } break;
 
@@ -5885,7 +5885,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 31803:
         {
             if (p_caster != nullptr)
-                value = (p_caster->GetAP() * 25 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 13) / 1000;
+                value = (p_caster->GetAP() * 25 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 13) / 1000;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_LIGHT:
@@ -5918,14 +5918,14 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 54158:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 16 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 25) / 100;
+                value += (p_caster->GetAP() * 16 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 25) / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS:
         case 20187:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 2 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 32) / 100;
+                value += (p_caster->GetAP() * 2 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 32) / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
@@ -5934,7 +5934,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 53733:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 14 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 22) / 100;
+                value += (p_caster->GetAP() * 14 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 22) / 100;
         } break;
 
         // SPELL_HASH_ENVENOM:

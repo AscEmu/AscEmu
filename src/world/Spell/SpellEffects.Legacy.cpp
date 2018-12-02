@@ -912,7 +912,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    uint32 sph = p_caster->getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + 1);
+                    uint32 sph = p_caster->getModDamageDonePositive(SCHOOL_HOLY);
                     int32 ap = p_caster->GetAP();
                     dmg += float2int32((0.15f * sph) + (0.15f * ap));
                     if (unitTarget && unitTarget->isCreature())

@@ -7668,10 +7668,10 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
                 if (apply)
                 {
                     mod->realamount = float2int32(((float)val / 100) * m_target->getStat(stat));
-                    p_target->ModPosDamageDoneMod(x, mod->realamount);
+                    p_target->modModDamageDonePositive(x, mod->realamount);
                 }
                 else
-                    p_target->ModPosDamageDoneMod(x, -mod->realamount);
+                    p_target->modModDamageDonePositive(x, -mod->realamount);
             }
         }
         p_target->UpdateChanceFields();
@@ -7704,7 +7704,7 @@ void Aura::SpellAuraModSpellDamageByAP(bool apply)
     {
         for (uint16_t x = 1; x < 7; x++) //melee damage != spell damage.
             if (mod->m_miscValue & (((uint32)1) << x))
-                p_target->ModPosDamageDoneMod(x, val);
+                p_target->modModDamageDonePositive(x, val);
 
         p_target->UpdateChanceFields();
     }

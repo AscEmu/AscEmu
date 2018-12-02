@@ -534,6 +534,12 @@ public:
     void modCoinage(int64_t coinage);
 #endif
 
+    uint32_t getModDamageDonePositive(uint16_t school) const;
+    void modModDamageDonePositive(uint16_t school, uint32_t value);
+
+    uint32_t getModDamageDoneNegative(uint16_t school) const;
+    void modModDamageDoneNegative(uint16_t school, uint32_t value);
+
     // playerfieldbytes start
     uint32_t getPlayerFieldBytes() const;
     void setPlayerFieldBytes(uint32_t bytes);
@@ -1071,7 +1077,7 @@ public:
             if (school >= SCHOOL_COUNT)
                 return 0;
 
-            return static_cast<int32>(GetPosDamageDoneMod(school)) - static_cast<int32>(GetNegDamageDoneMod(school));
+            return static_cast<int32>(getModDamageDonePositive(school)) - static_cast<int32>(getModDamageDoneNegative(school));
         }
 
         float GetDamageDonePctMod(uint16_t school)
@@ -1797,12 +1803,6 @@ public:
             if (amt == 0) { return; }
 #endif
         }
-
-        void ModPosDamageDoneMod(uint16_t school, uint32_t value) { modInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
-        uint32 GetPosDamageDoneMod(uint16_t school) { return getInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
-
-        void ModNegDamageDoneMod(uint16_t school, uint32_t value) { modInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
-        uint32 GetNegDamageDoneMod(uint16_t school) { return getInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
 
         void ModHealingDoneMod(uint32 value)
         {

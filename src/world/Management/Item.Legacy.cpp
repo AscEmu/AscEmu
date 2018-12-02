@@ -699,9 +699,9 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                         val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
                     if (Apply)
-                        m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, val);
+                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, val);
                     else
-                        m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, -val);
+                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, -val);
                     m_owner->CalcDamage();
                 }
                 break;
@@ -768,14 +768,14 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     if (Apply)
                     {
-                        //m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Entry->min[c]);
+                        //m_owner->modModDamageDonePositive(SCHOOL_NORMAL, Entry->min[c]);
                         //if I'm not wrong then we should apply DMPS formula for this. This will have somewhat a larger value 28->34
                         int32 val = Entry->min[c];
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
                         int32 value = getItemProperties()->Delay * val / 1000;
-                        m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, value);
+                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
                     }
                     else
                     {
@@ -784,7 +784,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
                         int32 value = -(int32)(getItemProperties()->Delay * val / 1000);
-                        m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, value);
+                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
                     }
                     m_owner->CalcDamage();
                 }

@@ -10060,7 +10060,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         {
             for (uint8 school = 1; school < SCHOOL_COUNT; ++school)
             {
-                ModPosDamageDoneMod(school, val);
+                modModDamageDonePositive(school, val);
             }
         }
         break;
@@ -10078,7 +10078,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         {
             for (uint8 school = 1; school < 7; ++school)
             {
-                ModPosDamageDoneMod(school, val);
+                modModDamageDonePositive(school, val);
                 HealDoneMod[school] += val;
             }
             ModHealingDoneMod(val);
@@ -10254,7 +10254,7 @@ void Player::CalcDamage()
     int ss = getShapeShiftForm();
     /////////////////MAIN HAND
     float ap_bonus = GetAP() / 14000.0f;
-    float delta = (float)GetPosDamageDoneMod(SCHOOL_NORMAL) - (float)GetNegDamageDoneMod(SCHOOL_NORMAL);
+    float delta = (float)getModDamageDonePositive(SCHOOL_NORMAL) - (float)getModDamageDoneNegative(SCHOOL_NORMAL);
 
     if (IsInFeralForm())
     {

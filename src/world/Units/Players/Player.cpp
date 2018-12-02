@@ -230,6 +230,22 @@ void Player::modCoinage(int64_t coinage)
 }
 #endif
 
+uint32_t Player::getModDamageDonePositive(uint16_t school) const { return playerData()->field_mod_damage_done_positive[school]; }
+void Player::modModDamageDonePositive(uint16_t school, uint32_t value)
+{
+    uint32_t damageDone = getModDamageDonePositive(school);
+    damageDone += value;
+    write(playerData()->field_mod_damage_done_positive[school], damageDone);
+}
+
+uint32_t Player::getModDamageDoneNegative(uint16_t school) const { return playerData()->field_mod_damage_done_negative[school]; }
+void Player::modModDamageDoneNegative(uint16_t school, uint32_t value)
+{
+    uint32_t damageDone = getModDamageDoneNegative(school);
+    damageDone += value;
+    write(playerData()->field_mod_damage_done_negative[school], damageDone);
+}
+
 float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
 void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
 
