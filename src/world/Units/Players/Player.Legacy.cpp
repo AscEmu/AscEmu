@@ -10047,15 +10047,17 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
             modAttackPowerMods(val);
         }
         break;
+#if VERSION_STRING > Classic
         case SPELL_HEALING_DONE:
         {
             for (uint8 school = 1; school < SCHOOL_COUNT; ++school)
             {
                 HealDoneMod[school] += val;
             }
-            ModHealingDoneMod(val);
+            modModHealingDone(val);
         }
         break;
+#endif
         case SPELL_DAMAGE_DONE:
         {
             for (uint8 school = 1; school < SCHOOL_COUNT; ++school)
@@ -10081,7 +10083,9 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
                 modModDamageDonePositive(school, val);
                 HealDoneMod[school] += val;
             }
-            ModHealingDoneMod(val);
+#if VERSION_STRING > Classic
+            modModHealingDone(val);
+#endif
         }
         break;
     }

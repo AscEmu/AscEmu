@@ -246,6 +246,16 @@ void Player::modModDamageDoneNegative(uint16_t school, uint32_t value)
     write(playerData()->field_mod_damage_done_negative[school], damageDone);
 }
 
+#if VERSION_STRING > Classic
+uint32_t Player::getModHealingDone() const { return playerData()->field_mod_healing_done; }
+void Player::modModHealingDone(uint32_t value)
+{
+    uint32_t healingDone = getModHealingDone();
+    healingDone += value;
+    write(playerData()->field_mod_healing_done, healingDone);
+}
+#endif
+
 float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
 void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
 

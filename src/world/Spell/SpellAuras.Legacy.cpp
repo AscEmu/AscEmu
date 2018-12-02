@@ -7712,6 +7712,7 @@ void Aura::SpellAuraModSpellDamageByAP(bool apply)
 
 void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
 {
+#if VERSION_STRING > Classic
     int32 val;
 
     if (apply)
@@ -7747,15 +7748,17 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
         if (apply)
         {
             mod->realamount = float2int32(((float)val / 100.0f) * p_target->getStat(stat));
-            p_target->ModHealingDoneMod(mod->realamount);
+            p_target->modModHealingDone(mod->realamount);
         }
         else
-            p_target->ModHealingDoneMod(-mod->realamount);
+            p_target->modModHealingDone(-mod->realamount);
     }
+#endif
 }
 
 void Aura::SpellAuraModHealingByAP(bool apply)
 {
+#if VERSION_STRING > Classic
     int32 val;
 
     if (apply)
@@ -7788,9 +7791,10 @@ void Aura::SpellAuraModHealingByAP(bool apply)
 
     if (p_target != nullptr)
     {
-        p_target->ModHealingDoneMod(val);
+        p_target->modModHealingDone(val);
         p_target->UpdateChanceFields();
     }
+#endif
 }
 
 void Aura::SpellAuraAddFlatModifier(bool apply)
@@ -7989,6 +7993,7 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 
 void Aura::SpellAuraModHealingDone(bool apply)
 {
+#if VERSION_STRING > Classic
     int32 val;
     if (apply)
     {
@@ -8015,8 +8020,9 @@ void Aura::SpellAuraModHealingDone(bool apply)
     if (p_target != nullptr)
     {
         p_target->UpdateChanceFields();
-        p_target->ModHealingDoneMod(val);
+        p_target->modModHealingDone(val);
     }
+#endif
 }
 
 void Aura::SpellAuraModHealingDonePct(bool apply)

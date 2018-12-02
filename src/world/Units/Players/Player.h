@@ -540,6 +540,11 @@ public:
     uint32_t getModDamageDoneNegative(uint16_t school) const;
     void modModDamageDoneNegative(uint16_t school, uint32_t value);
 
+#if VERSION_STRING > Classic
+    uint32_t getModHealingDone() const;
+    void modModHealingDone(uint32_t value);
+#endif
+
     // playerfieldbytes start
     uint32_t getPlayerFieldBytes() const;
     void setPlayerFieldBytes(uint32_t bytes);
@@ -1801,21 +1806,6 @@ public:
             modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
-#endif
-        }
-
-        void ModHealingDoneMod(uint32 value)
-        {
-#if VERSION_STRING > Classic
-            modUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value);
-#endif
-        }
-        uint32 GetHealingDoneMod()
-        {
-#if VERSION_STRING > Classic
-            return getUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS);
-#else
-            return 0;
 #endif
         }
 
