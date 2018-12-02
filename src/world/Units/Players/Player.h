@@ -429,6 +429,11 @@ public:
     uint32_t getGuildRank() const;
     void setGuildRank(uint32_t guildRank);
 
+#if VERSION_STRING == Cata
+    uint32_t getGuildLevel() const;
+    void setGuildLevel(uint32_t guildLevel);
+#endif
+
     //bytes begin
     uint32_t getPlayerBytes() const;
     void setPlayerBytes(uint32_t bytes);
@@ -1189,11 +1194,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
 
         uint32 m_GuildIdInvited;
-
-#if VERSION_STRING == Cata
-        void SetGuildLevel(uint32 level) { setUInt32Value(PLAYER_GUILDLEVEL, level); }
-        uint32 GetGuildLevel() { return getUInt32Value(PLAYER_GUILDLEVEL); }
-#endif
 
         void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
         uint32 GetGuildIdInvited() { return m_GuildIdInvited; }

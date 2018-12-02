@@ -1434,7 +1434,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         player->SetGuildIdInvited(0);
         player->setGuildRank(rankId);
 #if VERSION_STRING == Cata
-        player->SetGuildLevel(getLevel());
+        player->setGuildLevel(getLevel());
 #endif
         sendLoginInfo(player->GetSession());
         name = player->getName().c_str();
@@ -1523,7 +1523,7 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
         player->setGuildId(0);
         player->setGuildRank(0);
 #if VERSION_STRING == Cata
-        player->SetGuildLevel(0);
+        player->setGuildLevel(0);
 
         for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
         {
@@ -2106,7 +2106,7 @@ void Guild::giveXP(uint32_t xp, Player* source)
         {
             if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
             {
-                player->SetGuildLevel(getLevel());
+                player->setGuildLevel(getLevel());
                 for (size_t i = 0; i < perksToLearn.size(); ++i)
                 {
                     player->addSpell(perksToLearn[i]);

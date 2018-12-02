@@ -90,6 +90,11 @@ void Player::setGuildId(uint32_t guildId)
 uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
 void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
 
+#if VERSION_STRING == Cata
+uint32_t Player::getGuildLevel() const { return playerData()->guild_level; }
+void Player::setGuildLevel(uint32_t guildLevel) { write(playerData()->guild_level, guildLevel); }
+#endif
+
 //bytes begin
 uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
 void Player::setPlayerBytes(uint32_t bytes) { write(playerData()->player_bytes.raw, bytes); }
@@ -1852,7 +1857,7 @@ void Player::setGuildAndGroupInfo()
             setGuildRank(getPlayerInfo()->guildRank);
             guild->sendLoginInfo(GetSession());
 #if VERSION_STRING == Cata
-            SetGuildLevel(guild->getLevel());
+            setGuildLevel(guild->getLevel());
 #endif
         }
     }
