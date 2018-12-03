@@ -325,7 +325,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    size_t maxAreaId = dbc.getMaxId();
+    const auto maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
     areas = new uint16[maxAreaId + 1];
 
     for (uint32 x = 0; x < area_count; ++x)

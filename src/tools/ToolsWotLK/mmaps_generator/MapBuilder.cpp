@@ -774,7 +774,7 @@ namespace MMAP
             // so we have a clear error message
             if (params.nvp > DT_VERTS_PER_POLYGON)
             {
-                printf("%s Invalid verts-per-polygon value! \n", tileString);
+                printf("%s Invalid verts-per-polygon value!\n", tileString);
                 break;
             }
             if (params.vertCount >= 0xffff)

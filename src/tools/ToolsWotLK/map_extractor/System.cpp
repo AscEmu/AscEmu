@@ -286,7 +286,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    size_t maxid = dbc.getMaxId();
+    const auto maxid = static_cast<uint32_t>(dbc.getMaxId());
     areas = new uint16[maxid + 1];
     memset(areas, 0xff, (maxid + 1) * sizeof(uint16));
 
