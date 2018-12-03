@@ -164,14 +164,15 @@ namespace MMAP
     class MapBuilder
     {
     public:
-        MapBuilder(float maxWalkableAngle   = 70.f,
-        bool skipLiquid          = false,
-        bool skipContinents      = false,
-        bool skipJunkMaps        = true,
-        bool skipBattlegrounds   = false,
-        bool debugOutput         = false,
-        bool bigBaseUnit         = false,
-        const char* offMeshFilePath = NULL);
+        MapBuilder(float maxWalkableAngle      = 70.f,
+                   bool skipLiquid             = false,
+                   bool skipContinents         = false,
+                   bool skipJunkMaps           = true,
+                   bool skipBattlegrounds      = false,
+                   bool debugOutput            = false,
+                   bool bigBaseUnit            = false,
+                   const char* offMeshFilePath = NULL
+                   );
 
         ~MapBuilder();
 
