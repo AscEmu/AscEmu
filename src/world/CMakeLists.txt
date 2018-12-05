@@ -13,6 +13,7 @@ include(Management/Battleground/CMakeLists.txt)
 include(Management/Gossip/CMakeLists.txt)
 include(Management/Guild/CMakeLists.txt)
 include(Management/LFG/CMakeLists.txt)
+include(Management/ObjectUpdates/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
@@ -88,6 +89,7 @@ set(sources
    ${SRC_MANAGEMENT_GOSSIP_FILES}
    ${SRC_MANAGEMENT_GUILD_FILES}
    ${SRC_MANAGEMENT_LFG_FILES}
+   ${SRC_MANAGEMENT_OBJECTUPDATES_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
    ${SRC_MOVEMENT_FILES}

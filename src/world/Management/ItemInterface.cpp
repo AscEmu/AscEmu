@@ -243,7 +243,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
                 item->PushToWorld(m_pOwner->GetMapMgr());
                 ByteBuffer buf(2500);
                 uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
-                m_pOwner->PushCreationData(&buf, count);
+                m_pOwner->getUpdateMgr().pushCreationData(&buf, count);
             }
             m_pOwner->SetInventorySlot(slot, item->getGuid());
         }

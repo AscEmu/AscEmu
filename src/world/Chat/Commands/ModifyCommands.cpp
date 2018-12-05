@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
+#include <world/Spell/Definitions/PowerType.h>
+#include <world/Units/Stats.h>
+
 
 //.modify hp
 bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)

@@ -35,6 +35,8 @@
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Guild.h"
+#include "Management/ObjectUpdates/SplineManager.h"
+#include "Management/ObjectUpdates/UpdateManager.h"
 
 struct CharCreate;
 class QuestLogEntry;
@@ -336,7 +338,6 @@ class PlayerSpec
 typedef std::set<uint32>                            SpellSet;
 typedef std::list<classScriptOverride*>             ScriptOverrideList;
 typedef std::set<uint32>                            SaveSet;
-typedef std::map<uint64, ByteBuffer*>               SplineMap;
 typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
@@ -411,6 +412,16 @@ class SERVER_DECL Player : public Unit
 {
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
+    void resendSpeed();
+
+private:
+    UpdateManager m_updateMgr;
+public:
+    UpdateManager& getUpdateMgr();
+private:
+    SplineManager m_splineMgr;
+public:
+    SplineManager& getSplineMgr();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -1664,21 +1675,12 @@ public:
 
         void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
-        bool bProcessPending;
-        Mutex _bufferS;
-        void PushUpdateData(ByteBuffer* data, uint32 updatecount);
-        void PushCreationData(ByteBuffer* data, uint32 updatecount);
-        void PushOutOfRange(const WoWGuid & guid);
         void ProcessPendingUpdates();
         bool CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
-        void ClearAllPendingUpdates();
 
         uint32 GetArmorProficiency() { return armor_proficiency; }
         uint32 GetWeaponProficiency() { return weapon_proficiency; }
 
-        void AddSplinePacket(uint64 guid, ByteBuffer* packet);
-        ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);
-        void ClearSplinePackets();
         bool ExitInstance();
         void SaveEntryPoint(uint32 mapId);
 
@@ -1749,7 +1751,6 @@ public:
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
-        LockedQueue<WorldPacket*> delayedPackets;
         uint32 m_UnderwaterMaxTime;
         uint32 m_UnderwaterLastDmg;
         LocationVector getMyCorpseLocation() const { return myCorpseLocation; }
@@ -1975,16 +1976,6 @@ public:
 
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
         void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
-
-        // Update system components
-        ByteBuffer bUpdateBuffer;
-        ByteBuffer bCreationBuffer;
-        uint32 mUpdateCount;
-        uint32 mCreationCount;
-        uint32 mOutOfRangeIdCount;
-        ByteBuffer mOutOfRangeIds;
-        SplineMap _splineMap;
-        // End update system
 
         void _LoadTutorials(QueryResult* result);
         void _SaveTutorials(QueryBuffer* buf);

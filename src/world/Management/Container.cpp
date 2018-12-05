@@ -185,7 +185,7 @@ bool Container::AddItem(int16 slot, Item* item)
 
         ByteBuffer buf(3000);
         uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
-        m_owner->PushCreationData(&buf, count);
+        m_owner->getUpdateMgr().pushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
     m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->getStackCount(), 0);
@@ -331,7 +331,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
                 pItem->PushToWorld(m_owner->GetMapMgr());
                 ByteBuffer buf(2500);
                 uint32 count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
-                m_owner->PushCreationData(&buf, count);
+                m_owner->getUpdateMgr().pushCreationData(&buf, count);
             }
             if (r_slot)
                 *r_slot = slot;

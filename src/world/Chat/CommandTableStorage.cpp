@@ -555,6 +555,7 @@ void CommandTableStorage::Init()
     {
         { "addagent",           'n', &ChatHandler::HandleNpcAddAgentCommand,            "Add ai agents to npc.",                            nullptr },
         { "addtrainerspell",    'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,     "Add spells to trainer learn list.",                nullptr },
+        { "appear", 'n', &ChatHandler::HandleNpcAppearCommand, "Teleports you to the target NPC's location.", nullptr },
         { "cast",               'n', &ChatHandler::HandleNpcCastCommand,                "Makes NPC cast <spellid>.",                        nullptr },
         { "come",               'n', &ChatHandler::HandleNpcComeCommand,                "Makes NPC move to your position",                  nullptr },
         { "delete",             'n', &ChatHandler::HandleNpcDeleteCommand,              "Deletes mob from world optional from DB",          nullptr },

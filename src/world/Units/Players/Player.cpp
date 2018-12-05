@@ -56,6 +56,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+void Player::resendSpeed()
+{
+    if (resend_speed)
+    {
+        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedForType(TYPE_FLY, getSpeedForType(TYPE_FLY));
+        resend_speed = false;
+    }
+}
+
+void Player::ProcessPendingUpdates()
+{
+    m_updateMgr.processPendingUpdates();
+}
+
+UpdateManager & Player::getUpdateMgr()
+{
+    return m_updateMgr;
+}
+
+SplineManager & Player::getSplineMgr()
+{
+    return m_splineMgr;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
 uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }

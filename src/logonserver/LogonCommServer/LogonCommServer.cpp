@@ -185,18 +185,6 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
         return;
     }
 
-    if (realm->status == 1)
-    {
-        WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
-        data << uint32_t(2);        // 2 = realm already registered - failed
-        data << realmId;
-        data << realmName;
-        SendPacket(&data);
-
-        return;
-    }
-
-
     realm->name = realmName;
 
     recvData >> realm->address;

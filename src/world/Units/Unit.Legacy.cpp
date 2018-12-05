@@ -12093,7 +12093,7 @@ void Unit::UpdateVisibility()
                     {
                         buf.clear();
                         count = pObj->buildCreateUpdateBlockForPlayer(&buf, plr);
-                        plr->PushCreationData(&buf, count);
+                        plr->getUpdateMgr().pushCreationData(&buf, count);
                         plr->AddVisibleObject(pObj->getGuid());
                     }
                 }
@@ -12117,7 +12117,7 @@ void Unit::UpdateVisibility()
                         {
                             buf.clear();
                             count = plr->buildCreateUpdateBlockForPlayer(&buf, pl);
-                            pl->PushCreationData(&buf, count);
+                            pl->getUpdateMgr().pushCreationData(&buf, count);
                             pl->AddVisibleObject(plr->getGuid());
                         }
                     }
@@ -12156,7 +12156,7 @@ void Unit::UpdateVisibility()
                     {
                         buf.clear();
                         count = buildCreateUpdateBlockForPlayer(&buf, p);
-                        p->PushCreationData(&buf, count);
+                        p->getUpdateMgr().pushCreationData(&buf, count);
                         p->AddVisibleObject(this->getGuid());
                     }
                 }

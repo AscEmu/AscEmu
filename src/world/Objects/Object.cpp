@@ -1360,7 +1360,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
     buf << (((uint32)(1)) << (Index % 32));
     buf << Value;
 
-    Target->PushUpdateData(&buf, 1);
+    Target->getUpdateMgr().pushUpdateData(&buf, 1);
 }
 
 void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value)
@@ -1425,7 +1425,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
 {
     uint32_t flags2 = 0;
     // This is checked for nullptr later
-    const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->GetAndRemoveSplinePacket(getGuid()) : nullptr;
+    const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->getSplineMgr().popSplinePacket(getGuid()) : nullptr;
 
     *data << flags;
 
@@ -1566,7 +1566,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
 
-    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(getGuid()) : 0;
+    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
 
     if (splinebuf != nullptr)
     {

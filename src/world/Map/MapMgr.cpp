@@ -256,7 +256,7 @@ void MapMgr::PushObject(Object* obj)
         LogDebugFlag(LF_MAP, "Creating player " I64FMT " for himself.", obj->getGuid());
         ByteBuffer pbuf(10000);
         count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
-        plObj->PushCreationData(&pbuf, count);
+        plObj->getUpdateMgr().pushCreationData(&pbuf, count);
     }
 
     // Build in-range data
@@ -353,7 +353,7 @@ void MapMgr::PushObject(Object* obj)
                    If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
                    Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
             if (globalcount > 0)
-                plObj->PushCreationData(buf, globalcount);
+                plObj->getUpdateMgr().pushCreationData(buf, globalcount);
         }
     }
 
@@ -495,7 +495,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         plObj = static_cast<Player*>(obj);
 
         _processQueue.erase(plObj);     // Clear any updates pending
-        plObj->ClearAllPendingUpdates();
+        plObj->getUpdateMgr().clearPendingUpdates();
     }
 
     obj->removeSelfFromInrangeSets();
@@ -533,7 +533,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
             if (*itr != nullptr && plObj)
-                plObj->PushOutOfRange((*itr)->GetNewGUID());
+                plObj->getUpdateMgr().pushOutOfRangeGuid((*itr)->GetNewGUID());
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
@@ -770,7 +770,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     {
                         CHECK_BUF;
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->PushCreationData(*buf, count);
+                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
                         plObj2->AddVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
@@ -783,7 +783,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     {
                         CHECK_BUF;
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->PushCreationData(*buf, count);
+                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
                         plObj2->AddVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
@@ -795,7 +795,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     {
                         CHECK_BUF;
                         count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
-                        plObj->PushCreationData(*buf, count);
+                        plObj->getUpdateMgr().pushCreationData(*buf, count);
                         plObj->AddVisibleObject(curObj->getGuid());
                         (*buf)->clear();
                     }
@@ -811,14 +811,14 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     isvisible = plObj2->IsVisible(obj->getGuid());
                     if (!cansee && isvisible)
                     {
-                        plObj2->PushOutOfRange(obj->GetNewGUID());
+                        plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
                         plObj2->RemoveVisibleObject(obj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
                         CHECK_BUF;
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->PushCreationData(*buf, count);
+                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
                         plObj2->AddVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
@@ -830,14 +830,14 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     isvisible = plObj2->IsVisible(obj->getGuid());
                     if (!cansee && isvisible)
                     {
-                        plObj2->PushOutOfRange(obj->GetNewGUID());
+                        plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
                         plObj2->RemoveVisibleObject(obj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
                         CHECK_BUF;
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->PushCreationData(*buf, count);
+                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
                         plObj2->AddVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
@@ -849,14 +849,14 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     isvisible = plObj->IsVisible(curObj->getGuid());
                     if (!cansee && isvisible)
                     {
-                        plObj->PushOutOfRange(curObj->GetNewGUID());
+                        plObj->getUpdateMgr().pushOutOfRangeGuid(curObj->GetNewGUID());
                         plObj->RemoveVisibleObject(curObj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
                         CHECK_BUF;
                         count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
-                        plObj->PushCreationData(*buf, count);
+                        plObj->getUpdateMgr().pushCreationData(*buf, count);
                         plObj->AddVisibleObject(curObj->getGuid());
                         (*buf)->clear();
                     }
@@ -916,7 +916,7 @@ void MapMgr::_UpdateObjects()
                 // send update to owner
                 if (count)
                 {
-                    pOwner->PushUpdateData(&update, count);
+                    pOwner->getUpdateMgr().pushUpdateData(&update, count);
                     update.clear();
                 }
             }
@@ -932,7 +932,7 @@ void MapMgr::_UpdateObjects()
                     count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
                     if (count)
                     {
-                        static_cast<Player*>(pObj)->PushUpdateData(&update, count);
+                        static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
                         update.clear();
                     }
                 }
@@ -941,7 +941,7 @@ void MapMgr::_UpdateObjects()
                     count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->mPlayerControler);
                     if (count)
                     {
-                        static_cast<Unit*>(pObj)->mPlayerControler->PushUpdateData(&update, count);
+                        static_cast<Unit*>(pObj)->mPlayerControler->getUpdateMgr().pushUpdateData(&update, count);
                         update.clear();
                     }
                 }
@@ -961,7 +961,7 @@ void MapMgr::_UpdateObjects()
 
                         // Make sure that the target player can see us.
                         if (lplr && lplr->IsVisible(pObj->getGuid()))
-                            lplr->PushUpdateData(&update, count);
+                            lplr->getUpdateMgr().pushUpdateData(&update, count);
                     }
                     update.clear();
                 }
@@ -1218,7 +1218,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
         {
             if (plr->IsVisible((*itr)->getGuid()) && !plr->canSee((*itr)))
             {
-                plr->PushOutOfRange((*itr)->GetNewGUID());      // Send destroy
+                plr->getUpdateMgr().pushOutOfRangeGuid((*itr)->GetNewGUID());      // Send destroy
             }
         }
         plr->m_visibleFarsightObjects.clear();
@@ -1249,7 +1249,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
                         {
                             ByteBuffer buf;
                             uint32 count = obj->buildCreateUpdateBlockForPlayer(&buf, plr);
-                            plr->PushCreationData(&buf, count);
+                            plr->getUpdateMgr().pushCreationData(&buf, count);
                             plr->m_visibleFarsightObjects.insert(obj);
                         }
                     }

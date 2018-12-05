@@ -255,7 +255,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* plrTo, uint32 pTime)
     }
 
     *(uint32*)&(data->contents()[pos]) = nodecounter;
-    plrTo->delayedPackets.add(data);
+    plrTo->getUpdateMgr().queueDelayedPacket(data);
 }
 
 void TaxiMgr::_LoadTaxiNodes()

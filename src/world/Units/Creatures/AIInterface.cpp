@@ -929,7 +929,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
 
             ByteBuffer buf(3000);
             uint32_t count = wpCreature->buildCreateUpdateBlockForPlayer(&buf, player);
-            player->PushCreationData(&buf, count);
+            player->getUpdateMgr().pushCreationData(&buf, count);
 
             wpCreature->setMoveRoot(true);
 
@@ -970,7 +970,7 @@ bool AIInterface::hideWayPoints(Player* player)
         {
             uint64_t guid = ((uint64_t)HIGHGUID_TYPE_WAYPOINT << 32) | wayPoint->id;
             WoWGuid wowguid(guid);
-            player->PushOutOfRange(wowguid);
+            player->getUpdateMgr().pushOutOfRangeGuid(wowguid);
         }
     }
     return true;
@@ -2939,7 +2939,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
 
-    plyr->AddSplinePacket(m_Unit->getGuid(), splineBuf);
+    plyr->getSplineMgr().addSplinePacket(m_Unit->getGuid(), splineBuf);
 }
 
 bool AIInterface::setInFront(Unit* target) // not the best way to do it, though

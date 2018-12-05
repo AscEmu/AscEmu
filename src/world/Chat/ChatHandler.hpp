@@ -368,6 +368,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         // NPC Commands
         bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcAppearCommand(const char * _, WorldSession * __);
         bool HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session);
         bool HandleNpcCastCommand(const char* args, WorldSession* m_session);
         bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);

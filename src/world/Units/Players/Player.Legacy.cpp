@@ -218,9 +218,6 @@ Player::Player(uint32 guid)
     m_resurrectMapId(0),
     m_mailBox(guid),
     m_finishingmovesdodge(false),
-    mUpdateCount(0),
-    mCreationCount(0),
-    mOutOfRangeIdCount(0),
     //Trade
 #if VERSION_STRING == Cata
     m_TradeData(nullptr),
@@ -274,9 +271,11 @@ Player::Player(uint32 guid)
     m_GroupInviter(0),
     m_SummonedObject(nullptr),
     myCorpseLocation(),
-    max_level(60)
+    max_level(60),
+    m_updateMgr(this, (size_t)worldConfig.server.compressionThreshold, 40000, 30000, 1000),
+    m_splineMgr()
 #ifdef FT_ACHIEVEMENTS
-        ,
+    ,
     m_achievementMgr(this)
 #endif
 {
@@ -365,14 +364,8 @@ Player::Player(uint32 guid)
         IncreaseCricticalByTypePCT[i] = 0;
     }
 
-    bCreationBuffer.reserve(40000);
-    bUpdateBuffer.reserve(30000);//ought to be > than enough ;)
-    mOutOfRangeIds.reserve(1000);
-
     mControledUnit = this;
     mPlayerControler = this;
-
-    bProcessPending = false;
     for (i = 0; i < MAX_QUEST_SLOT; ++i)
         m_questlog[i] = nullptr;
 
@@ -537,8 +530,6 @@ Player::Player(uint32 guid)
     m_visibleFarsightObjects.clear();
     SummonSpells.clear();
     PetSpells.clear();
-    delayedPackets.clear();
-    _splineMap.clear();
 
     m_lastPotionId = 0;
     for (i = 0; i < NUM_COOLDOWN_TYPES; i++)
@@ -638,11 +629,6 @@ Player::~Player()
         }
     }
 
-    for (SplineMap::iterator itr = _splineMap.begin(); itr != _splineMap.end(); ++itr)
-        delete itr->second;
-
-    _splineMap.clear();
-
     delete m_ItemInterface;
     m_ItemInterface = nullptr;
 
@@ -656,12 +642,6 @@ Player::~Player()
 
     delete SDetector;
     SDetector = nullptr;
-
-    while (delayedPackets.size())
-    {
-        WorldPacket* pck = delayedPackets.next();
-        delete pck;
-    }
 
     /*std::map<uint32,AchievementVal*>::iterator itr;
     for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
@@ -4623,7 +4603,7 @@ void Player::OnPushToWorld()
     // delay the unlock movement packet
     WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
     *data << uint32(0);
-    delayedPackets.add(data);
+    getUpdateMgr().queueDelayedPacket(data);
 
     // set fly if cheat is active
     // TODO Validate that this isn't breaking logon by messaging player without delay
@@ -4743,7 +4723,7 @@ void Player::OnPushToWorld()
     // delay the unlock movement packet
     WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
     *data << uint32(0);
-    delayedPackets.add(data);
+    getUpdateMgr().queueDelayedPacket(data);
 
     // set fly if cheat is active
     setMoveCanFly(m_cheats.FlyCheat);
@@ -4864,7 +4844,7 @@ void Player::RemoveFromWorld()
     //clear buyback
     GetItemInterface()->EmptyBuyBack();
 
-    ClearSplinePackets();
+    getSplineMgr().clearSplinePackets();
 
     summonhandler.RemoveAllSummons();
     DismissActivePets();
@@ -6503,7 +6483,9 @@ void Player::onRemoveInRangeObject(Object* pObj)
         return;
 
     if (IsVisible(pObj->getGuid()))
-        PushOutOfRange(pObj->GetNewGUID());
+    {
+        getUpdateMgr().pushOutOfRangeGuid(pObj->GetNewGUID());
+    }
 
     m_visibleObjects.erase(pObj->getGuid());
     Unit::onRemoveInRangeObject(pObj);
@@ -7928,252 +7910,6 @@ void Player::ResetAllCooldowns()
     }
 }
 
-void Player::PushUpdateData(ByteBuffer* data, uint32 updatecount)
-{
-    // imagine the bytebuffer getting appended from 2 threads at once! :D
-    _bufferS.Acquire();
-
-    // unfortunately there is no guarantee that all data will be compressed at a ratio
-    // that will fit into 2^16 bytes (stupid client limitation on server packets)
-    // so if we get more than 63KB of update data, force an update and then append it
-    // to the clean buffer.
-    if ((data->size() + bUpdateBuffer.size()) >= 63000)
-        ProcessPendingUpdates();
-
-    mUpdateCount += updatecount;
-    bUpdateBuffer.append(*data);
-
-    // add to process queue
-    if (m_mapMgr && !bProcessPending)
-    {
-        bProcessPending = true;
-        m_mapMgr->PushToProcessed(this);
-    }
-
-    _bufferS.Release();
-}
-
-void Player::PushOutOfRange(const WoWGuid & guid)
-{
-    _bufferS.Acquire();
-    mOutOfRangeIds << guid;
-    ++mOutOfRangeIdCount;
-
-    // add to process queue
-    if (m_mapMgr && !bProcessPending)
-    {
-        bProcessPending = true;
-        m_mapMgr->PushToProcessed(this);
-    }
-    _bufferS.Release();
-}
-
-void Player::PushCreationData(ByteBuffer* data, uint32 updatecount)
-{
-    // imagine the bytebuffer getting appended from 2 threads at once! :D
-    _bufferS.Acquire();
-
-    // unfortunately there is no guarantee that all data will be compressed at a ratio
-    // that will fit into 2^16 bytes (stupid client limitation on server packets)
-    // so if we get more than 63KB of update data, force an update and then append it
-    // to the clean buffer.
-    if ((data->size() + bCreationBuffer.size() + mOutOfRangeIds.size()) >= 63000)
-        ProcessPendingUpdates();
-
-    mCreationCount += updatecount;
-    bCreationBuffer.append(*data);
-
-    // add to process queue
-    if (m_mapMgr && !bProcessPending)
-    {
-        bProcessPending = true;
-        m_mapMgr->PushToProcessed(this);
-    }
-
-    _bufferS.Release();
-
-}
-#if VERSION_STRING > Classic
-void Player::ProcessPendingUpdates()
-{
-    _bufferS.Acquire();
-    if (!bUpdateBuffer.size() && !mOutOfRangeIds.size() && !bCreationBuffer.size())
-    {
-        _bufferS.Release();
-        return;
-    }
-
-    size_t bBuffer_size = (bCreationBuffer.size() > bUpdateBuffer.size() ? bCreationBuffer.size() : bUpdateBuffer.size()) + 10 + (mOutOfRangeIds.size() * 9);
-    uint8* update_buffer = new uint8[bBuffer_size];
-    size_t c = 0;
-
-    //build out of range updates if creation updates are queued
-    if (bCreationBuffer.size() || mOutOfRangeIdCount)
-    {
-#if VERSION_STRING == Cata
-        //get map id
-        *(uint16*)&update_buffer[c] = (uint16)GetMapId();
-        c += 2;
-#endif
-        *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount);
-        c += 4;
-#if VERSION_STRING <= TBC
-        update_buffer[c] = 1;
-        ++c;
-#endif
-
-        // append any out of range updates
-        if (mOutOfRangeIdCount)
-        {
-            update_buffer[c] = UPDATETYPE_OUT_OF_RANGE_OBJECTS;
-            ++c;
-
-            *(uint32*)&update_buffer[c] = mOutOfRangeIdCount;
-            c += 4;
-
-            memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());
-            c += mOutOfRangeIds.size();
-            mOutOfRangeIds.clear();
-            mOutOfRangeIdCount = 0;
-        }
-
-        if (bCreationBuffer.size())
-            memcpy(&update_buffer[c], bCreationBuffer.contents(), bCreationBuffer.size());
-        c += bCreationBuffer.size();
-
-        // clear our update buffer
-        bCreationBuffer.clear();
-        mCreationCount = 0;
-
-        // compress update packet
-        // while we said 350 before, I'm gonna make it 500 :D
-#if VERSION_STRING != Cata
-        if (c < (size_t)worldConfig.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
-#endif
-        {
-            // send uncompressed packet -> because we failed
-            m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)c, update_buffer);
-        }
-    }
-
-    if (bUpdateBuffer.size())
-    {
-        c = 0;
-
-#if VERSION_STRING == Cata
-        //get map id
-        *(uint16*)&update_buffer[c] = (uint16)GetMapId();
-        c += 2;
-#endif
-
-        *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);
-        c += 4;
-
-#if VERSION_STRING <= TBC
-        update_buffer[c] = 1;
-        ++c;
-#endif
-
-        //update_buffer[c] = 1;
-        memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());
-        c += bUpdateBuffer.size();
-
-        // clear our update buffer
-        bUpdateBuffer.clear();
-        mUpdateCount = 0;
-
-        // compress update packet
-        // while we said 350 before, I'm gonna make it 500 :D
-#if VERSION_STRING != Cata
-        if (c < (size_t)worldConfig.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
-#endif
-        {
-            // send uncompressed packet -> because we failed
-            m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)c, update_buffer);
-        }
-    }
-
-    bProcessPending = false;
-    _bufferS.Release();
-    delete[] update_buffer;
-
-    // send any delayed packets
-    WorldPacket* pck;
-    while (delayedPackets.size())
-    {
-        pck = delayedPackets.next();
-        //printf("Delayed packet opcode %u sent.\n", pck->GetOpcode());
-        m_session->SendPacket(pck);
-        delete pck;
-    }
-
-    // resend speed if needed
-    if (resend_speed)
-    {
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
-        setSpeedForType(TYPE_FLY, getSpeedForType(TYPE_FLY));
-        resend_speed = false;
-    }
-}
-#else
-void Player::ProcessPendingUpdates()
-{
-    _bufferS.Acquire();
-
-    uint32 buffer_size = uint32(bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9));
-    uint8 * update_buffer = new uint8[buffer_size];
-    uint32 c = 0;
-
-    *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);
-    c += 4;
-    update_buffer[c] = 1;
-    ++c;
-
-    // append any out of range updates
-    if (mOutOfRangeIdCount)
-    {
-        update_buffer[c] = UPDATETYPE_OUT_OF_RANGE_OBJECTS;
-        ++c;
-        *(uint32*)&update_buffer[c] = mOutOfRangeIdCount;
-        c += 4;
-        memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());
-        c += uint32(mOutOfRangeIds.size());
-        mOutOfRangeIds.clear();
-        mOutOfRangeIdCount = 0;
-    }
-
-    if (bUpdateBuffer.size())
-        memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());
-    c += uint32(bUpdateBuffer.size());
-
-    // clear our update buffer
-    bUpdateBuffer.clear();
-    bProcessPending = false;
-    mUpdateCount = 0;
-
-    _bufferS.Release();
-
-    // compress update packet
-    // while we said 350 before, i'm gonna make it 500 :D
-    if (c < 1000 || !CompressAndSendUpdateBuffer(c, update_buffer))
-    {
-        // send uncompressed packet -> because we failed
-        m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
-    }
-
-    delete[] update_buffer;
-
-    // send any delayed packets
-    WorldPacket * pck;
-    while (delayedPackets.size())
-    {
-        pck = delayedPackets.next();
-        m_session->SendPacket(pck);
-        delete pck;
-    }
-}
-#endif
-
 bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer)
 {
     uint32 destsize = size + size / 10 + 16;
@@ -8241,50 +7977,6 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     delete[] buffer;
 
     return true;
-}
-
-void Player::ClearAllPendingUpdates()
-{
-    _bufferS.Acquire();
-    bProcessPending = false;
-    mUpdateCount = 0;
-    bUpdateBuffer.clear();
-    _bufferS.Release();
-}
-
-void Player::AddSplinePacket(uint64 guid, ByteBuffer* packet)
-{
-    SplineMap::iterator itr = _splineMap.find(guid);
-    if (itr != _splineMap.end())
-    {
-        delete itr->second;
-        _splineMap.erase(itr);
-    }
-    _splineMap.insert(SplineMap::value_type(guid, packet));
-}
-
-ByteBuffer* Player::GetAndRemoveSplinePacket(uint64 guid)
-{
-    SplineMap::iterator itr = _splineMap.find(guid);
-    if (itr != _splineMap.end())
-    {
-        ByteBuffer* buf = itr->second;
-        _splineMap.erase(itr);
-        return buf;
-    }
-    return nullptr;
-}
-
-void Player::ClearSplinePackets()
-{
-    for (SplineMap::iterator itr = _splineMap.begin(); itr != _splineMap.end();)
-    {
-        SplineMap::iterator it2 = itr;
-        ++itr;
-        delete it2->second;
-        _splineMap.erase(it2);
-    }
-    _splineMap.clear();
 }
 
 bool Player::ExitInstance()
@@ -11345,8 +11037,7 @@ PlayerInfo::~PlayerInfo()
 
 void Player::CopyAndSendDelayedPacket(WorldPacket* data)
 {
-    WorldPacket* data2 = new WorldPacket(*data);
-    delayedPackets.add(data2);
+    getUpdateMgr().queueDelayedPacket(new WorldPacket(*data));
 }
 
 void Player::PartLFGChannel()
@@ -13106,7 +12797,7 @@ void Player::RemoveIfVisible(uint64 obj)
         return;
 
     m_visibleObjects.erase(obj);
-    PushOutOfRange(obj);
+    getUpdateMgr().pushOutOfRangeGuid(obj);
 }
 
 void Player::Phase(uint8 command, uint32 newphase)
@@ -14567,7 +14258,7 @@ void Player::SendLootUpdate(Object* o)
 
         o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
 
-        PushUpdateData(&buf, 1);
+        getUpdateMgr().pushUpdateData(&buf, 1);
     }
 }
 
@@ -14582,9 +14273,9 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             Player* p = static_cast<Player*>(itr);
 
             if (p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
-                p->PushUpdateData(groupbuf, 1);
+                p->getUpdateMgr().pushUpdateData(groupbuf, 1);
             else
-                p->PushUpdateData(nongroupbuf, 1);
+                p->getUpdateMgr().pushUpdateData(nongroupbuf, 1);
         }
     }
     else
@@ -14597,7 +14288,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             {
                 Player* p = static_cast<Player*>(itr);
                 if (p && p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
-                    p->PushUpdateData(groupbuf, 1);
+                    p->getUpdateMgr().pushUpdateData(groupbuf, 1);
             }
         }
         else
@@ -14612,7 +14303,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
                     {
                         Player* p = static_cast<Player*>(itr);
                         if (p->GetGroup() == nullptr || p->GetGroup()->GetID() != GetGroup()->GetID())
-                            p->PushUpdateData(nongroupbuf, 1);
+                            p->getUpdateMgr().pushUpdateData(nongroupbuf, 1);
                     }
                 }
             }
@@ -14620,7 +14311,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
     }
 
     if (sendtoself && groupbuf != nullptr)
-        PushUpdateData(groupbuf, 1);
+        getUpdateMgr().pushUpdateData(groupbuf, 1);
 }
 
 void Player::TagUnit(Object* o)

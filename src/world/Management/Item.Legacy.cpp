@@ -935,7 +935,7 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
     *data << Slot;
     *data << Duration;
     *data << m_owner->getGuid();
-    m_owner->delayedPackets.add(data);
+    m_owner->getUpdateMgr().queueDelayedPacket(data);
 }
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)

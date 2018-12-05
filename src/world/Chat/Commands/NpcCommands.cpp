@@ -96,6 +96,17 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+bool ChatHandler::HandleNpcAppearCommand(const char* _, WorldSession* session)
+{
+    const auto target = GetSelectedCreature(session);
+    if (!target) {
+        return true;
+    }
+
+    session->GetPlayer()->Teleport(target->GetPosition(), target->GetMapMgr());
+    return true;
+}
+
 //.npc addtrainerspell
 bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
 {

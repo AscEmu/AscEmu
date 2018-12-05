@@ -1195,14 +1195,14 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     {
                         data.clear();
                         plr->BuildValuesUpdateBlockForPlayer(&data, &hisMask);
-                        pPlayer->PushUpdateData(&data, 1);
+                        pPlayer->getUpdateMgr().pushUpdateData(&data, 1);
                     }
 
                     if (u2)
                     {
                         data.clear();
                         pPlayer->BuildValuesUpdateBlockForPlayer(&data, &myMask);
-                        plr->PushUpdateData(&data, 1);
+                        plr->getUpdateMgr().pushUpdateData(&data, 1);
                     }
                 }
             }
@@ -1329,7 +1329,7 @@ void Group::SendLootUpdates(Object* o)
                         PlayerInfo* p = *itr2;
 
                         if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
-                            p->m_loggedInPlayer->PushUpdateData(&buf, 1);
+                            p->m_loggedInPlayer->getUpdateMgr().pushUpdateData(&buf, 1);
                     }
                 }
 
@@ -1347,7 +1347,7 @@ void Group::SendLootUpdates(Object* o)
                     Unit* victim = static_cast<Unit*>(o);
 
                     victim->Tag(pLooter->getGuid());
-                    pLooter->PushUpdateData(&buf, 1);
+                    pLooter->getUpdateMgr().pushUpdateData(&buf, 1);
                 }
 
                 break;
