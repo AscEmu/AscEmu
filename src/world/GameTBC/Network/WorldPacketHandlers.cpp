@@ -51,7 +51,7 @@ void WorldSession::loadSpecificHandlers()
 
     // Movement
     WorldPacketHandlers[MSG_MOVE_HEARTBEAT].handler = &WorldSession::handleMovementOpcodes;
-    //WorldPacketHandlers[MSG_MOVE_WORLDPORT_ACK].handler       = &WorldSession::handleMoveWorldportAckOpcode;
+    WorldPacketHandlers[MSG_MOVE_WORLDPORT_ACK].handler = &WorldSession::handleMoveWorldportAckOpcode;
     WorldPacketHandlers[MSG_MOVE_JUMP].handler = &WorldSession::handleMovementOpcodes;
     WorldPacketHandlers[MSG_MOVE_START_ASCEND].handler = &WorldSession::handleMovementOpcodes;
     WorldPacketHandlers[MSG_MOVE_STOP_ASCEND].handler = &WorldSession::handleMovementOpcodes;
