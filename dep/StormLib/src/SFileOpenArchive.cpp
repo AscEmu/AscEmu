@@ -118,7 +118,6 @@ static int VerifyMpqTablePositions(TMPQArchive * ha, ULONGLONG FileSize)
     return ERROR_SUCCESS;
 }
 
-
 /*****************************************************************************/
 /* Public functions                                                          */
 /*****************************************************************************/
@@ -376,6 +375,10 @@ bool WINAPI SFileOpenArchive(
         if(dwFlags & (MPQ_OPEN_NO_LISTFILE | MPQ_OPEN_NO_ATTRIBUTES))
             ha->dwFlags |= MPQ_FLAG_READ_ONLY;
 
+        // Check if the caller wants to force adding listfile
+        if(dwFlags & MPQ_OPEN_FORCE_LISTFILE)
+            ha->dwFlags |= MPQ_FLAG_LISTFILE_FORCE;
+
         // Remember whether whis is a map for Warcraft III
         if(bIsWarcraft3Map)
             ha->dwFlags |= MPQ_FLAG_WAR3_MAP;
@@ -523,7 +526,7 @@ bool WINAPI SFileFlushArchive(HANDLE hMpq)
                 nResultError = nError;
         }
 
-        if(ha->dwFlags & MPQ_FLAG_LISTFILE_NEW)
+        if(ha->dwFlags & (MPQ_FLAG_LISTFILE_NEW | MPQ_FLAG_LISTFILE_FORCE))
         {
             nError = SListFileSaveToMpq(ha);
             if(nError != ERROR_SUCCESS)
