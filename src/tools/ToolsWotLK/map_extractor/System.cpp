@@ -71,7 +71,7 @@ uint16 *LiqType;
 #define MAX_PATH_LENGTH 128
 char output_path[MAX_PATH_LENGTH] = ".";
 char input_path[MAX_PATH_LENGTH] = ".";
-uint32 maxAreaId = 0;
+uint32_t maxAreaId = 0;
 
 // **************************************************
 // Extractor options
@@ -286,7 +286,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    const auto maxid = static_cast<uint32_t>(dbc.getMaxId());
+    uint32_t maxid = static_cast<uint32_t>(dbc.getMaxId());
     areas = new uint16[maxid + 1];
     memset(areas, 0xff, (maxid + 1) * sizeof(uint16));
 

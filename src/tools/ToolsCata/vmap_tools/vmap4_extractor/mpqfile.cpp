@@ -29,7 +29,7 @@ MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) 
     size(0)
 {
     HANDLE file;
-    if (!SFileOpenFileEx(mpq, filename, SFILE_OPEN_PATCHED_FILE, &file))
+    if (!SFileOpenFileEx(mpq, filename, SFILE_OPEN_FROM_MPQ, &file))
     {
         if (warnNoExist || GetLastError() != ERROR_FILE_NOT_FOUND)
             fprintf(stderr, "Can't open %s, err=%u!\n", filename, GetLastError());

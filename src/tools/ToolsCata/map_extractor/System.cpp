@@ -72,7 +72,7 @@ uint16 *LiqType;
 #define MAX_PATH_LENGTH 128
 char output_path[MAX_PATH_LENGTH] = ".";
 char input_path[MAX_PATH_LENGTH] = ".";
-uint32 maxAreaId = 0;
+uint32_t maxAreaId = 0;
 
 // **************************************************
 // Extractor options
@@ -237,7 +237,7 @@ uint32 ReadBuild(int locale)
     //printf("Read %s file... ", filename.c_str());
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, filename.c_str(), SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, filename.c_str(), SFILE_OPEN_FROM_MPQ, &dbcFile))
     {
         printf("Fatal error: Not found %s file!\n", filename.c_str());
         exit(1);
@@ -281,7 +281,7 @@ uint32 ReadMapDBC()
     printf("Read Map.dbc file... ");
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\Map.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\Map.dbc", SFILE_OPEN_FROM_MPQ, &dbcFile))
     {
         printf("Fatal error: Cannot find Map.dbc in archive!\n");
         exit(1);
@@ -311,7 +311,7 @@ void ReadAreaTableDBC()
 {
     printf("Read AreaTable.dbc file...");
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\AreaTable.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\AreaTable.dbc", SFILE_OPEN_FROM_MPQ, &dbcFile))
     {
         printf("Fatal error: Cannot find AreaTable.dbc in archive!\n");
         exit(1);
@@ -325,7 +325,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    const auto maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
+    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
     areas = new uint16[maxAreaId + 1];
 
     for (uint32 x = 0; x < area_count; ++x)
@@ -339,7 +339,7 @@ void ReadLiquidTypeTableDBC()
 {
     printf("Read LiquidType.dbc file...");
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_FROM_MPQ, &dbcFile))
     {
         printf("Fatal error: Cannot find LiquidType.dbc in archive!\n");
         exit(1);
@@ -1108,7 +1108,7 @@ void ExtractDBCFiles(int l, bool basicLocale)
 
         do
         {
-            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
+            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_FROM_MPQ, &dbcFile))
             {
                 printf("Unable to open file %s in the archive\n", foundFile.cFileName);
                 continue;
@@ -1155,7 +1155,7 @@ void ExtractDB2Files(int l, bool basicLocale)
 
         do
         {
-            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
+            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_FROM_MPQ, &dbcFile))
             {
                 printf("Unable to open file %s in the archive\n", foundFile.cFileName);
                 continue;
