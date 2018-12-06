@@ -37,7 +37,7 @@
 
 #ifdef PLATFORM_WINDOWS
 #define WORK_PATH_ROOT _T("E:\\Multimedia\\MPQs")
-static const TCHAR szListFileDir[] = { '1', '9', '9', '5', ' ', '-', ' ', 'T', 'e', 's', 't', ' ', 'M', 'P', 'Q', 's', '\\', 'l', 'i', 's', 't', 'f', 'i', 'l', 'e', 's', '-', 0x65B0, 0x5EFA, 0x6587, 0x4EF6, 0x5939, 0 };
+static const TCHAR szListFileDir[] = { '1', '9', '9', '5', ' ', '-', ' ', 'T', 'e', 's', 't', ' ', 'M', 'P', 'Q', 's', '\\', 'l', 'i', 's', 't', 'f', 'i', 'l', 'e', 's', '-', (TCHAR)0x65B0, (TCHAR)0x5EFA, (TCHAR)0x6587, (TCHAR)0x4EF6, (TCHAR)0x5939, 0 };
 #endif
 
 #ifdef PLATFORM_LINUX
@@ -1611,7 +1611,8 @@ static TFileData * LoadMpqFile(TLogHelper * pLogger, HANDLE hMpq, LPCSTR szFileN
         // Read the file data
         SFileReadFile(hFile, pFileData->FileData, dwFileSizeLo, &dwBytesRead, NULL);
         if(dwBytesRead != dwFileSizeLo)
-            nError = pLogger->PrintError("Read failed: %s", szFileName);
+//          nError = pLogger->PrintError("Read failed: %s", szFileName);
+            nError = ERROR_FILE_CORRUPT;
     }
 
     // If failed, free the buffer
@@ -2503,10 +2504,10 @@ static int TestOpenFile_OpenById(LPCTSTR szPlainName)
 
 static int TestOpenFile_OpenByName(LPCTSTR szPlainName, LPCSTR szFileName)
 {
-    TLogHelper Logger("OpenFileById", szPlainName);
+    TLogHelper Logger("OpenFileByName", szPlainName);
     TFileData * pFileData = NULL;
-    HANDLE hFile;
-    HANDLE hMpq;
+    HANDLE hFile = NULL;
+    HANDLE hMpq = NULL;
     DWORD dwCrc32_1 = 0;
     DWORD dwCrc32_2 = 0;
     int nError;
@@ -2541,11 +2542,11 @@ static int TestOpenFile_OpenByName(LPCTSTR szPlainName, LPCSTR szFileName)
             if(dwCrc32_1 != dwCrc32_2)
                 Logger.PrintError("Warning: CRC32 error on %s", szFileName);
         }
+
+        // Close the archive
+        SFileCloseArchive(hMpq);
     }
 
-    // Close the archive
-    if(hMpq != NULL)
-        SFileCloseArchive(hMpq);
     return nError;
 }
 
@@ -4403,10 +4404,19 @@ int _tmain(int argc, TCHAR * argv[])
     printf("==== Test Suite for StormLib version %s ====\n", STORMLIB_VERSION_STRING);
     nError = InitializeMpqDirectory(argv, argc);
 
+    HANDLE hMpq = NULL;
+
+    if(SFileOpenArchive(_T("e:\\hm.w3x"), 0, MPQ_OPEN_FORCE_LISTFILE, &hMpq))
+    {
+        SFileAddListFile(hMpq, _T("c:\\Tools32\\ListFiles\\Warcraft III Maps.txt"));
+        SFileAddFile(hMpq, _T("e:\\dummy.txt"), "dummy.txt", 0);
+        SFileCloseArchive(hMpq);
+    }
+
     // Not a test, but rather a tool for creating links to duplicated files
 //  if(nError == ERROR_SUCCESS)
 //      nError = FindFilePairs(ForEachFile_CreateArchiveLink, "2004 - WoW\\06080", "2004 - WoW\\06299");
-
+/*
     // Search all testing archives and verify their SHA1 hash
     if(nError == ERROR_SUCCESS)
         nError = FindFiles(ForEachFile_VerifyFileChecksum, szMpqSubDir);
@@ -4482,6 +4492,9 @@ int _tmain(int argc, TCHAR * argv[])
     // Open the update MPQ from Diablo II (patch 2016)
     if(nError == ERROR_SUCCESS)
         nError = TestOpenFile_OpenByName(_T("MPQ_2016_v1_D2XP_IX86_1xx_114a.mpq"), "waitingroombkgd.dc6");
+
+    if(nError == ERROR_SUCCESS)
+        nError = TestOpenFile_OpenByName(_T("MPQ_2018_v1_icon_error.w3m"), "file00000002.blp");
 
     // Open a file whose archive's (signature) file has flags = 0x90000000
     if(nError == ERROR_SUCCESS)
@@ -4621,6 +4634,9 @@ int _tmain(int argc, TCHAR * argv[])
 
     if(nError == ERROR_SUCCESS)
         nError = TestOpenArchive(_T("MPQ_2017_v1_TildeInFileName.mpq"), NULL, "1.blp");
+
+    if(nError == ERROR_SUCCESS)
+        nError = TestOpenArchive(_T("MPQ_2018_v1_EWIX_v8_7.w3x"), NULL, "BlueCrystal.mdx");
 
     // Open the multi-file archive with wrong prefix to see how StormLib deals with it
     if(nError == ERROR_SUCCESS)
@@ -4832,7 +4848,7 @@ int _tmain(int argc, TCHAR * argv[])
     // Test replacing a file with zero size file
     if(nError == ERROR_SUCCESS)
         nError = TestModifyArchive_ReplaceFile(_T("MPQ_2014_v4_Base.StormReplay"), _T("AddFile-replay.message.events"));
-
+*/
 #ifdef _MSC_VER
     _CrtDumpMemoryLeaks();
 #endif  // _MSC_VER
