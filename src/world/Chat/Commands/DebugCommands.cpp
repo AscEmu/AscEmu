@@ -507,6 +507,18 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     return true;
 }
 
+bool ChatHandler::HandleDebugSendCreatureMove(const char * args, WorldSession * m_session)
+{
+    const auto target = GetSelectedUnit(m_session);
+    if (!target)
+    {
+        return true;
+    }
+
+    target->getMovementAI().moveTo(m_session->GetPlayer()->GetPosition());
+    return true;
+}
+
 //.debug setweather
 bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session)
 {

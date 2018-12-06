@@ -5,6 +5,7 @@ project(world CXX)
 
 include(Game${ASCEMU_VERSION}/CMakeLists.txt)
 
+include(AI/CMakeLists.txt)
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
 include(Data/CMakeLists.txt)
@@ -81,6 +82,7 @@ set(sources
    ${SRC_GAMECATA_UNITS_PLAYERS_FILES}
    ${SRC_GAMECATA_SPELL_FILES}
 
+   ${SRC_AI_FILES}
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
    ${SRC_DATA_FILES}

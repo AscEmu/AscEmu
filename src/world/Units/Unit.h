@@ -20,6 +20,7 @@
 #pragma once
 
 // MIT Start
+#include "AI/MovementAI.h"
 #include "Objects/Object.h"
 #include "Spell/SpellDefines.hpp"
 
@@ -225,8 +226,11 @@ class SERVER_DECL Unit : public Object
     // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
+    MovementAI m_movementAI;
 public:
-
+    MovementAI& getMovementAI();
+    void setLocationWithoutUpdate(LocationVector& location);
+public:
     uint64_t getCharmGuid() const;
     void setCharmGuid(uint64_t guid);
 

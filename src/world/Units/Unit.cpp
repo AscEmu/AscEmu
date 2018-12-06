@@ -23,6 +23,16 @@ using namespace AscEmu::Packets;
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
+MovementAI & Unit::getMovementAI()
+{
+    return m_movementAI;
+}
+
+void Unit::setLocationWithoutUpdate(LocationVector & location)
+{
+    m_position.ChangeCoords(location.x, location.y, location.z);
+}
+
 uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
 void Unit::setCharmGuid(uint64_t guid) { write(unitData()->charm_guid.guid, guid); }
 

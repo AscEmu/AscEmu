@@ -386,7 +386,8 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     m_basicSpeedRun(7.0f), m_basicSpeedRunBack(4.5f), m_basicSpeedSwim(4.722222f), m_basicSpeedSwimBack(2.5f),
     m_basicTurnRate(3.141594f), m_basicSpeedFly(7.0f), m_basicSpeedFlyBack(4.5f), m_basicPitchRate(3.14f),
-    m_movementManager()
+    m_movementManager(),
+    m_movementAI(this)
 {
     mControledUnit = this;
     mPlayerControler = nullptr;
@@ -1015,6 +1016,7 @@ Unit::~Unit()
 
 void Unit::Update(unsigned long time_passed)
 {
+    m_movementAI.updateMovement(time_passed);
     _UpdateSpells(time_passed);
 
     RemoveGarbage();
