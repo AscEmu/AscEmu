@@ -467,9 +467,9 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     setFloatRate(RATE_ARENAPOINTMULTIPLIER5X, Config.MainConfig.getFloatDefault("Rates", "ArenaMultiplier5x", 1.0f));
 
     // world.conf - Terrain & Collision Settings
-    terrainCollision.unloadMapFiles = Config.MainConfig.getBoolDefault("Terrain", "UnloadMapFiles", true);
-    terrainCollision.isCollisionEnabled = Config.MainConfig.getBoolDefault("Terrain", "Collision", false);
-    terrainCollision.isPathfindingEnabled = Config.MainConfig.getBoolDefault("Terrain", "Pathfinding", false);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "UnloadMapFiles", &terrainCollision.unloadMapFiles));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Collision", &terrainCollision.isCollisionEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Pathfinding", &terrainCollision.isPathfindingEnabled));
 
     // world.conf - Mail Settings
     mail.isCostsForGmDisabled = Config.MainConfig.getBoolDefault("Mail", "DisablePostageCostsForGM", true);

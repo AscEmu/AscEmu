@@ -424,6 +424,7 @@ ConfigFile::ConfigValueSetting* ConfigFile::getSavedSetting(std::string sectionN
             return &(it2->second);
     }
 
+    LOG_ERROR("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
     return nullptr;
 }
 
@@ -461,5 +462,17 @@ float ConfigFile::getFloatDefault(std::string sectionName, std::string confName,
         return defaultFloat;
 
     return confSetting->asFloat;
+}
+
+bool ConfigFile::tryGetBool(std::string sectionName, std::string confName, bool * b)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *b = setting->asBool;
+    return true;
 }
 
