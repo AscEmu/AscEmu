@@ -81,7 +81,8 @@ void MovementAI::updateMovement(unsigned long diff)
         return;
     }
 
-    m_owner->setLocationWithoutUpdate(calculateCurrentPosition());
+    LocationVector currentPosition = calculateCurrentPosition();
+    m_owner->setLocationWithoutUpdate(currentPosition);
 
     if (m_owner->GetPosition().Distance(m_destination) < 2.f)
     {
