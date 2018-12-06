@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgUnlearnSkill.h"
 #include "Server/Packets/CmsgLearnTalent.h"
 #include "Server/Packets/CmsgLearnTalentMultiple.h"
+#include "Units/Players/Player.h"
 
 using namespace AscEmu::Packets;
 

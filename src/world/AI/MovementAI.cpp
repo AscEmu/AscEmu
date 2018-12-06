@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MovementAI.h"
+#include "WorldPacket.h"
+#include "Units/Unit.h"
 
 uint32_t MovementAI::calculateTimeToReachPoint(float speed, LocationVector point) const
 {

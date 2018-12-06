@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <vector>
+#include "Map/MapMgr.h"
+#include "Units/Players/Player.h"
 
 using namespace std;
 

@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Management/GuildMgr.h"
 #include "Packets/SmsgPlaySound.h"
+#include "Packets/SmsgAreaTriggerMessage.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"

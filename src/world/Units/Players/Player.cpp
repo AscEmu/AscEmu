@@ -53,6 +53,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgItemPushResult.h"
 #include "Server/Packets/SmsgClientControlUpdate.h"
 #include "Server/Packets/SmsgGuildEvent.h"
+#include "Server/Packets/SmsgDestoyObject.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
 

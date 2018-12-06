@@ -83,6 +83,7 @@
 #include "Server/Packets/SmsgSetFlatSpellModifier.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Packets/SmsgAreaTriggerMessage.h"
 
 using namespace AscEmu::Packets;
 

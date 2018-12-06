@@ -8,6 +8,8 @@
 
 #include <WorldPacket.h>
 
+class Player;
+
 typedef std::map<uint64_t, ByteBuffer*> SplineMap;
 
 class UpdateManager
