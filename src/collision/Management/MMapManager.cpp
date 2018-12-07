@@ -23,9 +23,13 @@
 #include "Errors.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "StringFormat.h" // AscEmu::string_format
 
 namespace MMAP
 {
+    static char const* const MAP_FILE_NAME_FORMAT = "mmaps/%04i.mmap";
+    static char const* const TILE_FILE_NAME_FORMAT = "mmaps/%04i%02i%02i.mmtile";
+
     // ######################## MMapManager ########################
     MMapManager::~MMapManager()
     {
@@ -76,16 +80,12 @@ namespace MMAP
         }
 
         // load and init dtNavMesh - read parameters from file
-        std::string dataDir = worldConfig.server.dataDir + "mmaps/";
-        uint32 pathLen = static_cast<uint32>(dataDir.length() + strlen("%04i.mmap") + 1);
-        char *fileName = new char[pathLen];
-        snprintf(fileName, pathLen, (dataDir + "%04i.mmap").c_str(), mapId);
+        std::string fileName = AscEmu::string_format(MAP_FILE_NAME_FORMAT, mapId);
 
-        FILE* file = fopen(fileName, "rb");
+        FILE* file = fopen(fileName.c_str(), "rb");
         if (!file)
         {
-            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
-            delete [] fileName;
+            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName.c_str());
             return false;
         }
 
@@ -94,8 +94,7 @@ namespace MMAP
         fclose(file);
         if (count != 1)
         {
-            LOG_ERROR("Error: Could not read params from file '%s'", fileName);
-            delete [] fileName;
+            LOG_ERROR("Error: Could not read params from file '%s'", fileName.c_str());
             return false;
         }
 
@@ -104,12 +103,9 @@ namespace MMAP
         if (dtStatusFailed(mesh->init(&params)))
         {
             dtFreeNavMesh(mesh);
-            LOG_ERROR("Failed to initialize dtNavMesh for mmap %04u from file %s", mapId, fileName);
-            delete [] fileName;
+            LOG_ERROR("Failed to initialize dtNavMesh for mmap %04u from file %s", mapId, fileName.c_str());
             return false;
         }
-
-        delete [] fileName;
 
         LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Loaded %04i.mmap", mapId);
 
@@ -142,19 +138,14 @@ namespace MMAP
             return false;
 
         // load this tile :: /MMMXXYY.mmtile
-        uint32 pathLen = static_cast<uint32>(basePath.length() + strlen("/%04i%02i%02i.mmtile") + 1);
-        char *fileName = new char[pathLen];
+        std::string fileName = AscEmu::string_format(TILE_FILE_NAME_FORMAT, mapId, x, y);
+        FILE* file = fopen(fileName.c_str(), "rb");
 
-        snprintf(fileName, pathLen, (basePath + "/%04i%02i%02i.mmtile").c_str(), mapId, x, y);
-
-        FILE* file = fopen(fileName, "rb");
         if (!file)
         {
-            LOG_DEBUG("Could not open mmtile file '%s'", fileName);
-            delete [] fileName;
+            LOG_DEBUG("Could not open mmtile file '%s'", fileName.c_str());
             return false;
         }
-        delete [] fileName;
 
         // read header
         MmapTileHeader fileHeader;
