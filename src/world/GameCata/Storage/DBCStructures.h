@@ -286,7 +286,7 @@ namespace DBC
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
             char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
             char const wmo_area_table_format[] = "niiixxxxxiixxxx";
-            //char const world_map_area_entry_format[] = "xinxffffixxxxx"; new
+            char const world_map_area_entry_format[] = "xinxxxxxixxxxx";
             char const world_map_overlay_format[] = "nxiiiixxxxxxxxx";
             //char const world_pvp_area_enrty_format[] = "niiiiii"; new
             //char const world_safe_locs_entry_format[] = "nifffx"; new
@@ -2049,6 +2049,24 @@ namespace DBC
             uint32_t areaId;            // 10
             //char Name[16];            // 11-26
             //uint32_t nameflags;       // 27
+        };
+
+        struct WorldMapAreaEntry
+        {
+            //uint32_t id;              // 0
+            uint32_t mapId;             // 1
+            uint32_t zoneId;            // 2
+            //const char* name;         // 3
+            //float y1;                 // 4
+            //float y2;                 // 5
+            //float x1;                 // 6
+            //float x2;                 // 7
+            int32_t continentMapId;     // 8 Map id of the continent where the area actually exists (-1 value means that mapId already has the continent map id)
+            //uint32_t unk1             // 9
+            //uint32_t parentId         // 10
+            //uint32_t unk2             // 11
+            //uint32_t minLevel         // 12 looks like this is the recommended minimum level for the zone
+            //uint32_t maxLevel         // 13 looks like this is the recommended maximum level for the zone
         };
 
         struct WorldMapOverlayEntry

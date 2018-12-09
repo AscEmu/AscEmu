@@ -603,14 +603,6 @@ void SpellCustomizations::loadSpellCoefficientOverride()
 
 void SpellCustomizations::setSpellCoefficient(SpellInfo *sp)
 {
-    // note:
-    // dot and hot parts are stored as per tick, like in wotlk spell.dbc
-    // channeled spell coeffs are also stored in direct member, as per missile/tick
-
-    // override table notes:
-    // overriding a spell which trigger another spell (like channeled spell) won't alter coeff of the triggered spell
-    // dots, hots and channeled spells will have coeffs for full duration in table, following code divides it per tick
-
     const auto baseDuration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
     const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
 

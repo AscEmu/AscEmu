@@ -3967,10 +3967,6 @@ uint8 Spell::CanCast(bool tolerate)
                 return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
 
-        // only in outland check
-        if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(ATTRIBUTESEXD_ONLY_IN_OUTLANDS))
-            return SPELL_FAILED_INCORRECT_AREA;
-
         /**
          * Mana check
          */
@@ -4031,11 +4027,6 @@ uint8 Spell::CanCast(bool tolerate)
         {
             if (GetSpellInfo()->getId() == 25860)  // Reindeer Transformation
                 return SPELL_FAILED_ONLY_MOUNTED;
-        }
-        else
-        {
-            if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE))
-                return SPELL_FAILED_NOT_MOUNTED;
         }
 
         // check if spell is allowed while shapeshifted

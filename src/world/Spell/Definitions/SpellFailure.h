@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellCastResult
+enum SpellCastResult : uint8_t
 {
     SPELL_FAILED_SUCCESS                        = 0x00,
     SPELL_FAILED_AFFECTING_COMBAT               = 0x01,
