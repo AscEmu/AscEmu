@@ -1190,6 +1190,57 @@ void Player::updateAutoRepeatSpell()
     }
 }
 
+bool Player::canUseFlyingMountHere()
+{
+#if VERSION_STRING == Classic
+    return false;
+#else
+    auto areaEntry = GetArea();
+    if (areaEntry == nullptr)
+        // If area is null, try finding any area from the zone with zone id
+        areaEntry = sAreaStore.LookupEntry(GetZoneId());
+    if (areaEntry == nullptr)
+        return false;
+
+    // Not flyable areas (such as Dalaran in wotlk)
+    if (areaEntry->flags & MapManagement::AreaManagement::AreaFlags::AREA_FLAG_NO_FLY_ZONE)
+        return false;
+
+    // Get continent map id
+    auto mapId = GetMapId();
+    if (mapId == 530 || mapId == 571)
+    {
+        const auto worldMapEntry = sWorldMapAreaStore.LookupEntry(GetZoneId());
+        if (worldMapEntry != nullptr)
+            mapId = worldMapEntry->continentMapId >= 0 ? worldMapEntry->continentMapId : worldMapEntry->mapId;
+    }
+
+    switch (mapId)
+    {
+        // Eastern Kingdoms
+        case 0:
+        // Kalimdor
+        case 1:
+            // Flight Master's License
+            if (!HasSpell(90267))
+                return false;
+            break;
+        // Outland
+        case 530:
+            return true;
+        // Northrend
+        case 571:
+            // Cold Weather Flying
+            if (!HasSpell(54197))
+                return false;
+            break;
+        default:
+            return false;
+    }
+    return true;
+#endif
+}
+
 bool Player::canDualWield2H() const
 {
     return m_canDualWield2H;

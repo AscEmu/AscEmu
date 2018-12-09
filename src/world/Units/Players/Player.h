@@ -658,6 +658,7 @@ public:
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
     void updateAutoRepeatSpell();
+    bool canUseFlyingMountHere();
 
     bool canDualWield2H() const;
     void setDualWield2H(bool enable);

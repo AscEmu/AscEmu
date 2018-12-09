@@ -417,13 +417,20 @@ SpellCastResult Spell::canCast(bool tolerate)
     if (p_caster != nullptr)
     {
         // Check if spell requires certain area
-        // TODO: load area DBC file for tbc
-#if VERSION_STRING >= WotLK
         if (GetSpellInfo()->getRequiresAreaId() > 0)
         {
+            auto areaEntry = p_caster->GetArea();
+            if (areaEntry == nullptr)
+                areaEntry = sAreaStore.LookupEntry(p_caster->GetZoneId());
+            if (areaEntry == nullptr)
+                return SPELL_FAILED_INCORRECT_AREA;
+
+#if VERSION_STRING == TBC
+            if (GetSpellInfo()->getRequiresAreaId() != areaEntry->id && GetSpellInfo()->getRequiresAreaId() != areaEntry->zone)
+                return SPELL_FAILED_INCORRECT_AREA;
+#elif VERSION_STRING >= WotLK
             auto found = false;
             auto areaGroup = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
-            const auto areaEntry = p_caster->GetArea();
             while (areaGroup != nullptr)
             {
                 for (auto i = 0; i < 6; ++i)
@@ -440,8 +447,30 @@ SpellCastResult Spell::canCast(bool tolerate)
 
             if (!found)
                 return SPELL_FAILED_INCORRECT_AREA;
-        }
 #endif
+        }
+
+        // Flying mount check
+        if (GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_ONLY_IN_OUTLANDS)
+        {
+            if (!p_caster->canUseFlyingMountHere())
+            {
+                if (p_caster->GetMapId() != 571 || !(GetSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IGNORE_COLD_WEATHER_FLYING))
+                    return SPELL_FAILED_NOT_HERE;
+            }
+        }
+
+        // Check if spell can be casted while mounted or on a taxi
+        if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !GetSpellInfo()->isPassive())
+        {
+            if (p_caster->isOnTaxi())
+                return SPELL_FAILED_NOT_ON_TAXI;
+            else
+            {
+                if (!(GetSpellInfo()->getAttributes() & ATTRIBUTES_MOUNT_CASTABLE))
+                    return SPELL_FAILED_NOT_MOUNTED;
+            }
+        }
 
         // Check if spell can be casted in heroic dungeons or in raids
         if (GetSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
