@@ -191,7 +191,7 @@ namespace MMAP
                 count += static_cast<int>(fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile));
                 count += static_cast<int>(fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile));
                 if (count != expected)
-                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
+                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
 
                 heightMultiplier = (hheader.gridMaxHeight - hheader.gridHeight) / 255;
 
@@ -209,7 +209,7 @@ namespace MMAP
                 count += static_cast<int>(fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile));
                 count += static_cast<int>(fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile));
                 if (count != expected)
-                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
+                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
 
                 heightMultiplier = (hheader.gridMaxHeight - hheader.gridHeight) / 65535;
 
@@ -225,7 +225,7 @@ namespace MMAP
                 count += static_cast<int>(fread(V9, sizeof(float), V9_SIZE_SQ, mapFile));
                 count += static_cast<int>(fread(V8, sizeof(float), V8_SIZE_SQ, mapFile));
                 if (count != expected)
-                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
+                    printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %llu\n", expected, count);
             }
 
             // hole data
