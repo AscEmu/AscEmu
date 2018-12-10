@@ -171,7 +171,7 @@ ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-    int count = fread(&nVertices, sizeof(int), 1, input);
+    const auto count = fread(&nVertices, sizeof(int), 1, input);
     fclose(input);
 
     if (count != 1 || nVertices == 0)
