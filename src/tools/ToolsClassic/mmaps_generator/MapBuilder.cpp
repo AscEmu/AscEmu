@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        int count = fread(&header, sizeof(MmapTileHeader), 1, file);
+        const auto count = fread(&header, sizeof(MmapTileHeader), 1, file);
         fclose(file);
         if (count != 1)
             return false;
