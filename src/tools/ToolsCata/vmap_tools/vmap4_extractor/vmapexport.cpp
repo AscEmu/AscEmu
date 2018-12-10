@@ -18,6 +18,7 @@
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
+
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -25,13 +26,13 @@
 #include <errno.h>
 
 #ifdef WIN32
-    #include <Windows.h>
-    #include <sys/stat.h>
-    #include <direct.h>
-    #define mkdir _mkdir
+#include <Windows.h>
+#include <sys/stat.h>
+#include <direct.h>
+#define mkdir _mkdir
 #else
-    #include <sys/stat.h>
-    #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
+#include <sys/stat.h>
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #undef min
