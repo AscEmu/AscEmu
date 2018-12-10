@@ -251,10 +251,10 @@ namespace MMAP
             rcCalcBounds(meshData.liquidVerts.getCArray(), meshData.liquidVerts.size() / 3, lmin, lmax);
 
         // convert coord bounds to grid bounds
-        maxX = 32 - bmin[0] / GRID_SIZE;
-        maxY = 32 - bmin[2] / GRID_SIZE;
-        minX = 32 - bmax[0] / GRID_SIZE;
-        minY = 32 - bmax[2] / GRID_SIZE;
+        maxX = static_cast<uint32_t>(32 - bmin[0] / GRID_SIZE);
+        maxY = static_cast<uint32_t>(32 - bmin[2] / GRID_SIZE);
+        minX = static_cast<uint32_t>(32 - bmax[0] / GRID_SIZE);
+        minY = static_cast<uint32_t>(32 - bmax[2] / GRID_SIZE);
     }
 
     void MapBuilder::buildMeshFromFile(char* name)
@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        int maxTiles = tiles->size();
+        const auto maxTiles = static_cast<int>(tiles->size());
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
