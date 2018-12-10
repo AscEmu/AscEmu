@@ -187,7 +187,7 @@ namespace MMAP
             {
                 uint8 v9[V9_SIZE_SQ];
                 uint8 v8[V8_SIZE_SQ];
-                int count = 0;
+                size_t count = 0;
                 count += fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile);
                 count += fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile);
                 if (count != expected)
