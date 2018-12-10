@@ -389,10 +389,10 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         int check = 3*nColVertices;
         fwrite(VERT,4,3,output);
         for (uint32 i=0; i<nVertices; ++i)
-            if(IndexRenum[i] >= 0)
+            if (IndexRenum[i] >= 0)
                 check -= static_cast<int>(fwrite(MOVT+3*i, sizeof(float), 3, output));
 
-        assert(check==0);
+        assert(check == 0);
 
         delete [] MoviEx;
         delete [] IndexRenum;
