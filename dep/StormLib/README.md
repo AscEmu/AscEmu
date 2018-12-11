@@ -1,0 +1,1 @@
+StomLib library, an open-source project that can work with Blizzard MPQ archives.
