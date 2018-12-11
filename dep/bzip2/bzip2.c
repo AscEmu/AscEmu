@@ -1613,7 +1613,7 @@ void license ( void )
     "   \n"
     "   This program is distributed in the hope that it will be useful,\n"
     "   but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    "   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+    "   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n"
     "   LICENSE file for more details.\n"
     "   \n",
     BZ2_bzlibVersion()
