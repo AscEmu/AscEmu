@@ -210,7 +210,7 @@ public:
                         (*itr)->SendWorldStateUpdate(WORLDSTATE_ZANGARMARSH_CAPTURE_BAR_DISPLAY_EAST, 1);
                         (*itr)->SendWorldStateUpdate(WORLDSTATE_ZANGARMARSH_CAPTURE_BAR_VALUE_EAST, Status);
                     }
-                    StoredPlayers.insert(make_pair((*itr)->GetLowGUID(), timeptr));
+                    StoredPlayers.insert(std::make_pair((*itr)->GetLowGUID(), timeptr));
 
                     if(is_valid)
                         plrcounts[(*itr)->GetTeam()]++;

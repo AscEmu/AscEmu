@@ -661,7 +661,7 @@ public:
             {
                 std::set<int> refs;
                 refs.insert(functionRef);
-                objRefs.insert(make_pair(ptr->getGuid(), refs));
+                objRefs.insert(std::make_pair(ptr->getGuid(), refs));
             }
             else
             {
@@ -699,7 +699,7 @@ public:
             {
                 std::set<int> refs;
                 refs.insert(functionRef);
-                objRefs.insert(make_pair(ptr->getGuid(), refs));
+                objRefs.insert(std::make_pair(ptr->getGuid(), refs));
             }
             else
             {

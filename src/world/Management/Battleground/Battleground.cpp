@@ -947,7 +947,7 @@ void CBattleground::AddSpiritGuide(Creature* pCreature)
     if (itr == m_resurrectMap.end())
     {
         std::set<uint32> ti;
-        m_resurrectMap.insert(make_pair(pCreature, ti));
+        m_resurrectMap.insert(std::make_pair(pCreature, ti));
     }
 }
 

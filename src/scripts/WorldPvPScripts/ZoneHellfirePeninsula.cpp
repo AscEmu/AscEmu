@@ -158,7 +158,7 @@ public:
                 {
                     (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_DISPLAY, 1);
                     (*itr)->SendWorldStateUpdate(WORLDSTATE_HELLFIRE_PVP_CAPTURE_BAR_VALUE, Status);
-                    StoredPlayers.insert(make_pair((*itr)->GetLowGUID(), timeptr));
+                    StoredPlayers.insert(std::make_pair((*itr)->GetLowGUID(), timeptr));
 
                     if(is_valid)
                         plrcounts[(*itr)->GetTeam()]++;
