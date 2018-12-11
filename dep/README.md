@@ -3,8 +3,9 @@
 # Opensource software in this folder:
 
 ## Folder: recastnavigation
-- Web: https://github.com/memononen/recastnavigation
-- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
+- Web: https://github.com/recastnavigation/recastnavigation
+- Version: 2c85309280dbc9c82029e7ab16dfb01b9235c74e (2017/06/13)
+- License: MIT
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org

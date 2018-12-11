@@ -26,14 +26,12 @@
 #include <set>
 #include <cstdlib>
 
-#ifdef WIN32
-#include <Windows.h>
-#include <sys/stat.h>
-#include <direct.h>
-#define mkdir _mkdir
+#ifdef _WIN32
+#include "direct.h"
 #else
-#include <sys/stat.h>
 #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 #include "dbcfile.h"
@@ -44,7 +42,7 @@
 #include <fcntl.h>
 
 #if defined( __GNUC__ )
-    #define _open  open
+    #define _open open
     #define _close close
     #ifndef O_BINARY
         #define O_BINARY 0
