@@ -124,7 +124,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
         flipcc(fourcc);
         fourcc[4] = 0;
 
-        auto nextpos = ADT.getPos() + size;;
+        auto nextpos = ADT.getPos() + size;
 
         if (!strcmp(fourcc, "MCIN"))
         {
