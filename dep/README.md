@@ -10,19 +10,22 @@
 ## Folder: recastnavigation
 - Web: https://github.com/recastnavigation/recastnavigation
 - Version: 2c85309280dbc9c82029e7ab16dfb01b9235c74e (2017/06/13)
-- License: MIT
+- License: zlib
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
 - Version: 1.0.2n (2017-12-7)
+- License: Apache ver. 2.0
 
 ## Folder: MySQL Connector/C
 - Web: http://www.mysql.com
 - Version: 6.1.11 (2017-07-13)
+- License: BSD 3-clause
 
 ## Folder: zlib
 - Web: http://www.zlib.net
 - Version: 1.2.11 (2017/01/15)
+- License: zlib
 
 ## Folder: lualib
 - Web: https://www.lua.org
