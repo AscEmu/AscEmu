@@ -39,26 +39,27 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     }
 
     // logon.conf - LogonDatabase
-    logonDb.host = Config.MainConfig.getStringDefault("LogonDatabase", "Hostname", "");
-    logonDb.user = Config.MainConfig.getStringDefault("LogonDatabase", "Username", "");
-    logonDb.db = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
-    logonDb.password = Config.MainConfig.getStringDefault("LogonDatabase", "Password", "");
-    logonDb.port = Config.MainConfig.getIntDefault("LogonDatabase", "Port", 3306);
-    logonDb.connections = Config.MainConfig.getIntDefault("LogonDatabase", "ConnectionCount", 5);
+    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Hostname", &logonDb.host));
+    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Username", &logonDb.user));
+    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Name", &logonDb.db));
+    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Password", &logonDb.password));
+    ASSERT(Config.MainConfig.tryGetInt("LogonDatabase", "Port", &logonDb.port));
+    ASSERT(Config.MainConfig.tryGetInt("LogonDatabase", "Connections", &logonDb.connections));
 
     // logon.conf - Listen
-    listen.host = Config.MainConfig.getStringDefault("Listen", "Host", "0.0.0.0");
-    listen.interServerHost = Config.MainConfig.getStringDefault("Listen", "ISHost", "0.0.0.0");
-    listen.realmListPort = Config.MainConfig.getIntDefault("Listen", "RealmListPort", 3724);
-    listen.port = Config.MainConfig.getIntDefault("Listen", "ServerPort", 8093);
+    ASSERT(Config.MainConfig.tryGetString("Listen", "Host", &listen.host));
+    ASSERT(Config.MainConfig.tryGetString("Listen", "ISHost", &listen.interServerHost));
+    ASSERT(Config.MainConfig.tryGetInt("Listen", "RealmListPort", &listen.realmListPort));
+    ASSERT(Config.MainConfig.tryGetInt("Listen", "ServerPort", &listen.port));
 
     // logon.conf - LogLevel
-    logLevel.file = Config.MainConfig.getIntDefault("LogLevel", "File", 0);
+    ASSERT(Config.MainConfig.tryGetInt("LogLevel", "File", &logLevel.file));
 
     // logon.conf - Rates
-    rates.accountRefreshTime = Config.MainConfig.getIntDefault("Rates", "AccountRefresh", 600);
+    ASSERT(Config.MainConfig.tryGetInt("Rates", "AccountRefresh", &rates.accountRefreshTime));
 
     // logon.conf - LogonServer
-    logonServer.allowedIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedIPs", "127.0.0.1/24");
-    logonServer.allowedModIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedModIPs", "127.0.0.1/24");
+    ASSERT(Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings));
+    ASSERT(Config.MainConfig.tryGetString("LogonServer", "AllowedIPs", &logonServer.allowedIps));
+    ASSERT(Config.MainConfig.tryGetString("LogonServer", "AllowedModIPs", &logonServer.allowedModIps));
 }
