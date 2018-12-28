@@ -280,8 +280,10 @@ void RealmsMgr::updateRealmPop(uint32_t realm_id, float pop)
             flags = REALM_FLAG_FULL | REALM_FLAG_INVALID;
         else if (pop >= 2)
             flags = REALM_FLAG_INVALID;
-        else if (pop >= 0.5)
+        else if (pop >= 1.25)
             flags = 0;
+        else if (pop >= 0.5)
+            flags = REALM_FLAG_RECOMMENDED;
         else
             flags = REALM_FLAG_NEW_PLAYERS;
 

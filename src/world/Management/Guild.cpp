@@ -659,8 +659,10 @@ void Guild::handleLeaveMember(WorldSession* session)
     {
         if (_guildMembersStore.size() > 1)
             session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE).serialise().get());
-        else if (getLevel() >= worldConfig.guild.undeletabelLevel)
+#if VERSION_STRING >= Cata
+        else if (getLevel() >= worldConfig.guild.undeletableLevel)
             session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL).serialise().get());
+#endif
         else
             disband();
     }
@@ -1080,7 +1082,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     data.Initialize(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
     session->SendPacket(&data);
 
-    if (worldConfig.guild.levlingEnabled == false)
+    if (worldConfig.guild.levelingEnabled == false)
         return;
 
     for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
@@ -2064,7 +2066,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
 void Guild::giveXP(uint32_t xp, Player* source)
 {
 #if VERSION_STRING == Cata
-    if (worldConfig.guild.levlingEnabled == false)
+    if (worldConfig.guild.levelingEnabled == false)
         return;
 
     if (getLevel() >= worldConfig.guild.maxLevel)

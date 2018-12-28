@@ -25,12 +25,19 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     charDb.port = 3306;
     charDb.connections = 5;
 
+    // world.conf - LogonServer Settings
+    logonServer.address = "127.0.0.1";
+    logonServer.port = 8093;
+    logonServer.name = "Default Logon";
+    logonServer.realmCount = 1;
+    logonServer.disablePings = false;
+
     // world.conf - Listen Config
     listen.listenPort = 8129;
 
     // world.conf - Log Settings
     log.extendedLogsDir = "./";
-    log.worldFileLogLevel = 0;
+    log.worldFileLogLevel = 1;
     log.worldDebugFlags = 0;
     log.enableWorldPacketLog = false;
     log.disableCrashdump = false;
@@ -40,44 +47,32 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     log.enableTimeStamp = false;
     log.enableSqlBanLog = false;
 
-    // world.conf - LogonServer Settings
-    logonServer.address = "127.0.0.1";
-    logonServer.port = 8093;
-    logonServer.name = "Default Logon";
-    logonServer.realmCount = 1;
-    logonServer.disablePings = false;
-
     // world.conf - Server Settings
-    server.playerLimit = 1000;
-    server.messageOfTheDay = "AscEmu Default MOTD";
+    server.playerLimit = 100;
+    server.messageOfTheDay = "Welcome to the World of Warcraft!";
     server.sendStatsOnJoin = true;
-    server.enableBreathing = true;
-    server.seperateChatChannels = false;
+    server.gmtTimeZone = 0;
     server.compressionThreshold = 1000;
-    server.queueUpdateInterval = 5000;
-    server.secondsBeforeKickAFKPlayers = 0;
-    server.secondsBeforeTimeOut = 180;
-    server.realmType = false;
     server.enableAdjustPriority = false;
-    server.requireAllSignatures = false;
-    server.showGmInWhoList = true;
     server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     server.mapCellNumber = 1;
+    server.secondsBeforeTimeOut = 180;
+    server.secondsBeforeKickAFKPlayers = 0;
+    server.queueUpdateInterval = 5000;
+    server.enableBreathing = true;
     server.enableLimitedNames = true;
     server.useAccountData = false;
     server.requireGmForCommands = false;
     server.enableLfgJoinForNonLfg = false;
-    server.gmtTimeZone = 0;
     server.disableFearMovement = false;
     server.saveExtendedCharData = false;
-    server.dataDir = "./";
+    server.dataDir = "";
 
     // world.conf - Player Settings
     player.playerStartingLevel = 1;
     player.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
     player.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
     player.allowTbcCharacters = true;
-    player.deactivateMasterLootNinja = false;
     player.deathKnightStartTalentPoints = 0;
     player.deathKnightPreReq = false;
     player.deathKnightLimit = false;
@@ -88,15 +83,34 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     player.minTalentResetLevel = 10;
     player.showAllVendorItems = false;
     player.isInterfactionChatEnabled = false;
+    player.isInterfactionChannelEnabled = false;
     player.isInterfactionGroupEnabled = false;
     player.isInterfactionGuildEnabled = false;
     player.isInterfactionTradeEnabled = false;
     player.isInterfactionFriendsEnabled = false;
+    player.isInterfactionMailEnabled = false;
     player.isInterfactionMiscEnabled = false;
-    player.isCrossoverCharsCreationEnabled = true;
+    player.isCrossoverCharsCreationEnabled = false;
     player.isGoldCapEnabled = true;
     player.limitGoldAmount = 214748;
     player.startGoldAmount = 0;
+    player.deactivateMasterLootNinja = false;
+    player.enablePvPToken = false;
+    player.pvpTokenId = 0;
+
+    // world.conf - Guild Settings
+    guild.charterCost = 1000;
+    guild.requireAllSignatures = true;
+    guild.maxLevel = 25;
+    guild.maxMembers = 0;
+    guild.maxXpPerDay = 0;
+    guild.maxRepPerWeek = 0;
+    guild.levelingEnabled = false;
+    guild.undeletableLevel = 0;
+    guild.eventLogCount = 0;
+    guild.newsLogCount = 0;
+    guild.bankLogCount = 0;
+    guild.saveInterval = 300;
 
     // world.conf - Announce Settings
     announce.enableGmAdminTag = true;
@@ -114,16 +128,23 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     gm.listOnlyActiveGms = false;
     gm.hidePermissions = false;
     gm.worldAnnounceOnKickPlayer = true;
+    gm.showGmInWhoList = true;
     gm.gmClientChannelName = "";
 
     // world.conf - Broadcast Settings
     broadcast.isSystemEnabled = false;
-    broadcast.interval = 10;
     broadcast.triggerPercentCap = 2;
     broadcast.orderMode = 0;
 
     // world.conf - Rate Settings
     rate.arenaQueueDiff = 150;
+
+    // world.conf - Corpse Decay Settings
+    corpseDecay.normalTimeInSeconds = 300000;
+    corpseDecay.rareTimeInSeconds = 900000;
+    corpseDecay.eliteTimeInSeconds = 300000;
+    corpseDecay.rareEliteTimeInSeconds = 900000;
+    corpseDecay.worldbossTimeInSeconds = 3600000;
 
     // world.conf - Terrain & Collision Settings
     terrainCollision.unloadMapFiles = false;
@@ -135,7 +156,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     mail.isCostsForEveryoneDisabled = false;
     mail.isDelayItemsDisabled = false;
     mail.isMessageExpiryDisabled = false;
-    mail.isInterfactionMailEnabled = false;
     mail.isInterfactionMailForGmEnabled = false;
 
     // world.conf - Startup Options
@@ -196,18 +216,15 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     // world.conf - Arena Settings
     arena.arenaSeason = 8;
     arena.arenaProgress = 1;
+    arena.charterCost2v2 = 800000;
+    arena.charterCost3v3 = 1200000;
+    arena.charterCost5v5 = 2000000;
     arena.minPlayerCount2V2 = 2;
     arena.maxPlayerCount2V2 = 2;
     arena.maxPlayerCount3V3 = 3;
     arena.minPlayerCount3V3 = 3;
     arena.maxPlayerCount5V5 = 5;
     arena.minPlayerCount5V5 = 5;
-
-    // world.conf - CharterCost
-    charterCost._guild = 1000;
-    charterCost._2V2 = 800000;
-    charterCost._3V3 = 1200000;
-    charterCost._5V5 = 2000000;
 
     // world.conf - Limits settings
     limit.isLimitSystemEnabled = true;
@@ -219,25 +236,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     limit.maxArenaPoints = 5000;
     limit.disconnectPlayerForExceedingLimits = false;
     limit.broadcastMessageToGmOnExceeding = true;
-
-    // world.conf - Corpse Decay Settings
-    corpseDecay.normalTimeInSeconds = 60000;
-    corpseDecay.rareTimeInSeconds = 300000;
-    corpseDecay.eliteTimeInSeconds = 300000;
-    corpseDecay.rareEliteTimeInSeconds = 300000;
-    corpseDecay.worldbossTimeInSeconds = 3600000;
-
-    // world.conf - Guild Settings
-    guild.maxLevel = 25;
-    guild.maxMembers = 10;
-    guild.maxXpPerDay = 0;
-    guild.maxRepPerWeek = 0;
-    guild.levlingEnabled = false;
-    guild.undeletabelLevel = 0;
-    guild.eventLogCount = 0;
-    guild.newsLogCount = 0;
-    guild.bankLogCount = 0;
-    guild.saveInterval = 0;
 }
 
 WorldConfig::~WorldConfig() = default;
@@ -261,62 +259,57 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     }
 
     // world.conf - Mysql Database Section
-    worldDb.host = Config.MainConfig.getStringDefault("WorldDatabase", "Hostname", "");
-    worldDb.user = Config.MainConfig.getStringDefault("WorldDatabase", "Username", "");
-    worldDb.password = Config.MainConfig.getStringDefault("WorldDatabase", "Password", "");
-    worldDb.dbName = Config.MainConfig.getStringDefault("WorldDatabase", "Name", "");
-    worldDb.port = Config.MainConfig.getIntDefault("WorldDatabase", "Port", 3306);
-    worldDb.connections = Config.MainConfig.getIntDefault("WorldDatabase", "Connections", 3);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("WorldDatabase", "Hostname", &worldDb.host));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("WorldDatabase", "Username", &worldDb.user));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("WorldDatabase", "Password", &worldDb.password));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("WorldDatabase", "Name", &worldDb.dbName));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("WorldDatabase", "Port", &worldDb.port));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("WorldDatabase", "Connections", &worldDb.connections));
 
-    charDb.host = Config.MainConfig.getStringDefault("CharacterDatabase", "Hostname", "");
-    charDb.user = Config.MainConfig.getStringDefault("CharacterDatabase", "Username", "");
-    charDb.password = Config.MainConfig.getStringDefault("CharacterDatabase", "Password", "");
-    charDb.dbName = Config.MainConfig.getStringDefault("CharacterDatabase", "Name", "");
-    charDb.port = Config.MainConfig.getIntDefault("CharacterDatabase", "Port", 3306);
-    charDb.connections = Config.MainConfig.getIntDefault("CharacterDatabase", "Connections", 5);
-
-    // world.conf - Listen Config
-    listen.listenHost = Config.MainConfig.getStringDefault("Listen", "Host", "0.0.0.0");
-    listen.listenPort = Config.MainConfig.getIntDefault("Listen", "WorldServerPort", 8129);
-
-    // world.conf - Log Settings
-    log.worldFileLogLevel = Config.MainConfig.getIntDefault("Log", "WorldFileLogLevel", 0);
-    log.worldDebugFlags = Config.MainConfig.getIntDefault("Log", "WorldDebugFlags", 0);
-    log.enableWorldPacketLog = Config.MainConfig.getBoolDefault("Log", "EnableWorldPacketLog", false);
-    log.disableCrashdump = Config.MainConfig.getBoolDefault("Log", "DisableCrashdumpReport", false);
-
-    log.extendedLogsDir = Config.MainConfig.getStringDefault("Log", "ExtendedLogDir", "./");
-    if (log.extendedLogsDir != "./")
-        log.extendedLogsDir = "./" + log.extendedLogsDir + "/";
-
-    log.enableCheaterLog = Config.MainConfig.getBoolDefault("Log", "EnableCheaterLog", false);
-    log.enableGmCommandLog = Config.MainConfig.getBoolDefault("Log", "EnableGMCommandLog", false);
-    log.enablePlayerLog = Config.MainConfig.getBoolDefault("Log", "EnablePlayerLog", false);
-    log.enableTimeStamp = Config.MainConfig.getBoolDefault("Log", "EnableTimeStamp", false);
-    log.enableSqlBanLog = Config.MainConfig.getBoolDefault("Log", "EnableSqlBanLog", false);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("CharacterDatabase", "Hostname", &charDb.host));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("CharacterDatabase", "Username", &charDb.user));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("CharacterDatabase", "Password", &charDb.password));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("CharacterDatabase", "Name", &charDb.dbName));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CharacterDatabase", "Port", &charDb.port));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CharacterDatabase", "Connections", &charDb.connections));
 
     // world.conf - LogonServer Settings
-    logonServer.address = Config.MainConfig.getStringDefault("LogonServer", "Address", "127.0.0.1");
-    logonServer.port = Config.MainConfig.getIntDefault("LogonServer", "Port", 8093);
-    logonServer.name = Config.MainConfig.getStringDefault("LogonServer", "Name", "Default Logon");
-    logonServer.realmCount = Config.MainConfig.getIntDefault("LogonServer", "RealmCount", 1);
-    logonServer.disablePings = Config.MainConfig.getBoolDefault("LogonServer", "DisablePings", false);
-    logonServer.remotePassword = Config.MainConfig.getStringDefault("LogonServer", "RemotePassword", "r3m0t3");
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("LogonServer", "Address", &logonServer.address));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("LogonServer", "Port", &logonServer.port));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("LogonServer", "Name", &logonServer.name));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("LogonServer", "RealmCount", &logonServer.realmCount));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("LogonServer", "RemotePassword", &logonServer.remotePassword));
 
     // world.conf - Realm Section
 
+    // world.conf - Listen Config
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Listen", "Host", &listen.listenHost));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Listen", "WorldServerPort", &listen.listenPort));
+
+    // world.conf - Log Settings
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Log", "WorldFileLogLevel", &log.worldFileLogLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Log", "WorldDebugFlags", &log.worldDebugFlags));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableWorldPacketLog", &log.enableWorldPacketLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "DisableCrashdumpReport", &log.disableCrashdump));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Log", "ExtendedLogDir", &log.extendedLogsDir));
+    if (log.extendedLogsDir != "./")
+        log.extendedLogsDir = "./" + log.extendedLogsDir + "/";
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableCheaterLog", &log.enableCheaterLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableGMCommandLog", &log.enableGmCommandLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnablePlayerLog", &log.enablePlayerLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableTimeStamp", &log.enableTimeStamp));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableSqlBanLog", &log.enableSqlBanLog));
+
     // world.conf - Server Settings
-    server.playerLimit = Config.MainConfig.getIntDefault("Server", "PlayerLimit", 1000);
-    server.messageOfTheDay = Config.MainConfig.getStringDefault("Server", "Motd", "AscEmu Default MOTD");
-    server.sendStatsOnJoin = Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", true);
-    server.enableBreathing = Config.MainConfig.getBoolDefault("Server", "EnableBreathing", true);
-    server.seperateChatChannels = Config.MainConfig.getBoolDefault("Server", "SeperateChatChannels", false);
-    server.compressionThreshold = Config.MainConfig.getIntDefault("Server", "CompressionThreshold", 1000);
-    server.queueUpdateInterval = Config.MainConfig.getIntDefault("Server", "QueueUpdateInterval", 5000);
-    server.secondsBeforeKickAFKPlayers = Config.MainConfig.getIntDefault("Server", "KickAFKPlayers", 0);
-    server.secondsBeforeTimeOut = uint32_t(1000 * Config.MainConfig.getIntDefault("Server", "ConnectionTimeout", 180));
-    server.realmType = Config.MainConfig.getBoolDefault("Server", "RealmType", false);
-    server.enableAdjustPriority = Config.MainConfig.getBoolDefault("Server", "AdjustPriority", false);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "PlayerLimit", &server.playerLimit));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Server", "Motd", &server.messageOfTheDay));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "SendStatsOnJoin", &server.sendStatsOnJoin));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "TimeZone", &server.gmtTimeZone));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "CompressionThreshold", &server.compressionThreshold));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "AdjustPriority", &server.enableAdjustPriority));
 #ifdef WIN32
     DWORD current_priority_class = GetPriorityClass(GetCurrentProcess());
     bool high = server.enableAdjustPriority;
@@ -332,288 +325,303 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
             SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
     }
 #endif
-
-    server.requireAllSignatures = Config.MainConfig.getBoolDefault("Server", "RequireAllSignatures", false);
-    server.showGmInWhoList = Config.MainConfig.getBoolDefault("Server", "ShowGMInWhoList", true);
-    server.mapUnloadTime = Config.MainConfig.getIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapUnloadTime", &server.mapUnloadTime));
     if (server.mapUnloadTime == 0)
     {
         LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
         server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     }
-
-    server.mapCellNumber = static_cast<uint8_t>(Config.MainConfig.getIntDefault("Server", "MapCellNumber", 1));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapCellNumber", &server.mapCellNumber));
     if (server.mapCellNumber == 0)
     {
         LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
         server.mapCellNumber = 1;
     }
-
-    server.enableLimitedNames = Config.MainConfig.getBoolDefault("Server", "LimitedNames", true);
-    server.useAccountData = Config.MainConfig.getBoolDefault("Server", "UseAccountData", false);
-    server.requireGmForCommands = !Config.MainConfig.getBoolDefault("Server", "AllowPlayerCommands", false);
-    server.enableLfgJoinForNonLfg = Config.MainConfig.getBoolDefault("Server", "EnableLFGJoin", false);
-    server.gmtTimeZone = Config.MainConfig.getIntDefault("Server", "TimeZone", 0);
-    server.disableFearMovement = Config.MainConfig.getBoolDefault("Server", "DisableFearMovement", false);
-    server.saveExtendedCharData = Config.MainConfig.getBoolDefault("Server", "SaveExtendedCharData", false);
-    server.dataDir = Config.MainConfig.getStringDefault("Server", "DataDir", "./");
-    if (server.dataDir != "./")
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "ConnectionTimeout", &server.secondsBeforeTimeOut));
+    server.secondsBeforeTimeOut *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "KickAFKPlayers", &server.secondsBeforeKickAFKPlayers));
+    server.secondsBeforeKickAFKPlayers *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "QueueUpdateInterval", &server.queueUpdateInterval));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "EnableBreathing", &server.enableBreathing));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "LimitedNames", &server.enableLimitedNames));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "UseAccountData", &server.useAccountData));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "AllowPlayerCommands", &server.requireGmForCommands));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "EnableLFGJoin", &server.enableLfgJoinForNonLfg));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "DisableFearMovement", &server.disableFearMovement));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "SaveExtendedCharData", &server.saveExtendedCharData));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Server", "DataDir", &server.dataDir));
+    if (server.dataDir == "")
+        server.dataDir = "./";
+    else if (server.dataDir != "./")
         server.dataDir = "./" + server.dataDir + "/";
 
     // world.conf - Player Settings
-    player.playerStartingLevel = Config.MainConfig.getIntDefault("Player", "StartingLevel", 1);
-    player.playerLevelCap = Config.MainConfig.getIntDefault("Player", "LevelCap", DBC_PLAYER_LEVEL_CAP);
-    player.playerGeneratedInformationByLevelCap = Config.MainConfig.getIntDefault("Player", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "StartingLevel", &player.playerStartingLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "LevelCap", &player.playerLevelCap));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "GenLevelCap", &player.playerGeneratedInformationByLevelCap)); //! no delete
     if (player.playerStartingLevel > static_cast<int32_t>(player.playerLevelCap))
         player.playerStartingLevel = static_cast<int32_t>(player.playerLevelCap);
-
-    player.allowTbcCharacters = Config.MainConfig.getBoolDefault("Player", "AllowTBC", true);
-    player.deactivateMasterLootNinja = Config.MainConfig.getBoolDefault("Player", "AntiMasterLootNinja", false);
-    player.deathKnightStartTalentPoints = Config.MainConfig.getIntDefault("Player", "DKStartingTalents", 0);
-    player.deathKnightPreReq = Config.MainConfig.getBoolDefault("Player", "DKPreReq", false);
-    player.deathKnightLimit = Config.MainConfig.getBoolDefault("Player", "DKLimit", true);
-    player.maxProfessions = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Player", "MaxProfessions", 2));
-    player.skipCinematics = Config.MainConfig.getBoolDefault("Player", "SkipCinematic", false);
-    player.enableInstantLogoutForAccessType = static_cast<uint8_t>(Config.MainConfig.getIntDefault("Player", "InstantLogout", 1));
-    player.minDualSpecLevel = Config.MainConfig.getIntDefault("Player", "MinDualSpecLevel", 40);
-    player.minTalentResetLevel = Config.MainConfig.getIntDefault("Player", "MinTalentResetLevel", 10);
-    player.showAllVendorItems = Config.MainConfig.getBoolDefault("Player", "ShowAllVendorItems", false);
-    player.isInterfactionChatEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionChat", false);
-    player.isInterfactionGroupEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionGroup", false);
-    player.isInterfactionGuildEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionGuild", false);
-    player.isInterfactionTradeEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionTrade", false);
-    player.isInterfactionFriendsEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionFriends", false);
-    player.isInterfactionMiscEnabled = Config.MainConfig.getBoolDefault("Player", "InterfactionMisc", false);
-    player.isCrossoverCharsCreationEnabled = Config.MainConfig.getBoolDefault("Player", "CrossOverCharacters", false);
-    player.isGoldCapEnabled = Config.MainConfig.getBoolDefault("Player", "EnableGoldCap", true);
-    player.limitGoldAmount = Config.MainConfig.getIntDefault("Player", "MaximumGold", 214000);
-    if (player.limitGoldAmount)
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "AllowTBC", &player.allowTbcCharacters));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "DKStartingTalents", &player.deathKnightStartTalentPoints));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "DKPreReq", &player.deathKnightPreReq));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "DKLimit", &player.deathKnightLimit));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "MaxProfessions", &player.maxProfessions));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "SkipCinematic", &player.skipCinematics));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "InstantLogout", &player.enableInstantLogoutForAccessType));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "MinDualSpecLevel", &player.minDualSpecLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "MinTalentResetLevel", &player.minTalentResetLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "ShowAllVendorItems", &player.showAllVendorItems));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionChat", &player.isInterfactionChatEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionChannel", &player.isInterfactionChannelEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionGroup", &player.isInterfactionGroupEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionGuild", &player.isInterfactionGuildEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionTrade", &player.isInterfactionTradeEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionFriends", &player.isInterfactionFriendsEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionMail", &player.isInterfactionMailEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "InterfactionMisc", &player.isInterfactionMiscEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "CrossOverCharacters", &player.isCrossoverCharsCreationEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "EnableGoldCap", &player.isGoldCapEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "MaximumGold", &player.limitGoldAmount));
+    if (player.limitGoldAmount > 0)
         player.limitGoldAmount *= 10000;
-
-    player.startGoldAmount = Config.MainConfig.getIntDefault("Player", "StartingGold", 0);
-    if (player.startGoldAmount)
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "StartingGold", &player.startGoldAmount));
+    if (player.startGoldAmount > 0)
         player.startGoldAmount *= 10000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "AntiMasterLootNinja", &player.deactivateMasterLootNinja));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "EnablePvPToken", &player.enablePvPToken));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "PvPTokenID", &player.pvpTokenId));
+    if (!player.enablePvPToken || player.pvpTokenId == 0)
+        player.enablePvPToken = player.pvpTokenId = 0;
+
+    // world.conf - Guild Settings
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "CharterCost", &guild.charterCost));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Guild", "RequireAllSignatures", &guild.requireAllSignatures));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxLevel", &guild.maxLevel));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxMembers", &guild.maxMembers));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxXpPerDay", &guild.maxXpPerDay));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxRepPerWeek", &guild.maxRepPerWeek));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Guild", "LevelingEnabled", &guild.levelingEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "UndeletableLevel", &guild.undeletableLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "EventLogCount", &guild.eventLogCount));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "NewsLogCount", &guild.newsLogCount));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "BankLogCount", &guild.bankLogCount));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "SaveInterval", &guild.saveInterval));
 
     // world.conf - Announce Settings
-    announce.announceTag = Config.MainConfig.getStringDefault("Announce", "Tag", "Staff");
-    announce.enableGmAdminTag = Config.MainConfig.getBoolDefault("Announce", "GMAdminTag", false);
-    announce.showNameInAnnounce = Config.MainConfig.getBoolDefault("Announce", "NameinAnnounce", true);
-    announce.showNameInWAnnounce = Config.MainConfig.getBoolDefault("Announce", "NameinWAnnounce", true);
-    announce.showAnnounceInConsoleOutput = Config.MainConfig.getBoolDefault("Announce", "ShowInConsole", true);
-    announce.tagColor = Config.MainConfig.getIntDefault("Announce", "AnnTagColor", 2);
-    announce.tagGmColor = Config.MainConfig.getIntDefault("Announce", "AnnGMTagColor", 1);
-    announce.nameColor = Config.MainConfig.getIntDefault("Announce", "AnnNameColor", 4);
-    announce.msgColor = Config.MainConfig.getIntDefault("Announce", "AnnMsgColor", 10);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Announce", "Tag", &announce.announceTag));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Announce", "GMAdminTag", &announce.enableGmAdminTag));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Announce", "NameinAnnounce", &announce.showNameInAnnounce));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Announce", "NameinWAnnounce", &announce.showNameInWAnnounce));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Announce", "ShowInConsole", &announce.showAnnounceInConsoleOutput));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Announce", "AnnTagColor", &announce.tagColor));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Announce", "AnnGMTagColor", &announce.tagGmColor));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Announce", "AnnNameColor", &announce.nameColor));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Announce", "AnnMsgColor", &announce.msgColor));
 
     // world.conf - GameMaster Settings
-    gm.isStartOnGmIslandEnabled = Config.MainConfig.getBoolDefault("GameMaster", "StartOnGMIsland", false);
-    gm.disableAchievements = Config.MainConfig.getBoolDefault("GameMaster", "DisableAchievements", false);
-    gm.listOnlyActiveGms = Config.MainConfig.getBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
-    gm.hidePermissions = Config.MainConfig.getBoolDefault("GameMaster", "HidePermissions", false);
-    gm.worldAnnounceOnKickPlayer = Config.MainConfig.getBoolDefault("GameMaster", "AnnounceKick", true);
-    gm.gmClientChannelName = Config.MainConfig.getStringDefault("GameMaster", "GmClientChannel", "");
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "StartOnGMIsland", &gm.isStartOnGmIslandEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "DisableAchievements", &gm.disableAchievements));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "ListOnlyActiveGMs", &gm.listOnlyActiveGms));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "HidePermissions", &gm.hidePermissions));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "AnnounceKick", &gm.worldAnnounceOnKickPlayer));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("GameMaster", "ShowGMInWhoList", &gm.showGmInWhoList));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("GameMaster", "GmClientChannel", &gm.gmClientChannelName));
 
     // world.conf - Broadcast Settings
-    broadcast.isSystemEnabled = Config.MainConfig.getBoolDefault("Broadcast", "EnableSystem", false);
-    broadcast.interval = Config.MainConfig.getIntDefault("Broadcast", "Interval", 1);
-    if (broadcast.interval < 10)
-        broadcast.interval = 10;
-    else if (broadcast.interval > 1440)
-        broadcast.interval = 1440;
-
-    broadcast.triggerPercentCap = Config.MainConfig.getIntDefault("Broadcast", "TriggerPercentCap", 100);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Broadcast", "EnableSystem", &broadcast.isSystemEnabled));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Broadcast", "TriggerPercentCap", &broadcast.triggerPercentCap));
     if (broadcast.triggerPercentCap >= 99)
         broadcast.triggerPercentCap = 98;
     else if (broadcast.triggerPercentCap <= 1)
         broadcast.triggerPercentCap = 0;
-
-    broadcast.orderMode = Config.MainConfig.getIntDefault("Broadcast", "OrderMode", 0);
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Broadcast", "OrderMode", &broadcast.orderMode));
     if (broadcast.orderMode < 0)
         broadcast.orderMode = 0;
     else if (broadcast.orderMode > 1)
         broadcast.orderMode = 1;
 
     // world.conf - Rate Settings
-    setFloatRate(RATE_HEALTH, Config.MainConfig.getFloatDefault("Rates", "Health", 1)); // health
-    setFloatRate(RATE_POWER1, Config.MainConfig.getFloatDefault("Rates", "Power1", 1)); // mana
-    setFloatRate(RATE_POWER2, Config.MainConfig.getFloatDefault("Rates", "Power2", 1)); // rage
-    setFloatRate(RATE_POWER3, Config.MainConfig.getFloatDefault("Rates", "Power3", 1)); // focus
-    setFloatRate(RATE_POWER4, Config.MainConfig.getFloatDefault("Rates", "Power4", 1)); // energy
-    setFloatRate(RATE_POWER7, Config.MainConfig.getFloatDefault("Rates", "Power7", 1)); // runic power (rate unused)
-    setFloatRate(RATE_VEHICLES_POWER_REGEN, Config.MainConfig.getFloatDefault("Rates", "VehiclePower", 1.0f)); // Vehicle power regeneration
-    setFloatRate(RATE_DROP0, Config.MainConfig.getFloatDefault("Rates", "DropGrey", 1));
-    setFloatRate(RATE_DROP1, Config.MainConfig.getFloatDefault("Rates", "DropWhite", 1));
-    setFloatRate(RATE_DROP2, Config.MainConfig.getFloatDefault("Rates", "DropGreen", 1));
-    setFloatRate(RATE_DROP3, Config.MainConfig.getFloatDefault("Rates", "DropBlue", 1));
-    setFloatRate(RATE_DROP4, Config.MainConfig.getFloatDefault("Rates", "DropPurple", 1));
-    setFloatRate(RATE_DROP5, Config.MainConfig.getFloatDefault("Rates", "DropOrange", 1));
-    setFloatRate(RATE_DROP6, Config.MainConfig.getFloatDefault("Rates", "DropArtifact", 1));
-    setFloatRate(RATE_XP, Config.MainConfig.getFloatDefault("Rates", "XP", 1));
-    setFloatRate(RATE_RESTXP, Config.MainConfig.getFloatDefault("Rates", "RestXP", 1));
-    setFloatRate(RATE_QUESTXP, Config.MainConfig.getFloatDefault("Rates", "QuestXP", 1));
-    setFloatRate(RATE_EXPLOREXP, Config.MainConfig.getFloatDefault("Rates", "ExploreXP", 1));
-    setIntRate(INTRATE_SAVE, Config.MainConfig.getIntDefault("Rates", "Save", 1));
-    setFloatRate(RATE_MONEY, Config.MainConfig.getFloatDefault("Rates", "DropMoney", 1.0f));
-    setFloatRate(RATE_QUESTREPUTATION, Config.MainConfig.getFloatDefault("Rates", "QuestReputation", 1.0f));
-    setFloatRate(RATE_KILLREPUTATION, Config.MainConfig.getFloatDefault("Rates", "KillReputation", 1.0f));
-    setFloatRate(RATE_HONOR, Config.MainConfig.getFloatDefault("Rates", "Honor", 1.0f));
-    setFloatRate(RATE_SKILLCHANCE, Config.MainConfig.getFloatDefault("Rates", "SkillChance", 1.0f));
-    setFloatRate(RATE_SKILLRATE, Config.MainConfig.getFloatDefault("Rates", "SkillRate", 1.0f));
-    setIntRate(INTRATE_COMPRESSION, Config.MainConfig.getIntDefault("Rates", "Compression", 1));
-    setIntRate(INTRATE_PVPTIMER, Config.MainConfig.getIntDefault("Rates", "PvPTimer", 300000));
-    rate.arenaQueueDiff = Config.MainConfig.getIntDefault("Rates", "ArenaQueueDiff", 150);
-    setFloatRate(RATE_ARENAPOINTMULTIPLIER2X, Config.MainConfig.getFloatDefault("Rates", "ArenaMultiplier2x", 1.0f));
-    setFloatRate(RATE_ARENAPOINTMULTIPLIER3X, Config.MainConfig.getFloatDefault("Rates", "ArenaMultiplier3x", 1.0f));
-    setFloatRate(RATE_ARENAPOINTMULTIPLIER5X, Config.MainConfig.getFloatDefault("Rates", "ArenaMultiplier5x", 1.0f));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Health", &mFloatRates[RATE_HEALTH]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Mana", &mFloatRates[RATE_POWER1]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Rage", &mFloatRates[RATE_POWER2]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Focus", &mFloatRates[RATE_POWER3]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Energy", &mFloatRates[RATE_POWER4]));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "RunicPower", &mFloatRates[RATE_POWER7]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "VehiclePower", &mFloatRates[RATE_VEHICLES_POWER_REGEN]));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropGrey", &mFloatRates[RATE_DROP0]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropWhite", &mFloatRates[RATE_DROP1]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropGreen", &mFloatRates[RATE_DROP2]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropBlue", &mFloatRates[RATE_DROP3]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropPurple", &mFloatRates[RATE_DROP4]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropOrange", &mFloatRates[RATE_DROP5]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropArtifact", &mFloatRates[RATE_DROP6]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "DropMoney", &mFloatRates[RATE_MONEY]));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "XP", &mFloatRates[RATE_XP]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "RestXP", &mFloatRates[RATE_RESTXP]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "QuestXP", &mFloatRates[RATE_QUESTXP]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "ExploreXP", &mFloatRates[RATE_EXPLOREXP]));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "QuestReputation", &mFloatRates[RATE_QUESTREPUTATION]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "KillReputation", &mFloatRates[RATE_KILLREPUTATION]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "SkillChance", &mFloatRates[RATE_SKILLCHANCE]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "SkillRate", &mFloatRates[RATE_SKILLRATE]));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Honor", &mFloatRates[RATE_HONOR]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Rates", "PvPTimer", &mIntRates[INTRATE_PVPTIMER]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Rates", "ArenaQueueDiff", &rate.arenaQueueDiff));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "ArenaMultiplier2x", &mFloatRates[RATE_ARENAPOINTMULTIPLIER2X]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "ArenaMultiplier3x", &mFloatRates[RATE_ARENAPOINTMULTIPLIER3X]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "ArenaMultiplier5x", &mFloatRates[RATE_ARENAPOINTMULTIPLIER5X]));
+
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Rates", "Save", &mIntRates[INTRATE_SAVE]));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Rates", "Compression", &mIntRates[INTRATE_COMPRESSION]));
+
+    // world.conf - Corpse Decay Settings
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayNormal", &corpseDecay.normalTimeInSeconds));
+    corpseDecay.normalTimeInSeconds *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayRare", &corpseDecay.rareTimeInSeconds));
+    corpseDecay.rareTimeInSeconds *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayElite", &corpseDecay.eliteTimeInSeconds));
+    corpseDecay.eliteTimeInSeconds *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayRareElite", &corpseDecay.rareEliteTimeInSeconds));
+    corpseDecay.rareEliteTimeInSeconds *= 1000;
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayWorldboss", &corpseDecay.worldbossTimeInSeconds));
+    corpseDecay.worldbossTimeInSeconds *= 1000;
 
     // world.conf - Terrain & Collision Settings
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "UnloadMapFiles", &terrainCollision.unloadMapFiles));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "UnloadMaps", &terrainCollision.unloadMapFiles));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Collision", &terrainCollision.isCollisionEnabled));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Pathfinding", &terrainCollision.isPathfindingEnabled));
 
     // world.conf - Mail Settings
-    mail.isCostsForGmDisabled = Config.MainConfig.getBoolDefault("Mail", "DisablePostageCostsForGM", true);
-    mail.isCostsForEveryoneDisabled = Config.MainConfig.getBoolDefault("Mail", "DisablePostageCosts", false);
-    mail.isDelayItemsDisabled = Config.MainConfig.getBoolDefault("Mail", "DisablePostageDelayItems", true);
-    mail.isMessageExpiryDisabled = Config.MainConfig.getBoolDefault("Mail", "DisableMessageExpiry", false);
-    mail.isInterfactionMailEnabled = Config.MainConfig.getBoolDefault("Mail", "EnableInterfactionMail", true);
-    mail.isInterfactionMailForGmEnabled = Config.MainConfig.getBoolDefault("Mail", "EnableInterfactionForGM", true);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisablePostageCostsForGM", &mail.isCostsForGmDisabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisablePostageCosts", &mail.isCostsForEveryoneDisabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisablePostageDelayItems", &mail.isDelayItemsDisabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisableMessageExpiry", &mail.isMessageExpiryDisabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "EnableInterfactionMailForGM", &mail.isInterfactionMailForGmEnabled));
 
     // world.conf - Startup Options
-    startup.enableMultithreadedLoading = Config.MainConfig.getBoolDefault("Startup", "EnableMultithreadedLoading", true);
-    startup.enableSpellIdDump = Config.MainConfig.getBoolDefault("Startup", "EnableSpellIDDump", false);
-    startup.additionalTableLoads = Config.MainConfig.getStringDefault("Startup", "LoadAdditionalTables", "");
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Startup", "EnableMultithreadedLoading", &startup.enableMultithreadedLoading));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Startup", "EnableSpellIDDump", &startup.enableSpellIdDump));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Startup", "LoadAdditionalTables", &startup.additionalTableLoads));
 
     // world.conf - AntiHack Setup
-    antiHack.isTeleportHackCheckEnabled = Config.MainConfig.getBoolDefault("AntiHack", "Teleport", true);
-    antiHack.isSpeedHackCkeckEnabled = Config.MainConfig.getBoolDefault("AntiHack", "Speed", true);
-    antiHack.isFallDamageHackCkeckEnabled = Config.MainConfig.getBoolDefault("AntiHack", "FallDamage", true);
-    antiHack.isFlyHackCkeckEnabled = Config.MainConfig.getBoolDefault("AntiHack", "Flight", true);
-    antiHack.flyHackThreshold = Config.MainConfig.getIntDefault("AntiHack", "FlightThreshold", 8);
-    antiHack.isAntiHackCheckDisabledForGm = Config.MainConfig.getBoolDefault("AntiHack", "DisableOnGM", true);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Teleport", &antiHack.isTeleportHackCheckEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Speed", &antiHack.isSpeedHackCkeckEnabled));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "FallDamage", &antiHack.isFallDamageHackCkeckEnabled));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Flight", &antiHack.isFlyHackCkeckEnabled));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("AntiHack", "FlightThreshold", &antiHack.flyHackThreshold));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "DisableOnGM", &antiHack.isAntiHackCheckDisabledForGm));
 
     // world.conf - Period Setup
-    period.arenaUpdate = Config.MainConfig.getStringDefault("Periods", "ArenaUpdate", "weekly");
-    period.dailyUpdate = Config.MainConfig.getStringDefault("Periods", "DailyUpdate", "daily");
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Periods", "ArenaUpdate", &period.arenaUpdate));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Periods", "DailyUpdate", &period.dailyUpdate));
 
     // world.conf - Chat Settings
-    chat.bannedChannels = Config.MainConfig.getStringDefault("Chat", "BannedChannels", "");
-    chat.minimumTalkLevel = Config.MainConfig.getStringDefault("Chat", "MinimumLevel", "");
-    chat.linesBeforeProtection = Config.MainConfig.getIntDefault("Chat", "FloodLines", 0);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Chat", "BannedChannels", &chat.bannedChannels));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Chat", "MinimumLevel", &chat.minimumTalkLevel));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Chat", "FloodLines", &chat.linesBeforeProtection));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Chat", "FloodSeconds", &chat.secondsBeforeProtectionReset));
     if (!chat.linesBeforeProtection || !chat.secondsBeforeProtectionReset)
         chat.linesBeforeProtection = chat.secondsBeforeProtectionReset = 0;
-
-    chat.secondsBeforeProtectionReset = Config.MainConfig.getIntDefault("Chat", "FloodSeconds", 0);
-    chat.enableSendFloodProtectionMessage = Config.MainConfig.getBoolDefault("Chat", "FloodSendMessage", false);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Chat", "FloodSendMessage", &chat.enableSendFloodProtectionMessage));
 
     // world.conf - Remote Console Setup
-    remoteConsole.isEnabled = Config.MainConfig.getBoolDefault("RemoteConsole", "Enabled", false);
-    remoteConsole.host = Config.MainConfig.getStringDefault("RemoteConsole", "Host", "0.0.0.0");
-    remoteConsole.port = Config.MainConfig.getIntDefault("RemoteConsole", "Port", 8092);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("RemoteConsole", "Enabled", &remoteConsole.isEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("RemoteConsole", "Host", &remoteConsole.host));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("RemoteConsole", "Port", &remoteConsole.port));
 
     // world.conf - Movement Setup
-    movement.compressIntervalInMs = Config.MainConfig.getIntDefault("Movement", "FlushInterval", 1000);
-    movement.compressRate = Config.MainConfig.getIntDefault("Movement", "CompressRate", 1);
-
-    movement.compressThresholdCreatures = Config.MainConfig.getFloatDefault("Movement", "CompressThresholdCreatures", 15.0f);
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Movement", "FlushInterval", &movement.compressIntervalInMs));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Movement", "CompressRate", &movement.compressRate));
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Movement", "CompressThresholdCreatures", &movement.compressThresholdCreatures));
     movement.compressThresholdCreatures *= movement.compressThresholdCreatures;
-
-    movement.compressThresholdPlayers = Config.MainConfig.getFloatDefault("Movement", "CompressThreshold", 25.0f);
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Movement", "CompressThreshold", &movement.compressThresholdPlayers));
     movement.compressThresholdPlayers *= movement.compressThresholdPlayers;
 
     // world.conf - Localization Setup
-    localization.localizedBindings = Config.MainConfig.getStringDefault("Localization", "LocaleBindings", "");
+    // todo: not used by core
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Localization", "LocaleBindings", &localization.localizedBindings));
 
     // world.conf - Dungeon / Instance Setup
-    instance.useGroupLeaderInstanceId = Config.MainConfig.getBoolDefault("InstanceHandling", "TakeGroupLeaderID", true);
-    instance.isRelativeExpirationEnabled = Config.MainConfig.getBoolDefault("InstanceHandling", "SlidingExpiration", false);
-    instance.relativeDailyHeroicInstanceResetHour = Config.MainConfig.getIntDefault("InstanceHandling", "DailyHeroicInstanceResetHour", 5);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("InstanceHandling", "TakeGroupLeaderID", &instance.useGroupLeaderInstanceId));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("InstanceHandling", "SlidingExpiration", &instance.isRelativeExpirationEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("InstanceHandling", "DailyHeroicInstanceResetHour", &instance.relativeDailyHeroicInstanceResetHour));
     if (instance.relativeDailyHeroicInstanceResetHour < 0)
         instance.relativeDailyHeroicInstanceResetHour = 0;
     if (instance.relativeDailyHeroicInstanceResetHour > 23)
         instance.relativeDailyHeroicInstanceResetHour = 23;
-
-    instance.checkTriggerPrerequisitesOnEnter = Config.MainConfig.getBoolDefault("InstanceHandling", "CheckTriggerPrerequisites", true);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("InstanceHandling", "CheckTriggerPrerequisites", &instance.checkTriggerPrerequisitesOnEnter));
 
     // world.conf - BattleGround settings
-    bg.minPlayerCountAlteracValley = Config.MainConfig.getIntDefault("Battleground", "AV_MIN", 10);
-    bg.maxPlayerCountAlteracValley = Config.MainConfig.getIntDefault("Battleground", "AV_MAX", 40);
-    bg.minPlayerCountArathiBasin = Config.MainConfig.getIntDefault("Battleground", "AB_MIN", 4);
-    bg.maxPlayerCountArathiBasin = Config.MainConfig.getIntDefault("Battleground", "AB_MAX", 15);
-    bg.minPlayerCountWarsongGulch = Config.MainConfig.getIntDefault("Battleground", "WSG_MIN", 2);
-    bg.maxPlayerCountWarsongGulch = Config.MainConfig.getIntDefault("Battleground", "WSG_MAX", 10);
-    bg.minPlayerCountEyeOfTheStorm = Config.MainConfig.getIntDefault("Battleground", "EOTS_MIN", 4);
-    bg.maxPlayerCountEyeOfTheStorm = Config.MainConfig.getIntDefault("Battleground", "EOTS_MAX", 15);
-    bg.minPlayerCountStrandOfTheAncients = Config.MainConfig.getIntDefault("Battleground", "SOTA_MIN", 10);
-    bg.maxPlayerCountStrandOfTheAncients = Config.MainConfig.getIntDefault("Battleground", "SOTA_MAX", 15);
-    bg.minPlayerCountIsleOfConquest = Config.MainConfig.getIntDefault("Battleground", "IOC_MIN", 10);
-    bg.maxPlayerCountIsleOfConquest = Config.MainConfig.getIntDefault("Battleground", "IOC_MAX", 15);
-    bg.firstRbgHonorValueToday = Config.MainConfig.getIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
-    bg.firstRbgArenaHonorValueToday = Config.MainConfig.getIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
-    bg.honorableKillsRbg = Config.MainConfig.getIntDefault("Battleground", "RBG_WIN_HONOR", 15);
-    bg.honorableArenaWinRbg = Config.MainConfig.getIntDefault("Battleground", "RBG_WIN_ARENA", 0);
-    bg.honorByLosingRbg = Config.MainConfig.getIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
-    bg.honorByLosingArenaRbg = Config.MainConfig.getIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "AV_MIN", &bg.minPlayerCountAlteracValley));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "AV_MAX", &bg.maxPlayerCountAlteracValley));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "AB_MIN", &bg.minPlayerCountArathiBasin));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "AB_MAX", &bg.maxPlayerCountArathiBasin));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "WSG_MIN", &bg.minPlayerCountWarsongGulch));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "WSG_MAX", &bg.maxPlayerCountWarsongGulch));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "EOTS_MIN", &bg.minPlayerCountEyeOfTheStorm));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "EOTS_MAX", &bg.maxPlayerCountEyeOfTheStorm));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "SOTA_MIN", &bg.minPlayerCountStrandOfTheAncients));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "SOTA_MAX", &bg.maxPlayerCountStrandOfTheAncients));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "IOC_MIN", &bg.minPlayerCountIsleOfConquest));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "IOC_MAX", &bg.maxPlayerCountIsleOfConquest));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_FIRST_WIN_HONOR", &bg.firstRbgHonorValueToday));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_FIRST_WIN_ARENA", &bg.firstRbgArenaHonorValueToday));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_WIN_HONOR", &bg.honorableKillsRbg));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_WIN_ARENA", &bg.honorableArenaWinRbg));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_LOSE_HONOR", &bg.honorByLosingRbg));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Battleground", "RBG_LOSE_ARENA", &bg.honorByLosingArenaRbg));
 
     // world.conf - Arena Settings
-    arena.arenaSeason = Config.MainConfig.getIntDefault("Arena", "Season", 1);
-    arena.arenaProgress = Config.MainConfig.getIntDefault("Arena", "Progress", 1);
-    arena.minPlayerCount2V2 = Config.MainConfig.getIntDefault("Arena", "2V2_MIN", 2);
-    arena.maxPlayerCount2V2 = Config.MainConfig.getIntDefault("Arena", "2V2_MAX", 2);
-    arena.minPlayerCount3V3 = Config.MainConfig.getIntDefault("Arena", "3V3_MIN", 3);
-    arena.maxPlayerCount3V3 = Config.MainConfig.getIntDefault("Arena", "3V3_MAX", 3);
-    arena.minPlayerCount5V5 = Config.MainConfig.getIntDefault("Arena", "5V5_MIN", 5);
-    arena.maxPlayerCount5V5 = Config.MainConfig.getIntDefault("Arena", "5V5_MAX", 5);
-
-    // world.conf - CharterCost
-    charterCost._guild = Config.MainConfig.getIntDefault("CharterCost", "Guild", 1000);
-    charterCost._2V2 = Config.MainConfig.getIntDefault("CharterCost", "2V2", 800000);
-    charterCost._3V3 = Config.MainConfig.getIntDefault("CharterCost", "3V3", 1200000);
-    charterCost._5V5 = Config.MainConfig.getIntDefault("CharterCost", "5V5", 2000000);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "Season", &arena.arenaSeason));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "Progress", &arena.arenaProgress));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "2V2_COST", &arena.charterCost2v2));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "3V3_COST", &arena.charterCost3v3));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "5V5_COST", &arena.charterCost5v5));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "2V2_MIN", &arena.minPlayerCount2V2));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "2V2_MAX", &arena.maxPlayerCount2V2));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "3V3_MIN", &arena.minPlayerCount3V3));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "3V3_MAX", &arena.maxPlayerCount3V3));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "5V5_MIN", &arena.minPlayerCount5V5));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Arena", "5V5_MAX", &arena.maxPlayerCount5V5));
 
     // world.conf - Limits settings
-    limit.isLimitSystemEnabled = Config.MainConfig.getBoolDefault("Limits", "Enable", true);
-    limit.maxAutoAttackDamageCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "AutoAttackDmg", 10000));
-    limit.maxSpellDamageCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "SpellDmg", 30000));
-    limit.maxHealthCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Health", 80000));
-    limit.maxManaCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Mana", 80000));
-    limit.maxHonorPoints = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Honor", 75000));
-    limit.maxArenaPoints = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Arena", 5000));
-    limit.disconnectPlayerForExceedingLimits = Config.MainConfig.getBoolDefault("Limits", "Disconnect", false);
-    limit.broadcastMessageToGmOnExceeding = Config.MainConfig.getBoolDefault("Limits", "BroadcastGMs", true);
-
-    // world.conf - Corpse Decay Settings
-    corpseDecay.normalTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
-    corpseDecay.rareTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayRare", 300)));
-    corpseDecay.eliteTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayElite", 300)));
-    corpseDecay.rareEliteTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
-    corpseDecay.worldbossTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
-
-    // world.conf - Guild Settings
-    guild.maxLevel = Config.MainConfig.getIntDefault("Guild", "MaxLevel", 25);
-    guild.maxMembers = Config.MainConfig.getIntDefault("Guild", "MaxMembers", 80);
-    guild.maxXpPerDay = Config.MainConfig.getIntDefault("Guild", "MaxXpPerDay", 6246000);
-    guild.maxRepPerWeek = Config.MainConfig.getIntDefault("Guild", "MaxRepPerWeek", 4375);
-    guild.levlingEnabled = Config.MainConfig.getBoolDefault("Guild", "LevlingEnabled", true);
-    guild.undeletabelLevel = Config.MainConfig.getIntDefault("Guild", "UndeletabelLevel", 4);
-    guild.eventLogCount = Config.MainConfig.getIntDefault("Guild", "EventLogCount", 100);
-    guild.newsLogCount = Config.MainConfig.getIntDefault("Guild", "NewsLogCount", 250);
-    guild.bankLogCount = Config.MainConfig.getIntDefault("Guild", "BankLogCount", 25);
-    guild.saveInterval = Config.MainConfig.getIntDefault("Guild", "SaveInterval", 300);
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Limits", "Enable", &limit.isLimitSystemEnabled));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "AutoAttackDmg", &limit.maxAutoAttackDamageCap));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "SpellDmg", &limit.maxSpellDamageCap));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "Health", &limit.maxHealthCap));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "Mana", &limit.maxManaCap));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "Honor", &limit.maxHonorPoints));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Limits", "Arena", &limit.maxArenaPoints));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Limits", "Disconnect", &limit.disconnectPlayerForExceedingLimits));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Limits", "BroadcastGMs", &limit.broadcastMessageToGmOnExceeding));
 }
 
-
-uint32_t WorldConfig::getRealmType()
-{
-    return server.realmType;
-}
-
-uint32_t WorldConfig::getPlayerLimit()
+uint32_t WorldConfig::getPlayerLimit() const
 {
     return server.playerLimit;
 }
 
-uint32_t WorldConfig::getKickAFKPlayerTime()
+uint32_t WorldConfig::getKickAFKPlayerTime() const
 {
     return server.secondsBeforeKickAFKPlayers;
 }
@@ -623,7 +631,7 @@ void WorldConfig::setMessageOfTheDay(std::string motd)
     server.messageOfTheDay = std::move(motd);
 }
 
-std::string WorldConfig::getMessageOfTheDay()
+std::string WorldConfig::getMessageOfTheDay() const
 {
     return server.messageOfTheDay;
 }
@@ -633,7 +641,7 @@ void WorldConfig::setFloatRate(uint32_t index, float value)
     mFloatRates[index] = value;
 }
 
-float WorldConfig::getFloatRate(uint32_t index)
+float WorldConfig::getFloatRate(uint32_t index) const
 {
     return mFloatRates[index];
 }
@@ -643,17 +651,17 @@ void WorldConfig::setIntRate(uint32_t index, uint32_t value)
     mIntRates[index] = value;
 }
 
-uint32_t WorldConfig::getIntRate(uint32_t index)
+uint32_t WorldConfig::getIntRate(uint32_t index) const
 {
     return mIntRates[index];
 }
 
-std::string WorldConfig::getGmClientChannelName()
+std::string WorldConfig::getGmClientChannelName() const
 {
     return gm.gmClientChannelName;
 }
 
-std::string WorldConfig::getColorStringForNumber(int color)
+std::string WorldConfig::getColorStringForNumber(int color) const
 {
     switch (color)
     {

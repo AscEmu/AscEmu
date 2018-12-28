@@ -9039,7 +9039,7 @@ void Player::UpdatePvPArea()
             removeSanctuaryFlag();
 
             //contested territory
-            if (worldConfig.getRealmType() == REALM_PVP)
+            if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
             {
                 //automatically sets pvp flag on contested territories.
                 if (!isPvpFlagSet())
@@ -9048,7 +9048,7 @@ void Player::UpdatePvPArea()
                     StopPvPTimer();
             }
 
-            if (worldConfig.getRealmType() == REALM_PVE)
+            if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
             {
                 if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
                 {
@@ -9109,7 +9109,7 @@ void Player::LoginPvPSetup()
 
 void Player::PvPToggle()
 {
-    if (worldConfig.getRealmType() == REALM_PVE)
+    if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
     {
         if (m_pvpTimer > 0)
         {
@@ -9157,7 +9157,7 @@ void Player::PvPToggle()
             }
         }
     }
-    else if (worldConfig.getRealmType() == REALM_PVP)
+    else if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
     {
         auto at = this->GetArea();
         if (at == nullptr)

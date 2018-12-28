@@ -626,7 +626,7 @@ void WorldSession::initGMMyMaster()
 
 void WorldSession::sendServerStats()
 {
-    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
+    if (worldConfig.server.sendStatsOnJoin)
     {
 #ifdef WIN32
         _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);

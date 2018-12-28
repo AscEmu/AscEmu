@@ -272,7 +272,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     if (!ChannelMgr::getSingletonPtr())
         new ChannelMgr;
 
-    channelmgr.seperatechannels = worldConfig.server.seperateChatChannels;
+    channelmgr.seperatechannels = !worldConfig.player.isInterfactionChannelEnabled;
 
     if (!MailSystem::getSingletonPtr())
         new MailSystem;
@@ -291,7 +291,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     if (worldConfig.mail.isMessageExpiryDisabled)
         mailFlags |= MAIL_FLAG_NO_EXPIRY;
 
-    if (worldConfig.mail.isInterfactionMailEnabled)
+    if (worldConfig.player.isInterfactionMailEnabled)
         mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
 
     if (worldConfig.mail.isInterfactionMailForGmEnabled)
@@ -639,7 +639,7 @@ bool Master::LoadWorldConfiguration(char* config_file)
     }
 
 #if !defined(WIN32) && defined(__DEBUG__)
-    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
+    if (!worldConfig.log.disableCrashdump)
     {
         char cmd[1024];
         char banner[1024];

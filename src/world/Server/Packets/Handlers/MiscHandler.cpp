@@ -103,7 +103,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         if (!plr->GetSession() || !plr->IsInWorld())
             continue;
 
-        if (!worldConfig.server.showGmInWhoList && !HasGMPermissions())
+        if (!worldConfig.gm.showGmInWhoList && !HasGMPermissions())
         {
             if (plr->GetSession()->HasGMPermissions())
                 continue;

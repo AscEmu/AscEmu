@@ -635,7 +635,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         if (playerCharter == nullptr)
             return;
 
-        if (playerCharter->SignatureCount < 9 && worldConfig.server.requireAllSignatures)
+        if (playerCharter->SignatureCount < playerCharter->GetNumberOfSlotsByType() && worldConfig.guild.requireAllSignatures && !_player->GetSession()->HasGMPermissions())
         {
             Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
             return;
@@ -683,8 +683,9 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        if (charter->SignatureCount < charter->GetNumberOfSlotsByType() && worldConfig.server.requireAllSignatures)
+        if (charter->SignatureCount < charter->GetNumberOfSlotsByType() && !_player->GetSession()->HasGMPermissions())
         {
+            ///\ todo: missing correct error message for arena charters
             Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
             return;
         }
@@ -777,7 +778,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
 
         static uint32_t item_ids[] = { CharterEntry::TwoOnTwo, CharterEntry::ThreeOnThree, CharterEntry::FiveOnFive };
-        static uint32_t costs[] = { worldConfig.charterCost._2V2, worldConfig.charterCost._3V3, worldConfig.charterCost._5V5 };
+        static uint32_t costs[] = { worldConfig.arena.charterCost2v2, worldConfig.arena.charterCost3v3, worldConfig.arena.charterCost5v5 };
 
         if (!_player->hasEnoughCoinage(costs[arena_type]))
         {
@@ -837,7 +838,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     }
     else
     {
-        if (!_player->hasEnoughCoinage(1000))
+        if (!_player->hasEnoughCoinage(worldConfig.guild.charterCost))
         {
             _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_NOT_ENOUGH_MONEY);
             return;
