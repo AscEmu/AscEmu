@@ -24,17 +24,21 @@
 ################################################################################
 # Host Directive
 #
-#    This is the address that the realmlist will listen on.
+#    This is the address that the logonserver will listen on.
 #    For example, "8.8.8.8" would allow only clients from 8.8.8.8 address to
-#    connect to the server.
+#    connect to the logonserver, while other addresses would get
+#    'Unable to Connect'.
+#    To listen on all addresses, set it to 0.0.0.0
+#    Default: 0.0.0.0
+#
+#    ISHost is the interserver communication listener. You need to enter the
+#    address of your worldserver here or the logonserver will not listen to it.
 #    To listen on all addresses, set it to 0.0.0.0
 #    Default: 127.0.0.1 (localhost)
 #
-#    Note: ISHost is the interserver communication listener.
-#
 
 <Listen Host          = "0.0.0.0"
-        ISHost        = "0.0.0.0"
+        ISHost        = "127.0.0.1"
         RealmListPort = "3724"
         ServerPort    = "8093">
 
@@ -67,9 +71,11 @@
 #        This directive controls whether logonserver handles pings sent by the
 #        worldserver to check if the connection is still alive. It is best
 #        to keep this enabled.
-#        Default: 0
+#        Default: 0 (enabled)
 #
 #    AllowedIPs
+#        This directive controls which IP addresses are allowed to register
+#        with the logonserver.
 #        This section MUST be completed, otherwise all attempts to link your
 #        servers will fail. These "Allowed" fields are a space-separated list
 #        of CIDR-form IP addresses that are allowed to make server connections
@@ -94,5 +100,5 @@
 #
 
 <LogonServer DisablePings   = "0"
-             AllowedIPs     = "127.0.0.1/24" 
+             AllowedIPs     = "127.0.0.1/24"
              AllowedModIPs  = "127.0.0.1/24">

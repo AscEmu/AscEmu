@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum WorldConfigRates
 {
-    RATE_HEALTH = 0,    // hp
-    RATE_POWER1,        // mp
+    RATE_HEALTH = 0,    // health
+    RATE_POWER1,        // mana
     RATE_POWER2,        // rage
     RATE_POWER3,        // focus
     RATE_POWER4,        // energy
@@ -52,12 +52,6 @@ enum WorldConfigIntRates
     MAX_INTRATES
 };
 
-enum WorldConfigRealmTypes
-{
-    REALM_PVE = 0,
-    REALM_PVP = 1
-};
-
 class SERVER_DECL WorldConfig
 {
     public:
@@ -74,8 +68,8 @@ class SERVER_DECL WorldConfig
             std::string user;
             std::string password;
             std::string dbName;
-            int port{};
-            int connections{};
+            int port;
+            int connections;
         } worldDb;
 
         struct CharacterDatabaseSettings
@@ -84,79 +78,73 @@ class SERVER_DECL WorldConfig
             std::string user;
             std::string password;
             std::string dbName;
-            int port{};
-            int connections{};
+            int port;
+            int connections;
         } charDb;
-
-        // world.conf - Listen Config
-        struct ListenSettings
-        {
-            std::string listenHost;
-            int listenPort{};
-        } listen;
-
-        // world.conf - Log Settings
-        struct LogSettings
-        {
-            int worldFileLogLevel{};
-            int worldDebugFlags{};
-            bool enableWorldPacketLog{};
-            bool disableCrashdump{};
-            std::string extendedLogsDir;
-            bool enableCheaterLog{};
-            bool enableGmCommandLog{};
-            bool enablePlayerLog{};
-            bool enableTimeStamp{};
-            bool enableSqlBanLog{};
-        } log;
 
         // world.conf - LogonServer Settings
         struct LogonServerSettings
         {
             std::string address;
-            int port{};
+            int port;
             std::string name;
-            int realmCount{};
-            bool disablePings{};
+            int realmCount;
+            bool disablePings;
             std::string remotePassword;
         } logonServer;
+
+        // world.conf - Listen Config
+        struct ListenSettings
+        {
+            std::string listenHost;
+            int listenPort;
+        } listen;
+
+        // world.conf - Log Settings
+        struct LogSettings
+        {
+            int worldFileLogLevel;
+            int worldDebugFlags;
+            bool enableWorldPacketLog;
+            bool disableCrashdump;
+            std::string extendedLogsDir;
+            bool enableCheaterLog;
+            bool enableGmCommandLog;
+            bool enablePlayerLog;
+            bool enableTimeStamp;
+            bool enableSqlBanLog;
+        } log;
 
         // world.conf - Server Settings
         struct ServerSettings
         {
-            uint32_t playerLimit{};
+            uint32_t playerLimit;
             std::string messageOfTheDay;
-            bool sendStatsOnJoin{};
-            bool enableBreathing{};
-            bool seperateChatChannels{};
-            uint32_t compressionThreshold{};
-            uint32_t queueUpdateInterval{};
-            uint32_t secondsBeforeKickAFKPlayers{};
-            uint32_t secondsBeforeTimeOut{};
-            uint32_t realmType{};
-            bool enableAdjustPriority{};
-            bool requireAllSignatures{};
-            bool showGmInWhoList{};
-            uint32_t mapUnloadTime{};
-            uint8_t mapCellNumber{};
-            bool enableLimitedNames{};
-            bool useAccountData{};
-            bool requireGmForCommands{};
-            bool enableLfgJoinForNonLfg{};
-            int gmtTimeZone{};
-            bool disableFearMovement{};
-            bool saveExtendedCharData{};
+            bool sendStatsOnJoin;
+            int gmtTimeZone;
+            uint32_t compressionThreshold;
+            bool enableAdjustPriority;
+            uint32_t mapUnloadTime;
+            uint8_t mapCellNumber;
+            uint32_t secondsBeforeTimeOut;
+            uint32_t secondsBeforeKickAFKPlayers;
+            uint32_t queueUpdateInterval;
+            bool enableBreathing;
+            bool enableLimitedNames;
+            bool useAccountData;
+            bool requireGmForCommands;
+            bool enableLfgJoinForNonLfg;
+            bool disableFearMovement;
+            bool saveExtendedCharData;
             std::string dataDir;
         } server;
 
-        uint32_t getPlayerLimit();
+        uint32_t getPlayerLimit() const;
 
         void setMessageOfTheDay(std::string motd);
-        std::string getMessageOfTheDay();
+        std::string getMessageOfTheDay() const;
 
-        uint32_t getKickAFKPlayerTime();
-
-        uint32_t getRealmType();
+        uint32_t getKickAFKPlayerTime() const;
 
         // world.conf - Player Settings
         struct PlayerSettings
@@ -165,7 +153,6 @@ class SERVER_DECL WorldConfig
             uint32_t playerLevelCap;
             uint32_t playerGeneratedInformationByLevelCap;
             bool allowTbcCharacters;
-            bool deactivateMasterLootNinja;
             uint32_t deathKnightStartTalentPoints;
             bool deathKnightPreReq;
             bool deathKnightLimit;
@@ -176,51 +163,73 @@ class SERVER_DECL WorldConfig
             uint32_t minTalentResetLevel;
             bool showAllVendorItems;
             bool isInterfactionChatEnabled;
+            bool isInterfactionChannelEnabled;
             bool isInterfactionGroupEnabled;
             bool isInterfactionGuildEnabled;
             bool isInterfactionTradeEnabled;
             bool isInterfactionFriendsEnabled;
+            bool isInterfactionMailEnabled;
             bool isInterfactionMiscEnabled;
             bool isCrossoverCharsCreationEnabled;
             bool isGoldCapEnabled;
             uint32_t limitGoldAmount;
             uint32_t startGoldAmount;
+            bool deactivateMasterLootNinja;
+            bool enablePvPToken;
+            uint32_t pvpTokenId;
         } player;
+
+        // world.conf - Guild Settings
+        struct GuildSettings
+        {
+            uint32_t charterCost;
+            bool requireAllSignatures;
+            uint32_t maxLevel;
+            uint32_t maxMembers;
+            uint32_t maxXpPerDay;
+            uint32_t maxRepPerWeek;
+            bool levelingEnabled;
+            uint32_t undeletableLevel;
+            uint32_t eventLogCount;
+            uint32_t newsLogCount;
+            uint32_t bankLogCount;
+            uint32_t saveInterval;
+        } guild;
 
         // world.conf - Announce Settings
         struct AnnounceSettings
         {
             std::string announceTag;
-            bool enableGmAdminTag{};
-            bool showNameInAnnounce{};
-            bool showNameInWAnnounce{};
-            bool showAnnounceInConsoleOutput{};
-            int tagColor{};
-            int tagGmColor{};
-            int nameColor{};
-            int msgColor{};
+            bool enableGmAdminTag;
+            bool showNameInAnnounce;
+            bool showNameInWAnnounce;
+            bool showAnnounceInConsoleOutput;
+            int tagColor;
+            int tagGmColor;
+            int nameColor;
+            int msgColor;
         } announce;
 
-        std::string getColorStringForNumber(int color);
+        std::string getColorStringForNumber(int color) const;
 
         // world.conf - GameMaster Settings
         struct GameMasterSettings
         {
-            bool isStartOnGmIslandEnabled{};
-            bool disableAchievements{};
-            bool listOnlyActiveGms{};
-            bool hidePermissions{};
-            bool worldAnnounceOnKickPlayer{};
+            bool isStartOnGmIslandEnabled;
+            bool disableAchievements;
+            bool listOnlyActiveGms;
+            bool hidePermissions;
+            bool worldAnnounceOnKickPlayer;
+            bool showGmInWhoList;
             std::string gmClientChannelName;
         } gm;
 
-        std::string getGmClientChannelName();
+        std::string getGmClientChannelName() const;
 
         // world.conf - Broadcast Settings
         struct BroadcastSettings
         {
             bool isSystemEnabled;
-            int interval;
             int triggerPercentCap;
             int orderMode;
         } broadcast;
@@ -235,10 +244,20 @@ class SERVER_DECL WorldConfig
         uint32_t mIntRates[MAX_INTRATES];
 
         void setFloatRate(uint32_t index, float value);
-        float getFloatRate(uint32_t index);
+        float getFloatRate(uint32_t index) const;
 
         void setIntRate(uint32_t index, uint32_t value);
-        uint32_t getIntRate(uint32_t index);
+        uint32_t getIntRate(uint32_t index) const;
+
+        // world.conf - Corpse Decay Settings
+        struct CorpseDecaySettings
+        {
+            uint32_t normalTimeInSeconds;
+            uint32_t rareTimeInSeconds;
+            uint32_t eliteTimeInSeconds;
+            uint32_t rareEliteTimeInSeconds;
+            uint32_t worldbossTimeInSeconds;
+        } corpseDecay;
 
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings
@@ -255,15 +274,14 @@ class SERVER_DECL WorldConfig
             bool isCostsForEveryoneDisabled;
             bool isDelayItemsDisabled;
             bool isMessageExpiryDisabled;
-            bool isInterfactionMailEnabled;
             bool isInterfactionMailForGmEnabled;
         } mail;
 
         // world.conf - Startup Options
         struct StartupSettings
         {
-            bool enableMultithreadedLoading{};
-            bool enableSpellIdDump{};
+            bool enableMultithreadedLoading;
+            bool enableSpellIdDump;
             std::string additionalTableLoads;
         } startup;
 
@@ -290,17 +308,17 @@ class SERVER_DECL WorldConfig
         {
             std::string bannedChannels;
             std::string minimumTalkLevel;
-            uint32_t linesBeforeProtection{};
-            uint32_t secondsBeforeProtectionReset{};
-            bool enableSendFloodProtectionMessage{};
+            uint32_t linesBeforeProtection;
+            uint32_t secondsBeforeProtectionReset;
+            bool enableSendFloodProtectionMessage;
         } chat;
 
         // world.conf - Remote Console Setup
         struct RemoteConsoleSettings
         {
-            bool isEnabled{};
+            bool isEnabled;
             std::string host;
-            int port{};
+            int port;
         } remoteConsole;
 
         // world.conf - Movement Setup
@@ -355,6 +373,9 @@ class SERVER_DECL WorldConfig
         {
             int arenaSeason;
             int arenaProgress;
+            uint32_t charterCost2v2;
+            uint32_t charterCost3v3;
+            uint32_t charterCost5v5;
             uint32_t minPlayerCount2V2;
             uint32_t maxPlayerCount2V2;
             uint32_t minPlayerCount3V3;
@@ -362,15 +383,6 @@ class SERVER_DECL WorldConfig
             uint32_t minPlayerCount5V5;
             uint32_t maxPlayerCount5V5;
         } arena;
-
-        // world.conf - CharterCost
-        struct CharterCost
-        {
-            uint32_t _guild;
-            uint32_t _2V2;
-            uint32_t _3V3;
-            uint32_t _5V5;
-        } charterCost;
 
         // world.conf - Limits settings
         struct LimitSettings
@@ -385,29 +397,4 @@ class SERVER_DECL WorldConfig
             bool disconnectPlayerForExceedingLimits;
             bool broadcastMessageToGmOnExceeding;
         } limit;
-
-        // world.conf - Corpse Decay Settings
-        struct CorpseDecaySettings
-        {
-            uint32_t normalTimeInSeconds;
-            uint32_t rareTimeInSeconds;
-            uint32_t eliteTimeInSeconds;
-            uint32_t rareEliteTimeInSeconds;
-            uint32_t worldbossTimeInSeconds;
-        } corpseDecay;
-
-        // world.conf - Guild Settings
-        struct GuildSettings
-        {
-            uint32_t maxLevel;
-            uint32_t maxMembers;
-            uint32_t maxXpPerDay;
-            uint32_t maxRepPerWeek;
-            bool levlingEnabled;
-            uint32_t undeletabelLevel;
-            uint32_t eventLogCount;
-            uint32_t newsLogCount;
-            uint32_t bankLogCount;
-            uint32_t saveInterval;
-        } guild;
 };

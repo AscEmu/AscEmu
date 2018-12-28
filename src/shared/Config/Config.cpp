@@ -500,6 +500,18 @@ bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, int* i
     return true;
 }
 
+bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint8_t* i)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *i = setting->asInt;
+    return true;
+}
+
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint32_t* i)
 {
     const auto setting = getSavedSetting(sectionName, confName);
