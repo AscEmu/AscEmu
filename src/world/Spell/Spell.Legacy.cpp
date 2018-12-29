@@ -3034,9 +3034,8 @@ bool Spell::TakePower()
                 {
                     if (u_caster != nullptr)
                     {
-                        auto caster_runic_power = u_caster->getPower(POWER_TYPE_RUNIC_POWER);
-                        auto spell_rune_gain = spell_rune_cost->runePowerGain;
-                        u_caster->setPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                        const auto runicPowerAmount = static_cast<uint32_t>((spell_rune_cost->runePowerGain + u_caster->getPower(POWER_TYPE_RUNIC_POWER)) * worldConfig.getFloatRate(RATE_POWER7));
+                        u_caster->setPower(POWER_TYPE_RUNIC_POWER, runicPowerAmount);
                     }
                 }
             }

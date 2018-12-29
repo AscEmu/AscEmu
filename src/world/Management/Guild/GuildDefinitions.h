@@ -43,8 +43,6 @@ namespace CharterType
     };
 }
 
-#define MAX_GUILD_MEMBERS           500
-
 #define MAX_GUILD_BANK_SLOTS        98
 
 #if VERSION_STRING == Cata
