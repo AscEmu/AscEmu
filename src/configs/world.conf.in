@@ -246,14 +246,8 @@
 #        Do NOT set this to 0!
 #        Default: 1 (normal)
 #
-#    Connection Timeout
-#        This directive specifies the amount of seconds that the client will
-#        be disconnected after if no ping packet is sent. It is advised to
-#        leave it at the default.
-#        Default: 180 (3 minutes)
-#
 #    Kick AFK Players
-#        Time in seconds that a player will be kicked after they go afk.
+#        Time in seconds that a player will be kicked after they go AFK.
 #        Default: 0 (disabled)
 #
 #    Queue Update Rate
@@ -280,16 +274,6 @@
 #        command group.
 #        Default: 0 (disabled)
 #
-#    EnableLFGJoin
-#        If this is enabled, you can join the LFG channel without using the
-#        LFG tool.
-#        Default: 0 (disabled)
-#
-#    DisableFearMovement
-#        Disable fear movement in arenas & battlegrounds. Recommended if you
-#        do not have collision enabled!
-#        Default: 0 (off)
-#
 #    SaveExtendedCharData
 #        Enable saving extended data to characters table. Recommended for
 #        armory type services.
@@ -308,15 +292,12 @@
         AdjustPriority       = "0"
         MapUnloadTime        = "300"
         MapCellNumber        = "1"
-        ConnectionTimeout    = "180"
         KickAFKPlayers       = "0"
         QueueUpdateInterval  = "5000"
         EnableBreathing      = "1"
         LimitedNames         = "1"
         UseAccountData       = "0"
         AllowPlayerCommands  = "0"
-        EnableLFGJoin        = "0"
-        DisableFearMovement  = "0"
         SaveExtendedCharData = "0"
         DataDir              = "">
 
@@ -339,11 +320,6 @@
 #        Generally the formulas go crazy after level @ASC_VERSION_MAX_LEVEL@ so
 #        this way you can keep the high visual but stats at a reasonable value.
 #        Default: @ASC_VERSION_MAX_LEVEL@
-#
-#    Allow The Burning Crusade characters
-#        This will override account settings, so you can disable TBC from your
-#        server without having to mess with accounts.
-#        Default: 1 (enabled)
 #
 #    DKPreReq
 #        Enable/Disable requirement to have a level 55 character on your
@@ -467,7 +443,6 @@
 <Player StartingLevel       = "1"
         LevelCap            = "@ASC_VERSION_MAX_LEVEL@"
         GenLevelCap         = "@ASC_VERSION_MAX_LEVEL@"
-        AllowTBC            = "1"
         DKStartingTalents   = "0"
         DKPreReq            = "1"
         DKLimit             = "1"
@@ -688,23 +663,15 @@
 #        table.
 #        Default: 0 (disabled)
 #
-#    TriggerPercentCap
-#        Unused value.
-#
-#    OrderMode
-#        Unused value.
-#
 
-<Broadcast EnableSystem      = "0"
-           TriggerPercentCap = "2"
-           OrderMode         = "0">
+<Broadcast EnableSystem = "0">
 
 ################################################################################
 # Rate Settings
 #
 #    Health & Powers
 #        These directives set up the multiplier in which regen values will be
-#        multiplied by every 2 seconds.
+#        multiplied.
 #
 #    Drop(Color)
 #        These values will be multiplied by the drop percentages of the items
@@ -829,9 +796,6 @@
 ################################################################################
 # Terrain & Collision Settings
 #
-#    UnloadMaps
-#        Unused parameter.
-#
 #    Collision
 #        Enables collision system (Line of Sight).
 #        Make sure you have extracted Vector Maps (VMaps).
@@ -843,8 +807,7 @@
 #        Default: 0 (disabled)
 #
 
-<Terrain UnloadMaps  = "1"
-         Collision   = "0"
+<Terrain Collision   = "0"
          Pathfinding = "0">
 
 ################################################################################
@@ -928,21 +891,6 @@
 #        on player movement.
 #        Default: 0 (disabled)
 #
-#    FallDamage
-#        This directive controls whether fall damage hack checks will be
-#        performed on player movement.
-#        Default: 0 (disabled)
-#
-#    Flying
-#        This directive controls whether flight hacks will be performed on
-#        players or not.
-#        Default: 0 (disabled)
-#
-#    FlightThreshold
-#      This directive controls the height at which you must be above the VMaps
-#      height before you are flagged as "flying" and are subject to kicks.
-#      Default: 10
-#
 #    DisableOnGM
 #        This directive controls hack checks will be disabled for GM's or not.
 #        Default: 1 (disabled)
@@ -950,9 +898,6 @@
 
 <AntiHack Teleport         = "0"
           Speed            = "0"
-          FallDamage       = "0"
-          Flight           = "0"
-          FlightThreshold  = "10" 
           DisableOnGM      = "1">
 
 ################################################################################
@@ -1025,55 +970,6 @@
 <RemoteConsole Enabled = "0"
                Host    = "0.0.0.0"
                Port    = "8092">
- 
-################################################################################
-# Movement Setup
-# 
-#    NOTE: For any of these directives to function, movement compression has to
-#    be compiled into the server.
-#
-#    FlushInterval
-#        This is the interval at which movement packets will be flushed to the
-#        client, i.e. compressed/sent. If you have a high threshold, keeping
-#        this at 1-2 seconds will work better.
-#        Default: 1000 (one second)
-#
-#    CompressionRate
-#        This is the deflate compression rate. Higher will use more cpu, but
-#        smaller packets.
-#        Range: 1-9 (or 0 is disable)
-#        Default: 1
-#
-#    CompressionThreshold
-#        This is the distance that will be used to determine if an object needs
-#        to be sent compressed or normal. It is advised to keep it at least 30
-#        units. This value is used for players.
-#        Default: 30.0
-#
-#    CompressionThresholdCreatures
-#        This is the distance that will be used to determine if an object needs
-#        to be sent compressed or normal. This value is used for creatures, so
-#        it can be a lot lower.
-#        Default: 10.0
-#
-
-<Movement FlushInterval              = "1000"
-          CompressRate               = "1"
-          CompressThreshold          = "30.0"
-          CompressThresholdCreatures = "10.0">
-
-################################################################################
-# Localization Setup
-#
-#    LocaleBindings
-#        This is a list of locale names and the other locale you want to
-#        associate with them. For example, to make the European client always
-#        use the French language, use "enGB=frFR"
-#        Must be terminated by a space.
-#        Default: ""
-#
-
-<Localization LocaleBindings = "">
 
 ################################################################################
 # Dungeon / Instance Setup

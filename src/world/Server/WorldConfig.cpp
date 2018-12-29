@@ -56,15 +56,12 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     server.enableAdjustPriority = false;
     server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     server.mapCellNumber = 1;
-    server.secondsBeforeTimeOut = 180;
     server.secondsBeforeKickAFKPlayers = 0;
     server.queueUpdateInterval = 5000;
     server.enableBreathing = true;
     server.enableLimitedNames = true;
     server.useAccountData = false;
     server.requireGmForCommands = false;
-    server.enableLfgJoinForNonLfg = false;
-    server.disableFearMovement = false;
     server.saveExtendedCharData = false;
     server.dataDir = "";
 
@@ -72,7 +69,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     player.playerStartingLevel = 1;
     player.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
     player.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
-    player.allowTbcCharacters = true;
     player.deathKnightStartTalentPoints = 0;
     player.deathKnightPreReq = false;
     player.deathKnightLimit = false;
@@ -133,8 +129,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
 
     // world.conf - Broadcast Settings
     broadcast.isSystemEnabled = false;
-    broadcast.triggerPercentCap = 2;
-    broadcast.orderMode = 0;
 
     // world.conf - Rate Settings
     rate.arenaQueueDiff = 150;
@@ -147,7 +141,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     corpseDecay.worldbossTimeInSeconds = 3600000;
 
     // world.conf - Terrain & Collision Settings
-    terrainCollision.unloadMapFiles = false;
     terrainCollision.isCollisionEnabled = false;
     terrainCollision.isPathfindingEnabled = false;
 
@@ -165,9 +158,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     // world.conf - AntiHack Setup
     antiHack.isTeleportHackCheckEnabled = false;
     antiHack.isSpeedHackCkeckEnabled = false;
-    antiHack.isFallDamageHackCkeckEnabled = false;
-    antiHack.isFlyHackCkeckEnabled = false;
-    antiHack.flyHackThreshold = 0;
     antiHack.isAntiHackCheckDisabledForGm = true;
 
     // world.conf - Period Setup
@@ -180,13 +170,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     remoteConsole.isEnabled = false;
     remoteConsole.port = 8092;
 
-    // world.conf - Movement Setup
-    movement.compressIntervalInMs = 1000; // not used by core
-    movement.compressRate = 1; // not used by core
-    movement.compressThresholdCreatures = 15.0f; // not used by core
-    movement.compressThresholdPlayers = 25.0f; // not used by core
-
-    // world.conf - Localization Setup
     // world.conf - Dungeon / Instance Setup
     instance.useGroupLeaderInstanceId = false;
     instance.isRelativeExpirationEnabled = false;
@@ -337,9 +320,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
         server.mapCellNumber = 1;
     }
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "ConnectionTimeout", &server.secondsBeforeTimeOut));
-    server.secondsBeforeTimeOut *= 1000;
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "KickAFKPlayers", &server.secondsBeforeKickAFKPlayers));
     server.secondsBeforeKickAFKPlayers *= 1000;
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "QueueUpdateInterval", &server.queueUpdateInterval));
@@ -347,10 +327,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "LimitedNames", &server.enableLimitedNames));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "UseAccountData", &server.useAccountData));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "AllowPlayerCommands", &server.requireGmForCommands));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "EnableLFGJoin", &server.enableLfgJoinForNonLfg));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "DisableFearMovement", &server.disableFearMovement));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Server", "SaveExtendedCharData", &server.saveExtendedCharData));
     ARCEMU_ASSERT(Config.MainConfig.tryGetString("Server", "DataDir", &server.dataDir));
     if (server.dataDir == "")
@@ -364,8 +340,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "GenLevelCap", &player.playerGeneratedInformationByLevelCap)); //! no delete
     if (player.playerStartingLevel > static_cast<int32_t>(player.playerLevelCap))
         player.playerStartingLevel = static_cast<int32_t>(player.playerLevelCap);
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "AllowTBC", &player.allowTbcCharacters));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Player", "DKStartingTalents", &player.deathKnightStartTalentPoints));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "DKPreReq", &player.deathKnightPreReq));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Player", "DKLimit", &player.deathKnightLimit));
@@ -401,7 +375,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "CharterCost", &guild.charterCost));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Guild", "RequireAllSignatures", &guild.requireAllSignatures));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxLevel", &guild.maxLevel));
-    // todo: not used by core
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxMembers", &guild.maxMembers));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxXpPerDay", &guild.maxXpPerDay));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Guild", "MaxRepPerWeek", &guild.maxRepPerWeek));
@@ -434,18 +407,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Broadcast Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Broadcast", "EnableSystem", &broadcast.isSystemEnabled));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Broadcast", "TriggerPercentCap", &broadcast.triggerPercentCap));
-    if (broadcast.triggerPercentCap >= 99)
-        broadcast.triggerPercentCap = 98;
-    else if (broadcast.triggerPercentCap <= 1)
-        broadcast.triggerPercentCap = 0;
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Broadcast", "OrderMode", &broadcast.orderMode));
-    if (broadcast.orderMode < 0)
-        broadcast.orderMode = 0;
-    else if (broadcast.orderMode > 1)
-        broadcast.orderMode = 1;
 
     // world.conf - Rate Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Health", &mFloatRates[RATE_HEALTH]));
@@ -453,7 +414,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Rage", &mFloatRates[RATE_POWER2]));
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Focus", &mFloatRates[RATE_POWER3]));
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "Energy", &mFloatRates[RATE_POWER4]));
-    // todo: not used by core
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "RunicPower", &mFloatRates[RATE_POWER7]));
     ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Rates", "VehiclePower", &mFloatRates[RATE_VEHICLES_POWER_REGEN]));
 
@@ -499,10 +459,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     corpseDecay.worldbossTimeInSeconds *= 1000;
 
     // world.conf - Terrain & Collision Settings
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "UnloadMaps", &terrainCollision.unloadMapFiles));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Collision", &terrainCollision.isCollisionEnabled));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Pathfinding", &terrainCollision.isPathfindingEnabled));
+    if (terrainCollision.isPathfindingEnabled && !terrainCollision.isCollisionEnabled)
+        terrainCollision.isPathfindingEnabled = false;
 
     // world.conf - Mail Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisablePostageCostsForGM", &mail.isCostsForGmDisabled));
@@ -519,12 +479,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     // world.conf - AntiHack Setup
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Teleport", &antiHack.isTeleportHackCheckEnabled));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Speed", &antiHack.isSpeedHackCkeckEnabled));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "FallDamage", &antiHack.isFallDamageHackCkeckEnabled));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "Flight", &antiHack.isFlyHackCkeckEnabled));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("AntiHack", "FlightThreshold", &antiHack.flyHackThreshold));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("AntiHack", "DisableOnGM", &antiHack.isAntiHackCheckDisabledForGm));
 
     // world.conf - Period Setup
@@ -544,22 +498,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("RemoteConsole", "Enabled", &remoteConsole.isEnabled));
     ARCEMU_ASSERT(Config.MainConfig.tryGetString("RemoteConsole", "Host", &remoteConsole.host));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("RemoteConsole", "Port", &remoteConsole.port));
-
-    // world.conf - Movement Setup
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Movement", "FlushInterval", &movement.compressIntervalInMs));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Movement", "CompressRate", &movement.compressRate));
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Movement", "CompressThresholdCreatures", &movement.compressThresholdCreatures));
-    movement.compressThresholdCreatures *= movement.compressThresholdCreatures;
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetFloat("Movement", "CompressThreshold", &movement.compressThresholdPlayers));
-    movement.compressThresholdPlayers *= movement.compressThresholdPlayers;
-
-    // world.conf - Localization Setup
-    // todo: not used by core
-    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Localization", "LocaleBindings", &localization.localizedBindings));
 
     // world.conf - Dungeon / Instance Setup
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("InstanceHandling", "TakeGroupLeaderID", &instance.useGroupLeaderInstanceId));

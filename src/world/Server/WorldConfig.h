@@ -126,15 +126,12 @@ class SERVER_DECL WorldConfig
             bool enableAdjustPriority;
             uint32_t mapUnloadTime;
             uint8_t mapCellNumber;
-            uint32_t secondsBeforeTimeOut;
             uint32_t secondsBeforeKickAFKPlayers;
             uint32_t queueUpdateInterval;
             bool enableBreathing;
             bool enableLimitedNames;
             bool useAccountData;
             bool requireGmForCommands;
-            bool enableLfgJoinForNonLfg;
-            bool disableFearMovement;
             bool saveExtendedCharData;
             std::string dataDir;
         } server;
@@ -152,7 +149,6 @@ class SERVER_DECL WorldConfig
             int32_t playerStartingLevel;
             uint32_t playerLevelCap;
             uint32_t playerGeneratedInformationByLevelCap;
-            bool allowTbcCharacters;
             uint32_t deathKnightStartTalentPoints;
             bool deathKnightPreReq;
             bool deathKnightLimit;
@@ -230,8 +226,6 @@ class SERVER_DECL WorldConfig
         struct BroadcastSettings
         {
             bool isSystemEnabled;
-            int triggerPercentCap;
-            int orderMode;
         } broadcast;
 
         // world.conf - Rate Settings
@@ -262,7 +256,6 @@ class SERVER_DECL WorldConfig
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings
         {
-            bool unloadMapFiles;
             bool isCollisionEnabled;
             bool isPathfindingEnabled;
         } terrainCollision;
@@ -290,9 +283,6 @@ class SERVER_DECL WorldConfig
         {
             bool isTeleportHackCheckEnabled;
             bool isSpeedHackCkeckEnabled;
-            bool isFallDamageHackCkeckEnabled;
-            bool isFlyHackCkeckEnabled;
-            uint32_t flyHackThreshold;
             bool isAntiHackCheckDisabledForGm;
         } antiHack;
 
@@ -320,21 +310,6 @@ class SERVER_DECL WorldConfig
             std::string host;
             int port;
         } remoteConsole;
-
-        // world.conf - Movement Setup
-        struct MovementSettings
-        {
-            uint32_t compressIntervalInMs;
-            uint32_t compressRate;
-            float compressThresholdPlayers;
-            float compressThresholdCreatures;
-        } movement;
-
-        // world.conf - Localization Setup
-        struct LocalizationSettings
-        {
-            std::string localizedBindings;
-        } localization;
 
         // world.conf - Dungeon / Instance Setup
         struct InstanceSettings
