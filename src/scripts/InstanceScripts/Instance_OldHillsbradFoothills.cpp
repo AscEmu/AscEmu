@@ -198,7 +198,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            case 1:
 //                Item* pBombs = objmgr.CreateItem(25853, Plr);
 //                if (pBombs)
-//                    if (!Plr->GetItemInterface()->AddItemToFreeSlot(pBombs))
+//                    if (!Plr->getItemInterface()->AddItemToFreeSlot(pBombs))
 //                        pBombs->DeleteMe();
 //                break;
 //        }

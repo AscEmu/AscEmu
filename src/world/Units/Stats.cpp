@@ -572,7 +572,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     if (pAttacker->disarmed && pAttacker->isPlayer())
     {
         offset = UNIT_FIELD_MINDAMAGE;
-        it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     }
     else if (weapon_damage_type == MELEE)
         offset = UNIT_FIELD_MINDAMAGE;
@@ -615,7 +615,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (!pAttacker->disarmed)
             {
-                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it)
                     wspeed = (float)it->getItemProperties()->Delay;
                 else
@@ -679,7 +679,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (!pAttacker->disarmed)
             {
-                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
                     wspeed = (float)it->getItemProperties()->Delay;
@@ -699,7 +699,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (ability->getEffect(0) == SPELL_EFFECT_DUMMYMELEE || ability->getEffect(1) == SPELL_EFFECT_DUMMYMELEE || ability->getEffect(2) == SPELL_EFFECT_DUMMYMELEE)
             {
-                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
                 {

@@ -46,7 +46,7 @@ bool QuestMgr::isRepeatableQuestFinished(Player* plr, QuestProperties const* qst
     {
         if (qst->required_item[i])
         {
-            if (plr->GetItemInterface()->GetItemCount(qst->required_item[i]) < qst->required_itemcount[i])
+            if (plr->getItemInterface()->GetItemCount(qst->required_item[i]) < qst->required_itemcount[i])
             {
                 return false;
             }
@@ -1022,7 +1022,7 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
             {
                 if (quest_log_entry->GetQuest()->required_item[j] == entry)
                 {
-                    pcount = plr->GetItemInterface()->GetItemCount(entry, true);
+                    pcount = plr->getItemInterface()->GetItemCount(entry, true);
                     CALL_QUESTSCRIPT_EVENT(quest_log_entry, OnPlayerItemPickup)(entry, pcount, plr, quest_log_entry);
                     if (pcount < quest_log_entry->GetQuest()->required_itemcount[j])
                     {
@@ -1146,7 +1146,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     // Check they don't have more than the max gold
     if (worldConfig.player.isGoldCapEnabled && (plr->getCoinage() + qst->reward_money) > worldConfig.player.limitGoldAmount)
     {
-        plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+        plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         return;
     }
 
@@ -1201,13 +1201,13 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 }
                 else
                 {
-                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
+                    auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
                     if (!item_add)
                     {
-                        auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -1216,7 +1216,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                                 return;
 
                             item->setStackCount(uint32(qst->reward_itemcount[i]));
-                            if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                            if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 item->DeleteMe();
                         }
                     }
@@ -1239,13 +1239,13 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             }
             else
             {
-                auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
+                auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
                 if (!item_add)
                 {
-                    auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                    auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                     if (!slotresult.Result)
                     {
-                        plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                        plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                     }
                     else
                     {
@@ -1254,7 +1254,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                             return;
 
                         item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                        if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                        if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                             item->DeleteMe();
 
                     }
@@ -1270,12 +1270,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Remove items
         for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
-            if (qst->required_item[i]) plr->GetItemInterface()->RemoveItemAmt(qst->required_item[i], qst->required_itemcount[i]);
+            if (qst->required_item[i]) plr->getItemInterface()->RemoveItemAmt(qst->required_item[i], qst->required_itemcount[i]);
         }
 
         // Remove srcitem
         if (qst->srcitem && qst->srcitem != qst->receive_items[0])
-            plr->GetItemInterface()->RemoveItemAmt(qst->srcitem, qst->srcitemcount ? qst->srcitemcount : 1);
+            plr->getItemInterface()->RemoveItemAmt(qst->srcitem, qst->srcitemcount ? qst->srcitemcount : 1);
 
         // cast Effect Spell
         if (qst->effect_on_player)
@@ -1314,13 +1314,13 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 }
                 else
                 {
-                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
+                    auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
                     if (!item_add)
                     {
-                        auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -1329,7 +1329,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                                 return;
 
                             item->setStackCount(uint32(qst->reward_itemcount[i]));
-                            if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                            if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 item->DeleteMe();
                         }
                     }
@@ -1352,13 +1352,13 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             }
             else
             {
-                auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
+                auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
                 if (!item_add)
                 {
-                    auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                    auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                     if (!slotresult.Result)
                     {
-                        plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                        plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                     }
                     else
                     {
@@ -1367,7 +1367,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                             return;
 
                         item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                        if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                        if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                             item->DeleteMe();
                     }
                 }
@@ -1382,12 +1382,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Remove items
         for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
-            if (qst->required_item[i]) plr->GetItemInterface()->RemoveItemAmt(qst->required_item[i], qst->required_itemcount[i]);
+            if (qst->required_item[i]) plr->getItemInterface()->RemoveItemAmt(qst->required_item[i], qst->required_itemcount[i]);
         }
 
         // Remove srcitem
         if (qst->srcitem && qst->srcitem != qst->receive_items[0])
-            plr->GetItemInterface()->RemoveItemAmt(qst->srcitem, qst->srcitemcount ? qst->srcitemcount : 1);
+            plr->getItemInterface()->RemoveItemAmt(qst->srcitem, qst->srcitemcount ? qst->srcitemcount : 1);
 
         // cast learning spell
         if (qst->reward_spell && !qst->effect_on_player) // qst->reward_spell is the spell the quest finisher teaches you, OR the icon of the spell if effect_on_player is not 0
@@ -1974,7 +1974,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
 {
     uint32 available_slots = 0;
     uint32 slotsrequired = 0;
-    available_slots = plyr->GetItemInterface()->CalculateFreeSlots(NULL);
+    available_slots = plyr->getItemInterface()->CalculateFreeSlots(NULL);
     // Static Item reward
     for (uint8 i = 0; i < 4; ++i)
     {
@@ -1984,7 +1984,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
             ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
             if (!proto)
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
-            else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
+            else if (plyr->getItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
                 return false;
         }
     }
@@ -1996,7 +1996,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
         ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
         if (!proto)
             LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
-        else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
+        else if (plyr->getItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
             return false;
     }
     if (available_slots < slotsrequired)

@@ -53,7 +53,7 @@ class HungarfenAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 20 && !FourSpores)
+        if (getCreature()->getHealthPct() <= 20 && !FourSpores)
         {
             getCreature()->GetAIInterface()->StopMovement(11000);
             getCreature()->setAttackTimer(MELEE, 1200);
@@ -102,7 +102,7 @@ class GhazanAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingSpell())
+        if (getCreature()->getHealthPct() <= 20 && !Enraged && !getCreature()->isCastingSpell())
         {
             getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
 

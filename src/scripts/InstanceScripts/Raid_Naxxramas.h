@@ -2061,7 +2061,7 @@ class SapphironAI : public CreatureAIScript
         if (getCreature()->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
             return;
 
-        if (getCreature()->GetHealthPct() > 10)
+        if (getCreature()->getHealthPct() > 10)
         {
             uint32 t = (uint32)time(NULL);
             if (t > PhaseTimer)
@@ -2566,7 +2566,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() == 0)
+        if (getCreature()->getHealthPct() == 0)
             return;
 
         switch (Util::getRandomUInt(1))
@@ -2784,7 +2784,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void PhaseTwo()
     {
-        if (getCreature()->GetHealthPct() <= 40)
+        if (getCreature()->getHealthPct() <= 40)
         {
             HelpDialog++;
             if (HelpDialog == 1)

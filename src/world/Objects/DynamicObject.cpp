@@ -154,7 +154,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     else
         p_caster = pSpell->p_caster;
 
-    m_spellProto = pSpell->GetSpellInfo();
+    m_spellProto = pSpell->getSpellInfo();
     setEntry(m_spellProto->getId());
     setScale(1.0f);
 

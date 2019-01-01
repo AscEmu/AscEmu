@@ -57,7 +57,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
     if (isAttackable(caster, target))
     {
         // Cast offensive Holy Shock
-        switch (pSpell->GetSpellInfo()->getId())
+        switch (pSpell->getSpellInfo()->getId())
         {
             case 20473: // Rank 1
                 spell_id = 25912;
@@ -82,7 +82,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                DLLLogDetail("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+                DLLLogDetail("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->getSpellInfo()->getId());
                 return true;
             }
         }
@@ -90,7 +90,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
     else
     {
         // Cast healing Holy Shock
-        switch (pSpell->GetSpellInfo()->getId())
+        switch (pSpell->getSpellInfo()->getId())
         {
             case 20473: // Rank 1
                 spell_id = 25914;
@@ -115,7 +115,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                DLLLogDetail("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+                DLLLogDetail("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->getSpellInfo()->getId());
                 return true;
             }
         }
@@ -270,7 +270,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
         default:
         {
-            DLLLogDetail("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
+            DLLLogDetail("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->getSpellInfo()->getId());
             return true;
         }
     }
@@ -278,7 +278,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     caster->CastSpell(target, id, true);
 
     // Cast judgement spell
-    switch (pSpell->GetSpellInfo()->getId())
+    switch (pSpell->getSpellInfo()->getId())
     {
         // SPELL_HASH_JUDGEMENT_OF_JUSTICE:
         case 20184:
@@ -301,14 +301,14 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
         default:
         {
-            DLLLogDetail("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->getId());
+            DLLLogDetail("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->getSpellInfo()->getId());
             return true;
         }
     }
 
     caster->CastSpell(target, id, true);
 
-    caster->setSingleTargetGuidForAura(pSpell->GetSpellInfo()->getId(), target->getGuid());
+    caster->setSingleTargetGuidForAura(pSpell->getSpellInfo()->getId(), target->getGuid());
 
     return true;
 }
@@ -388,7 +388,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 
 bool Illumination(uint8_t /*effectIndex*/, Spell* s)
 {
-    switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->getId() : s->m_triggeredByAura->GetSpellId())
+    switch (s->m_triggeredByAura == NULL ? s->getSpellInfo()->getId() : s->m_triggeredByAura->GetSpellId())
     {
         case 20210:
         case 20212:
@@ -398,7 +398,7 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
         {
             if (s->p_caster == NULL)
                 return false;
-            SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
+            SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->getSpellInfo();
             s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
         }
         break;

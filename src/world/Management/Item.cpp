@@ -3,13 +3,14 @@ Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Container.h"
 #include "Data/WoWObject.h"
 #include "Data/WoWItem.h"
-#include "Server/WUtil.h"
 #include "Item.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgrDefines.hpp"
-#include "Container.h"
+#include "Server/WUtil.h"
+#include "Spell/Definitions/SpellEffects.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void Item::init(uint32_t high, uint32_t low)
 {
@@ -53,7 +54,7 @@ void Item::create(uint32_t itemId, Player* owner)
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    for (auto i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
         setSpellCharges(i, m_itemProperties->Spells[i].Charges);
 
     setDurability(m_itemProperties->MaxDurability);
@@ -182,3 +183,40 @@ void Item::setContainer(Container* container) { setContainerGuid(container ? con
 
 ItemProperties const* Item::getItemProperties() const { return m_itemProperties; }
 void Item::setItemProperties(ItemProperties const* itemProperties) { m_itemProperties = itemProperties; }
+
+bool Item::fitsToSpellRequirements(SpellInfo const* spellInfo) const
+{
+    const auto itemProperties = getItemProperties();
+    const auto isEnchantSpell = spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM) || spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY) || spellInfo->hasEffect(SPELL_EFFECT_ADD_SOCKET);
+
+    if (spellInfo->getEquippedItemClass() != -1)
+    {
+        if (isEnchantSpell)
+        {
+            // Armor Vellums
+            if (spellInfo->getEquippedItemClass() == ITEM_CLASS_ARMOR && itemProperties->Class == ITEM_CLASS_TRADEGOODS && itemProperties->SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT)
+                return true;
+            // Weapon Vellums
+            if (spellInfo->getEquippedItemClass() == ITEM_CLASS_WEAPON && itemProperties->Class == ITEM_CLASS_TRADEGOODS && itemProperties->SubClass == ITEM_SUBCLASS_WEAPON_ENCHANTMENT)
+                return true;
+        }
+        // Check if item classes match
+        if (spellInfo->getEquippedItemClass() != static_cast<int32_t>(itemProperties->Class))
+            return false;
+        // Check if item subclasses match
+        if (spellInfo->getEquippedItemSubClass() != 0 && !(spellInfo->getEquippedItemSubClass() & (1 << itemProperties->SubClass)))
+            return false;
+    }
+
+    // Check if the enchant spell is casted on a correct item
+    if (isEnchantSpell && spellInfo->getEquippedItemInventoryTypeMask() != 0)
+    {
+        if (itemProperties->InventoryType == INVTYPE_WEAPON &&
+            (spellInfo->getEquippedItemInventoryTypeMask() & (1 << INVTYPE_WEAPONMAINHAND) ||
+             spellInfo->getEquippedItemInventoryTypeMask() & (1 << INVTYPE_WEAPONOFFHAND)))
+            return true;
+        else if (!(spellInfo->getEquippedItemInventoryTypeMask() & (1 << itemProperties->InventoryType)))
+            return false;
+    }
+    return true;
+}

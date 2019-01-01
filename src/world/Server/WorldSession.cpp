@@ -353,8 +353,8 @@ void WorldSession::LogoutPlayer(bool Save)
         // Issue a message telling all guild members that this player signed
         // off
 
-        _player->GetItemInterface()->EmptyBuyBack();
-        _player->GetItemInterface()->removeLootableItems();
+        _player->getItemInterface()->EmptyBuyBack();
+        _player->getItemInterface()->removeLootableItems();
 
         // Save HP/Mana
         _player->load_health = _player->getHealth();

@@ -136,7 +136,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
     for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
     {
-        const auto item = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuids[i]);
+        const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuids[i]);
         if (!item)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);
@@ -181,7 +181,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
         _player->modCoinage(-int32(item_deposit));
 
-        const auto item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
+        const auto item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
         if (!item)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERROR_ITEM);

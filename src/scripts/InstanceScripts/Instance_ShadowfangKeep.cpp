@@ -1169,7 +1169,7 @@ class ArugalBossAI : public CreatureAIScript
         if (_isInCombat())
         {
             // if mana is out - do melee attacks
-            if (getCreature()->GetManaPct() <= 10 && getAIAgent() == AGENT_SPELL)
+            if (getCreature()->getPowerPct(POWER_TYPE_MANA) <= 10 && getAIAgent() == AGENT_SPELL)
             {
                 setAIAgent(AGENT_MELEE);
                 getCreature()->GetAIInterface()->setMeleeDisabled(false);

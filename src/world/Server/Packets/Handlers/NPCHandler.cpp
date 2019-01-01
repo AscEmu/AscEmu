@@ -278,7 +278,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     Object* object;
     if (srlPacket.guid.isItem())
     {
-        object = _player->GetItemInterface()->GetItemByGUID(srlPacket.guid);
+        object = _player->getItemInterface()->GetItemByGUID(srlPacket.guid);
         if (object != nullptr)
             script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(object));
     }

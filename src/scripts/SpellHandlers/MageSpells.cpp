@@ -27,7 +27,7 @@ bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster)
         return true;
 
-    pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->GetSpellInfo()->getId());
+    pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->getSpellInfo()->getId());
     return true;
 }
 

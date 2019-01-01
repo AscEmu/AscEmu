@@ -729,8 +729,8 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
 
     if (ItemCount)
     {
-        int8 count = static_cast<int8>(owner->GetItemInterface()->GetItemCount(iProto->ItemId, true));
-        //int8 slot = owner->GetItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
+        int8 count = static_cast<int8>(owner->getItemInterface()->GetItemCount(iProto->ItemId, true));
+        //int8 slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
         if (iProto->ContainerSlots > 0)
         {
             SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);

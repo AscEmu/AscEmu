@@ -64,7 +64,7 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
                 for (uint8 i = 0; i < 4; ++i)
                 {
                     if (qst->receive_items[i])
-                        plr->GetItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
+                        plr->getItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
                 }
 
                 plr->UpdateNearbyGameObjects();
@@ -186,7 +186,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                             if (item == NULL)
                                 return false;
 
-                            if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
+                            if (!plr->getItemInterface()->AddItemToFreeSlot(item))
                                 item->DeleteMe();
                         }
                     }
@@ -197,7 +197,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                         if (item)
                         {
                             item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
-                            if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
+                            if (!plr->getItemInterface()->AddItemToFreeSlot(item))
                                 item->DeleteMe();
                         }
                     }
@@ -373,13 +373,13 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     }
                     else
                     {
-                        auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
+                        auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
                         if (!item_add)
                         {
-                            auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                            auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                             if (!slotresult.Result)
                             {
-                                plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                                plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                             }
                             else
                             {
@@ -387,7 +387,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                                 if (item)
                                 {
                                     item->setStackCount(uint32(qst->reward_itemcount[i]));
-                                    if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                                    if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                     {
                                         item->DeleteMe();
                                     }
@@ -412,13 +412,13 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
                 else
                 {
-                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
+                    auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
                     if (!item_add)
                     {
-                        auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -426,7 +426,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             if (item)
                             {
                                 item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                                if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                                if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
                                 }

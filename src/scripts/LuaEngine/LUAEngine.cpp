@@ -1522,7 +1522,7 @@ bool LuaHookOnResurrect(Player* pPlayer)
 bool LuaOnDummySpell(uint8_t effectIndex, Spell* pSpell)
 {
     GET_LOCK
-    LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->GetSpellInfo()->getId()]);
+    LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->getSpellInfo()->getId()]);
     LuaGlobal::instance()->luaEngine()->PUSH_UINT(effectIndex);
     LuaGlobal::instance()->luaEngine()->PushSpell(pSpell);
     LuaGlobal::instance()->luaEngine()->ExecuteCall(2);

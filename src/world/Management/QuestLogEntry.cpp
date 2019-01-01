@@ -230,7 +230,7 @@ bool QuestLogEntry::CanBeFinished()
     {
         if (m_quest->required_item[i])
         {
-            if (m_plr->GetItemInterface()->GetItemCount(m_quest->required_item[i]) < m_quest->required_itemcount[i])
+            if (m_plr->getItemInterface()->GetItemCount(m_quest->required_item[i]) < m_quest->required_itemcount[i])
             {
                 return false;
             }

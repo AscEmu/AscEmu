@@ -572,7 +572,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     if (cloudtype == 17378)
         item = 22578; //-water
 
-    s->p_caster->GetItemInterface()->AddItemById(item, count, 0);
+    s->p_caster->getItemInterface()->AddItemById(item, count, 0);
     creature->Despawn(3500, creature->GetCreatureProperties()->RespawnTime);
 
     return true;

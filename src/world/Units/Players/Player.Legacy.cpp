@@ -370,7 +370,7 @@ Player::Player(uint32 guid)
     for (i = 0; i < MAX_QUEST_SLOT; ++i)
         m_questlog[i] = nullptr;
 
-    m_ItemInterface = new ItemInterface(this);
+    m_itemInterface = new ItemInterface(this);
 
     SDetector = new SpeedCheatDetector;
 
@@ -630,8 +630,8 @@ Player::~Player()
         }
     }
 
-    delete m_ItemInterface;
-    m_ItemInterface = nullptr;
+    delete m_itemInterface;
+    m_itemInterface = nullptr;
 
     for (ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
         delete itr->second;
@@ -1033,17 +1033,17 @@ bool Player::Create(CharCreate& charCreateContent)
                 if (itemProperties->InventoryType == 0)
                 {
                     if (const auto itemDB2Properties = sItemStore.LookupEntry(itemId))
-                        itemSlot = GetItemInterface()->GetItemSlotByType(itemDB2Properties->InventoryType);
+                        itemSlot = getItemInterface()->GetItemSlotByType(itemDB2Properties->InventoryType);
                 }
                 else
                 {
-                    itemSlot = GetItemInterface()->GetItemSlotByType(itemProperties->InventoryType);
+                    itemSlot = getItemInterface()->GetItemSlotByType(itemProperties->InventoryType);
                 }
 
                 //use safeadd only for equipmentset items... all other items will go to a free bag slot.
                 if (itemSlot < INVENTORY_SLOT_BAG_END && (itemProperties->Class == ITEM_CLASS_ARMOR || itemProperties->Class == ITEM_CLASS_WEAPON || itemProperties->Class == ITEM_CLASS_CONTAINER || itemProperties->Class == ITEM_CLASS_QUIVER))
                 {
-                    if (!GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
+                    if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
                     {
                         LogDebugFlag(LF_DB_TABLES, "StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
                         item->DeleteMe();
@@ -1052,7 +1052,7 @@ bool Player::Create(CharCreate& charCreateContent)
                 else
                 {
                     item->setStackCount(itemProperties->MaxCount);
-                    if (!GetItemInterface()->AddItemToFreeSlot(item))
+                    if (!getItemInterface()->AddItemToFreeSlot(item))
                     {
                         LogDebugFlag(LF_DB_TABLES, "StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
                         item->DeleteMe();
@@ -1072,12 +1072,12 @@ bool Player::Create(CharCreate& charCreateContent)
                 item->setStackCount((*is).amount);
                 if ((*is).slot < INVENTORY_SLOT_BAG_END)
                 {
-                    if (!GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot))
+                    if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot))
                         item->DeleteMe();
                 }
                 else
                 {
-                    if (!GetItemInterface()->AddItemToFreeSlot(item))
+                    if (!getItemInterface()->AddItemToFreeSlot(item))
                         item->DeleteMe();
                 }
             }
@@ -2704,9 +2704,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     //Save Other related player stuff
 
     // Inventory
-    GetItemInterface()->mSaveItemsToDatabase(bNewCharacter, buf);
+    getItemInterface()->mSaveItemsToDatabase(bNewCharacter, buf);
 
-    GetItemInterface()->m_EquipmentSets.SavetoDB(buf);
+    getItemInterface()->m_EquipmentSets.SavetoDB(buf);
 
     // save quest progress
     _SaveQuestLogEntry(buf);
@@ -2761,15 +2761,15 @@ bool Player::canCast(SpellInfo* m_spellInfo)
 {
     if (m_spellInfo->getEquippedItemClass() != 0)
     {
-        if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
+        if (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
+            if ((int32)this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
             {
                 if (m_spellInfo->getEquippedItemSubClass() != 0)
                 {
                     if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
+                        if (pow(2.0, (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
                             return false;
                     }
                 }
@@ -2778,15 +2778,15 @@ bool Player::canCast(SpellInfo* m_spellInfo)
         else if (m_spellInfo->getEquippedItemSubClass() == 173555)
             return false;
 
-        if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
+        if (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
+            if ((int32)this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
             {
                 if (m_spellInfo->getEquippedItemSubClass() != 0)
                 {
                     if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
+                        if (pow(2.0, (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
                             return false;
                     }
                 }
@@ -3485,8 +3485,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     _LoadTutorials(results[PlayerQuery::Tutorials].result);
     _LoadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
     _LoadQuestLogEntry(results[PlayerQuery::Questlog].result);
-    m_ItemInterface->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
-    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
+    getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
+    getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
 
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
@@ -3562,7 +3562,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     for (uint8 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
-        ItemInterface* itemi = GetItemInterface();
+        ItemInterface* itemi = getItemInterface();
         Item* it = itemi->GetInventoryItem(x);
 
         if (it != nullptr)
@@ -4269,8 +4269,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     _LoadTutorials(results[PlayerQuery::Tutorials].result);
     _LoadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
     _LoadQuestLogEntry(results[PlayerQuery::Questlog].result);
-    m_ItemInterface->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
-    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
+    getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
+    getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
 
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
@@ -4342,7 +4342,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     for (uint8 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
-        ItemInterface* itemi = GetItemInterface();
+        ItemInterface* itemi = getItemInterface();
         Item* it = itemi->GetInventoryItem(x);
 
         if (it != nullptr)
@@ -4621,7 +4621,7 @@ void Player::OnPushToWorld()
 #endif
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
-        m_ItemInterface->RemoveAllConjured();
+        getItemInterface()->RemoveAllConjured();
 
     Unit::OnPushToWorld();
 
@@ -4679,7 +4679,7 @@ void Player::OnPushToWorld()
     setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
-        GetItemInterface()->CheckAreaItems();
+        getItemInterface()->CheckAreaItems();
 
     if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
     {
@@ -4695,7 +4695,7 @@ void Player::OnPushToWorld()
     m_changingMaps = false;
     SendFullAuraUpdate();
 
-    m_ItemInterface->HandleItemDurations();
+    getItemInterface()->HandleItemDurations();
 
     //SendInitialWorldstates();
 
@@ -4734,7 +4734,7 @@ void Player::OnPushToWorld()
     setPvpFlags(getPvpFlags() &~(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY));
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
-        m_ItemInterface->RemoveAllConjured();
+        getItemInterface()->RemoveAllConjured();
 
     Unit::OnPushToWorld();
 
@@ -4785,7 +4785,7 @@ void Player::OnPushToWorld()
     setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
-        GetItemInterface()->CheckAreaItems();
+        getItemInterface()->CheckAreaItems();
 
     if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
         m_mapMgr->m_battleground->PortPlayer(this, true);
@@ -4799,7 +4799,7 @@ void Player::OnPushToWorld()
     m_changingMaps = false;
     SendFullAuraUpdate();
 
-    m_ItemInterface->HandleItemDurations();
+    getItemInterface()->HandleItemDurations();
 
     SendInitialWorldstates();
 
@@ -4843,7 +4843,7 @@ void Player::RemoveFromWorld()
         DuelingWith->EndDuel(DUEL_WINNER_RETREAT);
 
     //clear buyback
-    GetItemInterface()->EmptyBuyBack();
+    getItemInterface()->EmptyBuyBack();
 
     getSplineMgr().clearSplinePackets();
 
@@ -5566,7 +5566,7 @@ void Player::CreateCorpse()
 
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
-        if (Item* pItem = GetItemInterface()->GetInventoryItem(i))
+        if (Item* pItem = getItemInterface()->GetInventoryItem(i))
         {
             uint32 iDisplayID = pItem->getItemProperties()->DisplayInfoID;
             uint16 iIventoryType = (uint16)pItem->getItemProperties()->InventoryType;
@@ -5631,7 +5631,7 @@ void Player::DeathDurabilityLoss(double percent)
 
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
-        if (Item* pItem = GetItemInterface()->GetInventoryItem(i))
+        if (Item* pItem = getItemInterface()->GetInventoryItem(i))
         {
             uint32 pMaxDurability = pItem->getMaxDurability();
             uint32 pDurability = pItem->getDurability();
@@ -5973,7 +5973,7 @@ void Player::UpdateChances()
     setFloatValue(PLAYER_DODGE_PERCENTAGE, tmp);
 
     // Block
-    Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    Item* it = this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it != nullptr && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
         tmp = GetBlockChance();
@@ -5986,7 +5986,7 @@ void Player::UpdateChances()
     setFloatValue(PLAYER_BLOCK_PERCENTAGE, tmp);
 
     // Parry (can only parry with something in main hand)
-    it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+    it = this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     if (it != nullptr)
     {
         tmp = GetParryChance();
@@ -6012,8 +6012,8 @@ void Player::UpdateChances()
 
     if (tocritchance.size() > 0)    // Crashfix by Cebernic
     {
-        Item* tItemMelee = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        Item* tItemRanged = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+        Item* tItemMelee = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        Item* tItemRanged = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
         //-1 = any weapon
 
@@ -6083,14 +6083,14 @@ void Player::UpdateAttackSpeed()
     }
     else if (!disarmed)  // Regular
     {
-        weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (weap != nullptr)
             speed = weap->getItemProperties()->Delay;
     }
     setBaseAttackTime(MELEE,
                       (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
 
-    weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->getItemProperties()->Delay;
@@ -6098,7 +6098,7 @@ void Player::UpdateAttackSpeed()
                           (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
     }
 
-    weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+    weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
     if (weap != nullptr)
     {
         speed = weap->getItemProperties()->Delay;
@@ -6337,7 +6337,7 @@ void Player::UpdateStats()
     }
 
     // Shield Block
-    Item* shield = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    Item* shield = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (shield != nullptr && shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
         float block_multiplier = (100.0f + m_modblockabsorbvalue) / 100.0f;
@@ -6626,7 +6626,7 @@ bool Player::HasQuestForItem(uint32 itemid)
                 QuestAssociationList::iterator it;
                 for (it = tempList->begin(); it != tempList->end(); ++it)
                 {
-                    if (((*it)->qst == qst) && (GetItemInterface()->GetItemCount(itemid) < (*it)->item_count))
+                    if (((*it)->qst == qst) && (getItemInterface()->GetItemCount(itemid) < (*it)->item_count))
                     {
                         return true;
                     } // end if
@@ -6638,16 +6638,11 @@ bool Player::HasQuestForItem(uint32 itemid)
                 continue;
 
             for (uint32 j = 0; j < MAX_REQUIRED_QUEST_ITEM; ++j)
-                if (qst->required_item[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->required_itemcount[j]))
+                if (qst->required_item[j] == itemid && (getItemInterface()->GetItemCount(itemid) < qst->required_itemcount[j]))
                     return true;
         }
     }
     return false;
-}
-
-bool Player::HasItemCount(uint32 item, uint32 count, bool inBankAlso) const
-{
-    return (m_ItemInterface->GetItemCount(item, inBankAlso) == count);
 }
 
 void Player::EventAllowTiggerPort(bool enable)
@@ -6681,7 +6676,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     // Check ammo
 #if VERSION_STRING < Cata
-    auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+    auto item = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
     auto item_proto = sMySQLStore.getItemProperties(getAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
@@ -6750,7 +6745,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 #if VERSION_STRING < Cata
     if (!m_requiresNoAmmo && item_proto && item->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
     {
-        uint32 ammocount = GetItemInterface()->GetItemCount(item_proto->ItemId);
+        uint32 ammocount = getItemInterface()->GetItemCount(item_proto->ItemId);
         if (ammocount == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
@@ -6776,7 +6771,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 #if VERSION_STRING < Cata
     if (spellid == SPELL_RANGED_THROW)
     {
-        if (GetItemInterface()->GetItemCount(item->getItemProperties()->ItemId) == 0)
+        if (getItemInterface()->GetItemCount(item->getItemProperties()->ItemId) == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
 #endif
@@ -7094,7 +7089,7 @@ void Player::UpdateNearbyGameObjects()
                     {
                         for (std::map<uint32, uint32>::const_iterator it2 = GOitr->second.begin(); it2 != GOitr->second.end(); ++it2)
                         {
-                            if (GetItemInterface()->GetItemCount(it2->first) < it2->second)
+                            if (getItemInterface()->GetItemCount(it2->first) < it2->second)
                             {
                                 activate_quest_object = true;
                                 break;
@@ -7660,7 +7655,7 @@ void Player::AddItemsToWorld()
 {
     for (uint8 i = 0; i < INVENTORY_KEYRING_END; ++i)
     {
-        if (const auto pItem = GetItemInterface()->GetInventoryItem(i))
+        if (const auto pItem = getItemInterface()->GetInventoryItem(i))
         {
             pItem->PushToWorld(m_mapMgr);
 
@@ -7670,7 +7665,7 @@ void Player::AddItemsToWorld()
             if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
                 UpdateKnownCurrencies(pItem->getEntry(), true);
 
-            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(i))
+            if (pItem->isContainer() && getItemInterface()->IsBagSlot(i))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -7689,7 +7684,7 @@ void Player::AddItemsToWorld()
 {
     for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; ++i)
     {
-        if (Item* pItem = GetItemInterface()->GetInventoryItem(i))
+        if (Item* pItem = getItemInterface()->GetInventoryItem(i))
         {
             pItem->PushToWorld(m_mapMgr);
 
@@ -7699,7 +7694,7 @@ void Player::AddItemsToWorld()
             if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
                 UpdateKnownCurrencies(pItem->getEntry(), true);
 
-            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(i))
+            if (pItem->isContainer() && getItemInterface()->IsBagSlot(i))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -7719,7 +7714,7 @@ void Player::RemoveItemsFromWorld()
 {
     for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; ++i)
     {
-        if (Item* pItem = m_ItemInterface->GetInventoryItem((int8)i))
+        if (Item* pItem = getItemInterface()->GetInventoryItem((int8)i))
         {
             if (pItem->IsInWorld())
             {
@@ -7729,7 +7724,7 @@ void Player::RemoveItemsFromWorld()
                 pItem->RemoveFromWorld();
             }
 
-            if (pItem->isContainer() && GetItemInterface()->IsBagSlot(static_cast<int16>(i)))
+            if (pItem->isContainer() && getItemInterface()->IsBagSlot(static_cast<int16>(i)))
             {
                 for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; e++)
                 {
@@ -7750,7 +7745,7 @@ uint32 Player::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     if (target == this)
     {
         // we need to send create objects for all items.
-        count += GetItemInterface()->m_CreateForPlayer(data);
+        count += getItemInterface()->m_CreateForPlayer(data);
     }
     count += Unit::buildCreateUpdateBlockForPlayer(data, target);
     return count;
@@ -10029,7 +10024,7 @@ void Player::CalcDamage()
 
     //////no druid ss
     uint32 speed = 2000;
-    Item* it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+    Item* it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
     if (!disarmed)
     {
@@ -10072,7 +10067,7 @@ void Player::CalcDamage()
 
     /////////////// OFF HAND START
     cr = 0;
-    it = static_cast< Player* >(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    it = static_cast< Player* >(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it)
     {
         if (!disarmed)
@@ -10112,7 +10107,7 @@ void Player::CalcDamage()
     /////////////second hand end
     ///////////////////////////RANGED
     cr = 0;
-    if ((it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != nullptr)
+    if ((it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != nullptr)
     {
         tmp = 1;
         for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
@@ -10196,7 +10191,7 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
     }
     //////no druid ss
     uint32 speed = 2000;
-    Item* it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+    Item* it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     if (!disarmed)
     {
         if (it)
@@ -11784,7 +11779,7 @@ void Player::FullHPMP()
 **********************************************/
 void Player::RemoveTempEnchantsOnArena()
 {
-    ItemInterface* itemi = GetItemInterface();
+    ItemInterface* itemi = getItemInterface();
 
     // Loop through all equipment items
     for (uint32 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
@@ -11970,8 +11965,8 @@ void Player::CalcExpertise()
 
             if (entry->getEquippedItemSubClass() != 0)
             {
-                auto item_mainhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                auto item_offhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                auto item_mainhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                auto item_offhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 uint32 reqskillMH = 0;
                 uint32 reqskillOH = 0;
 
@@ -12020,7 +12015,7 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
 
 void Player::RemoveItemByGuid(uint64 GUID)
 {
-    this->GetItemInterface()->SafeFullRemoveItemByGuid(GUID);
+    this->getItemInterface()->SafeFullRemoveItemByGuid(GUID);
 }
 
 void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active)
@@ -12069,7 +12064,7 @@ void Player::HandleSpellLoot(uint32 itemid)
         uint32 looteditemid = itr->item.itemproto->ItemId;
         uint32 count = itr->iItemsCount;
 
-        m_ItemInterface->AddItemById(looteditemid, count, 0);
+        getItemInterface()->AddItemById(looteditemid, count, 0);
     }
 }
 
@@ -12679,7 +12674,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         {
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
@@ -12690,8 +12685,8 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140)
-                interruptSpell(spl->GetSpellInfo()->getId());
+            if (spl->getSpellInfo()->getChannelInterruptFlags() == 48140)
+                interruptSpell(spl->getSpellInfo()->getId());
         }
     }
 
@@ -12730,7 +12725,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 SpellInfo* m_reincarnSpellInfo = sSpellCustomizations.GetSpellInfo(20608);
                 if (Cooldown_CanCast(m_reincarnSpellInfo))
                 {
-                    uint32 ankh_count = GetItemInterface()->GetItemCount(17030);
+                    uint32 ankh_count = getItemInterface()->GetItemCount(17030);
                     if (ankh_count)
                         self_res_spell = 21169;
                 }
@@ -12901,7 +12896,7 @@ void Player::Phase(uint8 command, uint32 newphase)
 ///\todo  Use this method all over source code
 uint32 Player::GetBlockDamageReduction()
 {
-    Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    Item* it = this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it == nullptr || it->getItemProperties()->InventoryType != INVTYPE_SHIELD)
         return 0;
 
@@ -12918,7 +12913,7 @@ void Player::ApplyFeralAttackPower(bool apply, Item* item)
 
     Item* it = item;
     if (it == nullptr)
-        it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
     if (it != nullptr)
     {
@@ -12991,7 +12986,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     }
     else if (wowGuid.isItem())
     {
-        Item* quest_giver = m_ItemInterface->GetItemByGUID(guid);
+        Item* quest_giver = getItemInterface()->GetItemByGUID(guid);
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -13065,9 +13060,9 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     {
         uint32 slots_required = qst->count_receiveitems;
 
-        if (m_ItemInterface->CalculateFreeSlots(nullptr) < slots_required)
+        if (getItemInterface()->CalculateFreeSlots(nullptr) < slots_required)
         {
-            m_ItemInterface->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
+            getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
             sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, this);
             return;
         }
@@ -13086,13 +13081,13 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             if (item == nullptr)
                 continue;
 
-            if (!m_ItemInterface->AddItemToFreeSlot(item))
+            if (!getItemInterface()->AddItemToFreeSlot(item))
             {
                 item->DeleteMe();
             }
             else
                 sendItemPushResultPacket(false, true, false,
-                m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
+                getItemInterface()->LastSearchItemBagSlot(), getItemInterface()->LastSearchItemSlot(),
                 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         }
     }
@@ -13105,7 +13100,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             if (item != nullptr)
             {
                 item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
-                if (!m_ItemInterface->AddItemToFreeSlot(item))
+                if (!getItemInterface()->AddItemToFreeSlot(item))
                     item->DeleteMe();
             }
         }
@@ -13904,7 +13899,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     }
     else if (wowGuid.isItem())
     {
-        Item* pItem = GetItemInterface()->GetItemByGUID(guid);
+        Item* pItem = getItemInterface()->GetItemByGUID(guid);
         if (!pItem)
             return;
         pLoot = pItem->loot;
@@ -14107,7 +14102,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                         for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
                         {
                             PlayerInfo* pinfo = *itr2;
-                            if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
+                            if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
                             {
                                 if (pinfo->m_loggedInPlayer->m_passOnLoot)
                                     iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3);		// passed
@@ -14339,7 +14334,7 @@ void Player::SendEquipmentSetList()
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
 
-    m_ItemInterface->m_EquipmentSets.FillEquipmentSetListPacket(data);
+    getItemInterface()->m_EquipmentSets.FillEquipmentSetListPacket(data);
     m_session->SendPacket(&data);
 
     LOG_DEBUG("Sent SMSG_EQUIPMENT_SET_LIST.");

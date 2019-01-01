@@ -83,7 +83,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     {
         if (_player->getCoinage() + mailMessage->money > worldConfig.player.limitGoldAmount)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
         }
     }
@@ -146,7 +146,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slotResult = _player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
+    const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(itemProperties);
     if (slotResult.Result == 0)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -160,7 +160,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
     item->setFlags(ITEM_FLAG_WRAP_GIFT);
     item->SetText(message->body);
 
-    if (_player->GetItemInterface()->AddItemToFreeSlot(item))
+    if (_player->getItemInterface()->AddItemToFreeSlot(item))
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
     else
         item->DeleteMe();
@@ -174,7 +174,7 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
   
-    if (const auto item = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuid))
+    if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid))
         SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->GetText()).serialise().get());
     else
         SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
@@ -376,7 +376,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slotResult = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
+    const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (slotResult.Result == 0)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
@@ -386,9 +386,9 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     }
     item->m_isDirty = true;
 
-    if (!_player->GetItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
+    if (!_player->getItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
     {
-        if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
+        if (!_player->getItemInterface()->AddItemToFreeSlot(item))
         {
             SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
             item->DeleteMe();
@@ -450,7 +450,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     std::vector<Item*> attachedItems;
     for (uint8_t i = 0; i < srlPacket.itemCount; ++i)
     {
-        Item* pItem = _player->GetItemInterface()->GetItemByGUID(srlPacket.itemGuid[i]);
+        Item* pItem = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid[i]);
         if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
             SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -511,7 +511,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         for (auto& item : attachedItems)
         {
             Item* pItem = item;
-            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(item->getGuid(), false) != pItem)
+            if (_player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(item->getGuid(), false) != pItem)
                 continue;
 
             pItem->RemoveFromWorld();

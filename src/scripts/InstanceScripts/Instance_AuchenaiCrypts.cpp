@@ -114,7 +114,7 @@ class EXARCH_MALADAAR_AI : public CreatureAIScript
     void AIUpdate() override
     {
         // case for scriptphase
-        if (getCreature()->GetHealthPct() <= 25 && !Avatar && !getCreature()->IsStunned())
+        if (getCreature()->getHealthPct() <= 25 && !Avatar && !getCreature()->IsStunned())
         {
             sendDBChatMessage(SAY_MALADAAR_07);
 

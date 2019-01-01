@@ -293,9 +293,9 @@ public:
         Item* item;
 
         if (weaponDamageType == OFFHAND)
-            item = static_cast< Player* >(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = static_cast< Player* >(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         else
-            item = static_cast< Player* >(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = static_cast< Player* >(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
         if (item != nullptr && item->getGuid() == mItemGUID)
         {
@@ -361,9 +361,9 @@ public:
         Item* item;
 
         if (weaponDamageType == OFFHAND)
-            item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         else
-            item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
         if (item != nullptr && item->getGuid() == mItemGUID)
             return false;
@@ -951,7 +951,7 @@ public:
 
         uint32 weapspeed = 1;
 
-        auto item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        auto item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (item != nullptr)
             weapspeed = item->getItemProperties()->Delay;
 

@@ -423,7 +423,7 @@ namespace luaItem
     int GetEquippedSlot(lua_State* L, Item* ptr)
     {
         if (!ptr) return 0;
-        lua_pushinteger(L, ptr->getOwner()->GetItemInterface()->GetInventorySlotById(ptr->getEntry()));
+        lua_pushinteger(L, ptr->getOwner()->getItemInterface()->GetInventorySlotById(ptr->getEntry()));
         return 1;
     }
 
