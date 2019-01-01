@@ -971,7 +971,7 @@ TradeData* TradeData::getTargetTradeData() const
 
 Item* TradeData::getTradeItem(TradeSlots slot) const
 {
-    return m_items[slot] ? m_player->GetItemInterface()->GetItemByGUID(m_items[slot]) : nullptr;
+    return m_items[slot] ? m_player->getItemInterface()->GetItemByGUID(m_items[slot]) : nullptr;
 }
 
 bool TradeData::hasTradeItem(uint64 item_guid) const
@@ -989,7 +989,7 @@ bool TradeData::hasTradeItem(uint64 item_guid) const
 
 Item* TradeData::getSpellCastItem() const
 {
-    return m_spellCastItem ? m_player->GetItemInterface()->GetItemByGUID(m_spellCastItem) : nullptr;
+    return m_spellCastItem ? m_player->getItemInterface()->GetItemByGUID(m_spellCastItem) : nullptr;
 }
 
 void TradeData::setItem(TradeSlots slot, Item* item)
@@ -1146,7 +1146,7 @@ void Player::updateAutoRepeatSpell()
     const auto autoRepeatSpell = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
 
     // If player is moving or casting a spell, interrupt wand casting and delay auto shot
-    const auto isAutoShot = autoRepeatSpell->GetSpellInfo()->getId() == 75;
+    const auto isAutoShot = autoRepeatSpell->getSpellInfo()->getId() == 75;
     if (m_isMoving || isCastingSpell(false, true, isAutoShot))
     {
         if (!isAutoShot)
@@ -1170,7 +1170,7 @@ void Player::updateAutoRepeatSpell()
         // also currently if target gets too far away, your autorepeat spell will get interrupted
         // it's related most likely to ::CanShootRangedWeapon()
         const auto target = GetMapMgr()->GetUnit(autoRepeatSpell->m_targets.m_unitTarget);
-        const auto canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->GetSpellInfo()->getId(), target, isAutoShot);
+        const auto canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->getSpellInfo()->getId(), target, isAutoShot);
         if (canCastAutoRepeatSpell != SPELL_CANCAST_OK)
         {
             if (!isAutoShot)
@@ -1183,7 +1183,7 @@ void Player::updateAutoRepeatSpell()
         }
 
         // Cast the spell with triggered flag
-        const auto newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->GetSpellInfo(), true, nullptr);
+        const auto newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->getSpellInfo(), true, nullptr);
         newAutoRepeatSpell->prepare(&autoRepeatSpell->m_targets);
 
         setAttackTimer(RANGED, getBaseAttackTime(RANGED));
@@ -1772,6 +1772,81 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Items
+void Player::unEquipOffHandIfRequired()
+{
+    auto offHandWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    if (offHandWeapon == nullptr)
+        return;
+
+    auto needToRemove = true;
+    // Check if player has a two-handed weapon in offhand
+    if (offHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+        needToRemove = !canDualWield2H();
+    else
+    {
+        // Player has something in offhand, check if main hand is a two-handed weapon
+        const auto mainHandWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+            needToRemove = !canDualWield2H();
+        else
+        {
+            // Main hand nor offhand is a two-handed weapon, check if player can dual wield one-handed weapons
+            if (offHandWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
+                needToRemove = !canDualWield();
+            else
+                // Offhand is not a weapon
+                needToRemove = false;
+        }
+    }
+
+    if (!needToRemove)
+        return;
+
+    // Unequip offhand and find a bag slot for it
+    offHandWeapon = getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
+    auto result = getItemInterface()->FindFreeInventorySlot(offHandWeapon->getItemProperties());
+    if (!result.Result)
+    {
+        // Player has no free slots in inventory, send it by mail
+        offHandWeapon->RemoveFromWorld();
+        offHandWeapon->setOwner(nullptr);
+        offHandWeapon->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
+        offHandWeapon->DeleteMe();
+        offHandWeapon = nullptr;
+    }
+    else if (!getItemInterface()->SafeAddItem(offHandWeapon, result.ContainerSlot, result.Slot) && !getItemInterface()->AddItemToFreeSlot(offHandWeapon))
+    {
+        // shouldn't happen
+        offHandWeapon->DeleteMe();
+        offHandWeapon = nullptr;
+    }
+}
+
+bool Player::hasOffHandWeapon() const
+{
+    if (!canDualWield())
+        return false;
+
+    const auto offHandItem = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    if (offHandItem == nullptr)
+        return false;
+
+    return offHandItem->getItemProperties()->Class == ITEM_CLASS_WEAPON;
+}
+
+bool Player::hasItem(uint32_t itemId, uint32_t amount /*= 1*/, bool checkBankAlso /*= false*/) const
+{
+    return getItemInterface()->GetItemCount(itemId, checkBankAlso) >= amount;
+}
+
+ItemInterface* Player::getItemInterface() const
+{
+    return m_itemInterface;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -1996,69 +2071,6 @@ void Player::sendCinematicOnFirstLogin()
             OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
 #endif
     }
-}
-
-void Player::unEquipOffHandIfRequired()
-{
-    auto offHandWeapon = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (offHandWeapon == nullptr)
-        return;
-
-    auto needToRemove = true;
-    // Check if player has a two-handed weapon in offhand
-    if (offHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
-        needToRemove = !canDualWield2H();
-    else
-    {
-        // Player has something in offhand, check if main hand is a two-handed weapon
-        const auto mainHandWeapon = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
-            needToRemove = !canDualWield2H();
-        else
-        {
-            // Main hand nor offhand is a two-handed weapon, check if player can dual wield one-handed weapons
-            if (offHandWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
-                needToRemove = !canDualWield();
-            else
-                // Offhand is not a weapon
-                needToRemove = false;
-        }
-    }
-
-    if (!needToRemove)
-        return;
-
-    // Unequip offhand and find a bag slot for it
-    offHandWeapon = GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
-    auto result = GetItemInterface()->FindFreeInventorySlot(offHandWeapon->getItemProperties());
-    if (!result.Result)
-    {
-        // Player has no free slots in inventory, send it by mail
-        offHandWeapon->RemoveFromWorld();
-        offHandWeapon->setOwner(nullptr);
-        offHandWeapon->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
-        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
-        offHandWeapon->DeleteMe();
-        offHandWeapon = nullptr;
-    }
-    else if (!GetItemInterface()->SafeAddItem(offHandWeapon, result.ContainerSlot, result.Slot) && !GetItemInterface()->AddItemToFreeSlot(offHandWeapon))
-    {
-        // shouldn't happen
-        offHandWeapon->DeleteMe();
-        offHandWeapon = nullptr;
-    }
-}
-
-bool Player::hasOffHandWeapon()
-{
-    if (!canDualWield())
-        return false;
-
-    const auto offHandItem = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (offHandItem == nullptr)
-        return false;
-
-    return offHandItem->getItemProperties()->Class == ITEM_CLASS_WEAPON;
 }
 
 int32_t Player::getMyCorpseInstanceId() const

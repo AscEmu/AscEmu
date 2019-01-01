@@ -2471,7 +2471,7 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
         for (uint8 i = 0; i < 5; ++i)
         {
             if (item_extended_cost->item[i])
-                m_pOwner->GetItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
+                m_pOwner->getItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
         }
 
         if (m_pOwner->GetHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
@@ -2501,7 +2501,7 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
         {
             if (item_extended_cost->item[i])
             {
-                if (m_pOwner->GetItemInterface()->GetItemCount(item_extended_cost->item[i], false) < (item_extended_cost->count[i] * amount))
+                if (m_pOwner->getItemInterface()->GetItemCount(item_extended_cost->item[i], false) < (item_extended_cost->count[i] * amount))
                     return INV_ERR_VENDOR_MISSING_TURNINS;
             }
         }
@@ -3001,11 +3001,11 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         {
             tSrcItem = (static_cast<Container*>((m_pItems[(int)srcslot])))->GetItem(static_cast<int16>(Slot));
 
-            m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
+            m_pOwner->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
 
             if (tSrcItem != nullptr)
             {
-                auto result = m_pOwner->GetItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
+                auto result = m_pOwner->getItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
                 if (!result)
                 {
                     LOG_ERROR("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->getName().c_str());
@@ -3037,9 +3037,9 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             tDstItem = (static_cast<Container*>((m_pItems[(int)dstslot])))->GetItem(static_cast<int16>(Slot));
 
             if (tSrcItem != nullptr)
-                m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
+                m_pOwner->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
             if (tDstItem != nullptr)
-                m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(dstslot, static_cast<int16>(Slot), false);
+                m_pOwner->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(dstslot, static_cast<int16>(Slot), false);
 
             if (tSrcItem != nullptr)
                 (static_cast<Container*>(DstItem))->AddItem(static_cast<int16>(Slot), tSrcItem);

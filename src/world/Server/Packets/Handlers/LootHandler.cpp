@@ -43,7 +43,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Item:
         {
-            if (const auto item = _player->GetItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
                 return item->loot;
         }
         case HighGuid::Player:
@@ -91,7 +91,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     }
     else if (wowGuid.isItem())
     {
-        lootItem = _player->GetItemInterface()->GetItemByGUID(wowGuid.GetOldGuid());
+        lootItem = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid());
         if (lootItem == nullptr)
             return;
     }
@@ -122,7 +122,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     {
         if (amt == 0)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
@@ -132,7 +132,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
         if (loot->items.at(srlPacket.slot).has_looted.end() != itr)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
@@ -140,9 +140,9 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     const uint32_t itemId = loot->items.at(srlPacket.slot).item.itemproto->ItemId;
     const auto itemProperties = loot->items.at(srlPacket.slot).item.itemproto;
 
-    if (const uint8_t error = _player->GetItemInterface()->CanReceiveItem(itemProperties, 1))
+    if (const uint8_t error = _player->getItemInterface()->CanReceiveItem(itemProperties, 1))
     {
-        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
+        _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
         return;
     }
 
@@ -151,14 +151,14 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     else if (lootCreature)
         CALL_SCRIPT_EVENT(lootCreature, OnLootTaken)(_player, itemProperties);
 
-    auto add = _player->GetItemInterface()->FindItemLessMax(itemId, amt, false);
+    auto add = _player->getItemInterface()->FindItemLessMax(itemId, amt, false);
     sHookInterface.OnLoot(_player, lootCreature, 0, itemId);
     if (add == nullptr)
     {
-        const auto slotResult = _player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
+        const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(itemProperties);
         if (!slotResult.Result)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
             return;
         }
 
@@ -179,7 +179,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             item->ApplyRandomProperties(false);
         }
 
-        if (_player->GetItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
+        if (_player->getItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
         {
             sQuestMgr.OnPlayerItemPickup(_player, item);
             _player->sendItemPushResultPacket(
@@ -211,7 +211,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             false,
             false,
             true,
-            static_cast<uint8_t>(_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid())),
+            static_cast<uint8_t>(_player->getItemInterface()->GetBagSlotByGuid(add->getGuid())),
             0,
             amt,
             add->getEntry(),
@@ -273,7 +273,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Item:
         {
-            if (const auto item = _player->GetItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
                 return item->loot;
         }
         case HighGuid::Player:
@@ -344,7 +344,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
         {
             if (worldConfig.player.isGoldCapEnabled && (_player->getCoinage() + money) > worldConfig.player.limitGoldAmount)
             {
-                _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
@@ -389,7 +389,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
             {
                 if (worldConfig.player.isGoldCapEnabled && (player->getCoinage() + sharedMoney) > worldConfig.player.limitGoldAmount)
                 {
-                    player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                    player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
@@ -616,7 +616,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isItem())
     {
-        if (auto item = _player->GetItemInterface()->GetItemByGUID(srlPacket.guid.GetOldGuid()))
+        if (auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.GetOldGuid()))
         {
             if (item->loot != nullptr)
             {
@@ -630,7 +630,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
             }
 
             if (item->loot == nullptr)
-                _player->GetItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.GetOldGuid(), 1);
+                _player->getItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.GetOldGuid(), 1);
         }
     }
     else
@@ -695,7 +695,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     {
         if (!lootAmount)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
@@ -704,7 +704,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
         const auto looterFFA = loot->items.at(srlPacket.slot).has_looted.find(player->getGuidLow());
         if (loot->items.at(srlPacket.slot).has_looted.end() != looterFFA)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
             return;
         }
     }
@@ -712,19 +712,19 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     const uint32_t itemEntry = loot->items.at(srlPacket.slot).item.itemproto->ItemId;
     const auto itemProperties = loot->items.at(srlPacket.slot).item.itemproto;
 
-    if (const uint8_t error = player->GetItemInterface()->CanReceiveItem(itemProperties, 1))
+    if (const uint8_t error = player->getItemInterface()->CanReceiveItem(itemProperties, 1))
     {
-        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
+        _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
         return;
     }
 
     if (creature)
         CALL_SCRIPT_EVENT(creature, OnLootTaken)(player, itemProperties);
 
-    const auto slotResult = player->GetItemInterface()->FindFreeInventorySlot(itemProperties);
+    const auto slotResult = player->getItemInterface()->FindFreeInventorySlot(itemProperties);
     if (!slotResult.Result)
     {
-        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+        _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
         return;
     }
 
@@ -744,7 +744,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
         item->ApplyRandomProperties(false);
     }
 
-    if (player->GetItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
+    if (player->getItemInterface()->SafeAddItem(item, slotResult.ContainerSlot, slotResult.Slot))
     {
         player->sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);

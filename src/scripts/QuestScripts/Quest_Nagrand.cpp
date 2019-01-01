@@ -289,7 +289,7 @@ class NotOnMyWatch : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() < 30)
+        if (getCreature()->getHealthPct() < 30)
         {
             Unit* pUnit = getCreature()->GetAIInterface()->GetMostHated();
             if (pUnit != nullptr && pUnit->isPlayer())

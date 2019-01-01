@@ -1405,8 +1405,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     break;
             }
 
-            Item* mh = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            Item* of = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            Item* mh = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            Item* of = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
             if (mh != nullptr && of != nullptr)
             {
@@ -1688,7 +1688,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 case 31616: //Nature's Guardian
                 {
                     //yep, another special case: Nature's grace
-                    if (GetHealthPct() > 30)
+                    if (getHealthPct() > 30)
                         continue;
                 }
                 break;
@@ -1710,8 +1710,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 case 16459:
                 {
                     //sword specialization
-                    Item* item_mainhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    Item* item_offhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    Item* item_mainhand = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    Item* item_offhand = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     uint32 reqskillMH = 0;
                     uint32 reqskillOH = 0;
 
@@ -1728,7 +1728,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 case 12721:
                 {
                     //deep wound requires a melee weapon
-                    auto item = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    auto item = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (item)
                     {
                         //class 2 means weapons ;)
@@ -1864,7 +1864,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 case 12964:
                 {
                     //let's recalc chance to cast since we have a full 100 all time on this one
-                    Item* it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    Item* it = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (it == nullptr)
                         continue; //no weapon no joy
                     //float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
@@ -4533,7 +4533,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!isPlayer() || !dmg)
                         continue;
                     //this needs offhand weapon
-                    Item* it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    Item* it = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (it == nullptr || it->getItemProperties()->InventoryType != INVTYPE_WEAPON)
                         continue;
                 }
@@ -7024,17 +7024,17 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         switch (weapon_damage_type)
         {
             case MELEE:   // melee main hand weapon
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
                 self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
                 self_skill = float2int32(pr->CalcRating(PCR_MELEE_OFF_HAND_SKILL));
                 break;
             case RANGED:  // ranged weapon
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 hitmodifier += pr->CalcRating(PCR_RANGED_HIT);
                 self_skill = float2int32(pr->CalcRating(PCR_RANGED_SKILL));
                 break;
@@ -7059,7 +7059,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
                 case 48806:
                 case 51384:
                 {
-                    it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
                     self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
                 } break;
@@ -7277,7 +7277,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             // can block ranged attacks
 
             // Is an offhand equipped and is it a shield?
-            Item* it2 = plr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            Item* it2 = plr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (it2 != nullptr && it2->getItemProperties()->InventoryType == INVTYPE_SHIELD)
             {
                 block = plr->GetBlockChance();
@@ -7332,7 +7332,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         switch (weapon_damage_type)
         {
             case MELEE:   // melee main hand weapon
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
                 if (it)
                 {
@@ -7342,7 +7342,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 }
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 self_skill = float2int32(pr->CalcRating(PCR_MELEE_OFF_HAND_SKILL));
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
@@ -7353,7 +7353,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 }
                 break;
             case RANGED:  // ranged weapon
-                it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 self_skill = float2int32(pr->CalcRating(PCR_RANGED_SKILL));
                 if (it)
                     dmg.school_type = it->getItemProperties()->Damage[0].Type;
@@ -7528,7 +7528,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
     if (this->isPlayer())
     {
-        it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+        it = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
         if (!ability && it != nullptr && (it->getItemProperties()->InventoryType == INVTYPE_WEAPON || it->getItemProperties()->InventoryType == INVTYPE_WEAPONOFFHAND))
         {
@@ -7857,7 +7857,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                     //block
                     case 4:
                     {
-                        Item* shield = static_cast<Player*>(pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                        Item* shield = static_cast<Player*>(pVictim)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                         if (shield != nullptr)
                         {
                             targetEvent = 2;
@@ -8215,7 +8215,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     //durability processing
     if (pVictim->isPlayer())
     {
-        static_cast<Player*>(pVictim)->GetItemInterface()->ReduceItemDurability();
+        static_cast<Player*>(pVictim)->getItemInterface()->ReduceItemDurability();
         if (!this->isPlayer())
         {
             Player* pr = static_cast<Player*>(pVictim);
@@ -8227,14 +8227,14 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
         else
         {
-            static_cast<Player*>(this)->GetItemInterface()->ReduceItemDurability();
+            static_cast<Player*>(this)->getItemInterface()->ReduceItemDurability();
         }
     }
     else
     {
         if (this->isPlayer())//not pvp
         {
-            static_cast<Player*>(this)->GetItemInterface()->ReduceItemDurability();
+            static_cast<Player*>(this)->getItemInterface()->ReduceItemDurability();
             Player* pr = static_cast<Player*>(this);
             if (Rand(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
@@ -8266,7 +8266,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         float s = 1.0f;
 
         // Weapon speed (normal)
-        Item* weapon = (static_cast<Player*>(this)->GetItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (weapon_damage_type == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
+        Item* weapon = (static_cast<Player*>(this)->getItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (weapon_damage_type == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
         if (weapon == nullptr)
         {
             if (weapon_damage_type == OFFHAND)
@@ -8701,8 +8701,8 @@ void Unit::AddAura(Aura* aur)
                             case 72329:
                             case 72330:
                             {
-                                Item* mh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                                Item* oh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                                Item* mh = caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                                Item* oh = caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
                                 if (mh != NULL && oh != NULL)
                                 {
@@ -9277,8 +9277,8 @@ void Unit::AddAura(Aura* aur)
                             case 72329:
                             case 72330:
                             {
-                                Item* mh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                                Item* oh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                                Item* mh = caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                                Item* oh = caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
                                 if (mh != NULL && oh != NULL)
                                 {
@@ -10698,7 +10698,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     //priest - surge of light
                     case 33151:
                     {
-                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
+                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
                         {
                             //SPELL_HASH_SMITE
                             case 585:
@@ -10769,7 +10769,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     {
                         if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
-                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
+                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
                             {
                                 //SPELL_HASH_SHADOW_BOLT
                                 case 686:
@@ -11216,7 +11216,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     {
                         if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
-                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
+                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
                             {
                                 //SPELL_HASH_SHADOW_BOLT
                                 case 686:
@@ -11558,7 +11558,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                         if (getCurrentSpell(CURRENT_GENERIC_SPELL) == nullptr)
                             continue;
 
-                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
+                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
                         {
                             //SPELL_HASH_PYROBLAST
                             case 11366:
@@ -12036,7 +12036,7 @@ void Unit::UpdateVisibility()
 
 void Unit::EventHealthChangeSinceLastUpdate()
 {
-    int pct = GetHealthPct();
+    int pct = getHealthPct();
     if (pct < 35)
         addAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
     else

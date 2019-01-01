@@ -266,6 +266,8 @@ public:
 
     void setDurabilityToMax() { setDurability(getMaxDurability()); }
 
+    bool fitsToSpellRequirements(SpellInfo const* spellInfo) const;
+
     // MIT End
 
         Item();

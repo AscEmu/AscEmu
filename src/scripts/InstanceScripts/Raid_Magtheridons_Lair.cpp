@@ -829,7 +829,7 @@ class MagtheridonAI : public CreatureAIScript
     {
         Aura* aura = getCreature()->getAuraWithId(BANISH);
 
-        if (getCreature()->GetHealthPct() <= 30)
+        if (getCreature()->getHealthPct() <= 30)
         {
             timer_caveIn = 1;
             PhaseSwitch = true;

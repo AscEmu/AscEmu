@@ -359,15 +359,15 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
         return;
 
     item->setStackCount(1);
-    if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
+    if (!Plr->getItemInterface()->AddItemToFreeSlot(item))
     {
         Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
         item->DeleteMe();
     }
     else
     {
-        Plr->sendItemPushResultPacket(false, true, false, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
+        Plr->sendItemPushResultPacket(false, true, false, Plr->getItemInterface()->LastSearchResult()->ContainerSlot,
+            Plr->getItemInterface()->LastSearchResult()->Slot, 1, item->getEntry(), item->getPropertySeed(),
             item->getRandomPropertiesId(), item->getStackCount());
     }
 };

@@ -217,22 +217,22 @@ public:
         if (!proto)
             return;
 
-        slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+        slotresult = pPlayer->getItemInterface()->FindFreeInventorySlot(proto);
 
         if (!slotresult.Result)
         {
-            pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            pPlayer->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
             return;
         }
         else
         {
-            if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
+            if (pPlayer->getItemInterface()->GetItemCount(32971, false) == 0)
             {
                 auto itm = objmgr.CreateItem(32971, pPlayer);
                 if (itm == nullptr)
                     return;
 
-                auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+                auto result = pPlayer->getItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
                 if (!result)
                 {
                     DLLLogDetail("Error while adding item %u to player %s", itm->getEntry(), pPlayer->getName().c_str());
@@ -241,7 +241,7 @@ public:
             }
             else
             {
-                pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                pPlayer->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                 return;
             }
         }

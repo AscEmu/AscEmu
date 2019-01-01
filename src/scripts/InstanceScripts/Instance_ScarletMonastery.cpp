@@ -217,7 +217,7 @@ class WhitemaneAI : public CreatureAIScript
         if (fAmount < 5)
             return;
 
-        if (getCreature()->GetHealthPct() <= 50 && getScriptPhase() == 1)
+        if (getCreature()->getHealthPct() <= 50 && getScriptPhase() == 1)
             ChangeToPhase1();
     }
 

@@ -47,18 +47,18 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
 
     if (rage >= 30)
     {
-        toadd = (multiple[pSpell->GetSpellInfo()->custom_RankNumber] * 30);
+        toadd = (multiple[pSpell->getSpellInfo()->custom_RankNumber] * 30);
     }
     else
     {
-        toadd = (multiple[pSpell->GetSpellInfo()->custom_RankNumber] * rage);
+        toadd = (multiple[pSpell->getSpellInfo()->custom_RankNumber] * rage);
     }
 
     dmg = pSpell->CalculateEffect(effectIndex, pSpell->GetUnitTarget());
     dmg += Caster->getAttackPower() / 5;
     dmg += toadd;
 
-    Caster->Strike(Target, 0, pSpell->GetSpellInfo(), 0, 0, dmg, false, false);
+    Caster->Strike(Target, 0, pSpell->getSpellInfo(), 0, 0, dmg, false, false);
 
     return true;
 }
@@ -128,7 +128,7 @@ bool Charge(uint8_t effectIndex, Spell* s)
         return false;
     }
 
-    uint32 rage_to_gen = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1;
+    uint32 rage_to_gen = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1;
     if (s->p_caster)
     {
         for (std::set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)

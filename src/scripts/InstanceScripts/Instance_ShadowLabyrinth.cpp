@@ -197,7 +197,7 @@ class FelOverseerAI : public CreatureAIScript
     void AIUpdate() override
     {
         HealCooldown--;
-        if (getCreature()->GetHealthPct() <= 25 && HealCooldown <= 0)
+        if (getCreature()->getHealthPct() <= 25 && HealCooldown <= 0)
         {
             getCreature()->CastSpell(getCreature(), heal->mSpellInfo, true);
             HealCooldown = 60;
@@ -370,7 +370,7 @@ class MurmurAI : public CreatureAIScript
         resonance->setAttackStopTimer(1000);
         resonanceTimerId = 0;
 
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->GetHealthPct() >= 41)
+        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }
@@ -382,7 +382,7 @@ class MurmurAI : public CreatureAIScript
     {
         SonicBoomTimerId = _addTimer(5000);
 
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->GetHealthPct() >= 41)
+        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }
@@ -391,7 +391,7 @@ class MurmurAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->GetHealthPct() >= 41)
+        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }

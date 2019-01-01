@@ -101,7 +101,7 @@ class JeklikAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        /*if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
+        /*if (getCreature()->getHealthPct() <= 50 && m_spellcheck[0])
         {
             m_spellcheck[0] = false;
             getCreature()->RemoveAura(TRANSFORM_BAT);
@@ -162,7 +162,7 @@ class VenoxisAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-//      if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
+//      if (getCreature()->getHealthPct() <= 50 && m_spellcheck[0])
 //      {
 //          // cast snake transform
 //          getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);

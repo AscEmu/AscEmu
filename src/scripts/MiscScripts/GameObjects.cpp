@@ -149,7 +149,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11073) && player->GetItemInterface()->GetItemCount(32720, 1))
+        if (player->HasQuest(11073) && player->getItemInterface()->GetItemCount(32720, 1))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(21838, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
@@ -196,7 +196,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->GetItemInterface()->GetItemCount(9240, 1))
+        if (player->getItemInterface()->GetItemCount(9240, 1))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(7273, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -700,8 +700,8 @@ public:
         if (qle == nullptr)
             return;
 
-        if (player->GetItemInterface()->GetItemCount(11470, 0) < 1)
-            player->GetItemInterface()->AddItemById(11470, 1, 0);
+        if (player->getItemInterface()->GetItemCount(11470, 0) < 1)
+            player->getItemInterface()->AddItemById(11470, 1, 0);
     }
 };
 

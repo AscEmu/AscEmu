@@ -229,7 +229,7 @@ class HalazziAI : public CreatureAIScript
             Split();
 
         // Lynx OR Halazzi is at 20% HP Merge them together again
-        if (mLynx && (mLynx->GetHealthPct() <= 20 || _getHealthPercent() <= 20))
+        if (mLynx && (mLynx->getHealthPct() <= 20 || _getHealthPercent() <= 20))
             Merge();
 
         // At <25% Phase 3 begins

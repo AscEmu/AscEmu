@@ -73,13 +73,13 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
     if (mapInfo && mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->HasFinishedQuest(mapInfo->required_quest_H))
         return AreaTriggerResult::NoAttuneQH;
 
-    if (mapInfo && mapInfo->required_item && !player->GetItemInterface()->GetItemCount(mapInfo->required_item, true))
+    if (mapInfo && mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
         return AreaTriggerResult::NoAttuneI;
 
     if (player->iInstanceType >= MODE_HEROIC &&
         mapInfo->type == INSTANCE_MULTIMODE
-        && ((mapInfo->heroic_key_1 > 0 && !player->GetItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
-        && (mapInfo->heroic_key_2 > 0 && !player->GetItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
+        && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
+        && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
         )
         )
         return AreaTriggerResult::NoKey;

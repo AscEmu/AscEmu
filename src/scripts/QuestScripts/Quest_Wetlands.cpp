@@ -32,9 +32,9 @@ bool BendingShinbone(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->p_caster)
     {
         if (Util::getRandomUInt(100) < 17) // 17% chance
-            pSpell->p_caster->GetItemInterface()->AddItemById(ITEM_STURDYSHINBONE, 1, 0); // Sturdy Dragon
+            pSpell->p_caster->getItemInterface()->AddItemById(ITEM_STURDYSHINBONE, 1, 0); // Sturdy Dragon
         else
-            pSpell->p_caster->GetItemInterface()->AddItemById(ITEM_BROKENSHINBONE, 1, 0);
+            pSpell->p_caster->getItemInterface()->AddItemById(ITEM_BROKENSHINBONE, 1, 0);
     }
     return true;
 }

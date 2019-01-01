@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum PowerType
+enum PowerType : int16_t
 {
     POWER_TYPE_HEALTH      = -2,
     POWER_TYPE_MANA        = 0,
@@ -13,7 +13,7 @@ enum PowerType
     POWER_TYPE_FOCUS       = 2,
     POWER_TYPE_ENERGY      = 3,
     POWER_TYPE_HAPPINESS   = 4,
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
     POWER_TYPE_RUNES       = 5,
     POWER_TYPE_RUNIC_POWER = 6,
 #endif

@@ -283,7 +283,7 @@ class VaelastraszAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 15 && getScriptPhase() == 1)
+        if (getCreature()->getHealthPct() <= 15 && getScriptPhase() == 1)
         {
             sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
             setScriptPhase(2);

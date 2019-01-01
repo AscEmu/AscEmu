@@ -185,7 +185,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
             if (unitOwner->isPlayer())
             {
                 auto playerOwner = dynamic_cast<Player*>(unitOwner);
-                const auto item = playerOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (item != nullptr)
                 {
                     for (uint8 si = 0; si < 5; si++)

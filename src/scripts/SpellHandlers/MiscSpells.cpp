@@ -45,14 +45,14 @@ bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget)
         return false;
 
-    uint32 spellId = s->GetSpellInfo()->getId();
+    uint32 spellId = s->getSpellInfo()->getId();
 
     unitTarget->RemoveReflect(spellId, true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetSpellInfo()->getProcChance();
-    rss->spellId = s->GetSpellInfo()->getId();
+    rss->chance = s->getSpellInfo()->getProcChance();
+    rss->spellId = s->getSpellInfo()->getId();
     rss->school = SCHOOL_FROST;
     rss->infront = false;
     rss->charges = 0;
@@ -69,12 +69,12 @@ bool MoltenShields(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget)
         return false;
 
-    unitTarget->RemoveReflect(s->GetSpellInfo()->getId(), true);
+    unitTarget->RemoveReflect(s->getSpellInfo()->getId(), true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetSpellInfo()->getEffectBasePoints(0);
-    rss->spellId = s->GetSpellInfo()->getId();
+    rss->chance = s->getSpellInfo()->getEffectBasePoints(0);
+    rss->spellId = s->getSpellInfo()->getId();
     rss->school = SCHOOL_FIRE;
     rss->infront = false;
     rss->charges = 0;
@@ -170,7 +170,7 @@ bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
         if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->getCoinage() + 50000000) > worldConfig.player.limitGoldAmount)
         {
             s->GetPlayerTarget()->setCoinage(worldConfig.player.limitGoldAmount);
-            s->GetPlayerTarget()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            s->GetPlayerTarget()->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         }
         else
         {
@@ -196,7 +196,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
     if (Rand(chance))
     {
         // Type 0 = Major, 1 = Minor
-        uint32 glyphType = (s->GetSpellInfo()->getId() == 61177) ? 0 : 1;
+        uint32 glyphType = (s->getSpellInfo()->getId() == 61177) ? 0 : 1;
 
         std::vector<uint32> discoverableGlyphs;
 
@@ -262,13 +262,13 @@ bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
         if (m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
-            school = m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->getSchool();
+            school = m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getSpellInfo()->getSchool();
             m_target->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
         // No need to check cast time for generic spells, checked already in Object::isCastingSpell()
         else if (m_target->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
         {
-            school = m_target->getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getSchool();
+            school = m_target->getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getSchool();
             m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
         }
 
@@ -490,10 +490,10 @@ bool TeleportToCoordinates(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == nullptr)
         return true;
 
-    TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->getId());
+    TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->getSpellInfo()->getId());
     if (teleport_coord == nullptr)
     {
-        DLLLogDetail("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->getName().c_str());
+        DLLLogDetail("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->getSpellInfo()->getId(), s->getSpellInfo()->getName().c_str());
         return true;
     }
 

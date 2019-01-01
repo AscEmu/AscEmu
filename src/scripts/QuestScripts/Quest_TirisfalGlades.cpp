@@ -45,7 +45,7 @@ class CalvinMontague : public CreatureAIScript
 
     void OnDamageTaken(Unit* mAttacker, uint32 /*fAmount*/) override
     {
-        if (getCreature()->GetHealthPct() < 10)
+        if (getCreature()->getHealthPct() < 10)
         {
             if (mAttacker->isPlayer())
             {

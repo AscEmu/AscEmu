@@ -183,7 +183,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
     if (playerTarget == nullptr)
         return;
 
-    const auto tradeItem = _player->GetItemInterface()->GetInventoryItem(srlPacket.sourceBag, srlPacket.sourceSlot);
+    const auto tradeItem = _player->getItemInterface()->GetInventoryItem(srlPacket.sourceBag, srlPacket.sourceSlot);
     if (tradeItem == nullptr)
         return;
 
@@ -210,7 +210,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
     {
         if (dynamic_cast<Container*>(tradeItem)->HasItems())
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
+            _player->getItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
 
             SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
             _player->ResetTradeVariables();
@@ -234,7 +234,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 
     if (srlPacket.sourceSlot >= INVENTORY_SLOT_BAG_START && srlPacket.sourceSlot < INVENTORY_SLOT_BAG_END)
     {
-        const auto item = _player->GetItemInterface()->GetInventoryItem(srlPacket.sourceBag);
+        const auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.sourceBag);
         if (item == nullptr || srlPacket.sourceSlot >= item->getItemProperties()->ContainerSlots)
         {
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
@@ -338,8 +338,8 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
         }
 
-        if (_player->m_ItemInterface->CalculateFreeSlots(nullptr) + itemCount < targetItemCount ||
-            targetPlayer->m_ItemInterface->CalculateFreeSlots(nullptr) + targetItemCount < itemCount ||
+        if (_player->getItemInterface()->CalculateFreeSlots(nullptr) + itemCount < targetItemCount ||
+            targetPlayer->getItemInterface()->CalculateFreeSlots(nullptr) + targetItemCount < itemCount ||
             itemCount == 0 && targetItemCount == 0 && !targetPlayer->mTradeGold && !_player->mTradeGold)
         {
             tradeStatus = TRADE_STATUS_CANCELLED;
@@ -375,7 +375,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                     }
                     else
                     {
-                        targetPlayer->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(tradeItemGuid, true);
+                        targetPlayer->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(tradeItemGuid, true);
                     }
                 }
             }
@@ -386,7 +386,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                 if (tradeItem != nullptr)
                 {
                     tradeItem->setOwner(targetPlayer);
-                    if (!targetPlayer->m_ItemInterface->AddItemToFreeSlot(tradeItem))
+                    if (!targetPlayer->getItemInterface()->AddItemToFreeSlot(tradeItem))
                         tradeItem->DeleteMe();
                 }
 
@@ -394,7 +394,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                 if (tradeItem != nullptr)
                 {
                     tradeItem->setOwner(_player);
-                    if (!_player->m_ItemInterface->AddItemToFreeSlot(tradeItem))
+                    if (!_player->getItemInterface()->AddItemToFreeSlot(tradeItem))
                         tradeItem->DeleteMe();
                 }
             }
@@ -403,7 +403,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
             {
                 if (worldConfig.player.isGoldCapEnabled && (_player->getCoinage() + targetPlayer->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
-                    _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                    _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
@@ -416,7 +416,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
             {
                 if (worldConfig.player.isGoldCapEnabled && (targetPlayer->getCoinage() + _player->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
-                    targetPlayer->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                    targetPlayer->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
@@ -920,12 +920,12 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
             if (trade_items[i])
             {
                 trade_items[i]->setCreatorGuid(_player->getGuid());
-                _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->getGuid(), true);
+                _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->getGuid(), true);
             }
             if (target_trade_items[i])
             {
                 target_trade_items[i]->setCreatorGuid(trade_target->getGuid());
-                trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->getGuid(), true);
+                trade_target->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->getGuid(), true);
             }
         }
 
@@ -935,13 +935,13 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
             if (trade_items[i] != nullptr)
             {
                 trade_items[i]->setOwner(trade_target);
-                if (!trade_target->m_ItemInterface->AddItemToFreeSlot(trade_items[i]))
+                if (!trade_target->getItemInterface()->AddItemToFreeSlot(trade_items[i]))
                     trade_items[i]->DeleteMe();
             }
             if (target_trade_items[i] != nullptr)
             {
                 target_trade_items[i]->setOwner(_player);
-                if (!_player->m_ItemInterface->AddItemToFreeSlot(target_trade_items[i]))
+                if (!_player->getItemInterface()->AddItemToFreeSlot(target_trade_items[i]))
                     target_trade_items[i]->DeleteMe();
             }
         }
@@ -951,7 +951,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
         {
             if (sWorld.settings.player.isGoldCapEnabled && (_player->getCoinage() + target_trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
-                _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
@@ -965,7 +965,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& recvData)
             // Check they don't have more than the max gold
             if (sWorld.settings.player.isGoldCapEnabled && (trade_target->getCoinage() + trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
-                trade_target->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+                trade_target->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
             else
             {
@@ -1020,7 +1020,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvData)
         return;
     }
 
-    Item* item = _player->GetItemInterface()->GetInventoryItem(sourceBag, sourceSlot);
+    Item* item = _player->getItemInterface()->GetInventoryItem(sourceBag, sourceSlot);
     if (item == nullptr || (tradeSlot != TRADE_SLOT_NONTRADED && (item->isAccountbound() || item->isSoulbound())))
     {
         sendTradeResult(TRADE_STATUS_TRADE_CANCELED);

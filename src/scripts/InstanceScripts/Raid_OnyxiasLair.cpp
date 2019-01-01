@@ -194,7 +194,7 @@ class OnyxiaAI : public CreatureAIScript
 
     void PhaseOne()
     {
-        if (getCreature()->GetHealthPct() <= 65)
+        if (getCreature()->getHealthPct() <= 65)
         {
             m_phase = 2;
             getCreature()->setModCastSpeed(0.01f);
@@ -216,7 +216,7 @@ class OnyxiaAI : public CreatureAIScript
 
     void PhaseTwo()
     {
-        if (getCreature()->GetHealthPct() <= 40)
+        if (getCreature()->getHealthPct() <= 40)
         {
             m_phase = 3;
             getCreature()->setModCastSpeed(1.0f);

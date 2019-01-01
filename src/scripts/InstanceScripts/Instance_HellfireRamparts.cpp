@@ -55,13 +55,13 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
     //case for scriptPhase
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 40 && !mCalledForHelp)
+        if (getCreature()->getHealthPct() <= 40 && !mCalledForHelp)
         {
             sendDBChatMessage(4871);      // Heal me, quickly!
             mCalledForHelp = true;
         }
 
-        if (getCreature()->GetHealthPct() <= 20 && !_retaliation)
+        if (getCreature()->getHealthPct() <= 20 && !_retaliation)
         {
             _retaliation = true;
             getCreature()->setAttackTimer(MELEE, 1500);

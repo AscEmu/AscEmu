@@ -219,7 +219,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 20 && !Enraged && getScriptPhase() == 1)
+        if (getCreature()->getHealthPct() <= 20 && !Enraged && getScriptPhase() == 1)
         {
             getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
 

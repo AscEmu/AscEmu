@@ -55,8 +55,11 @@ class SERVER_DECL Spell : public EventableObject
 
         virtual SpellCastResult canCast(bool tolerate);
 
+        SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
+
         SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
-        bool canAttackCreatureType(Creature* target);
+        bool canAttackCreatureType(Creature* target) const;
+        SpellInfo* getSpellInfo() const;
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -343,8 +346,6 @@ class SERVER_DECL Spell : public EventableObject
 
         bool IsAspect();
         bool IsSeal();
-
-        SpellInfo* GetSpellInfo();
 
         void InitProtoOverride();
 

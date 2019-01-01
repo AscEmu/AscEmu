@@ -152,7 +152,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
     // Check are we already casting this autorepeat spell
     if (spellInfo->isRangedAutoRepeat() && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
-       && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
+       && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->getSpellInfo())
     {
         return;
     }
@@ -248,7 +248,7 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
     {
         if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
         {
-            if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->getId() == spellId)
+            if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getSpellInfo()->getId() == spellId)
                 _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
 

@@ -176,7 +176,7 @@ public:
         QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
         if (pQuest != nullptr && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
         {
-            if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
+            if (pPlayer->getItemInterface()->GetItemCount(29501) > 0)
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.

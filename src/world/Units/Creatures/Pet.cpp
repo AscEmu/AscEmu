@@ -2399,7 +2399,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         {
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
@@ -2410,7 +2410,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140)
+            if (spl->getSpellInfo()->getChannelInterruptFlags() == 48140)
                 interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
     }

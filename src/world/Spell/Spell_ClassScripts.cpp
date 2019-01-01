@@ -124,7 +124,7 @@ public:
 
     void CastSpell(Unit* totem)
     {
-        uint32 fireNovaSpells = Spell::GetSpellInfo()->getId();
+        uint32 fireNovaSpells = Spell::getSpellInfo()->getId();
         //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
         totem->CastSpellAoF(totem->GetPosition(), sSpellCustomizations.GetSpellInfo(fireNovaSpells), true);
     }
@@ -329,7 +329,7 @@ public:
         {
             uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
             if (count)
-                value += value * count * (GetSpellInfo()->getEffectBasePoints(2) + 1) / 200;
+                value += value * count * (getSpellInfo()->getEffectBasePoints(2) + 1) / 200;
         }
 
         return value;
@@ -495,7 +495,7 @@ public:
         if (caster == NULL)
             return 0;
 
-        int health_pct = caster->GetHealthPct();
+        int health_pct = caster->getHealthPct();
         uint32 cur_health = caster->getHealth();
         uint32 max_health = caster->getMaxHealth();
         uint32 new_health_pct = (cur_health - *dmg) * 100 / max_health;
@@ -524,7 +524,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
+            value = p_caster->getMaxHealth() * (getSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
 
         return value;
     }

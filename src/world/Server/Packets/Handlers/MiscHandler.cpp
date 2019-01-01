@@ -577,7 +577,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", srlPacket.containerSlot, srlPacket.slot);
 
-    auto item = _player->GetItemInterface()->GetInventoryItem(srlPacket.containerSlot, srlPacket.slot);
+    auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.containerSlot, srlPacket.slot);
     if (item == nullptr)
         return;
 
@@ -616,20 +616,20 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         {
             if (lockEntry->locktype[lockCase] == 1 && lockEntry->lockmisc[lockCase] > 0)
             {
-                const int16_t slot2 = _player->GetItemInterface()->GetInventorySlotById(lockEntry->lockmisc[lockCase]);
+                const int16_t slot2 = _player->getItemInterface()->GetInventorySlotById(lockEntry->lockmisc[lockCase]);
                 if (slot2 != ITEM_NO_SLOT_AVAILABLE && slot2 >= INVENTORY_SLOT_ITEM_START && slot2 < INVENTORY_SLOT_ITEM_END)
                 {
                     removeLockItems[lockCase] = lockEntry->lockmisc[lockCase];
                 }
                 else
                 {
-                    _player->GetItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                    _player->getItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
                     return;
                 }
             }
             else if (lockEntry->locktype[lockCase] == 2 && item->locked)
             {
-                _player->GetItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                _player->getItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
                 return;
             }
         }
@@ -637,7 +637,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         for (uint8_t lockCase = 0; lockCase < LOCK_NUM_CASES; ++lockCase)
         {
             if (removeLockItems[lockCase])
-                _player->GetItemInterface()->RemoveItemAmt(removeLockItems[lockCase], 1);
+                _player->getItemInterface()->RemoveItemAmt(removeLockItems[lockCase], 1);
         }
     }
 
@@ -708,7 +708,7 @@ void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
 
     sWeatherMgr.SendWeather(_player);
     _player->ZoneUpdate(srlPacket.zoneId);
-    _player->GetItemInterface()->EmptyBuyBack();
+    _player->getItemInterface()->EmptyBuyBack();
 }
 
 void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
@@ -1485,7 +1485,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     if (!itemProperties)
         return;
 
-    if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->GetItemInterface()->GetItemCount(ammoId) == 0)
+    if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->getItemInterface()->GetItemCount(ammoId) == 0)
     {
         sCheatLog.writefromsession(_player->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
         _player->GetSession()->Disconnect();
@@ -1496,7 +1496,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     {
         if (_player->getLevel() < itemProperties->RequiredLevel)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
@@ -1508,7 +1508,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     {
         if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
@@ -1520,7 +1520,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         {
             if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
             {
-                _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
                 _player->setAmmoId(0);
 #endif
@@ -1540,7 +1540,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
         case DEATHKNIGHT:
 #endif
-            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
@@ -1694,7 +1694,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     const auto slotMaskPos = data.wpos();
     data << uint32_t(slotMask);
 
-    auto itemInterface = inspectedPlayer->GetItemInterface();
+    auto itemInterface = inspectedPlayer->getItemInterface();
     for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
         const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
@@ -2072,7 +2072,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
         for (uint8_t i = 0; i < 11; ++i)
         {
-            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
+            Item* item = pcaster->getItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
             if (item != nullptr)
                 data << uint32_t(item->getItemProperties()->DisplayInfoID);
             else

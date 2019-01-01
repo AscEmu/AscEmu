@@ -81,7 +81,7 @@ public:
         Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
 
-        if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->HasItemCount(39740, 1, false))
+        if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->hasItem(39740))
         {
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
         }

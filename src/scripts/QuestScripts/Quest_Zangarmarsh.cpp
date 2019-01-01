@@ -93,7 +93,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        if (!plr->GetItemInterface()->GetItemCount(24573, true))
+        if (!plr->getItemInterface()->GetItemCount(24573, true))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 9226, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
@@ -121,8 +121,8 @@ public:
             {
                 Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 9231, plr);
 
-                if (!plr->GetItemInterface()->GetItemCount(24573, true))
-                    plr->GetItemInterface()->AddItemById(24573, 1, 0);
+                if (!plr->getItemInterface()->GetItemCount(24573, true))
+                    plr->getItemInterface()->AddItemById(24573, 1, 0);
 
             }break;
         }

@@ -823,7 +823,7 @@ class CuratorAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             switch (Util::getRandomUInt(1))
             {
@@ -1052,10 +1052,10 @@ class ShadeofAranAI : public CreatureAIScript
                 if (itr)
                 {
                     Player* plr = static_cast<Player*>(itr);
-                    if (plr->GetItemInterface()->GetItemCount(22589) > 0 ||
-                        plr->GetItemInterface()->GetItemCount(22630) > 0 ||
-                        plr->GetItemInterface()->GetItemCount(22631) > 0 ||
-                        plr->GetItemInterface()->GetItemCount(22632) > 0)
+                    if (plr->getItemInterface()->GetItemCount(22589) > 0 ||
+                        plr->getItemInterface()->GetItemCount(22630) > 0 ||
+                        plr->getItemInterface()->GetItemCount(22631) > 0 ||
+                        plr->getItemInterface()->GetItemCount(22632) > 0)
                     {
                         HasAtiesh = true;
                         break;
@@ -1171,7 +1171,7 @@ class ShadeofAranAI : public CreatureAIScript
                     explode = false;
                 }
             }
-            else if (summoned == false && getCreature()->GetHealthPct() <= 40)
+            else if (summoned == false && getCreature()->getHealthPct() <= 40)
             {
                 getCreature()->CastSpell(getCreature(), info_summon_elemental_1, true);
                 getCreature()->CastSpell(getCreature(), info_summon_elemental_2, true);
@@ -1180,7 +1180,7 @@ class ShadeofAranAI : public CreatureAIScript
                 sendDBChatMessage(2041);     // I'm not finished yet! No, I have a few more tricks up me sleeve.
                 summoned = true;
             }
-            else if (getCreature()->GetManaPct() <= 20 && !getCreature()->isCastingSpell())
+            else if (getCreature()->getPowerPct(POWER_TYPE_MANA) <= 20 && !getCreature()->isCastingSpell())
             {
                 if (!m_time_pyroblast)
                 {
@@ -1764,7 +1764,7 @@ class DemonChains : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
             getCreature()->Despawn(10000, 0);
     }
 
@@ -2008,12 +2008,12 @@ class MalchezaarAI : public CreatureAIScript
         switch (m_phase)
         {
             case 1:
-                if (getCreature()->GetHealthPct() <= 60)
+                if (getCreature()->getHealthPct() <= 60)
                     PhaseTwo();
                 break;
             case 2:
                 PhaseTwo();
-                if (getCreature()->GetHealthPct() <= 30)
+                if (getCreature()->getHealthPct() <= 30)
                     PhaseThree();
                 break;
             case 3:
@@ -2063,7 +2063,7 @@ class MalchezaarAI : public CreatureAIScript
 
     void PhaseTwo()
     {
-        if (getCreature()->GetHealthPct() <= 60 && m_phase == 1)
+        if (getCreature()->getHealthPct() <= 60 && m_phase == 1)
         {
             sendDBChatMessage(2020);     // Time is the fire in which you'll burn!");
 
@@ -2094,7 +2094,7 @@ class MalchezaarAI : public CreatureAIScript
 
     void PhaseThree()
     {
-        if (getCreature()->GetHealthPct() <= 30 && m_phase == 2)
+        if (getCreature()->getHealthPct() <= 30 && m_phase == 2)
         {
             sendDBChatMessage(2024);     // How can you hope to withstand against such overwhelming power?
 
@@ -2659,9 +2659,9 @@ class NightbaneAI : public CreatureAIScript
             return;
 
         //Switch if needed
-        if ((m_phase == 0 && getCreature()->GetHealthPct() <= 75)
-            || (m_phase == 2 && getCreature()->GetHealthPct() <= 50)
-            || (m_phase == 4 && getCreature()->GetHealthPct() <= 25))
+        if ((m_phase == 0 && getCreature()->getHealthPct() <= 75)
+            || (m_phase == 2 && getCreature()->getHealthPct() <= 50)
+            || (m_phase == 4 && getCreature()->getHealthPct() <= 25))
         {
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
@@ -3043,7 +3043,7 @@ class CroneAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -3168,7 +3168,7 @@ class RomuloAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -3274,7 +3274,7 @@ class JulianneAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);

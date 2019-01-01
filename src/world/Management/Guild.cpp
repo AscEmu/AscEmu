@@ -2299,7 +2299,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     if ((slotId >= MAX_GUILD_BANK_SLOTS && slotId != UNDEFINED_TAB_SLOT) || tabId >= _getPurchasedTabsSize())
         return;
 
-    Item* pSourceItem = player->GetItemInterface()->GetInventoryItem(playerBag, playerSlotId);
+    Item* pSourceItem = player->getItemInterface()->GetInventoryItem(playerBag, playerSlotId);
     Item* pDestItem = getBankTab(tabId)->getItem(slotId);
     Item* pSourceItem2 = pSourceItem;
 
@@ -2307,7 +2307,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     {
         if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
         {
-            player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
+            player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
             return;
         }
     }
@@ -2330,7 +2330,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
         }
         else
         {
-            if (player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
+            if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
                 return;
             if(pSourceItem)
                 pSourceItem->RemoveFromWorld();
@@ -2377,9 +2377,9 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             pDestItem->setOwner(player);
             pDestItem->SaveToDB(playerBag, playerSlotId, true, nullptr);
 
-            if (!player->GetItemInterface()->SafeAddItem(pDestItem, 0, 0))
+            if (!player->getItemInterface()->SafeAddItem(pDestItem, 0, 0))
             {
-                if (!player->GetItemInterface()->AddItemToFreeSlot(pDestItem))
+                if (!player->getItemInterface()->AddItemToFreeSlot(pDestItem))
                     pDestItem->DeleteMe();
             }
 

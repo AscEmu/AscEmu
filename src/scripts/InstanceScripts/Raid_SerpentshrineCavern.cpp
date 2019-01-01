@@ -194,7 +194,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             if (!form)
             {
@@ -562,7 +562,7 @@ class LeotherasAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             if (Phase) //blood elf form
             {
@@ -659,7 +659,7 @@ class LeotherasAI : public CreatureAIScript
 
                 //15% Leotheras/Demon split
                 //wait until he returns nightelf (blizzlike)
-                if (getCreature()->GetHealthPct() <= 15 && !mInWhirlwind)
+                if (getCreature()->getHealthPct() <= 15 && !mInWhirlwind)
                     Phase = 3;
             }
             else
@@ -965,7 +965,7 @@ class KarathressAI : public CreatureAIScript
         }
 
         //Blessing of the Tides
-        if (getCreature()->GetHealthPct() <= 70 && AdvisorsLeft > 0)
+        if (getCreature()->getHealthPct() <= 70 && AdvisorsLeft > 0)
         {
             if (BlessingOfTidesCounter < AdvisorsLeft)
             {
@@ -1141,7 +1141,7 @@ class MorogrimAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             switch (Util::getRandomUInt(2))
             {
@@ -1390,7 +1390,7 @@ class VashjAI : public CreatureAIScript
     {
         if (Phase != 3)
         {
-            if (getCreature()->GetHealthPct() <= 70)
+            if (getCreature()->getHealthPct() <= 70)
             {
                 getCreature()->RemoveAllAuras();
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -1531,7 +1531,7 @@ class VashjAI : public CreatureAIScript
             TaintedElementalTimer = 120;
         }
 
-        if (getCreature()->GetHealthPct() <= 50)
+        if (getCreature()->getHealthPct() <= 50)
         {
             //despawn enchanted elementals
             for (const auto& itr : getCreature()->getInRangeObjectsSet())
@@ -1853,7 +1853,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         PositionChange--;
         PhoenixSummon--;
 
-        /*if (getCreature()->GetHealthPct() == 0)
+        /*if (getCreature()->getHealthPct() == 0)
         {
             Phase = 2;
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
