@@ -1178,7 +1178,7 @@ void Player::updateAutoRepeatSpell()
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
             else if (isPlayer())
-                autoRepeatSpell->SendCastResult(canCastAutoRepeatSpell);
+                autoRepeatSpell->SendCastResult(static_cast<uint8_t>(canCastAutoRepeatSpell));
             return;
         }
 
@@ -1399,7 +1399,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 #endif
 
     // Add the new talent to player talent map
-    getActiveSpec().AddTalent(talentId, talentRank);
+    getActiveSpec().AddTalent(talentId, static_cast<uint8_t>(talentRank));
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 }
 

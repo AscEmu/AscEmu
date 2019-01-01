@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 
-enum CharacterErrorCodes
+enum CharacterErrorCodes : uint8_t
 {
     E_CHAR_CREATE_IN_PROGRESS = 0x2E,
     E_CHAR_CREATE_SUCCESS = 0x2F,

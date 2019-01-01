@@ -246,8 +246,8 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     if (lootGameObject && lootGameObject->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (const auto& lootItem : loot->items)
-            count += lootItem.iItemsCount;
+        for (const auto& itemFromLoot : loot->items)
+            count += itemFromLoot.iItemsCount;
 
         if (!count)
             lootGameObject->ExpireAndDelete();

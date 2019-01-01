@@ -2023,7 +2023,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
         MySQLStructure::TotemDisplayIds totemDisplayId;
 
-        totemDisplayId._race = fields[0].GetUInt32();
+        totemDisplayId._race = static_cast<uint8_t>(fields[0].GetUInt32());
         totemDisplayId.display_id = fields[1].GetUInt32();
         totemDisplayId.race_specific_id = fields[2].GetUInt32();
 

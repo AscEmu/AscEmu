@@ -257,9 +257,9 @@ void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, 
 
 uint32_t Object::getOType() const { return objectData()->type; }
 void Object::setOType(uint32_t type) { write(objectData()->type, type); }
-void Object::setObjectType(uint32_t objectTypeId)
+void Object::setObjectType(uint8_t objectTypeId)
 {
-    uint32_t object_type = TYPE_OBJECT;
+    uint16_t object_type = TYPE_OBJECT;
     switch (objectTypeId)
     {
     case TYPEID_CONTAINER:
@@ -2280,7 +2280,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
                                         for (auto i = 0; i < 4; ++i)
                                         {
-                                            if (quest->required_mob_or_go[i] == this_go->getEntry())
+                                            if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                             {
                                                 if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
                                                 {

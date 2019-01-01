@@ -110,7 +110,7 @@ bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignor
         data << uint8_t(enchCount);
         for (uint32_t i = PERM_ENCHANTMENT_SLOT; i < MAX_ENCHANTMENT_SLOT; ++i)
         {
-            if (uint32_t enchId = pItem->getEnchantmentId(EnchantmentSlot(i)))
+            if (uint32_t enchId = pItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(i))))
             {
                 data << uint8_t(i);
                 data << uint32_t(enchId);

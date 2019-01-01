@@ -7791,7 +7791,6 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
     data << uint64_t(getGuid());
     GetSession()->SendPacket(&data);
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell_id);
     if (SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell_id))
     {
         for (int i = 0; i < NUM_COOLDOWN_TYPES; ++i)

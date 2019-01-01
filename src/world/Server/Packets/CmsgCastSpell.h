@@ -36,7 +36,7 @@ namespace AscEmu { namespace Packets
             return m_minimum_size;
         }
 
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& /*packet*/) override
         {
             return false;
         }
