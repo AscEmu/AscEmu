@@ -174,8 +174,8 @@ class SERVER_DECL PlayerInfo
         uint32 guid;
         uint32 acct;
         char* name;
-        uint32 race;
-        uint32 gender;
+        uint8_t race;
+        uint8_t gender;
         uint8 cl;
         uint32 team;
         uint8 role;

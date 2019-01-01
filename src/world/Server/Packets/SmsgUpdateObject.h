@@ -37,7 +37,7 @@ namespace AscEmu
                 return true;
             }
 
-            bool internalDeserialise(WorldPacket& packet) override
+            bool internalDeserialise(WorldPacket& /*packet*/) override
             {
                 return true;
             }

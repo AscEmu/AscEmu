@@ -167,7 +167,7 @@ enum GuildCommandError
     GC_ERROR_REP_TOO_LOW = 39
 };
 
-enum GuildEvents
+enum GuildEvents : uint8_t
 {
 #if VERSION_STRING == Cata
     GE_PROMOTION = 1,

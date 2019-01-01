@@ -395,7 +395,7 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     int i;
 
     m_canDualWield = false;
-    for (auto i = 0; i < 3; ++i)
+    for (i = 0; i < 3; ++i)
         m_attackTimer[i] = 0;
 
     m_ignoreArmorPctMaceSpec = 0;

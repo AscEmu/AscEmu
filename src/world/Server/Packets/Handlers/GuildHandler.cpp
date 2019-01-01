@@ -490,7 +490,7 @@ void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
         return;
 
     if (Guild* guild = _player->GetGuild())
-        guild->handleSetRankInfo(this, srlPacket.newRankId, srlPacket.rankName, srlPacket.newRights, srlPacket.moneyPerDay, srlPacket._rightsAndSlots);
+        guild->handleSetRankInfo(this, static_cast<uint8_t>(srlPacket.newRankId), srlPacket.rankName, srlPacket.newRights, srlPacket.moneyPerDay, srlPacket._rightsAndSlots);
 }
 
 
@@ -501,7 +501,7 @@ void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
         return;
 
     if (Charter* charter = objmgr.GetCharterByItemGuid(srlPacket.itemGuid))
-        _player->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->GetLeader(), charter->GetID(), charter->SignatureCount,
+        _player->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->GetLeader(), charter->GetID(), static_cast<uint8_t>(charter->SignatureCount),
             charter->Slots, charter->Signatures).serialise().get());
 }
 
@@ -531,7 +531,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->GetLeader(), pCharter->GetID(), pCharter->SignatureCount,
+    pTarget->GetSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->GetLeader(), pCharter->GetID(), static_cast<uint8_t>(pCharter->SignatureCount),
         pCharter->Slots, pCharter->Signatures).serialise().get());
 }
 

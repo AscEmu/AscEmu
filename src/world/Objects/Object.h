@@ -294,7 +294,7 @@ public:
     //\todo choose one function!
     uint32_t getOType() const;
     void setOType(uint32_t type);
-    void setObjectType(uint32_t objectTypeId);
+    void setObjectType(uint8_t objectTypeId);
 
     void setEntry(uint32_t entry);
     uint32_t getEntry() const;

@@ -39,7 +39,7 @@ namespace AscEmu { namespace Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& /*packet*/) override
         {
             return false;
         }
@@ -55,7 +55,7 @@ namespace AscEmu { namespace Packets
             GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
             for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
             {
-                uint32_t bankRights;
+                uint8_t bankRights;
                 uint32_t slots;
 
                 packet >> bankRights;
