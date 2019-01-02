@@ -61,7 +61,7 @@ bool hasInputPathParam = false;
 bool preciseVectorData = false;
 
 const char* szWorkDirWmo = "./Buildings";
-const char* szRawVMAPMagic = "VMAP041";
+const char* szRawVMAPMagic = "VMAP042";
 
 bool FileExists(const char* file)
 {
