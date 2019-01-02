@@ -561,10 +561,10 @@ public:
                 if (proto == nullptr)
                     return;
 
-                auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                 if (!slotresult.Result)
                 {
-                    plr->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                    plr->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                     return;
                 }
                 else
@@ -573,7 +573,7 @@ public:
                     if (item == nullptr)
                         return;
 
-                    auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
+                    auto result = plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
                     if (!result)
                     {
                         DLLLogDetail("Error while adding item %u to player %s", item->getEntry(), plr->getName().c_str());

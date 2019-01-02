@@ -121,33 +121,33 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto language = srlPacket.language;
+    auto messageLanguage = srlPacket.language;
     auto player_can_speak_language = true;
 
-    if (language != LANG_ADDON)
+    if (messageLanguage != LANG_ADDON)
     {
-        if (const auto language_skill = LanguageSkills[language])
+        if (const auto language_skill = LanguageSkills[messageLanguage])
             player_can_speak_language = _player->_HasSkillLine(language_skill);
     }
 
-    if (language != LANG_ADDON)
+    if (messageLanguage != LANG_ADDON)
     {
         if (worldConfig.player.isInterfactionChatEnabled)
         {
-            language = LANG_UNIVERSAL;
+            messageLanguage = LANG_UNIVERSAL;
             player_can_speak_language = true;
         }
 
         if (_player->m_modlanguage >= 0)
         {
-            language = _player->m_modlanguage;
+            messageLanguage = _player->m_modlanguage;
             player_can_speak_language = true;
         }
 
         // GMs speak universal language
         if (GetPermissionCount() > 0)
         {
-            language = LANG_UNIVERSAL;
+            messageLanguage = LANG_UNIVERSAL;
             player_can_speak_language = true;
         }
     }
@@ -207,14 +207,14 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     {
         case CHAT_MSG_EMOTE:
             // TODO Verify "strange gestures" for xfaction
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true, true);
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true, true);
             LogDetail("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             break;
         case CHAT_MSG_SAY:
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true);
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), true);
             break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
@@ -225,7 +225,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            const auto send_packet = SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise();
+            const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise();
 
             if (const auto group = _player->GetGroup())
             {
@@ -264,23 +264,23 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 break;
 
             if (const auto guild = _player->GetGuild())
-                guild->broadcastToGuild(this, false, srlPacket.message, language);
+                guild->broadcastToGuild(this, false, srlPacket.message, messageLanguage);
             break;
         case CHAT_MSG_OFFICER:
             if (is_gm_command)
                 break;
 
             if (const auto guild = _player->GetGuild())
-                guild->broadcastToGuild(this, true, srlPacket.message, language);
+                guild->broadcastToGuild(this, true, srlPacket.message, messageLanguage);
             break;
         case CHAT_MSG_YELL:
         {
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, language, _player->getGuid(), srlPacket.message,
+            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, messageLanguage, _player->getGuid(), srlPacket.message,
                 _player->isGMFlagSet());
-            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, language,
+            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage,
                 this);
         }
         break;
@@ -312,8 +312,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         break;
                     }
 
-                    player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
-                    if (language != LANG_ADDON)
+                    player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, _player->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
+                    if (messageLanguage != LANG_ADDON)
                         // TODO Verify should this be LANG_UNIVERSAL?
                         SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), srlPacket.message, we_are_gm_flagged).serialise().get());
 
@@ -362,7 +362,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!_player->m_bg)
                 break;
 
-            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(srlPacket.type, language, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), _player->getTeam());
+            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise().get(), _player->getTeam());
             break;
     }
 }

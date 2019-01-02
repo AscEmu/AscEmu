@@ -32,6 +32,7 @@
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/AuraEffects.h"
 #include "Spell/Definitions/AuraStates.h"
+#include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
@@ -322,6 +323,7 @@ public:
     void setUnitFlags2(uint32_t unitFlags2);
     void addUnitFlags2(uint32_t unitFlags2);
     void removeUnitFlags2(uint32_t unitFlags2);
+    bool hasUnitFlags2(uint32_t unitFlags2) const;
 #endif
 
     uint32_t getAuraState() const;
@@ -658,6 +660,9 @@ public:
     virtual void removeSanctuaryFlag();
 
     bool isSitting() const;
+
+    uint8_t getHealthPct() const;
+    uint8_t getPowerPct(PowerType powerType) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Death
@@ -1103,24 +1108,7 @@ public:
     void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg);
     void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 
-    int GetHealthPct()
-    {
-        //shitty db? pet/guardian bug?
-        if (getHealth() == 0 || getMaxHealth() == 0)
-            return 0;
-
-        return (int)(getHealth() * 100 / getMaxHealth());
-    };
-
     void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
-
-    int GetManaPct()
-    {
-        if (getPower(0) == 0 || getMaxPower(0) == 0)  //POWER_TYPE_MANA
-            return 0;
-
-        return (int)(getPower(0) * 100 / getMaxPower(0));
-    };
 
     //In-Range
     virtual void addToInRangeObjects(Object* pObj);

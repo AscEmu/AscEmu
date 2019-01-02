@@ -35,7 +35,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
-        plr->GetItemInterface()->AddItemById(24226, 1, 0);
+        plr->getItemInterface()->AddItemById(24226, 1, 0);
     }
 };
 

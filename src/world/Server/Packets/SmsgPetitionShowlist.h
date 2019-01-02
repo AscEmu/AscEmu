@@ -42,25 +42,25 @@ namespace AscEmu { namespace Packets
             {
                 packet << uint8_t(3);   // charter count
 
-                packet << uint32_t(1) << uint32_t(CharterEntry::TwoOnTwo) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._2V2)
+                packet << uint32_t(1) << uint32_t(CharterEntry::TwoOnTwo) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.arena.charterCost2v2)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::TwoOnTwo);
 
-                packet << uint32_t(2) << uint32_t(CharterEntry::ThreeOnThree) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._3V3)
+                packet << uint32_t(2) << uint32_t(CharterEntry::ThreeOnThree) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.arena.charterCost3v3)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::ThreeOnThree);
 
-                packet << uint32_t(3) << uint32_t(CharterEntry::FiveOnFive) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._5V5)
+                packet << uint32_t(3) << uint32_t(CharterEntry::FiveOnFive) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.arena.charterCost5v5)
                     << uint32_t(CharterType::Arena) << uint32_t(CharterRequiredSigns::FiveOnFive);
             }
             else
             {
                 packet << uint8_t(1);   // charter count
 
-                packet << uint32_t(1) << uint32_t(CharterEntry::Guild) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.charterCost._guild)
+                packet << uint32_t(1) << uint32_t(CharterEntry::Guild) << uint32_t(CHARTER_DISPLAY_ID) << uint32_t(worldConfig.guild.charterCost)
                     << uint32_t(CharterType::Guild) << uint32_t(CharterRequiredSigns::Guild);
             }
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override { return false; }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }}

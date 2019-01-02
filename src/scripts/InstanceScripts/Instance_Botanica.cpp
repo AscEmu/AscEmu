@@ -136,7 +136,7 @@ class CommanderSarannisAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 50 && GuardAdds == false)
+        if (getCreature()->getHealthPct() <= 50 && GuardAdds == false)
         {
             GuardAdds = true;
             getCreature()->CastSpell(getCreature(), summonReinforcements->mSpellInfo, true);
@@ -293,7 +293,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 20 && Enraged == false)
+        if (getCreature()->getHealthPct() <= 20 && Enraged == false)
         {
             Enraged = true;
             getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, true);

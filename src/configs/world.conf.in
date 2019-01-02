@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 2/09/2018
+# Last edited: 12/27/2018
 ################################################################################
 
 ################################################################################
@@ -28,115 +28,25 @@
                    Connections = "5">
 
 ################################################################################
-# Listen Config
-#
-#    Host
-#        This is the address that the server will listen on.
-#        To listen on all addresses, set it to 0.0.0.0
-#        Default: 127.0.0.1 (localhost)
-#
-#    WorldServerPort
-#        This is the port that the world server listens on.
-#        It has to be the same as what is specified in the
-#        realms table in the LogonDatabase.
-#        Default: 8129
-#
-
-<Listen Host            = "0.0.0.0"
-        WorldServerPort = "8129">
-
-################################################################################
-# Log Settings
-#
-#    WorldFileLogLevel
-#        This directive controls how much output the server will
-#        write to log files. It cannot be disabled
-#        0 = Normal + Error; 1 = Detail; 2 = Debug;
-#        Default: 0
-#
-#    WorldDebugFlags
-#        This directive controls which debug messages the server
-#        will write to log file.
-#         0 = None                       128 = Spell (Effect)
-#         1 = Opcodes                    256 = Aura (Effect)
-#         2 = Map                        512 = ScriptMgr
-#         4 = MapCell (activity)        1024 = Database
-#         8 = VMap
-#        16 = MMap
-#        32 = Spell
-#        64 = Aura
-#        You can combine these flags: Map + Spell + Database = 1058.
-#        Default: 0
-#
-#    EnableWorldPacketLog
-#        If this directive is turned on, a file called `world.log`
-#        will be created in the server's directory and all packets
-#        sent and received by clients will be dumped here in bfg
-#        format.
-#        Default: 0
-#
-#    DisableCrashdumpReport
-#        Disables crashdump reports, else if the build has debugging enabled, 
-#        ascemu-world will call ./ascemu-crashreport every time it starts, so 
-#        if there is a core, a crashdump will automatically be reported 
-#        to the tracker at sf.net
-#        Needs gdb and curl
-#        Linux only
-#        Default: 0
-#
-#    ExtendedLogDir
-#        Dir to hold all extended logs e.g. cheaters.logs.
-#        Default "logs" (all logs will be saved in ./logs/ directory)
-#
-#    EnableCheaterLog:
-#        This directive sets up the cheater logging file. If turned on any
-#        cheat / packet exploit / speedhack attempts will be logged here.
-#
-#    EnableGMCommandLog:
-#        This directive sets up the GM command logging fie. If turned on, most
-#        GM commands will be logged for abuse investigation, etc.
-#
-#    EnablePlayerLog:
-#        This directive sets up the Player logging fie. If turned on, most
-#        player interactions will be logged for abuse investigation, etc.
-#
-#    EnableTimeStamp:
-#        Enables timestamps in and for logs and log names.
-#
-#    EnableSqlBanLog:
-#        Turn on/off extended ban logs for characters in character database
-#        (table banned_char_log).
-#
-
-<Log WorldFileLogLevel      = "0"
-     WorldDebugFlags        = "0"
-     EnableWorldPacketLog   = "0"
-     DisableCrashdumpReport = "0"
-     ExtendedLogDir         = "logs"
-     EnableCheaterLog       = "0"
-     EnableGMCommandLog     = "0"
-     EnablePlayerLog        = "0"
-     EnableTimeStamp        = "0"
-     EnableSqlBanLog        = "0">
-
-################################################################################
 # LogonServer Settings
 #
 #    Address:
-#        The address (no port) of the server.
+#        The address (no port) of the logonserver.
+#        Default: 127.0.0.1 (localhost)
 #
 #    Port:
 #        The port on which the logon server listens. (*** NOT 3724 ***)
+#        Default: 8093
 #
 #    Name:
 #        Not really relevant, but name the logon.
 #
 #    RealmCount:
-#        The number of realms in section <Realm>. To add more realms, increase
-#        this - and also fill out more realms below depending on the
+#        The number of realms in section <RealmServer>. To add more realms,
+#        increase this - and also fill out more realms below depending on the
 #        configuration you need to connect to them.
 #
-#    DisablePings   
+#    DisablePings
 #        This directive controls whether pings will be sent to the logonserver
 #        to check if the connection is still "alive". Expect problems if it is
 #        disabled.
@@ -144,11 +54,11 @@
 #
 #    RemotePassword
 #        This directive controls the password used to authenticate with the
-#        logonserver. It must be the same between the two configs. If it is not,
-#        your server will not register.
+#        logonserver. It has to be the same as what is specified in the realms
+#        table. If it is not, your server will not register.
 #
 
-<LogonServer Address        = "127.0.0.1" 
+<LogonServer Address        = "127.0.0.1"
              Port           = "8093"
              Name           = "Default Logon"
              RealmCount     = "1"
@@ -156,19 +66,18 @@
              RemotePassword = "change_me_logon">
 
 ################################################################################
-# Realm Section
+# RealmServer Settings
 #
 #    Name:
 #        The name of the realm. (e.g.: Silvermoon)
+#        Default: AscEmu
 #
 #    Address:
 #        The address (and port) of that realm. (e.g.: uber.server.org:8192)
+#        Default: 127.0.0.1:8129
 #
 #    Icon:
 #        The type of realm (PVP, Normal, RPPVP, RP)
-#
-#    Population:
-#        (0 = low, 1 = medium, 2 = high)
 #
 #    TimeZone:
 #        The location of the server.
@@ -184,13 +93,114 @@
 #        10 = French         19 = CN3          30 = TestServer2
 #                            20 = CN4
 #
+#    Lock:
+#        Locks the realm (0 = open, 1 = locked)
+#        Default: 0
+#
 
 <Realm1 Id         = "1"
         Name       = "AscEmu"
-        Address    = "127.0.0.1:8129" 
+        Address    = "127.0.0.1:8129"
         Icon       = "Normal"
-        Population = "1.0"
-        TimeZone   = "1">
+        TimeZone   = "1"
+        Lock       = "0">
+
+################################################################################
+# Listen Config
+#
+#    Host
+#        This is the address that the server will listen on.
+#        To listen on all addresses, set it to 0.0.0.0
+#        Default: 0.0.0.0
+#
+#    WorldServerPort
+#        This is the port that the world server listens on.
+#        It has to be the same as what is specified in the
+#        RealmServer settings.
+#        Default: 8129
+#
+
+<Listen Host            = "0.0.0.0"
+        WorldServerPort = "8129">
+
+################################################################################
+# Log Settings
+#
+#    WorldFileLogLevel
+#        This directive controls how much output the server will
+#        write to log files. It cannot be disabled.
+#        0 = Minimal + Error; 1 = Detail; 2 = Debug;
+#        Default: 1 (Detail)
+#
+#    WorldDebugFlags
+#        This directive controls which debug messages the server
+#        will write to log file.
+#         0 = None                       128 = Spell (Effect)
+#         1 = Opcodes                    256 = Aura (Effect)
+#         2 = Map                        512 = ScriptMgr
+#         4 = MapCell (activity)        1024 = Database
+#         8 = VMap
+#        16 = MMap
+#        32 = Spell
+#        64 = Aura
+#        You can combine these flags: Map + Spell + Database = 1058.
+#        Default: 0 (none)
+#
+#    EnableWorldPacketLog
+#        If this directive is turned on, a file called `world.log`
+#        will be created in the server's directory and all packets
+#        sent and received by clients will be dumped here in bfg
+#        format.
+#        Default: 0 (disabled)
+#
+#    DisableCrashdumpReport
+#        Disables crashdump reports, else if the build has debugging enabled, 
+#        ascemu-world will call ./ascemu-crashreport every time it starts, so 
+#        if there is a core, a crashdump will automatically be reported 
+#        to the tracker at sf.net
+#        Needs gdb and curl
+#        Linux only
+#        Default: 0 (enabled)
+#
+#    ExtendedLogDir
+#        Dir to hold all extended logs e.g. cheaters.logs.
+#        Default "logs" (all logs will be saved in ./logs/ directory)
+#
+#    EnableCheaterLog:
+#        This directive sets up the cheater logging file. If turned on any
+#        cheat / packet exploit / speedhack attempts will be logged here.
+#        Default: 0 (disabled)
+#
+#    EnableGMCommandLog:
+#        This directive sets up the GM command logging fie. If turned on, most
+#        GM commands will be logged for abuse investigation, etc.
+#        Default: 0 (disabled)
+#
+#    EnablePlayerLog:
+#        This directive sets up the Player logging fie. If turned on, most
+#        player interactions will be logged for abuse investigation, etc.
+#        Default: 0 (disabled)
+#
+#    EnableTimeStamp:
+#        Enables timestamps in and for logs and log names.
+#        Default: 0 (disabled)
+#
+#    EnableSqlBanLog:
+#        Turn on/off extended ban logs for characters in character database
+#        (table banned_char_log).
+#        Default: 0 (disabled)
+#
+
+<Log WorldFileLogLevel      = "1"
+     WorldDebugFlags        = "0"
+     EnableWorldPacketLog   = "0"
+     DisableCrashdumpReport = "0"
+     ExtendedLogDir         = "logs"
+     EnableCheaterLog       = "0"
+     EnableGMCommandLog     = "0"
+     EnablePlayerLog        = "0"
+     EnableTimeStamp        = "0"
+     EnableSqlBanLog        = "0">
 
 ################################################################################
 # Server Settings
@@ -205,22 +215,16 @@
 #        This message will be displayed by the server in the chat
 #        box every time any user logs on. Colors can be used in the
 #        standard WoW format.
-#        Default: "No MOTD specified
+#        Default: "Welcome to the World of Warcraft!"
 #
 #    Send Stats On Join
 #        This directive controls whether the server will send the online player
 #        count to a cilent when it enters the world.
+#        Default: 1 (enabled)
 #
-#    Breathing Setup
-#        If the breathing code is causing problems or you want to run a fun
-#        server, you can disable water checks by enabling this directive.
-#        Default: 1
-#
-#    Separate Channels Control
-#        This directive controls whether horde and alliance chats will be
-#        separated across channels. Set to 1 for blizzlike separated channels,
-#        or 0 to allow horde/alliance to speak to each other across channels.
-#        Default: 0
+#    TimeZone
+#        Set your local timezone relative to GMT here.
+#        Default: 0 (GMT+0)
 #
 #    Compression Threshold
 #        This directive controls the limit when update packets will be
@@ -228,113 +232,72 @@
 #        value at the cost of CPU time.
 #        Default: 1000
 #
-#    Queue Update Rate
-#        This directive controls how many milliseconds (ms) between the
-#        updates that the queued players receive telling them their position
-#        in the queue.
-#        Default: 5000 (5 seconds).
-#
-#    Kick AFK Players
-#        Time in milliseconds (ms) that a player will be kicked after they
-#        go afk.
-#        Default: 0 (disabled)
-#
-#    Connection Timeout
-#        This directive specifies the amount of seconds that the client will
-#        be disconnected after if no ping packet is sent. It is advised to
-#        leave it at the default.
-#        Default: 180
-#
-#    Realm Type
-#        This is the realm type that will be used by the server to handle
-#        world PVP.
-#        Default: 0 (pve)(RPPVE)
-#        Other values: 1(pvp)(RPPVP)
-#
 #    AdjustPriority
 #        Set the server to high process priority - may cause lockups.
-#        Default: 0
-#
-#    RequireAllSignatures
-#        This directive controls whether the full 10 signatures will be
-#        required in order to turn in a petition. Smaller servers would be
-#        better off having it turned off.
-#        Default: off
-#
-#    ShowGMInWhoList
-#        This directive controls whether GM's will be shown in player's who
-#        lists or not.
-#        Default: on
+#        Default: 0 (disabled)
 #
 #    MapUnloadTime
 #        This directive controls whether to unload map cells after an idle
-#        period of <x> seconds. NOTE: THIS CAN'T BE SET TO 0!!!
-#        Default: 300
+#        period of <x> seconds. NOTE: THIS CAN'T BE SET TO 0!
+#        Default: 300 (5 minutes)
 #
 #    MapCellNumber
 #        Defines how many cells will be active around a player.
 #        Do NOT set this to 0!
 #        Default: 1 (normal)
 #
+#    Kick AFK Players
+#        Time in seconds that a player will be kicked after they go AFK.
+#        Default: 0 (disabled)
+#
+#    Queue Update Rate
+#        This directive controls how many milliseconds (ms) between the
+#        updates that the queued players receive telling them their position
+#        in the queue.
+#        Default: 5000 (5 seconds)
+#
+#    Breathing Enabled
+#        This directive controls whether breathing is enabled.
+#        Default: 1 (enabled)
+#
 #    LimitedNames
 #        This directive forces all character names to be a-z and A-Z compliant.
-#        Default: 1
+#        Default: 1 (enabled)
 #
 #    UseAccountData
-#        This directive determines whether the account_data table is used to save
-#        custom client data. May cause buggy behaviour.
-#        Default: 0
+#        This directive determines whether the account_data table is used to
+#        save custom client data. May cause buggy behaviour.
+#        Default: 0 (disabled)
 #
 #    AllowPlayerCommands
-#        This directive, if enabled can allow players to use commands with a '0'
+#        This directive, if enabled can allow players to use commands from '0'
 #        command group.
-#        Default: 0
-#
-#    EnableLFGJoin
-#        If this is enabled, you can join the LFG channel without using the LFG
-#        tool.
-#        Default: 0
-#
-#    TimeZone
-#        Set your local timezone relative to GMT here.
-#        Default: 0
-#
-#    DisableFearMovement
-#        Disable fear movement in arenas & battlegrounds. Recommended if you do
-#        not have collision enabled!
-#        Default: 0 (off) Not blizzlike
+#        Default: 0 (disabled)
 #
 #    SaveExtendedCharData
-#        Enable saving extended data to characters table. Recommended for armory
-#        type services.
+#        Enable saving extended data to characters table. Recommended for
+#        armory type services.
 #        Default: 0 (off)
 #
 #    DataDir
-#        Set up the data dir for dbc, maps, vmaps and mmaps.
-#        Default: empty
+#        Set up the data dir for DBC, Maps, VMaps and MMaps.
+#        Default: "" (root directory)
 #
 
 <Server PlayerLimit          = "100"
         Motd                 = "Welcome to the World of Warcraft!"
         SendStatsOnJoin      = "1"
-        EnableBreathing      = "1"
-        SeperateChatChannels = "0"
+        TimeZone             = "0"
         CompressionThreshold = "1000"
-        QueueUpdateInterval  = "5000"
-        KickAFKPlayers       = "0"
-        ConnectionTimeout    = "180"
-        RealmType            = "1"
         AdjustPriority       = "0"
-        RequireAllSignatures = "0"
-        ShowGMInWhoList      = "1"
         MapUnloadTime        = "300"
         MapCellNumber        = "1"
+        KickAFKPlayers       = "0"
+        QueueUpdateInterval  = "5000"
+        EnableBreathing      = "1"
         LimitedNames         = "1"
         UseAccountData       = "0"
         AllowPlayerCommands  = "0"
-        EnableLFGJoin        = "0"
-        TimeZone             = "0"
-        DisableFearMovement  = "0"
         SaveExtendedCharData = "0"
         DataDir              = "">
 
@@ -358,25 +321,24 @@
 #        this way you can keep the high visual but stats at a reasonable value.
 #        Default: @ASC_VERSION_MAX_LEVEL@
 #
-#    Allow The Burning Crusade characters
-#        This will override account settings, so you can disable TBC from your
-#        server without having to mess with accounts.
-#        Default: 1
-#
 #    DKPreReq
-#        Enable/Disable requirement to have a level 55 character on your account
-#        before allowing creation of a Death Knight hero class.
+#        Enable/Disable requirement to have a level 55 character on your
+#        account before allowing creation of a Death Knight hero class.
 #        1 = level 55      0 = Any level
+#        Note: this has no effect on classic or TBC
+#        Default: 1 (enabled)
 #
 #    DKLimit
 #        Enable/Disable limit to have a more than one Death Knight Hero Class
 #        per realm.
 #        1 = Enabled (Only one Death Knight per realm)
-#        0 = Disabled (You can create a 10 DK per realm)
+#        0 = Disabled (You can create 10 DKs per realm)
+#        Note: this has no effect on classic or TBC
+#        Default: 1 (enabled)
 #
 #    MaxProfessions
-#        The maximum number of professions a player can have at a time.
-#        Default: 2
+#        The maximum number of primary professions a player can have at a time.
+#        Default: 2 (blizzlike)
 #
 #    SkipCinematic
 #        Disables intro cinematic at first login. Prevents wrong intros
@@ -384,24 +346,33 @@
 #        Default: 0 (0 = show cinematics, 1 skip cinematics)
 #
 #    InstantLogout
-#        Requires command acces for instantly logging out everywhere.
-#        0 = No one    1 = GMs (default)    2 = Everyone
+#        This variable controls the access level required for instant
+#        logout outside cities.
+#        0 = No one    1 = Only GMs    2 = Everyone
+#        Default: 1 (Only GMs)
 #
 #    MinDualSpecLevel
-#        Player required level for Dual Talent Specialization
+#        Minimum required level for Dual Talent Specialization.
+#        Note: this has no effect on classic or TBC
 #        Default: 40
 #
 #    MinTalentResetLevel
-#        Player required level for talent reset
+#        Minimum required level for talent reset.
 #        Default: 10
 #
 #    ShowAllVendorItems
-#        Show all vendor items
+#        This directive controls whether to show all vendor items
+#        even if the player cannot use them.
 #        Default: 0 (disabled)
 #
 #    InterfactionChat
 #        This directive controls whether horde and alliance players can talk to
 #        each other.
+#        Default: 0 (disabled)
+#
+#    InterfactionChannel
+#        This directive controls whether horde and alliance players have
+#        cross-faction channels.
 #        Default: 0 (disabled)
 #
 #    InterfactionGroup
@@ -424,23 +395,28 @@
 #        faction to their friends list
 #        Default: 0 (disabled)
 #
+#    InterfactionMail
+#        This variable controls whether horde and alliance players can send
+#        mail to each other.
+#        Default: 0 (disabled)
+#
 #    InterfactionMisc
-#        This directive controls whether horde and alliance players are able to
-#        use different functions on players of the opposite faction. This
+#        This directive controls whether horde and alliance players are able
+#        to use different functions on players of the opposite faction. This
 #        includes e.g. using the /who command.
 #        Default: 0 (disabled)
 #
 #    CrossOverCharacters
 #        If this is enabled players are able to create both, horde and alliance
 #        characters on a PVP realm.
-#        Default: 1 (enabled)(Blizzlike)
+#        Default: 0 (disabled)
 #
 #    EnableGoldCap
-#        Enable/Disable Maximum Gold.
-#        Default: 0(Disable) 1(Enable)
+#        Enable/Disable Maximum Gold amount.
+#        Default: 1 (enabled)
 #
 #    StartingGold
-#        On Creating a character they will start with this amount in Gold
+#        This variable controls the amount of gold players start with.
 #        Default: 0
 #
 #    MaximumGold
@@ -448,18 +424,25 @@
 #        Default: 214748 (214k gold)
 #        Note: Client Max is 214748 Gold (2^31, signed int32)
 #
+#    AntiMasterLootNinja
+#        This directive will force the master looter to link all items
+#        which dropped from the creature, eliminating the chance of
+#        ninja looting.
+#        Default: 0 (disabled)
+#
 #    EnablePvPToken
-#        Enable PVPTokenSystem (Adds token to player)
+#        This variable controls whether PvP Token System is enabled.
+#        The system adds a token to the player on a honorable kill.
+#        Default: 0 (disabled)
 #
 #    PvPTokenID
-#        Set PVPToken (Item Id)
+#        The PvPToken for PvP Token System. This is the item id.
+#        Default: 0
 #
 
 <Player StartingLevel       = "1"
         LevelCap            = "@ASC_VERSION_MAX_LEVEL@"
         GenLevelCap         = "@ASC_VERSION_MAX_LEVEL@"
-        AllowTBC            = "1"
-        AntiMasterLootNinja = "0"
         DKStartingTalents   = "0"
         DKPreReq            = "1"
         DKLimit             = "1"
@@ -470,17 +453,97 @@
         MinTalentResetLevel = "10"
         ShowAllVendorItems  = "0"
         InterfactionChat    = "0"
+        InterfactionChannel = "0"
         InterfactionGroup   = "0"
         InterfactionGuild   = "0"
         InterfactionTrade   = "0"
         InterfactionFriends = "0"
+        InterfactionMail    = "0"
         InterfactionMisc    = "0"
-        CrossOverCharacters = "1"
+        CrossOverCharacters = "0"
         EnableGoldCap       = "1"
         StartingGold        = "0"
         MaximumGold         = "214748"
+        AntiMasterLootNinja = "0"
         EnablePvPToken      = "0"
         PvPTokenID          = "0">
+
+################################################################################
+# Guild Settings
+#
+#    Guild
+#        This variable controls how much the guild charter costs in coppers.
+#        Default: 1000 (10 silver)
+#
+#    RequireAllSignatures
+#        This directive controls whether the full 10 signatures will be
+#        required in order to turn in a petition.
+#        Default: 1 (enabled, blizzlike)
+#
+#    MaxLevel
+#        This variable controls the maximum level of the guild.
+#        Note: this has no effect on classic, TBC or wotlk.
+#        Default: 25 (blizzlike)
+#
+#    MaxMembers
+#        This variable controls how many players there can be in the guild.
+#        Default: 0 (unlimited)
+#
+#    MaxXpPerDay
+#        This variable controls how much XP the guild can gain in one day.
+#        Note: this has no effect on classic, TBC or wotlk.
+#        Default: 0 (unlimited)
+#
+#    MaxRepPerWeek
+#        This variable controls how much reputation the guild can gain
+#        in one week.
+#        Note: this has no effect on classic, TBC or wotlk.
+#        Default: 0 (unlimited)
+#
+#    LevelingEnabled
+#        This variable controls whether guilds can level-up.
+#        Note: this has no effect on classic, TBC or wotlk.
+#        Default: 1 (enabled)
+#
+#    UndeletableLevel
+#        This variable controls the maximum level after the guild cannot
+#        be disbanded.
+#        Note: this has no effect on classic, TBC or wotlk.
+#        Default: 0
+#
+#    EventLogCount
+#        This variable controls how many log events there can be in
+#        event logs.
+#        Default: 0
+#
+#    NewsLogCount
+#        This variable controls how many news events there can be in
+#        news logs.
+#        Default: 0
+#
+#    BankLogCount
+#        This variable controls how many guild bank events there can be
+#        in guild bank logs.
+#        Default: 0
+#
+#    SaveInterval
+#        This variable controls how often the guild's data will
+#        be saved. The value is in seconds.
+#        Default: 300 (5 minutes)
+#
+
+<Guild CharterCost          = "1000"
+       RequireAllSignatures = "1"
+       MaxLevel             = "25"
+       MaxMembers           = "0"
+       MaxXpPerDay          = "0"
+       MaxRepPerWeek        = "0"
+       LevelingEnabled      = "1"
+       UndeletableLevel     = "0"
+       EventLogCount        = "0"
+       NewsLogCount         = "0"
+       BankLogCount         = "0"
+       SaveInterval         = "300">
 
 ################################################################################
 # Announce Settings
@@ -494,8 +557,8 @@
 #        Default: 0 (disabled)
 #
 #    NameinAnnounce
-#        If this is enabled the name of the person who makes an announcement will
-#        be shown in front of the msg.
+#        If this is enabled the name of the person who makes an announcement
+#        will be shown in front of the message.
 #        Default: 1 (enabled)
 #
 #    NameinWAnnounce
@@ -548,32 +611,38 @@
 # GameMaster Settings
 #
 #    StartOnGMIsland
-#        Makes GM Characters start on GM Island
-#        Also sets their bind location to GM Island
-#        Default: 0
+#        Makes GameMaster characters start on GM Island.
+#        Also sets their bind location to GM Island.
+#        Default: 0 (disabled)
 #
 #    DisableAchievements
 #        Disables achievements for GameMasters.
-#        Default: 0
+#        Note: this has no effect on classic or TBC.
+#        Default: 0 (disabled)
 #
 #    ListOnlyActiveGMs
-#        List only game masters with enabled GMFlag to players without any
+#        List only GameMasters with enabled GMFlag to players without any
 #        permissions.
-#        Default: 0
+#        Default: 0 (disabled)
 #
 #    HidePermissions
 #        Hides permission flags from players without any permissions.
-#        Default: 0
+#        Default: 0 (disabled)
 #
 #    AnnounceKick
 #        Announce the kick of an player in an global message.
-#        Default: 1
+#        Default: 1 (enabled)
+#
+#    ShowGMInWhoList
+#        This directive controls whether GM's will be shown in player's who
+#        lists or not.
+#        Default: 1 (enabled)
 #
 #    GmClientChannel
 #        This should be set to 'gm_sync_channel' for various Game Master ticket
 #        addons to work. In ArcGM you can set this to be any channel you wish,
-#        however it is good to announce if you change this to anything other then
-#        default to your staff to avoid confusion.
+#        however it is good to announce if you change this to anything other
+#        then default to your staff to avoid confusion.
 #        Default: gm_sync_channel
 #
 
@@ -582,43 +651,44 @@
             ListOnlyActiveGMs   = "0"
             HidePermissions     = "0"
             AnnounceKick        = "1"
+            ShowGMInWhoList     = "1"
             GmClientChannel     = "gm_sync_channel">
 
 ################################################################################
 # Broadcast Settings
 #
 #    EnableSystem
-#        Enable/Disable periodic broadcast system.
-#        Default: 0(Disable) 1(Enable)
+#        This variable controls whether the periodic broadcast system is
+#        enabled. Broadcast entries can be placed in worlddb.worldbroadcast
+#        table.
+#        Default: 0 (disabled)
 #
 
 <Broadcast EnableSystem = "0">
 
 ################################################################################
 # Rate Settings
-# 
-#    These directives set up the multiplier in which regen values will be
-#    multiplied by every 2 seconds.
-#    Powers: 
-#        Power1 = Mana, Power2 = Rage, Power3 = Focus (pets), Power4 = Energy,
-#        VehiclePower = Vehicle Powers ( whatever is set currently )
-#    
-#    Reputation:
-#        Kill = Rep gained on kill, Quest = rep gained from quests
 #
-#    Honor:
-#        Honor = multiplier used to calculate honor per-kill.
+#    Health & Powers
+#        These directives set up the multiplier in which regen values will be
+#        multiplied.
 #
-#    PvP:
-#        PvPTimer = in ms, the timeout for pvp after turning it off. default:
-#        5mins (300000) ArenaQueueDiff = maximum difference in average rating of
-#        2 arena teams to be matched in queue
+#    Drop(Color)
+#        These values will be multiplied by the drop percentages of the items
+#        for creatures to determine which items to drop. All default to 1.
+#        To allow you better control of drops, separate multipliers have been
+#        created for items of each quality group.
 #
-#    XP:
+#    DropMoney
+#        This value will be multiplied by any gold looted and pickpocketed.
+#        Default: 1
+#
+#    XP
 #        The xp that a player receives from killing a creature will be
 #        multiplied by this value in order to get his xp gain.
+#        Default: 1
 #
-#    RestXP: 
+#    RestXP
 #        Amount of hours needed to get one Bubble rested XP ( one bubble is 5%
 #        of the complete XP bar). Default is 8 hrs rest for one bubble. Raising
 #        this rate causes RestedXP to be earned faster, F.e, setting a rate of
@@ -626,49 +696,55 @@
 #        Note that resting in a resting area (Zzz) goes 4 times faster.
 #        Default: 1 (bubble every 8 hrs)
 #
-#    Drop(Color):
-#        These values will be multiplied by the drop percentages of the items
-#        for creatures to determine which items to drop. All default to 1.
-#        To allow you better control of drops, separate multipliers have been
-#        created for items of each quality group. 
+#    Reputation
+#        Kill = Rep gained on kill, Quest = Rep gained from quests
+#        Default: 1
 #
-#    DropMoney:
-#        This value will be multiplied by any gold looted and pickpocketed
-#
-#    Save:
-#        Value in milliseconds (ms) that will be between player autosaves.
-#        Default: 300000 (5 minutes)
-# 
-#    SkillChance:
+#    SkillChance
 #        The chance that you have to level up a skill in melee or a profession
 #        is multiplied by this value.
 #        Default: 1
 #
-#    SkillRate:
+#    SkillRate
 #        The amount of "levels" your skill goes up each time you gain a level
 #        is multiplied by this value.
+#        Default: 1
+#
+#    Honor
+#        Multiplier used to calculate honor per-kill.
+#        Default: 1
+#
+#    PvP Timer
+#        PvPTimer = in ms, the timeout for pvp after turning it off. Default:
+#        5mins (300000)
+#
+#    ArenaQueueDiff
+#        Maximum difference in average rating of 2 arena teams to be matched in
+#        queue.
+#        Default: 150
 #
 #    ArenaMultiplier
 #         Every week/day the arena points gained by a player will be multiplied
 #         by this value.
+#         Default: 1
+#
+#    Save
+#        Value in milliseconds (ms) that will be between player autosaves.
+#        Default: 300000 (5 minutes)
+#
+#    Compression
+#        Multiplier for compressing packets.
+#        Default: 1
 #
 
 <Rates Health            = "1"
-       Power1            = "1"
-       Power2            = "1"
-       Power3            = "1"
-       Power4            = "1"
+       Mana              = "1"
+       Rage              = "1"
+       Focus             = "1"
+       Energy            = "1"
+       RunicPower        = "1"
        VehiclePower      = "1"
-       QuestReputation   = "1"
-       KillReputation    = "1"
-       Honor             = "1"
-       PvPTimer          = "300000"
-       ArenaQueueDiff    = "150"
-       Compression       = "1"
-       XP                = "1"
-       QuestXP           = "1"
-       RestXP            = "1"
-       ExploreXP         = "1"
+
        DropGrey          = "1"
        DropWhite         = "1"
        DropGreen         = "1"
@@ -677,71 +753,98 @@
        DropOrange        = "1"
        DropArtifact      = "1"
        DropMoney         = "1"
-       Save              = "300000"
+
+       XP                = "1"
+       QuestXP           = "1"
+       RestXP            = "1"
+       ExploreXP         = "1"
+
+       QuestReputation   = "1"
+       KillReputation    = "1"
        SkillChance       = "1"
        SkillRate         = "1"
+
+       Honor             = "1"
+       PvPTimer          = "300000"
+       ArenaQueueDiff    = "150"
        ArenaMultiplier2x = "1"
        ArenaMultiplier3x = "1"
-       ArenaMultiplier5x = "1">
+       ArenaMultiplier5x = "1"
+
+       Save              = "300000"
+       Compression       = "1">
+
+################################################################################
+# Corpse Decay Settings
+#
+#    Time in seconds until creature's corpse will decay if not skinned or looted.
+#
+#    Default:
+#    DecayNormal    = "300"     (5 Minutes)
+#    DecayRare      = "900"     (15 Minutes)
+#    DecayElite     = "300"     (5 Minutes)
+#    DecayRareElite = "900"     (15 Minutes)
+#    DecayWorldboss = "3600"    (1 Hour)
+#
+
+<CorpseDecaySettings DecayNormal     = "300"
+                     DecayRare       = "900"
+                     DecayElite      = "300"
+                     DecayRareElite  = "900"
+                     DecayWorldboss  = "3600">
 
 ################################################################################
 # Terrain & Collision Settings
 #
 #    Collision
-#        Enable collision system (LoS). Make sure you have extracted vmaps.
-#        Default: 0 (boolean 0 = false and 1 = true)
+#        Enables collision system (Line of Sight).
+#        Make sure you have extracted Vector Maps (VMaps).
+#        Default: 0 (disabled)
 #
 #    Pathfinding
-#        Enable pathfinding (test). Make sure you enabled collision and
-#        extracted mmaps
-#        Default: 0 (boolean 0 = false and 1 = true)
+#        Enables pathfinding. Make sure you have enabled collision and
+#        extracted Movement Maps (MMaps).
+#        Default: 0 (disabled)
 #
 
-<Terrain UnloadMaps  = "1"
-         Collision   = "0"
+<Terrain Collision   = "0"
          Pathfinding = "0">
 
 ################################################################################
 # Mail Settings
 #
 #    These directives control the limits and behaviour of the ingame mail
-#    system. All options must have Mail prefixed before them.
+#    system.
 #
 #    DisablePostageCostsForGM 
-#        Enables/disables the postage costs for GM's. DisablePostageCosts
-#        overrides this.
-#        Default: 1
+#        Enables/disables the postage costs for GameMasters.
+#        DisablePostageCosts overrides this.
+#        Default: 1 (disabled)
 #
 #    DisablePostageCosts
 #        Disables postage costs for all players.
-#        Default: 0
+#        Default: 0 (enabled)
 #
 #    DisablePostageDelayItems
 #        Disables the one hour wait time when sending mail with items attached.
-#        Default: 1
+#        Default: 1 (disabled)
 #
 #    DisableMessageExpiry
 #        Turns off the 30 day / 3 day after read message expiry time. 
 #        WARNING: A mailbox still cannot show more than 50 items at once
 #        (stupid limitation in client).
-#        Default: 0
-#
-#    EnableInterfactionMail
-#        Removes the faction limitation for sending mail messages. Applies to
-#        all players.
-#        Default: 1
+#        Default: 0 (enabled)
 #
 #    EnableInterfactionMailForGM 
-#        Removes the faction limitation for sending mail messages, but only
-#        applies to GM's. EnableInterfactionMail overrides this.
-#        Default: 1
+#        Removes the faction limitation for sending mail messages for
+#        GameMasters.
+#        Default: 1 (enabled)
 #
 
 <Mail DisablePostageCostsForGM    = "1"
       DisablePostageCosts         = "0"
       DisablePostageDelayItems    = "1"
       DisableMessageExpiry        = "0"
-      EnableInterfactionMail      = "1"
       EnableInterfactionMailForGM = "1">
 
 ################################################################################
@@ -752,14 +855,14 @@
 #        use for loading the database and starting the server. Turning it on
 #        increases the speed at which it starts up for each additional CPU in
 #        your computer.
-#        Default: on
+#        Default: 1 (enabled)
 #
 #    EnableSpellIDDump
 #        This directive controls whether to dump the IDs of spells with
 #        unimplemented dummy/scripted effect or apply dummy aura effect. You
-#        need to load the spellhandlers library for this to actually produce a
+#        need to load the Spellhandlers library for this to actually produce a
 #        valid result!
-#        Default: off
+#        Default: 0 (disabled)
 #        
 #
 #    LoadAdditionalTables
@@ -767,7 +870,7 @@
 #        directive. This way throughout database updates your custom data can be
 #        preserved.
 #        Format: "sourcetable destination table,sourcetable destinationtable"
-#        Example: "myitems items,mynpcs creature_names"
+#        Example: "myitems item_properties,mynpcs creature_properties"
 #        Default: ""
 #
 
@@ -780,51 +883,28 @@
 # Note: Most of this doesn't work as it should.
 #
 #    Teleport   
-#        This directive controls teleport hack checks will be enabled or not.
-#        Default: 1
+#        This directive controls whether teleport hack checks will be enabled.
+#        Default: 0 (disabled)
 #
 #    Speed
-#        This directive controls speed hack checks will be performed on player
-#        movement or not.
-#        Default: 1
-#
-#    SpeedThreshold
-#        This directive controls the threshold at which the speedhack detection
-#        will trip. It's (char move time of dist - real move time of dist)
-#        Default: -600.0
-#
-#    FallDamage
-#        This directive controls fall damage hack checks will be performed on
-#        player movement or not.
-#        Default: 1
-#
-#    Flying
-#        This directive controls whether flight hacks will be performed on
-#        players or not.
-#        Default: 1
-#
-#    FlightThreshold
-#      This directive controls the height at which you must be above the vmaps
-#      height before you are flagged as "flying" and are subject to kicks.
-#      Default: 10
+#        This directive controls whether speed hack checks will be performed
+#        on player movement.
+#        Default: 0 (disabled)
 #
 #    DisableOnGM
 #        This directive controls hack checks will be disabled for GM's or not.
-#        Default: 0
+#        Default: 1 (disabled)
 #
 
-<AntiHack Teleport         = "1"
-          Speed            = "1"
-          FallDamage       = "1"
-          Flight           = "1"
-          FlightThreshold  = "10" 
+<AntiHack Teleport         = "0"
+          Speed            = "0"
           DisableOnGM      = "1">
 
 ################################################################################
 # Period Setup
 #
 #    These are the periods that the server will wait before doing periodic
-#    duties.At the moment only arena point calculation is used here.
+#    duties. At the moment only arena point calculation is used here.
 #
 #    Default:
 #        ArenaUpdate = "weekly"
@@ -850,18 +930,18 @@
 #    FloodLines
 #        This is the number of "messages" or lines that it will allow before
 #        stopping messages from being sent. This counter is reset every
-#        "Seconds" seconds.
+#        "FloodSeconds" seconds.
 #        Default: 0 (disabled)
 #
 #    FloodSeconds
-#        This is the number of seconds in between the Line counter being reset.
+#        This is the number of seconds in between the line counter being reset.
 #        Default: 0 (disabled)
 #
 #    FloodSendMessage
 #        If this is enabled, a "Your message has triggered serverside flood
 #        protection. You can speak again in %u seconds." message will be sent
 #        upon flood triggering.
-#        Default: 0
+#        Default: 0 (disabled)
 #
 
 <Chat BannedChannels   = ""
@@ -874,8 +954,8 @@
 # Remote Console Setup
 #
 #    Enabled
-#        If you want to enable the remote administration console, set this.
-#        Default: 0
+#        If you want to enable the remote administration console, enable this.
+#        Default: 0 (disabled)
 #
 #    Host
 #        This is the interface the RA server listens on.
@@ -890,56 +970,6 @@
 <RemoteConsole Enabled = "0"
                Host    = "0.0.0.0"
                Port    = "8092">
- 
-################################################################################
-# Movement Setup
-# 
-#    NOTE: For any of these directives to function, movement compression has to
-#    be compiled into
-#        the server.
-#
-#    FlushInterval
-#        This is the interval at which movement packets will be flushed to the
-#        client, i.e. compressed/sent. If you have a high threshold, keeping
-#        this at 1-2 seconds will work better.
-#        Default: 1000 (one second)
-#
-#    CompressionRate
-#        This is the deflate compression rate. Higher will use more cpu, but
-#        smaller packets.
-#        Range: 1-9 (or 0 is disable)
-#        Default: 1
-#
-#    CompressionThreshold
-#        This is the distance that will be used to determine if an object needs
-#        to be sent compressed or normal. It is advised to keep it at least 30
-#        units. This value is used for players.
-#        Default: 30.0
-#
-#    CompressionThresholdCreatures
-#        This is the distance that will be used to determine if an object needs
-#        to be sent compressed or normal. This value is used for creatures, so
-#        it can be a lot lower.
-#        Default: 10.0
-#
-
-<Movement FlushInterval              = "1000"
-          CompressRate               = "1"
-          CompressThreshold          = "30.0"
-          CompressThresholdCreatures = "10.0">
-
-################################################################################
-# Localization Setup
-#
-#    LocaleBindings
-#        This is a list of locale names and the other locale you want to
-#        associate with them. For example, to make the European client always
-#        use the French language, "enGB=frFR"
-#        Must be terminated by a space.
-#        Default: ""
-#
-
-<Localization LocaleBindings = "">
 
 ################################################################################
 # Dungeon / Instance Setup
@@ -953,17 +983,17 @@
 #    SlidingExpiration
 #        If enabled, persistent instances will expire relative to the creation
 #        time. Otherwise persistent instances will expire at fixed points of
-#        time. (blizz like)
+#        time. (blizzlike)
 #        Default: 0 (disabled)
 #
 #    DailyHeroicInstanceResetHour
-#        Sets the hour of day when heroic instances will be reset on disabled
-#        SlidingExpiration.
+#        Sets the hour of day (server time) when heroic instances will be reset
+#        on disabled SlidingExpiration.
 #        Default: 5
 #
 #    CheckTriggerPrerequisites
 #        Entering & checks
-#        Default: 1
+#        Default: 1 (enabled)
 #
 
 <InstanceHandling TakeGroupLeaderID            = "1" 
@@ -973,8 +1003,9 @@
 
 ################################################################################
 # BattleGround settings
-# Set Rules for Min / Max players ---- PS.Min for each side | Max for Total
+# Set Rules for Min / Max players ---- PS. Min and Max per each side.
 #
+#  Defaults:
 #    Alterac Valley
 #        AV_MIN = 10
 #        AV_MAX = 40
@@ -1001,25 +1032,25 @@
 #
 #    Random battleground system
 #    RBG_FIRST_WIN_HONOR
-#        Number of honorable Kills worth of additional Honor received for
-#        winning RBG first time in a day
+#        How many honoroable kills worth of additional honor received for
+#        winning RBG first time in a day?
 #        Default 30 (Blizzlike)
 #    RBG_FIRST_WIN_ARENA
-#        Amount of arena points received for winning RBG first time in a day
+#        Amount of arena points received for winning RBG first time in a day.
 #        Default 25
 #    RBG_WIN_HONOR
-#        Number of honorable Kills worth of additional Honor received for
-#        winning RBG
+#        How many honoroable kills worth of additional honor received for
+#        winning RBG?
 #        Default 15
 #    RBG_WIN_ARENA
-#        Amount of arena points received for winning RBG
+#        Amount of arena points received for winning RBG.
 #        Default 0
 #    RBG_LOSE_HONOR
-#        Number of honorable Kills worth of additional Honor received for
-#        losing RBG
+#        How many honoroable kills worth of additional honor received for
+#        losing RBG?
 #        Default 5
 #    RBG_LOSE_ARENA
-#        Amount of arena points received for losing RBG
+#        Amount of arena points received for losing RBG.
 #        Default 0
 #
 
@@ -1044,75 +1075,85 @@
 
 ################################################################################
 # Arena Settings
+# Allows you to control various Arena settings.
 #
-#    Allows you to control various Arena settings.
-#        Season - has to be higher than 0 for arenas to work.
-#        Progress - sets the progress, 0 = finished, 1 = in progress
+#    Season
+#        The current arena season. Has to be higher than 0 for arenas to work.
+#        Default: 8
 #
-################# Player limit rules ###############################
+#    Progress
+#        The progession of current arena season. 0 = finished, 1 = in progress.
+#        Default: 1
 #
-#    2V2_MIN / 2V2_MAX - min/max players #per side# for 2V2 Arenas
-#    3V3_MIN / 3V3_MAX - min/max players #per side# for 3V3 Arenas
-#    5V5_MIN / 5V5_MAX - min/max players #per side# for 5V5 Arenas
+#    2V2_COST
+#        The price for 2v2 charter in coppers.
+#        Default: 800000 (80 gold)
+#
+#    3V3_COST
+#        The price for 3v3 charter in coppers.
+#        Default: 1200000 (120 gold)
+#
+#    5V5_COST
+#        The price for 5v5 charter in coppers.
+#        Default: 2000000 (200 gold)
+#
+#    Minimum and maximum amount of players per side for 2v2/3v3/5v5 arenas.
+#    Defaults:
+#    2v2
+#        2V2_MIN = 2
+#        2V2_MAX - 2
+#
+#    3v3
+#        3V3_MIN = 3
+#        3V3_MAX = 3
+#
+#    5v5
+#        5V5_MIN = 5
+#        5V5_MAX = 5
 #
 
 <Arena Season    = "8"
        Progress  = "1"
+       2V2_COST  = "800000"
+       3V3_COST  = "1200000"
+       5V5_COST  = "2000000"
        2V2_MIN   = "2"
        2V2_MAX   = "2"
        3V3_MIN   = "3"
        3V3_MAX   = "3"
        5V5_MIN   = "5"
        5V5_MAX   = "5">
-       
-################################################################################
-# Charter Costs
-#
-#    Allows you to control the cost of the charters.
-#    The cost is defined in copper (100 copper = 1 silver).
-#
-#   Default:
-#    Guild = "1000"     (10 silver)
-#    2V2   = "800000"   (80 gold)
-#    3V3   = "1200000"  (120 gold)
-#    5V5   = "2000000"  (200 gold)
-#
-
-<CharterCost Guild  = "1000"
-             2V2    = "800000"
-             3V3    = "1200000"
-             5V5    = "2000000">
 
 ################################################################################
 # Limits settings
 #
 #    Enable
-#        Enable damage/hp/mana caps
+#        Enables damage/hp/mana caps.
 #        Default value: 1 (enabled)
 #    AutoAttackDmg
-#        Maximum damage allowed for auto-attack (swing)
+#        Maximum damage allowed for auto-attack (swing).
 #        Default value: 10000
 #    SpellDmg
-#        Maximum damage allowed for a spell
+#        Maximum damage allowed for a spell.
 #        Default value: 30000
 #    Health
-#        Maximum health allowed for a player
+#        Maximum health allowed for a player.
 #        Default value: 100000
 #    Mana
-#        Maximum mana allowed for a player
+#        Maximum mana allowed for a player.
 #        Default value: 80000
 #    Honor
-#        Maximum honor points allowed for a player
+#        Maximum honor points allowed for a player.
 #        Default value: 75000
 #    Arena
-#        Maximum arena points allowed for a player
+#        Maximum arena points allowed for a player.
 #        Default value: 5000
 #    Disconnect
-#        Disconnect player that exceeds limits above
+#        Disconnect player that exceeds limits above.
 #        Default value: 0 (disabled)
 #    BroadcastGMs
 #        Broadcast a message to online GMs when max damage/hp/mana has been
-#        exceeded (possible cheating)
+#        exceeded (possible cheating).
 #        Default value: 1 (on)
 #
 # Set any of the values above to 0 to disable that setting (for example, set
@@ -1124,26 +1165,8 @@
         SpellDmg       = "30000"
         Health         = "100000"
         Mana           = "80000"
+
         Honor          = "75000"
         Arena          = "5000"
         Disconnect     = "0"
         BroadcastGMs   = "1">
-        
-################################################################################
-# Corpse Decay Settings
-#
-#    Time in seconds until creature corpse will decay if not skinned or looted.
-#
-#    Default:
-#    DecayNormal    = "60"      (1 Minute)
-#    DecayRare      = "300"     (5 Minutes)
-#    DecayElite     = "300"     (5 Minutes)
-#    DecayRareElite = "300"     (5 Minutes)
-#    DecayWorldboss = "3600"    (1 Hour)
-#
-
-<CorpseDecaySettings DecayNormal     = "60"
-                     DecayRare       = "300"
-                     DecayElite      = "300"
-                     DecayRareElite  = "300"
-                     DecayWorldboss  = "3600">

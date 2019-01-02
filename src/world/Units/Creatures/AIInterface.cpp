@@ -2452,7 +2452,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
     {
         if (sp->spellType == STYPE_HEAL)
         {
-            if (m_Unit->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
+            if (m_Unit->getHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
             {
                 m_Unit->setTargetGuid(0);
                 return m_Unit;
@@ -2463,7 +2463,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
                 {
                     continue;
                 }
-                if ((*i)->GetHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
+                if ((*i)->getHealthPct() / 100.0f <= sp->floatMisc1) // Heal ourselves cause we got too low HP
                 {
                     m_Unit->setTargetGuid((*i)->getGuid());
                     return (*i); // heal Assist Target which has low HP
@@ -2656,7 +2656,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
         {
             // If nearby miners weren't spotted already we'll give them a little surprise.
             Spell* sp = target->getCurrentSpell(CURRENT_GENERIC_SPELL);
-            if (sp != nullptr && sp->GetSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->getEffectMiscValue(0) == LOCKTYPE_MINING)
+            if (sp != nullptr && sp->getSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK && sp->getSpellInfo()->getEffectMiscValue(0) == LOCKTYPE_MINING)
             {
                 isMining = true;
             }
@@ -3910,8 +3910,8 @@ void AIInterface::_UpdateTotem(uint32 p_time)
         if (nextTarget == NULL ||
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->getGuid()) ||
             !nextTarget->isAlive() ||
-            !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->GetSpellInfo()->custom_base_range_or_radius_sqr)) ||
-            !isAttackable(m_Unit, nextTarget, !(pSpell->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+            !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
+            !isAttackable(m_Unit, nextTarget, !(pSpell->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
            )
            )
         {

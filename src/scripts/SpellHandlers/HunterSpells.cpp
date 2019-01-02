@@ -47,9 +47,9 @@ bool Readiness(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
-    pSpell->p_caster->ClearCooldownsOnLine(50, pSpell->GetSpellInfo()->getId());//Beast Mastery
-    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->GetSpellInfo()->getId());//Marksmanship
-    pSpell->p_caster->ClearCooldownsOnLine(51, pSpell->GetSpellInfo()->getId());//Survival
+    pSpell->p_caster->ClearCooldownsOnLine(50, pSpell->getSpellInfo()->getId());//Beast Mastery
+    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->getSpellInfo()->getId());//Marksmanship
+    pSpell->p_caster->ClearCooldownsOnLine(51, pSpell->getSpellInfo()->getId());//Survival
     return true;
 }
 

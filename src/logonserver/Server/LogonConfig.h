@@ -27,7 +27,7 @@ class SERVER_DECL LogonConfig
             std::string password;
             uint32_t port;
             int connections;
-        }logonDb;
+        } logonDb;
 
         // logon.conf - Listen
         struct Listen
@@ -36,24 +36,25 @@ class SERVER_DECL LogonConfig
             std::string interServerHost;
             uint32_t realmListPort;
             uint32_t port;
-        }listen;
+        } listen;
 
         // logon.conf - LogLevel
         struct LogLevel
         {
             uint32_t file;
-        }logLevel;
+        } logLevel;
 
         // logon.conf - Rates
         struct Rates
         {
             uint32_t accountRefreshTime;
-        }rates;
+        } rates;
 
         // logon.conf - LogonServer
         struct LogonServer
         {
+            bool disablePings;
             std::string allowedIps;
             std::string allowedModIps;
-        }logonServer;
+        } logonServer;
 };

@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "LogonStdAfx.h"
+#include "Logon.h"
 #include "RealmsMgr.h"
 #include "Util.hpp"
 #include <Threading/AEThreadPool.h>
@@ -13,7 +14,7 @@ initialiseSingleton(RealmsMgr);
 RealmsMgr::RealmsMgr()
 {
     LogNotice("RealmsMgr : Starting...");
-    usePings = !Config.MainConfig.getBoolDefault("LogonServer", "DisablePings", false);
+    usePings = !logonConfig.logonServer.disablePings;
 
     LoadRealms();
     LogDetail("RealmsMgr : Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
@@ -21,12 +22,12 @@ RealmsMgr::RealmsMgr()
 
 void RealmsMgr::LoadRealms()
 {
-    QueryResult* result = sLogonSQL->Query("SELECT id, password, status FROM realms");
-    if (result)
+    const auto result = sLogonSQL->Query("SELECT id, password, status FROM realms");
+    if (result != nullptr)
     {
         do
         {
-            Field* field = result->Fetch();
+            const auto field = result->Fetch();
             const uint32_t realmsCount = result->GetRowCount();
             _realmStore.reserve(realmsCount);
 
@@ -43,9 +44,9 @@ void RealmsMgr::LoadRealms()
     }
 }
 
-std::shared_ptr<Realms> RealmsMgr::getRealmById(uint32_t id)
+std::shared_ptr<Realms> RealmsMgr::getRealmById(uint32_t id) const
 {
-    for (auto& realm : _realmStore)
+    for (const auto& realm : _realmStore)
     {
         if (realm->id == id)
             return realm;
@@ -117,7 +118,7 @@ void RealmsMgr::sendRealms(AuthSocket* Socket)
         data << uint16_t(_realmStore.size());
 
     std::unordered_map<uint32_t, uint8_t>::iterator it;
-    for (auto realms : _realmStore)
+    for (const auto realms : _realmStore)
     {
         if (realms->gameBuild == Socket->GetChallenge()->build)
         {
@@ -264,7 +265,6 @@ void RealmsMgr::setRealmOffline(uint32_t realm_id)
         sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
     }
 
-
     realmLock.Release();
 }
 
@@ -280,8 +280,10 @@ void RealmsMgr::updateRealmPop(uint32_t realm_id, float pop)
             flags = REALM_FLAG_FULL | REALM_FLAG_INVALID;
         else if (pop >= 2)
             flags = REALM_FLAG_INVALID;
-        else if (pop >= 0.5)
+        else if (pop >= 1.25)
             flags = 0;
+        else if (pop >= 0.5)
+            flags = REALM_FLAG_RECOMMENDED;
         else
             flags = REALM_FLAG_NEW_PLAYERS;
 

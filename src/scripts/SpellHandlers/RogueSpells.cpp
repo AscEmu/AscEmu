@@ -60,7 +60,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 
     pSpell->p_caster->CastSpell(pTarget->getGuid(), 5940, true);
 
-    Item* it = pSpell->p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    Item* it = pSpell->p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (!it)
         return true;
 

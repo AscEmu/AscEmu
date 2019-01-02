@@ -101,7 +101,7 @@ class GythAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (!HasSummoned && getCreature()->GetHealthPct() <= 8)
+        if (!HasSummoned && getCreature()->getHealthPct() <= 8)
         {
             Unit* Warchief = spawnCreature(CN_REND_BLACKHAND, 157.366516f, -419.779358f, 110.472336f, 3.056772f);
             if (Warchief != NULL)
@@ -298,7 +298,7 @@ class HalyconAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (!HasSummoned && getCreature()->GetHealthPct() <= 25)
+        if (!HasSummoned && getCreature()->getHealthPct() <= 25)
         {
             Unit* cGizrul = spawnCreature(CN_GIZRUL, -195.100006f, -321.970001f, 65.424400f, 0.016500f);
             if (cGizrul != NULL)
@@ -346,7 +346,7 @@ class OverlordWyrmthalakAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (!HasSummoned && getCreature()->GetHealthPct() <= 50)
+        if (!HasSummoned && getCreature()->getHealthPct() <= 50)
         {
             Unit* Warlord1 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.675352f, -493.231750f, 90.610725f, 3.123542f);
             Unit* Warlord2 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.433489f, -479.833923f, 90.535606f, 3.123542f);

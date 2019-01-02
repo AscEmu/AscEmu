@@ -67,29 +67,29 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
     }
 
     uint32 mod;    // spirit bonus coefficient multiplied by 2
-    if (s->GetSpellInfo()->getId() == 1454)
+    if (s->getSpellInfo()->getId() == 1454)
         mod = 2;
-    else if (s->GetSpellInfo()->getId() == 1455)
+    else if (s->getSpellInfo()->getId() == 1455)
         mod = 3;
-    else if (s->GetSpellInfo()->getId() == 1456)
+    else if (s->getSpellInfo()->getId() == 1456)
         mod = 4;
-    else if (s->GetSpellInfo()->getId() == 11687)
+    else if (s->getSpellInfo()->getId() == 11687)
         mod = 5;
     else
         mod = 6;
 
-    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
 
     if (damage >= playerTarget->getHealth())
         return false;
 
-    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->getId());
+    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->getSpellInfo()->getId());
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
     if (playerTarget->getPower(POWER_TYPE_MANA) + damage > playerTarget->getMaxPower(POWER_TYPE_MANA))
         playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getMaxPower(POWER_TYPE_MANA));
     else
         playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getPower(POWER_TYPE_MANA) + damage);
-    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetSpellInfo()->getId());
+    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->getSpellInfo()->getId());
 
     return true;
 }
@@ -131,7 +131,7 @@ bool LesserHealthStone(uint8_t /*effectIndex*/, Spell* s)
     else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19006);
     else
-        s->p_caster->GetItemInterface()->AddItemById(5511, 1, 0);
+        s->p_caster->getItemInterface()->AddItemById(5511, 1, 0);
     return true;
 }
 

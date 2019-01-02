@@ -87,7 +87,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
     }
 
     const auto memberCount = guild->getMembersCount();
-    if (memberCount >= MAX_GUILD_MEMBERS)
+    if (worldConfig.guild.maxMembers > 0 && memberCount >= worldConfig.guild.maxMembers)
     {
         session->SystemMessage("Your guild is full.");
         return;
@@ -659,8 +659,10 @@ void Guild::handleLeaveMember(WorldSession* session)
     {
         if (_guildMembersStore.size() > 1)
             session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE).serialise().get());
-        else if (getLevel() >= worldConfig.guild.undeletabelLevel)
+#if VERSION_STRING >= Cata
+        else if (getLevel() >= worldConfig.guild.undeletableLevel)
             session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL).serialise().get());
+#endif
         else
             disband();
     }
@@ -1080,7 +1082,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     data.Initialize(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
     session->SendPacket(&data);
 
-    if (worldConfig.guild.levlingEnabled == false)
+    if (worldConfig.guild.levelingEnabled == false)
         return;
 
     for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
@@ -2064,7 +2066,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
 void Guild::giveXP(uint32_t xp, Player* source)
 {
 #if VERSION_STRING == Cata
-    if (worldConfig.guild.levlingEnabled == false)
+    if (worldConfig.guild.levelingEnabled == false)
         return;
 
     if (getLevel() >= worldConfig.guild.maxLevel)
@@ -2299,7 +2301,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     if ((slotId >= MAX_GUILD_BANK_SLOTS && slotId != UNDEFINED_TAB_SLOT) || tabId >= _getPurchasedTabsSize())
         return;
 
-    Item* pSourceItem = player->GetItemInterface()->GetInventoryItem(playerBag, playerSlotId);
+    Item* pSourceItem = player->getItemInterface()->GetInventoryItem(playerBag, playerSlotId);
     Item* pDestItem = getBankTab(tabId)->getItem(slotId);
     Item* pSourceItem2 = pSourceItem;
 
@@ -2307,7 +2309,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     {
         if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
         {
-            player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
+            player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
             return;
         }
     }
@@ -2330,7 +2332,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
         }
         else
         {
-            if (player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
+            if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
                 return;
             if(pSourceItem)
                 pSourceItem->RemoveFromWorld();
@@ -2377,9 +2379,9 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             pDestItem->setOwner(player);
             pDestItem->SaveToDB(playerBag, playerSlotId, true, nullptr);
 
-            if (!player->GetItemInterface()->SafeAddItem(pDestItem, 0, 0))
+            if (!player->getItemInterface()->SafeAddItem(pDestItem, 0, 0))
             {
-                if (!player->GetItemInterface()->AddItemToFreeSlot(pDestItem))
+                if (!player->getItemInterface()->AddItemToFreeSlot(pDestItem))
                     pDestItem->DeleteMe();
             }
 

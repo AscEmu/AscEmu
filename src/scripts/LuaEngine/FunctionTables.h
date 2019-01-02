@@ -100,7 +100,7 @@ RegType<Unit> UnitMethods[] =
     { "SetSoulLinkedWith", &LuaUnit::SetSoulLinkedWith },
     { "GetSoulLinkedWith", &LuaUnit::GetSoulLinkedWith },
     { "ChangeTarget", &LuaUnit::ChangeTarget },
-    { "GetHealthPct", &LuaUnit::GetHealthPct },
+    { "GetHealthPct", &LuaUnit::getHealthPct },
     { "SetHealthPct", &LuaUnit::SetHealthPct },
     { "GetManaPct", &LuaUnit::GetManaPct },
     { "Despawn", &LuaUnit::Despawn },

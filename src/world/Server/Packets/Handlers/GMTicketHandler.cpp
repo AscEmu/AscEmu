@@ -301,7 +301,7 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
     if (ticket == nullptr)
         SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0).serialise().get());
     else
-        SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, ticket->map).serialise().get());
+        SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, static_cast<uint8_t>(ticket->map)).serialise().get());
 }
 #else
 void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)

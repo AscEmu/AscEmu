@@ -1977,13 +1977,13 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 }
                 else
                 {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    auto item_add = player->getItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
                     if (!item_add)
                     {
-                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = player->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -1991,7 +1991,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                                if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
                                 }
@@ -2071,13 +2071,13 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 }
                 else
                 {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    auto item_add = player->getItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
                     if (!item_add)
                     {
-                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = player->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -2085,7 +2085,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+                                if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
                                 }

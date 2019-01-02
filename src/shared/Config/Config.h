@@ -44,6 +44,11 @@ public:
     float getFloatDefault(std::string sectionName, std::string confName, float defaultFloat);
 
     bool tryGetBool(std::string sectionName, std::string keyName, bool* b);
+    bool tryGetFloat(std::string sectionName, std::string keyName, float* f);
+    bool tryGetInt(std::string sectionName, std::string keyName, int* i);
+    bool tryGetInt(std::string sectionName, std::string keyName, uint8_t* i);
+    bool tryGetInt(std::string sectionName, std::string keyName, uint32_t* i);
+    bool tryGetString(std::string sectionName, std::string keyName, std::string* s);
 
 private:
 

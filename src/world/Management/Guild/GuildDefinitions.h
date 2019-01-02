@@ -43,8 +43,6 @@ namespace CharterType
     };
 }
 
-#define MAX_GUILD_MEMBERS           500
-
 #define MAX_GUILD_BANK_SLOTS        98
 
 #if VERSION_STRING == Cata
@@ -167,7 +165,7 @@ enum GuildCommandError
     GC_ERROR_REP_TOO_LOW = 39
 };
 
-enum GuildEvents
+enum GuildEvents : uint8_t
 {
 #if VERSION_STRING == Cata
     GE_PROMOTION = 1,

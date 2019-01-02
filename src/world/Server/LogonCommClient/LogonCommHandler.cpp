@@ -210,13 +210,12 @@ LogonCommClientSocket* LogonCommHandler::createReturnLogonServerConnection(std::
 
 void LogonCommHandler::addRealmToRealmlist(LogonCommClientSocket* Socket)
 {
-    for (auto itr : realms)
+    for (const auto realm : realms)
     {
         WorldPacket data(LRCMSG_REALM_REGISTER_REQUEST, 100);
 
         // Add realm to the packet
-        RealmStructure* realm = itr;
-        data << uint32_t(Config.MainConfig.getIntDefault("Realm1", "Id", 1));
+        data << realm->id;
         data << realm->name;
         data << realm->address;
         data << realm->flags;
@@ -447,17 +446,19 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmString << "Realm" << i;
 
             RealmStructure* realmStructure = new RealmStructure;
-            realmStructure->id = Config.MainConfig.getIntDefault(realmString.str(), "Id", 1);
-            realmStructure->name = Config.MainConfig.getStringDefault(realmString.str(), "Name", "AscEmu");
-            realmStructure->address = Config.MainConfig.getStringDefault(realmString.str(), "Address", "127.0.0.1:8129");
-            realmStructure->flags = 0;
-            realmStructure->timeZone = Config.MainConfig.getIntDefault(realmString.str(), "TimeZone", 1);
-            realmStructure->population = Config.MainConfig.getFloatDefault(realmString.str(), "Population", 0.0f);
-            realmStructure->lock = static_cast<uint8_t>(Config.MainConfig.getIntDefault(realmString.str(), "Lock", 0));
+            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id));
+            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name));
+            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address));
+            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "TimeZone", &realmStructure->timeZone));
+            ///\ todo: not handled in core
+            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Lock", &realmStructure->lock));
 
+            realmStructure->population = 0.0f;
+            realmStructure->flags = 0;
             realmStructure->gameBuild = VERSION_STRING;
 
-            std::string realmType = Config.MainConfig.getStringDefault(realmString.str(), "Icon", "Normal");
+            std::string realmType = "Normal";
+            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType));
             Util::StringToLowerCase(realmType);
 
             // process realm type

@@ -82,7 +82,7 @@ bool ElementalPowerExtractor(uint32 /*i*/, Spell* pSpell)
     Creature* pTarget = static_cast<Creature*>(pUnit);
     if ((pTarget->getEntry() == 18881 || pTarget->getEntry() == 18865) && pTarget->isAlive())
     {
-        pPlayer->GetItemInterface()->AddItemById(28548, 1, 0);
+        pPlayer->getItemInterface()->AddItemById(28548, 1, 0);
     }
 
     return true;
@@ -372,9 +372,9 @@ bool CookingPot(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    pPlayer->GetItemInterface()->RemoveItemAmt(31673, 1);
-    pPlayer->GetItemInterface()->RemoveItemAmt(31672, 2);
-    pPlayer->GetItemInterface()->AddItemById(33848, 1, 0);
+    pPlayer->getItemInterface()->RemoveItemAmt(31673, 1);
+    pPlayer->getItemInterface()->RemoveItemAmt(31672, 2);
+    pPlayer->getItemInterface()->AddItemById(33848, 1, 0);
 
     return true;
 }
@@ -996,8 +996,8 @@ bool EmblazonRuneblade(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    pPlayer->GetItemInterface()->AddItemById(38631, 1, 0);
-    pPlayer->GetItemInterface()->RemoveItemAmt(38607, 1);
+    pPlayer->getItemInterface()->AddItemById(38631, 1, 0);
+    pPlayer->getItemInterface()->RemoveItemAmt(38607, 1);
     return true;
 }
 
@@ -3127,8 +3127,8 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
         }
     }
 
-    if (pPlayer->GetItemInterface()->GetItemCount(pQuest->GetQuest()->required_item[0], true) < pQuest->GetQuest()->required_itemcount[0])
-        pPlayer->GetItemInterface()->AddItemById(23614, 1, 0); //Red Snapper.
+    if (pPlayer->getItemInterface()->GetItemCount(pQuest->GetQuest()->required_item[0], true) < pQuest->GetQuest()->required_itemcount[0])
+        pPlayer->getItemInterface()->AddItemById(23614, 1, 0); //Red Snapper.
 
     return true;
 }

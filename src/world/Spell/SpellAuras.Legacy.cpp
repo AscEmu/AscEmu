@@ -1766,7 +1766,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             {
                 Player* pr = static_cast< Player* >(c);
                 Item* it;
-                it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (it)
                 {
                     dmg = 0;
@@ -4225,7 +4225,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = m_target->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && (curSpell->GetSpellInfo()->getRequiredShapeShift() & decimalToMask(mod->m_miscValue)))
+                if (curSpell != nullptr && (curSpell->getSpellInfo()->getRequiredShapeShift() & decimalToMask(mod->m_miscValue)))
                     m_target->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }
@@ -6032,20 +6032,20 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
 
 
                 ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
-                if (pCaster->GetItemInterface()->CalculateFreeSlots(proto) > 0)
+                if (pCaster->getItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
                     Item* item = objmgr.CreateItem(itemid, pCaster);
                     if (!item)
                         return;
 
                     item->setCreatorGuid(pCaster->getGuid());
-                    if (!pCaster->GetItemInterface()->AddItemToFreeSlot(item))
+                    if (!pCaster->getItemInterface()->AddItemToFreeSlot(item))
                     {
-                        pCaster->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                        pCaster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                         item->DeleteMe();
                         return;
                     }
-                    SlotResult* lr = pCaster->GetItemInterface()->LastSearchResult();
+                    SlotResult* lr = pCaster->getItemInterface()->LastSearchResult();
 
                     pCaster->sendItemPushResultPacket(true, false, true, lr->ContainerSlot, lr->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 }
@@ -9439,11 +9439,11 @@ void Aura::SpellAuraMirrorImage2(bool apply)
 
             Item* item;
 
-            item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = p->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             if (item != nullptr)
                 m_target->setVirtualItemSlotId(0, item->getItemProperties()->ItemId);
 
-            item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = p->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)
                 m_target->setVirtualItemSlotId(OFFHAND, item->getItemProperties()->ItemId);
         }

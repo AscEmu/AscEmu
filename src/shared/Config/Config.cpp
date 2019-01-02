@@ -476,3 +476,62 @@ bool ConfigFile::tryGetBool(std::string sectionName, std::string confName, bool 
     return true;
 }
 
+bool ConfigFile::tryGetFloat(std::string sectionName, std::string confName, float* f)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *f = setting->asFloat;
+    return true;
+}
+
+bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, int* i)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *i = setting->asInt;
+    return true;
+}
+
+bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint8_t* i)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *i = setting->asInt;
+    return true;
+}
+
+bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint32_t* i)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *i = setting->asInt;
+    return true;
+}
+
+bool ConfigFile::tryGetString(std::string sectionName, std::string confName, std::string* s)
+{
+    const auto setting = getSavedSetting(sectionName, confName);
+    if (!setting)
+    {
+        return false;
+    }
+
+    *s = setting->asString;
+    return true;
+}

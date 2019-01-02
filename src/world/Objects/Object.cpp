@@ -257,9 +257,9 @@ void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, 
 
 uint32_t Object::getOType() const { return objectData()->type; }
 void Object::setOType(uint32_t type) { write(objectData()->type, type); }
-void Object::setObjectType(uint32_t objectTypeId)
+void Object::setObjectType(uint8_t objectTypeId)
 {
-    uint32_t object_type = TYPE_OBJECT;
+    uint16_t object_type = TYPE_OBJECT;
     switch (objectTypeId)
     {
     case TYPEID_CONTAINER:
@@ -649,7 +649,7 @@ Spell* Object::getCurrentSpellById(uint32_t spellId) const
     {
         if (m_currentSpell[i] == nullptr)
             continue;
-        if (m_currentSpell[i]->GetSpellInfo()->getId() == spellId)
+        if (m_currentSpell[i]->getSpellInfo()->getId() == spellId)
             return m_currentSpell[i];
     }
     return nullptr;
@@ -661,17 +661,17 @@ void Object::setCurrentSpell(Spell* curSpell)
 
     // Get current spell type
     CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
-    if (curSpell->GetSpellInfo()->isOnNextMeleeAttack())
+    if (curSpell->getSpellInfo()->isOnNextMeleeAttack())
     {
         // Melee spell
         spellType = CURRENT_MELEE_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->isRangedAutoRepeat())
+    else if (curSpell->getSpellInfo()->isRangedAutoRepeat())
     {
         // Autorepeat spells (Auto shot / Shoot (wand))
         spellType = CURRENT_AUTOREPEAT_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->isChanneled())
+    else if (curSpell->getSpellInfo()->isChanneled())
     {
         // Channeled spells
         spellType = CURRENT_CHANNELED_SPELL;
@@ -695,7 +695,7 @@ void Object::setCurrentSpell(Spell* curSpell)
             if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
             {
                 // Generic spells do not break Auto Shot
-                if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+                if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->getSpellInfo()->getId() != 75)
                     interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
             break;
@@ -708,7 +708,7 @@ void Object::setCurrentSpell(Spell* curSpell)
             interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
 
             // Also break autorepeat spells, unless it's Auto Shot
-            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->getSpellInfo()->getId() != 75)
             {
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
@@ -717,7 +717,7 @@ void Object::setCurrentSpell(Spell* curSpell)
         case CURRENT_AUTOREPEAT_SPELL:
         {
             // Other autorepeats than Auto Shot break non-delayed generic and channeled spells
-            if (curSpell->GetSpellInfo()->getId() != 75)
+            if (curSpell->getSpellInfo()->getId() != 75)
             {
                 interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
                 interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
@@ -751,7 +751,7 @@ void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell)
             continue;
 
         if (m_currentSpell[i] != nullptr &&
-            (spellId == 0 || m_currentSpell[i]->GetSpellInfo()->getId() == spellId))
+            (spellId == 0 || m_currentSpell[i]->getSpellInfo()->getId() == spellId))
         {
             interruptSpellWithSpellType(CurrentSpellType(i));
         }
@@ -768,7 +768,7 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             if (isPlayer() && IsInWorld())
             {
                 // Send server-side cancel message
-                auto spellId = curSpell->GetSpellInfo()->getId();
+                auto spellId = curSpell->getSpellInfo()->getId();
                 static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
             }
         }
@@ -783,14 +783,14 @@ bool Object::isCastingSpell(bool skipChanneled /*= false*/, bool skipAutorepeat 
 {
     // Check generic spell, but ignore finished spells
     if (m_currentSpell[CURRENT_GENERIC_SPELL] != nullptr && m_currentSpell[CURRENT_GENERIC_SPELL]->getState() != SPELL_STATE_FINISHED && m_currentSpell[CURRENT_GENERIC_SPELL]->getCastTimeLeft() > 0 &&
-        (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+        (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
     {
         return true;
     }
 
     // If not skipped, check channeled spell
     if (!skipChanneled && m_currentSpell[CURRENT_CHANNELED_SPELL] != nullptr && m_currentSpell[CURRENT_CHANNELED_SPELL]->getState() != SPELL_STATE_FINISHED &&
-        (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+        (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
     {
         return true;
     }
@@ -809,7 +809,7 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
     {
         if (m_currentSpell[i] == nullptr)
             continue;
-        if (m_currentSpell[i]->GetSpellInfo()->getId() == spellId)
+        if (m_currentSpell[i]->getSpellInfo()->getId() == spellId)
             return m_currentSpell[i];
     }
     return nullptr;
@@ -2280,7 +2280,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
                                         for (auto i = 0; i < 4; ++i)
                                         {
-                                            if (quest->required_mob_or_go[i] == this_go->getEntry())
+                                            if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                             {
                                                 if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
                                                 {
@@ -2303,7 +2303,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                         {
                                             if (const auto quest_log = target->GetQuestLogForEntry(quest_props.first->id))
                                             {
-                                                if (target->GetItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
+                                                if (target->getItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
                                                 {
                                                     activate_quest_object = true;
                                                     break;
@@ -3114,7 +3114,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
                 return;
 
             Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, nullptr);
-            sp->GetSpellInfo()->setEffectBasePoints(spellpower, 0);
+            sp->getSpellInfo()->setEffectBasePoints(spellpower, 0);
             SpellCastTargets targets;
             targets.m_unitTarget = pl->getGuid();
             sp->prepare(&targets);

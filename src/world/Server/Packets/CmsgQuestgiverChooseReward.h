@@ -31,7 +31,7 @@ namespace AscEmu { namespace Packets
         {
         }
 
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& /*packet*/) override
         {
             return false;
         }

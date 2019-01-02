@@ -41,7 +41,7 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 50 && getScriptPhase() == 1)
+        if (getCreature()->getHealthPct() <= 50 && getScriptPhase() == 1)
         {
             getCreature()->CastSpell(getCreature(), frenzy->mSpellInfo, true);
             setScriptPhase(2);
@@ -214,7 +214,7 @@ class VectusAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 25 && getScriptPhase() == 1)
+        if (getCreature()->getHealthPct() <= 25 && getScriptPhase() == 1)
         {
             getCreature()->CastSpell(getCreature(), frenzy->mSpellInfo, true);
             setScriptPhase(2);

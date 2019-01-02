@@ -56,7 +56,7 @@ class KrikthirAI : public CreatureAIScript
     void AIUpdate() override
     {
         // case for scriptphase
-        if (getCreature()->GetHealthPct() <= 10 && mEnraged == false)
+        if (getCreature()->getHealthPct() <= 10 && mEnraged == false)
         {
             _applyAura(KRIKTHIR_ENRAGE);
             mEnraged = true;

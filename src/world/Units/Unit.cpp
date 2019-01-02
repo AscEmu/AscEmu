@@ -260,6 +260,7 @@ uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
 void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
 void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
+bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & unitFlags2) != 0; }
 #endif
 
 uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
@@ -2123,6 +2124,32 @@ bool Unit::isSitting() const
         standState == STANDSTATE_SIT_CHAIR || standState == STANDSTATE_SIT_LOW_CHAIR ||
         standState == STANDSTATE_SIT_MEDIUM_CHAIR || standState == STANDSTATE_SIT_HIGH_CHAIR ||
         standState == STANDSTATE_SIT;
+}
+
+uint8_t Unit::getHealthPct() const
+{
+    if (getHealth() <= 0 || getMaxHealth() <= 0)
+        return 0;
+
+    if (getHealth() > getMaxHealth())
+        return 100;
+
+    return static_cast<uint8_t>(getHealth() * 100 / getMaxHealth());
+}
+
+uint8_t Unit::getPowerPct(PowerType powerType) const
+{
+    if (powerType == POWER_TYPE_HEALTH)
+        return getHealthPct();
+
+    const auto powerIndex = static_cast<uint16_t>(powerType);
+    if (getPower(powerIndex) <= 0 || getMaxPower(powerIndex) <= 0)
+        return 0;
+
+    if (getPower(powerIndex) > getMaxPower(powerIndex))
+        return 100;
+
+    return static_cast<uint8_t>(getPower(powerIndex) * 100 / getMaxPower(powerIndex));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

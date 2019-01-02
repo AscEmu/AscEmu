@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
+#include "Spell/Definitions/PowerType.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -563,12 +564,12 @@ void CreatureAIScript::_wipeHateList()
 
 int32_t CreatureAIScript::_getHealthPercent()
 {
-    return _creature->GetHealthPct();
+    return _creature->getHealthPct();
 }
 
 int32_t CreatureAIScript::_getManaPercent()
 {
-    return _creature->GetManaPct();
+    return _creature->getPowerPct(POWER_TYPE_MANA);
 }
 
 void CreatureAIScript::_regenerateHealth()
@@ -1082,7 +1083,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     continue;
 
                 // hp range
-                if (!AISpell->isHpInPercentRange(getCreature()->GetHealthPct()))
+                if (!AISpell->isHpInPercentRange(getCreature()->getHealthPct()))
                     continue;
 
                 // no random chance (cast in script)
@@ -1178,7 +1179,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
                 if (
                     inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getCreature()->GetDistance2dSq(inRangeTarget))
-                    && ((AiSpell->isHpInPercentRange(inRangeTarget->GetHealthPct()) && isTargetRandFriend)
+                    && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
                     || (getCreature()->GetAIInterface()->getThreatByPtr(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
                 {
                     possibleUnitTargets.push_back(inRangeTarget);
@@ -1187,7 +1188,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         }
 
         // add us as a friendly target.
-        if (AiSpell->isHpInPercentRange(getCreature()->GetHealthPct()) && isTargetRandFriend)
+        if (AiSpell->isHpInPercentRange(getCreature()->getHealthPct()) && isTargetRandFriend)
             possibleUnitTargets.push_back(getCreature());
 
         // no targets in our range for hp range and firendly targets
@@ -1530,7 +1531,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             return false;
 
         // only wounded targets if requested
-        if ((pFilter & TargetFilter_Wounded) && UnitTarget->GetHealthPct() >= 99)
+        if ((pFilter & TargetFilter_Wounded) && UnitTarget->getHealthPct() >= 99)
             return false;
 
         // targets not in melee range if requested

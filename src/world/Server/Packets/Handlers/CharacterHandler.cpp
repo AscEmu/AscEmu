@@ -567,7 +567,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name.c_str(), srlPacket.createStruct.name.length());
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SendPacket(SmsgCharCustomize(E_CHAR_NAME_NO_NAME).serialise().get());
+        SendPacket(SmsgCharCustomize(loginErrorCode).serialise().get());
         return;
     }
 
@@ -626,7 +626,7 @@ void WorldSession::initGMMyMaster()
 
 void WorldSession::sendServerStats()
 {
-    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
+    if (worldConfig.server.sendStatsOnJoin)
     {
 #ifdef WIN32
         _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
@@ -812,8 +812,6 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
     if (result)
     {
-        uint32_t numchar = result->GetRowCount();
-
         do
         {
             Field* fields = result->Fetch();

@@ -171,7 +171,7 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-        if (plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
+        if (plr->HasQuest(10201) && plr->getItemInterface()->GetItemCount(28500, 0))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
 
         menu.Send(plr);
@@ -179,7 +179,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
-        plr->GetItemInterface()->RemoveItemAmt(2799, 1);
+        plr->getItemInterface()->RemoveItemAmt(2799, 1);
 
         plr->AddQuestKill(10201, 0, 0);
     }

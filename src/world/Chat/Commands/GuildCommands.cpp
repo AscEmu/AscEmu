@@ -142,7 +142,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     {
         uint32 memberCount = guild->getMembersCount();
 
-        if (memberCount >= MAX_GUILD_MEMBERS)
+        if (worldConfig.guild.maxMembers > 0 && memberCount >= worldConfig.guild.maxMembers)
         {
             m_session->SystemMessage("That guild is full.");
             return true;

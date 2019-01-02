@@ -1882,7 +1882,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                     if (mEoS && mEoS->getCreature() && mEoS->isAlive())
                     {
                         Creature* pEoS = mEoS->getCreature();
-                        if (pEoS->GetHealthPct() <= 1 && pEoS->CalcDistance(getCreature()) <= 3)
+                        if (pEoS->getHealthPct() <= 1 && pEoS->CalcDistance(getCreature()) <= 3)
                         {
                             getCreature()->Emote(EMOTE_STATE_STAND);
                             mEoS->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11414, "Now what do I do?!");
@@ -1911,7 +1911,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                     if (mEoD && mEoD->getCreature() && mEoD->isAlive())
                     {
                         Creature* pEoD = mEoD->getCreature();
-                        if (pEoD->GetHealthPct() <= 1 && pEoD->CalcDistance(getCreature()) <= 3)
+                        if (pEoD->getHealthPct() <= 1 && pEoD->CalcDistance(getCreature()) <= 3)
                         {
                             getCreature()->Emote(EMOTE_STATE_STAND);
                             mEoD->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11413, "I'll be waiting.");
@@ -2061,7 +2061,7 @@ class ShahrazAI : public CreatureAIScript
             SoundTimer = 0;
         }
 
-        if (!Enraged && getCreature()->GetHealthPct() <= 20)
+        if (!Enraged && getCreature()->getHealthPct() <= 20)
         {
             sendDBChatMessage(4659);     // Stop toying with my emotions!
             getCreature()->CastSpell(getCreature(), MS_ENRAGE, true);
@@ -2296,7 +2296,7 @@ class ShadeofakamaAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetHealthPct() > 0)
+        if (getCreature()->getHealthPct() > 0)
         {
             switch (Util::getRandomUInt(2))
             {
@@ -2330,7 +2330,7 @@ class ShadeofakamaAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 85 && hm == 100)
+        if (getCreature()->getHealthPct() <= 85 && hm == 100)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 2; i++)
@@ -2343,7 +2343,7 @@ class ShadeofakamaAI : public CreatureAIScript
             getCreature()->PlaySoundToSet(10999);
             hm = 85;
         }
-        else if (getCreature()->GetHealthPct() <= 70 && hm == 85)
+        else if (getCreature()->getHealthPct() <= 70 && hm == 85)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 2; i++)
@@ -2356,7 +2356,7 @@ class ShadeofakamaAI : public CreatureAIScript
             getCreature()->PlaySoundToSet(10999);
             hm = 70;
         }
-        else if (getCreature()->GetHealthPct() <= 55 && hm == 70)
+        else if (getCreature()->getHealthPct() <= 55 && hm == 70)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 2; i++)
@@ -2369,7 +2369,7 @@ class ShadeofakamaAI : public CreatureAIScript
             getCreature()->PlaySoundToSet(10999);
             hm = 55;
         }
-        else if (getCreature()->GetHealthPct() <= 40 && hm == 55)
+        else if (getCreature()->getHealthPct() <= 40 && hm == 55)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 2; i++)
@@ -2382,7 +2382,7 @@ class ShadeofakamaAI : public CreatureAIScript
             getCreature()->PlaySoundToSet(10999);
             hm = 40;
         }
-        else if (getCreature()->GetHealthPct() <= 25 && hm == 40)
+        else if (getCreature()->getHealthPct() <= 25 && hm == 40)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 5; i++)
@@ -2395,7 +2395,7 @@ class ShadeofakamaAI : public CreatureAIScript
             getCreature()->PlaySoundToSet(10999);
             hm = 25;
         }
-        else if (getCreature()->GetHealthPct() <= 10 && hm == 25)
+        else if (getCreature()->getHealthPct() <= 10 && hm == 25)
         {
             Creature* cre = NULL;
             for (uint8 i = 0; i < 5; i++)
@@ -4673,7 +4673,7 @@ class IllidanStormrageAI : public CreatureAIScript
             MaievScene();
             return;
         }
-        else if (getCreature()->GetHealthPct() <= 30 && !_isCasting())
+        else if (getCreature()->getHealthPct() <= 30 && !_isCasting())
         {
 #ifdef USE_SHADOW_PRISON
             stopMovement();

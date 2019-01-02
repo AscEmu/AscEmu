@@ -333,7 +333,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (((getCreature()->GetHealthPct() <= 75 && getScriptPhase() == 1) || (getCreature()->GetHealthPct() <= 50 && getScriptPhase() == 2) || (getCreature()->GetHealthPct() <= 25 && getScriptPhase() == 3)))
+        if (((getCreature()->getHealthPct() <= 75 && getScriptPhase() == 1) || (getCreature()->getHealthPct() <= 50 && getScriptPhase() == 2) || (getCreature()->getHealthPct() <= 25 && getScriptPhase() == 3)))
         {
             getCreature()->setAttackTimer(MELEE, 1500);
             getCreature()->GetAIInterface()->StopMovement(1000);    // really?
@@ -477,7 +477,7 @@ class ANZUAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if ((getCreature()->GetHealthPct() <= 66 && getScriptPhase() == 1) || (getCreature()->GetHealthPct() <= 33 && getScriptPhase() == 1))
+        if ((getCreature()->getHealthPct() <= 66 && getScriptPhase() == 1) || (getCreature()->getHealthPct() <= 33 && getScriptPhase() == 1))
         {
             SummonPhase();
             setScriptPhase(getScriptPhase() + 1);

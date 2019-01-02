@@ -726,9 +726,9 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
     auto item_proto = sMySQLStore.getItemProperties(itemid);
     if (item_proto != nullptr)
     {
-        numadded -= player_target->GetItemInterface()->GetItemCount(itemid);
-        bool result = player_target->GetItemInterface()->AddItemById(itemid, count, randomprop);
-        numadded += player_target->GetItemInterface()->GetItemCount(itemid);
+        numadded -= player_target->getItemInterface()->GetItemCount(itemid);
+        bool result = player_target->getItemInterface()->AddItemById(itemid, count, randomprop);
+        numadded += player_target->getItemInterface()->GetItemCount(itemid);
         if (result == true)
         {
             if (count == 0)
@@ -807,7 +807,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
                     item->addFlags(ITEM_FLAG_SOULBOUND);
             }
 
-            if (!player->GetItemInterface()->AddItemToFreeSlot(item))
+            if (!player->getItemInterface()->AddItemToFreeSlot(item))
             {
                 m_session->SendNotification("No free slots left!");
                 item->DeleteMe();
@@ -816,7 +816,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             else
             {
                 SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
-                SlotResult* le = player->GetItemInterface()->LastSearchResult();
+                SlotResult* le = player->getItemInterface()->LastSearchResult();
                 player->sendItemPushResultPacket(false, true, false, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
                 ++itemset_items_count;
             }
@@ -1074,15 +1074,15 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
         return true;
 
     int32 loop_count = 0;
-    int32 start_count = selected_player->GetItemInterface()->GetItemCount(item_id, true);
+    int32 start_count = selected_player->getItemInterface()->GetItemCount(item_id, true);
     int32 start_count2 = start_count;
     if (count > start_count)
         count = start_count;
 
     while (start_count >= count && (count > 0) && loop_count < 20)
     {
-        selected_player->GetItemInterface()->RemoveItemAmt(item_id, count);
-        start_count2 = selected_player->GetItemInterface()->GetItemCount(item_id, true);
+        selected_player->getItemInterface()->RemoveItemAmt(item_id, count);
+        start_count2 = selected_player->getItemInterface()->GetItemCount(item_id, true);
         count -= (start_count - start_count2);
         start_count = start_count2;
         ++loop_count;
@@ -1178,10 +1178,10 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
 
     uint32 SubClassSkill = 0;
 
-    Item* item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+    Item* item = selected_player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     ItemProperties const* proto = nullptr;
     if (item == nullptr)
-        item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+        item = selected_player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
     if (item != nullptr)
         proto = item->getItemProperties();
@@ -1415,7 +1415,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
 
     for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
     {
-        auto player_item = player_target->GetItemInterface()->GetInventoryItem(static_cast<uint16>(i));
+        auto player_item = player_target->getItemInterface()->GetInventoryItem(static_cast<uint16>(i));
         if (player_item != nullptr)
         {
             if (player_item->isContainer())
@@ -1991,7 +1991,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
 
     SystemMessage(m_session, "==== %s has items ====", player_target->getName().c_str());
     int itemcount = 0;
-    ItemIterator itr(player_target->GetItemInterface());
+    ItemIterator itr(player_target->getItemInterface());
     itr.BeginSearch();
     for (; !itr.End(); itr.Increment())
     {

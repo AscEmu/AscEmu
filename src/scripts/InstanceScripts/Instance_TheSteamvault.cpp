@@ -182,7 +182,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
             }
         }
 
-        if ((getCreature()->GetHealthPct() <= 75 && GnomeCounter == 0) || (getCreature()->GetHealthPct() <= 50 && GnomeCounter == 1) || (getCreature()->GetHealthPct() <= 25 && GnomeCounter == 2))
+        if ((getCreature()->getHealthPct() <= 75 && GnomeCounter == 0) || (getCreature()->getHealthPct() <= 50 && GnomeCounter == 1) || (getCreature()->getHealthPct() <= 25 && GnomeCounter == 2))
         {
             Unit* Gnome = NULL;
             for (uint8 i = 0; i < 3; i++)

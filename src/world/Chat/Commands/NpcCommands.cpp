@@ -96,7 +96,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleNpcAppearCommand(const char* _, WorldSession* session)
+bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* session)
 {
     const auto target = GetSelectedCreature(session);
     if (!target) {

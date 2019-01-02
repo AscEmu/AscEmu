@@ -74,7 +74,7 @@ class ThekaAI : public CreatureAIScript
             target = getCreature()->GetAIInterface()->getNextTarget();
             getCreature()->CastSpell(target, plague, true);
         }
-        else if (getCreature()->GetHealthPct() <= 30 && morphcheck)
+        else if (getCreature()->getHealthPct() <= 30 && morphcheck)
         {
             morphcheck = false;
 
@@ -180,13 +180,13 @@ class AntusulAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (getCreature()->GetHealthPct() <= 75 && firstspawn)
+        if (getCreature()->getHealthPct() <= 75 && firstspawn)
         {
             firstspawn = false;
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
             getCreature()->CastSpell(getCreature(), servant, true);
         }
-        if (getCreature()->GetHealthPct() <= 25)
+        if (getCreature()->getHealthPct() <= 25)
         {
             secondspawncount++;
             if (secondspawn)

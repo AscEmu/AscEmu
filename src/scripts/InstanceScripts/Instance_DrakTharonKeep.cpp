@@ -467,7 +467,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
     {
-        if (getCreature()->GetHealthPct() < 2 && getScriptPhase() == 2)
+        if (getCreature()->getHealthPct() < 2 && getScriptPhase() == 2)
         {
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());

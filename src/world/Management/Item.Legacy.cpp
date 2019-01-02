@@ -188,7 +188,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     {
         uint32* played = getOwner()->GetPlayedtime();
         if (played[1] < (refundentry.first + 60 * 60 * 2))
-            m_owner->GetItemInterface()->AddRefundable(this, refundentry.second, refundentry.first);
+            m_owner->getItemInterface()->AddRefundable(this, refundentry.second, refundentry.first);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
         refundentry.first = 0;
         refundentry.second = 0;
 
-        refundentry = this->getOwner()->GetItemInterface()->LookupRefundable(this->getGuid());
+        refundentry = this->getOwner()->getItemInterface()->LookupRefundable(this->getGuid());
 
         ss << uint32(refundentry.first) << "','";
         ss << uint32(refundentry.second);
@@ -429,7 +429,7 @@ void Item::DeleteMe()
 
     // check to see if our owner is instantiated
     if (this->m_owner != NULL)
-        this->m_owner->GetItemInterface()->RemoveRefundable(this->getGuid());
+        this->m_owner->getItemInterface()->RemoveRefundable(this->getGuid());
 
     delete this;
 }
@@ -597,7 +597,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
 #endif
 
         /* Only apply the enchantment bonus if we're equipped */
-        int16 slot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid());
+        int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
         if (slot >= EQUIPMENT_SLOT_START && slot < EQUIPMENT_SLOT_END)
             ApplyEnchantmentBonus(Slot, true);
     }
@@ -654,14 +654,14 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
     // Apply the visual on the player.
 #if VERSION_STRING > TBC
-    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
         m_owner->setUInt32Value(static_cast<uint16_t>(VisibleBase), Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #else
-    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
+    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_PAD)
         m_owner->setUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
@@ -1179,7 +1179,7 @@ void Item::EventRemoveItem()
 {
     ARCEMU_ASSERT(this->getOwner() != NULL);
 
-    m_owner->GetItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
+    m_owner->getItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
 }
 
 void Item::SendDurationUpdate()
@@ -1243,7 +1243,7 @@ void Item::RemoveFromRefundableMap()
     GUID = this->getGuid();
 
     if (owner != NULL && GUID != 0)
-        owner->GetItemInterface()->RemoveRefundable(GUID);
+        owner->getItemInterface()->RemoveRefundable(GUID);
 }
 
 uint32 Item::RepairItemCost()

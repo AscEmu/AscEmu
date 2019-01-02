@@ -174,8 +174,8 @@ class SERVER_DECL PlayerInfo
         uint32 guid;
         uint32 acct;
         char* name;
-        uint32 race;
-        uint32 gender;
+        uint8_t race;
+        uint8_t gender;
         uint8 cl;
         uint32 team;
         uint8 role;
@@ -658,6 +658,7 @@ public:
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
     void updateAutoRepeatSpell();
+    bool canUseFlyingMountHere();
 
     bool canDualWield2H() const;
     void setDualWield2H(bool enable);
@@ -729,6 +730,19 @@ public:
     PlayerCheat m_cheats;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Items
+    void unEquipOffHandIfRequired();
+    bool hasOffHandWeapon() const;
+
+    bool hasItem(uint32_t itemId, uint32_t amount = 1, bool checkBankAlso = false) const;
+
+    // Player's item storage
+    ItemInterface* getItemInterface() const;
+private:
+    ItemInterface* m_itemInterface;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -740,9 +754,6 @@ public:
     void setPlayerInfoIfNeeded();
     void setGuildAndGroupInfo();
     void sendCinematicOnFirstLogin();
-
-    void unEquipOffHandIfRequired();
-    bool hasOffHandWeapon();
 
     int32_t getMyCorpseInstanceId() const;
 
@@ -1308,11 +1319,8 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Item Interface
         /////////////////////////////////////////////////////////////////////////////////////////
-        ItemInterface* GetItemInterface() { return m_ItemInterface; }       /// Player Inventory Item storage
         void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
-        bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
         /// item interface variables
-        ItemInterface* m_ItemInterface;
         int32 GetVisibleBase(int16 slot)
         {
 #if VERSION_STRING < WotLK
