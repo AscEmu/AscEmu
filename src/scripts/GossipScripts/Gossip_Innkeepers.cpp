@@ -1,7 +1,6 @@
-/**
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
+/*
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2005-2007 Ascent Team
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +25,6 @@ enum
 {
     SPELL_TRICK_OR_TREATED = 24755,
     SPELL_TREAT = 24715,
-
 };
 
 class InnkeeperGossip : public Arcemu::Gossip::Script

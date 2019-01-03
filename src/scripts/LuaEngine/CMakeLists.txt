@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 if(NOT BUILD_LUAENGINE)
   message("\tLuaEngine was skipped because BUILD_LUAENGINE is unchecked.")
