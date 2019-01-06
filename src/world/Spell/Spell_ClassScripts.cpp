@@ -81,9 +81,9 @@ public:
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
 
     bool HasFireTotem = false;
-    SpellCastResult canCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
-        auto result = Spell::canCast(tolerate);
+        auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -114,7 +114,7 @@ public:
                 }
                 if (!HasFireTotem)
                 {
-                    SetExtraCastResult(SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM);
+                    *parameter1 = SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM;
                     result = SPELL_FAILED_CUSTOM_ERROR;
                 }
             }
@@ -368,9 +368,9 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
-    SpellCastResult canCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
-        auto result = Spell::canCast(tolerate);
+        auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
         if (result == SPELL_CANCAST_OK)
         {

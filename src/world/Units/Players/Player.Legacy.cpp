@@ -6670,50 +6670,9 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->getId() , spell_info->getName().c_str());
 
-    // Check if Morphed
-    if (polySpell > 0)
-        return SPELL_FAILED_NOT_SHAPESHIFT;
-
-    // Check ammo
-#if VERSION_STRING < Cata
-    auto item = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = sMySQLStore.getItemProperties(getAmmoId());
-    if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
-        return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
-
-    if (!m_requiresNoAmmo)                  //Thori'dal, Wild Quiver, but it still requires to have a weapon equipped
-    {
-        // Check ammo level
-        if (item_proto && getLevel() < item_proto->RequiredLevel)
-            return SPELL_FAILED_LOWLEVEL;
-
-        // Check ammo type
-        auto item_proto_ammo = sMySQLStore.getItemProperties(item->getEntry());
-        if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
-            return SPELL_FAILED_NEED_AMMO;
-    }
-#endif
-
     // Player has clicked off target. Fail spell.
     if (m_curSelection != getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_targets.m_unitTarget)
         return SPELL_FAILED_INTERRUPTED;
-
-    // Check if target is already dead
-    if (target->isDead())
-        return SPELL_FAILED_TARGETS_DEAD;
-
-    // Check if in line of sight (need collision detection).
-    if (worldConfig.terrainCollision.isCollisionEnabled)
-    {
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-        bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
-        if (GetMapId() == target->GetMapId() && !isInLOS)
-            return SPELL_FAILED_LINE_OF_SIGHT;
-    }
-
-    // Check if we aren't casting another spell already
-    if (isCastingSpell(false, true, autoshot))
-        return -1;
 
     // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
     // So we'll use 114, which is the correct 35 yard range used by the other Hunter abilities (arcane shot, concussive shot...)
@@ -6737,30 +6696,10 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     //bonusRange = 2.52f;
     //LogDefault("Bonus range = %f" , bonusRange);
 
-    // check if facing target
-    if (!isInFront(target))
-        fail = SPELL_FAILED_UNIT_NOT_INFRONT;
-
-    // Check ammo count
-#if VERSION_STRING < Cata
-    if (!m_requiresNoAmmo && item_proto && item->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
-    {
-        uint32 ammocount = getItemInterface()->GetItemCount(item_proto->ItemId);
-        if (ammocount == 0)
-            fail = SPELL_FAILED_NO_AMMO;
-    }
-#endif
-
     // Check for too close
     if (spellid != SPELL_RANGED_WAND)  //no min limit for wands
         if (minrange > dist)
             fail = SPELL_FAILED_TOO_CLOSE;
-
-    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-    bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
-
-    if (worldConfig.terrainCollision.isCollisionEnabled && GetMapId() == target->GetMapId() && !isInLOS)
-        fail = SPELL_FAILED_LINE_OF_SIGHT;
 
     if (dist > maxr)
     {
@@ -6768,29 +6707,10 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         fail = SPELL_FAILED_OUT_OF_RANGE;
     }
 
-#if VERSION_STRING < Cata
-    if (spellid == SPELL_RANGED_THROW)
-    {
-        if (getItemInterface()->GetItemCount(item->getItemProperties()->ItemId) == 0)
-            fail = SPELL_FAILED_NO_AMMO;
-    }
-#endif
+    if (fail == 0)
+        fail = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->canCast(true, 0, 0);
 
-    if (fail > 0)  // && fail != SPELL_FAILED_OUT_OF_RANGE)
-    {
-        sendCastFailedPacket(autoshot ? 75 : spellid, fail, 0, 0);
-
-        if (fail != SPELL_FAILED_OUT_OF_RANGE)
-        {
-            uint32 spellid2 = autoshot ? 75 : spellid;
-            m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellid2);
-        }
-        //LogDefault("Result for CanShootWIthRangedWeapon: %u" , fail);
-        //LOG_DEBUG("Can't shoot with ranged weapon: %u (Timer: %u)" , fail , m_AutoShotAttackTimer);
-        return fail;
-    }
-
-    return 0;
+    return fail;
 }
 
 /*! \returns True if player's current battleground was queued for as a random battleground

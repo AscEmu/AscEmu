@@ -281,7 +281,7 @@ namespace DBC
             char const taxi_nodes_format[] = "nifffsiixxx";
             char const taxi_path_format[] = "niii";
             char const taxi_path_node_format[] = "diiifffiiii";
-            //char const totem_category_entry_format[] = "nxii"; new
+            char const totem_category_entry_format[] = "nxii";
             //char const transport_animation_entry_format[] = "diixxxx"; new
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
             char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
@@ -1902,6 +1902,14 @@ namespace DBC
             uint32_t waittime;            // 8
             uint32_t arivalEventID;       // 9
             uint32_t departureEventID;    // 10
+        };
+
+        struct TotemCategoryEntry
+        {
+            uint32_t id;            // 0
+            //char* name;           // 1
+            uint32_t categoryType;  // 2
+            uint32_t categoryMask;  // 3
         };
 
         #define MAX_VEHICLE_SEATS 8

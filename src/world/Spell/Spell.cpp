@@ -19,9 +19,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 
-SpellCastResult Spell::canCast(bool tolerate)
+SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
 {
     ////////////////////////////////////////////////////////
     // Caster checks
@@ -46,7 +47,7 @@ SpellCastResult Spell::canCast(bool tolerate)
 
         if (getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IS_CHEAT_SPELL && !p_caster->GetSession()->HasGMPermissions())
         {
-            m_extraError = SPELL_EXTRA_ERROR_GM_ONLY;
+            *parameter1 = SPELL_EXTRA_ERROR_GM_ONLY;
             return SPELL_FAILED_CUSTOM_ERROR;
         }
 
@@ -416,7 +417,10 @@ SpellCastResult Spell::canCast(bool tolerate)
 
 #if VERSION_STRING == TBC
             if (getSpellInfo()->getRequiresAreaId() != areaEntry->id && getSpellInfo()->getRequiresAreaId() != areaEntry->zone)
-                return SPELL_FAILED_INCORRECT_AREA;
+            {
+                *parameter1 = getSpellInfo()->getRequiresAreaId();
+                return SPELL_FAILED_REQUIRES_AREA;
+            }
 #elif VERSION_STRING >= WotLK
             auto found = false;
             auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
@@ -425,7 +429,13 @@ SpellCastResult Spell::canCast(bool tolerate)
                 for (auto i = 0; i < 6; ++i)
                 {
                     if (areaGroup->AreaId[i] == areaEntry->id || (areaEntry->zone != 0 && areaGroup->AreaId[i] == areaEntry->zone))
+                    {
                         found = true;
+                        *parameter1 = 0;
+                        break;
+                    }
+                    else if (areaGroup->AreaId[i] != 0)
+                        *parameter1 = areaGroup->AreaId[i];
                 }
 
                 if (found || areaGroup->next_group == 0)
@@ -435,7 +445,7 @@ SpellCastResult Spell::canCast(bool tolerate)
             }
 
             if (!found)
-                return SPELL_FAILED_INCORRECT_AREA;
+                return SPELL_FAILED_REQUIRES_AREA;
 #endif
         }
 
@@ -472,8 +482,7 @@ SpellCastResult Spell::canCast(bool tolerate)
     ////////////////////////////////////////////////////////
     // Item checks
 
-    uint32_t parameter1 = 0, parameter2 = 0;
-    const SpellCastResult itemCastResult = checkItems(&parameter1, &parameter2);
+    const SpellCastResult itemCastResult = checkItems(parameter1, parameter2);
     if (itemCastResult != SPELL_CANCAST_OK)
         return itemCastResult;
 
@@ -481,7 +490,7 @@ SpellCastResult Spell::canCast(bool tolerate)
     return m_triggeredSpell || ProcedOnSpell != nullptr ? SPELL_CANCAST_OK : SpellCastResult(CanCast(tolerate));
 }
 
-SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) const
+SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) const
 {
     if (p_caster == nullptr)
         return SPELL_CANCAST_OK;
@@ -524,6 +533,13 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
             if (itemProperties->Spells[i].Charges > 0 && i_caster->getSpellCharges(i) == 0)
                 return SPELL_FAILED_NO_CHARGES_REMAIN;
         }
+
+        // Check zone
+        if (itemProperties->ZoneNameID > 0 && itemProperties->ZoneNameID != p_caster->GetZoneId())
+            return SPELL_FAILED_INCORRECT_AREA;
+        // Check map
+        if (itemProperties->MapID > 0 && itemProperties->MapID != p_caster->GetMapId())
+            return SPELL_FAILED_INCORRECT_AREA;
 
         // Check health and power for consumables (potions, healthstones, mana items etc)
         if (itemProperties->Class == ITEM_CLASS_CONSUMABLE)
@@ -597,6 +613,7 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
         // Check if the targeted item is in the trade window
         if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
         {
+            // Only enchanting and lockpicking effects can be used in trade window
             if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK ||
                 getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM ||
                 getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)
@@ -606,14 +623,20 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
 
                 // todo: implement trade checks here when trading is fixed -Appled
             }
+            else
+                return SPELL_FAILED_NOT_TRADEABLE;
         }
         else
             targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
 
         if (targetItem == nullptr)
-            return SPELL_FAILED_ITEM_NOT_FOUND;
+            return SPELL_FAILED_ITEM_GONE;
 
         if (!targetItem->fitsToSpellRequirements(getSpellInfo()))
+            return SPELL_FAILED_BAD_TARGETS;
+
+        // Prevent exploiting (enchanting broken items and stacking them)
+        if (targetItem->getDurability() == 0 && targetItem->getMaxDurability() != 0)
             return SPELL_FAILED_BAD_TARGETS;
 
         if ((getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_ARMOR && targetItem->getItemProperties()->Class == ITEM_CLASS_TRADEGOODS && targetItem->getItemProperties()->SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT) ||
@@ -621,9 +644,9 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
             vellumTarget = true;
     }
     // Spell requires an item to be equipped
-    else if (m_targets.m_itemTarget == 0 && getSpellInfo()->getEquippedItemClass() > 0)
+    else if (m_targets.m_itemTarget == 0 && getSpellInfo()->getEquippedItemClass() >= 0)
     {
-        auto isItemProperType = false;
+        auto hasItemWithProperType = false;
         switch (getSpellInfo()->getEquippedItemClass())
         {
             // Spell requires a melee weapon or a ranged weapon
@@ -646,7 +669,7 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
                         // Check for proper item class and subclass
                         if (inventoryItem->fitsToSpellRequirements(getSpellInfo()))
                         {
-                            isItemProperType = true;
+                            hasItemWithProperType = true;
                             break;
                         }
                     }
@@ -670,7 +693,7 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
                             // Check for proper item class and subclass
                             if (inventoryItem->fitsToSpellRequirements(getSpellInfo()))
                             {
-                                isItemProperType = true;
+                                hasItemWithProperType = true;
                                 break;
                             }
                         }
@@ -686,14 +709,14 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
                         // Check for proper item class and subclass
                         if (inventoryItem->fitsToSpellRequirements(getSpellInfo()))
                         {
-                            isItemProperType = true;
+                            hasItemWithProperType = true;
                             break;
                         }
                     }
                 }
 
-                // No need to check further if matched already
-                if (isItemProperType)
+                // No need to check further if found already
+                if (hasItemWithProperType)
                     break;
 
                 // Ranged slot can have an item classified as armor (no need to check for disarm in these cases)
@@ -703,7 +726,7 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
                     // Check for proper item class and subclass
                     if (inventoryItem->fitsToSpellRequirements(getSpellInfo()))
                     {
-                        isItemProperType = true;
+                        hasItemWithProperType = true;
                         break;
                     }
                 }
@@ -712,8 +735,472 @@ SpellCastResult Spell::checkItems(uint32_t* /*parameter1*/, uint32_t* /*paramete
                 break;
         }
 
-        if (!isItemProperType)
+        if (!hasItemWithProperType)
+        {
+            *parameter1 = getSpellInfo()->getEquippedItemClass();
+            *parameter2 = getSpellInfo()->getEquippedItemSubClass();
             return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+        }
+
+        // Temporary helper lambda
+        auto hasEquippableWeapon = [&](Item const* weapon) -> bool
+        {
+            if (weapon == nullptr)
+                return false;
+            if (weapon->getItemProperties()->MaxDurability > 0 && weapon->getDurability() == 0)
+                return false;
+            return weapon->fitsToSpellRequirements(getSpellInfo());
+        };
+
+        // Check if spell explicitly requires a main hand weapon
+        if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_REQUIRES_MAIN_HAND_WEAPON)
+        {
+            if (!hasEquippableWeapon(p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)))
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS_MAINHAND;
+        }
+
+        // Check if spell explicitly requires an offhand weapon
+        if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON)
+        {
+            if (!hasEquippableWeapon(p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND)))
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS_OFFHAND;
+        }
+    }
+
+    // Check if the spell requires any reagents or tools (skip enchant scrolls)
+    if (i_caster == nullptr || !(i_caster->getItemProperties()->Flags & ITEM_FLAG_ENCHANT_SCROLL))
+    {
+        // Spells with ATTRIBUTESEXE_REAGENT_REMOVAL attribute won't take reagents if player has UNIT_FLAG_NO_REAGANT_COST flag
+        auto checkForReagents = !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_REAGENT_REMOVAL && p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST));
+        if (checkForReagents)
+        {
+#if VERSION_STRING >= WotLK
+            // Check for spells which remove the reagent cost for a spell
+            // e.g. Glyph of Slow Fall or Glyph of Levitate
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (getSpellInfo()->getSpellFamilyFlags(i) == 0)
+                    continue;
+                if (getSpellInfo()->getSpellFamilyFlags(i) & p_caster->getNoReagentCost(i))
+                {
+                    checkForReagents = false;
+                    break;
+                }
+            }
+#endif
+        }
+        // Reagents will always be checked for items in trade window
+        else if (m_targets.m_itemTarget != 0 && m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+            checkForReagents = true;
+
+        if (checkForReagents)
+        {
+            for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
+            {
+                if (getSpellInfo()->getReagent(i) == 0)
+                    continue;
+
+                const auto itemId = static_cast<uint32_t>(getSpellInfo()->getReagent(i));
+                auto itemCount = getSpellInfo()->getReagentCount(i);
+
+                // Some spells include the used item as one of the reagents
+                // So in these cases itemCount must be incremented by one
+                // e.g. item id 24502 requires 7 items but DBC data requires only 6, because the one missing item is the caster
+                if (i_caster != nullptr && i_caster->getEntry() == itemId)
+                {
+                    const auto itemProperties = i_caster->getItemProperties();
+                    for (uint8_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+                    {
+                        if (itemProperties->Spells[x].Id == 0)
+                            continue;
+                        if (itemProperties->Spells[x].Charges == -1 && i_caster->getSpellCharges(x) <= 1)
+                        {
+                            ++itemCount;
+                            break;
+                        }
+                    }
+                }
+
+                if (!p_caster->hasItem(itemId, itemCount))
+                {
+                    *parameter1 = itemId;
+                    return SPELL_FAILED_REAGENTS;
+                }
+            }
+        }
+
+        // Check for totem items
+        for (uint8_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
+        {
+            if (getSpellInfo()->getTotem(i) != 0)
+            {
+                if (!p_caster->hasItem(getSpellInfo()->getTotem(i)))
+                {
+                    *parameter1 = getSpellInfo()->getTotem(i);
+                    return SPELL_FAILED_TOTEMS;
+                }
+            }
+        }
+
+        // Check for totem category items
+        for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+        {
+            if (getSpellInfo()->getTotemCategory(i) != 0 && !p_caster->getItemInterface()->hasItemForTotemCategory(getSpellInfo()->getTotemCategory(i)))
+            {
+                *parameter1 = getSpellInfo()->getTotemCategory(i);
+                return SPELL_FAILED_TOTEM_CATEGORY;
+            }
+        }
+    }
+
+    // Special checks for different spell effects
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getSpellInfo()->getEffect(i) == 0)
+            continue;
+
+        switch (getSpellInfo()->getEffect(i))
+        {
+            case SPELL_EFFECT_CREATE_ITEM:
+            case SPELL_EFFECT_CREATE_ITEM2:
+                if (getSpellInfo()->getEffectItemType(i) != 0)
+                {
+                    const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
+                    if (itemProperties == nullptr)
+                    {
+                        LOG_ERROR("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_CREATE_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        return SPELL_FAILED_ERROR;
+                    }
+
+                    // Check if player has any free slots in the inventory
+                    if (p_caster->getItemInterface()->CalculateFreeSlots(itemProperties) == 0)
+                    {
+                        p_caster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                    
+                    // Check other limitations
+                    const auto itemErrorMessage = p_caster->getItemInterface()->CanReceiveItem(itemProperties, 1);
+                    if (itemErrorMessage != INV_ERR_OK)
+                    {
+                        p_caster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, itemErrorMessage);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                } break;
+            case SPELL_EFFECT_ENCHANT_ITEM:
+                // Check only for vellums here, normal checks are done in the next case
+                if (getSpellInfo()->getEffectItemType(i) != 0 && m_targets.m_itemTarget != 0 && vellumTarget)
+                {
+                    // Player can only enchant their own vellums
+                    if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                        return SPELL_FAILED_NOT_TRADEABLE;
+                    // Scrolls (enchanted vellums) cannot be enchanted into another vellum (duping)
+                    if (scrollItem)
+                        return SPELL_FAILED_BAD_TARGETS;
+
+                    const auto vellumItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                    if (vellumItem == nullptr)
+                        return SPELL_FAILED_ITEM_NOT_FOUND;
+                    // Check if vellum is appropriate target for the enchant
+                    if (getSpellInfo()->getBaseLevel() > vellumItem->getItemProperties()->ItemLevel)
+                        return SPELL_FAILED_LOWLEVEL;
+
+                    const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
+                    if (itemProperties == nullptr)
+                    {
+                        LOG_ERROR("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_ENCHANT_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        return SPELL_FAILED_ERROR;
+                    }
+
+                    // Check if player has any free slots in the inventory
+                    if (p_caster->getItemInterface()->CalculateFreeSlots(itemProperties) == 0)
+                    {
+                        p_caster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+
+                    // Check other limitations
+                    const auto itemErrorMessage = p_caster->getItemInterface()->CanReceiveItem(itemProperties, 1);
+                    if (itemErrorMessage != INV_ERR_OK)
+                    {
+                        p_caster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, itemErrorMessage);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                }
+            // no break here
+            case SPELL_EFFECT_ADD_SOCKET:
+            {
+                if (m_targets.m_itemTarget == 0)
+                    return SPELL_FAILED_ITEM_NOT_FOUND;
+
+                Item* targetItem = nullptr;
+                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                {
+                    // todo: implement this when trading is fixed
+                }
+                else
+                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+
+                if (targetItem == nullptr)
+                    return SPELL_FAILED_ITEM_NOT_FOUND;
+
+                // Check if the item's level is high enough for the enchantment
+                if (targetItem->getItemProperties()->ItemLevel < getSpellInfo()->getBaseLevel())
+                    return SPELL_FAILED_LOWLEVEL;
+
+                auto hasOnUseEffect = false;
+                const auto itemProperties = targetItem->getItemProperties();
+                for (uint8_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+                {
+                    if (itemProperties->Spells[x].Id == 0)
+                        continue;
+                    if (itemProperties->Spells[x].Trigger == USE || itemProperties->Spells[x].Trigger == APPLY_AURA_ON_PICKUP)
+                    {
+                        hasOnUseEffect = true;
+                        break;
+                    }
+                }
+
+                const auto enchantEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
+                if (enchantEntry == nullptr)
+                {
+                    LOG_ERROR("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    return SPELL_FAILED_ERROR;
+                }
+
+                // Loop through enchantment's types
+                for (uint8_t x = 0; x < 3; ++x)
+                {
+                    switch (enchantEntry->type[x])
+                    {
+                        // todo: declare these in a header file and figure out other values
+                        case 7: // Enchants 'on use' enchantment to item
+                            // Check if the item already has a 'on use' enchantment
+                            if (hasOnUseEffect)
+                                return SPELL_FAILED_ON_USE_ENCHANT;
+                            break;
+                        case 8: // Enchants a new prismatic socket slot to item
+                            // Check if the item already has a prismatic gem slot enchanted
+                            if (targetItem->getEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) != 0)
+                                return SPELL_FAILED_ITEM_ALREADY_ENCHANTED;
+                            // or if the item already has the maximum amount of socket slots
+                            else if (targetItem->GetSocketsCount() >= MAX_ITEM_PROTO_SOCKETS)
+                                return SPELL_FAILED_MAX_SOCKETS;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Check item owner in cases where enchantment makes item soulbound
+                if (targetItem->getOwner() != p_caster)
+                {
+                    if (enchantEntry->EnchantGroups & 0x01) // Makes item soulbound
+                        return SPELL_FAILED_NOT_TRADEABLE;
+                }
+                break;
+            }
+            case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
+            {
+                if (m_targets.m_itemTarget == 0)
+                    return SPELL_FAILED_ITEM_NOT_FOUND;
+
+                Item* targetItem = nullptr;
+                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                {
+                    // todo: implement this when trading is fixed
+                }
+                else
+                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+
+                if (targetItem == nullptr)
+                    return SPELL_FAILED_ITEM_NOT_FOUND;
+
+                const auto enchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
+                if (enchantmentEntry == nullptr)
+                {
+                    LOG_ERROR("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    return SPELL_FAILED_ERROR;
+                }
+
+                // Check item owner in cases where enchantment makes item soulbound
+                if (targetItem->getOwner() != p_caster)
+                {
+                    if (enchantmentEntry->EnchantGroups & 0x01) // Makes item soulbound
+                        return SPELL_FAILED_NOT_TRADEABLE;
+                }
+                break;
+            }
+            case SPELL_EFFECT_DISENCHANT:
+            {
+                if (m_targets.m_itemTarget == 0)
+                    return SPELL_FAILED_ITEM_GONE;
+                // Check if the item target is in a trade window
+                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                    return SPELL_FAILED_NOT_TRADEABLE;
+
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                if (targetItem == nullptr)
+                    return SPELL_FAILED_ITEM_GONE;
+
+                const auto itemProperties = targetItem->getItemProperties();
+                // Only armor and weapon items can be disenchanted
+                if (itemProperties->Class != ITEM_CLASS_ARMOR && itemProperties->Class != ITEM_CLASS_WEAPON)
+                    return SPELL_FAILED_CANT_BE_DISENCHANTED;
+                // Only items with uncommon, rare and epic quality can be disenchanted
+                if (itemProperties->Quality > ITEM_QUALITY_EPIC_PURPLE || itemProperties->Quality < ITEM_QUALITY_UNCOMMON_GREEN)
+                    return SPELL_FAILED_CANT_BE_DISENCHANTED;
+                // Some items are not disenchantable
+                if (itemProperties->DisenchantReqSkill <= 0)
+                    return SPELL_FAILED_CANT_BE_DISENCHANTED;
+#if VERSION_STRING >= TBC
+                // As of patch 2.0.1 disenchanting an item requires minimum skill level
+                if (static_cast<uint32_t>(itemProperties->DisenchantReqSkill) > p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING))
+                    return SPELL_FAILED_CANT_BE_DISENCHANTED_SKILL;
+#endif
+                // TODO: check does the item even have disenchant loot
+                break;
+            }
+            case SPELL_EFFECT_PROSPECTING:
+            {
+                if (m_targets.m_itemTarget == 0)
+                    return SPELL_FAILED_ITEM_GONE;
+                // Check if the item target is in a trade window
+                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                    return SPELL_FAILED_NOT_TRADEABLE;
+
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                if (targetItem == nullptr)
+                    return SPELL_FAILED_ITEM_GONE;
+
+                const auto itemProperties = targetItem->getItemProperties();
+                // Check if the item is prospectable
+                if (!(itemProperties->Flags & ITEM_FLAG_PROSPECTABLE))
+                    return SPELL_FAILED_CANT_BE_PROSPECTED;
+                // Check if player has enough skill in Jewelcrafting
+                if (itemProperties->RequiredSkillRank > p_caster->_GetSkillLineCurrent(SKILL_JEWELCRAFTING))
+                {
+                    *parameter1 = itemProperties->RequiredSkill;
+                    *parameter2 = itemProperties->RequiredSkillRank;
+                    return SPELL_FAILED_MIN_SKILL;
+                }
+                // Check if player has enough ores for prospecting
+                if (!p_caster->hasItem(targetItem->getEntry(), 5))
+                {
+                    *parameter1 = targetItem->getEntry();
+                    *parameter2 = 5;
+                    return SPELL_FAILED_NEED_MORE_ITEMS;
+                }
+
+                // TODO: check does the item even have prospecting loot
+                break;
+            }
+            case SPELL_EFFECT_MILLING:
+            {
+                if (m_targets.m_itemTarget == 0)
+                    return SPELL_FAILED_ITEM_GONE;
+                // Check if the item target is in a trade window
+                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                    return SPELL_FAILED_NOT_TRADEABLE;
+
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                if (targetItem == nullptr)
+                    return SPELL_FAILED_ITEM_GONE;
+
+                const auto itemProperties = targetItem->getItemProperties();
+                // Check if the item is millable
+                if (!(itemProperties->Flags & ITEM_FLAG_MILLABLE))
+                    return SPELL_FAILED_CANT_BE_MILLED;
+                // Check if player has enough skill in Inscription
+                if (itemProperties->RequiredSkillRank > p_caster->_GetSkillLineCurrent(SKILL_INSCRIPTION))
+                {
+                    *parameter1 = itemProperties->RequiredSkill;
+                    *parameter2 = itemProperties->RequiredSkillRank;
+                    return SPELL_FAILED_MIN_SKILL;
+                }
+                if (!p_caster->hasItem(targetItem->getEntry(), 5))
+                {
+                    *parameter1 = targetItem->getEntry();
+                    *parameter2 = 5;
+                    return SPELL_FAILED_NEED_MORE_ITEMS;
+                }
+
+                // TODO: check does the item even have milling loot
+                break;
+            }
+            case SPELL_EFFECT_WEAPON_DAMAGE:
+            case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+            {
+                // Check if spell is not ranged type
+                if (getSpellInfo()->getDmgClass() != SPELL_DMG_TYPE_RANGED)
+                    break;
+
+                const auto rangedWeapon = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                if (rangedWeapon == nullptr || rangedWeapon->getItemProperties()->Class != ITEM_CLASS_WEAPON)
+                    return SPELL_FAILED_EQUIPPED_ITEM;
+                // Check if the item has any durability left
+                if (rangedWeapon->getMaxDurability() > 0 && rangedWeapon->getDurability() == 0)
+                    return SPELL_FAILED_EQUIPPED_ITEM;
+
+#if VERSION_STRING <= WotLK
+                // Check for ammunitation
+                switch (rangedWeapon->getItemProperties()->SubClass)
+                {
+                    case ITEM_SUBCLASS_WEAPON_THROWN:
+                        // todo: at some point throwing weapons used durability but at some point they used stack count,
+                        // and at some point they had neither of those. Figure out which expansion/patch had which
+                        if (p_caster->getItemInterface()->GetItemCount(rangedWeapon->getEntry()) == 0)
+                            return SPELL_FAILED_NO_AMMO;
+                        break;
+                    // Check ammo for ranged weapons
+                    case ITEM_SUBCLASS_WEAPON_BOW:
+                    case ITEM_SUBCLASS_WEAPON_GUN:
+                    case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    {
+                        // Thori'dal, the Stars' Fury has a dummy aura which makes it generate magical arrows
+                        // iirc the only item with this kind of effect?
+                        if (p_caster->m_requiresNoAmmo)
+                            break;
+                        const auto ammoId = p_caster->getAmmoId();
+                        if (ammoId == 0)
+                            return SPELL_FAILED_NEED_AMMO;
+
+                        const auto ammoProperties = sMySQLStore.getItemProperties(ammoId);
+                        if (ammoProperties == nullptr)
+                            return SPELL_FAILED_NEED_AMMO;
+                        if (ammoProperties->Class != ITEM_CLASS_PROJECTILE)
+                            return SPELL_FAILED_NEED_AMMO;
+                        if (ammoProperties->RequiredLevel > p_caster->getLevel())
+                            return SPELL_FAILED_NEED_AMMO;
+
+                        // Check for correct projectile type
+                        if (rangedWeapon->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_GUN)
+                        {
+                            if (ammoProperties->SubClass != ITEM_SUBCLASS_PROJECTILE_BULLET)
+                                return SPELL_FAILED_NEED_AMMO;
+                        }
+                        else
+                        {
+                            if (ammoProperties->SubClass != ITEM_SUBCLASS_PROJECTILE_ARROW)
+                                return SPELL_FAILED_NEED_AMMO;
+                        }
+
+                        // Check if player is out of ammos
+                        if (!p_caster->hasItem(ammoId))
+                        {
+                            p_caster->setAmmoId(0);
+                            return SPELL_FAILED_NO_AMMO;
+                        }
+                    } break;
+                    default:
+                        break;
+                }
+#endif
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     return SPELL_CANCAST_OK;
@@ -777,6 +1264,116 @@ SpellCastResult Spell::getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, co
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
     return SPELL_CANCAST_OK;
+}
+
+void Spell::sendCastResult(SpellCastResult result, uint32_t parameter1 /*= 0*/, uint32_t parameter2 /*= 0*/)
+{
+    if (result == SPELL_CANCAST_OK)
+        return;
+
+    SetSpellFailed();
+
+    if (!m_caster->IsInWorld())
+        return;
+
+    Player* plr = p_caster;
+    if (plr == nullptr && u_caster != nullptr)
+        plr = u_caster->m_redirectSpellPackets;
+    if (plr == nullptr)
+        return;
+
+    sendCastResult(plr, 0, result, parameter1, parameter2);
+}
+
+void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2)
+{
+    if (caster == nullptr)
+        return;
+
+    // Include missing parameters to error messages
+    switch (result)
+    {
+        case SPELL_FAILED_ONLY_SHAPESHIFT:
+            if (parameter1 == 0)
+                parameter1 = getSpellInfo()->getRequiredShapeShift();
+            break;
+        case SPELL_FAILED_REQUIRES_AREA:
+            if (parameter1 == 0)
+            {
+#if VERSION_STRING == TBC
+                parameter1 = getSpellInfo()->getRequiresAreaId();
+#elif VERSION_STRING >= WotLK
+                // Send the first area id from areagroup to player
+                auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
+                for (auto i = 0; i < 6; ++i)
+                {
+                    if (areaGroup->AreaId[i] != 0)
+                    {
+                        parameter1 = areaGroup->AreaId[i];
+                        break;
+                    }
+                }
+#endif
+            } break;
+        case SPELL_FAILED_EQUIPPED_ITEM_CLASS:
+        case SPELL_FAILED_EQUIPPED_ITEM_CLASS_MAINHAND:
+        case SPELL_FAILED_EQUIPPED_ITEM_CLASS_OFFHAND:
+            if (parameter1 == 0 && parameter2 == 0)
+            {
+                parameter1 = getSpellInfo()->getEquippedItemClass();
+                parameter2 = getSpellInfo()->getEquippedItemSubClass();
+            } break;
+        case SPELL_FAILED_REAGENTS:
+            if (parameter1 == 0)
+            {
+                for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                {
+                    if (getSpellInfo()->getReagent(i) == 0)
+                        continue;
+                    if (!caster->hasItem(getSpellInfo()->getReagent(i), getSpellInfo()->getReagentCount(i)))
+                    {
+                        parameter1 = getSpellInfo()->getReagent(i);
+                        break;
+                    }
+                }
+            } break;
+        case SPELL_FAILED_TOTEMS:
+            if (parameter1 == 0)
+            {
+                for (uint8_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                {
+                    if (getSpellInfo()->getTotem(i) == 0)
+                        continue;
+                    if (!caster->hasItem(getSpellInfo()->getTotem(i)))
+                    {
+                        parameter1 = getSpellInfo()->getTotem(i);
+                        break;
+                    }
+                }
+            } break;
+        case SPELL_FAILED_TOTEM_CATEGORY:
+            if (parameter1 == 0)
+            {
+                for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+                {
+                    if (getSpellInfo()->getTotemCategory(i) == 0)
+                        continue;
+                    if (!caster->getItemInterface()->hasItemForTotemCategory(getSpellInfo()->getTotemCategory(i)))
+                    {
+                        parameter1 = getSpellInfo()->getTotemCategory(i);
+                        break;
+                    }
+                }
+            } break;
+        case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
+            if (parameter1 == 0)
+                parameter1 = getSpellInfo()->getRequiresSpellFocus();
+            break;
+        default:
+            break;
+    }
+
+    caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2);
 }
 
 bool Spell::canAttackCreatureType(Creature* target) const

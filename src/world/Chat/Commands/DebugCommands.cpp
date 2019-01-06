@@ -497,7 +497,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
         return true;
 
     uint32 fail = atol(args);
-    if (SPELL_CANCAST_OK < fail)
+    if (fail < SPELL_CANCAST_OK || fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;
