@@ -623,7 +623,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
     if (unitTarget->SchoolImmunityList[getSpellInfo()->getSchool()])
     {
-        SendCastResult(SPELL_FAILED_IMMUNE);
+        sendCastResult(SPELL_FAILED_IMMUNE);
         return;
     }
 
@@ -1413,7 +1413,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     _type = RANGED;
                 else
                 {
-                    if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+                    if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON)
                         _type = OFFHAND;
                     else
                         _type = MELEE;
@@ -1731,7 +1731,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 
         if (!Duration)
         {
-            SendCastResult(SPELL_FAILED_IMMUNE);
+            sendCastResult(SPELL_FAILED_IMMUNE);
             return;
         }
 
@@ -1764,7 +1764,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             }
             else
             {
-                SendCastResult(SPELL_FAILED_BAD_TARGETS);
+                sendCastResult(SPELL_FAILED_BAD_TARGETS);
                 return;
             }
         }break;
@@ -1796,7 +1796,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             }
             else
             {
-                SendCastResult(SPELL_FAILED_BAD_TARGETS);
+                sendCastResult(SPELL_FAILED_BAD_TARGETS);
                 return;
             }
         }break;
@@ -1810,7 +1810,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t /*effectIndex*/)
 
     if (playerTarget->SchoolImmunityList[getSpellInfo()->getSchool()])
     {
-        SendCastResult(SPELL_FAILED_IMMUNE);
+        sendCastResult(SPELL_FAILED_IMMUNE);
         return;
     }
     //this is GO, not unit
@@ -2527,7 +2527,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
         if (!playerTarget->getItemInterface()->AddItemById(itemid, count, 0))
         {
-            SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
+            sendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
             return;
         }
 
@@ -2626,7 +2626,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
     else
     {
         if (!playerTarget->getItemInterface()->AddItemById(itemid, count, 0))
-            SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
+            sendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
     }
 }
 
@@ -3341,7 +3341,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
             _type = RANGED;
         else
         {
-            if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+            if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON)
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -3533,7 +3533,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
             if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_HERBALISM) < v)
             {
-                //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
+                //sendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
                 return;
             }
             else
@@ -3572,7 +3572,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
             if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_MINING) < v)
             {
-                //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
+                //sendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
                 return;
             }
             else if (gameObjTarget->IsLootable())
@@ -4345,7 +4345,7 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
     {
         if (p_caster->GetSummon())
         {
-            SendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
+            sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
             return;
         }
 
@@ -4354,7 +4354,7 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
         {
             if (p_caster->GetPlayerPet(petno) == nullptr)
             {
-                SendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
+                sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
                 return;
             }
 
@@ -4369,7 +4369,7 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
         }
         else
         {
-            SendCastResult(SPELL_FAILED_NO_PET);
+            sendCastResult(SPELL_FAILED_NO_PET);
         }
         return;
     }
@@ -4464,7 +4464,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
         _type = RANGED;
     else
     {
-        if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
+        if (hasAttributeExC(ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON))
             _type = OFFHAND;
         else
             _type = MELEE;
@@ -4621,7 +4621,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
     uint32 dif = unitTarget->getMaxHealth() - unitTarget->getHealth();
     if (!dif)
     {
-        SendCastResult(SPELL_FAILED_ALREADY_AT_FULL_HEALTH);
+        sendCastResult(SPELL_FAILED_ALREADY_AT_FULL_HEALTH);
         return;
     }
 
@@ -4753,7 +4753,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
     Creature* target = static_cast< Creature* >(unitTarget);
     if (target->IsPickPocketed() || (target->GetCreatureProperties()->Type != UNIT_TYPE_HUMANOID))
     {
-        SendCastResult(SPELL_FAILED_TARGET_NO_POCKETS);
+        sendCastResult(SPELL_FAILED_TARGET_NO_POCKETS);
         return;
     }
 
@@ -4799,7 +4799,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
     // check if glyph is locked (obviously)
     if (!(p_caster->getGlyphsEnabled() & (1 << m_glyphslot)))
     {
-        SendCastResult(SPELL_FAILED_GLYPH_SOCKET_LOCKED);
+        sendCastResult(SPELL_FAILED_GLYPH_SOCKET_LOCKED);
         return;
     }
 
@@ -4823,7 +4823,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
     {
         if (glyph_slot->Type != glyph_prop_new->Type)
         {
-            SendCastResult(SPELL_FAILED_INVALID_GLYPH);
+            sendCastResult(SPELL_FAILED_INVALID_GLYPH);
             return;
         }
         p_caster->setGlyph(static_cast<uint8_t>(m_glyphslot), glyph_new);
@@ -4919,7 +4919,7 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
 
     if (p_caster->isStealthed())
     {
-        SendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED);
+        sendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED);
         return; // Player is stealth
     }
     if (!playerTarget || playerTarget == p_caster)
@@ -4929,7 +4929,7 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     \todo dueling zones ? (SPELL_FAILED_NO_DUELING)
     if (player->IsInvisible())
     {
-    SendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE);
+    sendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE);
     return;
     }
     */
@@ -4937,22 +4937,22 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     //Player* pTarget = sObjHolder.GetObject<Player>(player->GetSelection());      //  hacky.. and will screw up if plr is deselected..
     if (!playerTarget)
     {
-        SendCastResult(SPELL_FAILED_BAD_TARGETS);
+        sendCastResult(SPELL_FAILED_BAD_TARGETS);
         return; // invalid Target
     }
     if (!playerTarget->isAlive())
     {
-        SendCastResult(SPELL_FAILED_TARGETS_DEAD);
+        sendCastResult(SPELL_FAILED_TARGETS_DEAD);
         return; // Target not alive
     }
     if (playerTarget->hasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
-        SendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
+        sendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
         return; // Target in combat with another unit
     }
     if (playerTarget->DuelingWith)
     {
-        SendCastResult(SPELL_FAILED_TARGET_DUELING);
+        sendCastResult(SPELL_FAILED_TARGET_DUELING);
         return; // Already Dueling
     }
 
@@ -5165,7 +5165,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
     }
     else
     {
-        SendCastResult(SPELL_FAILED_TARGET_UNSKINNABLE);
+        sendCastResult(SPELL_FAILED_TARGET_UNSKINNABLE);
     }
 }
 
@@ -5201,7 +5201,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     Item* it = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
     if (!it)
     {
-        SendCastResult(SPELL_FAILED_CANT_BE_DISENCHANTED);
+        sendCastResult(SPELL_FAILED_CANT_BE_DISENCHANTED);
         return;
     }
 
@@ -5879,7 +5879,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         _type = RANGED;
     else
     {
-        if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+        if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON)
             _type = OFFHAND;
         else
             _type = MELEE;
@@ -6072,7 +6072,7 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
 
     if (!itemTarget) // this should never happen
     {
-        SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
+        sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
         return;
     }
 
@@ -6092,7 +6092,7 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     else // this should never happen either
     {
         LogDebugFlag(LF_SPELL_EFF, "Prospecting failed, item %d has no loot", uint32(itemTarget->getEntry()));
-        SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
+        sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
 
@@ -6292,7 +6292,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
     if (!itemTarget) // this should never happen
     {
-        SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
+        sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
         return;
     }
 
@@ -6312,7 +6312,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     else // this should never happen either
     {
         LogDebugFlag(LF_SPELL_EFF, "Milling failed, item %d has no loot", uint32(itemTarget->getEntry()));
-        SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
+        sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
 
@@ -6366,7 +6366,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
 
     if (p_caster->CombatStatus.IsInCombat())
     {
-        SendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
+        sendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;
     }
     else if (p_caster->m_bg)
@@ -6374,14 +6374,14 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         uint32 Type = p_caster->m_bg->GetType();
         if (isArena(Type))
         {
-            SendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
+            sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
             return;
         }
         else
         {
             if (p_caster->m_bg->HasStarted())
             {
-                SendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
+                sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
             }
         }
     }

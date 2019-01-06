@@ -54,7 +54,7 @@ void Item::create(uint32_t itemId, Player* owner)
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    for (uint8_t i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         setSpellCharges(i, m_itemProperties->Spells[i].Charges);
 
     setDurability(m_itemProperties->MaxDurability);

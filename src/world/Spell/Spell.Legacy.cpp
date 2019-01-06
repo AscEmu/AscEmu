@@ -250,7 +250,6 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     m_timer = 0;
     m_magnetTarget = 0;
     Dur = 0;
-    m_extraError = SPELL_EXTRA_ERROR_NONE;
 }
 
 Spell::~Spell()
@@ -736,7 +735,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
             _type = RANGED;
         else
         {
-            if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
+            if (hasAttributeExC(ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON))
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -911,10 +910,11 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
     m_spellState = SPELL_STATE_PREPARING;
 
+    uint32_t parameter1 = 0, parameter2 = 0;
     if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
-        cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
+        cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else
-        cancastresult = canCast(false);
+        cancastresult = canCast(false, &parameter1, &parameter2);
 
     if (cancastresult != 0)
         LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
@@ -923,7 +923,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     if (cancastresult != SPELL_CANCAST_OK)
     {
         // Triggered spells also need to go through cancast check but they do not pop a error message
-        SendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult);
+        sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult, parameter1, parameter2);
 
         if (m_triggeredByAura)
         {
@@ -1013,7 +1013,7 @@ void Spell::cancel()
         return;
 
     SendInterrupted(0);
-    SendCastResult(SPELL_FAILED_INTERRUPTED);
+    sendCastResult(SPELL_FAILED_INTERRUPTED);
 
     if (m_spellState == SPELL_STATE_CASTING)
     {
@@ -1111,10 +1111,11 @@ void Spell::castMe(bool check)
         LogDebugFlag(LF_SPELL, "Spell::cast %u, LowGuid: %u", getSpellInfo()->getId(), m_caster->getGuidLow());
     }
 
+    uint32_t parameter1 = 0, parameter2 = 0;
     if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
-        cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
+        cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else if (check)
-        cancastresult = canCast(true);
+        cancastresult = canCast(true, &parameter1, &parameter2);
     else
         cancastresult = SPELL_CANCAST_OK;
 
@@ -1128,7 +1129,7 @@ void Spell::castMe(bool check)
                 if (!HasPower())
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1139,7 +1140,7 @@ void Spell::castMe(bool check)
                 if (!TakePower())   // shouldn't happen
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1153,7 +1154,7 @@ void Spell::castMe(bool check)
                 {
                     //LOG_DEBUG("Spell::Not Enough Mana");
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1199,7 +1200,7 @@ void Spell::castMe(bool check)
             }
         }
 
-        SendCastResult(cancastresult);
+        sendCastResult(cancastresult);
         if (cancastresult != SPELL_CANCAST_OK)
         {
             finish(false);
@@ -1686,7 +1687,7 @@ void Spell::castMe(bool check)
             }*/
 
             m_isCasting = false;
-            SendCastResult(cancastresult);
+            sendCastResult(cancastresult);
             if (u_caster != nullptr)
                 u_caster->SetOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
 
@@ -1701,7 +1702,7 @@ void Spell::castMe(bool check)
     else
     {
         // cancast failed
-        SendCastResult(cancastresult);
+        sendCastResult(cancastresult, parameter1, parameter2);
         SendInterrupted(cancastresult);
         finish(false);
     }
@@ -2215,83 +2216,6 @@ void Spell::finish(bool successful)
     }
 
     DecRef();
-}
-
-void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError)
-{
-    uint32 spellId = getSpellInfo()->getId();
-
-    if (caster != nullptr)
-    {
-        uint32_t extraError1 = extraError;
-        switch (result)
-        {
-            case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-                extraError1 = getSpellInfo()->getRequiresSpellFocus();
-                break;
-
-#if VERSION_STRING > TBC
-            case SPELL_FAILED_REQUIRES_AREA:
-                if (getSpellInfo()->getRequiresAreaId() > 0)
-                {
-                    auto area_group = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
-                    auto area = p_caster->GetArea();
-                    for (uint8 i = 0; i < 6; i++)
-                    {
-                        if (area_group->AreaId[i] != 0 && area_group->AreaId[i] != area->id)
-                        {
-                            extraError1 = area_group->AreaId[i];
-                            break;
-                        }
-                    }
-                }
-                break;
-#endif
-            case SPELL_FAILED_TOTEMS:
-                if (getSpellInfo()->getTotem(0))
-                    extraError1 = getSpellInfo()->getTotem(0);
-
-                if (getSpellInfo()->getTotem(1))
-                    extraError1 = getSpellInfo()->getTotem(1);
-
-                break;
-            case SPELL_FAILED_ONLY_SHAPESHIFT:
-                extraError1 = getSpellInfo()->getRequiredShapeShift();
-                break;
-            case SPELL_FAILED_CUSTOM_ERROR:
-                extraError1 = extraError;
-                break;
-            default:
-                break;
-        }
-
-        caster->sendCastFailedPacket(spellId, result, castCount, extraError1);
-    }
-}
-
-void Spell::SetExtraCastResult(SpellExtraError result)
-{
-    m_extraError = result;
-}
-
-void Spell::SendCastResult(uint8 result)
-{
-    if (result == SPELL_CANCAST_OK)
-        return;
-
-    SetSpellFailed();
-
-    if (!m_caster->IsInWorld())
-        return;
-
-    Player* plr = p_caster;
-
-    if (!plr && u_caster)
-        plr = u_caster->m_redirectSpellPackets;
-    if (!plr)
-        return;
-
-    SendCastResult(p_caster, 0, result, m_extraError);
 }
 
 // uint16 0xFFFF
@@ -4120,48 +4044,6 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Item spell checks
-         */
-        if (i_caster)
-        {
-            if (i_caster->getItemProperties()->ZoneNameID && i_caster->getItemProperties()->ZoneNameID != i_caster->GetZoneId())
-                return SPELL_FAILED_NOT_HERE;
-            if (i_caster->getItemProperties()->MapID && i_caster->getItemProperties()->MapID != i_caster->GetMapId())
-                return SPELL_FAILED_NOT_HERE;
-        }
-
-        /**
-         *	Check if we have the required reagents
-         */
-        if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
-        {
-            // Skip this with enchanting scrolls
-            if (!i_caster || i_caster->getItemProperties()->Flags != 268435520)
-            {
-                for (uint8_t i = 0; i < 8; ++i)
-                {
-                    if (getSpellInfo()->getReagent(i) == 0 || getSpellInfo()->getReagentCount(i) == 0)
-                        continue;
-
-                    if (p_caster->getItemInterface()->GetItemCount(getSpellInfo()->getReagent(i)) < getSpellInfo()->getReagentCount(i))
-                        return SPELL_FAILED_ITEM_GONE;
-                }
-            }
-        }
-
-        /**
-         *	check if we have the required tools, totems, etc
-         */
-        for (uint8_t i = 0; i < 2; ++i)
-        {
-            if (getSpellInfo()->getTotem(i) != 0)
-            {
-                if (p_caster->getItemInterface()->GetItemCount(getSpellInfo()->getTotem(i)) == 0)
-                    return SPELL_FAILED_TOTEMS;
-            }
-        }
-
-        /**
          *	check if we have the required gameobject focus
          */
         float focusRange;
@@ -4247,106 +4129,11 @@ uint8 Spell::CanCast(bool tolerate)
             i_target = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
         }
 
-        // check to make sure we have a targeted item
-        // the second check is a temporary exploit fix, people keep stacking enchants on 0 durability items and then 1hit/1shot the other guys
-        if (!i_target || (i_target->getDurability() == 0 && i_target->getMaxDurability() != 0))
-            return SPELL_FAILED_BAD_TARGETS;
-
         ItemProperties const* proto = i_target->getItemProperties();
 
         // check to make sure the targeted item is acceptable
         switch (getSpellInfo()->getEffect(0))
         {
-            // Lock Picking Targeted Item Check
-            case SPELL_EFFECT_OPEN_LOCK:
-            {
-                // this is currently being handled in SpellEffects
-                break;
-            }
-
-            // Enchanting Targeted Item Check
-            case SPELL_EFFECT_ENCHANT_ITEM:
-            case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
-            case SPELL_EFFECT_ADD_SOCKET:
-            {
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ADD_SOCKET && i_target->GetSocketsCount() >= 3)
-                    return SPELL_FAILED_MAX_SOCKETS;
-
-                // If enchant is permanent and we are casting on Vellums
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM && getSpellInfo()->getEffectItemType(0) != 0 &&
-                    (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145 ||
-                    proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146))
-                {
-                    // Weapons enchants
-                    if (getSpellInfo()->getEquippedItemClass() == 2)
-                    {
-                        // These are armor vellums
-                        if (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // You tried to cast wotlk enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43146)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast tbc enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 39349)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast non-lvl enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 39349)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        break;
-                    }
-
-                    // Armors enchants
-                    else if (getSpellInfo()->getEquippedItemClass() == 4)
-                    {
-                        // These are weapon vellums
-                        if (proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // You tried to cast wotlk enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43145)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast tbc enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 38682)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast non-lvl enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 38682)
-                            return SPELL_FAILED_BAD_TARGETS;
-                    }
-
-                    // If We are here it means that we have right Vellum and right enchant to cast
-                    break;
-                }
-
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM &&
-                    getSpellInfo()->getBaseLevel() && (getSpellInfo()->getBaseLevel() > proto->ItemLevel))
-                    return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
-
-                if (i_caster && i_caster->getItemProperties()->Flags == 2097216)
-                    break;
-
-                break;
-            }
-
-            // Disenchanting Targeted Item Check
-            case SPELL_EFFECT_DISENCHANT:
-            {
-                // check if item can be disenchanted
-                if (proto->DisenchantReqSkill < 1)
-                    return SPELL_FAILED_CANT_BE_DISENCHANTED;
-
-                // check if we have high enough skill
-                if ((int32)p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING) < proto->DisenchantReqSkill)
-                    return SPELL_FAILED_CANT_BE_DISENCHANTED_SKILL;
-
-                break;
-            }
-
             // Feed Pet Targeted Item Check
             case SPELL_EFFECT_FEED_PET:
             {
@@ -4371,41 +4158,6 @@ uint8 Spell::CanCast(bool tolerate)
                 // check food level: food should be max 30 lvls below pets level
                 if (pPet->getLevel() > proto->ItemLevel + 30)
                     return SPELL_FAILED_FOOD_LOWLEVEL;
-
-                break;
-            }
-
-            // Prospecting Targeted Item Check
-            case SPELL_EFFECT_PROSPECTING:
-            {
-                // check if the item can be prospected
-                if (!(proto->Flags & ITEM_FLAG_PROSPECTABLE))
-                    return SPELL_FAILED_CANT_BE_PROSPECTED;
-
-                // check if we have at least 5 of the item
-                if (p_caster->getItemInterface()->GetItemCount(proto->ItemId) < 5)
-                    return SPELL_FAILED_ITEM_GONE;
-
-                // check if we have high enough skill
-                if (p_caster->_GetSkillLineCurrent(SKILL_JEWELCRAFTING) < proto->RequiredSkillRank)
-                    return SPELL_FAILED_LOW_CASTLEVEL;
-
-                break;
-            }
-            // Milling Targeted Item Check
-            case SPELL_EFFECT_MILLING:
-            {
-                // check if the item can be prospected
-                if (!(proto->Flags & ITEM_FLAG_MILLABLE))
-                    return SPELL_FAILED_CANT_BE_PROSPECTED;
-
-                // check if we have at least 5 of the item
-                if (p_caster->getItemInterface()->GetItemCount(proto->ItemId) < 5)
-                    return SPELL_FAILED_ITEM_GONE;
-
-                // check if we have high enough skill
-                if (p_caster->_GetSkillLineCurrent(SKILL_INSCRIPTION) < proto->RequiredSkillRank)
-                    return SPELL_FAILED_LOW_CASTLEVEL;
 
                 break;
             }
@@ -4500,13 +4252,6 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != nullptr)
             {
-                if (getSpellInfo()->getId() == SPELL_RANGED_THROW)
-                {
-                    auto item = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    if (item == nullptr)
-                        return SPELL_FAILED_NO_AMMO;
-                }
-
                 if (target->isPlayer())
                 {
                     // disallow spell casting in sanctuary zones

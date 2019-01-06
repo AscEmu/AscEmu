@@ -76,6 +76,13 @@ class SERVER_DECL ItemInterface
         AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
 
     public:
+        // APGL End
+        // MIT Start
+
+        bool hasItemForTotemCategory(uint32_t totemCategory);
+
+        // MIT End
+        // APGL Start
 
         Arcemu::EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;

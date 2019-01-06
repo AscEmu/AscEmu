@@ -53,11 +53,15 @@ class SERVER_DECL Spell : public EventableObject
         int32_t getFullCastTime() const { return m_castTime; }
         int32_t getCastTimeLeft() const { return m_timer; }
 
-        virtual SpellCastResult canCast(bool tolerate);
+        virtual SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2);
 
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
-
         SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
+
+        // Spell packets
+        void sendCastResult(SpellCastResult result, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+        void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
+
         bool canAttackCreatureType(Creature* target) const;
         SpellInfo* getSpellInfo() const;
         // MIT Ends
@@ -156,9 +160,6 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* GetTargetConstraintGameObject() const;
 
         // Send Packet functions
-        void SetExtraCastResult(SpellExtraError result);
-        void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
-        void SendCastResult(uint8 result);
         void SendSpellStart();
         void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
@@ -177,7 +178,6 @@ class SERVER_DECL Spell : public EventableObject
         uint32 pSpellId;
         SpellInfo* ProcedOnSpell;
         SpellCastTargets m_targets;
-        SpellExtraError m_extraError;
 
         void CreateItem(uint32 itemId);
 
@@ -438,7 +438,7 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* targetConstraintGameObject;
         uint32 add_damage;
 
-        uint8 cancastresult;
+        SpellCastResult cancastresult;
         uint32 Dur;
         bool bDurSet;
         float Rad[3];

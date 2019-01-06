@@ -321,6 +321,11 @@ void Player::modArenaCurrency(int32_t value)
 #endif
 #endif
 
+#if VERSION_STRING >= WotLK
+uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
+void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
@@ -1178,7 +1183,7 @@ void Player::updateAutoRepeatSpell()
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
             else if (isPlayer())
-                autoRepeatSpell->SendCastResult(static_cast<uint8_t>(canCastAutoRepeatSpell));
+                autoRepeatSpell->sendCastResult(static_cast<SpellCastResult>(canCastAutoRepeatSpell));
             return;
         }
 

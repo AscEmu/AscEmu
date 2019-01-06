@@ -595,6 +595,11 @@ public:
 #endif
 #endif
 
+#if VERSION_STRING >= WotLK
+    uint32_t getNoReagentCost(uint8_t index) const;
+    void setNoReagentCost(uint8_t index, uint32_t value);
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);

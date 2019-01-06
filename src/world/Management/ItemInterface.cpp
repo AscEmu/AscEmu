@@ -31,6 +31,82 @@
 
 using namespace AscEmu::Packets;
 
+// APGL End
+// MIT Start
+
+bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
+{
+    // If totem category is 0, the spell does not require any totems or tools
+    if (totemCategory == 0)
+        return true;
+
+#if VERSION_STRING == Classic
+    return false;
+#else
+    const auto spellTotemCategory = sTotemCategoryStore.LookupEntry(totemCategory);
+    if (spellTotemCategory == nullptr)
+        return false;
+
+    // Helper lambda
+    auto checkItem = [&](Item const* item) -> bool
+    {
+        if (item == nullptr)
+            return false;
+        // Item has no totem category
+        if (item->getItemProperties()->TotemCategory == 0)
+            return false;
+        const auto itemTotemCategory = sTotemCategoryStore.LookupEntry(item->getItemProperties()->TotemCategory);
+        // Item has invalid totem category
+        if (itemTotemCategory == nullptr)
+            return false;
+        // Totem category types do not match
+        if (spellTotemCategory->categoryType != itemTotemCategory->categoryType)
+            return false;
+        // Check if totem category masks match
+        if (itemTotemCategory->categoryMask & spellTotemCategory->categoryMask)
+            return true;
+        return false;
+    };
+
+    for (int16_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        if (checkItem(GetInventoryItem(i)))
+            return true;
+    }
+
+    for (int8_t i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+    {
+        // Get bag from bag slot
+        const auto container = GetContainer(i);
+        if (container == nullptr)
+            continue;
+        // Loop through bag's content
+        for (uint16_t j = 0; j < container->getSlotCount(); ++j)
+        {
+            if (checkItem(container->GetItem(static_cast<int16_t>(j))))
+                return true;
+        }
+    }
+
+    for (int16_t i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        if (checkItem(GetInventoryItem(i)))
+            return true;
+    }
+
+    for (int16_t i = INVENTORY_KEYRING_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    {
+        if (checkItem(GetInventoryItem(i)))
+            return true;
+    }
+
+    return false;
+#endif
+}
+
+// MIT End
+// APGL Start
+
 ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->getGuidLow())
 {
     m_pOwner = pPlayer;
