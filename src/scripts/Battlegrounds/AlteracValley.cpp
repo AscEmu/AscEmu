@@ -1109,7 +1109,7 @@ void AlteracValley::OnStart()
 void AlteracValley::OnAddPlayer(Player* plr)
 {
     if (!m_started)
-        plr->CastSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BG_PREPARATION, true);
 
     if (plr->isTeamHorde())
     {

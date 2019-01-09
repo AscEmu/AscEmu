@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 initialiseSingleton(MySQLDataStore);
 
@@ -742,7 +742,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 creatureProperties.AISpells[i] = fields[52 + i].GetUInt32();
                 if (creatureProperties.AISpells[i] != 0)
                 {
-                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(creatureProperties.AISpells[i]);
+                    SpellInfo const* sp = sSpellMgr.getSpellInfo(creatureProperties.AISpells[i]);
                     if (sp == nullptr)
                     {
                         uint8_t spell_number = i;
@@ -777,7 +777,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                     if (creature_spell_data->Spells[i] == 0)
                         continue;
 
-                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(creature_spell_data->Spells[i]);
+                    SpellInfo const* sp = sSpellMgr.getSpellInfo(creature_spell_data->Spells[i]);
                     if (sp == nullptr)
                         continue;
 
@@ -2608,14 +2608,14 @@ void MySQLDataStore::loadSpellOverrideTable()
         uint32_t distinct_override_id = fields[0].GetUInt32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<SpellInfo*>* list = new std::list <SpellInfo*>;
+        std::list<SpellInfo const*>* list = new std::list <SpellInfo const*>;
         if (spellid_for_overrideid_result != nullptr)
         {
             do
             {
                 Field* fieldsIn = spellid_for_overrideid_result->Fetch();
                 uint32_t spellid = fieldsIn[0].GetUInt32();
-                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(spellid);
+                SpellInfo const* spell = sSpellMgr.getSpellInfo(spellid);
                 if (spell == nullptr)
                 {
                     LOG_ERROR("Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);
@@ -3812,7 +3812,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //        Field* fields = result->Fetch();
 //        uint32 entry = fields[0].GetUInt32();
 //        uint32 spell = fields[1].GetUInt32();
-//        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell);
+//        const auto spellInfo = sSpellMgr.getSpellInfo(spell);
 //
 //        if (spell && entry && spellInfo)
 //        {
@@ -3823,7 +3823,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //            }
 //            else
 //            {
-//                std::set<SpellInfo*> spellInfoSet;
+//                std::set<SpellInfo const*> spellInfoSet;
 //                spellInfoSet.insert(spellInfo);
 //                _defaultPetSpellsStore[entry] = spellInfoSet;
 //            }
@@ -3836,7 +3836,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //}
 
 //\brief This function is never called!     Zyres 2017/07/16 not used
-//std::set<SpellInfo*>* MySQLDataStore::getDefaultPetSpellsByEntry(uint32_t entry)
+//std::set<SpellInfo const*>* MySQLDataStore::getDefaultPetSpellsByEntry(uint32_t entry)
 //{
 //    PetDefaultSpellsMap::iterator itr = _defaultPetSpellsStore.find(entry);
 //    if (itr == _defaultPetSpellsStore.end())

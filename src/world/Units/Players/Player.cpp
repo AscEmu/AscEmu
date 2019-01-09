@@ -1189,7 +1189,7 @@ void Player::updateAutoRepeatSpell()
         }
 
         // Cast the spell with triggered flag
-        const auto newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->getSpellInfo(), true, nullptr);
+        const auto newAutoRepeatSpell = sSpellMgr.newSpell(this, autoRepeatSpell->getSpellInfo(), true, nullptr);
         newAutoRepeatSpell->prepare(&autoRepeatSpell->m_targets);
 
         setAttackTimer(RANGED, getBaseAttackTime(RANGED));
@@ -1381,7 +1381,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (HasSpell(spellId))
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
         return;
 
@@ -1409,14 +1409,14 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 }
 
-void Player::addTalent(SpellInfo* sp)
+void Player::addTalent(SpellInfo const* sp)
 {
     // Add to player's spellmap
     addSpell(sp->getId());
 
     // Cast passive spells and spells with learn effect
     if (sp->hasEffect(SPELL_EFFECT_LEARN_SPELL))
-        CastSpell(getGuid(), sp, true);
+        castSpell(getGuid(), sp, true);
     else if (sp->isPassive())
     {
         if (sp->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (sp->getRequiredShapeShift() & getShapeShiftMask())) ||
@@ -1425,14 +1425,14 @@ void Player::addTalent(SpellInfo* sp)
             if (sp->getCasterAuraState() == 0 || hasAuraState(AuraState(sp->getCasterAuraState()), sp, this))
                 // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
                 if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
-                    CastSpell(getGuid(), sp, true);
+                    castSpell(getGuid(), sp, true);
         }
     }
 }
 
 void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
 {
-    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo != nullptr)
     {
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1442,7 +1442,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
             {
                 auto taughtSpellId = spellInfo->getEffectTriggerSpell(i);
                 // There is one case in 3.3.5a and 4.3.4 where the learnt spell yet teaches another spell
-                SpellInfo const* taughtSpell = sSpellCustomizations.GetSpellInfo(taughtSpellId);
+                SpellInfo const* taughtSpell = sSpellMgr.getSpellInfo(taughtSpellId);
                 if (taughtSpell != nullptr)
                 {
                     for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
@@ -1720,7 +1720,7 @@ void Player::activateTalentSpec(uint8_t specId)
     {
         auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
         if (glyphProperties != nullptr)
-            CastSpell(this, glyphProperties->SpellID, true);
+            castSpell(this, glyphProperties->SpellID, true);
     }
 
     // Add new talents
@@ -1729,7 +1729,7 @@ void Player::activateTalentSpec(uint8_t specId)
         auto talentInfo = sTalentStore.LookupEntry(itr.first);
         if (talentInfo == nullptr)
             continue;
-        auto spellInfo = sSpellCustomizations.GetSpellInfo(talentInfo->RankID[itr.second]);
+        auto spellInfo = sSpellMgr.getSpellInfo(talentInfo->RankID[itr.second]);
         if (spellInfo == nullptr)
             continue;
         addTalent(spellInfo);

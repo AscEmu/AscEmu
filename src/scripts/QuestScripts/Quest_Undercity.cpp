@@ -37,7 +37,7 @@ public:
         SpawnHighborneLamenter(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f);
 
         creat->PlaySoundToSet(10896);
-        creat->CastSpell(creat, sSpellCustomizations.GetSpellInfo(36568), false);
+        creat->castSpell(creat, sSpellMgr.getSpellInfo(36568), false);
 
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 

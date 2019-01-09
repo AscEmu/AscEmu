@@ -107,12 +107,12 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
         {
             if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
             {
-                pCreature->CastSpell(Plr, SPELL_TRICK_OR_TREATED, true);
+                pCreature->castSpell(Plr, SPELL_TRICK_OR_TREATED, true);
 
                 // either trick or treat, 50% chance
                 if (Util::getRandomUInt(1))
                 {
-                    Plr->CastSpell(Plr, SPELL_TREAT, true);
+                    Plr->castSpell(Plr, SPELL_TREAT, true);
                 }
                 else
                 {
@@ -169,7 +169,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                             return;
                         }
                     }
-                    pCreature->CastSpell(Plr, trickspell, true);
+                    pCreature->castSpell(Plr, trickspell, true);
                 }
             }
             Arcemu::Gossip::Menu::Complete(Plr);

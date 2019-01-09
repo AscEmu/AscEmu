@@ -1805,8 +1805,8 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                                 float his_facing = getNextTarget()->GetOrientation();
                                 if (fabs(our_facing - his_facing) < CREATURE_DAZE_TRIGGER_ANGLE && !getNextTarget()->HasAura(CREATURE_SPELL_TO_DAZE))
                                 {
-                                    SpellInfo* info = sSpellCustomizations.GetSpellInfo(CREATURE_SPELL_TO_DAZE);
-                                    Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
+                                    SpellInfo const* info = sSpellMgr.getSpellInfo(CREATURE_SPELL_TO_DAZE);
+                                    Spell* sp = sSpellMgr.newSpell(m_Unit, info, false, NULL);
                                     SpellCastTargets targets;
                                     targets.m_unitTarget = getNextTarget()->getGuid();
                                     sp->prepare(&targets);
@@ -1858,10 +1858,10 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                         if (infront)
                         {
                             m_Unit->setAttackTimer(MELEE, m_Unit->getBaseAttackTime(MELEE));
-                            SpellInfo* info = sSpellCustomizations.GetSpellInfo(SPELL_RANGED_GENERAL);
+                            SpellInfo const* info = sSpellMgr.getSpellInfo(SPELL_RANGED_GENERAL);
                             if (info)
                             {
-                                Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
+                                Spell* sp = sSpellMgr.newSpell(m_Unit, info, false, NULL);
                                 SpellCastTargets targets;
                                 targets.m_unitTarget = getNextTarget()->getGuid();
                                 sp->prepare(&targets);
@@ -1902,7 +1902,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 float distance = m_Unit->CalcDistance(getNextTarget());
                 if (los && ((distance <= m_nextSpell->maxrange + m_Unit->GetModelHalfSize()) || m_nextSpell->maxrange == 0))  // Target is in Range -> Attack
                 {
-                    SpellInfo* spellInfo = m_nextSpell->spell;
+                    const auto spellInfo = m_nextSpell->spell;
 
                     /* if in range stop moving so we don't interrupt the spell */
                     //do not stop for instant spells
@@ -1925,19 +1925,19 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                         }
                         case TTYPE_SOURCE:
                         {
-                            m_Unit->CastSpellAoF(targets.source(), spellInfo, true);
+                            m_Unit->castSpellLoc(targets.source(), spellInfo, true);
                             break;
                         }
                         case TTYPE_DESTINATION:
                         {
-                            m_Unit->CastSpellAoF(targets.destination(), spellInfo, true);
+                            m_Unit->castSpellLoc(targets.destination(), spellInfo, true);
                             break;
                         }
                         default:
                             LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
                     }
 
-                    // CastSpell(m_Unit, spellInfo, targets);
+                    // castSpell(m_Unit, spellInfo, targets);
                     if (m_nextSpell && m_nextSpell->cooldown)
                         m_nextSpell->cooldowntime = Util::getMSTime() + m_nextSpell->cooldown;
 
@@ -2130,10 +2130,10 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
         removeAiState(AI_STATE_UNFEARED);
     }
 
-    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellCustomizations.GetSpellInfo(spellId) : NULL, pUnit));
+    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellMgr.getSpellInfo(spellId) : NULL, pUnit));
 }
 
-void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo* sp, uint32 amount)
+void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, uint32 amount)
 {
     if (!caster || !victim)
         return;
@@ -3040,7 +3040,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     setPetFollowMovement();
 }
 
-void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets)
+void AIInterface::CastSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastTargets targets)
 {
     ARCEMU_ASSERT(spellInfo != NULL);
     if (!isAiScriptType(AI_SCRIPT_PET) && isCastDisabled())
@@ -3054,13 +3054,13 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets
 #endif
 
     //i wonder if this will lead to a memory leak :S
-    Spell* nspell = sSpellFactoryMgr.NewSpell(caster, spellInfo, false, NULL);
+    Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, NULL);
     nspell->prepare(&targets);
 }
 
-SpellInfo* AIInterface::getSpellEntry(uint32 spellId)
+SpellInfo const* AIInterface::getSpellEntry(uint32 spellId)
 {
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
 
     if (!spellInfo)
     {
@@ -3071,7 +3071,7 @@ SpellInfo* AIInterface::getSpellEntry(uint32 spellId)
     return spellInfo;
 }
 
-SpellCastTargets AIInterface::setSpellTargets(SpellInfo* /*spellInfo*/, Unit* target) const
+SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Unit* target) const
 {
     SpellCastTargets targets;
     targets.m_unitTarget = target ? target->getGuid() : 0;
@@ -3670,7 +3670,7 @@ void AIInterface::CheckTarget(Unit* target)
         tauntedBy = nullptr;
 }
 
-uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
+uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attacker)
 {
     if (!Attacker)
         return 0; // No attacker means no threat and we prevent crashes this way
@@ -3905,7 +3905,7 @@ void AIInterface::_UpdateTotem(uint32 p_time)
     ARCEMU_ASSERT(totemspell != 0);
     if (p_time >= m_totemspelltimer)
     {
-        Spell* pSpell = sSpellFactoryMgr.NewSpell(m_Unit, totemspell, true, 0);
+        Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
         Unit* nextTarget = getNextTarget();
         if (nextTarget == NULL ||
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->getGuid()) ||
@@ -3938,7 +3938,7 @@ void AIInterface::_UpdateTotem(uint32 p_time)
         }
         // these will *almost always* be AoE, so no need to find a target here.
         //            SpellCastTargets targets(m_Unit->getGuid());
-        //            Spell* pSpell = sSpellFactoryMgr.NewSpell(m_Unit, totemspell, true, 0);
+        //            Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
         //            pSpell->prepare(&targets);
         // need proper cooldown time!
         //            m_totemspelltimer = m_totemspelltime;

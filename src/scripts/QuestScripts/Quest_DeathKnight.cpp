@@ -125,7 +125,7 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 
     // Apply spell if caster has quest and still heven't completed it yet
     if (pCaster->HasQuest(QUEST_PREPARATION) && !pCaster->HasFinishedQuest(QUEST_PREPARATION))
-        pCaster->CastSpell(pCaster, SPELL_PREPERATION_FOR_BATTLE_CREDIT, true);
+        pCaster->castSpell(pCaster, SPELL_PREPERATION_FOR_BATTLE_CREDIT, true);
 
     return true;
 }
@@ -147,7 +147,7 @@ public:
         if (player->HasAura(51852))
             return;
 
-        player->CastSpell(player, 51888, true);
+        player->castSpell(player, 51888, true);
 
         _gameobject->setState(GO_STATE_CLOSED);
     }

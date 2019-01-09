@@ -402,7 +402,7 @@ class ArugalAI : public CreatureAIScript
                 case 0:
                 {
                     getCreature()->setVisible(true);
-                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
+                    getCreature()->castSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
                     {
@@ -452,7 +452,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 9:
                 {
-                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
+                    getCreature()->castSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
                     getCreature()->setVisible(false);
                     RemoveAIUpdateEvent();
@@ -718,7 +718,7 @@ class AshcrombeAI : public CreatureAIScript
                     case 3:
                     {
                         ModifyAIUpdateEvent(6000);
-                        getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_UNLOCK, false);
+                        getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_UNLOCK, false);
                     }break;
                     // Setting instance data to finished
                     case 4:
@@ -728,7 +728,7 @@ class AshcrombeAI : public CreatureAIScript
                     // Final stage - casting spell which despawns Ashcrombe Sorcerer
                     case 5:
                     {
-                        getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
+                        getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
                         getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_VANISH);
                         SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Finished);
                         RemoveAIUpdateEvent();
@@ -1151,7 +1151,7 @@ class ArugalBossAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->m_canMove = true;
 
                 // sanctum32: not sure if it is correct spell id
-                getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
+                getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
                 SFK_instance->SetLocaleInstanceData(0, INDEX_VOIDWALKER, Finished);
                 RemoveAIUpdateEvent();
             }break;
@@ -1192,7 +1192,7 @@ class ArugalBossAI : public CreatureAIScript
                 if (arugalPosition == ARUGAL_LOC_UPPER_LEDGE)
                 {
                     ModifyAIUpdateEvent(aiUpdateOriginal);
-                    getCreature()->CastSpell(getCreature(), SPELL_SHADOW_PORT_STAIRS, true);
+                    getCreature()->castSpell(getCreature(), SPELL_SHADOW_PORT_STAIRS, true);
                     arugalPosition = ARUGAL_LOC_STAIRS;
                     setRooted(false);
                 }
@@ -1201,7 +1201,7 @@ class ArugalBossAI : public CreatureAIScript
                 {
                     aiUpdateOriginal = GetAIUpdateFreq();
                     ModifyAIUpdateEvent(3000);
-                    getCreature()->CastSpell(getCreature(), SPELL_SHADOW_PORT_UPPER_LEDGE, true);
+                    getCreature()->castSpell(getCreature(), SPELL_SHADOW_PORT_UPPER_LEDGE, true);
                     arugalPosition = ARUGAL_LOC_UPPER_LEDGE;
                     setRooted(true);
                 }
@@ -1362,7 +1362,7 @@ class ShadowfangRagetoothAI : public CreatureAIScript
         // Cast Wild rage at 30% health
         if (_getHealthPercent() <= 30 && !getCreature()->HasAura(SPELL_WILD_RAGE) && !sWildRageCasted)
         {
-            getCreature()->CastSpell(getCreature(), SPELL_WILD_RAGE, true);
+            getCreature()->castSpell(getCreature(), SPELL_WILD_RAGE, true);
             sWildRageCasted = true;
         }
     }

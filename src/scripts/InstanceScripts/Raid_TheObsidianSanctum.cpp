@@ -74,7 +74,7 @@ public:
         if (pSartharion == NULL)
             return;
 
-        pSartharion->CastSpell(pSartharion, pSpellEntry, true);
+        pSartharion->castSpell(pSartharion, pSpellEntry, true);
         pSartharion->RemoveAura(pSpellEntry);   // unproper hackfix
     }
 

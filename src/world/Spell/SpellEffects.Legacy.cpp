@@ -59,7 +59,6 @@
 #include "Definitions/Spec.h"
 #include "SpellHelpers.h"
 #include "Spell.h"
-#include "Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
@@ -418,7 +417,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     std::map<uint64, Aura*>::iterator itr = m_pendingAuras.find(unitTarget->getGuid());
     if (itr == m_pendingAuras.end())
     {
-        pAura = sSpellFactoryMgr.NewAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
+        pAura = sSpellMgr.newAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
 
         float r = GetRadius(effectIndex);
 
@@ -531,9 +530,9 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
             }
             if (DemonicSacEffectSpellId)
             {
-                SpellInfo* se = sSpellCustomizations.GetSpellInfo(DemonicSacEffectSpellId);
+                SpellInfo const* se = sSpellMgr.getSpellInfo(DemonicSacEffectSpellId);
                 if (se && u_caster)
-                    u_caster->CastSpell(u_caster, se, true);
+                    u_caster->castSpell(u_caster, se, true);
             }
         } break;
 
@@ -573,12 +572,12 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
 
             //TO< Pet* >(u_caster)->Dismiss(true);
 
-            SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
+            SpellInfo const* se = sSpellMgr.getSpellInfo(5);
             if (static_cast< Pet* >(u_caster)->getPlayerOwner() == nullptr)
                 return;
 
             SpellCastTargets targets(u_caster->getGuid());
-            Spell* sp = sSpellFactoryMgr.NewSpell(static_cast< Pet* >(u_caster)->getPlayerOwner(), se, true, nullptr);
+            Spell* sp = sSpellMgr.newSpell(static_cast< Pet* >(u_caster)->getPlayerOwner(), se, true, nullptr);
             sp->prepare(&targets);
             return;
         } break;
@@ -593,10 +592,10 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
 
         //TO< Pet* >(unitTarget)->Dismiss(true);
 
-        SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
+        SpellInfo const* se = sSpellMgr.getSpellInfo(5);
 
         SpellCastTargets targets(unitTarget->getGuid());
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, nullptr);
+        Spell* sp = sSpellMgr.newSpell(p_caster, se, true, nullptr);
         sp->prepare(&targets);
         return;
     }
@@ -843,9 +842,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     if (!unitTarget->IsStunned())
                         dmg = dmg >> 1;
                     if (p_caster->HasAura(34258))
-                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -1266,9 +1265,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     if (p_caster->HasAura(34258))
-                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -1705,6 +1704,8 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
+        uint32_t Duration = GetDuration();
+
         if (ProcedOnSpell)  //Warrior's Blood Frenzy
         {
             switch (getSpellInfo()->getId())
@@ -1716,12 +1717,20 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
                 case 29859:
                 case 30069:
                 case 30070:
-                    getSpellInfo()->setDurationIndex(ProcedOnSpell->getDurationIndex());
-                    break;
+                {
+                    const auto motherSpellDuration = sSpellDurationStore.LookupEntry(ProcedOnSpell->getDurationIndex());
+                    if (motherSpellDuration != nullptr)
+                    {
+                        if (motherSpellDuration->Duration3 > 0)
+                            Duration = motherSpellDuration->Duration3;
+                        else if (motherSpellDuration->Duration2 > 0)
+                            Duration = motherSpellDuration->Duration2;
+                        else
+                            Duration = motherSpellDuration->Duration1;
+                    }
+                } break;
             }
         }
-
-        uint32 Duration = GetDuration();
 
         // Handle diminishing returns, if it should be resisted, it'll make duration 0 here.
         if (!(getSpellInfo()->isPassive())) // Passive
@@ -1736,9 +1745,9 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         }
 
         if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
-            pAura = sSpellFactoryMgr.NewAura(getSpellInfo(), Duration, g_caster->m_summoner, unitTarget, m_triggeredSpell, i_caster);
+            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->m_summoner, unitTarget, m_triggeredSpell, i_caster);
         else
-            pAura = sSpellFactoryMgr.NewAura(getSpellInfo(), Duration, m_caster, unitTarget, m_triggeredSpell, i_caster);
+            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, unitTarget, m_triggeredSpell, i_caster);
 
         pAura->pSpellId = pSpellId; //this is required for triggered spells
 
@@ -1792,7 +1801,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             if (unitTarget->getEntry() == 21387)
             {
                 ((Creature*)unitTarget)->Despawn(5000, 360000);
-                p_caster->CastSpell(p_caster, 38178, true);
+                p_caster->castSpell(p_caster, 38178, true);
             }
             else
             {
@@ -1990,7 +1999,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 if (unitTarget && unitTarget->isPlayer() && pSpellId && unitTarget->getHealthPct() < 30)
                 {
                     //check for that 10 second cooldown
-                    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(pSpellId);
+                    const auto spellInfo = sSpellMgr.getSpellInfo(pSpellId);
                     if (spellInfo)
                     {
                         //heal value is received by the level of current active talent :s
@@ -2103,7 +2112,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                             amplitude = 3;
 
                         //our hapiness is that we did not store the aura mod amount so we have to recalc it
-                        Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
+                        Spell* spell = sSpellMgr.newSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
                         uint32 healamount = spell->CalculateEffect(1, unitTarget);
                         delete spell;
                         spell = nullptr;
@@ -2215,7 +2224,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                             if (!amplitude) amplitude = 3;
 
                             //our happiness is that we did not store the aura mod amount so we have to recalc it
-                            Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
+                            Spell* spell = sSpellMgr.newSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
                             uint32 healamount = spell->CalculateEffect(0, unitTarget);
                             delete spell;
                             spell = nullptr;
@@ -2230,8 +2239,8 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                     if (new_dmg > 0)
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(18562);
-                        Spell* spell = sSpellFactoryMgr.NewSpell(unitTarget, spellInfo, true, nullptr);
+                        const auto spellInfo = sSpellMgr.getSpellInfo(18562);
+                        Spell* spell = sSpellMgr.newSpell(unitTarget, spellInfo, true, nullptr);
                         spell->SetUnitTarget(unitTarget);
                         spell->Heal((int32)new_dmg);
                         delete spell;
@@ -2570,7 +2579,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
             if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Rand(cast_chance))
             {
-                SpellInfo* dspellproto = sSpellCustomizations.GetSpellInfo(learn_spell);
+                SpellInfo const* dspellproto = sSpellMgr.getSpellInfo(learn_spell);
 
                 if (dspellproto != nullptr)
                 {
@@ -2603,7 +2612,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             // if something was discovered teach player that recipe and broadcast message
             if (discovered_recipe != 0)
             {
-                SpellInfo* se = sSpellCustomizations.GetSpellInfo(discovered_recipe);
+                SpellInfo const* se = sSpellMgr.getSpellInfo(discovered_recipe);
 
                 if (se != nullptr)
                 {
@@ -3274,7 +3283,7 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
         case 31786: // Paladin - Spiritual Attunement
             if (ProcedOnSpell)
             {
-                SpellInfo* motherspell = sSpellCustomizations.GetSpellInfo(pSpellId);
+                SpellInfo const* motherspell = sSpellMgr.getSpellInfo(pSpellId);
                 if (motherspell)
                 {
                     //heal amount from procspell (we only proceed on a heal spell)
@@ -3404,7 +3413,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         return;
     }
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spInfo = sSpellMgr.getSpellInfo(spellid);
     if (spInfo == nullptr)
     {
         LOG_ERROR("Spell %u (%s) has a trigger missle effect index (%hhu) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
@@ -3414,7 +3423,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
     // Cast the triggered spell on the destination location, spells like Freezing Arrow use it
     if ((u_caster != nullptr) && (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION))
     {
-        u_caster->CastSpellAoF(m_targets.destination(), spInfo, true);
+        u_caster->castSpellLoc(m_targets.destination(), spInfo, true);
         return;
     }
 
@@ -3442,7 +3451,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         if (!isAttackable(m_caster, itr))   //Fix Me: only enemy targets?
             continue;
 
-        Spell* sp = sSpellFactoryMgr.NewSpell(m_caster, spInfo, true, nullptr);
+        Spell* sp = sSpellMgr.newSpell(m_caster, spInfo, true, nullptr);
         SpellCastTargets tgt;
         tgt.m_unitTarget = itr->getGuid();
         sp->prepare(&tgt);
@@ -3605,8 +3614,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     return;
 
             uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
-            SpellInfo* en = sSpellCustomizations.GetSpellInfo(spellid);
-            Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, nullptr);
+            SpellInfo const* en = sSpellMgr.getSpellInfo(spellid);
+            Spell* sp = sSpellMgr.newSpell(p_caster, en, true, nullptr);
             SpellCastTargets tgt;
             tgt.m_unitTarget = gameObjTarget->getGuid();
             sp->prepare(&tgt);
@@ -3736,7 +3745,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
             }
         }
 
-        if (!spellid || !sSpellCustomizations.GetSpellInfo(spellid)) return;
+        if (!spellid || !sSpellMgr.getSpellInfo(spellid)) return;
 
         // learn me!
         p_caster->addSpell(spellid);
@@ -3760,7 +3769,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
             playerTarget->addSpell(32605);
 
         //smth is wrong here, first we add this spell to player then we may cast it on player...
-        SpellInfo* spellinfo = sSpellCustomizations.GetSpellInfo(spellToLearn);
+        SpellInfo const* spellinfo = sSpellMgr.getSpellInfo(spellToLearn);
         //remove specializations
         switch (spellinfo->getId())
         {
@@ -3836,7 +3845,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
                 spellinfo->getEffect(j) == SPELL_EFFECT_PROFICIENCY ||
                 spellinfo->getEffect(j) == SPELL_EFFECT_DUAL_WIELD)
             {
-                Spell* sp = sSpellFactoryMgr.NewSpell(unitTarget, spellinfo, true, nullptr);
+                Spell* sp = sSpellMgr.newSpell(unitTarget, spellinfo, true, nullptr);
                 SpellCastTargets targets;
                 targets.m_unitTarget = unitTarget->getGuid();
                 targets.m_targetMask = TARGET_FLAG_UNIT;
@@ -3876,7 +3885,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     }
 
     Aura* aur;
-    SpellInfo* aursp;
+    SpellInfo const* aursp;
     std::list< uint32 > dispelledSpells;
     bool finish = false;
 
@@ -3940,8 +3949,8 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                         case 68158:
                         case 68159:
                         {
-                            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(31117);
-                            Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, nullptr);
+                            const auto spellInfo = sSpellMgr.getSpellInfo(31117);
+                            Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
                             spell->forced_basepoints[0] = (aursp->getEffectBasePoints(0) + 1) * 9;   //damage effect
                             spell->ProcedOnSpell = getSpellInfo();
                             spell->pSpellId = aursp->getId();
@@ -4423,7 +4432,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
         if (pPet->IsSummonedPet())
             p_caster->AddSummonSpell(unitTarget->getEntry(), getSpellInfo()->getEffectTriggerSpell(effectIndex));
 
-        pPet->AddSpell(sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
+        pPet->AddSpell(sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
 
         // Send Packet
         /*      WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_OBSOLETE, 22);
@@ -4590,12 +4599,12 @@ void Spell::SpellEffectClearQuest(uint8_t effectIndex)
 
 void Spell::SpellEffectTriggerSpell(uint8_t effectIndex) // Trigger Spell
 {
-    SpellInfo* entry = sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    SpellInfo const* entry = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
     if (entry == nullptr)
         return;
 
     SpellCastTargets targets = m_targets;
-    Spell* sp = sSpellFactoryMgr.NewSpell(m_caster, entry, m_triggeredSpell, nullptr);
+    Spell* sp = sSpellMgr.newSpell(m_caster, entry, m_triggeredSpell, nullptr);
     sp->ProcedOnSpell = getSpellInfo();
     sp->prepare(&targets);
 }
@@ -4644,7 +4653,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
             case 27154:
             case 48788:
             case 53778:
-                u_caster->CastSpell(unitTarget, 25771, true);
+                u_caster->castSpell(unitTarget, 25771, true);
                 break;
             default:
                 break;
@@ -4827,7 +4836,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
             return;
         }
         p_caster->setGlyph(static_cast<uint8_t>(m_glyphslot), glyph_new);
-        p_caster->CastSpell(p_caster, glyph_prop_new->SpellID, true);
+        p_caster->castSpell(p_caster, glyph_prop_new->SpellID, true);
         p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(glyph_new);
         p_caster->smsg_TalentsInfo(false);
     }
@@ -5266,8 +5275,8 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
     if (deltaLvl > 20) damage = damage >> 1;
     damage *= 1000;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
-    Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, nullptr);
+    const auto spellInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    Spell* sp = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
     sp->forced_basepoints[0] = damage;
     SpellCastTargets tgt;
     tgt.m_unitTarget = pPet->getGuid();
@@ -5431,7 +5440,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
     for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
         uint32 spellid = *itr;
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
 
         if (sp != nullptr)
         {
@@ -5660,7 +5669,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         {
             //count the number of sunder armors on target
             uint32 sunder_count = 0;
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
+            SpellInfo const* spellInfo = nullptr;
             for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
             {
                 if (unitTarget->m_auras[x])
@@ -5701,6 +5710,9 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
                             sunder_count++;
                             spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
                         } break;
+                        default:
+                            spellInfo = sSpellMgr.getSpellInfo(7386);
+                            break;
                     }
                 }
             }
@@ -5708,7 +5720,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
             if (spellInfo == nullptr)
                 return; //omg how did this happen ?
                         //we should also cast sunder armor effect on target with or without dmg
-            Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, nullptr);
+            Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
             spell->ProcedOnSpell = getSpellInfo();
             spell->pSpellId = getSpellInfo()->getId();
             SpellCastTargets targets(unitTarget->getGuid());
@@ -5994,7 +6006,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
         return;
 
     Aura* aur;
-    SpellInfo* aursp;
+    SpellInfo const* aursp;
     std::list< uint32 > stealedSpells;
 
     for (uint32 x = start; x < end; x++)
@@ -6013,7 +6025,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                     stealedSpells.push_back(aursp->getId());
 
                     uint32 aurdur = (aur->GetDuration() > 120000 ? 120000 : aur->GetDuration());
-                    Aura* aura = sSpellFactoryMgr.NewAura(aursp, aurdur, u_caster, u_caster);
+                    Aura* aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
                     uint32 aur_removed = unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8 j = 0; j < 3; j++)
                     {
@@ -6027,7 +6039,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                         Aura* aur2;
                         for (uint32 j = 0; j < aur_removed - 1; j++)
                         {
-                            aur2 = sSpellFactoryMgr.NewAura(aura->GetSpellInfo(), aurdur, u_caster, u_caster);
+                            aur2 = sSpellMgr.newAura(aura->GetSpellInfo(), aurdur, u_caster, u_caster);
                             u_caster->AddAura(aur2);
                         }
                         if (!(aura->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
@@ -6167,11 +6179,11 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
 {
     if (!unitTarget) return;
 
-    SpellInfo* TriggeredSpell = sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    SpellInfo const* TriggeredSpell = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
     if (TriggeredSpell == nullptr)
         return;
 
-    Spell* sp = sSpellFactoryMgr.NewSpell(m_caster, TriggeredSpell, true, nullptr);
+    Spell* sp = sSpellMgr.newSpell(m_caster, TriggeredSpell, true, nullptr);
 
     for (uint32 x = 0; x < 3; x++)
     {

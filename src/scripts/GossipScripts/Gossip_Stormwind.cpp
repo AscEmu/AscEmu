@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Creature.h"
 #include "Management/Gossip/Gossip.h"
@@ -27,7 +27,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        static_cast<Creature*>(pObject)->CastSpell(plr, sSpellCustomizations.GetSpellInfo(42711), true);
+        static_cast<Creature*>(pObject)->castSpell(plr, sSpellMgr.getSpellInfo(42711), true);
         Arcemu::Gossip::Menu::Complete(plr);
     }
 

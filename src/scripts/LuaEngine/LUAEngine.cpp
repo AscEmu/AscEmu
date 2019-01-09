@@ -1105,7 +1105,7 @@ void LuaHookOnEnterCombat(Player* pPlayer, Unit* pTarget)
     RELEASE_LOCK
 }
 
-bool LuaHookOnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
+bool LuaHookOnCastSpell(Player* pPlayer, SpellInfo const* pSpell, Spell* spell)
 {
     GET_LOCK
     bool result = true;

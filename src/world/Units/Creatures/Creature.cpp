@@ -1737,11 +1737,11 @@ void Creature::OnPushToWorld()
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*itr));
+        SpellInfo const* sp = sSpellMgr.getSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
-        CastSpell(this, sp, 0);
+        castSpell(this, sp, 0);
     }
 
     if (GetScript() == NULL)
@@ -2322,9 +2322,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellInfo* killerspell;
+        SpellInfo const* killerspell;
         if (spellid)
-            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
+            killerspell = sSpellMgr.getSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

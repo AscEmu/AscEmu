@@ -9,7 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/Definitions/SpellCastTargetFlags.h"
+#include "Spell/SpellMgr.h"
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
@@ -1290,9 +1291,9 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
 #endif
 }
 
-void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
+void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell)
 {
-    uint32_t status = sSpellCustomizations.getDiminishingGroup(spell->getId());
+    uint32_t status = sSpellMgr.getDiminishingGroup(spell->getId());
     uint32_t group  = status & 0xFFFF;
     uint32_t PvE    = (status >> 16) & 0xFFFF;
 
@@ -1337,9 +1338,9 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
     ++m_diminishCount[group];
 }
 
-void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
+void Unit::removeDiminishingReturnTimer(SpellInfo const* spell)
 {
-    uint32_t status = sSpellCustomizations.getDiminishingGroup(spell->getId());
+    uint32_t status = sSpellMgr.getDiminishingGroup(spell->getId());
     uint32_t group  = status & 0xFFFF;
     uint32_t pve    = (status >> 16) & 0xFFFF;
     uint32_t aura_group;
@@ -1364,7 +1365,7 @@ void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
     {
         if (m_auras[x])
         {
-            aura_group = sSpellCustomizations.getDiminishingGroup(m_auras[x]->GetSpellInfo()->getId());
+            aura_group = sSpellMgr.getDiminishingGroup(m_auras[x]->GetSpellInfo()->getId());
             if (aura_group == status)
             {
                 m_diminishAuraCount[group]++;
@@ -1405,6 +1406,127 @@ void Unit::setDualWield(bool enable)
 
         plrUnit->_RemoveSkillLine(SKILL_DUAL_WIELD);
     }
+}
+
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered)
+{
+    castSpell(targetGuid, spellId, 0, triggered);
+}
+
+void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered)
+{
+    castSpell(target, spellId, 0, triggered);
+}
+
+void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    castSpell(targetGuid, spellInfo, 0, triggered);
+}
+
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+    
+    castSpell(target, spellInfo, 0, triggered);
+}
+
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, uint32_t forcedBasepoints, bool triggered)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
+}
+
+void Unit::castSpell(Unit* target, uint32_t spellId, uint32_t forcedBasepoints, bool triggered)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    castSpell(target, spellInfo, forcedBasepoints, triggered);
+}
+
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasePoints, int32_t spellCharges, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->forced_basepoints[0] = forcedBasePoints;
+    newSpell->m_charges = spellCharges;
+
+    SpellCastTargets targets(0);
+    if (target != nullptr)
+    {
+        targets.m_targetMask |= TARGET_FLAG_UNIT;
+        targets.m_unitTarget = target->getGuid();
+    }
+    else
+        newSpell->GenerateTargets(&targets);
+
+    // Prepare the spell
+    newSpell->prepare(&targets);
+}
+
+void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    SpellCastTargets targets;
+    targets.setDestination(location);
+    targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+
+    // Prepare the spell
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->prepare(&targets);
+}
+
+void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
+{
+    ARCEMU_ASSERT(spellInfo != nullptr);
+
+    castSpell(target, spellInfo, 0, true);
+}
+
+void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->forced_basepoints[0] = forcedBasepoints;
+    SpellCastTargets targets(targetGuid);
+
+    // Prepare the spell
+    newSpell->prepare(&targets);
+}
+
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->forced_basepoints[0] = forcedBasepoints;
+
+    SpellCastTargets targets(0);
+    if (target != nullptr)
+    {
+        targets.m_targetMask |= TARGET_FLAG_UNIT;
+        targets.m_unitTarget = target->getGuid();
+    }
+    else
+        newSpell->GenerateTargets(&targets);
+
+    // Prepare the spell
+    newSpell->prepare(&targets);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1483,11 +1605,11 @@ void Unit::addAuraStateAndAuras(AuraState state)
                 auto deletedSpell = static_cast<Player*>(this)->mDeletedSpells.find(spellId);
                 if ((deletedSpell != static_cast<Player*>(this)->mDeletedSpells.end()))
                     continue;
-                SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+                SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
                 if (spellInfo == nullptr || !spellInfo->isPassive())
                     continue;
                 if (spellInfo->getCasterAuraState() == uint32_t(state))
-                    CastSpell(this, spellId, true);
+                    castSpell(this, spellId, true);
             }
         }
     }

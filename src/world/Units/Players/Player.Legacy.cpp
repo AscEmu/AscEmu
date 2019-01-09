@@ -60,7 +60,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/Spec.h"
 #include "Spell/SpellHelpers.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Data/WoWPlayer.h"
@@ -1425,9 +1425,9 @@ void Player::_EventCharmAttack()
             }
             else
             {
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(currentCharm->GetOnMeleeSpell());
+                const auto spellInfo = sSpellMgr.getSpellInfo(currentCharm->GetOnMeleeSpell());
                 currentCharm->SetOnMeleeSpell(0);
-                Spell* spell = sSpellFactoryMgr.NewSpell(currentCharm, spellInfo, true, nullptr);
+                Spell* spell = sSpellMgr.newSpell(currentCharm, spellInfo, true, nullptr);
                 SpellCastTargets targets;
                 targets.m_unitTarget = GetSelection();
                 spell->prepare(&targets);
@@ -1950,7 +1950,7 @@ void Player::_SavePetSpells(QueryBuffer* buf)
 
 void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
 {
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     std::map<uint32, std::set<uint32> >::iterator itr = SummonSpells.find(Entry);
     if (itr == SummonSpells.end())
     {
@@ -1962,7 +1962,7 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
         {
             it3 = it2++;
-            if (sSpellCustomizations.GetSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
+            if (sSpellMgr.getSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
                 itr->second.erase(it3);
         }
         itr->second.insert(SpellID);
@@ -2143,7 +2143,7 @@ void Player::addSpell(uint32 spell_id)
 
     // Add the skill line for this spell if we don't already have it.
     auto skill_line_ability = objmgr.GetSpellSkill(spell_id);
-    SpellInfo* spell = sSpellCustomizations.GetSpellInfo(spell_id);
+    SpellInfo const* spell = sSpellMgr.getSpellInfo(spell_id);
     if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
         auto skill_line = sSkillLineStore.LookupEntry(skill_line_ability->skilline);
@@ -2757,7 +2757,7 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
     }
 }
 
-bool Player::canCast(SpellInfo* m_spellInfo)
+bool Player::canCast(SpellInfo const* m_spellInfo)
 {
     if (m_spellInfo->getEquippedItemClass() != 0)
     {
@@ -4960,8 +4960,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                         if (Set->itemscount == item_set_entry->itemscount[x])
                         {
                             //cast new spell
-                            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(item_set_entry->SpellID[x]);
-                            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);
+                            const auto spellInfo = sSpellMgr.getSpellInfo(item_set_entry->SpellID[x]);
+                            Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
                             SpellCastTargets targets;
                             targets.m_unitTarget = this->getGuid();
                             spell->prepare(&targets);
@@ -5227,7 +5227,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             if (item->getItemProperties()->Spells[k].Id == 0)
                 continue;//this isn't needed since the check below handles this case but it's a lot faster performance-wise.
 
-            SpellInfo* spells = sSpellCustomizations.GetSpellInfo(item->getItemProperties()->Spells[k].Id);
+            SpellInfo const* spells = sSpellMgr.getSpellInfo(item->getItemProperties()->Spells[k].Id);
             if (spells == nullptr)
                 continue;
 
@@ -5239,7 +5239,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                     continue;
                 }
 
-                Spell* spell = sSpellFactoryMgr.NewSpell(this, spells, true, nullptr);
+                Spell* spell = sSpellMgr.newSpell(this, spells, true, nullptr);
                 SpellCastTargets targets;
                 targets.m_unitTarget = this->getGuid();
                 spell->castedItemId = item->getEntry();
@@ -5260,7 +5260,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         {
             if (item->getItemProperties()->Spells[k].Trigger == ON_EQUIP)
             {
-                SpellInfo* spells = sSpellCustomizations.GetSpellInfo(item->getItemProperties()->Spells[k].Id);
+                SpellInfo const* spells = sSpellMgr.getSpellInfo(item->getItemProperties()->Spells[k].Id);
                 if (spells != nullptr)
                 {
                     if (spells->getRequiredShapeShift())
@@ -5308,14 +5308,14 @@ void Player::BuildPlayerRepop()
 
     if (getRace() == RACE_NIGHTELF)
     {
-        SpellInfo* inf = sSpellCustomizations.GetSpellInfo(9036);
-        Spell* sp = sSpellFactoryMgr.NewSpell(this, inf, true, nullptr);
+        SpellInfo const* inf = sSpellMgr.getSpellInfo(9036);
+        Spell* sp = sSpellMgr.newSpell(this, inf, true, nullptr);
         sp->prepare(&tgt);
     }
     else
     {
-        SpellInfo* inf = sSpellCustomizations.GetSpellInfo(8326);
-        Spell* sp = sSpellFactoryMgr.NewSpell(this, inf, true, nullptr);
+        SpellInfo const* inf = sSpellMgr.getSpellInfo(8326);
+        Spell* sp = sSpellMgr.newSpell(this, inf, true, nullptr);
         sp->prepare(&tgt);
     }
 
@@ -6664,7 +6664,7 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
 
 int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 {
-    SpellInfo* spell_info = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spell_info = sSpellMgr.getSpellInfo(spellid);
     if (spell_info == nullptr)
         return -1;
 
@@ -6690,7 +6690,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
     //if (autoshot)
-    //spellModFlatFloatValue(SM_FRange, &bonusRange, sSpellCustomizations.GetSpellInfo(75)->SpellGroupType); // HORRIBLE hackfixes :P
+    //spellModFlatFloatValue(SM_FRange, &bonusRange, sSpellMgr.getSpellInfo(75)->SpellGroupType); // HORRIBLE hackfixes :P
     // Partha: +2.52yds to max range, this matches the range the client is calculating.
     // see extra/supalosa_range_research.txt for more info
     //bonusRange = 2.52f;
@@ -6757,7 +6757,7 @@ void Player::removeSpellByHashName(uint32 hash)
     {
         SpellSet::iterator it = iter++;
         uint32 SpellID = *it;
-        SpellInfo* e = sSpellCustomizations.GetSpellInfo(SpellID);
+        SpellInfo const* e = sSpellMgr.getSpellInfo(SpellID);
         if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->getId()) != info->spell_list.end())
@@ -6775,7 +6775,7 @@ void Player::removeSpellByHashName(uint32 hash)
     {
         SpellSet::iterator it = iter++;
         uint32 SpellID = *it;
-        SpellInfo* e = sSpellCustomizations.GetSpellInfo(SpellID);
+        SpellInfo const* e = sSpellMgr.getSpellInfo(SpellID);
         if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->getId()) != info->spell_list.end())
@@ -6820,7 +6820,7 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
     // Dual Wield skills
     // these must be set false here instead because this function is called from many different places
     // and player can end up being without dual wield but still able to dual wield
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(SpellID);
+    const auto spellInfo = sSpellMgr.getSpellInfo(SpellID);
     if (spellInfo->hasEffect(SPELL_EFFECT_DUAL_WIELD))
         setDualWield(false);
 
@@ -7711,7 +7711,7 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
     data << uint64_t(getGuid());
     GetSession()->SendPacket(&data);
 
-    if (SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell_id))
+    if (const auto spellInfo = sSpellMgr.getSpellInfo(spell_id))
     {
         for (int i = 0; i < NUM_COOLDOWN_TYPES; ++i)
         {
@@ -9022,7 +9022,7 @@ void Player::LoginPvPSetup()
     auto at = this->GetArea();
 
     if (at != nullptr && isAlive() && (at->team == AREAC_CONTESTED || (isTeamAlliance() && at->team == AREAC_HORDE_TERRITORY) || (isTeamHorde() && at->team == AREAC_ALLIANCE_TERRITORY)))
-        CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
+        castSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
 
 }
 
@@ -9275,12 +9275,12 @@ void Player::CompleteLoading()
     if (getClass() == WARRIOR)
     {
         // battle stance passive
-        CastSpell(this, sSpellCustomizations.GetSpellInfo(2457), true);
+        castSpell(this, sSpellMgr.getSpellInfo(2457), true);
     }
 
     for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(*itr);
+        const auto spellInfo = sSpellMgr.getSpellInfo(*itr);
 
         if (spellInfo != nullptr
             && (spellInfo->isPassive())  // passive
@@ -9296,18 +9296,18 @@ void Player::CompleteLoading()
             if (spellInfo->getCasterAuraState() != 0 && !hasAuraState(AuraState(spellInfo->getCasterAuraState()), spellInfo, this))
                 continue;
 
-            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);
+            Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
             spell->prepare(&targets);
         }
     }
 
     for (std::list<LoginAura>::iterator i = loginauras.begin(); i != loginauras.end(); ++i)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*i).id);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo((*i).id);
         if (sp != nullptr && sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
             continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
-        Aura* aura = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
+        Aura* aura = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
         //if (!(*i).positive) // do we need this? - vojta
         //    aura->SetNegative();
 
@@ -9323,7 +9323,7 @@ void Player::CompleteLoading()
         {
             for (uint32 x = 0; x < (*i).charges - 1; x++)
             {
-                Aura* a = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
+                Aura* a = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
                 this->AddAura(a);
             }
             if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end() && !(sp->getProcFlags() & PROC_REMOVEONUSE))
@@ -9386,7 +9386,7 @@ void Player::CompleteLoading()
 
 #if VERSION_STRING > TBC
     // useless logon spell
-    Spell* logonspell = sSpellFactoryMgr.NewSpell(this, sSpellCustomizations.GetSpellInfo(836), false, nullptr);
+    Spell* logonspell = sSpellMgr.newSpell(this, sSpellMgr.getSpellInfo(836), false, nullptr);
     logonspell->prepare(&targets);
 #endif
 
@@ -9421,7 +9421,7 @@ void Player::CompleteLoading()
         if (glyph_properties == nullptr)
             continue;
 
-        CastSpell(this, glyph_properties->SpellID, true);
+        castSpell(this, glyph_properties->SpellID, true);
     }
 
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
@@ -9817,7 +9817,7 @@ void Player::SetShapeShift(uint8 ss)
 
     for (std::set<uint32>::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(*itr);
         if (sp == nullptr)
             continue;
 
@@ -9825,7 +9825,7 @@ void Player::SetShapeShift(uint8 ss)
         {
             if (sp->getRequiredShapeShift() && ((uint32)1 << (ss - 1)) & sp->getRequiredShapeShift())
             {
-                Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, nullptr);
+                Spell* spe = sSpellMgr.newSpell(this, sp, true, nullptr);
                 spe->prepare(&t);
             }
         }
@@ -9847,10 +9847,10 @@ void Player::SetShapeShift(uint8 ss)
     // now dummy-handler stupid hacky fixed shapeshift spells (leader of the pack, etc)
     for (std::set<uint32>::iterator itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(*itr);
         if (sp->getRequiredShapeShift() && ((uint32)1 << (ss - 1)) & sp->getRequiredShapeShift())
         {
-            Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, nullptr);
+            Spell* spe = sSpellMgr.newSpell(this, sp, true, nullptr);
             spe->prepare(&t);
         }
     }
@@ -10502,14 +10502,14 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
         // add new "automatic-acquired" spell
         if ((skill_line_ability->skilline == SkillLine) && (skill_line_ability->acquireMethod == 1))
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+            SpellInfo const* sp = sSpellMgr.getSpellInfo(skill_line_ability->spell);
             if (sp && (curr_sk >= skill_line_ability->minSkillLineRank))
             {
                 // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
                 bool addThisSpell = true;
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
-                    SpellInfo* se = sSpellCustomizations.GetSpellInfo(*itr);
+                    SpellInfo const* se = sSpellMgr.getSpellInfo(*itr);
                     if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
@@ -10546,7 +10546,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                         SpellCastTargets targets;
                         targets.m_unitTarget = this->getGuid();
                         targets.m_targetMask = TARGET_FLAG_UNIT;
-                        Spell* spell = sSpellFactoryMgr.NewSpell(this, sp, true, nullptr);
+                        Spell* spell = sSpellMgr.newSpell(this, sp, true, nullptr);
                         spell->prepare(&targets);
                     }
                 }
@@ -10977,19 +10977,19 @@ void Player::EventSummonPet(Pet* new_pet)
     {
         SpellSet::iterator it = iter++;
         uint32 SpellID = *it;
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(SpellID);
+        const auto spellInfo = sSpellMgr.getSpellInfo(SpellID);
         if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
         {
             this->removeAllAurasByIdForGuid(SpellID, this->getGuid());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(this->getGuid());
-            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);    //we cast it as a proc spell, maybe we should not !
+            Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);    //we cast it as a proc spell, maybe we should not !
             spell->prepare(&targets);
         }
         if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
         {
             this->removeAllAurasByIdForGuid(SpellID, this->getGuid());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(new_pet->getGuid());
-            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, nullptr);    //we cast it as a proc spell, maybe we should not !
+            Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);    //we cast it as a proc spell, maybe we should not !
             spell->prepare(&targets);
         }
     }
@@ -11014,12 +11014,12 @@ void Player::EventDismissPet()
 
 void Player::AddShapeShiftSpell(uint32 id)
 {
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(id);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(id);
     mShapeShiftSpells.insert(id);
 
     if (sp->getRequiredShapeShift() && getShapeShiftMask() & sp->getRequiredShapeShift())
     {
-        Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, nullptr);
+        Spell* spe = sSpellMgr.newSpell(this, sp, true, nullptr);
         SpellCastTargets t(this->getGuid());
         spe->prepare(&t);
     }
@@ -11043,7 +11043,7 @@ void Player::UpdatePotionCooldown()
         {
             if (proto->Spells[i].Id && proto->Spells[i].Trigger == USE)
             {
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(proto->Spells[i].Id);
+                const auto spellInfo = sSpellMgr.getSpellInfo(proto->Spells[i].Id);
                 if (spellInfo != nullptr)
                 {
                     Cooldown_AddItem(proto, i);
@@ -11060,7 +11060,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
 {
     for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellInfo *sp = sSpellCustomizations.GetSpellInfo(*itr);
+        SpellInfo const *sp = sSpellMgr.getSpellInfo(*itr);
 
         for (uint8_t i = 0; i < 3; ++i)
         {
@@ -11126,7 +11126,7 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
     LogDebugFlag(LF_SPELL, "Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - Util::getMSTime(), ItemId, SpellId);
 }
 
-void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
+void Player::Cooldown_Add(SpellInfo const* pSpell, Item* pItemCaster)
 {
     uint32 mstime = Util::getMSTime();
     int32 cool_time;
@@ -11152,7 +11152,7 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     }
 }
 
-void Player::Cooldown_AddStart(SpellInfo* pSpell)
+void Player::Cooldown_AddStart(SpellInfo const* pSpell)
 {
     if (pSpell->getStartRecoveryTime() == 0)
         return;
@@ -11183,7 +11183,7 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     }
 }
 
-bool Player::Cooldown_CanCast(SpellInfo* pSpell)
+bool Player::Cooldown_CanCast(SpellInfo const* pSpell)
 {
     PlayerCooldownMap::iterator itr;
     uint32 mstime = Util::getMSTime();
@@ -11879,7 +11879,7 @@ void Player::CalcExpertise()
     {
         if (m_auras[x] != nullptr && m_auras[x]->HasModType(SPELL_AURA_EXPERTISE))
         {
-            SpellInfo* entry = m_auras[x]->m_spellInfo;
+            SpellInfo const* entry = m_auras[x]->m_spellInfo;
             int32 val = m_auras[x]->GetModAmountByMod();
 
             if (entry->getEquippedItemSubClass() != 0)
@@ -12018,7 +12018,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
     {
         uint32 SpellId = (*sitr);
 
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(SpellId);
+        const auto spellInfo = sSpellMgr.getSpellInfo(SpellId);
 
         if (!spellInfo)
         {
@@ -12571,9 +12571,9 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellInfo* killerspell;
+        SpellInfo const* killerspell;
         if (spellid)
-            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
+            killerspell = sSpellMgr.getSpellInfo(spellid);
         else
             killerspell = nullptr;
 
@@ -12641,7 +12641,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
             if (self_res_spell == 0 && bReincarnation)
             {
-                SpellInfo* m_reincarnSpellInfo = sSpellCustomizations.GetSpellInfo(20608);
+                SpellInfo const* m_reincarnSpellInfo = sSpellMgr.getSpellInfo(20608);
                 if (Cooldown_CanCast(m_reincarnSpellInfo))
                 {
                     uint32 ankh_count = getItemInterface()->GetItemCount(17030);
@@ -12672,10 +12672,10 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     //check for spirit of Redemption
     if (HasSpell(20711))
     {
-        SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27827);
+        SpellInfo const* sorInfo = sSpellMgr.getSpellInfo(27827);
         if (sorInfo != nullptr)
         {
-            Spell* sor = sSpellFactoryMgr.NewSpell(this, sorInfo, true, nullptr);
+            Spell* sor = sSpellMgr.newSpell(this, sorInfo, true, nullptr);
             SpellCastTargets targets;
             targets.m_unitTarget = getGuid();
             sor->prepare(&targets);
@@ -13029,14 +13029,14 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         UpdateNearbyGameObjects();
 
     // Some spells applied at quest activation
-    SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(quest_id, true);
+    SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(quest_id, true);
     if (saBounds.first != saBounds.second)
     {
         for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
-            if (itr->second->autocast && itr->second->IsFitToRequirements(this, GetZoneId(), GetAreaID()))
+            if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), GetAreaID()))
                 if (!HasAura(itr->second->spellId))
-                    CastSpell(this, itr->second->spellId, true);
+                    castSpell(this, itr->second->spellId, true);
         }
     }
 
@@ -13130,7 +13130,7 @@ bool Player::LoadSpells(QueryResult* result)
 
         uint32 spellid = fields[0].GetUInt32();
 
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
         if (sp != nullptr)
             mSpells.insert(spellid);
 
@@ -13186,7 +13186,7 @@ bool Player::LoadDeletedSpells(QueryResult* result)
 
         uint32 spellid = fields[0].GetUInt32();
 
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
         if (sp != nullptr)
             mDeletedSpells.insert(spellid);
 
@@ -13562,19 +13562,19 @@ void Player::CastSpellArea()
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Spells get Casted in specified Area
-    SpellAreaForAreaMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(AreaId);
+    SpellAreaForAreaMapBounds saBounds = sSpellMgr.getSpellAreaForAreaMapBounds(AreaId);
     for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-        if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
+        if (itr->second->autoCast && itr->second->fitsToRequirements(this, ZoneId, AreaId))
             if (!HasAura(itr->second->spellId))
-                CastSpell(this, itr->second->spellId, true);
+                castSpell(this, itr->second->spellId, true);
 
 
     // Some spells applied at enter into zone (with subzones)
-    SpellAreaForAreaMapBounds szBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(ZoneId);
+    SpellAreaForAreaMapBounds szBounds = sSpellMgr.getSpellAreaForAreaMapBounds(ZoneId);
     for (SpellAreaForAreaMap::const_iterator itr = szBounds.first; itr != szBounds.second; ++itr)
-        if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
+        if (itr->second->autoCast && itr->second->fitsToRequirements(this, ZoneId, AreaId))
             if (!HasAura(itr->second->spellId))
-                CastSpell(this, itr->second->spellId, true);
+                castSpell(this, itr->second->spellId, true);
 
 
     //Remove of Spells
@@ -13582,9 +13582,9 @@ void Player::CastSpellArea()
     {
         if (m_auras[i] != nullptr)
         {
-            if (m_auras[i]->GetSpellInfo()->checkLocation(GetMapId(), ZoneId, AreaId, this) == false)
+            if (sSpellMgr.checkLocation(m_auras[i]->GetSpellInfo(), ZoneId, AreaId, this) == false)
             {
-                SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
+                SpellAreaMapBounds sab = sSpellMgr.getSpellAreaMapBounds(m_auras[i]->GetSpellId());
                 if (sab.first != sab.second)
                     RemoveAura(m_auras[i]->GetSpellId());
             }

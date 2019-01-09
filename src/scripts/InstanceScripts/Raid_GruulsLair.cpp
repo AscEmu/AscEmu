@@ -535,7 +535,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                     if (pTarget == pCurrentTarget)
                         _castAISpell(mHurtfulStrike);
                     else
-                        getCreature()->CastSpell(pTarget, GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, true);
+                        getCreature()->castSpell(pTarget, GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, true);
                 }
 
                 _resetTimer(mHurtfulTimer, 8000);

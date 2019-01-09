@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Spell/Definitions/SpellEffects.h"
 
 //.npc addagent
@@ -38,7 +38,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    auto spell_entry = sSpellCustomizations.GetSpellInfo(spellId);
+    auto spell_entry = sSpellMgr.getSpellInfo(spellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Spell %u is not invalid!", spellId);
@@ -142,7 +142,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
         return true;
     }
 
-    auto learn_spell = sSpellCustomizations.GetSpellInfo(spellid);
+    auto learn_spell = sSpellMgr.getSpellInfo(spellid);
     if (learn_spell == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell %u.", spellid);
@@ -204,7 +204,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
         return true;
     }
 
-    auto spell_entry = sSpellCustomizations.GetSpellInfo(spell_id);
+    auto spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid Spell ID: %u !", spell_id);
@@ -212,7 +212,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
     }
 
     auto unit_target = static_cast<Unit*>(creature_target);
-    unit_target->CastSpell(unit_target, spell_entry, false);
+    unit_target->castSpell(unit_target, spell_id, false);
 
     return true;
 }

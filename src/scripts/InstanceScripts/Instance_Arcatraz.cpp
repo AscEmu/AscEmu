@@ -146,7 +146,7 @@ class VoidZoneARC : public CreatureAIScript
         if (_isHeroic())
             SpellId = CONSUMPTION_H;
 
-        getCreature()->CastSpell(getCreature(), SpellId, true);
+        getCreature()->castSpell(getCreature(), SpellId, true);
         RemoveAIUpdateEvent();
     }
 };

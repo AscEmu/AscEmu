@@ -972,7 +972,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
 
     // Blood Strike
     auto blood_strike_spell = new AI_Spell;
-    blood_strike_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
+    blood_strike_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
     blood_strike_spell->entryId = getCreature()->getEntry();
     blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
@@ -991,7 +991,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
 
     // Bone Barrier
     auto bone_barrier_spell = new AI_Spell;
-    bone_barrier_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
+    bone_barrier_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
     bone_barrier_spell->entryId = getCreature()->getEntry();
     bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
@@ -1010,7 +1010,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
 
     // Taunt
     auto understudy_taunt_spell = new AI_Spell;
-    understudy_taunt_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
+    understudy_taunt_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
     understudy_taunt_spell->entryId = getCreature()->getEntry();
     understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
@@ -1339,7 +1339,7 @@ class GrobbulusAI : public CreatureAIScript
     void OnCombatStart(Unit* /*mTarget*/) override
     {
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
-        getCreature()->CastSpell(getCreature(), poisonCloudGrob->mSpellInfo, poisonCloudGrob->mIsTriggered);
+        getCreature()->castSpell(getCreature(), poisonCloudGrob->mSpellInfo, poisonCloudGrob->mIsTriggered);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1517,7 +1517,7 @@ class KorthazzAI : public CreatureAIScript
     void OnDied(Unit* /*mKiller*/) override
     {
         if (meteor)
-            getCreature()->CastSpell(getCreature(), meteor->mSpellInfo, meteor->mIsTriggered);
+            getCreature()->castSpell(getCreature(), meteor->mSpellInfo, meteor->mIsTriggered);
     }
 
     void AIUpdate() override
@@ -1612,7 +1612,7 @@ class BlaumeuxAI : public CreatureAIScript
     void OnDied(Unit* /*mKiller*/) override
     {
         if (voidZone)
-            getCreature()->CastSpell(getCreature(), voidZone->mSpellInfo, voidZone->mIsTriggered);
+            getCreature()->castSpell(getCreature(), voidZone->mSpellInfo, voidZone->mIsTriggered);
     }
 
     void AIUpdate() override
@@ -1702,7 +1702,7 @@ class ZeliekAI : public CreatureAIScript
     void OnDied(Unit* /*mKiller*/) override
     {
         if (holyWrath)
-            getCreature()->CastSpell(getCreature(), holyWrath->mSpellInfo, holyWrath->mIsTriggered);
+            getCreature()->castSpell(getCreature(), holyWrath->mSpellInfo, holyWrath->mIsTriggered);
     }
 
     void AIUpdate() override
@@ -1816,7 +1816,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->CastSpell(getCreature(), FROST_BREATH_EFFECT, true);
+        getCreature()->castSpell(getCreature(), FROST_BREATH_EFFECT, true);
 
         AICounter--;
         if (AICounter == 6)
@@ -1845,7 +1845,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(8000, 0);
 
-        getCreature()->CastSpell(getCreature(), FROST_BREATH, false);
+        getCreature()->castSpell(getCreature(), FROST_BREATH, false);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -1863,7 +1863,7 @@ public:
     explicit FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
-        getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
+        getCreature()->castSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -1879,7 +1879,7 @@ public:
 
     void AIUpdate() override
     {
-        getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
+        getCreature()->castSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
     }
 };
 
@@ -1890,7 +1890,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI);
     explicit ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
+        getCreature()->castSpellLoc(getCreature()->GetPosition(), sSpellMgr.getSpellInfo(28547), true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1963,7 +1963,7 @@ class SapphironAI : public CreatureAIScript
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
         getCreature()->GetAIInterface()->unsetSplineFlying();
         getCreature()->GetAIInterface()->m_canMove = true;
-        getCreature()->CastSpell(getCreature(), IMMUNITY_FROST, true);
+        getCreature()->castSpell(getCreature(), IMMUNITY_FROST, true);
 
         getCreature()->setMoveHover(false);
 
@@ -2035,7 +2035,7 @@ class SapphironAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->CastSpell(getCreature(), SAPPHIRON_DIES, true);
+        getCreature()->castSpell(getCreature(), SAPPHIRON_DIES, true);
     }
 
     void AIUpdate() override
@@ -2056,7 +2056,7 @@ class SapphironAI : public CreatureAIScript
 
     void PhaseOne()
     {
-        getCreature()->CastSpell(getCreature(), FROST_AURA, true);
+        getCreature()->castSpell(getCreature(), FROST_AURA, true);
 
         if (getCreature()->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
             return;
@@ -2958,7 +2958,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         {
             Unit* target = getCreature()->GetAIInterface()->getNextTarget();
             if (getCreature()->GetDistance2dSq(target) <= 49.0f)
-                getCreature()->CastSpell(getCreature(), DARK_BLAST, true);
+                getCreature()->castSpell(getCreature(), DARK_BLAST, true);
         }
     }
 
@@ -3250,7 +3250,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
             if (!LastTarget) { LastTarget = target; return; }
 
             if (LastTarget != target)
-                getCreature()->CastSpell(getCreature(), bloodTrap->mSpellInfo, bloodTrap->mIsTriggered);
+                getCreature()->castSpell(getCreature(), bloodTrap->mSpellInfo, bloodTrap->mIsTriggered);
 
             LastTarget = target;
         }

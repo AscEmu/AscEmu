@@ -63,7 +63,7 @@ class SERVER_DECL Spell : public EventableObject
         void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
 
         bool canAttackCreatureType(Creature* target) const;
-        SpellInfo* getSpellInfo() const;
+        SpellInfo const* getSpellInfo() const;
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -176,7 +176,7 @@ class SERVER_DECL Spell : public EventableObject
         void writeSpellGoTargets(WorldPacket* data);
         void writeSpellMissedTargets(WorldPacket* data);
         uint32 pSpellId;
-        SpellInfo* ProcedOnSpell;
+        SpellInfo const* ProcedOnSpell;
         SpellCastTargets m_targets;
 
         void CreateItem(uint32 itemId);
@@ -481,9 +481,8 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        SpellInfo* m_spellInfo;
-        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
-        static SpellInfo* checkAndReturnSpellEntry(uint32_t spellid);
+        SpellInfo const* m_spellInfo;
+        SpellInfo const* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 };
 
 #endif // USE_EXPERIMENTAL_SPELL_SYSTEM

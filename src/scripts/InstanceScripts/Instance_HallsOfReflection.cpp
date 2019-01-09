@@ -219,19 +219,19 @@ class Falric : public CreatureAIScript
     {
         if (isScriptPhase(1) && _getHealthPercent() <= 66)
         {
-            getCreature()->CastSpell(Plr, 72395, true);
+            getCreature()->castSpell(Plr, 72395, true);
             setScriptPhase(2);
         }
 
         if (isScriptPhase(2) && _getHealthPercent() <= 33)
         {
-            getCreature()->CastSpell(Plr, 72396, true);
+            getCreature()->castSpell(Plr, 72396, true);
             setScriptPhase(3);
         }
 
         if (isScriptPhase(3) && _getHealthPercent() <= 11)
         {
-            getCreature()->CastSpell(Plr, 72397, true);
+            getCreature()->castSpell(Plr, 72397, true);
             setScriptPhase(4);
         }
     }

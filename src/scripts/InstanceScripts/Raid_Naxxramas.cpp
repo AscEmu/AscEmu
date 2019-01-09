@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_Naxxramas.h"
-#include "Spell/SpellMgr.h"
 
 //const uint32 CN_THADDIUS = 15928;
 
@@ -372,7 +371,7 @@ void MaexxnaAI::AIUpdate()
 //
 //        // Somewhy root does not apply at all
 //        static_cast<Player*>(pTarget)->SafeTeleport(Maexxna->getCreature()->GetMapId(), Maexxna->getCreature()->GetInstanceID(), LocationVector(WebWrapPos[Id].x, WebWrapPos[Id].y, WebWrapPos[Id].z));
-//        pTarget->CastSpell(pTarget, MAEXXNA_WEB_WRAP, true);
+//        pTarget->castSpell(pTarget, MAEXXNA_WEB_WRAP, true);
 //    }
 //}
 
@@ -416,7 +415,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
             // Should be applied on Grand Widow, but is on the enemies - to script ?
             //ApplyAura(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
             // I don't like the way we apply it
-            Aura* WidowEmbrace = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE), 30000, getCreature(), mGrandWidow->getCreature());
+            Aura* WidowEmbrace = sSpellMgr.newAura(sSpellMgr.getSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE), 30000, getCreature(), mGrandWidow->getCreature());
             getCreature()->AddAura(WidowEmbrace);
 
             // Not sure about new Frenzy Timer
@@ -490,7 +489,7 @@ void NaxxramasFollowerAI::Destroy()
 //            NaxxramasFollower->getCreature()->GetAIInterface()->setNextTarget(pTarget);
 //        }
 //
-//        NaxxramasFollower->CastSpell(NaxxramasFollower->mCharge);
+//        NaxxramasFollower->castSpell(NaxxramasFollower->mCharge);
 //    }
 //}
 
@@ -1474,7 +1473,7 @@ void NothThePlaguebringerAI::Destroy()
 //    {
 //        // Dunno if target count that should be affected is correct
 //        Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC);
-//        Noth->CastSpell(Noth->mBlink);
+//        Noth->castSpell(Noth->mBlink);
 //    }
 //}
 //
@@ -1781,7 +1780,7 @@ void PlagueFissureGO::DoErrupt()
     if (!pFissureTrigger)
         return;
 
-    pFissureTrigger->CastSpell(pFissureTrigger, FISSURE_TRIGGER_ERUPTION, true);
+    pFissureTrigger->castSpell(pFissureTrigger, FISSURE_TRIGGER_ERUPTION, true);
     pFissureTrigger->Despawn(2000, 0);
 }
 
@@ -1914,9 +1913,9 @@ void LoathebAI::AIUpdate()
                         continue;
 
                     if (_isHeroic())
-                        PlayerPtr->CastSpell(PlayerPtr, LOATHEB_DEATHBLOOM_DAMAGE_HEROIC, true);
+                        PlayerPtr->castSpell(PlayerPtr, LOATHEB_DEATHBLOOM_DAMAGE_HEROIC, true);
                     else
-                        PlayerPtr->CastSpell(PlayerPtr, LOATHEB_DEATHBLOOM_DAMAGE_NORMAL, true);
+                        PlayerPtr->castSpell(PlayerPtr, LOATHEB_DEATHBLOOM_DAMAGE_NORMAL, true);
                 }
 
                 _resetTimer(mDeathbloomTimer, 25000);
@@ -2572,9 +2571,9 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //        return;
 //
 //    if (pCreatureAI->_isHeroic())
-//        pCreatureAI->getCreature()->CastSpell(pBestTarget, PATCHWERK_HATEFUL_STRIKE_25, true);
+//        pCreatureAI->getCreature()->castSpell(pBestTarget, PATCHWERK_HATEFUL_STRIKE_25, true);
 //    else
-//        pCreatureAI->getCreature()->CastSpell(pBestTarget, PATCHWERK_HATEFUL_STRIKE_10, true);
+//        pCreatureAI->getCreature()->castSpell(pBestTarget, PATCHWERK_HATEFUL_STRIKE_10, true);
 //}
 
 PatchwerkAI::PatchwerkAI(Creature* pCreature) : CreatureAIScript(pCreature)

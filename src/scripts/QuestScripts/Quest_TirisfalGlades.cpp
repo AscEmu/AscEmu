@@ -69,7 +69,7 @@ class CalvinMontague : public CreatureAIScript
             getCreature()->RemoveNegativeAuras();
             getCreature()->SetFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
@@ -118,7 +118,7 @@ class Zealot : public CreatureAIScript
 
         if (iWaypointId == 7)
         {
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(5), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(5), true);
         }
     }
 };

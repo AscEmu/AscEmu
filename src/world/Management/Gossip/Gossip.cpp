@@ -735,9 +735,9 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
                 Gossip::Menu::Complete(Plr);
                 Plr->modCoinage(-10000000);
                 Plr->m_talentSpecsCount = 2;
-                Plr->CastSpell(Plr, 63624, true); // Show activate spec buttons
-                Plr->CastSpell(Plr, 63706, true); // Allow primary spec to be activated
-                Plr->CastSpell(Plr, 63707, true); // Allow secondary spec to be activated
+                Plr->castSpell(Plr, 63624, true); // Show activate spec buttons
+                Plr->castSpell(Plr, 63706, true); // Allow primary spec to be activated
+                Plr->castSpell(Plr, 63707, true); // Allow secondary spec to be activated
                 Plr->SaveToDB(false); // hai gm i bought dual spec but no werk plis gief mi 1000g back - GTFO you never bought anything
             }
     }

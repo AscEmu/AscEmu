@@ -25,7 +25,6 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/DispelType.h>
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 enum
 {
@@ -59,9 +58,9 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
             if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
             {
                 if (blood)
-                    u_caster->CastSpell(Target, BLOOD_PLAGUE, true);
+                    u_caster->castSpell(Target, BLOOD_PLAGUE, true);
                 if (frost)
-                    u_caster->CastSpell(Target, FROST_FEVER, true);
+                    u_caster->castSpell(Target, FROST_FEVER, true);
             }
         }
         return true;
@@ -148,21 +147,21 @@ bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
     float y = s->p_caster->GetPositionY() - 1;
     float z = s->p_caster->GetPositionZ();
 
-    SpellInfo* sp = nullptr;
+    SpellInfo const* sp = nullptr;
 
     // Master of Ghouls
     if (s->p_caster->HasAura(52143) == false)
     {
         // Minion version, 1 min duration
-        sp = sSpellCustomizations.GetSpellInfo(46585);
+        sp = sSpellMgr.getSpellInfo(46585);
     }
     else
     {
         // Pet version, infinite duration
-        sp = sSpellCustomizations.GetSpellInfo(52150);
+        sp = sSpellMgr.getSpellInfo(52150);
     }
 
-    s->p_caster->CastSpellAoF(LocationVector(x, y, z), sp, true);
+    s->p_caster->castSpellLoc(LocationVector(x, y, z), sp, true);
 
     return true;
 }
@@ -265,13 +264,13 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 
     if (isAttackable(s->p_caster, unitTarget, false))
     {
-        s->p_caster->CastSpell(unitTarget, 47632, dmg, true);
+        s->p_caster->castSpell(unitTarget, 47632, dmg, true);
     }
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
         dmg = static_cast<int32>((dmg * multiplier));
-        s->p_caster->CastSpell(unitTarget, 47633, dmg, true);
+        s->p_caster->castSpell(unitTarget, 47633, dmg, true);
     }
 
     return true;
@@ -303,7 +302,7 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
 
         int32 value = int32(pAura->GetModAmount(effectIndex) + (int32)caster->GetAP() * 0.064);
 
-        caster->CastSpell(pAura->GetTarget(), 52212, value, true);
+        caster->castSpell(pAura->GetTarget(), 52212, value, true);
     }
 
     return true;

@@ -43,7 +43,7 @@ class DeepfuryAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 7164, false); // Defensive Stance
+        getCreature()->castSpell(getCreature(), 7164, false); // Defensive Stance
     }
 
     void AIUpdate() override
@@ -84,7 +84,7 @@ class BazilAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
+        getCreature()->castSpell(getCreature(), 674, false); // Dual Wield
     }
 };
 
@@ -99,7 +99,7 @@ class DextrenAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
+        getCreature()->castSpell(getCreature(), 7165, false); // Battle Stance
     }
 };
 
@@ -137,7 +137,7 @@ class InmateAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
+        getCreature()->castSpell(getCreature(), 7165, false); // Battle Stance
     }
 };
 
@@ -151,7 +151,7 @@ class InsurgentAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 9128, false); // Battle Shout
+        getCreature()->castSpell(getCreature(), 9128, false); // Battle Shout
     }
 };
 
@@ -166,7 +166,7 @@ class PrisonerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
+        getCreature()->castSpell(getCreature(), 7165, false); // Battle Stance
     }
 };
 
@@ -180,7 +180,7 @@ class ConvictAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
+        getCreature()->castSpell(getCreature(), 674, false); // Dual Wield
     }
 };
 

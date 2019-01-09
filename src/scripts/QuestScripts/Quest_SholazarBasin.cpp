@@ -62,7 +62,7 @@ class ChickenEscapee : public CreatureAIScript
                 if (qle != NULL)
                 {
                     // casting the spell that will create the item for the player
-                    getCreature()->CastSpell(Caster, 51037, true);
+                    getCreature()->castSpell(Caster, 51037, true);
                     getCreature()->Despawn(1000, 360000);
                 }
             }

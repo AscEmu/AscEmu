@@ -37,7 +37,7 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* creat = static_cast<Creature*>(pObject);
-        creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
+        creat->castSpell(plr, sSpellMgr.getSpellInfo(34905), true);
     }
 };
 

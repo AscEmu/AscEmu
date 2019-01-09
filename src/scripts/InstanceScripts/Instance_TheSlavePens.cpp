@@ -49,7 +49,7 @@ class TotemsAI : public CreatureAIScript
         getCreature()->Despawn(Despawn, 0);
         getCreature()->m_noRespawn = true;
 
-        getCreature()->CastSpell(getCreature(), SpellID, true);
+        getCreature()->castSpell(getCreature(), SpellID, true);
     }
 
     void AIUpdate() override
@@ -57,7 +57,7 @@ class TotemsAI : public CreatureAIScript
         if (getCreature()->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2))
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
-        getCreature()->CastSpell(getCreature(), SpellID, true);
+        getCreature()->castSpell(getCreature(), SpellID, true);
     }
 
 protected:
@@ -135,9 +135,9 @@ class MennuTheBetrayerAI : public CreatureAIScript
                     if (!SummonedTotems[i])
                     {
                         spawnCreature(Totems[i], getCreature()->GetPosition());
-                        getCreature()->CastSpell(getCreature(), earthgrabTotem->mSpellInfo, earthgrabTotem->mIsTriggered);
-                        getCreature()->CastSpell(getCreature(), stoneskinTotem->mSpellInfo, stoneskinTotem->mIsTriggered);
-                        getCreature()->CastSpell(getCreature(), novaTotem->mSpellInfo, novaTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), earthgrabTotem->mSpellInfo, earthgrabTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), stoneskinTotem->mSpellInfo, stoneskinTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), novaTotem->mSpellInfo, novaTotem->mIsTriggered);
                         SummonedTotems[i] = true;
                         TotemCounter++;
                         break;
@@ -156,13 +156,13 @@ class MennuTheBetrayerAI : public CreatureAIScript
                 switch (i)
                 {
                     case 1:
-                        getCreature()->CastSpell(getCreature(), earthgrabTotem->mSpellInfo, earthgrabTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), earthgrabTotem->mSpellInfo, earthgrabTotem->mIsTriggered);
                         break;
                     case 2:
-                        getCreature()->CastSpell(getCreature(), stoneskinTotem->mSpellInfo, stoneskinTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), stoneskinTotem->mSpellInfo, stoneskinTotem->mIsTriggered);
                         break;
                     case 3:
-                        getCreature()->CastSpell(getCreature(), novaTotem->mSpellInfo, novaTotem->mIsTriggered);
+                        getCreature()->castSpell(getCreature(), novaTotem->mSpellInfo, novaTotem->mIsTriggered);
                         break;
                     default:
                         break;
@@ -221,7 +221,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
     {
         if (getCreature()->getHealthPct() <= 20 && !Enraged && getScriptPhase() == 1)
         {
-            getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
+            getCreature()->castSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
 
             Enraged = true;
         }

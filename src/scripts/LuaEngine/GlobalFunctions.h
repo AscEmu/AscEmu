@@ -416,7 +416,7 @@ namespace luaGlobalFunctions
             subindex = static_cast<int>(luaL_optinteger(L, 3, 0));
             valindex++;
         }
-        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
+        SpellInfo const* proto = sSpellMgr.getSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushboolean(L, 0);
@@ -452,7 +452,7 @@ namespace luaGlobalFunctions
         uint32 entry = static_cast<uint32>(luaL_checkinteger(L, 1));
         const char* var = luaL_checkstring(L, 2);
         int subindex = static_cast<int>(luaL_optinteger(L, 3, 0));
-        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
+        SpellInfo const* proto = sSpellMgr.getSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushnil(L);

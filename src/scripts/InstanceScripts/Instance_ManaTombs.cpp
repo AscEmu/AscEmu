@@ -113,7 +113,7 @@ class ManaLeechAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->CastSpell(getCreature(), arcaneExplosion->mSpellInfo, true);
+        getCreature()->castSpell(getCreature(), arcaneExplosion->mSpellInfo, true);
     }
 
 protected:

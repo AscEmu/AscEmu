@@ -49,7 +49,7 @@ class WyrmcultBlackwhelp : public CreatureAIScript
                 if (qle != nullptr)
                 {
                     // casting the spell that will create the item for the player
-                    getCreature()->CastSpell(Caster, 38178, true);
+                    getCreature()->castSpell(Caster, 38178, true);
                     getCreature()->Despawn(1000, 360000);
                 }
             }
@@ -94,7 +94,7 @@ class MagnetoAura : public CreatureAIScript
 
     void OnLoad() override
     {
-        getCreature()->CastSpell(getCreature(), 37136, true);
+        getCreature()->castSpell(getCreature(), 37136, true);
     }
 };
 

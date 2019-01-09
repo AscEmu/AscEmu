@@ -40,7 +40,7 @@ void AHumbleTask(Player* /*pPlayer*/, Object* pObject)
 void Yorus_Barleybrew(Player* pPlayer, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_POINT);
-    pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(8554), true);
+    pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(8554), true);
 }
 
 void Menara_Voidrender(Player* /*pPlayer*/, Object* pObject)

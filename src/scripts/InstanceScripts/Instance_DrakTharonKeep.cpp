@@ -133,7 +133,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 47346, false);
+        getCreature()->castSpell(getCreature(), 47346, false);
         //spawn 4 Ritual Crystal
         for (uint8 i = 0; i < 4; i++)
             SpawnCrystal(i);
@@ -468,7 +468,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
-            getCreature()->CastSpell(getCreature(), 53463, false);
+            getCreature()->castSpell(getCreature(), 53463, false);
         }
     }
 
@@ -480,7 +480,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
             getCreature()->setDisplayId(27073);
             getCreature()->RemoveAllAuras();
-            getCreature()->CastSpell(getCreature(), 49356, false);
+            getCreature()->castSpell(getCreature(), 49356, false);
         }
         if (getScriptPhase() == 2 && phase_length <Util::getMSTime())
         {
@@ -488,7 +488,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
             getCreature()->RemoveAllAuras();
-            getCreature()->CastSpell(getCreature(), 53463, false);
+            getCreature()->castSpell(getCreature(), 53463, false);
         }
     }
 

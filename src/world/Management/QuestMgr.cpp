@@ -28,7 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Server/Packets/MsgQuestPushResult.h"
 
 using namespace AscEmu::Packets;
@@ -645,14 +645,14 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
 	// Some spells applied at quest reward
-	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
+	SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
 	if (saBounds.first != saBounds.second)
 	{
 		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
 		{
-			if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+			if (itr->second->autoCast && itr->second->fitsToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
 				if (!plr->HasAura(itr->second->spellId))
-					plr->CastSpell(plr, itr->second->spellId, true);
+					plr->castSpell(plr, itr->second->spellId, true);
 		}
 	}
 
@@ -1280,10 +1280,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // cast Effect Spell
         if (qst->effect_on_player)
         {
-            SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(qst->effect_on_player);
+            SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(qst->effect_on_player);
             if (spell_entry)
             {
-                Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
+                Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
                 tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);
@@ -1427,10 +1427,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // cast Effect Spell
         if (qst->effect_on_player)
         {
-            SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(qst->effect_on_player);
+            SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(qst->effect_on_player);
             if (spell_entry)
             {
-                Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
+                Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
                 tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);

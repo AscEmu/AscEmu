@@ -400,7 +400,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         uint32 subclass = item->getItemProperties()->SubClass;
         if (subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_AXE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_MACE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD)
         {
-            m_pOwner->CastSpell(m_pOwner, 49152, true);
+            m_pOwner->castSpell(m_pOwner, 49152, true);
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
@@ -3321,7 +3321,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             uint32 subclass = m_pItems[EQUIPMENT_SLOT_OFFHAND]->getItemProperties()->SubClass;
             if (subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_AXE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_MACE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD)
             {
-                m_pOwner->CastSpell(m_pOwner, 49152, true);
+                m_pOwner->castSpell(m_pOwner, 49152, true);
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }

@@ -395,7 +395,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    SpellInfo* spell_entry = nullptr;
+    SpellInfo const* spell_entry = nullptr;
 
     if (stricmp(args, "all") == 0)
     {
@@ -436,7 +436,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         uint8 player_class = selected_player->getClass();
         for (uint32 i = 0; spellarray[player_class][i] != 0; ++i)
         {
-            spell_entry = sSpellCustomizations.GetSpellInfo(spellarray[player_class][i]);
+            spell_entry = sSpellMgr.getSpellInfo(spellarray[player_class][i]);
             if (spell_entry == nullptr)
                 continue;
 
@@ -586,7 +586,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case PALADIN:
                 for (uint32 i = 0; paladinspellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = sSpellCustomizations.GetSpellInfo(paladinspellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(paladinspellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -599,7 +599,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case MAGE:
                 for (uint32 i = 0; magespellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = sSpellCustomizations.GetSpellInfo(magespellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(magespellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -612,7 +612,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case SHAMAN:
                 for (uint32 i = 0; shamanspellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = sSpellCustomizations.GetSpellInfo(shamanspellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(shamanspellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -632,7 +632,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         spell = GetSpellIDFromLink(args);
     }
 
-    spell_entry = sSpellCustomizations.GetSpellInfo(spell);
+    spell_entry = sSpellMgr.getSpellInfo(spell);
     if (spell_entry == nullptr)
     {
         SystemMessage(m_session, "Invalid spell %u", spell);

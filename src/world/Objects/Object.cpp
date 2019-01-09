@@ -42,7 +42,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.h"
 #include "Data/WoWPlayer.h"
@@ -2963,7 +2963,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim == nullptr || !pVictim->isAlive())
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellID);
     if (spellInfo == nullptr)
         return;
 
@@ -3109,15 +3109,11 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             if (spellpower > hp)
                 spellpower = hp;
 
-            SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
+            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
             if (!entry)
                 return;
 
-            Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, nullptr);
-            sp->getSpellInfo()->setEffectBasePoints(spellpower, 0);
-            SpellCastTargets targets;
-            targets.m_unitTarget = pl->getGuid();
-            sp->prepare(&targets);
+            pl->castSpell(pl->getGuid(), entry, spellpower, true);
         }
     }
 

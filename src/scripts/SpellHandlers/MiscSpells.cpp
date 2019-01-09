@@ -27,7 +27,6 @@
 #include "Map/MapScriptInterface.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 enum
 {
@@ -124,25 +123,25 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
 
 bool ArcaniteDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->CastSpell(s->u_caster, 19804, true);
+    s->u_caster->castSpell(s->u_caster, 19804, true);
     return true;
 }
 
 bool MithrilMechanicalDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->CastSpell(s->u_caster, 12749, true);
+    s->u_caster->castSpell(s->u_caster, 12749, true);
     return true;
 }
 
 bool MechanicalDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->CastSpell(s->u_caster, 4073, true);
+    s->u_caster->castSpell(s->u_caster, 4073, true);
     return true;
 }
 
 bool GnomishBattleChicken(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->CastSpell(s->u_caster, 13166, true);
+    s->u_caster->castSpell(s->u_caster, 13166, true);
     return true;
 }
 
@@ -155,8 +154,8 @@ bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
 
     SpellCastTargets tgt;
     tgt.m_unitTarget = playerTarget->getGuid();
-    SpellInfo* inf = sSpellCustomizations.GetSpellInfo(23782);
-    Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
+    SpellInfo const* inf = sSpellMgr.getSpellInfo(23782);
+    Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
 
     return true;
@@ -208,13 +207,13 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 
             if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
             {
-                SpellInfo* se1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+                SpellInfo const* se1 = sSpellMgr.getSpellInfo(skill_line_ability->spell);
                 if (se1 && se1->getEffect(0) == SPELL_EFFECT_CREATE_ITEM)
                 {
                     ItemProperties const* itm = sMySQLStore.getItemProperties(se1->getEffectItemType(0));
                     if (itm && (itm->Spells[0].Id != 0))
                     {
-                        SpellInfo* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
+                        SpellInfo const* se2 = sSpellMgr.getSpellInfo(itm->Spells[0].Id);
                         if (se2 && se2->getEffect(0) == SPELL_EFFECT_USE_GLYPH)
                         {
 #if VERSION_STRING > TBC
@@ -386,7 +385,7 @@ bool ChaosBlast(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->u_caster == NULL)
         return true;
 
-    pSpell->u_caster->CastSpell(pSpell->GetUnitTarget(), 37675, true);
+    pSpell->u_caster->castSpell(pSpell->GetUnitTarget(), 37675, true);
     return true;
 }
 
@@ -400,12 +399,12 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint8_t /*effectIndex*/, Spell* pSpell
     if (!Target)
         return true;
 
-    SpellInfo* SpellInfo = sSpellCustomizations.GetSpellInfo(42787);
+    SpellInfo const* SpellInfo = sSpellMgr.getSpellInfo(42787);
     if (!SpellInfo)
         return true;
 
     //Explode bomb after 6sec
-    sEventMgr.AddEvent(Target, &Unit::EventCastSpell, Target, SpellInfo, EVENT_UNK, 6000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(Target, &Unit::eventCastSpell, Target, SpellInfo, EVENT_UNK, 6000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     return true;
 }
 
@@ -464,7 +463,7 @@ bool ListeningToMusicParent(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL)
         return true;
 
-    s->p_caster->CastSpell(s->p_caster, 50493, true);
+    s->p_caster->castSpell(s->p_caster, 50493, true);
 
     return true;
 }

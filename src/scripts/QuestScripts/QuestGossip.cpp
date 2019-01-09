@@ -42,7 +42,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
+        plr->castSpell(plr, sSpellMgr.getSpellInfo(23122), true);
         Arcemu::Gossip::Menu::Complete(plr);
     }
 };
@@ -64,7 +64,7 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7014, plr);
-        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
+        plr->castSpell(plr, sSpellMgr.getSpellInfo(23123), true);
     }
 };
 
@@ -90,7 +90,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
+        plr->castSpell(plr, DALARAN_TELEPORT_SPELL, true);
     }
 };
 
