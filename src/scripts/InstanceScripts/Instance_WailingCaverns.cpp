@@ -254,7 +254,7 @@ public:
             case 1: // Disciple of Naralex Casts Mark of the Wild on players.
             {
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
-                pCreature->CastSpell(Plr, 5232, true);
+                pCreature->castSpell(Plr, 5232, true);
                 pCreature->Emote(EMOTE_ONESHOT_CHEER);
             } break;
             case 2: // Start Event

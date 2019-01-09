@@ -31,7 +31,7 @@ public:
 
         if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
         {
-            plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
+            plr->castSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
         }
     }
 };
@@ -99,7 +99,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             }
             else
             {
-                pUnit->CastSpell(pPlayer, 26218, true);
+                pUnit->castSpell(pPlayer, 26218, true);
             }
         }
     }

@@ -372,16 +372,16 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     }
 
     // Some spells applied at quest reward
-    SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
+    SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
     if (saBounds.first != saBounds.second)
     {
         for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
-            if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+            if (itr->second->autoCast && itr->second->fitsToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
             {
                 if (!plr->HasAura(itr->second->spellId))
                 {
-                    plr->CastSpell(plr, itr->second->spellId, true);
+                    plr->castSpell(plr, itr->second->spellId, true);
                 }
             }
         }

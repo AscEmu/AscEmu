@@ -53,7 +53,7 @@ class GluttonAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), mDiseaseCloud->mSpellInfo, true);
+        getCreature()->castSpell(getCreature(), mDiseaseCloud->mSpellInfo, true);
     }
 
     CreatureAISpells* mDiseaseCloud;

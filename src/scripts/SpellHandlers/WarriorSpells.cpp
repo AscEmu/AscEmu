@@ -22,7 +22,6 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/PowerType.h>
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)
 {
@@ -163,8 +162,8 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
     SpellCastTargets tgt;
     tgt.m_unitTarget = playerTarget->getGuid();
 
-    SpellInfo* inf = sSpellCustomizations.GetSpellInfo(12976);
-    Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
+    SpellInfo const* inf = sSpellMgr.getSpellInfo(12976);
+    Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
 
     return true;

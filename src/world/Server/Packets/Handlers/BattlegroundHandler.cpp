@@ -182,7 +182,7 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
         return;
 
     cBattleground->QueuePlayerForResurrect(_player, spiritHealer);
-    _player->CastSpell(_player, 2584, true);
+    _player->castSpell(_player, 2584, true);
 }
 
 void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)

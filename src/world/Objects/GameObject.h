@@ -451,7 +451,7 @@ public:
         virtual bool IsLootable() { return false; }
 
         virtual void Use(uint64 /*GUID*/) {}
-        void CastSpell(uint64 TargetGUID, SpellInfo* sp);
+        void CastSpell(uint64 TargetGUID, SpellInfo const* sp);
         void CastSpell(uint64 TargetGUID, uint32 SpellID);
 
         void Update(unsigned long time_passed);
@@ -589,7 +589,7 @@ class GameObject_Button : public GameObject
 
     private:
 
-        SpellInfo* spell;
+        SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -701,7 +701,7 @@ class GameObject_Chest : public GameObject_Lootable
 
     private:
 
-        SpellInfo* spell;
+        SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -718,7 +718,7 @@ class GameObject_Trap : public GameObject
 
     private:
 
-        SpellInfo* spell;
+        SpellInfo const* spell;
         uint32 targetupdatetimer;
         float maxdistance;
         uint32 cooldown;
@@ -770,7 +770,7 @@ class GameObject_Goober : public GameObject
         void Close();
 
     private:
-        SpellInfo* spell;
+        SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -854,7 +854,7 @@ class GameObject_SpellCaster : public GameObject
 
     private:
 
-        SpellInfo* spell;
+        SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

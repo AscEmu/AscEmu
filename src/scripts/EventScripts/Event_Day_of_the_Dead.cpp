@@ -29,7 +29,7 @@ void Catrina(Player* pPlayer, Unit* pUnit)
     {
         if (pPlayer->isDead() == false)
         {
-            pUnit->CastSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
+            pUnit->castSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
         }
     }
 

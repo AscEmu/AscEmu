@@ -215,7 +215,7 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget->HasSpell(19027))
-            mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);
+            mTarget->castSpell(mTarget, sSpellMgr.getSpellInfo(19027), true);
     }
 };
 

@@ -41,7 +41,6 @@
 #include "Definitions/SpellState.h"
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/PowerType.h"
-#include "Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
@@ -871,10 +870,10 @@ void Aura::Remove()
         if (!m_spellInfo->getEffect(x))
             continue;
 
-        if (m_spellInfo->getEffect(x) == SPELL_EFFECT_TRIGGER_SPELL && sSpellCustomizations.isAlwaysApply(m_spellInfo) == false)
+        if (m_spellInfo->getEffect(x) == SPELL_EFFECT_TRIGGER_SPELL && sSpellMgr.isAlwaysApply(m_spellInfo) == false)
         {
             // I'm not sure about this! FIX ME!!
-            auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(x));
+            auto spell_entry = sSpellMgr.getSpellInfo(GetSpellInfo()->getEffectTriggerSpell(x));
             if (spell_entry != nullptr)
                 if (spell_entry->getDurationIndex() < m_spellInfo->getDurationIndex())
                     m_target->RemoveAura(GetSpellInfo()->getEffectTriggerSpell(x));
@@ -1287,7 +1286,7 @@ void Aura::EventUpdatePetAA(float r)
             continue;
 
         {
-            Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), p, pet, true);
+            Aura* a = sSpellMgr.newAura(m_spellInfo, GetDuration(), p, pet, true);
             a->m_areaAura = true;
             a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->m_effectIndex);
             pet->AddAura(a);
@@ -1466,7 +1465,7 @@ void Aura::EventUpdateOwnerAA(float r)
         (c->getDistanceSq(ou) <= r))
     {
 
-        Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), c, ou, true);
+        Aura* a = sSpellMgr.newAura(m_spellInfo, GetDuration(), c, ou, true);
         a->m_areaAura = true;
         a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->m_effectIndex);
         ou->AddAura(a);
@@ -1545,7 +1544,7 @@ void Aura::EventUpdateAreaAura(float r)
         if (unit->HasAura(m_spellInfo->getId()))
             continue;
 
-        Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), m_target, unit, true);
+        Aura* a = sSpellMgr.newAura(m_spellInfo, GetDuration(), m_target, unit, true);
         a->m_areaAura = true;
         a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->m_effectIndex);
         unit->AddAura(a);
@@ -1727,7 +1726,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             {
                 if (!pSpellId) //we need a parent spell and should always have one since it procs on it
                     break;
-                SpellInfo* parentsp = sSpellCustomizations.GetSpellInfo(pSpellId);
+                SpellInfo const* parentsp = sSpellMgr.getSpellInfo(pSpellId);
                 if (!parentsp)
                     return;
                 if (c != nullptr && c->isPlayer())
@@ -1738,7 +1737,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 {
                     if (!dmg)
                         return;
-                    Spell* spell = sSpellFactoryMgr.NewSpell(c, parentsp, false, nullptr);
+                    Spell* spell = sSpellMgr.newSpell(c, parentsp, false, nullptr);
                     SpellCastTargets castTargets(m_target->getGuid());
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
@@ -1777,7 +1776,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 }
             }
         }
-        uint32* gr = GetSpellInfo()->getSpellFamilyFlags();
+        const uint32* gr = GetSpellInfo()->getSpellFamilyFlags();
         if (gr)
         {
             if (c != nullptr)
@@ -2828,7 +2827,7 @@ void Aura::SpellAuraModStealth(bool apply)
                 m_target->ModVisualAuraStackCount(buff, 0);
             }
             else
-                m_target->CastSpell(m_target, 58427, true);
+                m_target->castSpell(m_target, 58427, true);
         }
 
         if (p_target && p_target->m_bgHasFlag)
@@ -2957,7 +2956,7 @@ void Aura::SpellAuraModStealth(bool apply)
                     // Cast stealth spell/dismount/drop BG flag
                     if (p_target != nullptr)
                     {
-                        p_target->CastSpell(p_target, 1784, true);
+                        p_target->castSpell(p_target, 1784, true);
 
                         p_target->Dismount();
 
@@ -3321,7 +3320,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 {
     if (apply)
     {
-        SpellInfo* spe = sSpellCustomizations.GetSpellInfo(m_spellInfo->getEffectTriggerSpell(mod->m_effectIndex));
+        SpellInfo const* spe = sSpellMgr.getSpellInfo(m_spellInfo->getEffectTriggerSpell(mod->m_effectIndex));
         if (spe == nullptr)
             return;
 
@@ -3384,7 +3383,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
     if (target == 0 || !target->isPlayer())
     return; //what about creatures ?
 
-    SpellEntry *proto = sSpellCustomizations.GetSpellInfo(m_spellProto->EffectTriggerSpell[mod->i]);
+    SpellEntry *proto = sSpellMgr.getSpellInfo(m_spellProto->EffectTriggerSpell[mod->i]);
 
     if (apply)
     TO< Player* >(target)->AddOnStrikeSpell(proto, m_spellProto->EffectAmplitude[mod->i]);
@@ -3397,7 +3396,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
     if (apply)
     {
-        SpellInfo* trigger = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
+        SpellInfo const* trigger = sSpellMgr.getSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
 
         if (trigger == nullptr)
             return;
@@ -3419,9 +3418,9 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
     }
 }
 
-void Aura::EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue)
+void Aura::EventPeriodicTriggerSpell(SpellInfo const* spellInfo, bool overridevalues, int32 overridevalue)
 {
-    Spell* spell = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, this);
+    Spell* spell = sSpellMgr.newSpell(m_target, spellInfo, true, this);
     if (overridevalues)
     {
         spell->m_overrideBasePoints = true;
@@ -3998,9 +3997,9 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     modelId = 2289;
 
                 //some say there is a second effect
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(21178);
+                const auto spellInfo = sSpellMgr.getSpellInfo(21178);
 
-                Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
+                Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
                 SpellCastTargets tgt;
                 tgt.m_unitTarget = m_target->getGuid();
                 sp->prepare(&tgt);
@@ -4140,9 +4139,9 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
                     if (furorSpell != 0)
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(furorSpell);
+                        const auto spellInfo = sSpellMgr.getSpellInfo(furorSpell);
 
-                        Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
+                        Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
                         SpellCastTargets tgt;
                         tgt.m_unitTarget = m_target->getGuid();
                         sp->prepare(&tgt);
@@ -4171,17 +4170,17 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (spellId == 0)
             return;
 
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+        const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
 
-        Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
+        Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
         SpellCastTargets tgt;
         tgt.m_unitTarget = m_target->getGuid();
         sp->prepare(&tgt);
 
         /*if (spellId2 != 0) This cannot be true CID 52824
         {
-            spellInfo = sSpellCustomizations.GetSpellInfo(spellId2);
-            sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
+            spellInfo = sSpellMgr.getSpellInfo(spellId2);
+            sp = sSpellMgr.newSpell(m_target, spellInfo, true, NULL);
             sp->prepare(&tgt);
         }*/
 
@@ -6621,7 +6620,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         int charges;
 
         // Find spell of effect to be triggered
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(GetSpellInfo()->getEffectTriggerSpell(mod->m_effectIndex));
         if (sp == nullptr)
         {
             LogDebugFlag(LF_AURA, "Warning! class trigger spell is null for spell %u", GetSpellInfo()->getId());
@@ -6723,7 +6722,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                     break;
                 }
 
-                std::list<SpellInfo*>::iterator itrSE = itermap->second->begin();
+                std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
 
                 SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.find((*itrSE)->getId());
 
@@ -6772,7 +6771,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                 SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.begin(), itr2;
                 while (itr != plr->mSpellOverrideMap.end())
                 {
-                    std::list<SpellInfo*>::iterator itrSE = itermap->second->begin();
+                    std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
                     for (; itrSE != itermap->second->end(); ++itrSE)
                     {
                         if (itr->first == (*itrSE)->getId())
@@ -8665,8 +8664,8 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     {
         m_target->setScale(0.5);
         m_target->setHealth(1);
-        SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
-        Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
+        SpellInfo const* sorInfo = sSpellMgr.getSpellInfo(27792);
+        Spell* sor = sSpellMgr.newSpell(m_target, sorInfo, true, nullptr);
         SpellCastTargets spellTargets;
         spellTargets.m_unitTarget = m_target->getGuid();
         sor->prepare(&spellTargets);
@@ -9228,7 +9227,7 @@ bool Aura::DotCanCrit()
     if (caster == nullptr)
         return false;
 
-    SpellInfo* spell_info = this->GetSpellInfo();
+    SpellInfo const* spell_info = this->GetSpellInfo();
     if (spell_info == nullptr)
         return false;
 
@@ -9261,7 +9260,7 @@ bool Aura::DotCanCrit()
     if (aura == nullptr)
         return false;
 
-    SpellInfo* aura_spell_info = aura->GetSpellInfo();
+    SpellInfo const* aura_spell_info = aura->GetSpellInfo();
 
     uint8 i = 0;
     if (aura_spell_info->getEffectApplyAuraName(1) == SPELL_AURA_ALLOW_DOT_TO_CRIT)

@@ -84,7 +84,7 @@ class SunResearcherAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), poisonShield->mSpellInfo, true);
+        getCreature()->castSpell(getCreature(), poisonShield->mSpellInfo, true);
     }
 
 protected:
@@ -139,7 +139,7 @@ class CommanderSarannisAI : public CreatureAIScript
         if (getCreature()->getHealthPct() <= 50 && GuardAdds == false)
         {
             GuardAdds = true;
-            getCreature()->CastSpell(getCreature(), summonReinforcements->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), summonReinforcements->mSpellInfo, true);
         }
     }
 
@@ -218,22 +218,22 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         {
             case 0:
             {
-                getCreature()->CastSpell(getCreature(), plantRedSeedling->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), plantRedSeedling->mSpellInfo, true);
             }
             break;
             case 1:
             {
-                getCreature()->CastSpell(getCreature(), plantGreenSeedling->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), plantGreenSeedling->mSpellInfo, true);
             }
             break;
             case 2:
             {
-                getCreature()->CastSpell(getCreature(), plantWhiteSeedling->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), plantWhiteSeedling->mSpellInfo, true);
             }
             break;
             case 3:
             {
-                getCreature()->CastSpell(getCreature(), plantBlueSeedling->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), plantBlueSeedling->mSpellInfo, true);
             }
             break;
         }
@@ -296,7 +296,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         if (getCreature()->getHealthPct() <= 20 && Enraged == false)
         {
             Enraged = true;
-            getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), enrage->mSpellInfo, true);
         }
     }
 
@@ -349,7 +349,7 @@ class LajAI : public CreatureAIScript
         if (!TeleportTimer)
         {
             getCreature()->SetPosition(-204.125000f, 391.248993f, -11.194300f, 0.017453f);    // \todo hmm doesn't work :S
-            getCreature()->CastSpell(getCreature(), teleportSelf->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), teleportSelf->mSpellInfo, true);
             TeleportTimer = 20;
         }
     }
@@ -406,7 +406,7 @@ class WarpSplinterAI : public CreatureAIScript
 
         if (!SummonTimer)
         {
-            getCreature()->CastSpell(getCreature(), summonSaplings->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), summonSaplings->mSpellInfo, true);
             SummonTimer = 20;
         }
     }

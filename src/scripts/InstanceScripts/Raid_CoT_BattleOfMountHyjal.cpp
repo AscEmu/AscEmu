@@ -22,7 +22,6 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellMgr.h"
 
 enum
 {

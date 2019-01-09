@@ -380,7 +380,7 @@ namespace LuaSpell
             return 1;
         }
         sp->InitProtoOverride();
-        SpellInfo* proto = sp->getSpellInfo();
+        SpellInfo const* proto = sp->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_BOOL(false);
@@ -415,7 +415,7 @@ namespace LuaSpell
             lua_pushnil(L);
             return 1;
         }
-        SpellInfo* proto = sp->getSpellInfo();
+        SpellInfo const* proto = sp->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_NIL();

@@ -45,7 +45,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
+        getCreature()->castSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
     }
 
 protected:
@@ -71,7 +71,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), auraOfDiscipline->mSpellInfo, auraOfDiscipline->mIsTriggered);
+        getCreature()->castSpell(getCreature(), auraOfDiscipline->mSpellInfo, auraOfDiscipline->mIsTriggered);
     }
 
 protected:
@@ -97,7 +97,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
+        getCreature()->castSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
     }
 
 protected:
@@ -138,12 +138,12 @@ class ShatteredHandAssassinAI : public CreatureAIScript
         auto cheapShot = addAISpell(SP_SHATT_HAND_ASSASSIN_CHEAP_SHOT, 5.0f, TARGET_ATTACKING, 0, 25, false, true);
         cheapShot->setAttackStopTimer(1000);
 
-        getCreature()->CastSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
+        getCreature()->castSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
+        getCreature()->castSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
     }
 
 protected:

@@ -1387,7 +1387,7 @@ bool Spell::canAttackCreatureType(Creature* target) const
     return (target->GetCreatureProperties()->Type != 0 && typeMask != 0 && (typeMask & mask) == 0) ? false : true;
 }
 
-SpellInfo* Spell::getSpellInfo() const
+SpellInfo const* Spell::getSpellInfo() const
 {
     return m_spellInfo_override != nullptr ? m_spellInfo_override : m_spellInfo;
 }

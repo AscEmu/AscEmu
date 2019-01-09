@@ -71,13 +71,13 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
     if (isAttackable(player, target))   // Do holy damage
     {
         // First tick is instant.
-        player->CastSpell(target, hostileSpell[0], true);
-        player->CastSpell(target, hostileSpell[1], false);
+        player->castSpell(target, hostileSpell[0], true);
+        player->castSpell(target, hostileSpell[1], false);
     }
     else // Heal
     {
-        player->CastSpell(target, friendlySpell[0], true);
-        player->CastSpell(target, friendlySpell[1], false);
+        player->castSpell(target, friendlySpell[0], true);
+        player->castSpell(target, friendlySpell[1], false);
     }
     return true;
 }

@@ -268,7 +268,7 @@ class VaelastraszAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
+        getCreature()->castSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override

@@ -60,13 +60,13 @@ public:
                 plr->AddQuestKill(9785, 0, 0);
 
                 if (plr->GetStandingRank(942) == 4)
-                    casta->CastSpell(plr, 31808, true);
+                    casta->castSpell(plr, 31808, true);
                 else if (plr->GetStandingRank(942) == 5)
-                    casta->CastSpell(plr, 31810, true);
+                    casta->castSpell(plr, 31810, true);
                 else if (plr->GetStandingRank(942) == 6)
-                    casta->CastSpell(plr, 31811, true);
+                    casta->castSpell(plr, 31811, true);
                 else if (plr->GetStandingRank(942) == 7)
-                    casta->CastSpell(plr, 31815, true);
+                    casta->castSpell(plr, 31815, true);
 
             } break;
             case 17901:
@@ -74,13 +74,13 @@ public:
                 plr->AddQuestKill(9785, 1, 0);
 
                 if (plr->GetStandingRank(942) == 4)
-                    casta->CastSpell(plr, 31807, true);
+                    casta->castSpell(plr, 31807, true);
                 else if (plr->GetStandingRank(942) == 5)
-                    casta->CastSpell(plr, 31814, true);
+                    casta->castSpell(plr, 31814, true);
                 else if (plr->GetStandingRank(942) == 6)
-                    casta->CastSpell(plr, 31813, true);
+                    casta->castSpell(plr, 31813, true);
                 else if (plr->GetStandingRank(942) == 7)
-                    casta->CastSpell(plr, 31812, true);
+                    casta->castSpell(plr, 31812, true);
 
             } break;
         }

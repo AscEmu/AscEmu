@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 TotemSummon::TotemSummon(uint64_t guid) : Summon(guid) {}
 
@@ -85,8 +85,8 @@ void TotemSummon::SetupSpells()
     if (getUnitOwner() == nullptr)
         return;
 
-    const auto creatorSpell = sSpellCustomizations.GetSpellInfo(getCreatedBySpellId());
-    const auto totemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
+    const auto creatorSpell = sSpellMgr.getSpellInfo(getCreatedBySpellId());
+    const auto totemSpell = sSpellMgr.getSpellInfo(creature_properties->AISpells[0]);
     if (totemSpell == nullptr)
     {
         LOG_DEBUG("Totem %u does not have any spells to cast", creature_properties->Id);
@@ -108,7 +108,7 @@ void TotemSummon::SetupSpells()
         // We're an area aura. Simply cast the spell.
         m_aiInterface->totemspell = creatorSpell;
 
-        auto spell = sSpellFactoryMgr.NewSpell(this, totemSpell, true, nullptr);
+        auto spell = sSpellMgr.newSpell(this, totemSpell, true, nullptr);
         SpellCastTargets targets;
 
         if (!totemSpell->hasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))

@@ -111,9 +111,9 @@ const uint32 MAX_THRALLWP1 = 27;
 //    void OnPlayerEnter(Player* pPlayer)
 //    {
 //        if (pPlayer->getGender() == 0)
-//            pPlayer->CastSpell(pPlayer, 35482, true);   // Human Male illusion
+//            pPlayer->castSpell(pPlayer, 35482, true);   // Human Male illusion
 //        else
-//            pPlayer->CastSpell(pPlayer, 35483, true);   // Human Female illusion
+//            pPlayer->castSpell(pPlayer, 35483, true);   // Human Female illusion
 //    }
 //
 //    void SetData(uint32 pIndex, uint32 pData)

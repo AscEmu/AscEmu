@@ -23,12 +23,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 //#include "Config/Config.h"
 //#include "Map/MapCell.h"
-#include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
 #include "BroadcastMgr.h"
 #include "World.Legacy.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Management/GuildMgr.h"
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"
@@ -43,7 +42,6 @@ std::unique_ptr<DayWatcherThread> dw = nullptr;
 
 std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
-extern void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
 
 World::World()
@@ -128,15 +126,15 @@ World::~World()
     LogNotice("SpellProcMgr : ~SpellProcMgr()");
     delete SpellProcMgr::getSingletonPtr();
 
-    LogNotice("SpellFactoryMgr : ~SpellFactoryMgr()");
-    delete SpellFactoryMgr::getSingletonPtr();
+    LogNotice("SpellMgr : ~SpellMgr()");
+    delete SpellMgr::getSingletonPtr();
 
     LogNotice("MySQLDataStore : ~MySQLDataStore()");
     delete MySQLDataStore::getSingletonPtr();
 
     delete mEventableObjectHolder;
 
-    for (std::list<SpellInfo*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
+    for (std::list<SpellInfo const*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
         delete *itr;
 }
 
@@ -746,10 +744,9 @@ bool World::setInitialWorldSettings()
     new WorldPacketLog;
     sWorldPacketLog.initWorldPacketLog(worldConfig.log.enableWorldPacketLog);
 
-    new SpellCustomizations;
-    sSpellCustomizations.StartSpellCustomization();
-
-    ApplyNormalFixes();
+    LogNotice("World : Loading SpellInfo data...");
+    new SpellMgr;
+    sSpellMgr.startSpellMgr();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
     std::string vmapPath = worldConfig.server.dataDir + "vmaps";
@@ -759,8 +756,10 @@ bool World::setInitialWorldSettings()
     loadMySQLTablesByTask();
     logEntitySize();
 
+    sSpellMgr.loadSpellDataFromDatabase();
+
 #if VERSION_STRING > TBC
-    LogDetail("World : Starting Achievement System..");
+    LogDetail("World : Starting Achievement System...");
     objmgr.LoadAchievementCriteriaList();
 #endif
 
@@ -914,7 +913,6 @@ void World::loadMySQLTablesByTask()
 
     new ObjectMgr;
     new QuestMgr;
-    new SpellFactoryMgr;
     new WeatherMgr;
     new AddonMgr;
     new GameEventMgr;
@@ -940,8 +938,6 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(ObjectMgr, LoadTrainers);
     MAKE_TASK(ObjectMgr, LoadSpellSkills);
     MAKE_TASK(ObjectMgr, LoadVendors);
-    MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
-    MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);
     MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
 #if VERSION_STRING == Cata
     MAKE_TASK(ObjectMgr, LoadSpellRequired);
@@ -965,7 +961,6 @@ void World::loadMySQLTablesByTask()
     tl.wait();
 
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
-    MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
     MAKE_TASK(ObjectMgr, LoadEventScripts);
     MAKE_TASK(WeatherMgr, LoadFromDB);
     MAKE_TASK(AddonMgr, LoadFromDB);

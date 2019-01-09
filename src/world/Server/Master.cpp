@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20181208-00_spell_coefficient_override";
+static const char* REQUIRED_WORLD_DB_VERSION = "20190114-00_spell_custom_override";
 
 void Master::_OnSignal(int s)
 {
@@ -255,6 +255,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sSocketMgr.SpawnWorkerThreads();
 
     sScriptMgr.LoadScripts();
+
+    sSpellMgr.loadSpellScripts();
 
     if (worldConfig.startup.enableSpellIdDump)
     {

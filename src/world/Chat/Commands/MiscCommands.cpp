@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
@@ -268,12 +267,12 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                 case TYPEID_UNIT:
                 {
                     auto creature = static_cast<Creature*>(unit_target);
-                    auto kill_spell = sSpellCustomizations.GetSpellInfo(5);
+                    auto kill_spell = sSpellMgr.getSpellInfo(5);
                     if (kill_spell == nullptr)
                         return true;
 
                     SpellCastTargets targets(unit_target->getGuid());
-                    Spell* spell = sSpellFactoryMgr.NewSpell(m_session->GetPlayer(), kill_spell, true, 0);
+                    Spell* spell = sSpellMgr.newSpell(m_session->GetPlayer(), kill_spell, true, 0);
                     spell->prepare(&targets);
 
                     GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureProperties()->Name.c_str());

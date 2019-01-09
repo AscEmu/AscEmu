@@ -104,7 +104,7 @@ class OverlordMokMorokk : public CreatureAIScript
         uint32 chance = Util::getRandomUInt(100);
         if (chance < 25)
         {
-            getCreature()->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
+            getCreature()->castSpell(mAttacker, sSpellMgr.getSpellInfo(6749), true);
         }
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.3f)
         {

@@ -35,7 +35,7 @@ bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster && !apply)
-        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
+        caster->castSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
     return true;
 }
 
@@ -68,9 +68,9 @@ bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     if (caster->HasAura(70937))    // Glyph of Eternal Water
-        caster->CastSpell(caster, 70908, true);
+        caster->castSpell(caster, 70908, true);
     else
-        caster->CastSpell(caster, 70907, true);
+        caster->castSpell(caster, 70907, true);
 
     return true;
 }
@@ -139,7 +139,7 @@ bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
     Unit* caster = pAura->GetUnitCaster();
     if (caster != NULL && apply && effectIndex == 2)
         if (caster->getGuid() == pAura->GetTarget()->getCreatedByGuid())
-            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
+            caster->castSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
 
     return true;
 }

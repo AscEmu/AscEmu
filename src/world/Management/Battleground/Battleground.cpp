@@ -538,7 +538,7 @@ void CBattleground::CastSpellOnTeam(uint32 team, uint32 spell)
     for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
         Player* p = *itr;
-        p->CastSpell(p, spell, false);
+        p->castSpell(p, spell, false);
     }
 }
 
@@ -666,7 +666,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         if (!m_ended)
         {
             if(!plr->GetSession()->HasGMPermissions())
-                plr->CastSpell(plr, BG_DESERTER, true);
+                plr->castSpell(plr, BG_DESERTER, true);
         }
 
         if (!IS_INSTANCE(plr->m_bgEntryPointMap))
@@ -1001,7 +1001,7 @@ void CBattleground::EventResurrectPlayers()
                 plr->setHealth(plr->getMaxHealth());
                 plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
-                plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);
+                plr->castSpell(plr, BG_REVIVE_PREPARATION, true);
             }
         }
         i->second.clear();
@@ -1055,7 +1055,7 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     {
         closest->insert(plr->getGuidLow());
         plr->m_areaSpiritHealer_guid = cl->getGuid();
-        plr->CastSpell(plr, 2584, true);
+        plr->castSpell(plr, 2584, true);
     }
 
     m_lock.Release();

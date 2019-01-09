@@ -35,7 +35,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
         if (player_x < 5761.9f && player_x >5738.68f && player_y < 732.12f && player_y >712.09f && player_z > 635.0f)
         {
             getCreature()->setTargetGuid(player->getGuid());
-            getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54028));
+            getCreature()->eventCastSpell(player, sSpellMgr.getSpellInfo(54028));
         }
         else
         {
@@ -80,7 +80,7 @@ class SunreaversMageGuard : public CreatureAIScript
         if (player_x < 5891.88f && player_x >5858.89f && player_y < 594.99f && player_y >565.51f && player_z > 635.0f)
         {
             getCreature()->setTargetGuid(player->getGuid());
-            getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54029));
+            getCreature()->eventCastSpell(player, sSpellMgr.getSpellInfo(54029));
         }
         else
         {

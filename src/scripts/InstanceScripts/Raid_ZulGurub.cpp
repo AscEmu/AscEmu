@@ -45,39 +45,39 @@ class JeklikAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(JeklikAI);
     explicit JeklikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //spells[0].info = sSpellCustomizations.GetSpellInfo(TRANSFORM_BAT);
+        //spells[0].info = sSpellMgr.getSpellInfo(TRANSFORM_BAT);
         //spells[0].targettype = TARGET_SELF;
         //spells[0].instant = true;
         //spells[0].perctrigger = 0.0f;
         //spells[0].attackstoptimer = 1000; // 1sec
         //m_spellcheck[0] = true;
 
-        //spells[1].info = sSpellCustomizations.GetSpellInfo(CRUSHING_BLOW);
+        //spells[1].info = sSpellMgr.getSpellInfo(CRUSHING_BLOW);
         //spells[1].targettype = TARGET_ATTACKING;
         //spells[1].instant = false;
         //spells[1].perctrigger = 10.0f;
         //spells[1].attackstoptimer = 2000; // 1sec
 
-        //spells[2].info = sSpellCustomizations.GetSpellInfo(CRUSHING_AOE_SILENCE);
+        //spells[2].info = sSpellMgr.getSpellInfo(CRUSHING_AOE_SILENCE);
         //spells[2].targettype = TARGET_VARIOUS;
         //spells[2].instant = false;
         //spells[2].perctrigger = 10.0f;
         //spells[2].attackstoptimer = 2000; // 1sec
 
         //// 2 phase spells
-        //spells[3].info = sSpellCustomizations.GetSpellInfo(JEKLIK_AI_MIND_FLAY);
+        //spells[3].info = sSpellMgr.getSpellInfo(JEKLIK_AI_MIND_FLAY);
         //spells[3].targettype = TARGET_ATTACKING;
         //spells[3].instant = false;
         //spells[3].perctrigger = 10.0f;
         //spells[3].attackstoptimer = 6000; // 1sec
 
-        //spells[4].info = sSpellCustomizations.GetSpellInfo(SHADOW_WORD_PAIN);
+        //spells[4].info = sSpellMgr.getSpellInfo(SHADOW_WORD_PAIN);
         //spells[4].targettype = TARGET_ATTACKING;
         //spells[4].instant = false;
         //spells[4].perctrigger = 10.0f;
         //spells[4].attackstoptimer = 2000; // 1sec
 
-        //spells[5].info = sSpellCustomizations.GetSpellInfo(GREAT_HEAL);
+        //spells[5].info = sSpellMgr.getSpellInfo(GREAT_HEAL);
         //spells[5].targettype = TARGET_SELF;
         //spells[5].instant = false;
         //spells[5].perctrigger = 10.0f;
@@ -90,7 +90,7 @@ class JeklikAI : public CreatureAIScript
 
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
         // bat transform
-        //getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
+        //getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -123,26 +123,26 @@ class VenoxisAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI);
     explicit VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //spells[0].info = sSpellCustomizations.GetSpellInfo(TRANSFORM_SNAKE);
+        //spells[0].info = sSpellMgr.getSpellInfo(TRANSFORM_SNAKE);
         //spells[0].targettype = TARGET_SELF;
         //spells[0].instant = false;
         //spells[0].perctrigger = 0.0f;
         //spells[0].attackstoptimer = 1000; // 1sec
         //m_spellcheck[0] = true;
 
-        //spells[1].info = sSpellCustomizations.GetSpellInfo(HOLY_NOVA);
+        //spells[1].info = sSpellMgr.getSpellInfo(HOLY_NOVA);
         //spells[1].targettype = TARGET_VARIOUS;
         //spells[1].instant = false;
         //spells[1].perctrigger = 10.0f;
         //spells[1].attackstoptimer = 2000; // 2sec
 
-        //spells[2].info = sSpellCustomizations.GetSpellInfo(HOLY_FIRE);
+        //spells[2].info = sSpellMgr.getSpellInfo(HOLY_FIRE);
         //spells[2].targettype = TARGET_VARIOUS;
         //spells[2].instant = false;
         //spells[2].perctrigger = 10.0f;
         //spells[2].attackstoptimer = 2000; // 2sec
 
-        //spells[3].info = sSpellCustomizations.GetSpellInfo(SPIT_POISON);
+        //spells[3].info = sSpellMgr.getSpellInfo(SPIT_POISON);
         //spells[3].targettype = TARGET_VARIOUS;
         //spells[3].instant = false;
         //spells[3].perctrigger = 10.0f;
@@ -165,7 +165,7 @@ class VenoxisAI : public CreatureAIScript
 //      if (getCreature()->getHealthPct() <= 50 && m_spellcheck[0])
 //      {
 //          // cast snake transform
-//          getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
+//          getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
 //          m_spellcheck[0] = false;
 //      }
     }

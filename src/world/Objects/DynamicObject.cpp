@@ -240,7 +240,7 @@ void DynamicObject::UpdateTargets()
 
             if (getDistanceSq(target) <= radius)
             {
-                pAura = sSpellFactoryMgr.NewAura(m_spellProto, m_aliveDuration, u_caster, target, true);
+                pAura = sSpellMgr.newAura(m_spellProto, m_aliveDuration, u_caster, target, true);
                 for (uint8 i = 0; i < 3; ++i)
                 {
                     if (m_spellProto->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)

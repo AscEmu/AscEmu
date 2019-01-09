@@ -30,10 +30,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgUseItem.h"
 #include "Management/Battleground/Battleground.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
-#include "Spell/SpellMgr.h"
 #include "Management/Container.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgListInventory.h"
@@ -182,7 +181,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     {
         for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         {
-            if (SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(itemProto->Spells[i].Id))
+            if (SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(itemProto->Spells[i].Id))
             {
                 if (spellInfo->getAttributes() & ATTRIBUTES_REQ_OOC)
                 {
@@ -237,7 +236,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         return;
 
     SpellCastTargets targets(recvPacket, _player->getGuid());
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
     {
         LogError("WORLD: Unknown spell id %i in ::handleUseItemOpcode() from item id %i", srlPacket.spellId, itemProto->ItemId);
@@ -280,7 +279,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+    Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
     spell->i_caster = tmpItem;
     spell->m_glyphslot = srlPacket.glyphIndex;

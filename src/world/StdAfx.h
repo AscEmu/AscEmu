@@ -472,9 +472,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellTarget.h"
 #include "Spell/SpellTargetConstraint.h"
 
-// Spell/Customization
-#include "Spell/Customization/SpellCustomizations.hpp"
-
 // Spell/Definitions
 #include "Spell/Definitions/AuraEffects.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"

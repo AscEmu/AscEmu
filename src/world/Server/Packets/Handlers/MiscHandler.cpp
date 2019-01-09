@@ -743,8 +743,8 @@ void WorldSession::handleSelfResurrect(WorldPacket& /*recvPacket*/)
 {
     if (const auto resurrectSpell = _player->getSelfResurrectSpell())
     {
-        const auto spellInfo = sSpellCustomizations.GetSpellInfo(resurrectSpell);
-        if (const auto spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr))
+        const auto spellInfo = sSpellMgr.getSpellInfo(resurrectSpell);
+        if (const auto spell = sSpellMgr.newSpell(_player, spellInfo, true, nullptr))
         {
             SpellCastTargets spellCastTargets;
             spellCastTargets.m_unitTarget = _player->getGuid();

@@ -99,7 +99,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
     if ((info->getSpellDifficultyID() != 0) && (Caster->getObjectTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != nullptr) && (Caster->GetMapMgr()->pInstance != nullptr))
     {
-        SpellInfo* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
+        SpellInfo const* SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != nullptr)
             m_spellInfo = SpellDiffEntry;
         else
@@ -953,7 +953,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                !(pSpellId && sSpellMgr.getSpellInfo(pSpellId)->isPassive()))
             {
                 p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
             }
@@ -1330,7 +1330,7 @@ void Spell::castMe(bool check)
                 && getSpellInfo()->getId() != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellMgr.getSpellInfo(pSpellId)->isPassive()))
                 {
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
                 }
@@ -3386,7 +3386,7 @@ void Spell::HandleAddAura(uint64 guid)
                 if (p_caster && (p_caster->getShapeShiftForm() == FORM_BEAR || p_caster->getShapeShiftForm() == FORM_DIREBEAR) &&
                     p_caster->hasAurasWithId(kingOfTheJungle))
                 {
-                    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
+                    const auto spellInfo = sSpellMgr.getSpellInfo(51185);
                     if (!spellInfo)
                     {
                         delete aur;
@@ -3394,7 +3394,7 @@ void Spell::HandleAddAura(uint64 guid)
                         return;
                     }
 
-                    Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, nullptr);
+                    Spell* spell = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
 
 
                     spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->m_spellInfo->custom_RankNumber * 5;
@@ -3418,7 +3418,7 @@ void Spell::HandleAddAura(uint64 guid)
                     };
 
                     if (u_caster->hasAurasWithId(theBeastWithin))
-                        u_caster->CastSpell(u_caster, 34471, true);
+                        u_caster->castSpell(u_caster, 34471, true);
                 }
             } break;
             // SPELL_HASH_RAPID_KILLING
@@ -3480,7 +3480,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
+        const auto spellInfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -3488,7 +3488,7 @@ void Spell::HandleAddAura(uint64 guid)
             return;
         }
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, nullptr);
+        Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
 
         uint32 masterOfSubtlety[] =
         {
@@ -3526,7 +3526,7 @@ void Spell::HandleAddAura(uint64 guid)
         }
         for (int i = 0; i < (charges - 1); ++i)
         {
-            Aura* staur = sSpellFactoryMgr.NewAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
+            Aura* staur = sSpellMgr.newAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
             Target->AddAura(staur);
         }
         if (!(aur->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
@@ -3560,7 +3560,7 @@ LOG_ERROR("WORLD: unknown spell id %i\n", TriggerSpellId);
 return;
 }
 
-Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, spellInfo,false, NULL);
+Spell* spell = sSpellMgr.newSpell(m_caster, spellInfo,false, NULL);
 WPARCEMU_ASSERT(  spell);
 
 SpellCastTargets targets;
@@ -3652,7 +3652,7 @@ void Spell::InitProtoOverride()
 {
     if (m_spellInfo_override != nullptr)
         return;
-    m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->getId());
+    m_spellInfo_override = sSpellMgr.getSpellInfo(m_spellInfo->getId());
 }
 
 uint32 Spell::GetDuration()
@@ -4280,7 +4280,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(0));
+                    SpellInfo const* trig = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(0));
                     if (trig == nullptr)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -6143,7 +6143,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         {
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, nullptr, sSpellCustomizations.GetSpellInfo(53385));    //1 hit
+                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, nullptr, sSpellMgr.getSpellInfo(53385));    //1 hit
                 int target = 0;
                 uint8 did_hit_result;
 
@@ -6154,7 +6154,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                         auto obj = itr;
                         if (itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & itr->GetPhase()))
                         {
-                            did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
+                            did_hit_result = DidHit(sSpellMgr.getSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
                             if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                                 target++;
                         }
@@ -6491,7 +6491,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellInfo* refspell = nullptr;
+    SpellInfo const* refspell = nullptr;
     bool canreflect = false;
 
     if (m_reflectedParent != nullptr || refunit == nullptr || m_caster == refunit)
@@ -6547,7 +6547,7 @@ bool Spell::Reflect(Unit* refunit)
     if (!refspell || !canreflect)
         return false;
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(refunit, refspell, true, nullptr);
+    Spell* spell = sSpellMgr.newSpell(refunit, refspell, true, nullptr);
     spell->SetReflected();
     SpellCastTargets targets;
     targets.m_unitTarget = m_caster->getGuid();
@@ -6951,20 +6951,5 @@ void Spell::HandleTargetNoObject()
 
     m_targets.m_targetMask |= TARGET_FLAG_DEST_LOCATION;
     m_targets.setDestination(LocationVector(newx, newy, newz));
-}
-
-SpellInfo* Spell::checkAndReturnSpellEntry(uint32_t spellid)
-{
-    //Logging that spellid 0 or -1 don't exist is not needed.
-    if (spellid == 0 || spellid == uint32_t(-1))
-        return nullptr;
-
-    auto spell_info = sSpellCustomizations.GetSpellInfo(spellid);
-    if (spell_info == nullptr)
-    {
-        LogDebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
-    }
-
-    return spell_info;
 }
 #endif

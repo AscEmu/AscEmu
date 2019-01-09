@@ -63,13 +63,13 @@ bool NoggenFoggerElixr(uint8_t /*effectIndex*/, Spell* pSpell)
     switch (chance)
     {
         case 0:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(16591), true);
+            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16591), true);
             break;
         case 1:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(16593), true);
+            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16593), true);
             break;
         case 2:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(16595), true);
+            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16595), true);
             break;
     }
     return true;
@@ -82,10 +82,10 @@ bool HallowsEndCandy(uint8_t /*effectIndex*/, Spell* pSpell)
 
     int newspell = 24924 + Util::getRandomUInt(3);
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+    SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
 
-    pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
+    pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
     return true;
 }
 
@@ -96,10 +96,10 @@ bool DeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
 
     int newspell = 8064 + Util::getRandomUInt(4);
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+    SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
 
-    pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
+    pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
     return true;
 }
 
@@ -125,10 +125,10 @@ bool CookedDeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (newspell)
     {
-        SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+        SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
         if (!spInfo) return true;
 
-        pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
+        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
     }
     return true;
 }
@@ -162,22 +162,22 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster || !target)
         return true;
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(13099);
+    SpellInfo const* spInfo = sSpellMgr.getSpellInfo(13099);
     if (!spInfo)
         return true;
 
     int chance = Util::getRandomUInt(99) + 1;
 
     if (chance < 51) // nets target: 50%
-        pSpell->p_caster->CastSpell(target, spInfo, true);
+        pSpell->p_caster->castSpell(target, spInfo, true);
 
     else if (chance < 76) // nets you instead: 25%
-        pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
+        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
 
     else // nets you and target: 25%
     {
-        pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
-        pSpell->p_caster->CastSpell(target, spInfo, true);
+        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
+        pSpell->p_caster->castSpell(target, spInfo, true);
     }
     return true;
 }
@@ -220,8 +220,8 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
-    SpellInfo* pSpellEntry = sSpellCustomizations.GetSpellInfo(17743);
-    sEventMgr.AddEvent(target, &Unit::EventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + Util::getRandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    SpellInfo const* pSpellEntry = sSpellMgr.getSpellInfo(17743);
+    sEventMgr.AddEvent(target, &Unit::eventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + Util::getRandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;
 }
@@ -248,9 +248,9 @@ bool NighInvulnBelt(uint8_t /*effectIndex*/, Spell* pSpell)
     int chance = Util::getRandomUInt(99) + 1;
 
     if (chance > 10)    // Buff - Nigh-Invulnerability - 30456
-        pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(30456), true);
+        pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(30456), true);
     else                // Malfunction - Complete Vulnerability - 30457
-        pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(30457), true);
+        pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(30457), true);
 
     return true;
 }
@@ -296,7 +296,7 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
         spellid = outfitspells[gender];
 
 
-    target->CastSpell(target, spellid, true);
+    target->castSpell(target, spellid, true);
 
     return true;
 }
@@ -344,10 +344,10 @@ bool PurifyBoarMeat(uint8_t /*effectIndex*/, Spell* pSpell)
     switch (bormeat)
     {
         case 0:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, 29277, true);
+            pSpell->p_caster->castSpell(pSpell->p_caster, 29277, true);
             break;
         case 1:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, 29278, true);
+            pSpell->p_caster->castSpell(pSpell->p_caster, 29278, true);
             break;
     }
 
@@ -383,7 +383,7 @@ bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         else
             spellid = 46356;
 
-        target->CastSpell(target, spellid, true);
+        target->castSpell(target, spellid, true);
     }
 
     return true;
@@ -402,7 +402,7 @@ bool BigBlizzardBear(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         uint32 newspell = 58997;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
-            plr->CastSpell(plr, newspell, true);
+            plr->castSpell(plr, newspell, true);
     }
 
     return true;
@@ -415,7 +415,7 @@ bool WingedSteed(uint8_t /*effectIndex*/, Spell* pSpell)
         uint32 newspell = 54726;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
             newspell = 54727;
-        plr->CastSpell(plr, newspell, true);
+        plr->castSpell(plr, newspell, true);
     }
 
     return true;
@@ -438,7 +438,7 @@ bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
         }
         else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 48024;
-        plr->CastSpell(plr, newspell, true);
+        plr->castSpell(plr, newspell, true);
     }
 
     return true;
@@ -461,7 +461,7 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
         }
         else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 42683;
-        plr->CastSpell(plr, newspell, true);
+        plr->castSpell(plr, newspell, true);
     }
 
     return true;
@@ -470,7 +470,7 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
 bool MagicRoosterMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (Player* plr = pSpell->GetPlayerTarget())
-        plr->CastSpell(plr, 66122, true);
+        plr->castSpell(plr, 66122, true);
 
     return true;
 }
@@ -493,7 +493,7 @@ bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
         else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 72282;
 
-        plr->CastSpell(plr, newspell, true);
+        plr->castSpell(plr, newspell, true);
     }
 
     return true;
@@ -506,7 +506,7 @@ bool Poultryizer(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    s->u_caster->CastSpell(unitTarget->getGuid(), 30501, true);
+    s->u_caster->castSpell(unitTarget->getGuid(), 30501, true);
 
     return true;
 }
@@ -522,7 +522,7 @@ bool SixDemonBag(uint8_t /*effectIndex*/, Spell* s)
     uint32 randid = Util::getRandomUInt(5);
     uint32 spelltocast = ClearSpellId[randid];
 
-    s->u_caster->CastSpell(unitTarget, spelltocast, true);
+    s->u_caster->castSpell(unitTarget, spelltocast, true);
 
     return true;
 }
@@ -584,7 +584,7 @@ bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     for (uint8 j = 0; j < 20; j++)
-        s->u_caster->CastSpell(s->u_caster, 24575, true);
+        s->u_caster->castSpell(s->u_caster, 24575, true);
 
     return true;
 }
@@ -615,7 +615,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
     uint32 engineeringskill = s->p_caster->_GetSkillLineCurrent(SKILL_ENGINEERING);
 
     if (engineeringskill >= 400)
-        s->p_caster->CastSpell(s->p_caster, 54861, true);
+        s->p_caster->castSpell(s->p_caster, 54861, true);
 
     return true;
 }
@@ -656,7 +656,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
     if (!malfunction)
     {
 
-        s->p_caster->CastSpell(s->GetUnitTarget(), spellids[1], true);
+        s->p_caster->castSpell(s->GetUnitTarget(), spellids[1], true);
 
     }
     else
@@ -669,14 +669,14 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 0:  // us
             {
-                s->p_caster->CastSpell(s->p_caster, spellids[spellindex], true);
+                s->p_caster->castSpell(s->p_caster, spellids[spellindex], true);
             }
             break;
 
             case 1:  // them
             {
                 // if it's a malfunction it will only grow the target, since shrinking is normal
-                s->p_caster->CastSpell(s->GetUnitTarget(), spellids[0], true);
+                s->p_caster->castSpell(s->GetUnitTarget(), spellids[0], true);
             }
             break;
 
@@ -694,7 +694,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if (p->GetGroup()->GetID() != s->p_caster->GetGroup()->GetID())
                         continue;
 
-                    s->p_caster->CastSpell(p, spellids[spellindex], true);
+                    s->p_caster->castSpell(p, spellids[spellindex], true);
                 }
             }
             break;
@@ -722,7 +722,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if (!isAttackable(s->p_caster, u))
                         continue;
 
-                    s->p_caster->CastSpell(u, spellids[spellindex], true);
+                    s->p_caster->castSpell(u, spellids[spellindex], true);
                 }
             }
             break;
@@ -882,7 +882,7 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
             else
                 newspell = 75957;
         }
-        a->GetTarget()->CastSpell(a->GetTarget(), newspell, true);
+        a->GetTarget()->castSpell(a->GetTarget(), newspell, true);
     }
     return true;
 }
@@ -892,7 +892,7 @@ bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
     if (auto player = s->GetPlayerTarget())
     {
         auto spell = player->GetAreaID() == 4637 ? 59316 : 59314;
-        player->CastSpell(player, spell, true);
+        player->castSpell(player, spell, true);
     }
 
     return true;

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -571,9 +571,9 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     uint32 count = 0;
     std::string recout;
     char itoabuf[12];
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
+    for (auto it = sSpellMgr.getSpellInfoMap()->begin(); it != sSpellMgr.getSpellInfoMap()->end(); ++it)
     {
-        SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
+        SpellInfo const* spell = sSpellMgr.getSpellInfo(it->first);
         std::string y = std::string(spell->getName());
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))

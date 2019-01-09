@@ -30,7 +30,7 @@ public:
         if (!mTarget)
             return;
         if (!mTarget->HasSpell(30829))
-            mTarget->CastSpell(mTarget, 30829, true);
+            mTarget->castSpell(mTarget, 30829, true);
     }
 };
 

@@ -168,8 +168,9 @@ SpellInfo::SpellInfo()
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
 
-    SpellFactoryFunc = nullptr;
-    AuraFactoryFunc = nullptr;
+    // Script linkers
+    spellScriptLink = nullptr;
+    auraScriptLink = nullptr;
 }
 
 SpellInfo::~SpellInfo() {}

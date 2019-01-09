@@ -109,11 +109,11 @@ class ChaoticRiftAI : public CreatureAIScript
     explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        auto spell_mana_wrath = sSpellCustomizations.GetSpellInfo(SUMMON_MANA_WRAITH);
+        auto spell_mana_wrath = sSpellMgr.getSpellInfo(SUMMON_MANA_WRAITH);
         if (spell_mana_wrath != nullptr)
             addAISpell(SUMMON_MANA_WRAITH, 30.0f, TARGET_SELF, 0, spell_mana_wrath->getRecoveryTime());
 
-        auto spell_energy_burst = sSpellCustomizations.GetSpellInfo(CHAOTIC_ENERGY_BURST);
+        auto spell_energy_burst = sSpellMgr.getSpellInfo(CHAOTIC_ENERGY_BURST);
         if (spell_energy_burst != nullptr)
             addAISpell(CHAOTIC_ENERGY_BURST, 30.0f, TARGET_RANDOM_SINGLE, 0, spell_energy_burst->getRecoveryTime());
     }
@@ -413,17 +413,17 @@ class CrystalSpikeAI : public CreatureAIScript
 
         if (m_part == 1)
         {
-            getCreature()->CastSpell(getCreature(), SPELL_CRYSTAL_SPIKE_VISUAL, true);
+            getCreature()->castSpell(getCreature(), SPELL_CRYSTAL_SPIKE_VISUAL, true);
         }
         else if (m_part == 5)
         {
             if (_isHeroic())
             {
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
             }
             else
             {
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELL_CRYSTAL_SPIKE), true);
             }
         }
     }

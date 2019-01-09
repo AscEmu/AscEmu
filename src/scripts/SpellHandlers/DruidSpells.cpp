@@ -38,7 +38,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
         Unit* Target = static_cast<Unit*>(itr);
         if (isAttackable(Target, m_caster) && m_caster->CalcDistance(itr) <= pSpell->GetRadius(effectIndex))
         {
-            m_caster->CastSpell(Target, pSpell->CalculateEffect(effectIndex, Target), true);
+            m_caster->castSpell(Target, pSpell->CalculateEffect(effectIndex, Target), true);
             ++am;
             if (am >= 2)
                 return true;
@@ -142,7 +142,7 @@ bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
     /*if (expired)
     {
         
-        Spell* spell = sSpellFactoryMgr.NewSpell(pCaster, a->GetSpellInfo(), true, NULL);
+        Spell* spell = sSpellMgr.newSpell(pCaster, a->GetSpellInfo(), true, NULL);
         spell->SetUnitTarget(m_target);
         spell->Heal(a->GetModAmount(effectIndex));
         delete spell;

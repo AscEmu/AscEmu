@@ -377,7 +377,7 @@ void StrandOfTheAncient::OnAddPlayer(Player* plr)
 {
     if (!m_started)
     {
-        plr->CastSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BG_PREPARATION, true);
     }
 }
 
@@ -772,14 +772,14 @@ void StrandOfTheAncient::PrepareRound()
         {
             Player* p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
-            p->CastSpell(p, BG_PREPARATION, true);
+            p->castSpell(p, BG_PREPARATION, true);
         }
 
         for (std::set<Player*>::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
         {
             Player* p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
-            p->CastSpell(p, BG_PREPARATION, true);
+            p->castSpell(p, BG_PREPARATION, true);
         }
 
         sEventMgr.AddEvent(this, &StrandOfTheAncient::StartRound, EVENT_SOTA_START_ROUND, MSTIME_SECOND * 10, 1, 0);

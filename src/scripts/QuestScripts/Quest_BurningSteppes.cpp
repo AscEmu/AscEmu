@@ -28,7 +28,7 @@ public:
             return;
 
         if (mTarget->getItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->required_itemcount[0])
-            mTarget->CastSpell(mTarget, 15065, false);
+            mTarget->castSpell(mTarget, 15065, false);
     }
 };
 

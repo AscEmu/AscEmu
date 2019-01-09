@@ -27,7 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 const uint32 ARENA_PREPARATION = 32727;
 
@@ -226,7 +226,7 @@ void Arena::OnAddPlayer(Player* plr)
     if (!plr->m_isGmInvisible)
     {
         if (!m_started  && plr->IsInWorld())
-            plr->CastSpell(plr, ARENA_PREPARATION, true);
+            plr->castSpell(plr, ARENA_PREPARATION, true);
 
         m_playersCount[plr->getTeam()]++;
         UpdatePlayerCounts();
@@ -236,7 +236,7 @@ void Arena::OnAddPlayer(Player* plr)
         plr->m_bgIsQueued = false;
 
     // Add the green/gold team flag
-    Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);
+    Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);
     plr->AddAura(aura);
 
     plr->setFfaPvpFlag();
@@ -441,10 +441,10 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
         if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
         {
             // apply the buff
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
+            SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
             ARCEMU_ASSERT(sp != NULL);
 
-            Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
+            Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
             SpellCastTargets targets(plr->getGuid());
             s->prepare(&targets);
 

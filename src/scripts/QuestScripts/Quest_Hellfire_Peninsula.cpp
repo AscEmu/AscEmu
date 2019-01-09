@@ -235,7 +235,7 @@ class AncestralSpiritWolf : public CreatureAIScript
     explicit AncestralSpiritWolf(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
-        getCreature()->CastSpell(getCreature(), 29938, false);
+        getCreature()->castSpell(getCreature(), 29938, false);
     }
 };
 

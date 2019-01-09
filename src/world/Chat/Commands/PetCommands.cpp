@@ -158,7 +158,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         return false;
 
     uint32 SpellId = atol(args);
-    SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(SpellId);
+    SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(SpellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell id %u.", SpellId);
@@ -193,7 +193,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         return false;
 
     uint32 SpellId = atol(args);
-    SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(SpellId);
+    SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(SpellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell id requested.");

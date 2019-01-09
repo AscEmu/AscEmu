@@ -26,7 +26,6 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 uint32 buffentries[3] = { 180380, 180362, 180146 };
 
@@ -551,7 +550,7 @@ void ArathiBasin::OnAddPlayer(Player* plr)
 {
     if (!m_started && plr->IsInWorld())
     {
-        plr->CastSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BG_PREPARATION, true);
         plr->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED] = 0;
         plr->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED] = 0;
     }
@@ -643,10 +642,10 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
             sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, static_cast<uint32>(buffslot), EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             // cast the spell on the player
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+            const auto sp = sSpellMgr.getSpellInfo(spellid);
             if (sp)
             {
-                Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, nullptr);
+                Spell* pSpell = sSpellMgr.newSpell(plr, sp, true, nullptr);
                 SpellCastTargets targets(plr->getGuid());
                 pSpell->prepare(&targets);
             }

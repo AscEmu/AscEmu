@@ -164,7 +164,7 @@ class SeaforiumDepthCharge : public CreatureAIScript
                     GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
                     if (pSinkhole != NULL)
                     {
-                        getCreature()->CastSpell(getCreature(), 45502, true);
+                        getCreature()->castSpell(getCreature(), 45502, true);
 
                         float posX = pSinkhole->GetPositionX();
                         if (posX == 2657.13f)
@@ -629,9 +629,9 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (qle->GetMobCount(2) == 0)
         {
-            pCreature->CastSpell(pCreature, 46798, true);
-            pCreature->CastSpell(pCreature, 46799, true);
-            pCreature->CastSpell(pCreature, 46800, true);
+            pCreature->castSpell(pCreature, 46798, true);
+            pCreature->castSpell(pCreature, 46799, true);
+            pCreature->castSpell(pCreature, 46800, true);
         }
 
         pPlayer->AddQuestKill(11897, 2, 0);
@@ -641,9 +641,9 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (qle->GetMobCount(1) == 0)
         {
-            pCreature->CastSpell(pCreature, 46798, true);
-            pCreature->CastSpell(pCreature, 46799, true);
-            pCreature->CastSpell(pCreature, 46800, true);
+            pCreature->castSpell(pCreature, 46798, true);
+            pCreature->castSpell(pCreature, 46799, true);
+            pCreature->castSpell(pCreature, 46800, true);
         }
 
         pPlayer->AddQuestKill(11897, 1, 0);

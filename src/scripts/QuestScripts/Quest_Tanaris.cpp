@@ -83,7 +83,7 @@ public:
     {
         Creature* creat = static_cast<Creature*>(pObject);
 
-        creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
+        creat->castSpell(plr, sSpellMgr.getSpellInfo(34891), true);
     }
 };
 

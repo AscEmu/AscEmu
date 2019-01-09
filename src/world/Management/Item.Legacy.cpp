@@ -29,7 +29,6 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWItem.h"
 
 #if VERSION_STRING != Cata
@@ -715,11 +714,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
                         if (Entry->spell[c] != 0)
                         {
-                            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                            SpellInfo const* sp = sSpellMgr.getSpellInfo(Entry->spell[c]);
                             if (sp == NULL)
                                 continue;
 
-                            spell = sSpellFactoryMgr.NewSpell(m_owner, sp, true, 0);
+                            spell = sSpellMgr.newSpell(m_owner, sp, true, 0);
                             spell->i_caster = this;
                             spell->prepare(&targets);
                         }
