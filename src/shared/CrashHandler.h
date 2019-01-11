@@ -33,7 +33,7 @@ void OutputCrashLogLine(const char* format, ...);
 
 extern CircularQueue<uint32, 30> last_spells;
 
-class SERVER_DECL CStackWalker : public StackWalker
+class CStackWalker : public StackWalker
 {
     public:
 
