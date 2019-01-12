@@ -152,7 +152,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
         auto sent_packet = false;
 #ifndef AE_CATA
-        if (buffer.wpos() < m_compressionThreshold)
+        if (buffer.wpos() > m_compressionThreshold)
         {
             sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }
@@ -191,7 +191,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
         auto sent_packet = false;
 #ifndef AE_CATA
-        if (buffer.wpos() < m_compressionThreshold)
+        if (buffer.wpos() > m_compressionThreshold)
         {
             sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }
