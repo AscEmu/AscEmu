@@ -55,6 +55,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Spell/Definitions/AuraInterruptFlags.h"
 
 using namespace AscEmu::Packets;
 
