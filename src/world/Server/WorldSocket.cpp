@@ -231,7 +231,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     _crypt.encryptLegacySend((uint8*)&Header, sizeof(ServerPktHeader));
 #elif VERSION_STRING == WotLK
     _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
-#elif VERSION_STRING == Cata
+#elif VERSION_STRING >= Cata
     _crypt.encryptWotlkSend(static_cast<uint8*>(Header.header), Header.getHeaderLength());
 #endif
 
@@ -271,7 +271,7 @@ void WorldSocket::OnConnect()
     wp << uint32(0x1234ABCD);
 
     SendPacket(&wp);
-#elif VERSION_STRING == Cata
+#elif VERSION_STRING >= Cata
     WorldPacket packet(MSG_WOW_CONNECTION, 46);
     packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     SendPacket(&packet);
@@ -282,11 +282,21 @@ void WorldSocket::OnConnect()
 void WorldSocket::OnConnectTwo()
 {
     WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
+#if VERSION_STRING == Mop
+    packet << uint16_t(0);
+
+    for (int i = 0; i < 8; ++i)
+        packet << uint32_t(0);
+
+    packet << uint8_t(1);
+    packet << mSeed;
+#else
     for (int i = 0; i < 8; ++i)
         packet << uint32(0);
     
     packet << mSeed;
     packet << uint8(1);
+#endif
 
     SendPacket(&packet);
 }

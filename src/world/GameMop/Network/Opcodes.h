@@ -44,7 +44,7 @@ enum Opcodes
     CMSG_AUCTION_PLACE_BID                                  = 0x2306, // checked
     CMSG_AUCTION_REMOVE_ITEM                                = 0x6426, // checked
     CMSG_AUCTION_SELL_ITEM                                  = 0x4A06, // checked
-    CMSG_AUTH_SESSION                                       = 0x0449, // checked
+    CMSG_AUTH_SESSION                                       = 0x00B2, // 18414
     CMSG_AUTH_SRP6_BEGIN = 0x033,
     CMSG_AUTH_SRP6_PROOF = 0x034,
     CMSG_AUTH_SRP6_RECODE = 0x035,
@@ -897,8 +897,8 @@ enum Opcodes
     SMSG_AURA_UPDATE                                        = 0x4707, // checked
     SMSG_AURA_UPDATE_ALL                                    = 0x6916, // checked
     SMSG_AURACASTLOG_OBSOLETE                               = 0x1D1, // 0x0000
-    SMSG_AUTH_CHALLENGE                                     = 0x4542, // checked
-    SMSG_AUTH_RESPONSE                                      = 0x5DB6, // checked
+    SMSG_AUTH_CHALLENGE                                     = 0x0949, // 18414
+    SMSG_AUTH_RESPONSE                                      = 0x0ABA, // 18414
     SMSG_AUTH_SRP6_RESPONSE = 0x039,
     SMSG_AVAILABLE_VOICE_CHANNEL                            = 0x13DB, // ??? 0x2E16
     SMSG_AVERAGE_ITEM_LEVEL_INFORM                          = 0x5DA7, // new
@@ -963,7 +963,7 @@ enum Opcodes
     SMSG_CHAR_CREATE                                        = 0x2D05, // checked
     SMSG_CHAR_CUSTOMIZE                                     = 0x4F16, // checked
     SMSG_CHAR_DELETE                                        = 0x0304, // checked
-    SMSG_CHAR_ENUM                                          = 0x10B0, // checked
+    SMSG_CHAR_ENUM                                          = 0x11C3, // 18414
     SMSG_CHAR_FACTION_CHANGE                                = 0x4C06, // changed - was 0x4DA
     SMSG_CHAR_RENAME                                        = 0x2024, // checked
     SMSG_CHARACTER_LOGIN_FAILED                             = 0x4417, // checked
@@ -989,7 +989,7 @@ enum Opcodes
     SMSG_CLEAR_FAR_SIGHT_IMMEDIATE                          = 0x2A04, // changed - was 0x20D
     SMSG_CLEAR_TARGET                                       = 0x4B26, // changed - was 0x3BF
     SMSG_CLIENT_CONTROL_UPDATE                              = 0x2837, // checked
-    SMSG_CLIENTCACHE_VERSION                                = 0x2734, // checked
+    SMSG_CLIENTCACHE_VERSION                                = 0x002A, // 18414
     SMSG_COMBAT_EVENT_FAILED                                = 0x2B07, // new
     SMSG_COMMENTATOR_GET_PLAYER_INFO = 0x3BA,
     SMSG_COMMENTATOR_MAP_INFO                               = 0x0327, // changed - was 0x3B8
