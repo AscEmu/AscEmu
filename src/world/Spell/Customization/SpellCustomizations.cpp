@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellFamily.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/DiminishingGroup.h"
+#include "Spell/Definitions/SpellEffectTarget.h"
 
 initialiseSingleton(SpellCustomizations);
 
