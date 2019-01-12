@@ -271,7 +271,7 @@ void Group::Update()
                 {
                     data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
 					data << uint32(sLfgMgr.GetDungeon(GetID()));
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                     data << uint8(0);   //unk
 #endif
                 }
@@ -405,7 +405,7 @@ void SubGroup::Disband()
                     data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                     (*itr)->m_loggedInPlayer->GetSession()->sendEmptyGroupList((*itr)->m_loggedInPlayer);
 #else
                     (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
@@ -509,14 +509,14 @@ void Group::RemovePlayer(PlayerInfo* info)
     {
         if (pPlayer->GetSession() != NULL)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             SendNullUpdate(pPlayer);
 #endif
 
             data.SetOpcode(SMSG_GROUP_DESTROYED);
             pPlayer->GetSession()->SendPacket(&data);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR).serialise().get());
             pPlayer->GetSession()->sendEmptyGroupList(pPlayer);
 #else
@@ -1071,7 +1071,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #ifdef FT_VEHICLES
         if (Vehicle* veh = pPlayer->getCurrentVehicle())
             *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);

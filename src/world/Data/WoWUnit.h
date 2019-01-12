@@ -328,7 +328,7 @@ struct WoWUnit : WoWObject
     float hover_height;
     uint32_t unit_padding;
 };
-#elif VERSION_STRING == Cata
+#elif VERSION_STRING >= Cata
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_RESISTANCE_COUNT 7
 #define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7

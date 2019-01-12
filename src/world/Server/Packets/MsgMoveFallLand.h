@@ -7,7 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "WorldConf.h"
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
+#if VERSION_STRING != Mop
 #include "ManagedPacket.h"
 #include "MovementPacket.h"
 
@@ -22,4 +23,6 @@ namespace AscEmu { namespace Packets
         }
     };
 }}
+
+#endif
 #endif

@@ -15,7 +15,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         WoWGuid guid;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         bool full;
 #endif
 
@@ -40,7 +40,7 @@ namespace AscEmu { namespace Packets
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
             guid.Init(unpackedGuid);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> full;
 #endif
             return true;

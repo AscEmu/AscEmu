@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -1006,7 +1006,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 {
     uint16_t opcode = recvPacket.GetOpcode();

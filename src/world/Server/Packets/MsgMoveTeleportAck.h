@@ -38,7 +38,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> guid >> flags >> time;
 #else
             packet >> flags >> time;

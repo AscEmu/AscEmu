@@ -878,7 +878,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     SendPacket(&data);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -944,7 +944,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 {
     uint8_t unk1;
@@ -980,7 +980,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 {
     if (_player->isAlive())
@@ -990,7 +990,7 @@ void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
 {
     uint32_t disconnectReason;
@@ -1127,7 +1127,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     _player->setHealth(_player->getMaxHealth() / 2);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
 {
     uint32_t mapId;
@@ -1381,7 +1381,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (_player->obj_movement_info.isOnTransport())
 #else
     if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
@@ -1727,7 +1727,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     }
     data.put<uint32_t>(slotMaskPos, slotMask);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
     {
         data << guild->getGUID();
@@ -1740,7 +1740,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     SendPacket(&data);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 {
     if (recvPacket.rpos() + 4 > recvPacket.size())

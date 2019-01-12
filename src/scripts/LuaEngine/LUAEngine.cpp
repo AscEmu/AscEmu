@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Server/Script/ScriptSetup.h"
 #include "../../world/WorldConf.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #include "../../world/Management/Guild.h"
 #endif
 

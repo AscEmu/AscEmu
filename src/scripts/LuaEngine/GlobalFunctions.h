@@ -27,7 +27,7 @@
 #include "Management/ChannelMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #include "Management/Guild.h"
 #endif
 

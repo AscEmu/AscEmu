@@ -12,7 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class SmsgGuildBankMoneyWithdrawn : public ManagedPacket
     {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     public:
         int64_t amount;
 

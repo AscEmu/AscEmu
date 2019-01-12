@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
     #include "../world/GameWotLK/Network/Opcodes.h"
 #elif VERSION_STRING == Cata
     #include "../world/GameCata/Network/Opcodes.h"
+#elif VERSION_STRING == Mop
+    #include "../world/GameMop/Network/Opcodes.h"
 #endif
 
 #include <cstdint>

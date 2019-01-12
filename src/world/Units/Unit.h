@@ -36,7 +36,7 @@
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Data/MovementInfo.h"
 #endif
 

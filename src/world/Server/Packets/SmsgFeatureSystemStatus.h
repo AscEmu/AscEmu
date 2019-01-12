@@ -31,7 +31,7 @@ namespace AscEmu { namespace Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             bool featureBitFour = true;
 
             packet << unknown1 << uint32_t(1) << uint32_t(1) << uint32_t(2) << uint32_t(0);

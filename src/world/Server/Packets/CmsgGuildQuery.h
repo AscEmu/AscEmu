@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     class CmsgGuildQuery : public ManagedPacket
     {
     public:
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint32_t guildId;
 
         CmsgGuildQuery() : CmsgGuildQuery(0)
@@ -50,7 +50,7 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> guildId;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> playerGuid;
 #endif
             return true;

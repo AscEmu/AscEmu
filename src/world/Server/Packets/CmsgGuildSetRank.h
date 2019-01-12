@@ -46,7 +46,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> newRankId >> newRights >> rankName >> moneyPerDay;
 #else
             packet >> oldRankId >> oldRights >> newRights;
@@ -64,7 +64,7 @@ namespace AscEmu { namespace Packets
 
                 _rightsAndSlots.push_back(rightsAndSlots[tabId]);
             }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> moneyPerDay >> newRankId;
 
             const uint32_t nameLength = packet.readBits(7);

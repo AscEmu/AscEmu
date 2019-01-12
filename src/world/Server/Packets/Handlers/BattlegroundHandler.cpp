@@ -50,7 +50,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING != Classic
     kills = player->getUInt32Value(PLAYER_FIELD_KILLS);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     todayContrib = player->getUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     yesterdayContrib = player->getUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
 #endif
@@ -272,7 +272,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
     BattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
 {
     uint8_t unk_type;

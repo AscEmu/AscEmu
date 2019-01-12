@@ -653,7 +653,7 @@ void WorldSession::fullLogin(Player* player)
     m_MoverGuid = player->getGuid();
     m_MoverWoWGuid.Init(player->getGuid());
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
     memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 #endif
@@ -683,7 +683,7 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // hotfix data for cata
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     //\todo send Hotfixdata
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -742,7 +742,7 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Send Equipment set list - not sure what the intend was here.
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     player->SendEquipmentSetList();
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////

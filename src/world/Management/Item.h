@@ -150,7 +150,7 @@ enum EnchantmentSlot
     SOCK_ENCHANTMENT_SLOT3          = 4,
     BONUS_ENCHANTMENT_SLOT          = 5,
     PRISMATIC_ENCHANTMENT_SLOT      = 6,
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     MAX_INSPECTED_ENCHANTMENT_SLOT  = 7,
 
     PROP_ENCHANTMENT_SLOT_0         = 7,        /// used with RandomSuffix
@@ -445,7 +445,7 @@ public:
 
         void SetText(std::string &textString){ this->text = textString; }
         const std::string& GetText() const{ return this->text; }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     protected:
 
         bool m_isInTrade;

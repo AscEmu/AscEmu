@@ -51,7 +51,7 @@ class SERVER_DECL WorldSocket : public Socket
     // MIT
     private:
         uint8_t AuthDigest[20];
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint32_t mClientBuild;
 #else
         uint16_t mClientBuild;

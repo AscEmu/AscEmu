@@ -136,7 +136,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell* trainerSpell = nullptr;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     for (auto itr : trainer->Spells)
     {
         if (itr.spell == srlPacket.spellId)
@@ -164,7 +164,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
         return;
 
@@ -398,7 +398,7 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
     SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(_player->m_Pets.size()), _player->m_StableSlotCount, stableList).serialise().get());
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::sendTrainerList(Creature* creature)
 {
     const auto trainer = creature->GetTrainer();

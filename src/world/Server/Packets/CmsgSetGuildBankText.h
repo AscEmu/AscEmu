@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     class CmsgSetGuildBankText : public ManagedPacket
     {
     public:
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint8_t tabId;
 #else
         uint32_t tabId;
@@ -41,7 +41,7 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> tabId;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> text;
 #else
             const uint32_t textLen = packet.readBits(14);

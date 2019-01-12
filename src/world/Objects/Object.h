@@ -36,7 +36,7 @@
 #include "../shared/LocationVector.h"
 #include "Storage/MySQLStructures.h"
 #include "Storage/DBC/DBCStructures.hpp"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Structures.h"
 #endif
 #include "../shared/StackBuffer.h"
@@ -44,7 +44,7 @@
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Data/MovementInfo.h"
 #endif
 
@@ -91,8 +91,13 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
+#if VERSION_STRING >= Cata
+
 #if VERSION_STRING == Cata
 #include "GameCata/Movement/MovementDefines.h"
+#elif VERSION_STRING == Mop
+#include "GameMop/Movement/MovementDefines.h"
+#endif
 #include "LocationVector.h"
 
 class SERVER_DECL MovementInfo
@@ -516,7 +521,7 @@ public:
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         // TransporterInfo
         float GetTransPositionX() const { return obj_movement_info.transport_data.relativePosition.x; }
         float GetTransPositionY() const { return obj_movement_info.transport_data.relativePosition.y; }

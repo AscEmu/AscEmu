@@ -40,7 +40,7 @@ namespace AscEmu { namespace Packets
         {
             packet << guid;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet << uint32_t(1);
 #endif
             packet << powerType << power;

@@ -173,7 +173,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // Player's client sets these
     if (passenger->isCreature())
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         passenger->obj_movement_info.transport_data.transportGuid = owner->getGuid();
         passenger->obj_movement_info.transport_seat = static_cast<uint8_t>(seatid);
 #endif
@@ -582,7 +582,7 @@ void Vehicle::InstallAccessories()
 
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         c->obj_movement_info.transport_data.transportGuid = owner->getGuid();
 #ifdef FT_VEHICLES
         c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);

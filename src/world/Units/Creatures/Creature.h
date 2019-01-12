@@ -139,7 +139,7 @@ public:
 
         void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
 #else
         DB2::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
@@ -156,7 +156,7 @@ public:
         size_t GetSellItemCount();
 
         void RemoveVendorItem(uint32 itemid);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec);
 #else
         void AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec);

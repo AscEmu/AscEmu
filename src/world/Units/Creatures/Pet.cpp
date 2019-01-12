@@ -456,7 +456,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         if (myFamily == nullptr)
             m_name = "Pet";
         else
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             m_name.assign(myFamily->name[0]);
 #else
             m_name.assign(myFamily->name);

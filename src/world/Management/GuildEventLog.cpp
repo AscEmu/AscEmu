@@ -32,7 +32,7 @@ void GuildEventLogEntry::saveGuildLogToDB() const
 
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ObjectGuid guid1 = MAKE_NEW_GUID(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
     ObjectGuid guid2 = MAKE_NEW_GUID(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
 

@@ -1321,7 +1321,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 49051:
             case 49052:
             {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 if (p_caster != nullptr)
                 {
                     Item* pItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -3980,7 +3980,7 @@ void Spell::SpellEffectLanguage(uint8_t effectIndex)
     if (!playerTarget || !getSpellInfo()->getEffectMiscValue(effectIndex))
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint32 skills[15][2] =
 #else
     uint32 skills[17][2] =
@@ -4001,13 +4001,13 @@ void Spell::SpellEffectLanguage(uint8_t effectIndex)
         { SKILL_LANG_TROLL, 7341 },
         { SKILL_LANG_GUTTERSPEAK, 17737 },
         { SKILL_LANG_DRAENEI, 29932 },
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         { SKILL_LANG_GOBLIN, 69269 },
         { SKILL_LANG_GILNEAN, 69270 },
 #endif
     };
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (skills[getSpellInfo()->getEffectMiscValue(effectIndex)][0])
     {
         playerTarget->_AddSkillLine(skills[getSpellInfo()->getEffectMiscValue(effectIndex)][0], 300, 300);

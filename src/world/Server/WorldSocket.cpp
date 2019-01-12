@@ -41,7 +41,7 @@ struct ClientPktHeader
 // MIT
 struct ServerPktHeader
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ServerPktHeader(uint32_t _size, uint16_t _cmd) : size(_size)
     {
         headerLength = 0;
@@ -216,7 +216,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     // Packet logger :)
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ServerPktHeader Header(uint32(len + 2), static_cast<uint16_t>(opcode));
 #else
     // Encrypt the packet
@@ -235,7 +235,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     _crypt.encryptWotlkSend(static_cast<uint8*>(Header.header), Header.getHeaderLength());
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     rv = BurstSend(reinterpret_cast<const uint8*>(&Header.header), Header.getHeaderLength());
 #else
     // Pass the header to our send buffer
@@ -278,7 +278,7 @@ void WorldSocket::OnConnect()
 #endif
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSocket::OnConnectTwo()
 {
     WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
@@ -294,7 +294,7 @@ void WorldSocket::OnConnectTwo()
 
 void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     std::string account;
     uint32_t addonSize;
 
@@ -500,7 +500,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     Sha1Hash sha;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint8 digest[20];
     pAuthenticationPacket->read(digest, 20);
 #endif
@@ -526,7 +526,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
     sha.Finalize();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (memcmp(sha.GetDigest(), digest, 20))
 #else
     if (memcmp(sha.GetDigest(), AuthDigest, 20))
@@ -547,7 +547,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     // Set session properties
     pSession->SetClientBuild(mClientBuild);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     pSession->readAddonInfoPacket(mAddonInfoBuffer);
 #endif
 
@@ -620,7 +620,7 @@ void WorldSocket::Authenticate()
     if (mSession == nullptr)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_02))
         OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x02");
     else if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_01))
@@ -658,7 +658,7 @@ void WorldSocket::Authenticate()
     sWorld.addGlobalSession(mSession);
 
 #if VERSION_STRING > TBC
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     mSession->sendClientCacheVersion(12340);
 #endif
 #endif
@@ -667,7 +667,7 @@ void WorldSocket::Authenticate()
 
 void WorldSocket::UpdateQueuePosition(uint32 Position)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // cebernic: Displays re-correctly until 2.4.3,there will not be always 0
     WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 16);
     QueuePacket << uint8(0x1B) << uint8(0x2C) << uint8(0x73) << uint8(0) << uint8(0);
@@ -701,7 +701,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
         return;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     *recvPacket >> ping;
     *recvPacket >> _latency;
 #else
@@ -804,7 +804,7 @@ void WorldSocket::OnRead()
                 delete packet;
             }
             break;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             case MSG_WOW_CONNECTION:
             {
                 HandleWoWConnection(packet);
@@ -828,7 +828,7 @@ void WorldSocket::OnRead()
     }
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
 {
     std::string ClientToServerMsg;

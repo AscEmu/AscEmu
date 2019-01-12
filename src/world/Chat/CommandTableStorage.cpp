@@ -475,7 +475,7 @@ void CommandTableStorage::Init()
     {
         { "create",             'm', &ChatHandler::HandleGuildCreateCommand,            "Creates a guild.",                                 nullptr },
         { "disband",            'm', &ChatHandler::HandleGuildDisbandCommand,           "Disbands the guild of your target.",               nullptr },
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         { "info",               'm', &ChatHandler::HandleGuildInfoCommand,              "Shows guild info of your target.",                 nullptr },
 #endif
         { "join",               'm', &ChatHandler::HandleGuildJoinCommand,              "Force selected player to join a guild by name",    nullptr },

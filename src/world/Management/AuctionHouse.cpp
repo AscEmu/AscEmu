@@ -28,7 +28,7 @@
 #include "Objects/ObjectMgr.h"
 #include "Util.hpp"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void Auction::DeleteFromDB()
 {
     CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);

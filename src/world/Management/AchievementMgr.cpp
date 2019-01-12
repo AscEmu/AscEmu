@@ -382,7 +382,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     {
         // allocate enough space
         guidList = new uint32[sWorld.getSessionCount() + 256];
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {

@@ -13,7 +13,7 @@ initialiseSingleton(AddonMgr);
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 AddonMgr::AddonMgr()
 {
     mKnownAddons.clear();
@@ -309,7 +309,7 @@ void AddonMgr::SaveToDB()
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 void AddonMgr::LoadFromDB()
 {

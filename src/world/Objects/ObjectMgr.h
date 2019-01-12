@@ -29,7 +29,7 @@
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/MySQLStructures.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
@@ -107,7 +107,7 @@ struct SpellReplacement
 
 class Group;
 class SpellInfo;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 struct TrainerSpell
 {
     TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
@@ -360,7 +360,7 @@ typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 // spell_id  req_spell
 typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
@@ -570,7 +570,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TransporterMap m_TransportersByMap;
         TransporterMap m_TransportersByInstanceIdMap;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
         SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
@@ -666,7 +666,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         SpellsRequiringSpellMap mSpellsReqSpell;
         SpellRequiredMap mSpellReq;
         SkillLineAbilityMap mSkillLineAbilityMap;

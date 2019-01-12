@@ -26,7 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::sendEmptyGroupList(Player* player)
 {
     WorldPacket data(SMSG_GROUP_LIST, 28);
@@ -240,7 +240,7 @@ void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid unk_guid;

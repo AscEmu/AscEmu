@@ -1117,7 +1117,7 @@ void ApplyNormalFixes()
 
             //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_SEALS_OF_THE_PURE
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             case 20224:     // Seals of the Pure Rank 1
             case 20225:     // Seals of the Pure Rank 2
             case 20330:     // Seals of the Pure Rank 3
@@ -2721,7 +2721,7 @@ void ApplyNormalFixes()
         sp->setChannelInterruptFlags(0); // Remove channeling behaviour.
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //megai2: Everlasting Affliction
     sp = Spell::checkAndReturnSpellEntry(47205);
     if (sp != nullptr)
@@ -3411,7 +3411,7 @@ void ApplyNormalFixes()
         sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
         sp->setEffectDieSides(0, 1);
     }
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     sp = Spell::checkAndReturnSpellEntry(46097); // Brutal Totem of Survival
     if (sp != nullptr)
     {

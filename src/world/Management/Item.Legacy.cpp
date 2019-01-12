@@ -32,7 +32,7 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWItem.h"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Management/Guild.h"
 #endif
 
@@ -47,7 +47,7 @@ Item::Item()
     m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_updateFlag = UPDATEFLAG_HIGHGUID;
 #else
     m_updateFlag = UPDATEFLAG_NONE;
@@ -65,7 +65,7 @@ Item::Item()
     m_inQueue = false;
     m_loadedFromDB = false;
     ItemExpiresOn = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_isInTrade = false;
 #endif
     Enchantments.clear();
@@ -589,7 +589,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         EnchantLog << uint8(0);
         m_owner->SendPacket(&EnchantLog);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (m_owner->GetTradeTarget())
         {
             m_owner->SendTradeUpdate();

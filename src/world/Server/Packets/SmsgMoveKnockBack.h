@@ -43,7 +43,7 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet << guid << time << cos << sin << horizontal << vertical;
 #else
             ObjectGuid objectGuid = guid.GetOldGuid();

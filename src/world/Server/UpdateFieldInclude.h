@@ -15,4 +15,6 @@ This file is released under the MIT license. See README-MIT for more information
     #include "../world/GameWotLK/UpdateFields.h"
 #elif VERSION_STRING == Cata
     #include "../world/GameCata/UpdateFields.h"
+#elif VERSION_STRING == Mop
+#include "../world/GameMop/UpdateFields.h"
 #endif

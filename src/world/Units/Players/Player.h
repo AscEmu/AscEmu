@@ -351,7 +351,7 @@ typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 // AGPL End
 
 // MIT Start
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 class TradeData
 {
     void updateTrade(bool for_trader = true);
@@ -440,7 +440,7 @@ public:
     uint32_t getGuildRank() const;
     void setGuildRank(uint32_t guildRank);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint32_t getGuildLevel() const;
     void setGuildLevel(uint32_t guildLevel);
 #endif
@@ -514,7 +514,7 @@ public:
     void setNextLevelXp(uint32_t xp);
 
     uint32_t getFreeTalentPoints() const;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     void setFreeTalentPoints(uint32_t points);
 #endif
 
@@ -700,7 +700,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 private:
 
     TradeData* m_TradeData;
@@ -718,7 +718,7 @@ public:
 
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1273,7 +1273,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void SendTradeUpdate(void);
         void ResetTradeVariables()
         {
@@ -1816,7 +1816,7 @@ public:
         //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
@@ -1825,7 +1825,7 @@ public:
 
         void SetHonorCurrency(uint32 value)
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
@@ -1834,7 +1834,7 @@ public:
         }
         void ModHonorCurrency(uint32 value)
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
@@ -1843,7 +1843,7 @@ public:
         }
         uint32 GetHonorCurrency()
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             return 0;
 #elif VERSION_STRING == Classic
             return 0;
@@ -1927,7 +1927,7 @@ public:
         void SendAreaTriggerMessage(const char* message, ...);
 
         // Trade Target
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Player* GetTradeTarget();
 
         Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
@@ -2010,7 +2010,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Item* mTradeItems[8];
         uint32 mTradeGold;
         uint32 mTradeTarget;
@@ -2202,7 +2202,7 @@ public:
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         uint32 m_FirstTalentTreeLock;
 #endif
 

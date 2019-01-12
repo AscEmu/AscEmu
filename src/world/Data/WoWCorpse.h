@@ -104,7 +104,7 @@ struct WoWCorpse : WoWObject
 };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 #define WOWCORPSE_ITEM_COUNT 19
 

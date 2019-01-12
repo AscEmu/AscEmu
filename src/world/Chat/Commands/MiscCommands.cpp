@@ -157,7 +157,7 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
             raceid = 7;
         else if (race == "troll")
             raceid = 8;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         else if (race == "goblin")
             raceid = 9;
 #endif
@@ -167,13 +167,13 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
             raceid = 11;
         else if (race == "deathknight")
             classid = 6;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         else if (race == "worgen")
             raceid = 22;
 #endif
         else
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
 #else
             RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
@@ -603,7 +603,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     auto out_y = obj->GetPositionY();
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
 #else
     auto out_area_name = at->area_name;
@@ -613,7 +613,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (obj->obj_movement_info.isOnTransport())
 #else
     if (!obj->obj_movement_info.getTransportGuid().IsEmpty())
@@ -846,7 +846,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
             SystemMessage(chr->GetSession(), "%s is appearing to your location.", m_session->GetPlayer()->getName().c_str());
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (m_session->GetPlayer()->GetMapId() == chr->GetMapId() && m_session->GetPlayer()->GetInstanceID() == chr->GetInstanceID())
             m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         else
@@ -1026,7 +1026,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     static const char* classes[MAX_PLAYER_CLASSES] =
     { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // wrong for classic!
     static const char* races[11 + 1] =
     { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };

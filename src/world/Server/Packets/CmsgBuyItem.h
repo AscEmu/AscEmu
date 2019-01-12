@@ -44,7 +44,7 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t rawGuid;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> rawGuid >> itemType >> itemEntry >> slot >> amount;
 #endif
 

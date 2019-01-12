@@ -32,7 +32,7 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet << mapId << location.x << location.y << location.z << location.o;
 #else
             packet << location.x << location.o << location.z << mapId << location.y;

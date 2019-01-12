@@ -2280,7 +2280,7 @@ void Spell::SendSpellStart()
     data << extra_cast_number;
 #endif
     data << cast_flags;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint32(m_timer);
 #endif
     data << (uint32)m_castTime;
@@ -2318,7 +2318,7 @@ void Spell::SendSpellStart()
                 }
             }
         }
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
@@ -2333,7 +2333,7 @@ void Spell::SendSpellStart()
             data << ip->DisplayInfoID;
             data << ip->InventoryType;
         }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         else
         {
             data << uint32(0);
@@ -2474,7 +2474,7 @@ void Spell::SendSpellGo()
         }
         else
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             if (p_caster != nullptr)
                 ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
@@ -2707,7 +2707,7 @@ void Spell::SendChannelStart(uint32 duration)
         data << WoWGuid(m_caster->GetNewGUID());
         data << uint32(m_spellInfo->getId());
         data << uint32(duration);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         data << uint8(0);
         data << uint8(0);
 #endif
@@ -3073,7 +3073,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
                 itemTarget = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
             if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
             {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                 Player* p_trader = p_caster->getTradeTarget();
                 if (p_trader != nullptr)
                     itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
@@ -3106,7 +3106,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         {
             if (p_caster != nullptr)
             {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                 Player* plr = p_caster->getTradeTarget();
                 if (plr != nullptr)
                     itemTarget = plr->getTradeData()->getTradeItem((TradeSlots)guid);
@@ -4111,7 +4111,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
                 {
                     // get the player we are trading with
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                     Player* t_player = p_caster->getTradeTarget();
                     if (t_player != nullptr)
                         i_target = t_player->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
@@ -4956,7 +4956,7 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (hasAttributeExB(ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)

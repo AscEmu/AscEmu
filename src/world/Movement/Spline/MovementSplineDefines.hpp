@@ -13,7 +13,7 @@ namespace Movement { namespace Spline {
          * So the structure is:
          * uint8: anim_id
          * uint24: spline_flags */
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         SPLINEFLAG_DONE = 0x00000100,
         SPLINEFLAG_FALLING = 0x00000200,
         SPLINEFLAG_NO_SPLINE = 0x00000400,

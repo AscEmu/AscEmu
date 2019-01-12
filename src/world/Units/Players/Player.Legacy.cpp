@@ -220,7 +220,7 @@ Player::Player(uint32 guid)
     m_mailBox(guid),
     m_finishingmovesdodge(false),
     //Trade
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_TradeData(nullptr),
 #else
     mTradeTarget(0),
@@ -319,7 +319,7 @@ Player::Player(uint32 guid)
     }
 
     //Trade
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     ResetTradeVariables();
 #endif
 
@@ -440,7 +440,7 @@ Player::Player(uint32 guid)
     m_talentActiveSpec = 0;
     m_talentSpecsCount = 1;
     m_talentPointsFromQuests = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = 0;
 #endif
 
@@ -592,7 +592,7 @@ Player::~Player()
     }
 
     Player* pTarget;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (mTradeTarget != 0)
     {
         pTarget = GetTradeTarget();
@@ -609,7 +609,7 @@ Player::~Player()
         pTarget->SetInviter(0);
 
     DismissActivePets();
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     mTradeTarget = 0;
 #endif
 
@@ -688,7 +688,7 @@ uint32 GetSpellForLanguage(uint32 SkillID)
             return 17737;
         case SKILL_LANG_DRAENEI:
             return 29932;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         case SKILL_LANG_GOBLIN:
             return 69269;
         case SKILL_LANG_GILNEAN:
@@ -719,7 +719,7 @@ void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face,
 //Begining of code for phase two of character customization (Race/Faction) Change.
 void Player::CharChange_Language(uint64 GUID, uint8 race)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH));
 #else
     CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH), GetSpellForLanguage(SKILL_LANG_GILNEAN), GetSpellForLanguage(SKILL_LANG_GOBLIN));
@@ -762,7 +762,7 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_THALASSIAN));
             break;
 #endif
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         case RACE_WORGEN:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GILNEAN));
@@ -909,7 +909,7 @@ bool Player::Create(CharCreate& charCreateContent)
     setGender(charCreateContent.gender);
     setPowerType(powertype);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
 #else
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
@@ -920,7 +920,7 @@ bool Player::Create(CharCreate& charCreateContent)
     if (charCreateContent._class == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 #endif
 
@@ -985,7 +985,7 @@ bool Player::Create(CharCreate& charCreateContent)
         if (skill_line == nullptr)
             continue;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (skill_line->type != SKILL_TYPE_LANGUAGE)
             _AddSkillLine(skill_line->id, ss->currentval, ss->maxval);
 #else
@@ -1572,7 +1572,7 @@ void Player::_EventExploration()
             ApplyPlayerRestState(false);
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_data.transportGuid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #else
     if (!(currFields & val) && !isOnTaxi() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
@@ -1624,7 +1624,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     if (xp < 1)
         return;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     //this is new since 403. As we gain XP we also gain XP with our guild
     if (m_playerInfo && m_playerInfo->m_guild)
     {
@@ -2124,7 +2124,7 @@ void Player::addSpell(uint32 spell_id)
     {
         WorldPacket data(SMSG_LEARNED_SPELL, 6);
         data << uint32(spell_id);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         data << uint16(0);
 #else
         data << uint32(0);
@@ -2306,7 +2306,7 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_TEAM);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
 #endif
     Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
@@ -2443,7 +2443,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (getClass() == MAGE || getClass() == PRIEST || (getClass() == WARLOCK))
         ss << (uint32)0 << ","; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
     else
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         ss << m_uint32Values[PLAYER_AMMO_ID] << ",";
 #else
         ss << (uint32)0 << ",";
@@ -2658,7 +2658,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #endif
     ss << "', ";
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     ss << "'" << uint32(0);
     ss << "', ";
 #else
@@ -3467,7 +3467,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (m_session->CanUseCommand('c'))
         _AddLanguages(true);
     else
@@ -3787,7 +3787,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     get_next_field.GetUInt32();
 #endif
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
 #else
@@ -3979,7 +3979,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         field_index++;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
     if (obj_movement_info.transport_data.transportGuid)
     {
@@ -4180,12 +4180,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         setFreeTalentPoints(getActiveSpec().GetTP());
 #endif
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     get_next_field.GetUInt32();
 #else
     m_FirstTalentTreeLock = get_next_field.GetUInt32(); // Load First Set Talent Tree
@@ -4251,7 +4251,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (m_session->CanUseCommand('c'))
         _AddLanguages(true);
     else
@@ -4822,7 +4822,7 @@ void Player::RemoveFromWorld()
     if (m_bg)
         m_bg->RemovePlayer(this, true);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // Cancel trade if it's active.
     Player* pTarget;
     if (mTradeTarget != 0)
@@ -5353,7 +5353,7 @@ void Player::RepopRequestedPlayer()
     if (transport != nullptr)
     {
         transport->RemovePassenger(this);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         this->obj_movement_info.transport_data.transportGuid = 0;
 #else
         this->obj_movement_info.clearTransportData();
@@ -5744,13 +5744,13 @@ void Player::SendInitialActions()
 #else
 void Player::SendInitialActions()
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 4) + 1);
 #else
     WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     data << uint8(0);         // VLack: 3.1, some bool - 0 or 1. seems to work both ways
 #endif
 
@@ -5760,7 +5760,7 @@ void Player::SendInitialActions()
         data << m_specs[m_talentActiveSpec].mActions[i].Misc; // 3.3.5 Misc have to be sent before Type (buttons with value over 0xFFFF)
         data << m_specs[m_talentActiveSpec].mActions[i].Type;
     }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint8(1);
 #endif
     m_session->SendPacket(&data);
@@ -7206,7 +7206,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
     data << firstNode->z;
     data << m_taxi_ride_time;
     data << uint8(0);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint32(0x0C008400);
 #else
     data << uint32(0x00003000);
@@ -7385,7 +7385,7 @@ void Player::RegenerateHealth(bool inCombat)
     if (cur >= mh)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     auto HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
     if (HPRegenBase == nullptr)
         HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
@@ -7404,7 +7404,7 @@ void Player::RegenerateHealth(bool inCombat)
         basespirit = 50;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     float amt = basespirit * HPRegen->ratio + extraspirit * HPRegenBase->ratio;
 #else
     float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
@@ -7514,7 +7514,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     {
         data.SetOpcode(SMSG_TRANSFER_PENDING);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         data.writeBit(0);
         data.writeBit(0);
 #endif
@@ -7882,7 +7882,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     *(uint32*)&buffer[0] = size;
 
     // send it
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, (uint16)stream.total_out + 4, buffer);
 #else
     m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)stream.total_out + 4, buffer);
@@ -8029,7 +8029,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
                 return;
             }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             snprintf(updatedName, 95, chat_channels->name_pattern[0], at->area_name[0]);
 #else
             snprintf(updatedName, 95, chat_channels->name_pattern, at->area_name);
@@ -8129,7 +8129,7 @@ void Player::UpdateChannels(uint16 AreaID)
     }
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void Player::SendTradeUpdate()
 {
     Player* pTarget = GetTradeTarget();
@@ -8588,7 +8588,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, flo
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // Checking if we have a unit whose waypoints are shown
     // If there is such, then we "unlink" it
     // Failing to do so leads to a crash if we try to show some other Unit's wps, after the map was shut down
@@ -9200,7 +9200,7 @@ void Player::UpdateHonor()
 {
 #if VERSION_STRING != Classic
     this->setUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     this->setUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->setUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
 #endif
@@ -9706,7 +9706,7 @@ bool Player::CanSignCharter(Charter* charter, Player* requester)
     if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != nullptr)
         return false;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (charter->CharterType == CHARTER_TYPE_GUILD && IsInGuild())
         return false;
 #else
@@ -10278,7 +10278,7 @@ void Player::SetNoseLevel()
             else
                 m_noseLevel = 1.04f;
             break;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         case RACE_GOBLIN:
             if (getGender())
                 m_noseLevel = 1.06f;
@@ -10306,7 +10306,7 @@ void Player::SetNoseLevel()
                 m_noseLevel = 2.36f;
             break;
 #endif
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         case RACE_WORGEN:
             if (getGender())
                 m_noseLevel = 1.72f;
@@ -10393,7 +10393,7 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 
 void Player::_UpdateSkillFields()
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint16 f = PLAYER_SKILL_INFO_1_1;
 #else
     uint16 f = PLAYER_SKILL_LINEID_0;
@@ -10408,7 +10408,7 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS1);
 #else
         ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS);
@@ -10420,7 +10420,7 @@ void Player::_UpdateSkillFields()
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
 #endif
         }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
         {
             setUInt32Value(f++, itr->first | 0x40000);
@@ -10441,7 +10441,7 @@ void Player::_UpdateSkillFields()
     }
 
     /* Null out the rest of the fields */
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     for (; f < PLAYER_CHARACTER_POINTS1; ++f)
 #else
     for (; f < PLAYER_CHARACTER_POINTS; ++f)
@@ -10706,7 +10706,7 @@ void Player::_AddLanguages(bool All)
         SKILL_LANG_TROLL,
         SKILL_LANG_GUTTERSPEAK,
         SKILL_LANG_DRAENEI,
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         SKILL_LANG_GOBLIN,
         SKILL_LANG_GILNEAN,
 #endif
@@ -11775,7 +11775,7 @@ void Player::UpdateGlyphs()
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 enum GlyphSlotMask
 {
     GS_MASK_1 = 0x001,
@@ -13280,7 +13280,7 @@ bool Player::SaveSkills(bool NewCharacter, QueryBuffer* buf)
 
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (itr->second.Skill->type == SKILL_TYPE_LANGUAGE)
             continue;
 #endif
@@ -13452,7 +13452,7 @@ void Player::SetBattlegroundEntryPoint()
 
 void Player::SendTeleportPacket(float x, float y, float z, float o)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data2(MSG_MOVE_TELEPORT, 38);
     data2.append(GetNewGUID());
     BuildMovementPacket(&data2, x, y, z, o);
@@ -13716,7 +13716,7 @@ bool Player::IsMounted()
     return false;
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 Player* Player::GetTradeTarget()
 {
     if (!IsInWorld())
@@ -13843,7 +13843,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     data << uint8(loot_type);  //loot_type;
     data << uint32(pLoot->gold);
     data << uint8(0);   //loot size reserve
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint8(0);
 #endif
 

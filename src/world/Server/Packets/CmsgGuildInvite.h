@@ -34,7 +34,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> name;
 #else
             uint32_t nameLength = packet.readBits(7);

@@ -93,7 +93,7 @@ struct WoWGameObject : WoWObject
 };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 #define GAMEOBJECT_ROTATION_COUNT 4
 

@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <vector>
 
+#if VERSION_STRING == Cata
 enum GuildFinderOptionsInterest
 {
     INTEREST_QUESTING        = 0x01,
@@ -216,3 +217,5 @@ class SERVER_DECL GuildFinderMgr : public Singleton <GuildFinderMgr>
 };
 
 #define sGuildFinderMgr GuildFinderMgr::getSingleton()
+
+#endif

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+#if VERSION_STRING == Cata
 #include "GuildFinderMgr.h"
 #include "Management/GuildMgr.h"
 #include "Management/Guild.h"
@@ -332,3 +333,4 @@ void GuildFinderMgr::sendMembershipRequestListUpdate(Player& player)
     WorldPacket data(SMSG_LF_GUILD_APPLICATIONS_LIST_CHANGED, 0);
     player.SendMessageToSet(&data, false);
 }
+#endif

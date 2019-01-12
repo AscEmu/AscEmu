@@ -31,7 +31,7 @@ struct WoWObject
         uint64_t guid;
     };
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint64_t data;
 #endif
 
