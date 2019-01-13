@@ -1757,6 +1757,18 @@ void Player::smsg_InitialSpells()
     uint32 mstime = Util::getMSTime();
 
     WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (spellCount * 4) + (itemCount * 4));
+#if VERSION_STRING == Mop
+    data.writeBit(0);
+    data.writeBits(spellCount, 22);
+    data.flushBits();
+
+    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    {
+        data << uint32(*sitr);                   // spell id
+    }
+    data.flushBits();
+    GetSession()->SendPacket(&data);
+#else
     data << uint8(0);
     data << uint16(spellCount); // spell count
 
@@ -1840,7 +1852,8 @@ void Player::smsg_InitialSpells()
 
 #if VERSION_STRING != TBC
     uint32 v = 0;
-    GetSession()->OutPacket(0x041d, 4, &v);
+    GetSession()->OutPacket(CMSG_UNKNOWN_ON_LOGIN, 4, &v);
+#endif
 #endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
@@ -5744,6 +5757,64 @@ void Player::SendInitialActions()
 #else
 void Player::SendInitialActions()
 {
+#if VERSION_STRING == Mop
+    WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
+
+    uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8];
+
+    // Bits
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][4]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][5]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][3]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][1]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][6]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][7]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][0]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][2]);
+
+    // Data
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][0]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][1]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][4]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][6]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][7]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][2]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][5]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][3]);
+
+    data << uint8_t(0);
+
+#elif VERSION_STRING != Mop
 #if VERSION_STRING >= Cata
     WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 4) + 1);
 #else
@@ -5762,6 +5833,7 @@ void Player::SendInitialActions()
     }
 #if VERSION_STRING >= Cata
     data << uint8(1);
+#endif
 #endif
     m_session->SendPacket(&data);
 }
@@ -11583,6 +11655,10 @@ void Player::Social_SendFriendList(uint32 flag)
         // guid
         data << uint64(itr->first);
 
+#if VERSION_STRING == Mop
+        data << uint32(0);
+        data << uint32(0);
+#endif
         // friend/ignore flag.
         // 1 - friend
         // 2 - ignore
@@ -11622,6 +11698,12 @@ void Player::Social_SendFriendList(uint32 flag)
     {
         // guid
         data << uint64(ignoreitr->first);
+
+#if VERSION_STRING == Mop
+        data << uint32(0);
+        data << uint32(0);
+#endif
+
         // ignore flag - 2
         data << uint32(2);
         // no note
@@ -13747,6 +13829,9 @@ void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
 {
     WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
 
+#if VERSION_STRING == Mop
+    data.writeBit(0);
+#endif
     data << uint32(WorldState);
     data << uint32(Value);
 
@@ -14096,11 +14181,19 @@ void Player::SendInitialLogonPackets()
 
     StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
 
+#if VERSION_STRING != Mop
     data << float(m_bind_pos_x);
     data << float(m_bind_pos_y);
     data << float(m_bind_pos_z);
     data << uint32(m_bind_mapid);
     data << uint32(m_bind_zoneid);
+#elif VERSION_STRING == Mop
+    data << float(m_bind_pos_x);
+    data << float(m_bind_pos_z);
+    data << float(m_bind_pos_y);
+    data << uint32(m_bind_zoneid);
+    data << uint32(m_bind_mapid);
+#endif
 
     m_session->SendPacket(&data);
 
@@ -14122,9 +14215,16 @@ void Player::SendInitialLogonPackets()
     smsg_InitialSpells();
 
 #if VERSION_STRING > TBC
+#if VERSION_STRING == Mop
+    WorldPacket unlearnPacket(SMSG_SEND_UNLEARN_SPELLS, 4);
+    unlearnPacket.writeBits(0, 22); // Count
+    unlearnPacket.flushBits();
+    GetSession()->SendPacket(&unlearnPacket);
+#elif VERSION_STRING < Mop
     data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
     data << uint32(0); // count, for (count) uint32;
     GetSession()->SendPacket(&data);
+#endif
 #endif
 
     SendInitialActions();
@@ -14132,10 +14232,18 @@ void Player::SendInitialLogonPackets()
 
     data.Initialize(SMSG_LOGIN_SETTIMESPEED);
 
+#if VERSION_STRING != Mop
     data << uint32(Arcemu::Util::MAKE_GAME_TIME());
     data << float(0.0166666669777748f);    // Normal Game Speed
 #if VERSION_STRING > TBC
     data << uint32(0);   // 3.1.2
+#endif
+#elif VERSION_STRING == Mop
+    data << uint32_t(0);
+    data << uint32_t(Arcemu::Util::MAKE_GAME_TIME());
+    data << uint32_t(0);
+    data << uint32_t(Arcemu::Util::MAKE_GAME_TIME());
+    data << float(0.0166666669777748f);    // Normal Game Speed
 #endif
 
     m_session->SendPacket(&data);

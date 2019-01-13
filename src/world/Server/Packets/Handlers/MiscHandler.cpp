@@ -1155,6 +1155,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid guid;
 
+#if VERSION_STRING == Cata
     guid[6] = recvPacket.readBit();
     guid[7] = recvPacket.readBit();
     guid[4] = recvPacket.readBit();
@@ -1172,6 +1173,25 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guid[4]);
     recvPacket.ReadByteSeq(guid[0]);
     recvPacket.ReadByteSeq(guid[5]);
+#elif VERSION_STRING == Mop
+    guid[3] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[2] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[4]);
+#endif
 
     LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
 

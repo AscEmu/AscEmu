@@ -1635,6 +1635,7 @@ void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry cons
 /// Sends all achievement data to the player. Also used for achievement inspection.
 void AchievementMgr::SendAllAchievementData(Player* player)
 {
+#if VERSION_STRING != Mop
     // maximum size for the SMSG_ALL_ACHIEVEMENT_DATA packet without causing client problems seems to be 0x7fff
     uint32 packetSize = 18 + ((uint32)m_completedAchievements.size() * 8) + (GetCriteriaProgressCount() * 36);
     bool doneCompleted = false;
@@ -1747,6 +1748,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         // a SMSG_ALL_ACHIEVEMENT_DATA packet has been sent to the player, so the achievement manager can send SMSG_CRITERIA_UPDATE and SMSG_ACHIEVEMENT_EARNED when it gets them
         isCharacterLoading = false;
     }
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

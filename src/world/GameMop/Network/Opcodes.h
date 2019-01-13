@@ -474,7 +474,7 @@ enum Opcodes
     CMSG_NEXT_CINEMATIC_CAMERA                              = 0x2014, // checked
     CMSG_NO_SPELL_VARIANCE = 0x1417,
     CMSG_NPC_TEXT_QUERY                                     = 0x4E24, // checked
-    CMSG_OBJECT_UPDATE_FAILED                               = 0x3808, // checked
+    CMSG_OBJECT_UPDATE_FAILED                               = 0x1061, // 18414
     CMSG_OBJECT_UPDATE_RESCUED                              = 0x3906, // new
     CMSG_OFFER_PETITION                                     = 0x4817, // checked
     CMSG_OPEN_ITEM                                          = 0x6A34, // checked
@@ -781,7 +781,7 @@ enum Opcodes
     MSG_MOVE_SET_FLIGHT_BACK_SPEED                          = 0x30A2, // ??? SMSG?
     MSG_MOVE_SET_FLIGHT_BACK_SPEED_CHEAT = 0x1380,
     MSG_MOVE_SET_FLIGHT_SPEED                               = 0x71A6, // ??? SMSG
-    MSG_MOVE_SET_FLIGHT_SPEED_CHEAT                         = 0x71A6, // ??? 0x0000
+    MSG_MOVE_SET_FLIGHT_SPEED_CHEAT                         = 0x037D, // ??? 0x0000
     MSG_MOVE_SET_PITCH                                      = 0x7312, // checked
     MSG_MOVE_SET_PITCH_RATE                                 = 0x75B0, // SMSG
     MSG_MOVE_SET_PITCH_RATE_CHEAT = 0x45A,
@@ -789,7 +789,7 @@ enum Opcodes
     MSG_MOVE_SET_RUN_BACK_SPEED                             = 0x71B1, // ??? 0x0000, SMSG set run back speed
     MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT = 0x10CF,
     MSG_MOVE_SET_RUN_MODE                                   = 0x791A, // checked
-    MSG_MOVE_SET_RUN_SPEED                                  = 0x3DB5, // ??? SMSG
+    MSG_MOVE_SET_RUN_SPEED                                  = 0x184C, // 18414
     MSG_MOVE_SET_RUN_SPEED_CHEAT                            = 0x10CD, // ??? 0x0000
     MSG_MOVE_SET_SWIM_BACK_SPEED                            = 0x5CA6, // ??? 0x0000, SMSG ?
     MSG_MOVE_SET_SWIM_BACK_SPEED_CHEAT = 0x10D5,
@@ -846,8 +846,8 @@ enum Opcodes
     MSG_RAID_TARGET_UPDATE                                  = 0x2C36, // changed - was 0x321
     MSG_RANDOM_ROLL                                         = 0x0905, // checked
     MSG_SAVE_GUILD_EMBLEM                                   = 0x2404, // checked
-    MSG_SET_DUNGEON_DIFFICULTY                              = 0x4925, // checked
-    MSG_SET_RAID_DIFFICULTY                                 = 0x0614, // checked
+    MSG_SET_DUNGEON_DIFFICULTY                              = 0x4925, // 18414 even with cata
+    MSG_SET_RAID_DIFFICULTY                                 = 0x0614, // 18414 even with cata
     MSG_TABARDVENDOR_ACTIVATE                               = 0x6926, // checked
     MSG_TALENT_WIPE_CONFIRM                                 = 0x0107, // checked
     MSG_VIEW_PHASE_SHIFT = 0x4F9,
@@ -858,13 +858,13 @@ enum Opcodes
     SMSG_ACCOUNT_RESTRICTED_WARNING                         = 0x51A7, // new
     SMSG_ACHIEVEMENT_DELETED                                = 0x6A16, // checked
     SMSG_ACHIEVEMENT_EARNED                                 = 0x4405, // checked
-    SMSG_ACTION_BUTTONS                                     = 0x38B5, // checked
+    SMSG_ACTION_BUTTONS                                     = 0x081A, // 18414
     SMSG_ACTIVATETAXIREPLY                                  = 0x6A37, // checked
     SMSG_ADD_RUNE_POWER                                     = 0x6915, // checked
     SMSG_ADDON_INFO                                         = 0x2C14, // checked
     SMSG_AFK_MONITOR_INFO_RESPONSE = 0x504,
     SMSG_AI_REACTION                                        = 0x0637, // changed - was 0x13C
-    SMSG_ALL_ACHIEVEMENT_DATA                               = 0x58B1, // checked
+    SMSG_ALL_ACHIEVEMENT_DATA                               = 0x180A, // 18414
     SMSG_AREA_SPIRIT_HEALER_TIME                            = 0x0734, // checked
     SMSG_AREA_TRIGGER_MESSAGE                               = 0x4505, // checked
     SMSG_AREA_TRIGGER_MOVEMENT_UPDATE                       = 0x3DB1, // new
@@ -895,7 +895,7 @@ enum Opcodes
     SMSG_AUCTION_REMOVED_NOTIFICATION                       = 0x2334, // checked
     SMSG_AURA_POINTS_DELETED                                = 0x7CB7, // new
     SMSG_AURA_UPDATE                                        = 0x4707, // checked
-    SMSG_AURA_UPDATE_ALL                                    = 0x6916, // checked
+    SMSG_AURA_UPDATE_ALL                                    = 0x495, // checked
     SMSG_AURACASTLOG_OBSOLETE                               = 0x1D1, // 0x0000
     SMSG_AUTH_CHALLENGE                                     = 0x0949, // 18414
     SMSG_AUTH_RESPONSE                                      = 0x0ABA, // 18414
@@ -926,7 +926,7 @@ enum Opcodes
     SMSG_BATTLEGROUND_PLAYER_JOINED                         = 0x50B0, // changed - was 0x2EC
     SMSG_BATTLEGROUND_PLAYER_LEFT                           = 0x59A6, // changed - was 0x2ED
     SMSG_BINDER_CONFIRM                                     = 0x2835, // checked
-    SMSG_BINDPOINTUPDATE                                    = 0x0527, // checked
+    SMSG_BINDPOINTUPDATE                                    = 0x0E3B, // 18414
     SMSG_BINDZONEREPLY                                      = 0x4C34, // changed - was 0x157
     SMSG_BREAK_TARGET                                       = 0x0105, // changed - was 0x152
     SMSG_BUY_BANK_SLOT_RESULT                               = 0x4806, // checked
@@ -956,7 +956,7 @@ enum Opcodes
     SMSG_CAMERA_SHAKE                                       = 0x4214, // checked
     SMSG_CANCEL_AUTO_REPEAT                                 = 0x6436, // changed - was 0x29C
     SMSG_CANCEL_COMBAT                                      = 0x4F04, // checked
-    SMSG_CAST_FAILED                                        = 0x4D16, // changed - was 0x130
+    SMSG_CAST_FAILED                                        = 0x130, // changed - was 0x130
     SMSG_CHANNEL_LIST                                       = 0x2214, // checked
     SMSG_CHANNEL_MEMBER_COUNT                               = 0x6414, // checked
     SMSG_CHANNEL_NOTIFY                                     = 0x0825, // checked
@@ -1003,7 +1003,7 @@ enum Opcodes
     SMSG_COMSAT_CONNECT_FAIL                                = 0x6317, // changed - was 0x3E2
     SMSG_COMSAT_DISCONNECT                                  = 0x0316, // changed - was 0x3E1
     SMSG_COMSAT_RECONNECT_TRY                               = 0x4D35, // changed - was 0x3E0
-    SMSG_CONTACT_LIST                                       = 0x6017, // checked
+    SMSG_CONTACT_LIST                                       = 0x1F22, // 18414
     SMSG_CONTROL_VEHICLE = 0x49D,
     SMSG_CONVERT_RUNE                                       = 0x4F14, // changed - was 0x486
     SMSG_COOLDOWN_CHEAT                                     = 0x4537, // changed - was 0x1E1
@@ -1031,7 +1031,7 @@ enum Opcodes
     SMSG_DEBUG_SERVER_GEO                                   = 0x0235, // changed - was 0x4FC
     SMSG_DEBUGAURAPROC = 0x24D,
     SMSG_DEFENSE_MESSAGE                                    = 0x0314, // changed - was 0x33A
-    SMSG_DESTROY_OBJECT = 0x4724,
+    SMSG_DESTROY_OBJECT = 0x14C2,                                     // 18414
     SMSG_DESTRUCTIBLE_BUILDING_DAMAGE                       = 0x4825, // changed - was 0x032
     SMSG_DIFFERENT_INSTANCE_FROM_PARTY                      = 0x15B1, // new
     SMSG_DISENCHANT_CREDIT                                  = 0x55A2, // new
@@ -1179,15 +1179,15 @@ enum Opcodes
     SMSG_IGNORE_REQUIREMENTS_CHEAT                          = 0x4E36, // changed - was 0x3A9
     SMSG_INIT_EXTRA_AURA_INFO_OBSOLETE = 0x3A3,
     SMSG_INIT_WORLD_STATES                                  = 0x4C15, // changed - was 0x2C2
-    SMSG_INITIAL_SPELLS                                     = 0x0104, // checked
-    SMSG_INITIALIZE_FACTIONS                                = 0x4634, // checked
+    SMSG_INITIAL_SPELLS                                     = 0x045A, // 18414
+    SMSG_INITIALIZE_FACTIONS                                = 0x0AAA, // 18414
     SMSG_INIT_CURRENCY                                      = 0x15A5, // new
     SMSG_INSPECT                                            = 0x4014, // ??? 0x0000
     SMSG_INSPECT_HONOR_STATS                                = 0x79A5, // checked
     SMSG_INSPECT_TALENT                                     = 0x4014, // checked
     SMSG_INSPECT_RATED_BG_STATS                             = 0x19A5, // new
     SMSG_INSPECT_RESULTS_UPDATE                             = 0x0C14, // new
-    SMSG_INSTANCE_DIFFICULTY = 0x33B,
+    SMSG_INSTANCE_DIFFICULTY = 0x33B,                                 // 18414 even with cata
     SMSG_INSTANCE_LOOK_WARNING_QUERY                        = 0x4F17, // new
     SMSG_INSTANCE_RESET                                     = 0x6F05, // checked
     SMSG_INSTANCE_RESET_FAILED                              = 0x4725, // checked
@@ -1208,7 +1208,7 @@ enum Opcodes
     SMSG_ITEM_REMOVE_PASSIVE                                = 0x39A1, // new
     SMSG_ITEM_SEND_PASSIVE                                  = 0x70B1, // new
     SMSG_ITEM_TEXT_QUERY_RESPONSE                           = 0x2725, // checked
-    SMSG_ITEM_TIME_UPDATE                                   = 0x2407, // checked
+    SMSG_ITEM_TIME_UPDATE                                   = 0x0000, // checked
     SMSG_ITEMREFUNDINFO = 0x15A3,
     SMSG_ITEMREFUNDREQUEST = 0x4B5,
     SMSG_JOINED_BATTLEGROUND_QUEUE                          = 0x38A, // 0x0000
@@ -1244,10 +1244,10 @@ enum Opcodes
     SMSG_LIST_INVENTORY                                     = 0x7CB0, // checked
     SMSG_LOAD_CUF_PROFILES                                  = 0x50B1, // new
     SMSG_LOG_XPGAIN                                         = 0x4514, // changed - was 0x1D0
-    SMSG_LOGIN_SETTIMESPEED                                 = 0x4D15, // checked
-    SMSG_LOGIN_VERIFY_WORLD                                 = 0x2005, // checked
+    SMSG_LOGIN_SETTIMESPEED                                 = 0x082B, // 18414
+    SMSG_LOGIN_VERIFY_WORLD                                 = 0x1C0F, // 18414
     SMSG_LOGOUT_CANCEL_ACK                                  = 0x6514, // checked
-    SMSG_LOGOUT_COMPLETE                                    = 0x2137, // checked
+    SMSG_LOGOUT_COMPLETE                                    = 0x142F, // 18414
     SMSG_LOGOUT_RESPONSE                                    = 0x0524, // checked
     SMSG_LOOT_ALL_PASSED                                    = 0x6237, // checked
     SMSG_LOOT_CLEAR_MONEY                                   = 0x2B37, // checked
@@ -1272,7 +1272,7 @@ enum Opcodes
     SMSG_MEETINGSTONE_IN_PROGRESS                           = 0x2D35, // changed - was 0x298
     SMSG_MEETINGSTONE_MEMBER_ADDED                          = 0x299, // 0x0000
     SMSG_MEETINGSTONE_SETQUEUE                              = 0x295, // 0x0000
-    SMSG_MESSAGECHAT                                        = 0x2026, // checked
+    SMSG_MESSAGECHAT                                        = 0x1A9A, // 18414
     SMSG_MESSAGE_BOX                                        = 0x30A1, // new
     SMSG_MINIGAME_MOVE_FAILED = 0x2F9,
     SMSG_MINIGAME_SETUP                                     = 0x6727, // changed - was 0x2F6
@@ -1282,7 +1282,7 @@ enum Opcodes
     SMSG_MONEY_NOTIFY                                       = 0x55B6, // new
     SMSG_MONSTER_MOVE                                       = 0x6E17, // checked
     SMSG_MONSTER_MOVE_TRANSPORT                             = 0x2004, // checked
-    SMSG_MOTD                                               = 0x0A35, // checked
+    SMSG_MOTD                                               = 0x183B, // 18414
     SMSG_MOUNTRESULT                                        = 0x2225, // changed - was 0x16E
     SMSG_MOUNTSPECIAL_ANIM                                  = 0x0217, // changed - was 0x172
     SMSG_MOVE_ABANDON_TRANSPORT = 0x45F,
@@ -1302,7 +1302,7 @@ enum Opcodes
     SMSG_MOVE_SET_COMPOUND_STATE                            = 0x75A0, // new
     SMSG_MOVE_SET_FLIGHT_OBSOLETE = 0x33E,
     SMSG_MOVE_SET_HOVER                                     = 0x5CB3, // checked
-    SMSG_MOVE_UNSET_CAN_FLY                                 = 0x15A2, // checked
+    SMSG_MOVE_UNSET_CAN_FLY                                 = 0x0162, // 18414
     SMSG_MOVE_UNSET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY     = 0x7DB2, // new
     SMSG_MOVE_UNSET_FLIGHT_OBSOLETE = 0x33F,
     SMSG_MOVE_UNSET_HOVER                                   = 0x51B3, // checked
@@ -1376,7 +1376,7 @@ enum Opcodes
     SMSG_PLAYERBINDERROR                                    = 0x6A24, // checked
     SMSG_PLAYERBOUND                                        = 0x2516, // checked
     SMSG_PONG                                               = 0x1969, // 18414
-    SMSG_POWER_UPDATE                                       = 0x4A07, // checked
+    SMSG_POWER_UPDATE                                       = 0x109F, // 18414
     SMSG_POWERGAINLOG_OBSOLETE = 0x20E,
     SMSG_PRE_RESURRECT                                      = 0x6C36, // checked
     SMSG_PROCRESIST                                         = 0x0426, // changed - was 0x260
@@ -1450,7 +1450,7 @@ enum Opcodes
     SMSG_SELL_ITEM                                          = 0x6105, // checked
     SMSG_SEND_ALL_COMBAT_LOG = 0x514,
     SMSG_SEND_MAIL_RESULT                                   = 0x4927, // checked
-    SMSG_SEND_UNLEARN_SPELLS                                = 0x4E25, // checked
+    SMSG_SEND_UNLEARN_SPELLS                                = 0x10F1, // 18414
     SMSG_SERVER_BUCK_DATA = 0x141E,
     SMSG_SERVER_BUCK_DATA_START = 0x4A3,
     SMSG_SERVER_FIRST_ACHIEVEMENT                           = 0x6424, // checked
@@ -1475,7 +1475,7 @@ enum Opcodes
     SMSG_SET_PHASE_SHIFT                                    = 0x70A0, // checked
     SMSG_SET_PLAYER_DECLINED_NAMES_RESULT                   = 0x2B25, // changed - was 0x41A
     SMSG_SET_PLAY_HOVER_ANIM                                = 0x30A6, // new
-    SMSG_SET_PROFICIENCY                                    = 0x6207, // checked
+    SMSG_SET_PROFICIENCY                                    = 0x1440, // 18414
     SMSG_SET_PROJECTILE_POSITION                            = 0x2616, // changed - was 0x4BF
     SMSG_SET_REST_START_OBSOLETE = 0x21E,
     SMSG_SHOW_BANK                                          = 0x2627, // checked
@@ -1491,8 +1491,8 @@ enum Opcodes
     SMSG_SPELL_DELAYED                                      = 0x0715, // checked
     SMSG_SPELL_FAILED_OTHER                                 = 0x4535, // ??? 0x0C34
     SMSG_SPELL_FAILURE                                      = 0x0C34, // ??? 0x4535
-    SMSG_SPELL_GO                                           = 0x6E16, // checked
-    SMSG_SPELL_START                                        = 0x6415, // checked
+    SMSG_SPELL_GO                                           = 0x09D8, // 18414
+    SMSG_SPELL_START                                        = 0x107A, // 18414
     SMSG_SPELL_UPDATE_CHAIN_TARGETS                         = 0x1331, // ??? 0x6006
     SMSG_SPELLBREAKLOG                                      = 0x6B17, // checked
     SMSG_SPELLDAMAGESHIELD                                  = 0x2927, // checked
@@ -1552,7 +1552,7 @@ enum Opcodes
     SMSG_SUSPEND_COMMS                                      = 0x4140, // changed - was 0x50F
     SMSG_SUSPED_TOKEN_RESPONSE                              = 0x14B1, // new
     SMSG_TALENTS_ERROR                                      = 0x0916, // new
-    SMSG_TALENTS_INFO                                       = 0x6F26, // checked
+    SMSG_TALENTS_INFO                                       = 0x0A9B, // 18414
     SMSG_TALENTS_INVOLUNTARILY_RESET                        = 0x2C27, // checked
     SMSG_TAXINODE_STATUS                                    = 0x2936, // checked
     SMSG_TEST_DROP_RATE_RESULT                              = 0x6816, // new
@@ -1561,7 +1561,7 @@ enum Opcodes
     SMSG_THREAT_REMOVE                                      = 0x2E05, // changed - was 0x484
     SMSG_THREAT_UPDATE                                      = 0x4735, // changed - was 0x483
     SMSG_TIME_ADJUSTMENT                                    = 0x79B7, // new
-    SMSG_TIME_SYNC_REQ                                      = 0x3CA4, // checked
+    SMSG_TIME_SYNC_REQ                                      = 0x0000, // checked
     SMSG_TITLE_EARNED                                       = 0x2426, // changed - was 0x373
     SMSG_TOGGLE_XP_GAIN                                     = 0x6704, // chagned - was 0x4ED
     SMSG_TOTEM_CREATED                                      = 0x2414, // checked
@@ -1575,7 +1575,7 @@ enum Opcodes
     SMSG_TRIGGER_CINEMATIC                                  = 0x6C27, // checked
     SMSG_TRIGGER_MOVIE                                      = 0x4625, // checked
     SMSG_TURN_IN_PETITION_RESULTS                           = 0x0F07, // checked
-    SMSG_TUTORIAL_FLAGS                                     = 0x0B35, // checked
+    SMSG_TUTORIAL_FLAGS                                     = 0x1B90, // 18414
     SMSG_UI_TIME = 0x4A14,
     SMSG_UNIT_HEALTH_FREQUENT                               = 0x2C26, // new
     SMSG_UNIT_SPELLCAST_START                               = 0x2517, // new
@@ -1597,9 +1597,9 @@ enum Opcodes
     SMSG_UPDATE_LAST_INSTANCE                               = 0x0437, // checked
     SMSG_UPDATE_LAST_INSTANCE_CREATED = 0x2CB,
     SMSG_UPDATE_LFG_LIST = 0x360,
-    SMSG_UPDATE_OBJECT                                      = 0x4715, // checked
+    SMSG_UPDATE_OBJECT                                      = 0x1792, // 18414
     SMSG_UPDATE_SERVER_PLAYER_POSITION                      = 0x74A3, // new
-    SMSG_UPDATE_WORLD_STATE                                 = 0x4816, // changed - was 0x2C3
+    SMSG_UPDATE_WORLD_STATE                                 = 0x121B, // 18414
     SMSG_USERLIST_ADD                                       = 0x0F37, // changed - was 0x3F0
     SMSG_USERLIST_REMOVE                                    = 0x2006, // changed - was 0x3F1
     SMSG_USERLIST_UPDATE                                    = 0x0135, // changed - was 0x3F2
@@ -1622,7 +1622,7 @@ enum Opcodes
     SMSG_WARDEN_DATA                                        = 0x31A0, // changed - was 0x2E6
     SMSG_WARGAME_CHECK_ENTRY                                = 0x3DA4, // new
     SMSG_WARGAME_REQUEST_SENT                               = 0x59B2, // new
-    SMSG_WEATHER                                            = 0x2904, // checked
+    SMSG_WEATHER                                            = 0x06AB, // 18414
     SMSG_WEEKLY_LAST_RESET                                  = 0x50A5, // new
     SMSG_WEEKLY_RESET_CURRENCY                              = 0x3CA1, // new
     SMSG_WEEKLY_SPELL_USAGE                                 = 0x39B7, // new
