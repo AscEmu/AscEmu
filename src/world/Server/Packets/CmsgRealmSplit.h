@@ -28,8 +28,7 @@ namespace AscEmu { namespace Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << unknown;
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override

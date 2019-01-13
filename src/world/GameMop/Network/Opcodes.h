@@ -200,7 +200,7 @@ enum Opcodes
     CMSG_DELETE_DANCE = 0x454,
     CMSG_DESTROY_ITEMS = 0x0B2,
     CMSG_DESTROYITEM                                        = 0x4A27, // checked
-    CMSG_DESTROYMONSTER = 0x012,
+    CMSG_DESTROYMONSTER = 0x0000,
     CMSG_DISABLE_PVP_CHEAT = 0x030,
     CMSG_DISMISS_CONTROLLED_VEHICLE                         = 0x3218, // changed - was 0x46D
     CMSG_DISMISS_CRITTER                                    = 0x4227, // changed - was 0x48D
@@ -502,7 +502,7 @@ enum Opcodes
     CMSG_PETITION_SHOW_SIGNATURES                           = 0x4F15, // checked
     CMSG_PETITION_SHOWLIST                                  = 0x4617, // checked
     CMSG_PETITION_SIGN                                      = 0x0E04, // checked
-    CMSG_PING                                               = 0x444D, // checked
+    CMSG_PING                                               = 0x0012, // 18414
     CMSG_PLAY_DANCE                                         = 0x6914, // changed - was 0x44B
     CMSG_PLAYED_TIME                                        = 0x0804, // checked
     CMSG_PLAYER_AI_CHEAT = 0x26C,
@@ -544,7 +544,7 @@ enum Opcodes
     CMS_RANDOMIZE_CHAR_NAME                                 = 0x2413, // new
     CMSG_READ_ITEM                                          = 0x2F16, // checked
     CMSG_READY_FOR_ACCOUNT_DATA_TIMES                       = 0x031C, // 18414
-    CMSG_REALM_SPLIT                                        = 0x2906, // checked
+    CMSG_REALM_SPLIT                                        = 0x18B2, // 18414
     CMSG_RECHARGE = 0x00F,
     CMSG_RECLAIM_CORPSE                                     = 0x4036, // checked
     CMSG_REDIRECTION_AUTH_PROOF                             = 0x044D, // changed - was 0x512
@@ -1375,7 +1375,7 @@ enum Opcodes
     SMSG_PLAYER_VEHICLE_DATA                                = 0x4115, // changed - was 0x4A7
     SMSG_PLAYERBINDERROR                                    = 0x6A24, // checked
     SMSG_PLAYERBOUND                                        = 0x2516, // checked
-    SMSG_PONG                                               = 0x4D42, // checked
+    SMSG_PONG                                               = 0x1969, // 18414
     SMSG_POWER_UPDATE                                       = 0x4A07, // checked
     SMSG_POWERGAINLOG_OBSOLETE = 0x20E,
     SMSG_PRE_RESURRECT                                      = 0x6C36, // checked
@@ -1424,7 +1424,7 @@ enum Opcodes
     SMSG_READ_ITEM_FAILED                                   = 0x0F16, // checked
     SMSG_READ_ITEM_OK                                       = 0x2605, // checked
     SMSG_REAL_GROUP_UPDATE                                  = 0x0F34, // changed - was 0x397
-    SMSG_REALM_SPLIT                                        = 0x2714, // checked
+    SMSG_REALM_SPLIT                                        = 0x1A2E, // 18414
     SMSG_RECEIVED_MAIL                                      = 0x2924, // checked
     SMSG_REDIRECT_CLIENT                                    = 0x0942, // changed - was 0x50D
     SMSG_REFER_A_FRIEND_EXPIRED                             = 0x4934, // changed - was 0x01E

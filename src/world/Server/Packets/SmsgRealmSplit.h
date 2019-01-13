@@ -32,8 +32,13 @@ namespace AscEmu { namespace Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            // All versions share same implementation
+#if VERSION_STRING < Mop
             packet << unknown << splitState << dateFormat;
+#else
+            packet << unknown << splitState;
+            packet.writeBits(dateFormat.size(), 7);
+            packet.WriteString(dateFormat);
+#endif
             return true;
         }
 
