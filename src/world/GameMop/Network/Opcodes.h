@@ -140,7 +140,7 @@ enum Opcodes
     CMSG_CHANNEL_VOICE_ON                                   = 0x1144, // checked
     CMSG_CHAR_CREATE                                        = 0x4A36, // checked
     CMSG_CHAR_CUSTOMIZE                                     = 0x2C34, // checked
-    CMSG_CHAR_DELETE                                        = 0x6425, // checked
+    CMSG_CHAR_DELETE                                        = 0x04E2, // 18414
     CMSG_CHAR_ENUM                                          = 0x00E0, // 18414
     CMSG_CHAR_FACTION_CHANGE                                = 0x2735, // changed - was 0x4D9
     CMSG_CHAR_RACE_CHANGE                                   = 0x0D24, // changed - was 0x4F8
@@ -962,7 +962,7 @@ enum Opcodes
     SMSG_CHANNEL_NOTIFY                                     = 0x0825, // checked
     SMSG_CHAR_CREATE                                        = 0x2D05, // checked
     SMSG_CHAR_CUSTOMIZE                                     = 0x4F16, // checked
-    SMSG_CHAR_DELETE                                        = 0x0304, // checked
+    SMSG_CHAR_DELETE                                        = 0x0C9F, // 18414
     SMSG_CHAR_ENUM                                          = 0x11C3, // 18414
     SMSG_CHAR_FACTION_CHANGE                                = 0x4C06, // changed - was 0x4DA
     SMSG_CHAR_RENAME                                        = 0x2024, // checked
