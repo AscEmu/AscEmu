@@ -847,35 +847,35 @@ void WorldSocket::Authenticate()
 
     data.flushBits();
 
-    // add races-expansion combination
-    data << uint8_t(1) << uint8_t(0);
-    data << uint8_t(2) << uint8_t(0);
-    data << uint8_t(3) << uint8_t(0);
-    data << uint8_t(4) << uint8_t(0);
-    data << uint8_t(5) << uint8_t(0);
-    data << uint8_t(6) << uint8_t(0);
-    data << uint8_t(7) << uint8_t(0);
-    data << uint8_t(8) << uint8_t(0);
-    data << uint8_t(9) << uint8_t(3);
-    data << uint8_t(10) << uint8_t(1);
-    data << uint8_t(11) << uint8_t(1);
-    data << uint8_t(22) << uint8_t(3);
-    data << uint8_t(24) << uint8_t(4);
-    data << uint8_t(25) << uint8_t(4);
-    data << uint8_t(26) << uint8_t(4);
+    // add expansion-race combination
+    data << uint8_t(0) << uint8_t(1);
+    data << uint8_t(0) << uint8_t(2);
+    data << uint8_t(0) << uint8_t(3);
+    data << uint8_t(0) << uint8_t(4);
+    data << uint8_t(0) << uint8_t(5);
+    data << uint8_t(0) << uint8_t(6);
+    data << uint8_t(0) << uint8_t(7);
+    data << uint8_t(0) << uint8_t(8);
+    data << uint8_t(3) << uint8_t(9);
+    data << uint8_t(1) << uint8_t(10);
+    data << uint8_t(1) << uint8_t(11);
+    data << uint8_t(3) << uint8_t(22);
+    data << uint8_t(4) << uint8_t(24);
+    data << uint8_t(4) << uint8_t(25);
+    data << uint8_t(4) << uint8_t(26);
 
-    // add classes-expansion combination
-    data << uint8_t(1) << uint8_t(0);
-    data << uint8_t(2) << uint8_t(0);
-    data << uint8_t(3) << uint8_t(0);
-    data << uint8_t(4) << uint8_t(0);
-    data << uint8_t(5) << uint8_t(0);
-    data << uint8_t(6) << uint8_t(2);
-    data << uint8_t(7) << uint8_t(0);
-    data << uint8_t(8) << uint8_t(0);
-    data << uint8_t(9) << uint8_t(0);
-    data << uint8_t(10) << uint8_t(4);
-    data << uint8_t(11) << uint8_t(0);
+    // add expansion-class combination
+    data << uint8_t(0) << uint8_t(1);
+    data << uint8_t(0) << uint8_t(2);
+    data << uint8_t(0) << uint8_t(3);
+    data << uint8_t(0) << uint8_t(4);
+    data << uint8_t(0) << uint8_t(5);
+    data << uint8_t(2) << uint8_t(6);
+    data << uint8_t(0) << uint8_t(7);
+    data << uint8_t(0) << uint8_t(8);
+    data << uint8_t(0) << uint8_t(9);
+    data << uint8_t(4) << uint8_t(10);
+    data << uint8_t(0) << uint8_t(11);
 
     data << uint32_t(0);            // BillingTime
     data << uint8_t(4);             // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA, 4 - MOP
