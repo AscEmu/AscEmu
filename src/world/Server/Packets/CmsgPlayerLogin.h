@@ -37,7 +37,7 @@ namespace AscEmu { namespace Packets
 #if VERSION_STRING < Cata
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
-#else
+#elif VERSION_STRING == Cata
             ObjectGuid unpackedGuid;
             unpackedGuid[2] = packet.readBit();
             unpackedGuid[3] = packet.readBit();
@@ -56,6 +56,28 @@ namespace AscEmu { namespace Packets
             packet.ReadByteSeq(unpackedGuid[6]);
             packet.ReadByteSeq(unpackedGuid[1]);
             packet.ReadByteSeq(unpackedGuid[4]);
+#elif VERSION_STRING == Mop
+            ObjectGuid unpackedGuid;
+            float unknown;
+            packet >> unknown;
+
+            unpackedGuid[1] = packet.readBit();
+            unpackedGuid[4] = packet.readBit();
+            unpackedGuid[7] = packet.readBit();
+            unpackedGuid[3] = packet.readBit();
+            unpackedGuid[2] = packet.readBit();
+            unpackedGuid[6] = packet.readBit();
+            unpackedGuid[5] = packet.readBit();
+            unpackedGuid[0] = packet.readBit();
+
+            packet.ReadByteSeq(unpackedGuid[5]);
+            packet.ReadByteSeq(unpackedGuid[1]);
+            packet.ReadByteSeq(unpackedGuid[0]);
+            packet.ReadByteSeq(unpackedGuid[6]);
+            packet.ReadByteSeq(unpackedGuid[2]);
+            packet.ReadByteSeq(unpackedGuid[4]);
+            packet.ReadByteSeq(unpackedGuid[7]);
+            packet.ReadByteSeq(unpackedGuid[3]);
 #endif
             guid.Init(unpackedGuid);
             return true;

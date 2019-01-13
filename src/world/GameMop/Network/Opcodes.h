@@ -399,7 +399,7 @@ enum Opcodes
     CMSG_LFG_TELEPORT                                       = 0x2482, // changed - was 0x370
     CMSG_LIST_INVENTORY                                     = 0x2806, // checked
     CMSG_LOAD_DANCES = 0x44D,
-    CMSG_LOAD_SCREEN                                        = 0x2422, // checked
+    CMSG_LOAD_SCREEN                                        = 0x1DBD, // 18414
     CMSG_LOG_DISCONNECT                                     = 0x10B3, // 18414
     CMSG_LOGOUT_CANCEL                                      = 0x2324, // checked
     CMSG_LOGOUT_REQUEST                                     = 0x0A25, // checked
@@ -506,7 +506,7 @@ enum Opcodes
     CMSG_PLAY_DANCE                                         = 0x6914, // changed - was 0x44B
     CMSG_PLAYED_TIME                                        = 0x0804, // checked
     CMSG_PLAYER_AI_CHEAT = 0x26C,
-    CMSG_PLAYER_LOGIN                                       = 0x05B1, // checked
+    CMSG_PLAYER_LOGIN                                       = 0x158F, // 18414
     CMSG_PLAYER_LOGOUT = 0x04A,
     CMSG_PLAYER_VEHICLE_ENTER                               = 0x2705, // changed - was 0x4A8
     CMSG_PUSHQUESTTOPARTY                                   = 0x4B14, // checked
@@ -562,7 +562,7 @@ enum Opcodes
     CMSG_REQUEST_ACCOUNT_DATA                               = 0x6505, // changed - was 0x20A
     CMSG_REQUEST_CATEGORY_COOLDOWNS                         = 0x7102, // checked
     CMSG_REQUEST_CEMETERY_LIST                              = 0x720A, // checked
-    CMSG_REQUEST_HOTFIX                                     = 0x2401, // checked
+    CMSG_REQUEST_HOTFIX                                     = 0x158D, // 18414
     CMSG_REQUEST_INSPECT_RATED_BG_STATS                     = 0x3010, // checked
     CMSG_REQUEST_PARTY_MEMBER_STATS                         = 0x0C04, // changed - was 0x27F
     CMSG_REQUEST_PET_INFO                                   = 0x4924, // changed - was 0x279
@@ -724,7 +724,7 @@ enum Opcodes
     CMSG_USE_ITEM                                           = 0x2C06, // checked
     CMSG_USED_FOLLOW                                        = 0x7912, // new
     CMSG_USE_SKILL_CHEAT = 0x029,
-    CMSG_VIOLENCE_LEVEL                                     = 0x7816, // checked
+    CMSG_VIOLENCE_LEVEL                                     = 0x0040, // 18414
     CMSG_VOICE_SESSION_ENABLE                               = 0x2314, // checked
     CMSG_VOICE_SET_TALKER_MUTED_REQUEST = 0x3A1,
     CMSG_VOID_STORAGE_QUERY                                 = 0x790A, // new

@@ -1189,6 +1189,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 {
+#if VERSION_STRING == Cata
     uint32_t type;
     recvPacket >> type;
 
@@ -1234,6 +1235,53 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 break;
         }*/
     }
+#elif VERSION_STRING == Mop
+    uint32_t type;
+    recvPacket >> type;
+
+    uint32_t count = recvPacket.readBits(23);
+
+    ObjectGuid* guids = new ObjectGuid[count];
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        guids[i][6] = recvPacket.readBit();
+        guids[i][3] = recvPacket.readBit();
+        guids[i][0] = recvPacket.readBit();
+        guids[i][1] = recvPacket.readBit();
+        guids[i][4] = recvPacket.readBit();
+        guids[i][5] = recvPacket.readBit();
+        guids[i][7] = recvPacket.readBit();
+        guids[i][2] = recvPacket.readBit();
+    }
+
+    uint32_t entry;
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        recvPacket.ReadByteSeq(guids[i][1]);
+        recvPacket >> entry;
+        recvPacket.ReadByteSeq(guids[i][0]);
+        recvPacket.ReadByteSeq(guids[i][5]);
+        recvPacket.ReadByteSeq(guids[i][6]);
+        recvPacket.ReadByteSeq(guids[i][4]);
+        recvPacket.ReadByteSeq(guids[i][7]);
+        recvPacket.ReadByteSeq(guids[i][2]);
+        recvPacket.ReadByteSeq(guids[i][3]);
+
+        /*switch (type)
+        {
+            case DB2_REPLY_ITEM:
+                SendItemDb2Reply(entry);
+                break;
+            case DB2_REPLY_SPARSE:
+                SendItemSparseDb2Reply(entry);
+                break;
+            default:
+                LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
+                recvPacket.clear();
+                break;
+        }*/
+    }
+#endif
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
