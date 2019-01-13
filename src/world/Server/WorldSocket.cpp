@@ -652,7 +652,12 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     BNK.SetBinary(K, 40);
 #endif
 
+#if VERSION_STRING != Mop
     recvData >> lang;
+#else
+    if (recvData.rpos() != recvData.wpos())
+        recvData.read((uint8*)lang.data(), 4);
+#endif
 
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
@@ -720,7 +725,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     // Set session properties
     pSession->SetClientBuild(mClientBuild);
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
     pSession->readAddonInfoPacket(mAddonInfoBuffer);
 #endif
 
@@ -729,7 +734,12 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pSession->m_lastPing = static_cast<uint32>(UNIXTIME);
     pSession->language = Util::getLanguagesIdFromString(lang);
 
+#if VERSION_STRING != Mop
     recvData >> pSession->m_muted;
+#else
+    if (recvData.rpos() != recvData.wpos())
+        recvData >> pSession->m_muted;
+#endif
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
@@ -909,7 +919,7 @@ void WorldSocket::UpdateQueuePosition(uint32 Position)
     QueuePacket << uint32(0) << uint8(0);// << uint8(0);
     QueuePacket << Position;
     //    QueuePacket << uint8(1);
-#else
+#elif VERSION_STRING == Cata
     WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21);    // 17 + 4 if queued
     QueuePacket.writeBit(true);                         // has queue
     QueuePacket.writeBit(false);                        // unk queue-related
@@ -922,6 +932,17 @@ void WorldSocket::UpdateQueuePosition(uint32 Position)
     QueuePacket << uint8_t(0);                          // BillingPlanFlags
     QueuePacket << uint8_t(0x1B);                       // Waiting in queue (AUTH_WAIT_QUEUE I think)
     QueuePacket << uint32_t(Position);                  // position in queue
+#elif VERSION_STRING == Mop
+    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 80);
+    QueuePacket.writeBit(false);
+
+    QueuePacket.writeBit(true);
+    QueuePacket.writeBit(1);
+
+    QueuePacket.flushBits();
+    QueuePacket << uint32_t(0);
+
+    QueuePacket << uint8_t(0x1B);          // 0x1B = 27 AUTH_WAIT_QUEUE
 #endif
     SendPacket(&QueuePacket);
 }

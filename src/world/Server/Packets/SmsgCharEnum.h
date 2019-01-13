@@ -177,13 +177,13 @@ namespace AscEmu { namespace Packets
                 packet.append(buffer);
             }
 #elif VERSION_STRING == Mop
-            ByteBuffer buffer;
-
-            packet.writeBits(0, 21);
-            packet.writeBits(char_count, 16);
-
             if (char_count)
             {
+                ByteBuffer buffer;
+
+                packet.writeBits(0, 21);
+                packet.writeBits(char_count, 16);
+
                 for (auto const& data : enum_data)
                 {
                     ObjectGuid guid = MAKE_NEW_GUID(data.guid, 0, 0x000);
@@ -302,6 +302,13 @@ namespace AscEmu { namespace Packets
                 packet.writeBit(1);
                 packet.flushBits();
                 packet.append(buffer);
+            }
+            else
+            {
+                packet.writeBits(0, 21);
+                packet.writeBits(0, 16);
+                packet.writeBit(1);
+                packet.flushBits();
             }
 #endif
 

@@ -233,7 +233,7 @@ class SERVER_DECL WorldSession
         const char* LocalizedMapName(uint32 id);
         const char* LocalizedBroadCast(uint32 id);
 
-#if VERSION_STRING < Cata
+#if VERSION_STRING != Cata
         uint32_t GetClientBuild() { return client_build; }
         void SetClientBuild(uint32_t build) { client_build = build; }
 #else
