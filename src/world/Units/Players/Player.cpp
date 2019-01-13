@@ -563,7 +563,35 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_RUN:
         {
             data.Initialize(MSG_MOVE_SET_RUN_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[0]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[1]);
+
+            data << uint32_t(0);
+
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[0]);
+
+            data << float(speed);
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[5]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
+#endif
             break;
         }
         case TYPE_RUN_BACK:
@@ -593,7 +621,32 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY:
         {
             data.Initialize(MSG_MOVE_SET_FLIGHT_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data << float(speed);
+            data << uint32_t(0);
+
+            data.writeBit(guid[6]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[2]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[1]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
+#endif
             break;
         }
         case TYPE_FLY_BACK:

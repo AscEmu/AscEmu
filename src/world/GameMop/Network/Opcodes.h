@@ -705,7 +705,7 @@ enum Opcodes
     CMSG_UNKNOWN_1206 = 0x4B6,
     CMSG_UNKNOWN_1210 = 0x4BA,
     CMSG_UNKNOWN_1227 = 0x4CB,
-    CMSG_UNKNOWN_ON_LOGIN = 0x041D,
+    SMSG_SERVER_BUCK_DATA = 0x041D,
     CMSG_UNKNOWN_ON_LOGIN2 = 0xBD84,
     CMSG_UNKNOWN_ON_LOGIN3 = 0x5649,
     CMSG_UNKNOWN_ON_LOGIN4 = 0xF364,
@@ -894,7 +894,7 @@ enum Opcodes
     SMSG_AUCTION_OWNER_NOTIFICATION                         = 0x4116, // checked
     SMSG_AUCTION_REMOVED_NOTIFICATION                       = 0x2334, // checked
     SMSG_AURA_POINTS_DELETED                                = 0x7CB7, // new
-    SMSG_AURA_UPDATE                                        = 0x4707, // checked
+    SMSG_AURA_UPDATE                                        = 0x0072, // 18414
     SMSG_AURA_UPDATE_ALL                                    = 0x495, // checked
     SMSG_AURACASTLOG_OBSOLETE                               = 0x1D1, // 0x0000
     SMSG_AUTH_CHALLENGE                                     = 0x0949, // 18414
@@ -1451,7 +1451,7 @@ enum Opcodes
     SMSG_SEND_ALL_COMBAT_LOG = 0x514,
     SMSG_SEND_MAIL_RESULT                                   = 0x4927, // checked
     SMSG_SEND_UNLEARN_SPELLS                                = 0x10F1, // 18414
-    SMSG_SERVER_BUCK_DATA = 0x141E,
+    SMSG_SERVER_BUCK_DATA_0 = 0x141E,
     SMSG_SERVER_BUCK_DATA_START = 0x4A3,
     SMSG_SERVER_FIRST_ACHIEVEMENT                           = 0x6424, // checked
     SMSG_SERVER_INFO_RESPONSE                               = 0x74B5, // changed - was 0x4A1

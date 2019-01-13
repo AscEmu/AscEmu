@@ -1852,7 +1852,7 @@ void Player::smsg_InitialSpells()
 
 #if VERSION_STRING != TBC
     uint32 v = 0;
-    GetSession()->OutPacket(CMSG_UNKNOWN_ON_LOGIN, 4, &v);
+    GetSession()->OutPacket(SMSG_SERVER_BUCK_DATA, 4, &v);
 #endif
 #endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
