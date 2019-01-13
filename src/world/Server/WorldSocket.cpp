@@ -38,7 +38,25 @@ struct ClientPktHeader
     uint32 cmd;
 };
 
+struct AuthPktHeader
+{
+    AuthPktHeader(uint32_t _size, uint32_t _opcode) : raw(_size << 13 | _opcode & 0x01FFF) {}
+
+    uint16_t getOpcode() const
+    {
+        return uint16_t(raw & 0x01FFF);
+    }
+
+    uint32_t getSize() const
+    {
+        return raw >> 13;
+    };
+
+    uint32_t raw;
+};
+
 // MIT
+#if VERSION_STRING != Mop
 struct ServerPktHeader
 {
 #if VERSION_STRING >= Cata
@@ -63,6 +81,48 @@ struct ServerPktHeader
     uint16_t cmd;
 #endif
 };
+#else
+struct ServerPktHeader
+{
+    ServerPktHeader(uint32_t _size, uint32_t _cmd) : headerLength(0)
+    {
+        if (_size > 0x7FFF)
+            header[headerLength++] = 0x80 | 0xFF & _size >> 16;
+
+        header[headerLength++] = 0xFF & _size;
+        header[headerLength++] = 0xFF & _size >> 8;
+        header[headerLength++] = 0xFF & _cmd;
+        header[headerLength++] = 0xFF & _cmd >> 8;
+    }
+
+    uint32_t getOpcode() const
+    {
+        uint8_t length = headerLength;
+        uint32_t opcode = uint32_t(header[--length]) << 8;
+        opcode |= uint32_t(header[--length]);
+
+        return opcode;
+    }
+
+    uint32_t getSize() const
+    {
+        uint32_t size = 0;
+
+        uint8_t length = 0;
+        if (header[length] & 0x80)
+            size |= uint32_t(header[length++] & 0x7F) << 16;
+
+        size |= uint32_t(header[length++] & 0xFF) << 8;
+        size |= uint32_t(header[length] & 0xFF);
+
+        return size;
+    }
+
+    uint8_t headerLength;
+    uint8_t header[6]{};
+};
+#endif
+
 // MIT End
 #pragma pack(pop)
 
@@ -132,7 +192,11 @@ void WorldSocket::OnDisconnect()
     }
 }
 
+#if VERSION_STRING != Mop
 void WorldSocket::OutPacket(uint16 opcode, size_t len, const void* data)
+#else
+void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
+#endif
 {
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
@@ -149,7 +213,9 @@ void WorldSocket::OutPacket(uint16 opcode, size_t len, const void* data)
         /* queue the packet */
         queueLock.Acquire();
         WorldPacket* packet = new WorldPacket(opcode, len);
-        if (len) packet->append(static_cast<const uint8*>(data), len);
+        if (len)
+            packet->append(static_cast<const uint8_t*>(data), len);
+
         _queue.Push(packet);
         queueLock.Release();
     }
@@ -199,6 +265,7 @@ void WorldSocket::UpdateQueuedPackets()
     queueLock.Release();
 }
 
+#if VERSION_STRING != Mop
 OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* data)
 {
     bool rv;
@@ -252,6 +319,48 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     BurstEnd();
     return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
 }
+#else
+OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void* data)
+{
+    bool rv;
+    if (!IsConnected())
+        return OUTPACKET_RESULT_NOT_CONNECTED;
+
+    BurstBegin();
+
+    if (writeBuffer.GetSpace() < (len + 4))
+    {
+        BurstEnd();
+        return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
+    }
+
+    // Packet logger :)
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+
+    if (_crypt.isInitialized())
+    {
+        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), opcode);
+        _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+        rv = BurstSend(reinterpret_cast<const uint8_t*>(&authPktHeader.raw), 4);
+    }
+    else
+    {
+        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), opcode);
+        rv = BurstSend(reinterpret_cast<const uint8_t*>(&serverPktHeader.header), serverPktHeader.headerLength);
+    }
+
+    // Pass the rest of the packet to our send buffer (if there is any)
+    if (len > 0 && rv)
+        rv = BurstSend(static_cast<const uint8_t*>(data), static_cast<uint32_t>(len));
+
+    if (rv)
+        BurstPush();
+
+    BurstEnd();
+    return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
+}
+#endif
+
 
 void WorldSocket::OnConnect()
 {
@@ -304,7 +413,56 @@ void WorldSocket::OnConnectTwo()
 
 void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 {
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Mop
+    std::string account;
+    uint32_t addonSize;
+
+    _latency = Util::getMSTime() - _latency;
+
+    try
+    {
+        recvPacket->read<uint32_t>();
+        recvPacket->read<uint32_t>();
+        *recvPacket >> AuthDigest[18];
+        *recvPacket >> AuthDigest[14];
+        *recvPacket >> AuthDigest[3];
+        *recvPacket >> AuthDigest[4];
+        *recvPacket >> AuthDigest[0];
+        recvPacket->read<uint32_t>();
+        *recvPacket >> AuthDigest[11];
+        *recvPacket >> mClientSeed;
+        *recvPacket >> AuthDigest[19];
+        recvPacket->read<uint8_t>();
+        recvPacket->read<uint8_t>();
+        *recvPacket >> AuthDigest[2];
+        *recvPacket >> AuthDigest[9];
+        *recvPacket >> AuthDigest[12];
+        recvPacket->read<uint64_t>();
+        recvPacket->read<uint32_t>();
+        *recvPacket >> AuthDigest[16];
+        *recvPacket >> AuthDigest[5];
+        *recvPacket >> AuthDigest[6];
+        *recvPacket >> AuthDigest[8];
+        *recvPacket >> mClientBuild;
+        *recvPacket >> AuthDigest[17];
+        *recvPacket >> AuthDigest[7];
+        *recvPacket >> AuthDigest[13];
+        *recvPacket >> AuthDigest[15];
+        *recvPacket >> AuthDigest[1];
+        *recvPacket >> AuthDigest[10];
+
+        *recvPacket >> addonSize;
+        if (addonSize)
+        {
+            mAddonInfoBuffer.resize(addonSize);
+            recvPacket->read(static_cast<uint8_t*>(mAddonInfoBuffer.contents()), addonSize);
+        }
+
+        recvPacket->readBit();
+        const auto accountNameLength = recvPacket->readBits(11);
+        account = recvPacket->ReadString(accountNameLength);
+    }
+#elif VERSION_STRING == Cata
     std::string account;
     uint32_t addonSize;
 
@@ -485,8 +643,13 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     _crypt.setLegacyKey(K, 40);
     _crypt.initLegacyCrypt();
 #endif
-#else
+#elif VERSION_STRING < Mop
     _crypt.initWotlkCrypt(K);
+#else
+    _crypt.initMopCrypt(K);
+
+    BigNumber BNK;
+    BNK.SetBinary(K, 40);
 #endif
 
     recvData >> lang;
@@ -639,7 +802,7 @@ void WorldSocket::Authenticate()
         OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x00");
 
     sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
-#else
+#elif VERSION_STRING == Cata
     WorldPacket data(SMSG_AUTH_RESPONSE, 17);
     data.writeBit(false);
     data.writeBit(true);
@@ -656,6 +819,68 @@ void WorldSocket::Authenticate()
 
     // send addon info here
     mSession->sendAddonInfo();
+#elif VERSION_STRING == Mop
+    WorldPacket data(SMSG_AUTH_RESPONSE, 80);
+    data.writeBit(true);
+    data.writeBits(0, 21);
+
+    data.writeBits(11, 23); //classes
+    data.writeBits(0, 21);
+    data.writeBit(0);
+    data.writeBit(0);
+    data.writeBit(0);
+    data.writeBit(0);
+    data.writeBits(15, 23); //races
+    data.writeBit(0);
+
+    data.writeBit(false);
+
+    data.flushBits();
+
+    // add races-expansion combination
+    data << uint8_t(1) << uint8_t(0);
+    data << uint8_t(2) << uint8_t(0);
+    data << uint8_t(3) << uint8_t(0);
+    data << uint8_t(4) << uint8_t(0);
+    data << uint8_t(5) << uint8_t(0);
+    data << uint8_t(6) << uint8_t(0);
+    data << uint8_t(7) << uint8_t(0);
+    data << uint8_t(8) << uint8_t(0);
+    data << uint8_t(9) << uint8_t(3);
+    data << uint8_t(10) << uint8_t(1);
+    data << uint8_t(11) << uint8_t(1);
+    data << uint8_t(22) << uint8_t(3);
+    data << uint8_t(24) << uint8_t(4);
+    data << uint8_t(25) << uint8_t(4);
+    data << uint8_t(26) << uint8_t(4);
+
+    // add classes-expansion combination
+    data << uint8_t(1) << uint8_t(0);
+    data << uint8_t(2) << uint8_t(0);
+    data << uint8_t(3) << uint8_t(0);
+    data << uint8_t(4) << uint8_t(0);
+    data << uint8_t(5) << uint8_t(0);
+    data << uint8_t(6) << uint8_t(2);
+    data << uint8_t(7) << uint8_t(0);
+    data << uint8_t(8) << uint8_t(0);
+    data << uint8_t(9) << uint8_t(0);
+    data << uint8_t(10) << uint8_t(4);
+    data << uint8_t(11) << uint8_t(0);
+
+    data << uint32_t(0);            // BillingTime
+    data << uint8_t(4);             // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA, 4 - MOP
+    data << uint32_t(4);
+    data << uint32_t(0);
+    data << uint8_t(4);
+    data << uint32_t(0);
+    data << uint32_t(0);
+    data << uint32_t(0);
+
+    data << uint8_t(0x0C);          // 0x0C = 12 (AUTH_OK)
+
+    SendPacket(&data);
+
+    mSession->sendClientCacheVersion(18414);
 #endif
 
 
@@ -759,6 +984,7 @@ void WorldSocket::OnRead()
 {
     for (;;)
     {
+#if VERSION_STRING != Mop
         // Check for the header if we don't have any bytes to wait for.
         if (mRemaining == 0)
         {
@@ -782,6 +1008,39 @@ void WorldSocket::OnRead()
             mRemaining = mSize = ntohs(Header.size) - 4;
             mOpcode = Header.cmd;
         }
+#else
+        if (mRemaining == 0)
+        {
+            if (_crypt.isInitialized())
+            {
+                if (readBuffer.GetSize() < 4)
+                {
+                    return;
+                }
+
+                AuthPktHeader authPktHeader(0, 0);
+                readBuffer.Read(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+                _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+
+                mRemaining = mSize = authPktHeader.getSize();
+                mOpcode = authPktHeader.getOpcode();
+            }
+            else
+            {
+                if (readBuffer.GetSize() < 6)
+                {
+                    return;
+                }
+
+                ClientPktHeader clientPktHeader;
+                readBuffer.Read(reinterpret_cast<uint8_t*>(&clientPktHeader), 6);
+                _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
+
+                mRemaining = mSize = clientPktHeader.size -= 4;
+                mOpcode = clientPktHeader.cmd;
+            }
+        }
+#endif
 
         if (mRemaining > 0)
         {

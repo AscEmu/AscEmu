@@ -141,7 +141,7 @@ enum Opcodes
     CMSG_CHAR_CREATE                                        = 0x4A36, // checked
     CMSG_CHAR_CUSTOMIZE                                     = 0x2C34, // checked
     CMSG_CHAR_DELETE                                        = 0x6425, // checked
-    CMSG_CHAR_ENUM                                          = 0x0502, // checked
+    CMSG_CHAR_ENUM                                          = 0x00E0, // 18414
     CMSG_CHAR_FACTION_CHANGE                                = 0x2735, // changed - was 0x4D9
     CMSG_CHAR_RACE_CHANGE                                   = 0x0D24, // changed - was 0x4F8
     CMSG_CHAR_RENAME                                        = 0x2327, // checked
@@ -218,7 +218,7 @@ enum Opcodes
     CMSG_EQUIPMENT_SET_USE                                  = 0x0417, // changed - was 0x4D5
     CMSG_EXPIRE_RAID_INSTANCE = 0x415,
     CMSG_FAR_SIGHT                                          = 0x4835, // changed - was 0x27A
-    CMSG_FLAG_QUEST = 0x02A,
+    CMSG_FLAG_QUEST = 0x000,
     CMSG_FLAG_QUEST_FINISH = 0x02B,
     CMSG_FLOOD_GRACE_CHEAT = 0x497,
     CMSG_FORCE_ANIM = 0x4D7,
@@ -400,7 +400,7 @@ enum Opcodes
     CMSG_LIST_INVENTORY                                     = 0x2806, // checked
     CMSG_LOAD_DANCES = 0x44D,
     CMSG_LOAD_SCREEN                                        = 0x2422, // checked
-    CMSG_LOG_DISCONNECT                                     = 0x446D, // checked
+    CMSG_LOG_DISCONNECT                                     = 0x10B3, // 18414
     CMSG_LOGOUT_CANCEL                                      = 0x2324, // checked
     CMSG_LOGOUT_REQUEST                                     = 0x0A25, // checked
     CMSG_LOOT                                               = 0x0127, // checked
@@ -543,7 +543,7 @@ enum Opcodes
     CMSG_QUESTLOG_SWAP_QUEST                                = 0x1194, // ??? 0x0000
     CMS_RANDOMIZE_CHAR_NAME                                 = 0x2413, // new
     CMSG_READ_ITEM                                          = 0x2F16, // checked
-    CMSG_READY_FOR_ACCOUNT_DATA_TIMES                       = 0x2B16, // checked
+    CMSG_READY_FOR_ACCOUNT_DATA_TIMES                       = 0x031C, // 18414
     CMSG_REALM_SPLIT                                        = 0x2906, // checked
     CMSG_RECHARGE = 0x00F,
     CMSG_RECLAIM_CORPSE                                     = 0x4036, // checked
@@ -785,7 +785,7 @@ enum Opcodes
     MSG_MOVE_SET_PITCH                                      = 0x7312, // checked
     MSG_MOVE_SET_PITCH_RATE                                 = 0x75B0, // SMSG
     MSG_MOVE_SET_PITCH_RATE_CHEAT = 0x45A,
-    MSG_MOVE_SET_RAW_POSITION_ACK                           = 0x0E0, // ??? 0x0000
+    MSG_MOVE_SET_RAW_POSITION_ACK                           = 0x000, // ??? 0x0000
     MSG_MOVE_SET_RUN_BACK_SPEED                             = 0x71B1, // ??? 0x0000, SMSG set run back speed
     MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT = 0x10CF,
     MSG_MOVE_SET_RUN_MODE                                   = 0x791A, // checked
@@ -853,7 +853,7 @@ enum Opcodes
     MSG_VIEW_PHASE_SHIFT = 0x4F9,
     MSG_WOW_CONNECTION = 0x4F57,
     OBSOLETE_DROP_ITEM = 0x110,
-    SMSG_ACCOUNT_DATA_TIMES                                 = 0x4B05, // checked
+    SMSG_ACCOUNT_DATA_TIMES                                 = 0x162B, // 18414
     SMSG_ACCOUNT_INFO_RESPONSE                              = 0x10A7, // new
     SMSG_ACCOUNT_RESTRICTED_WARNING                         = 0x51A7, // new
     SMSG_ACHIEVEMENT_DELETED                                = 0x6A16, // checked

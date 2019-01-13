@@ -32,6 +32,7 @@ class WowCrypt
     // WotLK
     public:
         void initWotlkCrypt(uint8_t* key);
+        void initMopCrypt(uint8_t* key);
         void decryptWotlkReceive(uint8_t* data, size_t length);
         void encryptWotlkSend(uint8_t* data, size_t length);
 

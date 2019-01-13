@@ -176,6 +176,133 @@ namespace AscEmu { namespace Packets
                 packet.flushBits();
                 packet.append(buffer);
             }
+#elif VERSION_STRING == Mop
+            ByteBuffer buffer;
+
+            packet.writeBits(0, 21);
+            packet.writeBits(char_count, 16);
+
+            if (char_count)
+            {
+                for (auto const& data : enum_data)
+                {
+                    ObjectGuid guid = MAKE_NEW_GUID(data.guid, 0, 0x000);
+                    ObjectGuid guildGuid = MAKE_NEW_GUID(data.guildId, 0, HIGHGUID_TYPE_GUILD);
+
+                    packet.writeBit(guildGuid[4]);
+                    packet.writeBit(guid[0]);
+                    packet.writeBit(guildGuid[3]);
+                    packet.writeBit(guid[3]);
+                    packet.writeBit(guid[7]);
+                    packet.writeBit(0);
+                    packet.writeBit(data.loginFlags & 0x20); // 0x20 = AT_LOGIN_FIRST
+                    packet.writeBit(guid[6]);
+                    packet.writeBit(guildGuid[6]);
+                    packet.writeBits(uint32_t(data.name.length()), 6);
+                    packet.writeBit(guid[1]);
+                    packet.writeBit(guildGuid[1]);
+                    packet.writeBit(guildGuid[0]);
+                    packet.writeBit(guid[4]);
+                    packet.writeBit(guildGuid[7]);
+                    packet.writeBit(guid[2]);
+                    packet.writeBit(guid[5]);
+                    packet.writeBit(guildGuid[2]);
+                    packet.writeBit(guildGuid[5]);
+
+                    buffer << uint32_t(0);
+
+                    buffer.WriteByteSeq(guid[1]);
+
+                    buffer << uint8_t(0);
+
+                    const uint8_t skin = uint8_t(data.bytes & 0xFF);
+                    const uint8_t face = uint8_t((data.bytes >> 8) & 0xFF);
+                    const uint8_t hairStyle = uint8_t((data.bytes >> 16) & 0xFF);
+                    const uint8_t hairColor = uint8_t((data.bytes >> 24) & 0xFF);
+                    const uint8_t facialHair = uint8_t(data.bytes & 0xFF);
+                    buffer << uint8(hairStyle);
+
+                    buffer.WriteByteSeq(guildGuid[2]);
+                    buffer.WriteByteSeq(guildGuid[0]);
+                    buffer.WriteByteSeq(guildGuid[6]);
+
+                    buffer.append(data.name.c_str(), data.name.length());
+
+                    buffer.WriteByteSeq(guildGuid[3]);
+
+                    buffer << float(data.x);
+                    buffer << uint32_t(0);
+                    buffer << uint8_t(face);
+                    buffer << uint8_t(data.Class);
+
+                    buffer.WriteByteSeq(guildGuid[5]);
+
+                    for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+                    {
+                        buffer << uint32_t(data.player_items[i].enchantmentId);
+                        buffer << uint8_t(data.player_items[i].inventoryType);
+                        buffer << uint32_t(data.player_items[i].displayId);
+                    }
+
+                    switch (data.loginFlags)
+                    {
+                        case LOGIN_CUSTOMIZE_LOOKS:
+                            buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);    //Character recustomization flag
+                            break;
+                        case LOGIN_CUSTOMIZE_RACE:
+                            buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_RACE);         //Character recustomization + race flag
+                            break;
+                        case LOGIN_CUSTOMIZE_FACTION:
+                            buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_FACTION);      //Character recustomization + race + faction flag
+                            break;
+                        default:
+                            buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_NONE);         //Character recustomization no flag set
+                    }
+
+                    buffer.WriteByteSeq(guid[3]);
+                    buffer.WriteByteSeq(guid[5]);
+
+                    buffer << uint32_t(data.pet_data.family);
+
+                    buffer.WriteByteSeq(guildGuid[4]);
+
+                    buffer << uint32_t(data.mapId);
+                    buffer << uint8_t(data.race);
+                    buffer << uint8_t(skin);
+
+                    buffer.WriteByteSeq(guildGuid[1]);
+
+                    buffer << uint8_t(data.level);
+
+                    buffer.WriteByteSeq(guid[0]);
+                    buffer.WriteByteSeq(guid[2]);
+
+                    buffer << uint8_t(hairColor);
+                    buffer << uint8_t(data.gender);
+                    buffer << uint8_t(facialHair);
+
+                    buffer << uint32_t(data.pet_data.level);
+
+                    buffer.WriteByteSeq(guid[4]);
+                    buffer.WriteByteSeq(guid[7]);
+
+                    buffer << float(data.y);
+                    buffer << uint32_t(data.pet_data.display_id);
+                    buffer << uint32_t(0);
+
+                    buffer.WriteByteSeq(guid[6]);
+
+                    buffer << uint32_t(data.char_flags);
+                    buffer << uint32_t(data.zoneId);
+
+                    buffer.WriteByteSeq(guildGuid[7]);
+
+                    buffer << float(data.z);
+                }
+                packet.writeBit(1);
+                packet.flushBits();
+                packet.append(buffer);
+            }
 #endif
 
             return true;
