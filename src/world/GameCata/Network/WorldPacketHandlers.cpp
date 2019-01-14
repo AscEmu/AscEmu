@@ -603,7 +603,6 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
-    //WorldPacketHandlers[CMSG_UNKNOWN_ON_LOGIN].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 
     WorldPacketHandlers[CMSG_ADDON_REGISTERED_PREFIXES].handler = &WorldSession::handleAddonRegisteredPrefixesOpcode;
