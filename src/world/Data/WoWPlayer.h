@@ -411,7 +411,7 @@ struct WoWPlayer : WoWUnit
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
 };
-#elif VERSION_STRING == Cata
+#elif VERSION_STRING >= Cata
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 156
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12

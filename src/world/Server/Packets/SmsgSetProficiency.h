@@ -35,7 +35,11 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING != Mop
             packet << itemClass << proficiency;
+#elif VERSION_STRING == Mop
+            packet << proficiency << itemClass;
+#endif
             return true;
         }
 

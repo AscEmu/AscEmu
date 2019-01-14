@@ -24,7 +24,7 @@
 #include "Server/EventableObject.h"
 #include "Singleton.h"
 #include "Storage/DBC/DBCStructures.hpp"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Structures.h"
 #endif
 

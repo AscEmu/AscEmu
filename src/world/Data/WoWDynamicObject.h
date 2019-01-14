@@ -68,7 +68,7 @@ struct WoWDynamicObject : WoWObject
 };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;

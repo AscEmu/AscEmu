@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     class CmsgGuildDemote : public ManagedPacket
     {
     public:
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         std::string name;
 
         CmsgGuildDemote() : CmsgGuildDemote("")
@@ -48,7 +48,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> name;
 #else
             guid[7] = packet.readBit();

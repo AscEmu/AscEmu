@@ -78,7 +78,7 @@ enum Languages
     LANG_TROLL          = 0x0E,
     LANG_GUTTERSPEAK    = 0x21,
     LANG_DRAENEI        = 0x23,
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     NUM_LANGUAGES       = 0x24
 #else
     LANG_ZOMBIE         = 0x24,

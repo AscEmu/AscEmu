@@ -176,6 +176,3 @@ struct MovementInfo
     bool isInterpolated() const { return hasFlag2(MOVEFLAG2_INTERPOLATED_MOVE); }
 };
 #endif
-
-#if VERSION_STRING == Cata
-#endif

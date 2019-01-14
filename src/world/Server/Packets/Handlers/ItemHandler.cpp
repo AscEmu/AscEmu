@@ -382,7 +382,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
         this->SendPacket(&packet);
     }
 }
-#elif VERSION_STRING == Cata
+#elif VERSION_STRING >= Cata
 void WorldSession::sendRefundInfo(uint64_t guid)
 {
     if (!_player || !_player->IsInWorld())
@@ -477,7 +477,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
     uint32_t error = 1;
 
     
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     DBC::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
 #else
     DB2::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
@@ -1527,7 +1527,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
             it->DeleteMe();
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         WorldPacket data(16);
         data.Initialize(SMSG_BUY_ITEM);
         data << uint64_t(srlPacket.itemGuid);
@@ -1802,7 +1802,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
     data << uint64_t(srlPacket.srcGuid.GetOldGuid());
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     data << Util::getMSTime();
     data << uint32_t(srlPacket.itemId);
 #else
@@ -1993,7 +1993,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!_player->obj_movement_info.isOnTransport())
 #else
     if (_player->obj_movement_info.getTransportGuid().IsEmpty())
@@ -2028,7 +2028,7 @@ void WorldSession::sendInventoryList(Creature* unit)
         return;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data((unit->GetSellItemCount() * 28 + 9));       // allocate
     data.SetOpcode(SMSG_LIST_INVENTORY);
     data << unit->getGuid();
@@ -2069,7 +2069,7 @@ void WorldSession::sendInventoryList(Creature* unit)
                 if (sellItem.extended_cost == nullptr || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
                     price = GetBuyPriceForItem(curItem, 1, _player, unit);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 data << uint32_t(counter + 1);    // we start from 0 but client starts from 1
                 data << uint32_t(curItem->ItemId);
                 data << uint32_t(curItem->DisplayInfoID);
@@ -2113,7 +2113,7 @@ void WorldSession::sendInventoryList(Creature* unit)
         }
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const_cast<uint8_t*>(data.contents())[8] = static_cast<uint8_t>(counter);
 #else
     ObjectGuid guid = unit->getGuid();

@@ -56,7 +56,7 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
     _player->resetTalents();
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC

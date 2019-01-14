@@ -168,7 +168,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.cast_count;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     spell->m_glyphslot = srlPacket.glyphSlot;
 #endif
 
@@ -193,7 +193,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
         if (hasMovementData)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
             handleMovementOpcodes(recvPacket);
 #else

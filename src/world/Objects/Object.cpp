@@ -1214,7 +1214,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
     uint16 updateflags = m_updateFlag;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (target == this)
     {
         updateflags |= UPDATEFLAG_SELF;
@@ -1827,7 +1827,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
@@ -2384,7 +2384,7 @@ bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false 
 
     m_position = const_cast<LocationVector &>(v);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!allowPorting && v.z < -500)
     {
         m_position.z = 500;
@@ -2419,7 +2419,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
     m_position.ChangeCoords(newX, newY, newZ, newOrientation);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!allowPorting && newZ < -500)
     {
         m_position.z = 500;
@@ -3508,7 +3508,7 @@ uint32 Object::GetTeam()
 
 Transporter* Object::GetTransport() const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
     return nullptr;
@@ -3693,7 +3693,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 // replace text with content
                 std::string newText = text;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #if VERSION_STRING > Classic
                 static const char* races[NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
 #else
@@ -3994,8 +3994,12 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     return true;
 }
 
+#if VERSION_STRING >= Cata
 #if VERSION_STRING == Cata
-#include "GameCata/Movement/MovementStructures.h"
+    #include "GameCata/Movement/MovementStructures.h"
+#elif VERSION_STRING == Mop
+    #include "GameMop/Movement/MovementStructures.h"
+#endif
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {

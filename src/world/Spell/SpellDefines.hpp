@@ -321,7 +321,7 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK32                             = 0x80000000
 };
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 enum SpellAttributesExH
 {
     ATTRIBUTESEXH_UNK0                              = 0x00000001,   // 0

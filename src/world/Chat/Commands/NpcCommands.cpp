@@ -117,7 +117,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     uint32_t spellid;
     uint32_t cost;
     uint32_t reqlevel;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint32_t reqspell;
     uint32_t delspell;
 
@@ -156,7 +156,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     }
 
     TrainerSpell sp;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     sp.Cost = cost;
     sp.IsProfession = false;
     sp.pLearnSpell = learn_spell;
@@ -837,7 +837,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
 //.npc vendoradditem
 bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     char* pitem = strtok(const_cast<char*>(args), " ");
     if (!pitem)
         return false;

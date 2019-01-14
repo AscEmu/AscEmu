@@ -55,7 +55,7 @@ void GuildLogHolder::addEvent(GuildLogEntry* entry)
 
 void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ByteBuffer buffer;
     data.writeBits(mLog.size(), 23);
     for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)

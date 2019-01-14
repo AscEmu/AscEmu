@@ -52,7 +52,7 @@ struct WoWContainer : WoWItem
 };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 #define WOWCONTAINER_ITEM_SLOT_COUNT 36
 

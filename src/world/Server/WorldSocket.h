@@ -51,7 +51,7 @@ class SERVER_DECL WorldSocket : public Socket
     // MIT
     private:
         uint8_t AuthDigest[20];
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint32_t mClientBuild;
 #else
         uint16_t mClientBuild;
@@ -74,8 +74,13 @@ class SERVER_DECL WorldSocket : public Socket
         inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
         inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
+#if VERSION_STRING != Mop
         void OutPacket(uint16 opcode, size_t len, const void* data);
         OUTPACKET_RESULT _OutPacket(uint16 opcode, size_t len, const void* data);
+#else
+        void OutPacket(uint32_t opcode, size_t len, const void* data);
+        OUTPACKET_RESULT _OutPacket(uint32_t opcode, size_t len, const void* data);
+#endif
 
         inline uint32 GetLatency() { return _latency; }
 

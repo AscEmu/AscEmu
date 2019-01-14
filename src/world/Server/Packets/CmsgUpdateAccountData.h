@@ -40,7 +40,7 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> uiId;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> uiTimestamp;
 #endif
             packet >> uiDecompressedSize;

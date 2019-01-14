@@ -34,6 +34,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
+#elif VERSION_STRING == Mop
+#include "GameMop/Management/GuildFinderMgr.h"
 #endif
 
 initialiseSingleton(World);
@@ -106,7 +108,7 @@ World::~World()
     LogNotice("TaxiMgr : ~TaxiMgr()");
     delete TaxiMgr::getSingletonPtr();
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     LogNotice("GuildMgr", "~GuildMgr()");
     delete GuildMgr::getSingletonPtr();
 
@@ -734,7 +736,7 @@ bool World::setInitialWorldSettings()
         return false;
 
     new TaxiMgr;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     new GuildFinderMgr;
 #endif
     new GuildMgr;
@@ -780,7 +782,7 @@ bool World::setInitialWorldSettings()
 
     sGuildMgr.loadGuildDataFromDB();
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     sGuildMgr.loadGuildXpForLevelFromDB();
     sGuildMgr.loadGuildRewardsFromDB();
 
@@ -816,7 +818,7 @@ void World::resetCharacterLoginBannState()
 
 bool World::loadDbcDb2Stores()
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     LoadDB2Stores();
 #endif
 
@@ -939,7 +941,7 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(ObjectMgr, LoadSpellSkills);
     MAKE_TASK(ObjectMgr, LoadVendors);
     MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     MAKE_TASK(ObjectMgr, LoadSpellRequired);
     MAKE_TASK(ObjectMgr, LoadSkillLineAbilityMap);
 #endif

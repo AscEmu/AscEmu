@@ -60,6 +60,32 @@ void WowCrypt::initWotlkCrypt(uint8_t* key)
     m_isInitialized = true;
 }
 
+void WowCrypt::initMopCrypt(uint8_t* key)
+{
+    static const uint8_t send[seedLenght] = { 0x40, 0xAA, 0xD3, 0x92, 0x26, 0x71, 0x43, 0x47, 0x3A, 0x31, 0x08, 0xA6, 0xE7, 0xDC, 0x98, 0x2A };
+    static const uint8_t recv[seedLenght] = { 0x08, 0xF1, 0x95, 0x9F, 0x47, 0xE5, 0xD2, 0xDB, 0xA1, 0x3D, 0x77, 0x8F, 0x3F, 0x3E, 0xE7, 0x00 };
+
+    uint8_t encryptHash[SHA_DIGEST_LENGTH];
+    uint8_t decryptHash[SHA_DIGEST_LENGTH];
+
+    uint8_t pass[1024];
+    uint32_t mdLength;
+
+    HMAC(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
+    assert(mdLength == SHA_DIGEST_LENGTH);
+
+    HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
+    assert(mdLength == SHA_DIGEST_LENGTH);
+
+    RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
+    RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
+
+    RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
+    RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
+
+    m_isInitialized = true;
+}
+
 void WowCrypt::decryptWotlkReceive(uint8_t* data, size_t length)
 {
     if (!m_isInitialized)

@@ -7,6 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 
+#ifdef AE_MOP
+#include "../world/GameMop/Storage/DBCStructures.h"
+#endif
+
 #ifdef AE_CATA
     #include "../world/GameCata/Storage/DBCStructures.h"
 #endif

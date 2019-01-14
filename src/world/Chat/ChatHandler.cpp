@@ -169,7 +169,7 @@ WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const ch
     //channels are handled in channel handler and so on
     uint32 messageLength = (uint32)strlen(message) + 1;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 60);
 #else
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);

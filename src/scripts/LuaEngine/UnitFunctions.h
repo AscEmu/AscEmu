@@ -4483,7 +4483,7 @@ public:
 
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         TEST_UNIT()
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
@@ -5308,7 +5308,7 @@ public:
         if (movement_info != NULL)
         {
             lua_newtable(L);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             lua_pushstring(L, "x");
             lua_pushnumber(L, movement_info->position.x);
             lua_rawset(L, -3);
@@ -5346,7 +5346,7 @@ public:
         TEST_PLAYER()
             MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
         if (move_info != NULL)
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             lua_pushnumber(L, move_info->flags);
 #else
             lua_pushnumber(L, move_info->getMovementFlags());

@@ -41,7 +41,7 @@ namespace AscEmu { namespace Packets
             packet << guid << honnorCurrency;
 #if VERSION_STRING != Classic
             packet << kills;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet << todayContrib;
             packet << yesterdayContrib;
 #endif

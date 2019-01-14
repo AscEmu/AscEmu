@@ -24,7 +24,7 @@ namespace AscEmu { namespace Packets
         uint8_t itemSlot{};
         uint64_t itemGuid[12]{};
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint64_t gobjGuid;
         uint32_t money{};
         uint32_t cod{};
@@ -52,7 +52,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> gobjGuid;
             packet >> receiverName;
             packet >> subject;

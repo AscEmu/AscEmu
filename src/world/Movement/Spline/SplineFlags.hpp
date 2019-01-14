@@ -12,7 +12,7 @@ namespace Movement { namespace Spline {
 #pragma pack(push, 1)
     struct SplineFlagsData
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint8_t animation_id : 8; // 8
         bool done : 1;
         bool falling : 1;

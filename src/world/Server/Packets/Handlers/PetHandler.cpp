@@ -311,7 +311,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
 {
     uint32_t stable_cost = 0;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const auto stableSlotPrices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
 
     if (stableSlotPrices != nullptr)
@@ -465,7 +465,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
         creature->RemoveAura(srlPacket.spellId);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {

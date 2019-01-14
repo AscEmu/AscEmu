@@ -878,7 +878,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     SendPacket(&data);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -944,7 +944,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 {
     uint8_t unk1;
@@ -980,7 +980,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 {
     if (_player->isAlive())
@@ -990,7 +990,7 @@ void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
 {
     uint32_t disconnectReason;
@@ -1127,7 +1127,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     _player->setHealth(_player->getMaxHealth() / 2);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
 {
     uint32_t mapId;
@@ -1155,6 +1155,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid guid;
 
+#if VERSION_STRING == Cata
     guid[6] = recvPacket.readBit();
     guid[7] = recvPacket.readBit();
     guid[4] = recvPacket.readBit();
@@ -1172,6 +1173,25 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guid[4]);
     recvPacket.ReadByteSeq(guid[0]);
     recvPacket.ReadByteSeq(guid[5]);
+#elif VERSION_STRING == Mop
+    guid[3] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[2] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[7]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[4]);
+#endif
 
     LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
 
@@ -1189,6 +1209,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 {
+#if VERSION_STRING == Cata
     uint32_t type;
     recvPacket >> type;
 
@@ -1234,6 +1255,53 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 break;
         }*/
     }
+#elif VERSION_STRING == Mop
+    uint32_t type;
+    recvPacket >> type;
+
+    uint32_t count = recvPacket.readBits(23);
+
+    ObjectGuid* guids = new ObjectGuid[count];
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        guids[i][6] = recvPacket.readBit();
+        guids[i][3] = recvPacket.readBit();
+        guids[i][0] = recvPacket.readBit();
+        guids[i][1] = recvPacket.readBit();
+        guids[i][4] = recvPacket.readBit();
+        guids[i][5] = recvPacket.readBit();
+        guids[i][7] = recvPacket.readBit();
+        guids[i][2] = recvPacket.readBit();
+    }
+
+    uint32_t entry;
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        recvPacket.ReadByteSeq(guids[i][1]);
+        recvPacket >> entry;
+        recvPacket.ReadByteSeq(guids[i][0]);
+        recvPacket.ReadByteSeq(guids[i][5]);
+        recvPacket.ReadByteSeq(guids[i][6]);
+        recvPacket.ReadByteSeq(guids[i][4]);
+        recvPacket.ReadByteSeq(guids[i][7]);
+        recvPacket.ReadByteSeq(guids[i][2]);
+        recvPacket.ReadByteSeq(guids[i][3]);
+
+        /*switch (type)
+        {
+            case DB2_REPLY_ITEM:
+                SendItemDb2Reply(entry);
+                break;
+            case DB2_REPLY_SPARSE:
+                SendItemSparseDb2Reply(entry);
+                break;
+            default:
+                LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
+                recvPacket.clear();
+                break;
+        }*/
+    }
+#endif
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
@@ -1381,7 +1449,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (_player->obj_movement_info.isOnTransport())
 #else
     if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
@@ -1727,7 +1795,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     }
     data.put<uint32_t>(slotMaskPos, slotMask);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
     {
         data << guild->getGUID();
@@ -1740,7 +1808,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     SendPacket(&data);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 {
     if (recvPacket.rpos() + 4 > recvPacket.size())
@@ -2136,7 +2204,7 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
 
         data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
     }
-#else
+#elif VERSION_STRING <= Cata
     WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
     data << uint32_t(UNIXTIME);
     data << uint8_t(1);
@@ -2146,6 +2214,17 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
         if (mask & (1 << i))
             data << uint32(0);
     }
+#else
+    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
+    data.writeBit(1);
+    data.flushBits();
+    for (uint8_t i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    {
+        if (mask & (1 << i))
+            data << uint32_t(0);
+    }
+    data << uint32_t(mask);
+    data << uint32_t(UNIXTIME);
 #endif
     SendPacket(&data);
 }

@@ -38,7 +38,7 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
         m_update = true;
         if (m_update)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             // Initialize dungeon cache
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
@@ -115,7 +115,7 @@ void LfgMgr::LoadRewards()
         uint32 otherMoneyVar = fields[6].GetUInt32();
         uint32 otherXPVar = fields[7].GetUInt32();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (!sLFGDungeonStore.LookupEntry(dungeonId))
         {
             LOG_DEBUG("Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
@@ -141,7 +141,7 @@ void LfgMgr::LoadRewards()
             otherQuestId = 0;
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 		//DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
 #endif
         m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
@@ -420,7 +420,7 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
     LfgDungeonSet dungeons = GetDungeonsByRandom(0);
     LfgLockMap lock;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end(); ++it)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
@@ -1485,7 +1485,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
                 SetDungeon(grp->GetGUID(), dungeon->Entry());
 #endif
@@ -1539,7 +1539,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
 #endif
         //Set Dungeon difficult incomplete :D
@@ -1548,7 +1548,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             return;
 
         uint64 gguid = grp->GetGUID();
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         SetDungeon(gguid, dungeon->ID);
 #endif
         SetState(gguid, LFG_STATE_DUNGEON);
@@ -1816,7 +1816,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
         error = LFG_TELEPORTERROR_PLAYER_DEAD;
     else
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint64 gguid = grp->GetGUID();
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(GetDungeon(gguid));
 
@@ -1885,7 +1885,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
 void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     Group* group = player->GetGroup();
     if (!group || !group->isLFGGroup())
     {
@@ -2137,7 +2137,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 
 const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(randomdungeon);
     uint32 groupType = dungeon ? dungeon->grouptype : 0;
     return m_CachedDungeonMap[groupType];
@@ -2165,7 +2165,7 @@ LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 
 LfgType LfgMgr::GetDungeonType(uint32 dungeonId)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
     if (!dungeon)
         return LFG_TYPE_NONE;

@@ -83,7 +83,7 @@ struct Auction
     void DeleteFromDB();
     void SaveToDB(uint32 AuctionHouseId);
     void UpdateInDB();
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     void AddToPacket(WorldPacket& data);
 #else
     uint32 GetAuctionOutBid();

@@ -88,7 +88,7 @@ class SkillNameMgr
                     continue;
 
                 uint32 SkillID = skill_line->id;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 char* SkillName = skill_line->Name[0];
 #else
                 char* SkillName = skill_line->Name;

@@ -58,7 +58,7 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
 
 void GuildBankTab::writeInfoPacket(WorldPacket& data) const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint8_t count = 0;
 
     size_t pos = data.wpos();
@@ -152,7 +152,7 @@ void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
     else
         LogDebugFlag(LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (session)
         session->SendPacket(MsgQueryGuildBankText(mTabId, mText).serialise().get());
     else

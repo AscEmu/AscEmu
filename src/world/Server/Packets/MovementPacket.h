@@ -8,7 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
+#if VERSION_STRING != Mop
 
 #include "Data/MovementInfo.h"
 
@@ -202,4 +203,5 @@ namespace AscEmu { namespace Packets
     };
 }}
 
+#endif
 #endif

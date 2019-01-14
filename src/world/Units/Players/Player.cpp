@@ -97,7 +97,7 @@ bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & f
 
 uint32_t Player::getGuildId() const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     return playerData()->guild_id;
 #else
     return static_cast<uint32_t>(objectData()->data);
@@ -105,7 +105,7 @@ uint32_t Player::getGuildId() const
 }
 void Player::setGuildId(uint32_t guildId)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     write(playerData()->guild_id, guildId);
 #else
     write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
@@ -118,7 +118,7 @@ void Player::setGuildId(uint32_t guildId)
 uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
 void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 uint32_t Player::getGuildLevel() const { return playerData()->guild_level; }
 void Player::setGuildLevel(uint32_t guildLevel) { write(playerData()->guild_level, guildLevel); }
 #endif
@@ -330,7 +330,7 @@ void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData(
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data(50);
@@ -563,7 +563,35 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_RUN:
         {
             data.Initialize(MSG_MOVE_SET_RUN_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[0]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[1]);
+
+            data << uint32_t(0);
+
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[0]);
+
+            data << float(speed);
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[5]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
+#endif
             break;
         }
         case TYPE_RUN_BACK:
@@ -593,7 +621,32 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY:
         {
             data.Initialize(MSG_MOVE_SET_FLIGHT_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data << float(speed);
+            data << uint32_t(0);
+
+            data.writeBit(guid[6]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[2]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[1]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
+#endif
             break;
         }
         case TYPE_FLY_BACK:
@@ -1291,7 +1344,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentTreeInfo == nullptr || !(getClassMask() & talentTreeInfo->ClassMask))
         return;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     // Check if enough talent points are spent in the primary talent tree before unlocking other trees
     if (talentInfo->TalentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
     {
@@ -1394,7 +1447,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 
     addTalent(spellInfo);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     // Set primary talent tree and lock others
     if (m_FirstTalentTreeLock == 0)
     {
@@ -1490,7 +1543,7 @@ void Player::resetTalents()
 
     // Clear talents
     getActiveSpec().talents.clear();
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = 0;
 #endif
 
@@ -1512,7 +1565,7 @@ void Player::setTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/
 #endif
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // Send talent points also to client
     setFreeTalentPoints(talentPoints);
 #endif
@@ -1530,7 +1583,7 @@ void Player::addTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/
         m_specs[SPEC_PRIMARY].SetTP(m_specs[SPEC_PRIMARY].GetTP() + talentPoints);
         m_specs[SPEC_SECONDARY].SetTP(m_specs[SPEC_SECONDARY].GetTP() + talentPoints);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         setFreeTalentPoints(getFreeTalentPoints() + talentPoints);
 #endif
 #endif
@@ -1547,7 +1600,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
 
     // Calculate initial talent points based on level
     uint32_t talentPoints = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     auto talentPointsAtLevel = sNumTalentsAtLevel.LookupEntry(getLevel());
     if (talentPointsAtLevel != nullptr)
         talentPoints = uint32_t(talentPointsAtLevel->talentPoints);
@@ -1565,7 +1618,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
             // However if Death Knight is not in the instanced Ebon Hold, it is safe to assume that
             // the player has completed the DK starting quest chain and normal calculation can be used.
             uint32_t dkTalentPoints = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             auto dkBaseTalentPoints = sNumTalentsAtLevel.LookupEntry(55);
             if (dkBaseTalentPoints != nullptr)
                 dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - uint32_t(dkBaseTalentPoints->talentPoints);
@@ -1659,7 +1712,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         {
             PlayerSpec spec = m_specs[specId];
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             // Send primary talent tree
             data << uint32_t(m_FirstTalentTreeLock);
 #endif
@@ -1941,13 +1994,13 @@ void Player::logIntoBattleground()
 bool Player::logOntoTransport()
 {
     bool success = true;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (obj_movement_info.transport_data.transportGuid != 0)
 #else
     if (!obj_movement_info.getTransportGuid().IsEmpty())
 #endif
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         const auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
         const auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(static_cast<uint32>(obj_movement_info.getTransportGuid())));
@@ -2050,7 +2103,7 @@ void Player::setGuildAndGroupInfo()
             setGuildId(getPlayerInfo()->m_guild);
             setGuildRank(getPlayerInfo()->guildRank);
             guild->sendLoginInfo(GetSession());
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             setGuildLevel(guild->getLevel());
 #endif
         }

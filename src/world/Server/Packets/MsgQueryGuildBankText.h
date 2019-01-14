@@ -12,7 +12,7 @@ namespace AscEmu { namespace Packets
 {
     class MsgQueryGuildBankText : public ManagedPacket
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     public:
         uint8_t tabId;
         std::string tabInfo;

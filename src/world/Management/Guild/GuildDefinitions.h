@@ -45,7 +45,7 @@ namespace CharterType
 
 #define MAX_GUILD_BANK_SLOTS        98
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #define MAX_GUILD_BANK_TABS         8
 #else
 #define MAX_GUILD_BANK_TABS         6
@@ -167,7 +167,7 @@ enum GuildCommandError
 
 enum GuildEvents : uint8_t
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     GE_PROMOTION = 1,
     GE_DEMOTION = 2,
     GE_MOTD = 3,

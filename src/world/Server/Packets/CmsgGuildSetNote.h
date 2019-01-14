@@ -13,7 +13,7 @@ namespace AscEmu { namespace Packets
 {
     class CmsgGuildSetNote : public ManagedPacket
     {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     public:
         bool isPublic;
         std::string note;

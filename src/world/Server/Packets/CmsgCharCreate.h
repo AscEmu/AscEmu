@@ -33,9 +33,24 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING != Mop
             packet >> createStruct.name >> createStruct._race >> createStruct._class >>
                 createStruct.gender >> createStruct.skin >> createStruct.face >> createStruct.hairStyle >>
                 createStruct.hairColor >> createStruct.facialHair >> createStruct.outfitId;
+#else
+            packet >> createStruct.outfitId >> createStruct.hairStyle >> createStruct._class >>
+                createStruct.skin >> createStruct.face >> createStruct._race >> createStruct.facialHair >>
+                createStruct.gender >> createStruct.hairColor;
+
+            const auto nameLength = packet.readBits(6);
+            uint8_t unknown = packet.readBit();
+            createStruct.name = packet.ReadString(nameLength);
+
+            if (unknown)
+                packet.read<uint32_t>();
+
+            packet.rpos(0);
+#endif
 
             return true;
         }

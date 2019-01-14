@@ -74,7 +74,7 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
     };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0

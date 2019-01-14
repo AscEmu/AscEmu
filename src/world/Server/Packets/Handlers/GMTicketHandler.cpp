@@ -148,7 +148,7 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
     }
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 {
     CmsgGmTicketCreate srlPacket;
@@ -294,7 +294,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 {
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());

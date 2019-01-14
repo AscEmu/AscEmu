@@ -2458,7 +2458,7 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
         uint32_t player_info_index = fields[0].GetUInt32();
         uint32_t item_id = fields[1].GetUInt32();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         auto player_item = sMySQLStore.getItemProperties(item_id);
 #else
         DB2::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);

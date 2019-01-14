@@ -19,12 +19,12 @@ This project is for educational purpose. So, if you're looking for serverfiles t
 ## Multiversion Status
 AscEmu will support the most common versions. This is currently a work in progress. Check out the following table to see the current status of multiversion support:
 
-Description | Classic | TBC | WotLK | Cataclysm
-:------------: | :------------: | :------------: | :------------: | :------------:
-Authentification | OK | OK | OK | OK
-Worldsocket | OK | OK | OK | OK
-Char Enum | OK | OK | OK | OK
-Log into world | NO | OK | OK | OK
+Description | Classic | TBC | WotLK | Cata | MoP
+:------------: | :------------: | :------------: | :------------: | :------------: | :------------:
+Authentification | OK | OK | OK | OK | OK
+Worldsocket | OK | OK | OK | OK | OK
+Char Enum | OK | OK | OK | OK | OK
+Log into world | NO | OK | OK | OK | NO
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.

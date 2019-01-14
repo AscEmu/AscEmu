@@ -35,7 +35,11 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING != Mop
             packet << mapId << location.x << location.y << location.z << location.o;
+#elif VERSION_STRING == Mop
+            packet << location.x << location.o << location.y << mapId << location.z;
+#endif
             return true;
         }
 

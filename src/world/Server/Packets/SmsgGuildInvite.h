@@ -16,7 +16,7 @@ namespace AscEmu { namespace Packets
         std::string inviterName;
         std::string guildName;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         uint32_t guildLevel;
         EmblemInfo mEmblemInfo;
         uint32_t guildId;
@@ -34,7 +34,7 @@ namespace AscEmu { namespace Packets
         {
         }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         SmsgGuildInvite(std::string inviterName, std::string guildName, uint32_t guildLevel, EmblemInfo mEmblemInfo, uint32_t guildId, uint64_t guildGuid) :
             ManagedPacket(SMSG_GUILD_INVITE, 100),
             inviterName(inviterName),
@@ -52,7 +52,7 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet << inviterName << guildName;
 #else
             packet << uint32_t(guildLevel);

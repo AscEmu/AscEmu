@@ -1065,7 +1065,7 @@ void AIInterface::unsetSpline()
 
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = false;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = false;
 #else
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = false;
@@ -1088,7 +1088,7 @@ void AIInterface::splineMoveKnockback(float x, float y, float z, float /*horizon
     m_runSpeed /= speedmod;
 
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
 #else
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = true;
@@ -1655,7 +1655,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                     {
                         MovementInfo* mi = static_cast<Player*>(getNextTarget())->GetSession()->GetMovementInfo();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                         if (mi->flags & MOVEFLAG_FLYING)
                             HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
 #else
@@ -2096,7 +2096,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
                     {
                         MovementInfo* mi = static_cast< Player* >(pUnit)->GetSession()->GetMovementInfo();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                         if (mi != nullptr && !(mi->flags & MOVEFLAG_FALLING) && !(mi->flags & MOVEFLAG_SWIMMING) && !(mi->flags & MOVEFLAG_HOVER))
                             return;
 #else
@@ -4844,7 +4844,7 @@ void AIInterface::OnMoveCompleted()
     //remove flags that are temporary
     splineFlags.done = false;
     splineFlags.trajectory = false;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     splineFlags.knockback = false;
 #else
     splineFlags.falling = false;

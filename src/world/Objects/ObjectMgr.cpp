@@ -37,7 +37,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Management/GuildMgr.h"
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Management/Guild.h"
 #endif
 
@@ -1163,7 +1163,7 @@ void ObjectMgr::LoadVendors()
             LOG_ERROR("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
 #else
         DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
@@ -1319,7 +1319,7 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
 
 void ObjectMgr::LoadAchievementCriteriaList()
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
         auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
@@ -1355,7 +1355,7 @@ void ObjectMgr::CorpseCollectorUnload()
     _corpseslock.Release();
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 //move to spellmgr or mysqldatastore todo danko
 void ObjectMgr::LoadSkillLineAbilityMap()
 {
@@ -1541,7 +1541,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
     }
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void ObjectMgr::LoadTrainers()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");

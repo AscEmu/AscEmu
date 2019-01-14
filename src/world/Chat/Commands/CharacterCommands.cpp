@@ -293,7 +293,7 @@ bool ChatHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* 
     if (!player_target->_HasSkillLine(skill))
     {
         SystemMessage(m_session, "Does not have skill line, adding.");
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         player_target->_AddSkillLine(skill, 1, 300);
 #else
         player_target->_AddSkillLine(skill, 1, 525);
@@ -404,7 +404,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 
         static uint32 spellarray[DRUID + 1][512] =
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             { 0 }, // N/A
             { 6673, 2457, 78, 100, 772, 6343, 1715, 284, 2687, 71, 6546, 7386, 355, 5242, 7384, 72, 1160, 6572, 285, 694, 2565, 676, 8198, 845, 6547, 20230, 12678, 6192, 5246, 7405, 6190, 5308, 1608, 6574, 1161, 6178, 871, 8204, 2458, 7369, 20252, 6548, 1464, 11549, 18499, 20658, 11564, 11554, 7379, 8380, 1680, 6552, 8820, 8205, 11608, 20660, 11565, 11572, 23922, 11550, 11555, 11600, 11578, 11604, 11596, 20661, 11566, 23923, 11580, 11609, 1719, 11573, 11551, 11556, 11601, 23924, 11605, 20662, 11567, 11597, 11581, 25289, 20569, 25286, 11574, 25288, 23925, 25241, 25202, 34428, 25269, 23920, 25234, 29707, 25258, 25225, 25264, 25231, 469, 25208, 2048, 25242, 25203, 25236, 30324, 3411, 30357, 30356, 46845, 47519, 47449, 47470, 47501, 47439, 47474, 55694, 47487, 47450, 47465, 47520, 47467, 47436, 47502, 47437, 47475, 47440, 47471, 57755, 57823, 47488, 674, 750, 64382, 0 }, // Warrior
             { 465, 643, 1032, 10290, 10291, 10292, 10293, 27149, 48941, 48942, 635, 21084, 19740, 20271, 498, 639, 853, 1152, 1022, 633, 19834, 53408, 7328, 19742, 647, 31789, 62124, 7294, 25780, 1044, 31785, 26573, 879, 19750, 5502, 19835, 19746, 1026, 20164, 19850, 5588, 5599, 10322, 10326, 19939, 1038, 10298, 5614, 53407, 19876, 20116, 19752, 1042, 2800, 20165, 19836, 19888, 19852, 642, 19940, 5615, 19891, 10324, 10299, 10278, 3472, 20166, 20922, 5589, 19895, 19837, 4987, 19941, 19853, 10312, 19897, 24275, 6940, 10328, 10300, 19899, 20772, 20923, 19942, 2812, 10310, 19838, 10313, 25782, 24274, 19896, 19854, 25894, 10308, 10329, 19898, 10301, 19943, 25291, 25290, 20924, 10314, 19900, 25898, 25916, 25899, 25918, 24239, 25292, 10318, 53651, 20773, 32223, 27135, 27151, 27142, 27143, 27137, 27150, 33776, 27138, 27152, 27180, 27139, 27154, 31884, 27140, 27173, 27153, 27141, 27136, 48935, 54428, 48937, 48816, 48949, 48931, 48800, 48933, 48784, 48805, 48818, 48781, 53600, 54043, 48943, 48936, 48945, 48938, 48947, 48817, 48788, 48932, 48801, 48785, 48934, 48950, 48819, 48806, 48782, 53601, 61411, 750, 20217, 53736, 33388, 0 }, // Paladin
@@ -446,7 +446,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             selected_player->addSpell(spellarray[player_class][i]);
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         static uint32 paladinspellarray[NUM_RACES][5] =
         {
             { 0 },                                  // RACE 0
@@ -494,7 +494,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 
         static uint32 shamanspellarray[NUM_RACES][2] =
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
             { 2825, 0 },                            // ORC Bloodlust
@@ -534,7 +534,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         static uint32 magespellarray[NUM_RACES][13] =
         {
             { 0 },                                                                                  // RACE 0

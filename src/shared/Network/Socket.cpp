@@ -81,6 +81,7 @@ void Socket::_OnConnect()
 #endif
     sSocketMgr.AddSocket(this);
 
+    LogDetail("Socket::_OnConnect called");
     // Call virtual onconnect
     OnConnect();
 }

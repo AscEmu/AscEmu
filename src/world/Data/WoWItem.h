@@ -104,7 +104,7 @@ struct WoWItem : WoWObject
 };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 #define WOWITEM_SPELL_CHARGES_COUNT 5
 #define WOWITEM_ENCHANTMENT_COUNT 15
