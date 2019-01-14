@@ -104,7 +104,24 @@ struct WoWCorpse : WoWObject
 };
 #endif
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
+
+#define WOWCORPSE_ITEM_COUNT 19
+
+struct WoWCorpse : WoWObject
+{
+    uint64_t owner_guid;
+    uint64_t party_guid;
+    uint32_t display_id;
+    uint32_t item[WOWCORPSE_ITEM_COUNT];
+    corpse_bytes_1_union corpse_bytes_1;
+    corpse_bytes_2_union corpse_bytes_2;
+    uint32_t corpse_flags;
+    uint32_t dynamic_flags;
+};
+#endif
+
+#if VERSION_STRING == Mop
 
 #define WOWCORPSE_ITEM_COUNT 19
 

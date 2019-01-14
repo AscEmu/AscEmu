@@ -298,8 +298,10 @@ uint32_t Player::getAmmoId() const { return playerData()->ammo_id; }
 void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
 #endif
 
+#if VERSION_STRING != Mop
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
+#endif
 
 #if VERSION_STRING > TBC
 uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }

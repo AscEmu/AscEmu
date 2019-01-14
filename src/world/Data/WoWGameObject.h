@@ -93,7 +93,7 @@ struct WoWGameObject : WoWObject
 };
 #endif
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
 
 #define GAMEOBJECT_ROTATION_COUNT 4
 
@@ -106,6 +106,34 @@ struct WoWGameObject : WoWObject
     uint32_t dynamic;
     uint32_t faction_template;
     uint32_t level;
+    union
+    {
+        struct
+        {
+            uint8_t state;
+            uint8_t type;
+            uint8_t art_kit;
+            uint8_t animation_progress;
+        } bytes_1_gameobject;
+        uint32_t bytes_1;
+    };
+};
+#endif
+
+#if VERSION_STRING == Mop
+
+#define GAMEOBJECT_ROTATION_COUNT 4
+
+struct WoWGameObject : WoWObject
+{
+    guid_union object_field_created_by;
+    uint32_t display_id;
+    uint32_t flags;
+    float rotation[GAMEOBJECT_ROTATION_COUNT];
+    uint32_t faction_template;
+    uint32_t level;
+    uint32_t dynamic;
+    
     union
     {
         struct
