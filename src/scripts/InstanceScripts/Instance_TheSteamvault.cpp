@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -177,7 +177,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 if (!Gnome->isCastingSpell())
                 {
                     Gnome->GetAIInterface()->StopMovement(1);
-                    Gnome->CastSpell(getCreature(), REPAIR, false);    // core problem? casted on self (and effect is applied on caster instead of _unit)
+                    Gnome->castSpell(getCreature(), REPAIR, false);    // core problem? casted on self (and effect is applied on caster instead of _unit)
                 }
             }
         }
@@ -369,7 +369,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                         sendDBChatMessage(SAY_WARLORD_KALITRESH_02);
 
                         if (!getCreature()->getAuraWithId(36453))
-                            getCreature()->CastSpell(getCreature(), 31543, true);
+                            getCreature()->castSpell(getCreature(), 31543, true);
 
                         EnrageTimer = t + 3;
                         RagePhase = 1;
@@ -394,7 +394,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->m_canMove = true;
                     getCreature()->GetAIInterface()->ResetUnitToFollow();
                     getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
-                    getCreature()->CastSpell(getCreature(), 36453, true);
+                    getCreature()->castSpell(getCreature(), 36453, true);
 
                     RagePhaseTimer = t + Util::getRandomUInt(15) + 20;
                     DistillerNumber = 0;

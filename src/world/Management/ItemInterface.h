@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -76,6 +76,13 @@ class SERVER_DECL ItemInterface
         AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
 
     public:
+        // APGL End
+        // MIT Start
+
+        bool hasItemForTotemCategory(uint32_t totemCategory);
+
+        // MIT End
+        // APGL Start
 
         Arcemu::EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;

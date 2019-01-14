@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -77,7 +77,7 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
 
     memset(movement_packet, 0, sizeof(movement_packet));
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     movement_info.redirect_velocity = 0;
 #endif
 

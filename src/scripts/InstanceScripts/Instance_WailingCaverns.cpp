@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
@@ -254,7 +254,7 @@ public:
             case 1: // Disciple of Naralex Casts Mark of the Wild on players.
             {
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
-                pCreature->CastSpell(Plr, 5232, true);
+                pCreature->castSpell(Plr, 5232, true);
                 pCreature->Emote(EMOTE_ONESHOT_CHEER);
             } break;
             case 2: // Start Event

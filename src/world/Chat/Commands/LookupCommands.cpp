@@ -1,12 +1,12 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 foundmatch = false;
                 if (lookupname)
                 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                     y = std::string(achievement->name[0]);
 #else
                     y = std::string(achievement->name);
@@ -101,7 +101,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 }
                 if (!foundmatch && lookupdesc)
                 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                     y = std::string(achievement->description[0]);
 #else
                     y = std::string(achievement->description);
@@ -111,7 +111,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 }
                 if (!foundmatch && lookupreward)
                 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                     y = std::string(achievement->rewardName[0]);
 #else
                     y = std::string(achievement->rewardName);
@@ -183,7 +183,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 y = std::string(criteria->name[0]);
 #else
                 y = std::string(criteria->name);
@@ -339,7 +339,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
         DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
         if (faction != nullptr)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             std::string y = std::string(faction->Name[0]);
 #else
             std::string y = std::string(faction->Name);
@@ -347,7 +347,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
             Util::StringToLowerCase(y);
             if (Util::findXinYString(x, y))
             {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
                 SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
 #else
                 SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
@@ -571,9 +571,9 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     uint32 count = 0;
     std::string recout;
     char itoabuf[12];
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
+    for (auto it = sSpellMgr.getSpellInfoMap()->begin(); it != sSpellMgr.getSpellInfoMap()->end(); ++it)
     {
-        SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
+        SpellInfo const* spell = sSpellMgr.getSpellInfo(it->first);
         std::string y = std::string(spell->getName());
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))
@@ -630,7 +630,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         if (skill_line == nullptr)
             continue;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         std::string y = std::string(skill_line->Name[0]);
 #else
         std::string y = std::string(skill_line->Name);
@@ -638,7 +638,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
 #else
             SendHighlightedName(m_session, "Skill", skill_line->Name, y, x, skill_line->id);

@@ -1,8 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +20,6 @@
 #pragma once
 
 #include "Units/Unit.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Summons/SummonHandler.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Creatures/Creature.h"
@@ -520,7 +518,7 @@ public:
     {
         uint32 sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
-            ptr->CastSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true);
+            ptr->castSpell(ptr, sSpellMgr.getSpellInfo(sp), true);
         return 0;
     }
 
@@ -528,7 +526,7 @@ public:
     {
         uint32 sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
-            ptr->CastSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false);
+            ptr->castSpell(ptr, sSpellMgr.getSpellInfo(sp), false);
         return 0;
     }
     static int FullCastSpellOnTarget(lua_State* L, Unit* ptr)
@@ -538,7 +536,7 @@ public:
             uint32 sp = CHECK_ULONG(L, 1);
             Object* target = CHECK_OBJECT(L, 2);
             if (sp && target != NULL)
-                ptr->CastSpell(target->getGuid(), sp, false);
+                ptr->castSpell(target->getGuid(), sp, false);
         }
         return 0;
     }
@@ -547,7 +545,7 @@ public:
         uint32 sp = CHECK_ULONG(L, 1);
         Object* target = CHECK_OBJECT(L, 2);
         if (ptr != NULL && sp && target != NULL)
-            ptr->CastSpell(target->getGuid(), sp, true);
+            ptr->castSpell(target->getGuid(), sp, true);
         return 0;
     }
     static int SpawnCreature(lua_State* L, Unit* ptr)
@@ -2128,7 +2126,7 @@ public:
         return 0;
     }
 
-    static int CastSpellAoF(lua_State* L, Unit* ptr)
+    static int castSpellLoc(lua_State* L, Unit* ptr)
     {
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
@@ -2136,7 +2134,7 @@ public:
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(LocationVector(x, y, z), sSpellCustomizations.GetSpellInfo(sp), true);
+        ptr->castSpellLoc(LocationVector(x, y, z), sSpellMgr.getSpellInfo(sp), true);
         return 0;
     }
 
@@ -2148,7 +2146,7 @@ public:
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(LocationVector(x, y, z), sSpellCustomizations.GetSpellInfo(sp), false);
+        ptr->castSpellLoc(LocationVector(x, y, z), sSpellMgr.getSpellInfo(sp), false);
         return 0;
     }
 
@@ -2772,7 +2770,7 @@ public:
 
         if (!target)
             return 0;
-        ptr->Strike(target, weapon_damage_type, sSpellCustomizations.GetSpellInfo(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
+        ptr->Strike(target, weapon_damage_type, sSpellMgr.getSpellInfo(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
         return 0;
     }
 
@@ -3524,7 +3522,7 @@ public:
         return 0;
     }
 
-    static int EventCastSpell(lua_State* L, Unit* ptr)
+    static int eventCastSpell(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
             Unit* target = CHECK_UNIT(L, 1);
@@ -3536,10 +3534,10 @@ public:
             switch (ptr->getObjectTypeId())
             {
                 case TYPEID_PLAYER:
-                    sEventMgr.AddEvent(ptr, &Player::EventCastSpell, target, sSpellCustomizations.GetSpellInfo(sp), EVENT_PLAYER_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    sEventMgr.AddEvent(ptr, &Player::eventCastSpell, target, sSpellMgr.getSpellInfo(sp), EVENT_PLAYER_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     break;
                 case TYPEID_UNIT:
-                    sEventMgr.AddEvent(ptr, &Unit::EventCastSpell, target, sSpellCustomizations.GetSpellInfo(sp), EVENT_CREATURE_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    sEventMgr.AddEvent(ptr, &Unit::eventCastSpell, target, sSpellMgr.getSpellInfo(sp), EVENT_CREATURE_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     break;
             }
         }
@@ -3810,7 +3808,7 @@ public:
         bool temp = CHECK_BOOL(L, 3);
         if (ptr && spellid)
         {
-            Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(spellid), duration, ptr, ptr, temp);
+            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(spellid), duration, ptr, ptr, temp);
             ptr->AddAura(aura);
             lua_pushboolean(L, 1);
         }
@@ -4485,7 +4483,7 @@ public:
 
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         TEST_UNIT()
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
@@ -4674,7 +4672,7 @@ public:
         Object* target = CHECK_OBJECT(L, 2);
         if (Csp && target != nullptr)
         {
-            ptr->CastSpell(target->getGuid(), sSpellCustomizations.GetSpellInfo(Csp), false);
+            ptr->castSpell(target->getGuid(), sSpellMgr.getSpellInfo(Csp), false);
             ptr->setChannelObjectGuid(target->getGuid());
             ptr->setChannelSpellId(Csp);
         }
@@ -5310,7 +5308,7 @@ public:
         if (movement_info != NULL)
         {
             lua_newtable(L);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             lua_pushstring(L, "x");
             lua_pushnumber(L, movement_info->position.x);
             lua_rawset(L, -3);
@@ -5348,7 +5346,7 @@ public:
         TEST_PLAYER()
             MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
         if (move_info != NULL)
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             lua_pushnumber(L, move_info->flags);
 #else
             lua_pushnumber(L, move_info->getMovementFlags());

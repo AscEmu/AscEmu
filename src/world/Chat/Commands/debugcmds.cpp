@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -26,7 +26,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
@@ -36,7 +36,7 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSess
         auto me = session->GetPlayerOrThrow();
 
         SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         SystemMessage(session, "On transport: %s", me->obj_movement_info.transport_data.transportGuid != 0 ? "yes" : "no");
         SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transport_data.transportGuid);
         SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transport_data.relativePosition.x, me->obj_movement_info.transport_data.relativePosition.y, me->obj_movement_info.transport_data.relativePosition.z, me->obj_movement_info.transport_data.relativePosition.o);
@@ -471,7 +471,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     if (!spellId)
         return false;
 
-    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellCustomizations.GetSpellInfo(atoi(spellId)), m_session->GetPlayer());
+    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellMgr.getSpellInfo(atoi(spellId)), m_session->GetPlayer());
 
     std::stringstream sstext;
     sstext << "generated threat is: " << threat << '\0';
@@ -840,14 +840,14 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     }
     else
     {
-        SpellInfo* Sp = sSpellCustomizations.GetSpellInfo(SpellID);
+        SpellInfo const* Sp = sSpellMgr.getSpellInfo(SpellID);
         if (!Sp)
         {
             SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
             return true;
         }
-        Spell* SpellPtr = sSpellFactoryMgr.NewSpell(Pl, Sp, false, NULL);
-        AuraPtr = sSpellFactoryMgr.NewAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
+        Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, NULL);
+        AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
         Pl->AddAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
 
@@ -1012,10 +1012,10 @@ struct spell_thingo
     uint32 target;
 };
 
-std::list<SpellInfo*> aiagent_spells;
+std::list<SpellInfo const*> aiagent_spells;
 std::map<uint32, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellInfo* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.m_unitTarget = 0;
@@ -1075,7 +1075,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
         if (!aiagent_spells.size())
             break;
 
-        SpellInfo* sp = *aiagent_spells.begin();
+        SpellInfo const* sp = *aiagent_spells.begin();
         aiagent_spells.erase(aiagent_spells.begin());
         BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), aiagent_spells.size());
 
@@ -1105,13 +1105,13 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* /*args*/, WorldSession* m_
 
     do
     {
-        SpellInfo* se = sSpellCustomizations.GetSpellInfo(result->Fetch()[0].GetUInt32());
+        SpellInfo const* se = sSpellMgr.getSpellInfo(result->Fetch()[0].GetUInt32());
         if (se)
             aiagent_spells.push_back(se);
     } while (result->NextRow());
     delete result;
 
-    for (std::list<SpellInfo*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    for (std::list<SpellInfo const*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->getId());
         ARCEMU_ASSERT(result != NULL);
@@ -1139,14 +1139,14 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     }
 
     uint32 spellid = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
 
-    Spell* sp = sSpellFactoryMgr.NewSpell(caster, spellentry, false, NULL);
+    Spell* sp = sSpellMgr.newSpell(caster, spellentry, false, NULL);
 
     BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
     SpellCastTargets targets;
@@ -1180,7 +1180,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     }
 
     uint32 spellId = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellId);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1240,14 +1240,14 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     }
 
     uint32 spellid = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
 
-    Spell* sp = sSpellFactoryMgr.NewSpell(target, spellentry, false, NULL);
+    Spell* sp = sSpellMgr.newSpell(target, spellentry, false, NULL);
 
     BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
     SpellCastTargets targets;

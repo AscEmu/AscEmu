@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -497,7 +497,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
         return true;
 
     uint32 fail = atol(args);
-    if (SPELL_CANCAST_OK < fail)
+    if (fail < SPELL_CANCAST_OK || fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;

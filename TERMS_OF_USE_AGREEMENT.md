@@ -82,7 +82,7 @@ publish or to remove or block access to any Content you provide at any time and 
 
 If you use commits/pullrequests or codeparts made for or by the ascemu community, you agree to fill the following lines into the header
 section of your files:
-* Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+* Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 If you don't want to fill the AscEmu copyright link, feel free to contact the original author of this commit/pullrequest or codepart
 to get permission to use it without the link back.

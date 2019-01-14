@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     class CmsgGuildRemove : public ManagedPacket
     {
     public:
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         std::string name;
 
         CmsgGuildRemove() : CmsgGuildRemove("")
@@ -48,7 +48,7 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet >> name;
 #else
             guid[6] = packet.readBit();

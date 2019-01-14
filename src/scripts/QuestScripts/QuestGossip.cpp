@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- * Copyright (C) 2008 WEmu Team
  * Copyright (C) 2009 WhyScripts Team <http://www.whydb.org/>
+ * Copyright (C) 2008 WEmu Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
+        plr->castSpell(plr, sSpellMgr.getSpellInfo(23122), true);
         Arcemu::Gossip::Menu::Complete(plr);
     }
 };
@@ -64,7 +64,7 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7014, plr);
-        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
+        plr->castSpell(plr, sSpellMgr.getSpellInfo(23123), true);
     }
 };
 
@@ -90,7 +90,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
+        plr->castSpell(plr, DALARAN_TELEPORT_SPELL, true);
     }
 };
 

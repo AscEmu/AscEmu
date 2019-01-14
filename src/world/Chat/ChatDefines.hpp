@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -78,7 +78,7 @@ enum Languages
     LANG_TROLL          = 0x0E,
     LANG_GUTTERSPEAK    = 0x21,
     LANG_DRAENEI        = 0x23,
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     NUM_LANGUAGES       = 0x24
 #else
     LANG_ZOMBIE         = 0x24,

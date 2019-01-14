@@ -1,8 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +81,7 @@ LuaSpellEntry luaSpellVars[] =
     //{ "manaPerSecondPerLevel", 0, offsetof(SpellInfo, manaPerSecondPerLevel) },
     //{ "rangeIndex", 0, offsetof(SpellInfo, rangeIndex) },
     //{ "speed", 3, offsetof(SpellInfo, speed) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "modalNextSpell", 0, offsetof(SpellInfo, modalNextSpell) },
 #endif
     //{ "maxstack", 0, offsetof(SpellInfo, maxstack) },
@@ -91,7 +90,7 @@ LuaSpellEntry luaSpellVars[] =
     //{ "ReagentCount", 0, offsetof(SpellInfo, ReagentCount[0]) },
     //{ "EquippedItemClass", 0, offsetof(SpellInfo, EquippedItemClass) },
     //{ "EquippedItemSubClass", 0, offsetof(SpellInfo, EquippedItemSubClass) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "RequiredItemFlags", 0, offsetof(SpellInfo, RequiredItemFlags) },
 #endif
     //{ "Effect", 0, offsetof(SpellInfo, Effect[0]) },
@@ -113,14 +112,14 @@ LuaSpellEntry luaSpellVars[] =
     //{ "EffectMiscValueB", 0, offsetof(SpellInfo, EffectMiscValueB[0]) },
     //{ "EffectTriggerSpell", 0, offsetof(SpellInfo, EffectTriggerSpell[0]) },
     //{ "EffectPointsPerComboPoint", 3, offsetof(SpellInfo, EffectPointsPerComboPoint[0]) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "EffectSpellClassMask", 0, offsetof(SpellInfo, EffectSpellClassMask[0][0]) },
 #endif
     //{ "SpellVisual", 0, offsetof(SpellInfo, SpellVisual) },
     //{ "field114", 0, offsetof(SpellInfo, field114) },
     //{ "spellIconID", 0, offsetof(SpellInfo, spellIconID) },
     //{ "activeIconID", 0, offsetof(SpellInfo, activeIconID) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "spellPriority", 0, offsetof(SpellInfo, spellPriority) },
 #endif
     //{ "Name", 1, offsetof(SpellInfo, Name) },
@@ -136,11 +135,11 @@ LuaSpellEntry luaSpellVars[] =
     //{ "MaxTargets", 0, offsetof(SpellInfo, MaxTargets) },
     //{ "Spell_Dmg_Type", 0, offsetof(SpellInfo, Spell_Dmg_Type) },
     //{ "PreventionType", 0, offsetof(SpellInfo, PreventionType) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "StanceBarOrder", 0, offsetof(SpellInfo, StanceBarOrder) },
 #endif
     //{ "dmg_multiplier", 3, offsetof(SpellInfo, dmg_multiplier[0]) },
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //{ "MinFactionID", 0, offsetof(SpellInfo, MinFactionID) },
     //{ "MinReputation", 0, offsetof(SpellInfo, MinReputation) },
     //{ "RequiredAuraVision", 0, offsetof(SpellInfo, RequiredAuraVision) },
@@ -270,7 +269,7 @@ namespace LuaSpell
     {
         if (!sp)
             return 0;
-        lua_pushinteger(L, sp->canCast(false));
+        lua_pushinteger(L, sp->canCast(false, 0, 0));
         return 1;
     }
 
@@ -381,7 +380,7 @@ namespace LuaSpell
             return 1;
         }
         sp->InitProtoOverride();
-        SpellInfo* proto = sp->getSpellInfo();
+        SpellInfo const* proto = sp->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_BOOL(false);
@@ -416,7 +415,7 @@ namespace LuaSpell
             lua_pushnil(L);
             return 1;
         }
-        SpellInfo* proto = sp->getSpellInfo();
+        SpellInfo const* proto = sp->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_NIL();

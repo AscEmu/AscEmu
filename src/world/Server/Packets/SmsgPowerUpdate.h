@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -33,17 +33,45 @@ namespace AscEmu { namespace Packets
     protected:
         size_t expectedSize() const override
         {
-            return 8 + 4;
+            return 8 + 4 + 1 + 4;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
+            ObjectGuid powerGuid = guid;
+
+            packet.writeBit(powerGuid[4]);
+            packet.writeBit(powerGuid[6]);
+            packet.writeBit(powerGuid[7]);
+            packet.writeBit(powerGuid[5]);
+            packet.writeBit(powerGuid[2]);
+            packet.writeBit(powerGuid[3]);
+            packet.writeBit(powerGuid[0]);
+            packet.writeBit(powerGuid[1]);
+
+            packet.writeBits(1, 21);
+
+            packet.WriteByteSeq(powerGuid[7]);
+            packet.WriteByteSeq(powerGuid[0]);
+            packet.WriteByteSeq(powerGuid[5]);
+            packet.WriteByteSeq(powerGuid[3]);
+            packet.WriteByteSeq(powerGuid[1]);
+            packet.WriteByteSeq(powerGuid[2]);
+            packet.WriteByteSeq(powerGuid[4]);
+
+            packet << uint8_t(powerType);
+            packet << uint32_t(power);
+
+            packet.WriteByteSeq(powerGuid[6]);
+#elif VERSION_STRING != Mop
             packet << guid;
 
 #if VERSION_STRING == Cata
             packet << uint32_t(1);
 #endif
             packet << powerType << power;
+#endif
             return true;
         }
 

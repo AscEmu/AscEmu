@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -30,7 +30,6 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
@@ -54,7 +53,7 @@ Object* Pet::getPlayerOwner() { return m_Owner; }
 
 //MIT END
 
-uint32 Pet::GetAutoCastTypeForSpell(SpellInfo* ent)
+uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
 {
     switch (ent->getId())
     {
@@ -375,7 +374,7 @@ void Pet::SetNameForEntry(uint32 entry)
     }
 }
 
-bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
+bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
     if (ci == nullptr || owner == nullptr)
         return false;                       //the caller will delete us.
@@ -456,7 +455,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         if (myFamily == nullptr)
             m_name = "Pet";
         else
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             m_name.assign(myFamily->name[0]);
 #else
             m_name.assign(myFamily->name);
@@ -778,12 +777,12 @@ void Pet::InitializeSpells()
 {
     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellInfo* info = itr->first;
+        SpellInfo const* info = itr->first;
         // Check that the spell isn't passive
         if (info->isPassive())
         {
             // Cast on self..
-            Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
+            Spell* sp = sSpellMgr.newSpell(this, info, true, NULL);
             SpellCastTargets targets(this->getGuid());
             sp->prepare(&targets);
 
@@ -798,7 +797,7 @@ void Pet::InitializeSpells()
     }
 }
 
-AI_Spell* Pet::CreateAISpell(SpellInfo* info)
+AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
 {
     ARCEMU_ASSERT(info != NULL);
 
@@ -895,9 +894,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
                 break;
 
             ActionBar[i] = spellid;
-            //SetSpellState(sSpellCustomizations.GetSpellInfo(spellid), spstate);
+            //SetSpellState(sSpellMgr.getSpellInfo(spellid), spstate);
             if (!(ActionBar[i] & 0x4000000) && spellid)
-                mSpells[sSpellCustomizations.GetSpellInfo(spellid)] = static_cast<unsigned short>(spstate);
+                mSpells[sSpellMgr.getSpellInfo(spellid)] = static_cast<unsigned short>(spstate);
 
             i++;
 
@@ -1054,7 +1053,7 @@ void Pet::InitializeMe(bool first)
             do
             {
                 Field* f = query->Fetch();
-                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(f[2].GetUInt32());
+                SpellInfo const* spell = sSpellMgr.getSpellInfo(f[2].GetUInt32());
                 uint16 flags = f[3].GetUInt16();
                 if (spell != NULL && mSpells.find(spell) == mSpells.end())
                     mSpells.insert(std::make_pair(spell, flags));
@@ -1307,7 +1306,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             uint32 spellid = creature_spell_data->Spells[i];
             if (spellid != 0)
             {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
                 if (sp != NULL)
                     AddSpell(sp, true, showLearnSpells);
             }
@@ -1319,7 +1318,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         uint32 spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+            SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
             if (sp != NULL)
                 AddSpell(sp, true, showLearnSpells);
         }
@@ -1332,7 +1331,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         {
             std::set<uint32>::iterator it2 = it1->second.begin();
             for (; it2 != it1->second.end(); ++it2)
-                AddSpell(sSpellCustomizations.GetSpellInfo(*it2), true, showLearnSpells);
+                AddSpell(sSpellMgr.getSpellInfo(*it2), true, showLearnSpells);
 
         }
         return;
@@ -1358,7 +1357,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             // Update existing spell, or add new "automatic-acquired" spell
             if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->getBaseLevel())
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
@@ -1381,7 +1380,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     }
 }
 
-void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
+void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
 {
     if (sp == NULL)
         return;
@@ -1390,7 +1389,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     {
         if (IsInWorld())
         {
-            Spell* spell = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
+            Spell* spell = sSpellMgr.newSpell(this, sp, true, NULL);
             SpellCastTargets targets(this->getGuid());
             spell->prepare(&targets);
             mSpells[sp] = 0x0100;
@@ -1428,7 +1427,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                         SetAutoCast(asp, true);
 
                     if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN)
-                        CastSpell(this, sp, false);
+                        castSpell(this, sp, false);
 
                     RemoveSpell(itr->first, showLearnSpell);
                     done = true;
@@ -1477,7 +1476,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
 
                 // Phase shift gets cast on spawn, right?
                 if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN)
-                    CastSpell(this, sp, false);
+                    castSpell(this, sp, false);
 
                 switch (asp->spell->getId())
                 {
@@ -1489,7 +1488,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                     case 20329:
                     case 29309:
                     case 29315:
-                        CastSpell(this, sp, false);
+                        castSpell(this, sp, false);
                         break;
                 }
             }
@@ -1509,7 +1508,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
         SendSpellsToOwner();
 }
 
-void Pet::SetSpellState(SpellInfo* sp, uint16 State)
+void Pet::SetSpellState(SpellInfo const* sp, uint16 State)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1531,7 +1530,7 @@ void Pet::SetSpellState(SpellInfo* sp, uint16 State)
     }
 }
 
-uint16 Pet::GetSpellState(SpellInfo* sp)
+uint16 Pet::GetSpellState(SpellInfo const* sp)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1580,7 +1579,7 @@ void Pet::WipeTalents()
     SendSpellsToOwner();
 }
 
-void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
+void Pet::RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell)
 {
     mSpells.erase(sp);
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->getId());
@@ -1846,7 +1845,7 @@ void Pet::ApplyPetLevelAbilities()
     if (pet_family > 46)
         LOG_ERROR("PETSTAT: Creature family %i [%s] has missing data.", pet_family, myFamily->name);
     else if (family_aura[pet_family] != 0)
-        this->CastSpell(this, family_aura[pet_family], true);
+        this->castSpell(this, family_aura[pet_family], true);
 
     for (uint8_t x = 0; x < 5; ++x)
         CalcStat(x);
@@ -1911,12 +1910,12 @@ void Pet::LoadPetAuras(int32 id)
     else if (id == -2)      //load all
     {
         for (uint32 x = 0; x < 9; ++x)
-            CastSpell(this, mod_auras[x], true);
+            castSpell(this, mod_auras[x], true);
     }
     else if (mod_auras[id])  //reload one
     {
         RemoveAura(mod_auras[id]);
-        CastSpell(this, mod_auras[id], true);
+        castSpell(this, mod_auras[id], true);
     }
 
     m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_PET);
@@ -1939,7 +1938,7 @@ void Pet::UpdateAP()
     setAttackPower(AP);
 }
 
-uint32 Pet::CanLearnSpell(SpellInfo* sp)
+uint32 Pet::CanLearnSpell(SpellInfo const* sp)
 {
     // level requirement
     if (getLevel() < sp->getSpellLevel())
@@ -2051,12 +2050,12 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
         if (sp->spelltargetType == TTYPE_OWNER)
         {
             if (!m_Owner->HasAura(sp->spell->getId()))
-                CastSpell(m_Owner, sp->spell, false);
+                castSpell(m_Owner, sp->spell, false);
         }
         else
         {
             //modified by Zack: Spell targeting will be generated in the castspell function now.You cannot force to target self all the time
-            CastSpell(static_cast<Unit*>(NULL), sp->spell, false);
+            castSpell(static_cast<Unit*>(NULL), sp->spell, false);
         }
     }
 }
@@ -2377,9 +2376,9 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellInfo* killerspell;
+        SpellInfo const* killerspell;
         if (spellid)
-            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
+            killerspell = sSpellMgr.getSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

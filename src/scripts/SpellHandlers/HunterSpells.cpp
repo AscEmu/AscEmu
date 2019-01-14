@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,10 +67,10 @@ bool MastersCall(uint8_t effectIndex, Spell* pSpell)
     switch (effectIndex)
     {
         case 0:
-            Summon->CastSpell(caster, pSpell->damage, true);
+            Summon->castSpell(caster, pSpell->damage, true);
             return true;
         case 1:
-            Summon->CastSpell(Summon, 62305, true);
+            Summon->castSpell(Summon, 62305, true);
             return true;
     }
 
@@ -196,7 +196,7 @@ public:
             case 3043:
             case 18545:
             case 52604:
-                caster->CastSpell(target, 53359, true);
+                caster->castSpell(target, 53359, true);
                 break;
 
             // SPELL_HASH_WYVERN_STING:
@@ -220,7 +220,7 @@ public:
             case 49012:
             case 65877:
             case 65878:
-                caster->CastSpell(target, 53366, true);
+                caster->castSpell(target, 53366, true);
                 break;
 
             // SPELL_HASH_SERPENT_STING:
@@ -242,7 +242,7 @@ public:
             case 39182:
             case 49000:
             case 49001:
-                caster->CastSpell(target, 53353, true);
+                caster->castSpell(target, 53353, true);
                 break;
 
             // SPELL_HASH_VIPER_STING:
@@ -254,7 +254,7 @@ public:
             case 67991:
             case 67992:
             case 67993:
-                caster->CastSpell(target, 53358, true);
+                caster->castSpell(target, 53358, true);
                 break;
         }
     }

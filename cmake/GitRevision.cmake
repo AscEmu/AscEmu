@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 # mark variables as advanced to not get them in gui
 mark_as_advanced(

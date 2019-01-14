@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -32,6 +32,7 @@ class WowCrypt
     // WotLK
     public:
         void initWotlkCrypt(uint8_t* key);
+        void initMopCrypt(uint8_t* key);
         void decryptWotlkReceive(uint8_t* data, size_t length);
         void encryptWotlkSend(uint8_t* data, size_t length);
 

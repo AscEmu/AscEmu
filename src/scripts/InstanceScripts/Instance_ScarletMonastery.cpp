@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Instance_ScarletMonastery.h"
@@ -113,9 +113,9 @@ class DoanAI : public CreatureAIScript
 
     void Shield()
     {
-        getCreature()->CastSpell(getCreature(), SP_DOAN_SHIELD, true);
+        getCreature()->castSpell(getCreature(), SP_DOAN_SHIELD, true);
         sendDBChatMessage(2100);     // Burn in righteous fire!
-        getCreature()->CastSpell(getCreature(), SP_DOAN_NOVA, false);
+        getCreature()->castSpell(getCreature(), SP_DOAN_NOVA, false);
         m_bShielded = true;
     }
 
@@ -232,14 +232,14 @@ class WhitemaneAI : public CreatureAIScript
 
     void CastSleep()
     {
-        getCreature()->CastSpell(getCreature(), sleep->mSpellInfo, true);
+        getCreature()->castSpell(getCreature(), sleep->mSpellInfo, true);
     }
 
     void CastRes()
     {
         auto morgrain = getNearestCreature(CN_COMMANDER_MOGRAINE);
         if (morgrain != nullptr)
-            getCreature()->CastSpell(morgrain, resurrection->mSpellInfo, true);
+            getCreature()->castSpell(morgrain, resurrection->mSpellInfo, true);
     }
 
 protected:

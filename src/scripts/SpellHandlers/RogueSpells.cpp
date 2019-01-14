@@ -1,21 +1,21 @@
 /*
-* ArcScript Scripts for Arcemu MMORPG Server
-* Copyright (C) 2008-2011 Arcemu Team
-* Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
+ * Copyright (C) 2008-2011 ArcEmu Team <http://www.ArcEmu.org/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "Setup.h"
 #include "Management/Item.h"
@@ -26,7 +26,6 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/SpellIsFlags.h>
 #include <Spell/Definitions/SpellMechanics.h>
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 //Alice : Correct formula for Rogue - Preparation
 
@@ -58,7 +57,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* pTarget = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !pTarget) return true;
 
-    pSpell->p_caster->CastSpell(pTarget->getGuid(), 5940, true);
+    pSpell->p_caster->castSpell(pTarget->getGuid(), 5940, true);
 
     Item* it = pSpell->p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (!it)
@@ -72,12 +71,12 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
         {
             if (Entry->type[c] && Entry->spell[c])
             {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(Entry->spell[c]);
                 if (!sp) return true;
 
                 if (sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
-                    pSpell->p_caster->CastSpell(pTarget->getGuid(), Entry->spell[c], true);
+                    pSpell->p_caster->castSpell(pTarget->getGuid(), Entry->spell[c], true);
                 }
             }
         }
@@ -234,7 +233,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
         uint32 targetHP = target->getHealth();
 
         if (plrHP > targetHP)
-            p_target->CastSpell(p_target, 58670, true);
+            p_target->castSpell(p_target, 58670, true);
     }
 
     return true;
@@ -272,9 +271,9 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
 
                 uint64 spellTarget = itr->getGuid();
                 //SPELL_EFFECT_TELEPORT
-                p_target->CastSpell(spellTarget, 57840, true);
+                p_target->castSpell(spellTarget, 57840, true);
                 //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
-                p_target->CastSpell(spellTarget, 57841, true);
+                p_target->castSpell(spellTarget, 57841, true);
             }
 
         }
@@ -291,7 +290,7 @@ bool KillingSpreeEffectDummy(uint8_t /*effectIndex*/, Spell* s)
 
     //SPELL_EFFECT_BREAK_PLAYER_TARGETING
     //and applying 20% SPELL_AURA_MOD_DAMAGE_PERCENT_DONE
-    p_caster->CastSpell(p_caster, 61851, true);
+    p_caster->castSpell(p_caster, 61851, true);
 
     return true;
 }

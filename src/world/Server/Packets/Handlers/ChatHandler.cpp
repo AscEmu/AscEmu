@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetChannelWatch.h"
 #include "Management/GuildMgr.h"
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #include "Spell/SpellAuras.h"
 #endif
 
@@ -72,7 +72,7 @@ bool WorldSession::isFloodProtectionTriggered()
     return false;
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 static const uint32_t LanguageSkills[NUM_LANGUAGES] =
 {
     0,          // UNIVERSAL        0x00
@@ -845,7 +845,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 {
     if (!_player->isAlive())
@@ -1009,7 +1009,7 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     sQuestMgr.OnPlayerEmote(_player, srlPacket.emote, guid);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 {
     CmsgComplaint srlPacket;
@@ -1023,7 +1023,7 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 {
     CmsgChatIgnored srlPacket;

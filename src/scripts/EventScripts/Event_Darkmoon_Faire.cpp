@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Event_Darkmoon_Faire.h"
@@ -47,7 +47,7 @@ public:
         if (mPlayerGuid != 0)
             return;
 
-        pPlayer->CastSpell(pPlayer, 24832, true);
+        pPlayer->castSpell(pPlayer, 24832, true);
         pPlayer->setMoveRoot(true);
         _gameobject->PlaySoundToSet(8476);
         mPlayerGuid = static_cast<uint32>(pPlayer->getGuid());
@@ -78,7 +78,7 @@ public:
         }
 
         CurrentPlayer->setMoveRoot(false);
-        CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
+        CurrentPlayer->castSpell(CurrentPlayer, 42867, true);   // 24742
         _gameobject->setFlags(GO_FLAG_NONE);
         mPlayerGuid = 0;
         RemoveAIUpdateEvent();
@@ -134,7 +134,7 @@ Creature* pTonk = NULL;
 pTonk = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
 
 // Cast the tonk control spell on the tonk
-pPlayer->CastSpell(pTonk, 33849, false);
+pPlayer->castSpell(pTonk, 33849, false);
 
 // Start checks to see if player still has aura
 RegisterAIUpdateEvent(1000);
@@ -149,8 +149,8 @@ void AIUpdate()
 if (!Plr->HasAura(33849) || Tonk->isDead())
 {
 // Kill then Despawn Tonk after 10 seconds
-Plr->CastSpell(Tonk, 5, false); // Kill spell
-Plr->CastSpell(Plr, 2880, false); // Stun Player
+Plr->castSpell(Tonk, 5, false); // Kill spell
+Plr->castSpell(Plr, 2880, false); // Stun Player
 Plr->RemoveAura(33849);
 Tonk->Despawn(10000,0);
 
@@ -467,21 +467,21 @@ public:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23768, true);
+                pCreature->castSpell(plr, 23768, true);
                 menu.Send(plr);
             }break;
             case 15:     // Answers: 1-2
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23769, true);
+                pCreature->castSpell(plr, 23769, true);
                 menu.Send(plr);
             }break;
             case 16:     // Answers: 1-3
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23767, true);
+                pCreature->castSpell(plr, 23767, true);
                 menu.Send(plr);
             }break;
             // Answers 2-#
@@ -489,21 +489,21 @@ public:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23738, true);
+                pCreature->castSpell(plr, 23738, true);
                 menu.Send(plr);
             }break;
             case 18:     // Answers: 2-2
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23766, true);
+                pCreature->castSpell(plr, 23766, true);
                 menu.Send(plr);
             }break;
             case 19:     // Answers: 2-3
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23769, true);
+                pCreature->castSpell(plr, 23769, true);
                 menu.Send(plr);
             }break;
             // Answers 3-#
@@ -511,21 +511,21 @@ public:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23737, true);
+                pCreature->castSpell(plr, 23737, true);
                 menu.Send(plr);
             }break;
             case 21:     // Answers: 3-2
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23735, true);
+                pCreature->castSpell(plr, 23735, true);
                 menu.Send(plr);
             }break;
             case 22:     // Answers: 3-3
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23736, true);
+                pCreature->castSpell(plr, 23736, true);
                 menu.Send(plr);
             }break;
             // Answers 4-#
@@ -533,21 +533,21 @@ public:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23766, true);
+                pCreature->castSpell(plr, 23766, true);
                 menu.Send(plr);
             }break;
             case 24:     // Answers: 4-2
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23738, true);
+                pCreature->castSpell(plr, 23738, true);
                 menu.Send(plr);
             }break;
             case 25:     // Answers: 4-3
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23737, true);
+                pCreature->castSpell(plr, 23737, true);
                 menu.Send(plr);
             }break;
             case 30:
@@ -555,7 +555,7 @@ public:
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 60033, plr->GetSession()->language);
                 menu.Send(plr);
                 // Cast the fortune into the player's inventory - Not working?
-                pCreature->CastSpell(plr, 23765, true);
+                pCreature->castSpell(plr, 23765, true);
                 // TEMP fix for spell not adding item to  player's inventory.
                 auto proto = sMySQLStore.getItemProperties(19422);
                 if (proto == nullptr)

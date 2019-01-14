@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -342,7 +342,7 @@ typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
 typedef std::map<uint32, uint64>                    SoloSpells;
-typedef std::map<SpellInfo*, std::pair<uint32, uint32> >StrikeSpellMap;
+typedef std::map<SpellInfo const*, std::pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
@@ -351,7 +351,7 @@ typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 // AGPL End
 
 // MIT Start
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 class TradeData
 {
     void updateTrade(bool for_trader = true);
@@ -440,7 +440,7 @@ public:
     uint32_t getGuildRank() const;
     void setGuildRank(uint32_t guildRank);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint32_t getGuildLevel() const;
     void setGuildLevel(uint32_t guildLevel);
 #endif
@@ -514,7 +514,7 @@ public:
     void setNextLevelXp(uint32_t xp);
 
     uint32_t getFreeTalentPoints() const;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     void setFreeTalentPoints(uint32_t points);
 #endif
 
@@ -595,6 +595,11 @@ public:
 #endif
 #endif
 
+#if VERSION_STRING >= WotLK
+    uint32_t getNoReagentCost(uint8_t index) const;
+    void setNoReagentCost(uint8_t index, uint32_t value);
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
@@ -672,7 +677,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
     void learnTalent(uint32_t talentId, uint32_t talentRank);
-    void addTalent(SpellInfo* sp);
+    void addTalent(SpellInfo const* sp);
     void removeTalent(uint32_t spellId, bool onSpecChange = false);
     void resetTalents();
     void setTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
@@ -695,7 +700,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 private:
 
     TradeData* m_TradeData;
@@ -713,7 +718,7 @@ public:
 
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -882,10 +887,10 @@ public:
 
     public:
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
-        void Cooldown_AddStart(SpellInfo* pSpell);
-        void Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster);
+        void Cooldown_AddStart(SpellInfo const* pSpell);
+        void Cooldown_Add(SpellInfo const* pSpell, Item* pItemCaster);
         void Cooldown_AddItem(ItemProperties const* pProto, uint32 x);
-        bool Cooldown_CanCast(SpellInfo* pSpell);
+        bool Cooldown_CanCast(SpellInfo const* pSpell);
         bool Cooldown_CanCast(ItemProperties const* pProto, uint32 x);
         void UpdatePotionCooldown();
         bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
@@ -1135,11 +1140,11 @@ public:
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
 
         // PLEASE DO NOT INLINE!
-        void AddOnStrikeSpell(SpellInfo* sp, uint32 delay)
+        void AddOnStrikeSpell(SpellInfo const* sp, uint32 delay)
         {
-            m_onStrikeSpells.insert(std::map<SpellInfo*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
+            m_onStrikeSpells.insert(std::map<SpellInfo const*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
         }
-        void RemoveOnStrikeSpell(SpellInfo* sp)
+        void RemoveOnStrikeSpell(SpellInfo const* sp)
         {
             m_onStrikeSpells.erase(sp);
         }
@@ -1268,7 +1273,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void SendTradeUpdate(void);
         void ResetTradeVariables()
         {
@@ -1452,7 +1457,7 @@ public:
         uint32 GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
-        bool canCast(SpellInfo* m_spellInfo);
+        bool canCast(SpellInfo const* m_spellInfo);
 
         float GetSpellCritFromSpell() { return m_spellcritfromspell; }
         float GetHitFromSpell() { return m_hitfromspell; }
@@ -1755,7 +1760,7 @@ public:
         void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
-        std::map<uint32, std::map<SpellInfo*, uint16>*> PetSpells;
+        std::map<uint32, std::map<SpellInfo const*, uint16>*> PetSpells;
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
@@ -1811,7 +1816,7 @@ public:
         //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
@@ -1820,7 +1825,7 @@ public:
 
         void SetHonorCurrency(uint32 value)
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
@@ -1829,7 +1834,7 @@ public:
         }
         void ModHonorCurrency(uint32 value)
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
@@ -1838,7 +1843,7 @@ public:
         }
         uint32 GetHonorCurrency()
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             return 0;
 #elif VERSION_STRING == Classic
             return 0;
@@ -1922,7 +1927,7 @@ public:
         void SendAreaTriggerMessage(const char* message, ...);
 
         // Trade Target
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Player* GetTradeTarget();
 
         Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
@@ -1939,7 +1944,7 @@ public:
         void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
 
         bool m_deathVision;
-        SpellInfo* last_heal_spell;
+        SpellInfo const* last_heal_spell;
         LocationVector m_sentTeleportPosition;
 
         bool InBattleground() const { return m_bgQueueInstanceId != 0; }
@@ -2005,7 +2010,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Item* mTradeItems[8];
         uint32 mTradeGold;
         uint32 mTradeTarget;
@@ -2197,7 +2202,7 @@ public:
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         uint32 m_FirstTalentTreeLock;
 #endif
 

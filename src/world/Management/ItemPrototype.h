@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -351,11 +351,12 @@ enum ITEM_STAT_TYPE
 
 enum ITEM_SPELLTRIGGER_TYPE
 {
-    USE                 = 0,
-    ON_EQUIP            = 1,
-    CHANCE_ON_HIT       = 2,
-    SOULSTONE           = 4,
-    LEARNING            = 6
+    USE                     = 0,
+    ON_EQUIP                = 1,
+    CHANCE_ON_HIT           = 2,
+    SOULSTONE               = 4,
+    APPLY_AURA_ON_PICKUP    = 5, // Applies aura to player on item pickup and removes the aura on item loss
+    LEARNING                = 6
 };
 
 enum ITEM_BONDING_TYPE

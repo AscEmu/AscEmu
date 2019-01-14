@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -15,7 +15,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         WoWGuid guid;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         bool full;
 #endif
 
@@ -40,7 +40,7 @@ namespace AscEmu { namespace Packets
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
             guid.Init(unpackedGuid);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             packet >> full;
 #endif
             return true;

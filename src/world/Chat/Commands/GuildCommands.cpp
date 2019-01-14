@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -71,7 +71,7 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s is not in a guild.", selected_player->getName().c_str());
@@ -91,7 +91,7 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
     return true;
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* session)
 {
     Player* selected_player = GetSelectedPlayer(session, true, true);
@@ -120,7 +120,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s is already in a guild.", selected_player->getName().c_str());
@@ -185,7 +185,7 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s not in a guild.", selected_player->getName().c_str());

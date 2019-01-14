@@ -1,6 +1,5 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -28,7 +27,6 @@
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
@@ -168,8 +166,8 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         if (m_buffs[buffslot] != 0 && m_buffs[buffslot]->IsInWorld())
         {
             // apply the buff
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
-            Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
+            SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
+            Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
             SpellCastTargets targets(plr->getGuid());
             s->prepare(&targets);
 
@@ -344,8 +342,8 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
      */
     m_dropFlags[plr->getTeam()]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
 
-    SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->getTeam() * 2));
-    Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
+    SpellInfo const* pSp = sSpellMgr.getSpellInfo(23333 + (plr->getTeam() * 2));
+    Spell* sp = sSpellMgr.newSpell(plr, pSp, true, 0);
     SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
     SetWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
@@ -399,8 +397,8 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         return;
     }
 
-    SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->getTeam() * 2));
-    Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
+    SpellInfo const* pSp = sSpellMgr.getSpellInfo(23333 + (plr->getTeam() * 2));
+    Spell* sp = sSpellMgr.newSpell(plr, pSp, true, 0);
     SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
 
@@ -434,7 +432,7 @@ void WarsongGulch::OnAddPlayer(Player* plr)
 {
     if (!m_started && plr->IsInWorld())
     {
-        plr->CastSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BG_PREPARATION, true);
         plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_CAPTURED] = 0;
         plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_RETURNED] = 0;
     }

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -231,7 +231,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     data << uint32_t(pRoleCheck->state);       // Check result
     data << uint8_t(pRoleCheck->state == LFG_ROLECHECK_INITIALITING);
     data << uint8_t(dungeons.size());          // Number of dungeons
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!dungeons.empty())
     {
         for (auto dungeonEntry : dungeons)
@@ -418,7 +418,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
             dungeonId = (*playerDungeons.begin());
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
     {
         dungeonId = dungeon->Entry();
@@ -483,7 +483,7 @@ void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
     sLfgMgr.SetComment(_player->getGuid(), srlPacket.comment);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleLfgLockInfoOpcode(WorldPacket& recvPacket)
 {
     const bool requestFromPlayer = recvPacket.readBit();
@@ -619,7 +619,7 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
     LfgDungeonSet randomDungeons;
     const uint8_t level = static_cast<uint8_t>(_player->getLevel());
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     uint8_t expansion = static_cast<uint8_t>(_player->GetSession()->GetFlags());
     for (uint32_t i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {

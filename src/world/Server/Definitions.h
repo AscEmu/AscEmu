@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -60,7 +60,7 @@ enum TimeConstants
 
 #define MAX_RACES         12
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #define RACEMASK_ALL_PLAYABLE \
     ((1<<(RACE_HUMAN-1))    |(1<<(RACE_ORC-1))      |(1<<(RACE_DWARF-1))   | \
     (1<<(RACE_NIGHTELF-1))  |(1<<(RACE_UNDEAD-1))   |(1<<(RACE_TAUREN-1))  | \
@@ -79,7 +79,7 @@ enum TimeConstants
     (1<<(RACE_GNOME-1))     |(1<<(RACE_TROLL-1)))
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #define RACEMASK_ALLIANCE \
     ((1<<(RACE_HUMAN-1))    |(1<<(RACE_DWARF-1))    |(1<<(RACE_NIGHTELF-1)) | \
     (1<<(RACE_GNOME-1))     |(1<<(RACE_DRAENEI-1))  |(1<<(RACE_WORGEN-1)))

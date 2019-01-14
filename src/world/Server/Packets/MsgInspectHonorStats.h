@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -41,7 +41,7 @@ namespace AscEmu { namespace Packets
             packet << guid << honnorCurrency;
 #if VERSION_STRING != Classic
             packet << kills;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             packet << todayContrib;
             packet << yesterdayContrib;
 #endif

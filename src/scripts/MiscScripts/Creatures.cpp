@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 
@@ -20,7 +20,7 @@ class ExplosiveSheep : public CreatureAIScript
     void OnCombatStart(Unit* mTarget) // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
     {
         getCreature()->GetAIInterface()->splineMoveCharge(mTarget);
-        getCreature()->CastSpell(getCreature(), 4050, true);
+        getCreature()->castSpell(getCreature(), 4050, true);
         getCreature()->Despawn(1000, 0); // Despawn since we "exploded"
     }
 };
@@ -93,7 +93,7 @@ class PeonSleepingAI : public CreatureAIScript
 
     void AIUpdate()
     {
-        getCreature()->CastSpell(getCreature(), 17743, true);
+        getCreature()->castSpell(getCreature(), 17743, true);
         RemoveAIUpdateEvent();
     };
 };
@@ -301,7 +301,7 @@ class TrollRoofStalker : public CreatureAIScript
 
     void OnLoad()
     {
-        getCreature()->CastSpell(getCreature(), 30991, true);
+        getCreature()->castSpell(getCreature(), 30991, true);
     };
 };
 
@@ -323,8 +323,8 @@ class DISCO : public CreatureAIScript
 
     void OnLoad()
     {
-        getCreature()->CastSpell(getCreature(), 50487, false);   // summon disco dancefloor
-        getCreature()->CastSpell(getCreature(), 50314, false);   // play the music
+        getCreature()->castSpell(getCreature(), 50487, false);   // summon disco dancefloor
+        getCreature()->castSpell(getCreature(), 50314, false);   // play the music
     }
 };
 

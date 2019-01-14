@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
@@ -268,7 +268,7 @@ class VaelastraszAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
+        getCreature()->castSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override

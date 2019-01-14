@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,13 @@ bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster && !apply)
-        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
+        caster->castSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
     return true;
 }
 
 bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (effectIndex == 0)
     {
         auto caster = pAura->GetUnitCaster();
@@ -68,9 +68,9 @@ bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     if (caster->HasAura(70937))    // Glyph of Eternal Water
-        caster->CastSpell(caster, 70908, true);
+        caster->castSpell(caster, 70908, true);
     else
-        caster->CastSpell(caster, 70907, true);
+        caster->castSpell(caster, 70907, true);
 
     return true;
 }
@@ -139,7 +139,7 @@ bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
     Unit* caster = pAura->GetUnitCaster();
     if (caster != NULL && apply && effectIndex == 2)
         if (caster->getGuid() == pAura->GetTarget()->getCreatedByGuid())
-            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
+            caster->castSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
 
     return true;
 }

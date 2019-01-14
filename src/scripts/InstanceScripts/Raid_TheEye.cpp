@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
@@ -327,11 +327,11 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell
     Unit* Target = Caster->GetAIInterface()->getNextTarget();
     if (!Target) return true;
 
-    SpellInfo* SpellInfo = sSpellCustomizations.GetSpellInfo(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
+    SpellInfo const* SpellInfo = sSpellMgr.getSpellInfo(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
     if (!SpellInfo) return true;
 
     //Explode bomb after 6sec
-    sEventMgr.AddEvent(Target, &Unit::EventCastSpell, Target, SpellInfo, EVENT_UNK, 6000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(Target, &Unit::eventCastSpell, Target, SpellInfo, EVENT_UNK, 6000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     return true;
 }
 

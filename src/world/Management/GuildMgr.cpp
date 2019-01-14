@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -37,7 +37,7 @@ void GuildMgr::update(uint32_t /*diff*/)
 
 void GuildMgr::saveGuilds()
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     for (GuildContainer::iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         itr->second->saveGuildToDB();
 #endif
@@ -92,7 +92,7 @@ void GuildMgr::loadGuildDataFromDB()
     {
         const auto startTime = Util::TimeNow();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     //                                                         0          1            2             3              4              5              6
     QueryResult* result = CharacterDatabase.Query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
         //           7               8          9          10            11            12

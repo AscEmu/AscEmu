@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "Setup.h"
 #include "Instance_ShadowLabyrinth.h"
@@ -199,7 +198,7 @@ class FelOverseerAI : public CreatureAIScript
         HealCooldown--;
         if (getCreature()->getHealthPct() <= 25 && HealCooldown <= 0)
         {
-            getCreature()->CastSpell(getCreature(), heal->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), heal->mSpellInfo, true);
             HealCooldown = 60;
         }
     }
@@ -260,7 +259,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
     {
         if (_isTimerFinished(aoeFearTimerId) && !getCreature()->isCastingSpell())
         {
-            getCreature()->CastSpell(getCreature(), aoeFear->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), aoeFear->mSpellInfo, true);
 
             _resetTimer(aoeFearTimerId, 25000);
         }
@@ -313,7 +312,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
     {
         if (_isTimerFinished(chaosTimerId) && !getCreature()->isCastingSpell())
         {
-            getCreature()->CastSpell(getCreature(), chaos->mSpellInfo, true);
+            getCreature()->castSpell(getCreature(), chaos->mSpellInfo, true);
             _resetTimer(chaosTimerId, chaos->mCooldown);
         }
     }
@@ -408,7 +407,7 @@ class MurmurAI : public CreatureAIScript
 
             getCreature()->interruptSpell();
 
-            getCreature()->CastSpell(getCreature(), SP_MURMUR_SONIC_BOOM2, true);
+            getCreature()->castSpell(getCreature(), SP_MURMUR_SONIC_BOOM2, true);
 
             _resetTimer(SonicBoomTimerId, 25000);
         }

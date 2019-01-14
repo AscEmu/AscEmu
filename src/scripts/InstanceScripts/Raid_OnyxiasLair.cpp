@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,13 @@ class OnyxiaAI : public CreatureAIScript
         AddWaypoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY, coords[7]));
         AddWaypoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY, coords[8]));
 
-        infoFear = sSpellCustomizations.GetSpellInfo(AOE_FEAR);
-        infoCleave = sSpellCustomizations.GetSpellInfo(CLEAVE);
-        infoFBreath = sSpellCustomizations.GetSpellInfo(FLAME_BREATH);
-        infoKAway = sSpellCustomizations.GetSpellInfo(KNOCK_AWAY);
-        infoSFireball = sSpellCustomizations.GetSpellInfo(SCRIPTABLE_FIREBALL);
-        infoWBuffet = sSpellCustomizations.GetSpellInfo(WING_BUFFET);
-        infoDeepBreath = sSpellCustomizations.GetSpellInfo(DEEP_BREATH);
+        infoFear = sSpellMgr.getSpellInfo(AOE_FEAR);
+        infoCleave = sSpellMgr.getSpellInfo(CLEAVE);
+        infoFBreath = sSpellMgr.getSpellInfo(FLAME_BREATH);
+        infoKAway = sSpellMgr.getSpellInfo(KNOCK_AWAY);
+        infoSFireball = sSpellMgr.getSpellInfo(SCRIPTABLE_FIREBALL);
+        infoWBuffet = sSpellMgr.getSpellInfo(WING_BUFFET);
+        infoDeepBreath = sSpellMgr.getSpellInfo(DEEP_BREATH);
 
         if (!infoFear || !infoCleave || !infoFBreath
                 || !infoKAway || !infoSFireball || !infoWBuffet || !infoDeepBreath)
@@ -237,7 +237,7 @@ class OnyxiaAI : public CreatureAIScript
         m_eFlamesCooldown--;
         if (!m_eFlamesCooldown && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
-            getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoSFireball, false);//(_unit->getAttackTarget(),
+            getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), infoSFireball, false);//(_unit->getAttackTarget(),
             m_eFlamesCooldown = 4;
             m_fCastCount--;
         }
@@ -275,7 +275,7 @@ class OnyxiaAI : public CreatureAIScript
             else if (val < 350)
             {
                 //Deep breath
-                getCreature()->CastSpell(getCreature(), infoDeepBreath, false);
+                getCreature()->castSpell(getCreature(), infoDeepBreath, false);
                 m_fCastCount = 5;
             }
             else
@@ -310,7 +310,7 @@ class OnyxiaAI : public CreatureAIScript
     {
         if (!m_aoeFearCooldown)
         {
-            getCreature()->CastSpell(getCreature(), infoFear, false);//(_unit->getAttackTarget(),
+            getCreature()->castSpell(getCreature(), infoFear, false);//(_unit->getAttackTarget(),
             m_aoeFearCooldown = 30;
             return;
         }
@@ -364,25 +364,25 @@ class OnyxiaAI : public CreatureAIScript
         {
             if (m_fBreath)
             {
-                getCreature()->CastSpell(getCreature(), infoFBreath, false);
+                getCreature()->castSpell(getCreature(), infoFBreath, false);
                 m_fBreath = false;
                 return;
             }
             else if (m_kAway)
             {
-                getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoKAway, false);
+                getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), infoKAway, false);
                 m_kAway = false;
                 return;
             }
             else if (m_wBuffet)
             {
-                getCreature()->CastSpell(getCreature(), infoWBuffet, false);
+                getCreature()->castSpell(getCreature(), infoWBuffet, false);
                 m_wBuffet = false;
                 return;
             }
             else if (m_Cleave)
             {
-                getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoCleave, false);
+                getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), infoCleave, false);
                 m_Cleave = false;
                 return;
             }
@@ -391,25 +391,25 @@ class OnyxiaAI : public CreatureAIScript
             {
                 getCreature()->setAttackTimer(MELEE, 6000);//6000
                 m_fBreath = true;
-                //_unit->CastSpell(_unit, infoFBreath, false);
+                //_unit->castSpell(_unit, infoFBreath, false);
             }
             else if (val > 225 && val <= 300)
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
                 m_kAway = true;
-                //_unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoKAway, false);
+                //_unit->castSpell(_unit->GetAIInterface()->GetNextTarget(), infoKAway, false);
             }
             else if (val > 300 && val <= 375)
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//3000
                 m_wBuffet = true;
-                //_unit->CastSpell(_unit, infoWBuffet, false);
+                //_unit->castSpell(_unit, infoWBuffet, false);
             }
             else if (val > 375 && val < 450)
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
                 m_Cleave = true;
-                // _unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoCleave, false);
+                // _unit->castSpell(_unit->GetAIInterface()->GetNextTarget(), infoCleave, false);
             }
         }
     }
@@ -430,7 +430,7 @@ protected:
     uint32 m_aoeFearCooldown;
     uint32 m_fCastCount;
     uint32 m_currentWP;
-    SpellInfo* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
+    SpellInfo const* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
 };
 
 void SetupOnyxiasLair(ScriptMgr* mgr)

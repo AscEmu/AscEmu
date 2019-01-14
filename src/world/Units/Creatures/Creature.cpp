@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -1134,7 +1134,7 @@ Trainer* Creature::GetTrainer()
     return mTrainer;
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
 #else
 void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec)
@@ -1737,11 +1737,11 @@ void Creature::OnPushToWorld()
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*itr));
+        SpellInfo const* sp = sSpellMgr.getSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
-        CastSpell(this, sp, 0);
+        castSpell(this, sp, 0);
     }
 
     if (GetScript() == NULL)
@@ -2124,7 +2124,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 #else
 DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
@@ -2322,9 +2322,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellInfo* killerspell;
+        SpellInfo const* killerspell;
         if (spellid)
-            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
+            killerspell = sSpellMgr.getSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

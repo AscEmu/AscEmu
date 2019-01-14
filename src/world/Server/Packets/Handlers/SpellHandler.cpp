@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellState.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
@@ -75,7 +75,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
         {
             if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry()))
             {
-                creatureTarget->CastSpell(_player, clickSpell->SpellID, true);
+                creatureTarget->castSpell(_player, clickSpell->SpellID, true);
             }
             else
             {
@@ -99,7 +99,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
         if (!isFriendly(_player, creatureTarget))
             return;
 
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellClickData->SpellID);
+        const auto spellInfo = sSpellMgr.getSpellInfo(spellClickData->SpellID);
         if (spellInfo == nullptr)
         {
             LOG_ERROR("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
@@ -107,7 +107,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
         }
 
         // TODO: there are spellclick spells which should be casted on player by npc (i.e. Lightwell spell) but also vice versa
-        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+        Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
         SpellCastTargets targets(unitGuid);
         spell->prepare(&targets);
     }
@@ -127,7 +127,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spell_id);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell_id);
     if (spellInfo == nullptr)
     {
         LOG_ERROR("Unknown spell id %u in handleCastSpellOpcode().", srlPacket.spell_id);
@@ -165,10 +165,10 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     SpellCastTargets targets(recvPacket, _player->getGuid());
-    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+    Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.cast_count;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     spell->m_glyphslot = srlPacket.glyphSlot;
 #endif
 
@@ -193,7 +193,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
         if (hasMovementData)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
             handleMovementOpcodes(recvPacket);
 #else
@@ -232,7 +232,7 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
     uint32_t spellId;
     recvPacket >> spellId;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
         return;
 
@@ -313,7 +313,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
         return;
 
@@ -394,7 +394,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     }
 
     SpellCastTargets targets(recvPacket, srlPacket.petGuid);
-    Spell* spell = sSpellFactoryMgr.NewSpell(petUnit, spellInfo, false, nullptr);
+    Spell* spell = sSpellMgr.newSpell(petUnit, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
 
     // Some spell cast packets include more data

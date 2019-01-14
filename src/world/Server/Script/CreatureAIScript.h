@@ -1,12 +1,12 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Chat/ChatDefines.hpp"
 #include "Management/Item.h"
 #include "Units/Creatures/AIInterface.h"
@@ -31,7 +31,7 @@ enum AISpellTargetType
 class SERVER_DECL CreatureAISpells
 {
 public:
-    CreatureAISpells(SpellInfo* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
+    CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
     {
         mSpellInfo = spellInfo;
         mCastChance = castChance;
@@ -68,7 +68,7 @@ public:
     {
     }
 
-    SpellInfo* mSpellInfo;
+    SpellInfo const* mSpellInfo;
     float mCastChance;
     uint32_t mTargetType;
     uint32_t mDuration;

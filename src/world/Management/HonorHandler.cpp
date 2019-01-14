@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -30,7 +30,7 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
@@ -212,8 +212,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 if (pAffectedPlayer->GetZoneId() == 3518)
                 {
                     // Add Halaa Battle Token
-                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->isTeamHorde() ? 33004 : 33005);
-                    pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
+                    SpellInfo const* pvp_token_spell = sSpellMgr.getSpellInfo(pAffectedPlayer->isTeamHorde() ? 33004 : 33005);
+                    pAffectedPlayer->castSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
                 // If we are in Hellfire Peninsula <http://www.wowwiki.com/Hellfire_Peninsula#World_PvP_-_Hellfire_Fortifications>
                 if (pAffectedPlayer->GetZoneId() == 3483)
@@ -228,8 +228,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         */
 
                     // Add Mark of Thrallmar/Honor Hold
-                    SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->isTeamHorde() ? 32158 : 32155);
-                    pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
+                    SpellInfo const* pvp_token_spell = sSpellMgr.getSpellInfo(pAffectedPlayer->isTeamHorde() ? 32158 : 32155);
+                    pAffectedPlayer->castSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
             }
         }

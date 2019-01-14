@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Instance_AuchenaiCrypts.h"
@@ -54,7 +54,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
     {
         if (Appear)
         {
-            getCreature()->CastSpell(getCreature(), phaseIn->mSpellInfo, phaseIn->mIsTriggered);
+            getCreature()->castSpell(getCreature(), phaseIn->mSpellInfo, phaseIn->mIsTriggered);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
 
             Appear = false;
@@ -121,7 +121,7 @@ class EXARCH_MALADAAR_AI : public CreatureAIScript
             getCreature()->setAttackTimer(MELEE, 3500);
             getCreature()->GetAIInterface()->StopMovement(2000);
 
-            getCreature()->CastSpell(getCreature(), summonAvatar->mSpellInfo, summonAvatar->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonAvatar->mSpellInfo, summonAvatar->mIsTriggered);
             Avatar = true;
         }
     }

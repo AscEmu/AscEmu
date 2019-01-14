@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GuildMgr.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
+#elif VERSION_STRING == Mop
+#include "GameMop/Management/GuildFinderMgr.h"
 #endif
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"
@@ -98,7 +100,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
     guild->logEvent(GE_LOG_INVITE_PLAYER, session->GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
     invitedPlayer->SetGuildIdInvited(guild->getId());
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
 
 #else
@@ -164,7 +166,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
 
     if (ret)
     {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         broadcastEvent(GE_FOUNDER, 0, {});
 #endif
         sHookInterface.OnGuildCreate(pLeader, this);
@@ -199,7 +201,7 @@ void Guild::disband()
     CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildId = %u", m_id);
 
     CharacterDatabase.Execute("DELETE FROM guild_bank_logs WHERE guildId = %u", m_id);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     sGuildFinderMgr.deleteGuild(m_id);
 #endif
 
@@ -254,7 +256,7 @@ void Guild::onPlayerStatusChange(Player* player, uint32_t flag, bool state)
 
 void Guild::handleRoster(WorldSession* session)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data(SMSG_GUILD_ROSTER, (4 + m_motd.length() + 1 + m_info.length() + 1 + 4 + _getRanksSize() * (4 + 4 + MAX_GUILD_BANK_TABS * (4 + 4)) + _guildMembersStore.size() * 50));
     data << uint32_t(_guildMembersStore.size());
     data << m_motd;
@@ -404,7 +406,7 @@ void Guild::handleQuery(WorldSession* session)
 {
     WorldPacket data(SMSG_GUILD_QUERY_RESPONSE, 8 * 32 + 200);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint64_t(getGUID());
 #else
     data << uint32_t(m_id);
@@ -418,7 +420,7 @@ void Guild::handleQuery(WorldSession* session)
         else
             data << uint8_t(0);
     }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     for (uint8_t i = 0; i < MAX_GUILD_RANKS; ++i)
     {
         if (i < _getRanksSize())
@@ -446,7 +448,7 @@ void Guild::handleQuery(WorldSession* session)
 
 void Guild::sendGuildRankInfo(WorldSession* session) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ByteBuffer rankData(100);
     WorldPacket data(SMSG_GUILD_RANK, 100);
 
@@ -801,7 +803,7 @@ void Guild::handleAddNewRank(WorldSession* session, std::string const& name)
     {
         if (createRank(name, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK))
         {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             broadcastEvent(GE_RANK_CREATED, 0, {});
 #else
             broadcastEvent(GE_RANK_UPDATED, 0, {});
@@ -907,7 +909,7 @@ void Guild::handleGuildPartyRequest(WorldSession* session)
 
 void Guild::sendEventLog(WorldSession* session) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_EVENT_LOG_QUERY_RESULT, 1 + mEventLog->getSize() * (1 + 8 + 4));
 #else
     WorldPacket data(MSG_GUILD_EVENT_LOG_QUERY, 1 + mEventLog->getSize() * (1 + 8 + 4));
@@ -920,7 +922,7 @@ void Guild::sendEventLog(WorldSession* session) const
 
 void Guild::sendNewsUpdate(WorldSession* session)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint32_t size = mNewsLog->getSize();
     GuildLog* logs = mNewsLog->getGuildLog();
 
@@ -984,7 +986,7 @@ void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
     {
         GuildLogHolder const* log = mBankEventLog[tabId];
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         WorldPacket data(SMSG_GUILD_BANK_LOG_QUERY_RESULT, log->getSize() * (4 * 4 + 1) + 1 + 1);
         data.writeBit(getLevel() >= 5 && tabId == MAX_GUILD_BANK_TABS);
         log->writeLogHolderPacket(data);
@@ -1014,7 +1016,7 @@ void Guild::sendPermissions(WorldSession* session) const
 
     uint8_t rankId = member->getRankId();
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_PERMISSIONS_QUERY_RESULTS, 4 * 15 + 1);
     data << uint32_t(rankId);
     data << uint32_t(_getPurchasedTabsSize());
@@ -1048,7 +1050,7 @@ void Guild::sendMoneyInfo(WorldSession* session) const
 
     const int32_t amount = getMemberRemainingMoney(member);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     session->SendPacket(SmsgGuildBankMoneyWithdrawn(amount).serialise().get());
 #else
     session->SendPacket(MsgGuildBankMoneyWithdrawn(amount).serialise().get());
@@ -1063,7 +1065,7 @@ void Guild::sendLoginInfo(WorldSession* session)
 
     Player* player = session->GetPlayer();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     sendBankList(session, 0, false, true);
 
     handleRoster(session);
@@ -1116,7 +1118,7 @@ bool Guild::loadGuildFromDB(Field* fields)
     m_motd = fields[9].GetString();
     m_createdDate = time_t(fields[10].GetUInt32());
     m_bankMoney = fields[11].GetUInt64();
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_level = static_cast<uint8_t>(fields[12].GetUInt32());
     m_experience = fields[13].GetUInt64();
     m_todayExperience = fields[14].GetUInt64();
@@ -1435,7 +1437,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         player->setGuildId(m_id);
         player->SetGuildIdInvited(0);
         player->setGuildRank(rankId);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         player->setGuildLevel(getLevel());
 #endif
         sendLoginInfo(player->GetSession());
@@ -1472,7 +1474,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     logEvent(GE_LOG_JOIN_GUILD, lowguid);
     broadcastEvent(GE_JOINED, guid, { name });
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     sGuildFinderMgr.removeAllMembershipRequestsFromPlayer(lowguid);
 #endif
     sHookInterface.OnGuildJoin(player, this);
@@ -1524,7 +1526,7 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
     {
         player->setGuildId(0);
         player->setGuildRank(0);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         player->setGuildLevel(0);
 
         for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
@@ -1837,7 +1839,7 @@ void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<st
 
 void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     bool sendAllSlots = true;
 
     WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
@@ -1991,7 +1993,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 
 void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     ObjectGuid tarGuid = targetGuid;
     ObjectGuid setGuid = setterGuid;
 
@@ -2065,7 +2067,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
 
 void Guild::giveXP(uint32_t xp, Player* source)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     if (worldConfig.guild.levelingEnabled == false)
         return;
 
@@ -2124,7 +2126,7 @@ void Guild::giveXP(uint32_t xp, Player* source)
 
 void Guild::sendGuildXP(WorldSession* session) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_XP, 40);
     data << uint64_t(/*member ? member->getTotalActivity() :*/ 0);
     data << uint64_t(sGuildMgr.getXPForGuildLevel(getLevel()) - getExperience());
@@ -2138,7 +2140,7 @@ void Guild::sendGuildXP(WorldSession* session) const
 
 void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputation) const
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint32_t cap = worldConfig.guild.maxRepPerWeek - reputation;
 
     WorldPacket data(SMSG_GUILD_REPUTATION_WEEKLY_CAP, 4);
@@ -2151,7 +2153,7 @@ void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputat
 
 void Guild::resetTimes(bool weekly)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_todayExperience = 0;
     for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
     {
@@ -2167,7 +2169,7 @@ void Guild::resetTimes(bool weekly)
 
 void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     uint32_t lowGuid = Arcemu::Util::GUID_LOPART(guid);
     GuildNewsLogEntry* news = new GuildNewsLogEntry(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
 
@@ -2189,7 +2191,7 @@ bool Guild::hasAchieved(uint32_t /*achievementId*/) const
 
 void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sticky)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     GuildLog* logs = mNewsLog->getGuildLog();
     GuildLog::iterator itr = logs->begin();
     while (itr != logs->end() && (*itr)->getGUID() != newsId)
@@ -2217,7 +2219,7 @@ void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sti
 
 void Guild::handleGuildRequestChallengeUpdate(WorldSession* session)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_CHALLENGE_UPDATED, 4 * 4 * 5);
 
     for (int i = 0; i < 4; ++i)
@@ -2401,7 +2403,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
 void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlots) const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
     data << uint64_t(m_bankMoney);
     data << uint8_t(tabId);

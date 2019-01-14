@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -52,6 +52,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
+#elif VERSION_STRING == Mop
+#include "GameMop/Management/GuildFinderMgr.h"
 #endif
 
 using namespace AscEmu::Packets;
@@ -66,7 +68,7 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
     if (guild == nullptr)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     guild->handleQuery(this);
 #else
 
@@ -85,7 +87,7 @@ void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
         guild->sendGuildInvitePacket(_player->GetSession(), srlPacket.name);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 {
     if (const auto guild = _player->GetGuild())
@@ -247,7 +249,7 @@ void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
@@ -267,7 +269,7 @@ void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
@@ -287,7 +289,7 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const auto targetPlayerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (targetPlayerInfo == nullptr)
         return;
@@ -300,7 +302,7 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
 #endif
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
 {
     CmsgGuildSetPublicNote srlPacket;
@@ -340,7 +342,7 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
 {
     if (Guild* guild = _player->GetGuild())
@@ -410,7 +412,7 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
         guild->swapItemsWithInventory(_player, srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
 {
     MsgQueryGuildBankText srlPacket;
@@ -446,7 +448,7 @@ void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
     if (pTab == nullptr)
         return;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     guild->sendBankList(this, srlPacket.tabId, false, true);
 #else
     guild->sendBankList(this, srlPacket.tabId, true, false);
@@ -470,7 +472,7 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
         return;
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     guild->sendBankList(this, 0, false, false);
 #else
     guild->sendBankList(this, 0, true, true);
@@ -912,7 +914,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 {
     ObjectGuid targetGuid;

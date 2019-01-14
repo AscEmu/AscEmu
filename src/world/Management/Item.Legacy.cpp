@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -29,10 +29,9 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWItem.h"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Management/Guild.h"
 #endif
 
@@ -47,7 +46,7 @@ Item::Item()
     m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     m_updateFlag = UPDATEFLAG_HIGHGUID;
 #else
     m_updateFlag = UPDATEFLAG_NONE;
@@ -65,7 +64,7 @@ Item::Item()
     m_inQueue = false;
     m_loadedFromDB = false;
     ItemExpiresOn = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_isInTrade = false;
 #endif
     Enchantments.clear();
@@ -589,7 +588,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         EnchantLog << uint8(0);
         m_owner->SendPacket(&EnchantLog);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (m_owner->GetTradeTarget())
         {
             m_owner->SendTradeUpdate();
@@ -715,11 +714,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
                         if (Entry->spell[c] != 0)
                         {
-                            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                            SpellInfo const* sp = sSpellMgr.getSpellInfo(Entry->spell[c]);
                             if (sp == NULL)
                                 continue;
 
-                            spell = sSpellFactoryMgr.NewSpell(m_owner, sp, true, 0);
+                            spell = sSpellMgr.newSpell(m_owner, sp, true, 0);
                             spell->i_caster = this;
                             spell->prepare(&targets);
                         }

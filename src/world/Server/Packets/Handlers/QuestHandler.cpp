@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 {
     // 2048 bytes should be more than enough. The fields cost ~200 bytes.

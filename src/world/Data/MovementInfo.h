@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -175,7 +175,4 @@ struct MovementInfo
     bool hasFlag2(uint32_t flag2) const { return (flags2 & flag2) != 0; }
     bool isInterpolated() const { return hasFlag2(MOVEFLAG2_INTERPOLATED_MOVE); }
 };
-#endif
-
-#if VERSION_STRING == Cata
 #endif

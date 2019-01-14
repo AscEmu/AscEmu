@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Instance_HellfireRamparts.h"
-
 
 // \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
 class WatchkeeperGargolmarAI : public CreatureAIScript

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -26,7 +26,6 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.h"
 #include "Definitions/DispelType.h"
-#include "Customization/SpellCustomizations.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
@@ -81,9 +80,9 @@ public:
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
 
     bool HasFireTotem = false;
-    SpellCastResult canCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
-        auto result = Spell::canCast(tolerate);
+        auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -114,7 +113,7 @@ public:
                 }
                 if (!HasFireTotem)
                 {
-                    SetExtraCastResult(SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM);
+                    *parameter1 = SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM;
                     result = SPELL_FAILED_CUSTOM_ERROR;
                 }
             }
@@ -126,7 +125,7 @@ public:
     {
         uint32 fireNovaSpells = Spell::getSpellInfo()->getId();
         //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
-        totem->CastSpellAoF(totem->GetPosition(), sSpellCustomizations.GetSpellInfo(fireNovaSpells), true);
+        totem->castSpellLoc(totem->GetPosition(), sSpellMgr.getSpellInfo(fireNovaSpells), true);
     }
 };
 
@@ -139,7 +138,7 @@ public:
     CheatDeathAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
     {
-        dSpell = sSpellCustomizations.GetSpellInfo(31231);
+        dSpell = sSpellMgr.getSpellInfo(31231);
     }
 
     static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
@@ -172,15 +171,15 @@ public:
         as long as proceeding cheat death is not so height (how many rogue at the same time_
         gonna get to this point?) so it's better to use it because we wont lose anything!!
         */
-        p_target->CastSpell(p_target->getGuid(), dSpell, true);
+        p_target->castSpell(p_target->getGuid(), dSpell, true);
 
         // set dummy effect,
         // this spell is used to procced the post effect of cheat death later.
         // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
-        p_target->CastSpell(p_target->getGuid(), 45182, true);
+        p_target->castSpell(p_target->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        dSpell->setRecoveryTime(60000);
+        //dSpell->setRecoveryTime(60000);
         p_target->Cooldown_Add(dSpell, NULL);
 
         // Calc abs and applying it
@@ -193,7 +192,7 @@ public:
 
 private:
 
-    SpellInfo* dSpell;
+    SpellInfo const* dSpell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -211,9 +210,9 @@ public:
         if (p_caster != NULL)
         {
             // Mana regeneration
-            p_caster->CastSpell(target, 60069, true);
+            p_caster->castSpell(target, 60069, true);
             // Remove snares and movement impairing effects and make player immune to them
-            p_caster->CastSpell(target, 63230, true);
+            p_caster->castSpell(target, 63230, true);
         }
     }
 };
@@ -356,7 +355,7 @@ public:
         if (!Rand(aur->GetSpellInfo()->getProcChance()))
             return;
 
-        p_caster->CastSpell(target, 47632, false);
+        p_caster->castSpell(target, 47632, false);
     }
 };
 
@@ -368,9 +367,9 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
-    SpellCastResult canCast(bool tolerate)
+    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
-        auto result = Spell::canCast(tolerate);
+        auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -559,37 +558,37 @@ public:
         if (!Rand(aur->GetSpellInfo()->getProcChance()))
             return;
 
-        p_caster->CastSpell(target, 47632, false);
+        p_caster->castSpell(target, 47632, false);
     }
 };
 
-void SpellFactoryMgr::SetupSpellClassScripts()
+void SpellMgr::setupSpellClassScripts()
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Mage
-    AddSpellById(2120, FirestarterTalent::Create);   //Rank 1
-    AddSpellById(2121, FirestarterTalent::Create);   //Rank 2
-    AddSpellById(8422, FirestarterTalent::Create);   //Rank 3
-    AddSpellById(8423, FirestarterTalent::Create);   //Rank 4
-    AddSpellById(10215, FirestarterTalent::Create);   //Rank 5
-    AddSpellById(10216, FirestarterTalent::Create);   //Rank 6
-    AddSpellById(27086, FirestarterTalent::Create);   //Rank 7
-    AddSpellById(42925, FirestarterTalent::Create);   //Rank 8
-    AddSpellById(42926, FirestarterTalent::Create);   //Rank 9
+    addSpellById(2120, FirestarterTalent::Create);   //Rank 1
+    addSpellById(2121, FirestarterTalent::Create);   //Rank 2
+    addSpellById(8422, FirestarterTalent::Create);   //Rank 3
+    addSpellById(8423, FirestarterTalent::Create);   //Rank 4
+    addSpellById(10215, FirestarterTalent::Create);   //Rank 5
+    addSpellById(10216, FirestarterTalent::Create);   //Rank 6
+    addSpellById(27086, FirestarterTalent::Create);   //Rank 7
+    addSpellById(42925, FirestarterTalent::Create);   //Rank 8
+    addSpellById(42926, FirestarterTalent::Create);   //Rank 9
 
-    AddSpellById(5143, MissileBarrage::Create);   //Rank 1
-    AddSpellById(5144, MissileBarrage::Create);   //Rank 2
-    AddSpellById(5145, MissileBarrage::Create);   //Rank 3
-    AddSpellById(8416, MissileBarrage::Create);   //Rank 4
-    AddSpellById(8417, MissileBarrage::Create);   //Rank 5
-    AddSpellById(10211, MissileBarrage::Create);   //Rank 6
-    AddSpellById(10212, MissileBarrage::Create);   //Rank 7
-    AddSpellById(25345, MissileBarrage::Create);   //Rank 8
-    AddSpellById(27075, MissileBarrage::Create);   //Rank 9
-    AddSpellById(38699, MissileBarrage::Create);   //Rank 10
-    AddSpellById(38704, MissileBarrage::Create);   //Rank 11
-    AddSpellById(42843, MissileBarrage::Create);   //Rank 12
-    AddSpellById(42846, MissileBarrage::Create);   //Rank 13
+    addSpellById(5143, MissileBarrage::Create);   //Rank 1
+    addSpellById(5144, MissileBarrage::Create);   //Rank 2
+    addSpellById(5145, MissileBarrage::Create);   //Rank 3
+    addSpellById(8416, MissileBarrage::Create);   //Rank 4
+    addSpellById(8417, MissileBarrage::Create);   //Rank 5
+    addSpellById(10211, MissileBarrage::Create);   //Rank 6
+    addSpellById(10212, MissileBarrage::Create);   //Rank 7
+    addSpellById(25345, MissileBarrage::Create);   //Rank 8
+    addSpellById(27075, MissileBarrage::Create);   //Rank 9
+    addSpellById(38699, MissileBarrage::Create);   //Rank 10
+    addSpellById(38704, MissileBarrage::Create);   //Rank 11
+    addSpellById(42843, MissileBarrage::Create);   //Rank 12
+    addSpellById(42846, MissileBarrage::Create);   //Rank 13
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Warrior
@@ -599,74 +598,74 @@ void SpellFactoryMgr::SetupSpellClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Shaman
-    AddSpellById(1535, FireNova::Create);   //Rank 1
-    AddSpellById(8498, FireNova::Create);   //Rank 2
-    AddSpellById(8499, FireNova::Create);   //Rank 3
-    AddSpellById(11314, FireNova::Create);  //Rank 4
-    AddSpellById(11315, FireNova::Create);  //Rank 5
-    AddSpellById(25546, FireNova::Create);  //Rank 6
-    AddSpellById(25547, FireNova::Create);  //Rank 7
-    AddSpellById(61649, FireNova::Create);  //Rank 8
-    AddSpellById(61657, FireNova::Create);  //Rank 9
+    addSpellById(1535, FireNova::Create);   //Rank 1
+    addSpellById(8498, FireNova::Create);   //Rank 2
+    addSpellById(8499, FireNova::Create);   //Rank 3
+    addSpellById(11314, FireNova::Create);  //Rank 4
+    addSpellById(11315, FireNova::Create);  //Rank 5
+    addSpellById(25546, FireNova::Create);  //Rank 6
+    addSpellById(25547, FireNova::Create);  //Rank 7
+    addSpellById(61649, FireNova::Create);  //Rank 8
+    addSpellById(61657, FireNova::Create);  //Rank 9
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Rogue
-    AddAuraById(31228, &CheatDeathAura::Create);   // Rank 1
-    AddAuraById(31229, &CheatDeathAura::Create);   // Rank 2
-    AddAuraById(31230, &CheatDeathAura::Create);   // Rank 3
+    addAuraById(31228, &CheatDeathAura::Create);   // Rank 1
+    addAuraById(31229, &CheatDeathAura::Create);   // Rank 2
+    addAuraById(31230, &CheatDeathAura::Create);   // Rank 3
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Priest
-    AddSpellById(47585, &DispersionSpell::Create);
+    addSpellById(47585, &DispersionSpell::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Druid
-    AddSpellById(29166, &InnervateSpell::Create);
+    addSpellById(29166, &InnervateSpell::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // DeathKnight
-    AddSpellById(55078, &BloodPlagueSpell::Create);
-    AddSpellById(45477, &IcyTouchSpell::Create);
-    AddSpellById(55095, &FrostFeverSpell::Create);
+    addSpellById(55078, &BloodPlagueSpell::Create);
+    addSpellById(45477, &IcyTouchSpell::Create);
+    addSpellById(55095, &FrostFeverSpell::Create);
 
-    AddSpellById(48721, &BloodBoilSpell::Create);   // Rank 1
-    AddSpellById(49939, &BloodBoilSpell::Create);   // Rank 2
-    AddSpellById(49940, &BloodBoilSpell::Create);   // Rank 3
-    AddSpellById(49941, &BloodBoilSpell::Create);   // Rank 4
+    addSpellById(48721, &BloodBoilSpell::Create);   // Rank 1
+    addSpellById(49939, &BloodBoilSpell::Create);   // Rank 2
+    addSpellById(49940, &BloodBoilSpell::Create);   // Rank 3
+    addSpellById(49941, &BloodBoilSpell::Create);   // Rank 4
 
-    AddSpellById(45902, &BloodStrikeSpell::Create);   // Rank 1
-    AddSpellById(49926, &BloodStrikeSpell::Create);   // Rank 2
-    AddSpellById(49927, &BloodStrikeSpell::Create);   // Rank 3
-    AddSpellById(49928, &BloodStrikeSpell::Create);   // Rank 4
-    AddSpellById(49929, &BloodStrikeSpell::Create);   // Rank 5
-    AddSpellById(49930, &BloodStrikeSpell::Create);   // Rank 6
+    addSpellById(45902, &BloodStrikeSpell::Create);   // Rank 1
+    addSpellById(49926, &BloodStrikeSpell::Create);   // Rank 2
+    addSpellById(49927, &BloodStrikeSpell::Create);   // Rank 3
+    addSpellById(49928, &BloodStrikeSpell::Create);   // Rank 4
+    addSpellById(49929, &BloodStrikeSpell::Create);   // Rank 5
+    addSpellById(49930, &BloodStrikeSpell::Create);   // Rank 6
 
-    AddSpellById(47541, &DeathCoilSpell::Create);   // Rank 1
-    AddSpellById(49892, &DeathCoilSpell::Create);   // Rank 2
-    AddSpellById(49893, &DeathCoilSpell::Create);   // Rank 3
-    AddSpellById(49894, &DeathCoilSpell::Create);   // Rank 4
-    AddSpellById(49895, &DeathCoilSpell::Create);   // Rank 5
+    addSpellById(47541, &DeathCoilSpell::Create);   // Rank 1
+    addSpellById(49892, &DeathCoilSpell::Create);   // Rank 2
+    addSpellById(49893, &DeathCoilSpell::Create);   // Rank 3
+    addSpellById(49894, &DeathCoilSpell::Create);   // Rank 4
+    addSpellById(49895, &DeathCoilSpell::Create);   // Rank 5
 
-    AddSpellById(56815, &RuneStrileSpell::Create);
+    addSpellById(56815, &RuneStrileSpell::Create);
 
-    AddAuraById(48707, &AntiMagicShellAura::Create);
+    addAuraById(48707, &AntiMagicShellAura::Create);
 
-    AddAuraById(49145, &SpellDeflectionAura::Create);   // Rank 1
-    AddAuraById(49495, &SpellDeflectionAura::Create);   // Rank 2
-    AddAuraById(49497, &SpellDeflectionAura::Create);   // Rank 3
+    addAuraById(49145, &SpellDeflectionAura::Create);   // Rank 1
+    addAuraById(49495, &SpellDeflectionAura::Create);   // Rank 2
+    addAuraById(49497, &SpellDeflectionAura::Create);   // Rank 3
 
-    AddSpellById(50452, &BloodwormSpell::Create);
+    addSpellById(50452, &BloodwormSpell::Create);
 
-    AddAuraById(52284, &WillOfTheNecropolisAura::Create);   // Rank 1
-    AddAuraById(52285, &WillOfTheNecropolisAura::Create);   // Rank 1
-    AddAuraById(52286, &WillOfTheNecropolisAura::Create);   // Rank 1
+    addAuraById(52284, &WillOfTheNecropolisAura::Create);   // Rank 1
+    addAuraById(52285, &WillOfTheNecropolisAura::Create);   // Rank 1
+    addAuraById(52286, &WillOfTheNecropolisAura::Create);   // Rank 1
 
-    AddSpellById(55233, &VampiricBloodSpell::Create);
+    addSpellById(55233, &VampiricBloodSpell::Create);
 
-    AddSpellById(55050, &HeartStrikeSpell::Create);   // Rank 1
-    AddSpellById(55258, &HeartStrikeSpell::Create);   // Rank 2
-    AddSpellById(55259, &HeartStrikeSpell::Create);   // Rank 3
-    AddSpellById(55260, &HeartStrikeSpell::Create);   // Rank 4
-    AddSpellById(55261, &HeartStrikeSpell::Create);   // Rank 5
-    AddSpellById(55262, &HeartStrikeSpell::Create);   // Rank 6
+    addSpellById(55050, &HeartStrikeSpell::Create);   // Rank 1
+    addSpellById(55258, &HeartStrikeSpell::Create);   // Rank 2
+    addSpellById(55259, &HeartStrikeSpell::Create);   // Rank 3
+    addSpellById(55260, &HeartStrikeSpell::Create);   // Rank 4
+    addSpellById(55261, &HeartStrikeSpell::Create);   // Rank 5
+    addSpellById(55262, &HeartStrikeSpell::Create);   // Rank 6
 }

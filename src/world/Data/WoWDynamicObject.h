@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -69,6 +69,17 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == Cata
+struct WoWDynamicObject : WoWObject
+{
+    uint64_t caster_guid;
+    dynamic_bytes_union dynamicobject_bytes;
+    uint32_t spell_id;
+    float radius;
+    uint32_t cast_time;
+};
+#endif
+
+#if VERSION_STRING == Mop
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;

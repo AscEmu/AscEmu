@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Raid_Ulduar.h"
@@ -58,31 +58,31 @@ public:
     //    switch (Id)
     //    {
     //        case 0:
-    //            player->CastSpell(player, 64014, true);     // Expedition Base Camp
+    //            player->castSpell(player, 64014, true);     // Expedition Base Camp
     //            break;
     //        case 1:
-    //            player->CastSpell(player, 64032, true);     // Formation Grounds
+    //            player->castSpell(player, 64032, true);     // Formation Grounds
     //            break;
     //        case 2:
-    //            player->CastSpell(player, 64028, true);     // Colossal Forge
+    //            player->castSpell(player, 64028, true);     // Colossal Forge
     //            break;
     //        case 3:
-    //            player->CastSpell(player, 64031, true);     // Scrapyard
+    //            player->castSpell(player, 64031, true);     // Scrapyard
     //            break;
     //        case 4:
-    //            player->CastSpell(player, 64030, true);     // Antechamber of Ulduar
+    //            player->castSpell(player, 64030, true);     // Antechamber of Ulduar
     //            break;
     //        case 5:
-    //            player->CastSpell(player, 64029, true);     // Shattered Walkway
+    //            player->castSpell(player, 64029, true);     // Shattered Walkway
     //            break;
     //        case 6:
-    //            player->CastSpell(player, 64024, true);     // Conservatory of Life
+    //            player->castSpell(player, 64024, true);     // Conservatory of Life
     //            break;
     //        case 7:
-    //            player->CastSpell(player, 64025, true);     // Spark of Imagination
+    //            player->castSpell(player, 64025, true);     // Spark of Imagination
     //            break;
     //        case 8:
-    //            player->CastSpell(player, 65042, true);     // Prison of Yogg-Saron
+    //            player->castSpell(player, 65042, true);     // Prison of Yogg-Saron
     //            break;
     //    }
     //}

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -39,7 +39,7 @@ enum Stats
 SERVER_DECL uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl);
 SERVER_DECL uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker);
 SERVER_DECL uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0);
-SERVER_DECL uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, uint32* spellgroup, SpellInfo* ability);
+SERVER_DECL uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, const uint32* spellgroup, SpellInfo const* ability);
 SERVER_DECL uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat);
 SERVER_DECL bool isEven(int num);
 

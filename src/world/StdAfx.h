@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -81,6 +81,8 @@ This file is released under the MIT license. See README-MIT for more information
 // Management
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
+#elif VERSION_STRING == Mop
+#include "GameMop/Management/GuildFinderMgr.h"
 #endif
 
 #include "Management/AchievementMgr.h"
@@ -472,9 +474,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellTarget.h"
 #include "Spell/SpellTargetConstraint.h"
 
-// Spell/Customization
-#include "Spell/Customization/SpellCustomizations.hpp"
-
 // Spell/Definitions
 #include "Spell/Definitions/AuraEffects.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
@@ -519,7 +518,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 
 // Storage/DB2
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Loader.h"
 #include "Storage/DB2/DB2Storage.h"
 #include "Storage/DB2/DB2Stores.h"

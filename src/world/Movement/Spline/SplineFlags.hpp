@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -12,7 +12,7 @@ namespace Movement { namespace Spline {
 #pragma pack(push, 1)
     struct SplineFlagsData
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint8_t animation_id : 8; // 8
         bool done : 1;
         bool falling : 1;

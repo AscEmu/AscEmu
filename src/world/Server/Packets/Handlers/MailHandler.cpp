@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -246,7 +246,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
         else
             guidSize = 4;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
             message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
 #else
@@ -274,14 +274,14 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
                 break;
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         data << uint32_t(message.second.cod);
 #else
         data << uint64_t(message.second.cod);
 #endif
         data << uint32_t(0);
         data << uint32_t(message.second.stationery);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         data << uint32_t(message.second.money);
 #else
         data << uint64_t(message.second.money);

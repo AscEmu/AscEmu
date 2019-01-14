@@ -1,8 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +27,7 @@
 #include "Management/ChannelMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #include "Management/Guild.h"
 #endif
 
@@ -417,7 +416,7 @@ namespace luaGlobalFunctions
             subindex = static_cast<int>(luaL_optinteger(L, 3, 0));
             valindex++;
         }
-        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
+        SpellInfo const* proto = sSpellMgr.getSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushboolean(L, 0);
@@ -453,7 +452,7 @@ namespace luaGlobalFunctions
         uint32 entry = static_cast<uint32>(luaL_checkinteger(L, 1));
         const char* var = luaL_checkstring(L, 2);
         int subindex = static_cast<int>(luaL_optinteger(L, 3, 0));
-        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
+        SpellInfo const* proto = sSpellMgr.getSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushnil(L);

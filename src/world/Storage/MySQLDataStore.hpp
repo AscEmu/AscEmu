@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -60,7 +60,7 @@ public:
     typedef std::unordered_map<uint32_t, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32_t> PlayerXPperLevel;
 
-    typedef std::map<uint32_t, std::list<SpellInfo*>*> SpellOverrideIdMap;
+    typedef std::map<uint32_t, std::list<SpellInfo const*>*> SpellOverrideIdMap;
 
     typedef std::map<uint32_t, uint32_t> NpcGossipTextIdMap;
 
@@ -92,7 +92,7 @@ public:
 
     typedef std::unordered_map<uint32_t, MySQLStructure::NpcMonsterSay*> NpcMonstersayContainer;
 
-    //typedef std::map<uint32_t, std::set<SpellInfo*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
+    //typedef std::map<uint32_t, std::set<SpellInfo const*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
 
     typedef std::set<MySQLStructure::ProfessionDiscovery*> ProfessionDiscoverySet;
 
@@ -202,7 +202,7 @@ public:
     MySQLStructure::LocalesWorldStringTable const* getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale);
 
     MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
-    //std::set<SpellInfo*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
+    //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
 
     TransportCreaturesContainer* getTransportCreaturesStore() { return &_transportCreaturesStore; }
     

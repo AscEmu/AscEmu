@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -148,7 +148,7 @@ RegType<Unit> UnitMethods[] =
     { "GetDistance", &LuaUnit::GetDistance },
     { "GetGuid", &LuaUnit::GetGUID },
     { "GetCreatureNearestCoords", &LuaUnit::GetCreatureNearestCoords },
-    { "CastSpellAoF", &LuaUnit::CastSpellAoF },
+    { "CastSpellAoF", &LuaUnit::castSpellLoc },
     { "GetGameObjectNearestCoords", &LuaUnit::GetGameObjectNearestCoords },
     { "SetInFront", &LuaUnit::SetInFront },
     { "RemoveAllAuras", &LuaUnit::RemoveAllAuras },
@@ -244,7 +244,7 @@ RegType<Unit> UnitMethods[] =
     { "GetPowerType", &LuaUnit::GetPowerType },
     { "GetMapId", &LuaUnit::GetMapId },
     { "AttackReaction", &LuaUnit::AttackReaction },
-    { "EventCastSpell", &LuaUnit::EventCastSpell },
+    { "EventCastSpell", &LuaUnit::eventCastSpell },
     { "IsPlayerMoving", &LuaUnit::IsPlayerMoving },
     { "IsPlayerAttacking", &LuaUnit::IsPlayerAttacking },
     { "RemoveThreat", &LuaUnit::RemoveThreatByPtr },
@@ -509,7 +509,7 @@ RegType<Unit> UnitMethods[] =
     { "FullCastSpellAoF", &LuaUnit::FullCastSpellAoF },
     { "GetClosestUnit", &LuaUnit::GetClosestUnit },
     { "FullCastSpellAoE", &LuaUnit::FullCastSpellAoF },
-    { "CastSpellAoE", &LuaUnit::CastSpellAoF },
+    { "CastSpellAoE", &LuaUnit::castSpellLoc },
     { "SetFlag", &LuaUnit::SetFlag },
     { "SetSelectedGO", &LuaUnit::SetSelectedGO },
     { "IsOnVehicle", &LuaUnit::IsOnVehicle },

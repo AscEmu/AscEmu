@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -18,6 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define BUILD_VERSION 12340
 #elif VERSION_STRING == Cata
     #define BUILD_VERSION 15595
+#elif VERSION_STRING == Mop
+    #define BUILD_VERSION 18414
 #endif
 
 namespace MapManagement

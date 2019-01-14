@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -74,7 +74,7 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
     };
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
@@ -535,7 +535,7 @@ uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
     return gain;
 }
 
-uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, uint32* /*spellgroup*/, SpellInfo* ability)   // spellid is used only for 2-3 spells, that have AP bonus
+uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, const uint32* /*spellgroup*/, SpellInfo const* ability)   // spellid is used only for 2-3 spells, that have AP bonus
 {
     ///\todo Some awesome formula to determine how much damage to deal consider this is melee damage weapon_damage_type: 0 = melee, 1 = offhand(dualwield), 2 = ranged
 

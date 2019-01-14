@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 
@@ -29,7 +29,7 @@ void Catrina(Player* pPlayer, Unit* pUnit)
     {
         if (pPlayer->isDead() == false)
         {
-            pUnit->CastSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
+            pUnit->castSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
         }
     }
 

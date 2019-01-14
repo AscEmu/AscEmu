@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -50,7 +50,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING != Classic
     kills = player->getUInt32Value(PLAYER_FIELD_KILLS);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     todayContrib = player->getUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     yesterdayContrib = player->getUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
 #endif
@@ -182,7 +182,7 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
         return;
 
     cBattleground->QueuePlayerForResurrect(_player, spiritHealer);
-    _player->CastSpell(_player, 2584, true);
+    _player->castSpell(_player, 2584, true);
 }
 
 void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
@@ -272,7 +272,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
     BattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
 {
     uint8_t unk_type;

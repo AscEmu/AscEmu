@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -55,6 +55,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Spell/Definitions/AuraInterruptFlags.h"
 
 using namespace AscEmu::Packets;
 
@@ -96,7 +97,7 @@ bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & f
 
 uint32_t Player::getGuildId() const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     return playerData()->guild_id;
 #else
     return static_cast<uint32_t>(objectData()->data);
@@ -104,7 +105,7 @@ uint32_t Player::getGuildId() const
 }
 void Player::setGuildId(uint32_t guildId)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     write(playerData()->guild_id, guildId);
 #else
     write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
@@ -117,7 +118,7 @@ void Player::setGuildId(uint32_t guildId)
 uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
 void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 uint32_t Player::getGuildLevel() const { return playerData()->guild_level; }
 void Player::setGuildLevel(uint32_t guildLevel) { write(playerData()->guild_level, guildLevel); }
 #endif
@@ -297,8 +298,10 @@ uint32_t Player::getAmmoId() const { return playerData()->ammo_id; }
 void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
 #endif
 
+#if VERSION_STRING != Mop
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
+#endif
 
 #if VERSION_STRING > TBC
 uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
@@ -321,10 +324,15 @@ void Player::modArenaCurrency(int32_t value)
 #endif
 #endif
 
+#if VERSION_STRING >= WotLK
+uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
+void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data(50);
@@ -557,7 +565,35 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_RUN:
         {
             data.Initialize(MSG_MOVE_SET_RUN_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[0]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[1]);
+
+            data << uint32_t(0);
+
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[0]);
+
+            data << float(speed);
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[5]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
+#endif
             break;
         }
         case TYPE_RUN_BACK:
@@ -587,7 +623,32 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY:
         {
             data.Initialize(MSG_MOVE_SET_FLIGHT_SPEED, 1 + 8 + 4 + 4);
+#if VERSION_STRING == Mop
+            data << float(speed);
+            data << uint32_t(0);
+
+            data.writeBit(guid[6]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[2]);
+
+            data.flushBits();
+
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[1]);
+#else
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
+#endif
             break;
         }
         case TYPE_FLY_BACK:
@@ -1178,12 +1239,12 @@ void Player::updateAutoRepeatSpell()
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
             else if (isPlayer())
-                autoRepeatSpell->SendCastResult(static_cast<uint8_t>(canCastAutoRepeatSpell));
+                autoRepeatSpell->sendCastResult(static_cast<SpellCastResult>(canCastAutoRepeatSpell));
             return;
         }
 
         // Cast the spell with triggered flag
-        const auto newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->getSpellInfo(), true, nullptr);
+        const auto newAutoRepeatSpell = sSpellMgr.newSpell(this, autoRepeatSpell->getSpellInfo(), true, nullptr);
         newAutoRepeatSpell->prepare(&autoRepeatSpell->m_targets);
 
         setAttackTimer(RANGED, getBaseAttackTime(RANGED));
@@ -1285,7 +1346,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentTreeInfo == nullptr || !(getClassMask() & talentTreeInfo->ClassMask))
         return;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     // Check if enough talent points are spent in the primary talent tree before unlocking other trees
     if (talentInfo->TalentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
     {
@@ -1375,7 +1436,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (HasSpell(spellId))
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
         return;
 
@@ -1388,7 +1449,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 
     addTalent(spellInfo);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     // Set primary talent tree and lock others
     if (m_FirstTalentTreeLock == 0)
     {
@@ -1403,14 +1464,14 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 }
 
-void Player::addTalent(SpellInfo* sp)
+void Player::addTalent(SpellInfo const* sp)
 {
     // Add to player's spellmap
     addSpell(sp->getId());
 
     // Cast passive spells and spells with learn effect
     if (sp->hasEffect(SPELL_EFFECT_LEARN_SPELL))
-        CastSpell(getGuid(), sp, true);
+        castSpell(getGuid(), sp, true);
     else if (sp->isPassive())
     {
         if (sp->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (sp->getRequiredShapeShift() & getShapeShiftMask())) ||
@@ -1419,14 +1480,14 @@ void Player::addTalent(SpellInfo* sp)
             if (sp->getCasterAuraState() == 0 || hasAuraState(AuraState(sp->getCasterAuraState()), sp, this))
                 // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
                 if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
-                    CastSpell(getGuid(), sp, true);
+                    castSpell(getGuid(), sp, true);
         }
     }
 }
 
 void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
 {
-    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo != nullptr)
     {
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1436,7 +1497,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
             {
                 auto taughtSpellId = spellInfo->getEffectTriggerSpell(i);
                 // There is one case in 3.3.5a and 4.3.4 where the learnt spell yet teaches another spell
-                SpellInfo const* taughtSpell = sSpellCustomizations.GetSpellInfo(taughtSpellId);
+                SpellInfo const* taughtSpell = sSpellMgr.getSpellInfo(taughtSpellId);
                 if (taughtSpell != nullptr)
                 {
                     for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
@@ -1484,7 +1545,7 @@ void Player::resetTalents()
 
     // Clear talents
     getActiveSpec().talents.clear();
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = 0;
 #endif
 
@@ -1506,7 +1567,7 @@ void Player::setTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/
 #endif
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     // Send talent points also to client
     setFreeTalentPoints(talentPoints);
 #endif
@@ -1524,7 +1585,7 @@ void Player::addTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/
         m_specs[SPEC_PRIMARY].SetTP(m_specs[SPEC_PRIMARY].GetTP() + talentPoints);
         m_specs[SPEC_SECONDARY].SetTP(m_specs[SPEC_SECONDARY].GetTP() + talentPoints);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         setFreeTalentPoints(getFreeTalentPoints() + talentPoints);
 #endif
 #endif
@@ -1541,7 +1602,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
 
     // Calculate initial talent points based on level
     uint32_t talentPoints = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     auto talentPointsAtLevel = sNumTalentsAtLevel.LookupEntry(getLevel());
     if (talentPointsAtLevel != nullptr)
         talentPoints = uint32_t(talentPointsAtLevel->talentPoints);
@@ -1559,7 +1620,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
             // However if Death Knight is not in the instanced Ebon Hold, it is safe to assume that
             // the player has completed the DK starting quest chain and normal calculation can be used.
             uint32_t dkTalentPoints = 0;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             auto dkBaseTalentPoints = sNumTalentsAtLevel.LookupEntry(55);
             if (dkBaseTalentPoints != nullptr)
                 dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - uint32_t(dkBaseTalentPoints->talentPoints);
@@ -1653,7 +1714,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         {
             PlayerSpec spec = m_specs[specId];
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             // Send primary talent tree
             data << uint32_t(m_FirstTalentTreeLock);
 #endif
@@ -1714,7 +1775,7 @@ void Player::activateTalentSpec(uint8_t specId)
     {
         auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
         if (glyphProperties != nullptr)
-            CastSpell(this, glyphProperties->SpellID, true);
+            castSpell(this, glyphProperties->SpellID, true);
     }
 
     // Add new talents
@@ -1723,7 +1784,7 @@ void Player::activateTalentSpec(uint8_t specId)
         auto talentInfo = sTalentStore.LookupEntry(itr.first);
         if (talentInfo == nullptr)
             continue;
-        auto spellInfo = sSpellCustomizations.GetSpellInfo(talentInfo->RankID[itr.second]);
+        auto spellInfo = sSpellMgr.getSpellInfo(talentInfo->RankID[itr.second]);
         if (spellInfo == nullptr)
             continue;
         addTalent(spellInfo);
@@ -1935,13 +1996,13 @@ void Player::logIntoBattleground()
 bool Player::logOntoTransport()
 {
     bool success = true;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (obj_movement_info.transport_data.transportGuid != 0)
 #else
     if (!obj_movement_info.getTransportGuid().IsEmpty())
 #endif
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         const auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
         const auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(static_cast<uint32>(obj_movement_info.getTransportGuid())));
@@ -2044,7 +2105,7 @@ void Player::setGuildAndGroupInfo()
             setGuildId(getPlayerInfo()->m_guild);
             setGuildRank(getPlayerInfo()->guildRank);
             guild->sendLoginInfo(GetSession());
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
             setGuildLevel(guild->getLevel());
 #endif
         }

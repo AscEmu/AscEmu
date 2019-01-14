@@ -116,7 +116,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
     if (bCreationBuffer.size() > 0 || mOutOfRangeIdCount > 0)
     {
-#ifdef AE_CATA
+#if VERSION_STRING >= Cata
         buffer << uint16_t(m_owner->GetMapId());
 #endif
 
@@ -151,8 +151,8 @@ void UpdateManager::internalProcessPendingUpdates()
         }
 
         auto sent_packet = false;
-#ifndef AE_CATA
-        if (buffer.wpos() < m_compressionThreshold)
+#if VERSION_STRING < Cata
+        if (buffer.wpos() > m_compressionThreshold)
         {
             sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }
@@ -168,7 +168,7 @@ void UpdateManager::internalProcessPendingUpdates()
     {
         buffer.clear();
 
-#ifdef AE_CATA
+#if VERSION_STRING >= Cata
         buffer << uint16_t(m_owner->GetMapId());
 #endif
 
@@ -190,8 +190,8 @@ void UpdateManager::internalProcessPendingUpdates()
         mUpdateCount = 0;
 
         auto sent_packet = false;
-#ifndef AE_CATA
-        if (buffer.wpos() < m_compressionThreshold)
+#if VERSION_STRING < Cata
+        if (buffer.wpos() > m_compressionThreshold)
         {
             sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }

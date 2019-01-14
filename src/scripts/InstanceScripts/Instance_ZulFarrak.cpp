@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ class ThekaAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ThekaAI);
     explicit ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        morph = sSpellCustomizations.GetSpellInfo(SP_THEKA_TRANSFORM);
-        plague = sSpellCustomizations.GetSpellInfo(SP_THEKA_FEVERED_PLAGUE);
+        morph = sSpellMgr.getSpellInfo(SP_THEKA_TRANSFORM);
+        plague = sSpellMgr.getSpellInfo(SP_THEKA_FEVERED_PLAGUE);
 
         plaguecount = 0;
         randomplague = 0;
@@ -72,21 +72,21 @@ class ThekaAI : public CreatureAIScript
             plaguecount = 0;
             Unit* target = NULL;
             target = getCreature()->GetAIInterface()->getNextTarget();
-            getCreature()->CastSpell(target, plague, true);
+            getCreature()->castSpell(target, plague, true);
         }
         else if (getCreature()->getHealthPct() <= 30 && morphcheck)
         {
             morphcheck = false;
 
-            getCreature()->CastSpell(getCreature(), morph, false);
+            getCreature()->castSpell(getCreature(), morph, false);
         }
     }
 
 protected:
     int plaguecount, randomplague;
     bool morphcheck;
-    SpellInfo* morph;
-    SpellInfo* plague;
+    SpellInfo const* morph;
+    SpellInfo const* plague;
 };
 
 
@@ -144,7 +144,7 @@ class AntusulAI : public CreatureAIScript
     {
         add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
         spawns = spawns2 = attack = firstspawn = secondspawn = false;
-        servant = sSpellCustomizations.GetSpellInfo(SP_ANTUSUL_SERVANTS);
+        servant = sSpellMgr.getSpellInfo(SP_ANTUSUL_SERVANTS);
 
         secondspawncount = 0;
     }
@@ -184,7 +184,7 @@ class AntusulAI : public CreatureAIScript
         {
             firstspawn = false;
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
-            getCreature()->CastSpell(getCreature(), servant, true);
+            getCreature()->castSpell(getCreature(), servant, true);
         }
         if (getCreature()->getHealthPct() <= 25)
         {
@@ -193,12 +193,12 @@ class AntusulAI : public CreatureAIScript
             {
                 secondspawn = false;
                 getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The children of sul will protect their master. Rise once more Sul'lithuz!");
-                getCreature()->CastSpell(getCreature(), servant, true);
+                getCreature()->castSpell(getCreature(), servant, true);
             }
             if (secondspawncount >= 15)
             {
                 secondspawncount = 0;
-                getCreature()->CastSpell(getCreature(), servant, true);
+                getCreature()->castSpell(getCreature(), servant, true);
             }
 
         }
@@ -321,7 +321,7 @@ protected:
     Creature* add6;
     Creature* trigger;
 
-    SpellInfo* servant;
+    SpellInfo const* servant;
 };
 
 void SetupZulFarrak(ScriptMgr* mgr)

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -53,6 +53,18 @@ struct WoWContainer : WoWItem
 #endif
 
 #if VERSION_STRING == Cata
+
+#define WOWCONTAINER_ITEM_SLOT_COUNT 36
+
+struct WoWContainer : WoWItem
+{
+    uint32_t slot_count;
+    uint32_t container_padding_0;
+    guid_union item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+};
+#endif
+
+#if VERSION_STRING == Mop
 
 #define WOWCONTAINER_ITEM_SLOT_COUNT 36
 

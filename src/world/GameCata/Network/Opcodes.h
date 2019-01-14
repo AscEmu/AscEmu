@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -705,7 +705,7 @@ enum Opcodes
     CMSG_UNKNOWN_1206 = 0x4B6,
     CMSG_UNKNOWN_1210 = 0x4BA,
     CMSG_UNKNOWN_1227 = 0x4CB,
-    CMSG_UNKNOWN_ON_LOGIN = 0x041D,
+    SMSG_SERVER_BUCK_DATA = 0x041D,
     CMSG_UNKNOWN_ON_LOGIN2 = 0xBD84,
     CMSG_UNKNOWN_ON_LOGIN3 = 0x5649,
     CMSG_UNKNOWN_ON_LOGIN4 = 0xF364,
@@ -1451,7 +1451,7 @@ enum Opcodes
     SMSG_SEND_ALL_COMBAT_LOG = 0x514,
     SMSG_SEND_MAIL_RESULT                                   = 0x4927, // checked
     SMSG_SEND_UNLEARN_SPELLS                                = 0x4E25, // checked
-    SMSG_SERVER_BUCK_DATA = 0x141E,
+    SMSG_SERVER_BUCK_DATA_0 = 0x141E,
     SMSG_SERVER_BUCK_DATA_START = 0x4A3,
     SMSG_SERVER_FIRST_ACHIEVEMENT                           = 0x6424, // checked
     SMSG_SERVER_INFO_RESPONSE                               = 0x74B5, // changed - was 0x4A1

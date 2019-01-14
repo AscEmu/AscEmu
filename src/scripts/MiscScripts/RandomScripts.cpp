@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 
@@ -89,7 +89,7 @@ public:
 
     void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        Plr->CastSpell(Plr, 64795, true);
+        Plr->castSpell(Plr, 64795, true);
         Arcemu::Gossip::Menu::Complete(Plr);
     }
 };
@@ -121,22 +121,22 @@ public:
         switch (Id)
         {
             case 1:
-                Plr->CastSpell(Plr, 67834, true);
+                Plr->castSpell(Plr, 67834, true);
                 break;
             case 2:
-                Plr->CastSpell(Plr, 67838, true);
+                Plr->castSpell(Plr, 67838, true);
                 break;
             case 3:
-                Plr->CastSpell(Plr, 67835, true);
+                Plr->castSpell(Plr, 67835, true);
                 break;
             case 4:
-                Plr->CastSpell(Plr, 67836, true);
+                Plr->castSpell(Plr, 67836, true);
                 break;
             case 5:
-                Plr->CastSpell(Plr, 67837, true);
+                Plr->castSpell(Plr, 67837, true);
                 break;
             case 6:
-                Plr->CastSpell(Plr, 68081, true);
+                Plr->castSpell(Plr, 68081, true);
                 break;
         }
         Arcemu::Gossip::Menu::Complete(Plr);

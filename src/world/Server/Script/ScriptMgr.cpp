@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -31,7 +31,7 @@
 #include <mutex>
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Objects/ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Map/MapScriptInterface.h"
@@ -221,9 +221,9 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.open("unimplemented1.txt");
 
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
+    for (auto it = sSpellMgr.getSpellInfoMap()->begin(); it != sSpellMgr.getSpellInfoMap()->end(); ++it)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(it->first);
         if (!sp)
             continue;
 
@@ -258,9 +258,9 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     count = 0;
 
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
+    for (auto it = sSpellMgr.getSpellInfoMap()->begin(); it != sSpellMgr.getSpellInfoMap()->end(); ++it)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        SpellInfo const* sp = sSpellMgr.getSpellInfo(it->first);
         if (!sp)
             continue;
 
@@ -312,14 +312,14 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
     }
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
     }
 
-    if (!sp->appliesAreaAura(SPELL_AURA_DUMMY) && !sp->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
+    if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
@@ -333,7 +333,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
         return;
     }
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
@@ -435,7 +435,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         return;
     }
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
@@ -1274,7 +1274,7 @@ void HookInterface::OnEnterCombat(Player* pPlayer, Unit* pTarget)
         ((tOnEnterCombat)*itr)(pPlayer, pTarget);
 }
 
-bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
+bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo const* pSpell, Spell* spell)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CAST_SPELL];
     bool ret_val = true;

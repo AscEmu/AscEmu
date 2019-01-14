@@ -1,9 +1,9 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class CoreRagerAI : public CreatureAIScript
     {
         m_mangle = true;
 
-        info_mangle = sSpellCustomizations.GetSpellInfo(MANGLE);
+        info_mangle = sSpellMgr.getSpellInfo(MANGLE);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -56,7 +56,7 @@ class CoreRagerAI : public CreatureAIScript
             //Unit* target = _unit->GetAIInterface()->GetNextTarget();
             if (m_mangle)
             {
-                getCreature()->CastSpell(getCreature(), info_mangle, false);
+                getCreature()->castSpell(getCreature(), info_mangle, false);
                 m_mangle = false;
                 return;
             }
@@ -72,7 +72,7 @@ class CoreRagerAI : public CreatureAIScript
 protected:
 
     bool m_mangle;
-    SpellInfo* info_mangle;
+    SpellInfo const* info_mangle;
 };
 
 const uint32 CN_SULFURON_HARBRINGER = 12098;
@@ -89,9 +89,9 @@ class SulfuronAI : public CreatureAIScript
     {
         m_demoralizingshout = m_inspire = m_flamespear = true;
 
-        info_demoralizingshout = sSpellCustomizations.GetSpellInfo(DEMORALIZING_SHOUT);
-        info_inspire = sSpellCustomizations.GetSpellInfo(INSPIRE);
-        info_flamespear = sSpellCustomizations.GetSpellInfo(FLAME_SPEAR);
+        info_demoralizingshout = sSpellMgr.getSpellInfo(DEMORALIZING_SHOUT);
+        info_inspire = sSpellMgr.getSpellInfo(INSPIRE);
+        info_flamespear = sSpellMgr.getSpellInfo(FLAME_SPEAR);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -113,21 +113,21 @@ class SulfuronAI : public CreatureAIScript
 
             if (m_demoralizingshout)
             {
-                getCreature()->CastSpell(getCreature(), info_demoralizingshout, false);
+                getCreature()->castSpell(getCreature(), info_demoralizingshout, false);
                 m_demoralizingshout = false;
                 return;
             }
 
             if (m_inspire)
             {
-                getCreature()->CastSpell(getCreature(), info_inspire, false);
+                getCreature()->castSpell(getCreature(), info_inspire, false);
                 m_inspire = false;
                 return;
             }
 
             if (m_flamespear)
             {
-                getCreature()->CastSpell(getCreature(), info_flamespear, false);
+                getCreature()->castSpell(getCreature(), info_flamespear, false);
                 m_flamespear = false;
                 return;
             }
@@ -155,7 +155,7 @@ class SulfuronAI : public CreatureAIScript
 protected:
 
     bool m_demoralizingshout, m_inspire, m_flamespear;
-    SpellInfo* info_demoralizingshout, *info_inspire, *info_flamespear;
+    SpellInfo const* info_demoralizingshout, *info_inspire, *info_flamespear;
 };
 
 // Woot DOING RAGNAROS Tha BosS
@@ -191,11 +191,11 @@ class RagnarosAI : public CreatureAIScript
     {
         m_elementalfire = m_wrath = m_hammer = m_meltweapon = m_summonsons = true;
 
-        info_elementalfire = sSpellCustomizations.GetSpellInfo(ELEMENTAL_FIRE);
-        info_wrath = sSpellCustomizations.GetSpellInfo(WRATH_OF_RAGNAROS);
-        info_hammer = sSpellCustomizations.GetSpellInfo(HAMMER_OF_RAGNAROS);
-        info_meltweapon = sSpellCustomizations.GetSpellInfo(MELT_WEAPON);
-        info_summonsons = sSpellCustomizations.GetSpellInfo(SUMMON_SONS_OF_FLAMES);
+        info_elementalfire = sSpellMgr.getSpellInfo(ELEMENTAL_FIRE);
+        info_wrath = sSpellMgr.getSpellInfo(WRATH_OF_RAGNAROS);
+        info_hammer = sSpellMgr.getSpellInfo(HAMMER_OF_RAGNAROS);
+        info_meltweapon = sSpellMgr.getSpellInfo(MELT_WEAPON);
+        info_summonsons = sSpellMgr.getSpellInfo(SUMMON_SONS_OF_FLAMES);
         getCreature()->setMoveRoot(true);
     }
 
@@ -224,7 +224,7 @@ class RagnarosAI : public CreatureAIScript
 
             if (m_elementalfire)
             {
-                getCreature()->CastSpell(target, info_elementalfire, false);
+                getCreature()->castSpell(target, info_elementalfire, false);
                 m_elementalfire = false;
                 return;
             }
@@ -232,7 +232,7 @@ class RagnarosAI : public CreatureAIScript
             if (m_wrath)
             {
                 sendDBChatMessage(3052);     // TASTE THE FLAMES OF SULFURON!
-                getCreature()->CastSpell(getCreature(), info_wrath, false);
+                getCreature()->castSpell(getCreature(), info_wrath, false);
                 m_wrath = false;
                 return;
             }
@@ -240,14 +240,14 @@ class RagnarosAI : public CreatureAIScript
             if (m_hammer)
             {
                 sendDBChatMessage(3051);     // By fire be purged!
-                getCreature()->CastSpell(getCreature(), info_hammer, false);
+                getCreature()->castSpell(getCreature(), info_hammer, false);
                 m_hammer = false;
                 return;
             }
 
             if (m_meltweapon)
             {
-                getCreature()->CastSpell(target, info_meltweapon, false);
+                getCreature()->castSpell(target, info_meltweapon, false);
                 m_meltweapon = false;
                 return;
             }
@@ -281,7 +281,7 @@ class RagnarosAI : public CreatureAIScript
 protected:
 
     bool m_elementalfire, m_wrath, m_hammer, m_meltweapon, m_summonsons;
-    SpellInfo* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
+    SpellInfo const* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
 };
 
 /*

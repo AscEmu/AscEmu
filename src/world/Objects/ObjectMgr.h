@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -29,7 +29,7 @@
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/MySQLStructures.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
@@ -107,7 +107,7 @@ struct SpellReplacement
 
 class Group;
 class SpellInfo;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 struct TrainerSpell
 {
     TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
@@ -132,9 +132,9 @@ struct TrainerSpell
 #else
 struct TrainerSpell
 {
-    SpellInfo* pCastSpell;
-    SpellInfo* pLearnSpell;
-    SpellInfo* pCastRealSpell;
+    SpellInfo const* pCastSpell;
+    SpellInfo const* pLearnSpell;
+    SpellInfo const* pCastRealSpell;
     uint32 DeleteSpell;
     uint32 RequiredSpell;
     uint32 RequiredSkillLine;
@@ -360,7 +360,7 @@ typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 // spell_id  req_spell
 typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
@@ -489,7 +489,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellInfo* GetNextSpellRank(SpellInfo* sp, uint32 level);
+        SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32 level);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -534,9 +534,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadSpellSkills();
         void LoadVendors();
         void ReloadVendors();
-        void LoadAIThreatToSpellId();
 
-        void LoadSpellEffectsOverride();
         void LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap);
         void LoadReputationModifiers();
         ReputationModifier* GetReputationModifier(uint32 entry_id, uint32 faction_id);
@@ -570,7 +568,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TransporterMap m_TransportersByMap;
         TransporterMap m_TransportersByInstanceIdMap;
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
         SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
@@ -666,7 +664,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         SpellsRequiringSpellMap mSpellsReqSpell;
         SpellRequiredMap mSpellReq;
         SkillLineAbilityMap mSkillLineAbilityMap;

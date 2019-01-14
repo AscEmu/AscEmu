@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -53,13 +53,17 @@ class SERVER_DECL Spell : public EventableObject
         int32_t getFullCastTime() const { return m_castTime; }
         int32_t getCastTimeLeft() const { return m_timer; }
 
-        virtual SpellCastResult canCast(bool tolerate);
+        virtual SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2);
 
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
-
         SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
+
+        // Spell packets
+        void sendCastResult(SpellCastResult result, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+        void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
+
         bool canAttackCreatureType(Creature* target) const;
-        SpellInfo* getSpellInfo() const;
+        SpellInfo const* getSpellInfo() const;
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -156,9 +160,6 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* GetTargetConstraintGameObject() const;
 
         // Send Packet functions
-        void SetExtraCastResult(SpellExtraError result);
-        void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
-        void SendCastResult(uint8 result);
         void SendSpellStart();
         void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
@@ -175,9 +176,8 @@ class SERVER_DECL Spell : public EventableObject
         void writeSpellGoTargets(WorldPacket* data);
         void writeSpellMissedTargets(WorldPacket* data);
         uint32 pSpellId;
-        SpellInfo* ProcedOnSpell;
+        SpellInfo const* ProcedOnSpell;
         SpellCastTargets m_targets;
-        SpellExtraError m_extraError;
 
         void CreateItem(uint32 itemId);
 
@@ -438,7 +438,7 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* targetConstraintGameObject;
         uint32 add_damage;
 
-        uint8 cancastresult;
+        SpellCastResult cancastresult;
         uint32 Dur;
         bool bDurSet;
         float Rad[3];
@@ -481,9 +481,8 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        SpellInfo* m_spellInfo;
-        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
-        static SpellInfo* checkAndReturnSpellEntry(uint32_t spellid);
+        SpellInfo const* m_spellInfo;
+        SpellInfo const* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 };
 
 #endif // USE_EXPERIMENTAL_SPELL_SYSTEM

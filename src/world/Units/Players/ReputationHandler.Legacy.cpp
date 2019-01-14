@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -114,6 +114,40 @@ inline bool RankChangedFlat(int32 Standing, int32 NewStanding)
 
 void Player::smsg_InitialFactions()
 {
+#if VERSION_STRING == Mop
+    const uint16_t factionCount = 256;
+    ByteBuffer buffer;
+    uint32_t a = 0;
+
+    WorldPacket data(SMSG_INITIALIZE_FACTIONS, factionCount * (1 + 4) + 32);
+    for (uint32 i = 0; i < 128; ++i)
+    {
+        FactionReputation* rep = reputationByListId[i];
+        if (rep == nullptr)
+        {
+            data << uint8_t(0);
+            data << uint32_t(0);
+            buffer.writeBit(0);
+        }
+        else
+        {
+            data << rep->flag;
+            data << rep->CalcStanding();
+            buffer.writeBit(0);
+        }
+    }
+
+    for (; a != factionCount; ++a)
+    {
+        data << uint8_t(0);
+        data << uint32_t(0);
+        buffer.writeBit(0);
+    }
+
+    buffer.flushBits();
+
+    data.append(buffer);
+#else
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
     data << uint32(128);
     FactionReputation* rep;
@@ -131,6 +165,7 @@ void Player::smsg_InitialFactions()
             data << rep->CalcStanding();
         }
     }
+#endif
     m_session->SendPacket(&data);
 }
 

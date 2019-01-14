@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Spell/SpellAuras.h"
 
@@ -22,7 +21,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
     }
 
     uint32 spell_id = atol(args);
-    auto spell_entry = sSpellCustomizations.GetSpellInfo(spell_id);
+    auto spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (!spell_entry)
     {
         RedSystemMessage(m_session, "Spell %u is not a valid spell!", spell_id);
@@ -50,11 +49,11 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         {
             if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
             {
-                sEventMgr.AddEvent(static_cast< Unit* >(player), &Unit::EventCastSpell, static_cast< Unit* >(player), spell_entry, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast< Unit* >(player), &Unit::eventCastSpell, static_cast< Unit* >(player), spell_entry, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
             else
             {
-                Spell* spell = sSpellFactoryMgr.NewSpell(player, spell_entry, true, 0);
+                Spell* spell = sSpellMgr.newSpell(player, spell_entry, true, 0);
                 SpellCastTargets targets(player->getGuid());
                 spell->prepare(&targets);
             }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -17,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/MainServerDefines.h>
 #include <StdAfx.h>
 #include "LuaHelpers.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
 #include <Map/WorldCreator.h>
 #include "Management/WeatherMgr.h"
 
@@ -650,7 +649,7 @@ int LuaGameObject::CastSpell(lua_State* L, GameObject* ptr)
     uint32_t sp = CHECK_ULONG(L, 1);
     if (sp)
     {
-        Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
+        Spell* tSpell = sSpellMgr.newSpell(ptr, sSpellMgr.getSpellInfo(sp), true, NULL);
         SpellCastTargets tar(ptr->getGuid());
         tSpell->prepare(&tar);
     }
@@ -664,7 +663,7 @@ int LuaGameObject::CastSpellOnTarget(lua_State* L, GameObject* ptr)
     Object* target = CHECK_OBJECT(L, 2);
     if (sp && target != NULL)
     {
-        Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
+        Spell* tSpell = sSpellMgr.newSpell(ptr, sSpellMgr.getSpellInfo(sp), true, NULL);
         SpellCastTargets spCastTargets(target->getGuid());
         tSpell->prepare(&spCastTargets);
     }
@@ -1033,7 +1032,7 @@ int LuaGameObject::FullCastSpellOnTarget(lua_State* L, GameObject* ptr)
     Object* target = CHECK_OBJECT(L, 2);
     if (sp && target != NULL)
     {
-        Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
+        Spell* tSpell = sSpellMgr.newSpell(ptr, sSpellMgr.getSpellInfo(sp), false, NULL);
         SpellCastTargets sct(target->getGuid());
         tSpell->prepare(&sct);
     }
@@ -1046,7 +1045,7 @@ int LuaGameObject::FullCastSpell(lua_State* L, GameObject* ptr)
     uint32_t sp = CHECK_ULONG(L, 1);
     if (sp)
     {
-        Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
+        Spell* tSpell = sSpellMgr.newSpell(ptr, sSpellMgr.getSpellInfo(sp), false, NULL);
         SpellCastTargets sct(ptr->getGuid());
         tSpell->prepare(&sct);
     }

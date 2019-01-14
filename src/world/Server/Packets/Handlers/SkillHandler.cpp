@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -56,7 +56,7 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
     _player->resetTalents();
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC

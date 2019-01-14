@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 project(libmpq C)
 file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.c ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.h)

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -29,10 +29,9 @@
 #include "Faction.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
-#include "Spell/SpellMgr.h"
 
 // MIT
 
@@ -604,9 +603,9 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
+void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
 {
-    Spell* s = new Spell(this, sp, true, NULL);
+    Spell* s = sSpellMgr.newSpell(this, sp, true, nullptr);
 
     SpellCastTargets tgt(TargetGUID);
 
@@ -618,7 +617,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
 
 void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 {
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp == nullptr)
     {
         LogError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
@@ -706,7 +705,7 @@ void GameObject_Button::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
+                spell = sSpellMgr.getSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -827,7 +826,7 @@ void GameObject_Chest::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
+                spell = sSpellMgr.getSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -869,8 +868,8 @@ void GameObject_Chest::onUse(Player* player)
 
         //open chest spell?
         SpellCastTargets targets;
-        auto spellInfo = sSpellCustomizations.GetSpellInfo(11437);
-        auto spellOpen = sSpellFactoryMgr.NewSpell(player, spellInfo, true, nullptr);
+        auto spellInfo = sSpellMgr.getSpellInfo(11437);
+        auto spellOpen = sSpellMgr.newSpell(player, spellInfo, true, nullptr);
         targets.m_unitTarget = getGuid();
         spellOpen->prepare(&targets);
     }
@@ -908,7 +907,7 @@ void GameObject_Trap::InitAI()
             return;
     }
 
-    spell = sSpellCustomizations.GetSpellInfo(gameobject_properties->trap.spell_id);
+    spell = sSpellMgr.getSpellInfo(gameobject_properties->trap.spell_id);
     charges = gameobject_properties->trap.charges;
 
     if (gameobject_properties->trap.stealthed != 0)
@@ -1087,7 +1086,7 @@ void GameObject_Goober::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
+                spell = sSpellMgr.getSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -1115,7 +1114,7 @@ void GameObject_Goober::onUse(Player* player)
         if (spell != nullptr)
             CastSpell(player->getGuid(), spell);
 
-        player->CastSpell(getGuid(), gameobject_properties->goober.spell_id, false);
+        player->castSpell(getGuid(), gameobject_properties->goober.spell_id, false);
 
         if (gameobject_properties->goober.page_id)
         {
@@ -1351,7 +1350,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (!GetRitual()->GetTargetGUID() == 0)
                 return;
 
-            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
             if (info == nullptr)
                 return;
 
@@ -1359,7 +1358,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (target == nullptr || !target->IsInWorld())
                 return;
 
-            spell = sSpellFactoryMgr.NewSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            spell = sSpellMgr.newSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
             targets.m_unitTarget = target->getGuid();
             spell->prepare(&targets);
         }
@@ -1373,17 +1372,17 @@ void GameObject_Ritual::onUse(Player* player)
             if (!psacrifice || !pCaster)
                 return;
 
-            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.caster_target_spell);
+            SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.caster_target_spell);
             if (!info)
                 return;
 
-            spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, nullptr);
+            spell = sSpellMgr.newSpell(psacrifice, info, true, nullptr);
             targets.m_unitTarget = psacrifice->getGuid();
             spell->prepare(&targets);
 
             // summons demon
-            info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
-            spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, nullptr);
+            info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            spell = sSpellMgr.newSpell(pCaster, info, true, nullptr);
 
             SpellCastTargets targets2;
             targets2.m_unitTarget = pCaster->getGuid();
@@ -1399,8 +1398,8 @@ void GameObject_Ritual::onUse(Player* player)
             if (!pleader)
                 return;
 
-            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
-            spell = sSpellFactoryMgr.NewSpell(pleader, info, true, nullptr);
+            SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            spell = sSpellMgr.newSpell(pleader, info, true, nullptr);
             SpellCastTargets targets2(plr->getGuid());
             spell->prepare(&targets2);
 
@@ -1409,11 +1408,11 @@ void GameObject_Ritual::onUse(Player* player)
         }
         else if (gameobject_properties->entry == 186811 || gameobject_properties->entry == 181622)
         {
-            SpellInfo* info = sSpellCustomizations.GetSpellInfo(gameobject_properties->summoning_ritual.spell_id);
+            SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
             if (info == NULL)
                 return;
 
-            spell = sSpellFactoryMgr.NewSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            spell = sSpellMgr.newSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
             SpellCastTargets targets2(GetRitual()->GetCasterGUID());
             spell->prepare(&targets2);
             ExpireAndDelete();
@@ -1435,7 +1434,7 @@ void GameObject_SpellCaster::InitAI()
 {
     charges = gameobject_properties->spell_caster.charges;
 
-    spell = sSpellCustomizations.GetSpellInfo(gameobject_properties->spell_caster.spell_id);
+    spell = sSpellMgr.getSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
         LogError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }

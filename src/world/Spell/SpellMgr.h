@@ -1,105 +1,127 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef SPELLMGR_H
-#define SPELLMGR_H
+#pragma once
 
-#include "Management/Item.h"
+#include "Singleton.h"
+
+#include "Spell.h"
+#include "SpellAuras.h"
+#include "SpellInfo.hpp"
+
 #include "Units/Players/PlayerDefines.hpp"
 
 struct SpellArea
 {
-	uint32 spellId;
-	uint32 areaId;              // zone/subzone/or 0 is not limited to zone
-	uint32 questStart;          // quest start (quest must be active or rewarded for spell apply)
-	uint32 questEnd;            // quest end (quest must not be rewarded for spell apply)
-	int32 auraSpell;           // spell aura must be applied for spell apply)if possitive) and it must not be applied in other case
-	uint32 raceMask;            // can be applied only to races
-	Gender gender;              // can be applied only to gender
-	bool questStartCanActive;   // if true then quest start can be active (not only rewarded)
-	bool autocast;              // if true then auto applied at area enter, in other case just allowed to cast
+    uint32_t spellId;
+    uint32_t areaId;            // Zone or area id. 0 if not zone dependant
+    uint32_t questStart;        // Quest id if casted on accepting quest
+    uint32_t questEnd;          // If not 0, spell won't be casted (and removed if applied) if the quest id given here has been completed
+    int32_t auraSpell;          // If negative, spell won't be casted if player has this aura id. If positive, spell won't be casted if player does not have this aura id
+    uint32_t raceMask;          // Can only be applied to certain races (bitmask)
+    Gender gender;              // Can only be applied to either gender
+    bool questStartCanActive;   // If true, aura is applied on quest start. If false, aura is applied on quest complete?
+    bool autoCast;              // If true, then aura is auto applied at entering area
 
-	// helpers
-	bool IsFitToRequirements(Player* player, uint32 newZone, uint32 newArea) const;
+    bool fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const;
 };
 
-typedef std::multimap<uint32, SpellArea> SpellAreaMap;
-typedef std::multimap<uint32, SpellArea const*> SpellAreaForQuestMap;
-typedef std::multimap<uint32, SpellArea const*> SpellAreaForAuraMap;
-typedef std::multimap<uint32, SpellArea const*> SpellAreaForAreaMap;
+typedef std::unordered_map<uint32_t, SpellInfo> SpellInfoMap;
+
+typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
+typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
+
+typedef std::multimap<uint32_t, SpellArea> SpellAreaMap;
+typedef std::multimap<uint32_t, SpellArea const*> SpellAreaForQuestMap;
+typedef std::multimap<uint32_t, SpellArea const*> SpellAreaForAuraMap;
+typedef std::multimap<uint32_t, SpellArea const*> SpellAreaForAreaMap;
 typedef std::pair<SpellAreaMap::const_iterator, SpellAreaMap::const_iterator> SpellAreaMapBounds;
 typedef std::pair<SpellAreaForQuestMap::const_iterator, SpellAreaForQuestMap::const_iterator> SpellAreaForQuestMapBounds;
 typedef std::pair<SpellAreaForAuraMap::const_iterator, SpellAreaForAuraMap::const_iterator> SpellAreaForAuraMapBounds;
 typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::const_iterator> SpellAreaForAreaMapBounds;
 
-class Aura;
-
-typedef Spell* (*spell_factory_function)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-typedef Aura* (*aura_factory_function)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
-
-class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
+// This class loads spells from Spell.dbc and stores them as SpellInfo objects
+// Also, this class registers spell scripts to spells and aura scripts to auras
+class SERVER_DECL SpellMgr : public Singleton<SpellMgr>
 {
-	public:
+public:
+    SpellMgr();
+    ~SpellMgr();
 
-		SpellFactoryMgr()
-		{
-			Setup();
-		}
+    void startSpellMgr();
+    void loadSpellDataFromDatabase();
+    void loadSpellScripts();
 
-		~SpellFactoryMgr()
-		{
-		}
+    Spell* newSpell(Object* caster, SpellInfo const* info, bool triggered, Aura* aur);
+    Aura* newAura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
 
-		SpellInfo* GetSpellEntryByDifficulty(uint32 id, uint8 difficulty);
-		Spell* NewSpell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-		Aura* NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+    // Registering spell scripts
+    void addSpellById(uint32_t spellId, SpellScriptLinker spellScript);
+    // Registering aura scripts
+    void addAuraById(uint32_t spellId, AuraScriptLinker auraScript);
+    
+    // Spell area maps
+    SpellAreaMapBounds getSpellAreaMapBounds(uint32_t spellId) const;
+    SpellAreaForAreaMapBounds getSpellAreaForAreaMapBounds(uint32_t areaId) const;
+    SpellAreaForAuraMapBounds getSpellAreaForAuraMapBounds(uint32_t spellId) const;
+    SpellAreaForQuestMapBounds getSpellAreaForQuestMapBounds(uint32_t questId, bool active) const;
+    SpellAreaForQuestMapBounds getSpellAreaForQuestEndMapBounds(uint32_t questId) const;
+    bool checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint32_t area_id, Player* player) const;
 
-		// Spell area
-		void LoadSpellAreas();
+    // Custom methods (defined in SpellCustomizations.cpp)
+    bool isAlwaysApply(SpellInfo const* spellInfo) const;
+    uint32_t getDiminishingGroup(uint32_t id) const;
 
-		SpellAreaMapBounds GetSpellAreaMapBounds(uint32 spell_id) const;
-		SpellAreaForQuestMapBounds GetSpellAreaForQuestMapBounds(uint32 quest_id, bool active) const;
-		SpellAreaForQuestMapBounds GetSpellAreaForQuestEndMapBounds(uint32 quest_id) const;
-		SpellAreaForAuraMapBounds GetSpellAreaForAuraMapBounds(uint32 spell_id) const;
-		SpellAreaForAreaMapBounds GetSpellAreaForAreaMapBounds(uint32 area_id) const;
+    SpellInfo const* getSpellInfo(const uint32_t spellId) const;
+    SpellInfo const* getSpellInfoByDifficulty(const uint32_t spellId, const uint8_t difficulty) const;
+    SpellInfoMap const* getSpellInfoMap() const { return &mSpellInfoMapStore; }
 
-	private:
+private:
+    // DBC files
+    void loadSpellInfoData();
 
-		void AddSpellByEntry(SpellInfo* info, spell_factory_function spell_func);
-		void AddSpellById(uint32 spellId, spell_factory_function spell_func);
+    // Database tables
+    void loadSpellCoefficientOverride();
+    void loadSpellCustomOverride();
+    void loadSpellAIThreat();
+    void loadSpellEffectOverride();
+    void loadSpellAreas();
 
-		void AddAuraByEntry(SpellInfo* info, aura_factory_function aura_func);
-		void AddAuraById(uint32 spellId, aura_factory_function aura_func);
+    // Calculates spell power coefficient
+    void setSpellCoefficient(SpellInfo* sp);
 
-		void Setup();
+    // Custom setters (defined in SpellCustomizations.cpp)
+    void setSpellEffectAmplitude(SpellInfo* sp);
+    void setSpellMeleeSpellBool(SpellInfo* sp);
+    void setSpellRangedSpellBool(SpellInfo* sp);
+    void setSpellMissingCIsFlags(SpellInfo* sp);
+    void setSpellOnShapeshiftChange(SpellInfo* sp);
+    // Hacky methods (defined in Hackfixes.cpp)
+    void createDummySpell(uint32_t id);
+    void modifyEffectBasePoints(SpellInfo* sp);
+    void setMissingSpellLevel(SpellInfo* sp);
+    void modifyAuraInterruptFlags(SpellInfo* sp);
+    void modifyRecoveryTime(SpellInfo* sp);
+    void applyHackFixes();
 
-        void SetupSpellClassScripts();
+    SpellAreaMap mSpellAreaMap;
+    SpellAreaForAreaMap mSpellAreaForAreaMap;
+    SpellAreaForAuraMap mSpellAreaForAuraMap;
+    SpellAreaForQuestMap mSpellAreaForQuestMap;
+    SpellAreaForQuestMap mSpellAreaForActiveQuestMap;
+    SpellAreaForQuestMap mSpellAreaForQuestEndMap;
 
-		SpellAreaMap mSpellAreaMap;
-		SpellAreaForQuestMap mSpellAreaForQuestMap;
-		SpellAreaForQuestMap mSpellAreaForActiveQuestMap;
-		SpellAreaForQuestMap mSpellAreaForQuestEndMap;
-		SpellAreaForAuraMap mSpellAreaForAuraMap;
-		SpellAreaForAreaMap mSpellAreaForAreaMap;
+    SpellInfoMap mSpellInfoMapStore;
+
+    SpellInfo* getMutableSpellInfo(const uint32_t spellId);
+
+    // Script registerers
+    void addSpellBySpellInfo(SpellInfo* info, SpellScriptLinker spellScript);
+    void addAuraBySpellInfo(SpellInfo* info, AuraScriptLinker auraScript);
+    void setupSpellScripts();
+    void setupSpellClassScripts();
 };
 
-#define sSpellFactoryMgr SpellFactoryMgr::getSingleton()
-
-#endif // SPELLMGR_H
+#define sSpellMgr SpellMgr::getSingleton()

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
     auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
@@ -27,7 +27,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
 
 bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
     auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
@@ -60,7 +60,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
         if (time == 0)
             return false;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
@@ -80,7 +80,7 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
 {
     try
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
@@ -104,7 +104,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
 {
     try
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
@@ -151,7 +151,7 @@ bool ChatHandler::HandleDespawnInstanceTransport(const char* /*args*/, WorldSess
 {
     try
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
 #else
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));

@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,7 @@
 #include "Setup.h"
 #include "Instance_DrakTharonKeep.h"
 
-
-
 // \todo Whole corpses/consume thingo is wrong
-
 
 const uint32 INVASION_INTERVAL = 20000;
 const uint32 INVADERS_PER_INVASION = 1;
@@ -136,7 +133,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), 47346, false);
+        getCreature()->castSpell(getCreature(), 47346, false);
         //spawn 4 Ritual Crystal
         for (uint8 i = 0; i < 4; i++)
             SpawnCrystal(i);
@@ -471,7 +468,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
-            getCreature()->CastSpell(getCreature(), 53463, false);
+            getCreature()->castSpell(getCreature(), 53463, false);
         }
     }
 
@@ -483,7 +480,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
             getCreature()->setDisplayId(27073);
             getCreature()->RemoveAllAuras();
-            getCreature()->CastSpell(getCreature(), 49356, false);
+            getCreature()->castSpell(getCreature(), 49356, false);
         }
         if (getScriptPhase() == 2 && phase_length <Util::getMSTime())
         {
@@ -491,7 +488,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
             getCreature()->RemoveAllAuras();
-            getCreature()->CastSpell(getCreature(), 53463, false);
+            getCreature()->castSpell(getCreature(), 53463, false);
         }
     }
 

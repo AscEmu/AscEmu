@@ -1,20 +1,20 @@
 /*
-* ArcScripts for ArcEmu MMORPG Server
-* Copyright (C) 2010 ArcEmu Team <http://www.arcemu.org/>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2010 ArcEmu Team <http://www.arcemu.org/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /* Script Comment:
  * Everything before escort event is made to work as blizzlike as possible!
@@ -111,9 +111,9 @@ const uint32 MAX_THRALLWP1 = 27;
 //    void OnPlayerEnter(Player* pPlayer)
 //    {
 //        if (pPlayer->getGender() == 0)
-//            pPlayer->CastSpell(pPlayer, 35482, true);   // Human Male illusion
+//            pPlayer->castSpell(pPlayer, 35482, true);   // Human Male illusion
 //        else
-//            pPlayer->CastSpell(pPlayer, 35483, true);   // Human Female illusion
+//            pPlayer->castSpell(pPlayer, 35483, true);   // Human Female illusion
 //    }
 //
 //    void SetData(uint32 pIndex, uint32 pData)

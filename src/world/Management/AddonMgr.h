@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 //\TODO handle it, if possible, the same way in all versions
 #define STANDARD_ADDON_CRC 0x4C1C776D
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 static uint8 PublicKey[265] =
 {
     0x02, 0x01, 0x01, 0xC3, 0x5B, 0x50, 0x84, 0xB9, 0x3E, 0x32, 0x42, 0x8C, 0xD0, 0xC7, 0x48, 0xFA,
@@ -112,7 +112,7 @@ typedef std::list<SavedAddon> SavedAddonsList;
 
 class AddonMgr : public Singleton <AddonMgr>
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     public:
 
         AddonMgr();

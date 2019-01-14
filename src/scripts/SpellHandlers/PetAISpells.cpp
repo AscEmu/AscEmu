@@ -1,6 +1,5 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,7 +52,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->CastSpell(getCreature()->getGuid(), 20480, false);
+        getCreature()->castSpell(getCreature()->getGuid(), 20480, false);
         RemoveAIUpdateEvent();
         getCreature()->GetAIInterface()->m_canMove = true;
     }
@@ -105,8 +104,8 @@ class MirrorImageAI : public CreatureAIScript
             auto summon = dynamic_cast<Summon*>(getCreature());
             auto unitOwner = summon->getUnitOwner();
 
-            unitOwner->CastSpell(getCreature(), 45204, true);   // clone me
-            unitOwner->CastSpell(getCreature(), 58838, true);   // inherit threat list
+            unitOwner->castSpell(getCreature(), 45204, true);   // clone me
+            unitOwner->castSpell(getCreature(), 58838, true);   // inherit threat list
 
             // Mage mirror image spell
             if (getCreature()->getCreatedBySpellId() == 58833)
@@ -120,7 +119,7 @@ class MirrorImageAI : public CreatureAIScript
 
                 AI_Spell sp1{};
                 sp1.entryId = 59638;
-                sp1.spell = sSpellCustomizations.GetSpellInfo(sp1.entryId);
+                sp1.spell = sSpellMgr.getSpellInfo(sp1.entryId);
                 if (!sp1.spell)
                     return;
 
@@ -140,7 +139,7 @@ class MirrorImageAI : public CreatureAIScript
 
                 AI_Spell sp2{};
                 sp2.entryId = 59637;
-                sp2.spell = sSpellCustomizations.GetSpellInfo(sp2.entryId);
+                sp2.spell = sSpellMgr.getSpellInfo(sp2.entryId);
                 if (!sp2.spell)
                     return;
 
@@ -265,9 +264,9 @@ class DancingRuneWeaponAI : public CreatureAIScript
             if (dpsCycle > 11)
                 dpsCycle = 0;
 
-            const auto nextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
+            const auto nextSpell = sSpellMgr.getSpellInfo(dpsSpell);
             if (nextSpell)
-                getCreature()->CastSpell(currentTarget, nextSpell, true);
+                getCreature()->castSpell(currentTarget, nextSpell, true);
         }
     }
 
@@ -277,7 +276,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
         {
             if (p != 0)
             {
-                const auto spellProc = sSpellCustomizations.GetSpellInfo(p);
+                const auto spellProc = sSpellMgr.getSpellInfo(p);
                 if (!spellProc)
                     return;
 
@@ -289,7 +288,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 if (randomProcChance <= spellProcChance)
                 {
                     const auto victim = spellProc->custom_self_cast_only ? getCreature() : mTarget;
-                    getCreature()->CastSpell(victim, spellProc, true);
+                    getCreature()->castSpell(victim, spellProc, true);
                 }
             }
         }

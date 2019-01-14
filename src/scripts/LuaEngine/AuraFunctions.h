@@ -1,8 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,7 +141,7 @@ namespace LuaAura
         int valindex = 2;
         if (subindex)
             valindex++;
-        SpellInfo* proto = aura->m_spellInfo;
+        SpellInfo const* proto = aura->m_spellInfo;
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_BOOL(false);
@@ -177,7 +176,7 @@ namespace LuaAura
             lua_pushnil(L);
             return 1;
         }
-        SpellInfo* proto = aura->m_spellInfo;
+        SpellInfo const* proto = aura->m_spellInfo;
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_NIL();

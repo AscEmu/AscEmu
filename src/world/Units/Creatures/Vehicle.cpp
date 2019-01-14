@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -173,7 +173,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // Player's client sets these
     if (passenger->isCreature())
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         passenger->obj_movement_info.transport_data.transportGuid = owner->getGuid();
         passenger->obj_movement_info.transport_seat = static_cast<uint8_t>(seatid);
 #endif
@@ -321,7 +321,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
     // if we are on a flying vehicle, add a parachute!
     if (owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT) || owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT2))
-        passenger->CastSpell(passenger, 45472, false);
+        passenger->castSpell(passenger, 45472, false);
 
     // re-add spellclick flag if needed
     // despawn vehicle if it was spawned by spell?
@@ -582,7 +582,7 @@ void Vehicle::InstallAccessories()
 
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         c->obj_movement_info.transport_data.transportGuid = owner->getGuid();
 #ifdef FT_VEHICLES
         c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);

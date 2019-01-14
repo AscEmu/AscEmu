@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define TBC 8606
 #define WotLK 12340
 #define Cata 15595
+#define Mop 18414
 
 #define VERSION_STRING @ASCEMU_VERSION@
 
@@ -34,6 +35,9 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Cata
     #define AE_CATA
     #define VERSION 4, 3, 4
+#elif VERSION_STRING == Mop
+    #define AE_MOP
+    #define VERSION 5, 4, 8
 #endif
 
 #if VERSION_STRING >= TBC

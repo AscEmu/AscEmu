@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -136,7 +136,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell* trainerSpell = nullptr;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     for (auto itr : trainer->Spells)
     {
         if (itr.spell == srlPacket.spellId)
@@ -164,7 +164,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
         return;
 
@@ -172,7 +172,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     if (trainerSpell->IsCastable())
     {
-        _player->CastSpell(_player, trainerSpell->spell, true);
+        _player->castSpell(_player, trainerSpell->spell, true);
     }
     else
     {
@@ -189,7 +189,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     _player->modCoinage(-static_cast<int32>(trainerSpell->Cost));
     if (trainerSpell->pCastSpell)
     {
-        _player->CastSpell(_player, trainerSpell->pCastSpell->getId(), true);
+        _player->castSpell(_player, trainerSpell->pCastSpell->getId(), true);
     }
     else
     {
@@ -344,7 +344,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
 
     _player->bHasBindDialogOpen = false;
     OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
-    creature->CastSpell(_player->getGuid(), 3286, true);
+    creature->castSpell(_player->getGuid(), 3286, true);
 }
 
 void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
@@ -398,7 +398,7 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
     SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(_player->m_Pets.size()), _player->m_StableSlotCount, stableList).serialise().get());
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void WorldSession::sendTrainerList(Creature* creature)
 {
     const auto trainer = creature->GetTrainer();
@@ -523,7 +523,7 @@ void WorldSession::sendTrainerList(Creature* creature)
                     break;
                 }
 
-                SpellInfo* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
+                SpellInfo const* learnedSpellInfo = sSpellMgr.getSpellInfo(pSpell->learnedSpell[i]);
                 if (learnedSpellInfo && learnedSpellInfo->isPrimaryProfession())
                     primary_prof_first_rank = true;
             }
@@ -569,7 +569,7 @@ void WorldSession::sendTrainerList(Creature* creature)
                 ++maxReq;
             }
 
-            const auto spellInfo = sSpellCustomizations.GetSpellInfo(pSpell->spell);
+            const auto spellInfo = sSpellMgr.getSpellInfo(pSpell->spell);
             if (spellInfo && spellInfo->isPrimaryProfession())
                 data << uint32_t(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
             else
@@ -651,10 +651,10 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
         const auto aura = _player->getAuraWithId(15007);
         if (aura == nullptr)
         {
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);
+            const auto spellInfo = sSpellMgr.getSpellInfo(15007);
             SpellCastTargets targets;
             targets.m_unitTarget = _player->getGuid();
-            const auto spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr);
+            const auto spell = sSpellMgr.newSpell(_player, spellInfo, true, nullptr);
             spell->prepare(&targets);
         }
 

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -28,7 +28,7 @@
 #include "Units/Unit.h"
 #include "Server/CharacterErrors.h"
 #include "Data/Flags.h"
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
     #include "Units/Players/PlayerDefines.hpp"
     #include "Units/Players/Player.h"
@@ -301,7 +301,7 @@ class SERVER_DECL WorldSession
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
         void handleBattlefieldListOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         void handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);
         void handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);
         void handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);
@@ -412,7 +412,7 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GroupHandler.cpp
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     public:
         void sendEmptyGroupList(Player* player);
 
@@ -445,7 +445,7 @@ class SERVER_DECL WorldSession
         // GuildHandler.cpp
         void handleGuildQuery(WorldPacket& recvPacket);
         void handleInviteToGuild(WorldPacket& recvPacket);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void handleGuildInfo(WorldPacket& /*recvPacket*/);
 #endif
         void handleSaveGuildEmblem(WorldPacket& recvPacket);
@@ -480,7 +480,7 @@ class SERVER_DECL WorldSession
 
         //\brief this was two seperated opcodes on versions < Cata.
         //       now it is one since cata.
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void handleGuildSetPublicNote(WorldPacket& recvPacket);
         void handleGuildSetOfficerNote(WorldPacket& recvPacket);
 #else
@@ -489,7 +489,7 @@ class SERVER_DECL WorldSession
 
         //\brief this was an empty opcodes on versions < Cata.
         //       now it has some content since cata.
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void handleGuildDelRank(WorldPacket& /*recvPacket*/);
 #else
         void handleGuildDelRank(WorldPacket& recvPacket);
@@ -497,7 +497,7 @@ class SERVER_DECL WorldSession
 
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void handleGuildBankQueryText(WorldPacket& recvPacket);
 #else
         void handleQueryGuildBankTabText(WorldPacket& recvPacket);
@@ -512,7 +512,7 @@ class SERVER_DECL WorldSession
         void handleCharterQuery(WorldPacket& recvPacket);
         void handleCharterBuy(WorldPacket& recvPacket);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         // Guild
         void handleGuildAssignRankOpcode(WorldPacket& recvPacket);
         void handleGuildQueryRanksOpcode(WorldPacket& recvPacket);
@@ -597,7 +597,7 @@ class SERVER_DECL WorldSession
 
     protected:
         void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         void handleLfgLockInfoOpcode(WorldPacket& recvPacket);
 #endif
 #if VERSION_STRING > TBC
@@ -683,7 +683,7 @@ class SERVER_DECL WorldSession
         void handleUpdateAccountData(WorldPacket& recvPacket);
         void handleRequestAccountData(WorldPacket& recvPacket);
         void handleBugOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         void handleSuggestionOpcode(WorldPacket& recvPacket);
         void handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);
         void handleLogDisconnectOpcode(WorldPacket& recvPacket);
@@ -695,7 +695,7 @@ class SERVER_DECL WorldSession
         void handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/);
         void handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/);
         void handleCorpseReclaimOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         void handleLoadScreenOpcode(WorldPacket& recvPacket);
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
@@ -714,7 +714,7 @@ class SERVER_DECL WorldSession
         void handleInspectOpcode(WorldPacket& recvPacket);
 
     //\todo move to seperated file
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     private:
         bool isAddonMessageFiltered;
         std::vector<std::string> mRegisteredAddonPrefixesVector;
@@ -757,7 +757,7 @@ class SERVER_DECL WorldSession
         void sendInnkeeperBind(Creature* creature);
         void sendTrainerList(Creature* creature);
         void sendStabledPetList(uint64_t npcguid);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint8_t trainerGetSpellStatus(TrainerSpell* trainerSpell);
 #else
         TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
@@ -833,7 +833,7 @@ class SERVER_DECL WorldSession
         void handleUnlearnSkillOpcode(WorldPacket& recvPacket);
         void handleLearnTalentOpcode(WorldPacket& recvPacket);
         void handleUnlearnTalents(WorldPacket& recvPacket);
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
 #else
         void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
@@ -874,7 +874,7 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // TradeHandler.cpp
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     public:
         void sendTradeResult(TradeStatus result);
         void sendTradeUpdate(bool trade_state = true);
@@ -963,7 +963,7 @@ class SERVER_DECL WorldSession
         bool LoggingOut; //Player requesting to be logged out
 
         uint32 _latency;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         uint32_t client_build;
 #else
         uint16_t client_build;

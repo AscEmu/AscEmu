@@ -1,10 +1,10 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 # general
 set(ASCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory for AscEmu modules." )
 
 set(ASCEMU_VERSION "WotLK" CACHE STRING "Client Version")
-set_property(CACHE ASCEMU_VERSION PROPERTY STRINGS Classic TBC WotLK Cata)
+set_property(CACHE ASCEMU_VERSION PROPERTY STRINGS Classic TBC WotLK Cata Mop)
 
 option(BUILD_ASCEMUSCRIPTS "Build AscEmu modules." ON)
 option(BUILD_TOOLS "Build AscEmu tools." OFF)

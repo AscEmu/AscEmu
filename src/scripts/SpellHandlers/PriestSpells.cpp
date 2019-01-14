@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
+ * Copyright (C) 2008-2011 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,8 +12,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
+ *
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -71,13 +71,13 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
     if (isAttackable(player, target))   // Do holy damage
     {
         // First tick is instant.
-        player->CastSpell(target, hostileSpell[0], true);
-        player->CastSpell(target, hostileSpell[1], false);
+        player->castSpell(target, hostileSpell[0], true);
+        player->castSpell(target, hostileSpell[1], false);
     }
     else // Heal
     {
-        player->CastSpell(target, friendlySpell[0], true);
-        player->CastSpell(target, friendlySpell[1], false);
+        player->castSpell(target, friendlySpell[0], true);
+        player->castSpell(target, friendlySpell[1], false);
     }
     return true;
 }

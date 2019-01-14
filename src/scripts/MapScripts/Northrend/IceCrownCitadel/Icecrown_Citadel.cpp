@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -53,22 +53,22 @@ public:
         switch (Id)
         {
             case 0:
-                player->CastSpell(player, 70781, true);     // Light's Hammer
+                player->castSpell(player, 70781, true);     // Light's Hammer
                 break;
             case 1:
-                player->CastSpell(player, 70856, true);     // Oratory of The Damned
+                player->castSpell(player, 70856, true);     // Oratory of The Damned
                 break;
             case 2:
-                player->CastSpell(player, 70857, true);     // Rampart of Skulls
+                player->castSpell(player, 70857, true);     // Rampart of Skulls
                 break;
             case 3:
-                player->CastSpell(player, 70858, true);     // Deathbringer's Rise
+                player->castSpell(player, 70858, true);     // Deathbringer's Rise
                 break;
             case 4:
-                player->CastSpell(player, 70859, true);     // Upper Spire
+                player->castSpell(player, 70859, true);     // Upper Spire
                 break;
             case 5:
-                player->CastSpell(player, 70861, true);     // Sindragosa's Lair
+                player->castSpell(player, 70861, true);     // Sindragosa's Lair
                 break;
         }
         Arcemu::Gossip::Menu::Complete(player);

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -99,7 +99,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
     if ((info->getSpellDifficultyID() != 0) && (Caster->getObjectTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != nullptr) && (Caster->GetMapMgr()->pInstance != nullptr))
     {
-        SpellInfo* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
+        SpellInfo const* SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != nullptr)
             m_spellInfo = SpellDiffEntry;
         else
@@ -250,7 +250,6 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     m_timer = 0;
     m_magnetTarget = 0;
     Dur = 0;
-    m_extraError = SPELL_EXTRA_ERROR_NONE;
 }
 
 Spell::~Spell()
@@ -736,7 +735,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
             _type = RANGED;
         else
         {
-            if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
+            if (hasAttributeExC(ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON))
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -911,10 +910,11 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 
     m_spellState = SPELL_STATE_PREPARING;
 
+    uint32_t parameter1 = 0, parameter2 = 0;
     if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
-        cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
+        cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else
-        cancastresult = canCast(false);
+        cancastresult = canCast(false, &parameter1, &parameter2);
 
     if (cancastresult != 0)
         LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
@@ -923,7 +923,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     if (cancastresult != SPELL_CANCAST_OK)
     {
         // Triggered spells also need to go through cancast check but they do not pop a error message
-        SendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult);
+        sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult, parameter1, parameter2);
 
         if (m_triggeredByAura)
         {
@@ -953,7 +953,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                !(pSpellId && sSpellMgr.getSpellInfo(pSpellId)->isPassive()))
             {
                 p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
             }
@@ -1013,7 +1013,7 @@ void Spell::cancel()
         return;
 
     SendInterrupted(0);
-    SendCastResult(SPELL_FAILED_INTERRUPTED);
+    sendCastResult(SPELL_FAILED_INTERRUPTED);
 
     if (m_spellState == SPELL_STATE_CASTING)
     {
@@ -1111,10 +1111,11 @@ void Spell::castMe(bool check)
         LogDebugFlag(LF_SPELL, "Spell::cast %u, LowGuid: %u", getSpellInfo()->getId(), m_caster->getGuidLow());
     }
 
+    uint32_t parameter1 = 0, parameter2 = 0;
     if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
-        cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
+        cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else if (check)
-        cancastresult = canCast(true);
+        cancastresult = canCast(true, &parameter1, &parameter2);
     else
         cancastresult = SPELL_CANCAST_OK;
 
@@ -1128,7 +1129,7 @@ void Spell::castMe(bool check)
                 if (!HasPower())
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1139,7 +1140,7 @@ void Spell::castMe(bool check)
                 if (!TakePower())   // shouldn't happen
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1153,7 +1154,7 @@ void Spell::castMe(bool check)
                 {
                     //LOG_DEBUG("Spell::Not Enough Mana");
                     SendInterrupted(SPELL_FAILED_NO_POWER);
-                    SendCastResult(SPELL_FAILED_NO_POWER);
+                    sendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
                     return;
                 }
@@ -1199,7 +1200,7 @@ void Spell::castMe(bool check)
             }
         }
 
-        SendCastResult(cancastresult);
+        sendCastResult(cancastresult);
         if (cancastresult != SPELL_CANCAST_OK)
         {
             finish(false);
@@ -1329,7 +1330,7 @@ void Spell::castMe(bool check)
                 && getSpellInfo()->getId() != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->isPassive()))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellMgr.getSpellInfo(pSpellId)->isPassive()))
                 {
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
                 }
@@ -1686,7 +1687,7 @@ void Spell::castMe(bool check)
             }*/
 
             m_isCasting = false;
-            SendCastResult(cancastresult);
+            sendCastResult(cancastresult);
             if (u_caster != nullptr)
                 u_caster->SetOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
 
@@ -1701,7 +1702,7 @@ void Spell::castMe(bool check)
     else
     {
         // cancast failed
-        SendCastResult(cancastresult);
+        sendCastResult(cancastresult, parameter1, parameter2);
         SendInterrupted(cancastresult);
         finish(false);
     }
@@ -2217,83 +2218,6 @@ void Spell::finish(bool successful)
     DecRef();
 }
 
-void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError)
-{
-    uint32 spellId = getSpellInfo()->getId();
-
-    if (caster != nullptr)
-    {
-        uint32_t extraError1 = extraError;
-        switch (result)
-        {
-            case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-                extraError1 = getSpellInfo()->getRequiresSpellFocus();
-                break;
-
-#if VERSION_STRING > TBC
-            case SPELL_FAILED_REQUIRES_AREA:
-                if (getSpellInfo()->getRequiresAreaId() > 0)
-                {
-                    auto area_group = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
-                    auto area = p_caster->GetArea();
-                    for (uint8 i = 0; i < 6; i++)
-                    {
-                        if (area_group->AreaId[i] != 0 && area_group->AreaId[i] != area->id)
-                        {
-                            extraError1 = area_group->AreaId[i];
-                            break;
-                        }
-                    }
-                }
-                break;
-#endif
-            case SPELL_FAILED_TOTEMS:
-                if (getSpellInfo()->getTotem(0))
-                    extraError1 = getSpellInfo()->getTotem(0);
-
-                if (getSpellInfo()->getTotem(1))
-                    extraError1 = getSpellInfo()->getTotem(1);
-
-                break;
-            case SPELL_FAILED_ONLY_SHAPESHIFT:
-                extraError1 = getSpellInfo()->getRequiredShapeShift();
-                break;
-            case SPELL_FAILED_CUSTOM_ERROR:
-                extraError1 = extraError;
-                break;
-            default:
-                break;
-        }
-
-        caster->sendCastFailedPacket(spellId, result, castCount, extraError1);
-    }
-}
-
-void Spell::SetExtraCastResult(SpellExtraError result)
-{
-    m_extraError = result;
-}
-
-void Spell::SendCastResult(uint8 result)
-{
-    if (result == SPELL_CANCAST_OK)
-        return;
-
-    SetSpellFailed();
-
-    if (!m_caster->IsInWorld())
-        return;
-
-    Player* plr = p_caster;
-
-    if (!plr && u_caster)
-        plr = u_caster->m_redirectSpellPackets;
-    if (!plr)
-        return;
-
-    SendCastResult(p_caster, 0, result, m_extraError);
-}
-
 // uint16 0xFFFF
 enum SpellStartFlags
 {
@@ -2356,7 +2280,7 @@ void Spell::SendSpellStart()
     data << extra_cast_number;
 #endif
     data << cast_flags;
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     data << uint32(m_timer);
 #endif
     data << (uint32)m_castTime;
@@ -2394,7 +2318,7 @@ void Spell::SendSpellStart()
                 }
             }
         }
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
@@ -2409,7 +2333,7 @@ void Spell::SendSpellStart()
             data << ip->DisplayInfoID;
             data << ip->InventoryType;
         }
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         else
         {
             data << uint32(0);
@@ -2550,7 +2474,7 @@ void Spell::SendSpellGo()
         }
         else
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             if (p_caster != nullptr)
                 ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
@@ -2783,7 +2707,7 @@ void Spell::SendChannelStart(uint32 duration)
         data << WoWGuid(m_caster->GetNewGUID());
         data << uint32(m_spellInfo->getId());
         data << uint32(duration);
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         data << uint8(0);
         data << uint8(0);
 #endif
@@ -3149,7 +3073,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
                 itemTarget = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
             if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
             {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                 Player* p_trader = p_caster->getTradeTarget();
                 if (p_trader != nullptr)
                     itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
@@ -3182,7 +3106,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         {
             if (p_caster != nullptr)
             {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                 Player* plr = p_caster->getTradeTarget();
                 if (plr != nullptr)
                     itemTarget = plr->getTradeData()->getTradeItem((TradeSlots)guid);
@@ -3462,7 +3386,7 @@ void Spell::HandleAddAura(uint64 guid)
                 if (p_caster && (p_caster->getShapeShiftForm() == FORM_BEAR || p_caster->getShapeShiftForm() == FORM_DIREBEAR) &&
                     p_caster->hasAurasWithId(kingOfTheJungle))
                 {
-                    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
+                    const auto spellInfo = sSpellMgr.getSpellInfo(51185);
                     if (!spellInfo)
                     {
                         delete aur;
@@ -3470,7 +3394,7 @@ void Spell::HandleAddAura(uint64 guid)
                         return;
                     }
 
-                    Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, nullptr);
+                    Spell* spell = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
 
 
                     spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->m_spellInfo->custom_RankNumber * 5;
@@ -3494,7 +3418,7 @@ void Spell::HandleAddAura(uint64 guid)
                     };
 
                     if (u_caster->hasAurasWithId(theBeastWithin))
-                        u_caster->CastSpell(u_caster, 34471, true);
+                        u_caster->castSpell(u_caster, 34471, true);
                 }
             } break;
             // SPELL_HASH_RAPID_KILLING
@@ -3556,7 +3480,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
+        const auto spellInfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -3564,7 +3488,7 @@ void Spell::HandleAddAura(uint64 guid)
             return;
         }
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, nullptr);
+        Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
 
         uint32 masterOfSubtlety[] =
         {
@@ -3602,7 +3526,7 @@ void Spell::HandleAddAura(uint64 guid)
         }
         for (int i = 0; i < (charges - 1); ++i)
         {
-            Aura* staur = sSpellFactoryMgr.NewAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
+            Aura* staur = sSpellMgr.newAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
             Target->AddAura(staur);
         }
         if (!(aur->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
@@ -3636,7 +3560,7 @@ LOG_ERROR("WORLD: unknown spell id %i\n", TriggerSpellId);
 return;
 }
 
-Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, spellInfo,false, NULL);
+Spell* spell = sSpellMgr.newSpell(m_caster, spellInfo,false, NULL);
 WPARCEMU_ASSERT(  spell);
 
 SpellCastTargets targets;
@@ -3728,7 +3652,7 @@ void Spell::InitProtoOverride()
 {
     if (m_spellInfo_override != nullptr)
         return;
-    m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->getId());
+    m_spellInfo_override = sSpellMgr.getSpellInfo(m_spellInfo->getId());
 }
 
 uint32 Spell::GetDuration()
@@ -4120,48 +4044,6 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Item spell checks
-         */
-        if (i_caster)
-        {
-            if (i_caster->getItemProperties()->ZoneNameID && i_caster->getItemProperties()->ZoneNameID != i_caster->GetZoneId())
-                return SPELL_FAILED_NOT_HERE;
-            if (i_caster->getItemProperties()->MapID && i_caster->getItemProperties()->MapID != i_caster->GetMapId())
-                return SPELL_FAILED_NOT_HERE;
-        }
-
-        /**
-         *	Check if we have the required reagents
-         */
-        if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
-        {
-            // Skip this with enchanting scrolls
-            if (!i_caster || i_caster->getItemProperties()->Flags != 268435520)
-            {
-                for (uint8_t i = 0; i < 8; ++i)
-                {
-                    if (getSpellInfo()->getReagent(i) == 0 || getSpellInfo()->getReagentCount(i) == 0)
-                        continue;
-
-                    if (p_caster->getItemInterface()->GetItemCount(getSpellInfo()->getReagent(i)) < getSpellInfo()->getReagentCount(i))
-                        return SPELL_FAILED_ITEM_GONE;
-                }
-            }
-        }
-
-        /**
-         *	check if we have the required tools, totems, etc
-         */
-        for (uint8_t i = 0; i < 2; ++i)
-        {
-            if (getSpellInfo()->getTotem(i) != 0)
-            {
-                if (p_caster->getItemInterface()->GetItemCount(getSpellInfo()->getTotem(i)) == 0)
-                    return SPELL_FAILED_TOTEMS;
-            }
-        }
-
-        /**
          *	check if we have the required gameobject focus
          */
         float focusRange;
@@ -4229,7 +4111,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
                 {
                     // get the player we are trading with
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                     Player* t_player = p_caster->getTradeTarget();
                     if (t_player != nullptr)
                         i_target = t_player->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
@@ -4247,106 +4129,11 @@ uint8 Spell::CanCast(bool tolerate)
             i_target = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
         }
 
-        // check to make sure we have a targeted item
-        // the second check is a temporary exploit fix, people keep stacking enchants on 0 durability items and then 1hit/1shot the other guys
-        if (!i_target || (i_target->getDurability() == 0 && i_target->getMaxDurability() != 0))
-            return SPELL_FAILED_BAD_TARGETS;
-
         ItemProperties const* proto = i_target->getItemProperties();
 
         // check to make sure the targeted item is acceptable
         switch (getSpellInfo()->getEffect(0))
         {
-            // Lock Picking Targeted Item Check
-            case SPELL_EFFECT_OPEN_LOCK:
-            {
-                // this is currently being handled in SpellEffects
-                break;
-            }
-
-            // Enchanting Targeted Item Check
-            case SPELL_EFFECT_ENCHANT_ITEM:
-            case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
-            case SPELL_EFFECT_ADD_SOCKET:
-            {
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ADD_SOCKET && i_target->GetSocketsCount() >= 3)
-                    return SPELL_FAILED_MAX_SOCKETS;
-
-                // If enchant is permanent and we are casting on Vellums
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM && getSpellInfo()->getEffectItemType(0) != 0 &&
-                    (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145 ||
-                    proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146))
-                {
-                    // Weapons enchants
-                    if (getSpellInfo()->getEquippedItemClass() == 2)
-                    {
-                        // These are armor vellums
-                        if (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // You tried to cast wotlk enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43146)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast tbc enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 39349)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast non-lvl enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 39349)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        break;
-                    }
-
-                    // Armors enchants
-                    else if (getSpellInfo()->getEquippedItemClass() == 4)
-                    {
-                        // These are weapon vellums
-                        if (proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // You tried to cast wotlk enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43145)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast tbc enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 38682)
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        // you tried to cast non-lvl enchant on bad item
-                        if (getSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 38682)
-                            return SPELL_FAILED_BAD_TARGETS;
-                    }
-
-                    // If We are here it means that we have right Vellum and right enchant to cast
-                    break;
-                }
-
-                if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM &&
-                    getSpellInfo()->getBaseLevel() && (getSpellInfo()->getBaseLevel() > proto->ItemLevel))
-                    return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
-
-                if (i_caster && i_caster->getItemProperties()->Flags == 2097216)
-                    break;
-
-                break;
-            }
-
-            // Disenchanting Targeted Item Check
-            case SPELL_EFFECT_DISENCHANT:
-            {
-                // check if item can be disenchanted
-                if (proto->DisenchantReqSkill < 1)
-                    return SPELL_FAILED_CANT_BE_DISENCHANTED;
-
-                // check if we have high enough skill
-                if ((int32)p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING) < proto->DisenchantReqSkill)
-                    return SPELL_FAILED_CANT_BE_DISENCHANTED_SKILL;
-
-                break;
-            }
-
             // Feed Pet Targeted Item Check
             case SPELL_EFFECT_FEED_PET:
             {
@@ -4371,41 +4158,6 @@ uint8 Spell::CanCast(bool tolerate)
                 // check food level: food should be max 30 lvls below pets level
                 if (pPet->getLevel() > proto->ItemLevel + 30)
                     return SPELL_FAILED_FOOD_LOWLEVEL;
-
-                break;
-            }
-
-            // Prospecting Targeted Item Check
-            case SPELL_EFFECT_PROSPECTING:
-            {
-                // check if the item can be prospected
-                if (!(proto->Flags & ITEM_FLAG_PROSPECTABLE))
-                    return SPELL_FAILED_CANT_BE_PROSPECTED;
-
-                // check if we have at least 5 of the item
-                if (p_caster->getItemInterface()->GetItemCount(proto->ItemId) < 5)
-                    return SPELL_FAILED_ITEM_GONE;
-
-                // check if we have high enough skill
-                if (p_caster->_GetSkillLineCurrent(SKILL_JEWELCRAFTING) < proto->RequiredSkillRank)
-                    return SPELL_FAILED_LOW_CASTLEVEL;
-
-                break;
-            }
-            // Milling Targeted Item Check
-            case SPELL_EFFECT_MILLING:
-            {
-                // check if the item can be prospected
-                if (!(proto->Flags & ITEM_FLAG_MILLABLE))
-                    return SPELL_FAILED_CANT_BE_PROSPECTED;
-
-                // check if we have at least 5 of the item
-                if (p_caster->getItemInterface()->GetItemCount(proto->ItemId) < 5)
-                    return SPELL_FAILED_ITEM_GONE;
-
-                // check if we have high enough skill
-                if (p_caster->_GetSkillLineCurrent(SKILL_INSCRIPTION) < proto->RequiredSkillRank)
-                    return SPELL_FAILED_LOW_CASTLEVEL;
 
                 break;
             }
@@ -4500,13 +4252,6 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != nullptr)
             {
-                if (getSpellInfo()->getId() == SPELL_RANGED_THROW)
-                {
-                    auto item = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    if (item == nullptr)
-                        return SPELL_FAILED_NO_AMMO;
-                }
-
                 if (target->isPlayer())
                 {
                     // disallow spell casting in sanctuary zones
@@ -4535,7 +4280,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(getSpellInfo()->getEffectTriggerSpell(0));
+                    SpellInfo const* trig = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(0));
                     if (trig == nullptr)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -5211,7 +4956,7 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         if (hasAttributeExB(ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
@@ -6398,7 +6143,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         {
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, nullptr, sSpellCustomizations.GetSpellInfo(53385));    //1 hit
+                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, nullptr, sSpellMgr.getSpellInfo(53385));    //1 hit
                 int target = 0;
                 uint8 did_hit_result;
 
@@ -6409,7 +6154,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                         auto obj = itr;
                         if (itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & itr->GetPhase()))
                         {
-                            did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
+                            did_hit_result = DidHit(sSpellMgr.getSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
                             if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                                 target++;
                         }
@@ -6746,7 +6491,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellInfo* refspell = nullptr;
+    SpellInfo const* refspell = nullptr;
     bool canreflect = false;
 
     if (m_reflectedParent != nullptr || refunit == nullptr || m_caster == refunit)
@@ -6802,7 +6547,7 @@ bool Spell::Reflect(Unit* refunit)
     if (!refspell || !canreflect)
         return false;
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(refunit, refspell, true, nullptr);
+    Spell* spell = sSpellMgr.newSpell(refunit, refspell, true, nullptr);
     spell->SetReflected();
     SpellCastTargets targets;
     targets.m_unitTarget = m_caster->getGuid();
@@ -7206,20 +6951,5 @@ void Spell::HandleTargetNoObject()
 
     m_targets.m_targetMask |= TARGET_FLAG_DEST_LOCATION;
     m_targets.setDestination(LocationVector(newx, newy, newz));
-}
-
-SpellInfo* Spell::checkAndReturnSpellEntry(uint32_t spellid)
-{
-    //Logging that spellid 0 or -1 don't exist is not needed.
-    if (spellid == 0 || spellid == uint32_t(-1))
-        return nullptr;
-
-    auto spell_info = sSpellCustomizations.GetSpellInfo(spellid);
-    if (spell_info == nullptr)
-    {
-        LogDebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
-    }
-
-    return spell_info;
 }
 #endif

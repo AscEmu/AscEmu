@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
@@ -302,9 +302,9 @@ class Volkhan : public CreatureAIScript
 
             Creature* pAnvil = getNearestCreature(CN_VOLKHANS_ANVIL);
             if (pAnvil)
-                getCreature()->CastSpell(pAnvil, SPELL_TEMPER, true);
+                getCreature()->castSpell(pAnvil, SPELL_TEMPER, true);
             else
-                getCreature()->CastSpell(getCreature(), SPELL_TEMPER, true);
+                getCreature()->castSpell(getCreature(), SPELL_TEMPER, true);
 
             setCanEnterCombat(true);
             getCreature()->GetAIInterface()->AttackReaction(getNearestPlayer(), 1);   // hackfix
@@ -319,9 +319,9 @@ class Volkhan : public CreatureAIScript
             {
                 Creature* pCreature = static_cast<Creature*>(itr);
                 if (_isHeroic())
-                    pCreature->CastSpell(pCreature, 59527, true);
+                    pCreature->castSpell(pCreature, 59527, true);
                 else
-                    pCreature->CastSpell(pCreature, 52429, true);
+                    pCreature->castSpell(pCreature, 52429, true);
 
                 pCreature->Despawn(1000, 0);
             }

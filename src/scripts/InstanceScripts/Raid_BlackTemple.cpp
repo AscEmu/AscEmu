@@ -1,13 +1,12 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_BlackTemple.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellMgr.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Illidan Encounter Event Options
@@ -350,7 +349,7 @@ class MutantWarHoundAI : public CreatureAIScript
 
     void OnDied(Unit* /*pKiller*/) override
     {
-        Aura* pAura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, getCreature(), getCreature());
+        Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, getCreature(), getCreature());
         getCreature()->AddAura(pAura);
     }
 };
@@ -1487,10 +1486,10 @@ class SupremusAI : public CreatureAIScript
     {
         m_MoltenFlame = m_HurtfulStrike = m_MoltenPunch = m_VolcanicGazer = true;
 
-        infoMoltenFlame = sSpellCustomizations.GetSpellInfo(MOLTEN_FLAME);
-        infoHurtfulStrike = sSpellCustomizations.GetSpellInfo(HURTFUL_STRIKE);
-        infoMoltenPunch =  sSpellCustomizations.GetSpellInfo(MOLTEN_PUNCH);
-        infoVolcanicGazer =  sSpellCustomizations.GetSpellInfo(VOLCANIC_GAZER);
+        infoMoltenFlame = sSpellMgr.getSpellInfo(MOLTEN_FLAME);
+        infoHurtfulStrike = sSpellMgr.getSpellInfo(HURTFUL_STRIKE);
+        infoMoltenPunch =  sSpellMgr.getSpellInfo(MOLTEN_PUNCH);
+        infoVolcanicGazer =  sSpellMgr.getSpellInfo(VOLCANIC_GAZER);
 
         timer = 0;
         m_phase = 0;
@@ -1538,14 +1537,14 @@ class SupremusAI : public CreatureAIScript
         {
             if (m_MoltenFlame)
             {
-                getCreature()->CastSpell(getCreature(), infoMoltenFlame, false);
+                getCreature()->castSpell(getCreature(), infoMoltenFlame, false);
                 m_MoltenFlame = false;
                 return;
             }
 
             else if (m_HurtfulStrike)
             {
-                getCreature()->CastSpell(getCreature(), infoHurtfulStrike, false);
+                getCreature()->castSpell(getCreature(), infoHurtfulStrike, false);
                 m_HurtfulStrike = false;
                 return;
             }
@@ -1581,7 +1580,7 @@ class SupremusAI : public CreatureAIScript
         {
             if (m_MoltenPunch)
             {
-                getCreature()->CastSpell(getCreature(), infoMoltenPunch, false);
+                getCreature()->castSpell(getCreature(), infoMoltenPunch, false);
                 m_MoltenPunch = false;
                 return;
             }
@@ -1589,7 +1588,7 @@ class SupremusAI : public CreatureAIScript
             else if (m_VolcanicGazer)
             {
                 sendDBChatMessage(4690);     // The ground begins to crack open"
-                getCreature()->CastSpell(getCreature(), infoVolcanicGazer, false);
+                getCreature()->castSpell(getCreature(), infoVolcanicGazer, false);
                 m_VolcanicGazer = false;
                 return;
 
@@ -1621,7 +1620,7 @@ protected:
     uint32 timer;
     uint32 m_phase;
     bool m_MoltenFlame, m_HurtfulStrike, m_MoltenPunch, m_VolcanicGazer;
-    SpellInfo* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
+    SpellInfo const* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
 };
 
 class GurtoggAI : public CreatureAIScript
@@ -2064,7 +2063,7 @@ class ShahrazAI : public CreatureAIScript
         if (!Enraged && getCreature()->getHealthPct() <= 20)
         {
             sendDBChatMessage(4659);     // Stop toying with my emotions!
-            getCreature()->CastSpell(getCreature(), MS_ENRAGE, true);
+            getCreature()->castSpell(getCreature(), MS_ENRAGE, true);
 
             Enraged = true;
         }
@@ -2100,8 +2099,8 @@ class ShahrazAI : public CreatureAIScript
                     break;
             }
 
-            //_unit->CastSpell(_unit, SpellId, true);
-            Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(SpellId), (uint32)15000, getCreature(), getCreature());
+            //_unit->castSpell(_unit, SpellId, true);
+            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32)15000, getCreature(), getCreature());
             getCreature()->AddAura(aura);
 
             AuraChange = t + 15;
@@ -3062,7 +3061,7 @@ class AkamaAI : public CreatureAIScript
                 pGate->setState(GO_STATE_OPEN);
                 if (pDoorTrigger != NULL)
                 {
-                    pDoorTrigger->CastSpell(pDoorTrigger, sSpellCustomizations.GetSpellInfo(GATE_FAILURE), true);
+                    pDoorTrigger->castSpell(pDoorTrigger, sSpellMgr.getSpellInfo(GATE_FAILURE), true);
                 }
                 break;
             case 12:
@@ -4038,7 +4037,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
         /*if (_isTimerFinished(mLocaleEnrageTimerId))
         {
-            CastSpell(mLocaleEnrageSpell);
+            castSpell(mLocaleEnrageSpell);
             _removeTimer(mLocaleEnrageTimerId);
         }*/
 
@@ -4165,7 +4164,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 case 1:
                     for (uint8 i = 0; i < 2; ++i)
                     {
-                        getCreature()->CastSpellAoF(LocationVector(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z), sSpellCustomizations.GetSpellInfo(ILLIDAN_THROW_GLAIVE1), false);
+                        getCreature()->castSpellLoc(LocationVector(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z), sSpellMgr.getSpellInfo(ILLIDAN_THROW_GLAIVE1), false);
                     }
                     _setWieldWeapon(false);
                     break;
@@ -4359,7 +4358,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11481, "Stare into the eyes of the Betrayer!");
                         _setTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
-                        getCreature()->CastSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
+                        getCreature()->castSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
                         getCreature()->GetAIInterface()->setNextTarget(pTrigger);
 
                         float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
@@ -4791,7 +4790,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         if (pUnit)
                         {
                             CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->getFactionTemplate());
-                            getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
+                            getCreature()->castSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
                             if (pAI != nullptr)
                             {
                                 float Distance = getRangeToObject(pUnit);
@@ -4992,7 +4991,7 @@ class IllidanStormrageAI : public CreatureAIScript
 //    IllidanStormrageAI* Illidan = (pCreatureAI != NULL) ? static_cast< IllidanStormrageAI* >(pCreatureAI) : NULL;
 //    if (Illidan != NULL)
 //    {
-//        Illidan->CastSpell(Illidan->mParasiticDmg);
+//        Illidan->castSpell(Illidan->mParasiticDmg);
 //        if (pTarget != NULL)                        // not sure if target is really added here
 //        {
 //            // Workaround - we will spawn 2 Parasitic Shadowfiends on that player place

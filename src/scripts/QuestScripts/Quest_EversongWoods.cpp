@@ -1,8 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2009-2012 ArcEmu Team <http://www.arcemu.org>
- * Copyright (C) 2007-2008 Moon++ Team <http://moonplusplus.info>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +25,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
 
 enum
 {

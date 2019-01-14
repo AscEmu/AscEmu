@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -42,6 +42,8 @@ enum PlayerTeam : uint8_t
     #define DBC_PLAYER_LEVEL_CAP 80
 #elif VERSION_STRING == Cata
     #define DBC_PLAYER_LEVEL_CAP 85
+#elif VERSION_STRING == Mop
+    #define DBC_PLAYER_LEVEL_CAP 85
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +68,8 @@ enum PlayerTeam : uint8_t
 #elif VERSION_STRING == WotLK
     #define DBC_PLAYER_SKILL_MAX 450
 #elif VERSION_STRING == Cata
+    #define DBC_PLAYER_SKILL_MAX 525
+#elif VERSION_STRING == Mop
     #define DBC_PLAYER_SKILL_MAX 525
 #endif
 
@@ -116,14 +120,14 @@ enum Races
     RACE_TAUREN     = 6,
     RACE_GNOME      = 7,
     RACE_TROLL      = 8,
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     RACE_GOBLIN     = 9,
 #endif
 #if VERSION_STRING > Classic
     RACE_BLOODELF   = 10,
     RACE_DRAENEI    = 11,
 #endif
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     NUM_RACES
 #else
     RACE_WORGEN     = 22,
@@ -502,7 +506,7 @@ enum DrunkenState
 
 static const uint32 TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     { 0, 0, 0 },        // NONE
     { 161, 163, 164 },  // WARRIOR
     { 382, 383, 381 },  // PALADIN
@@ -553,7 +557,7 @@ enum UnderwaterState
     UNDERWATERSTATE_SLIME           = 64
 };
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 enum TradeStatus
 {
     TRADE_STATUS_OPEN_WINDOW            = 0,
@@ -1113,7 +1117,7 @@ static uint8_t getSideByRace(uint8_t race)
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
 #else
     #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
@@ -1125,7 +1129,7 @@ static uint8_t getSideByRace(uint8_t race)
 #define MAX_SPEC_COUNT 1
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 #define GLYPHS_COUNT 9
 #elif VERSION_STRING == WotLK
 #define GLYPHS_COUNT 6

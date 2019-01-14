@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -33,11 +33,11 @@
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Management/GuildMgr.h"
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #include "Management/Guild.h"
 #endif
 
@@ -370,7 +370,7 @@ DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id
     return mSpellSkills[id];
 }
 
-SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
+SpellInfo const* ObjectMgr::GetNextSpellRank(SpellInfo const* sp, uint32 level)
 {
     // Looks for next spell rank
     if (sp == nullptr)
@@ -381,7 +381,7 @@ SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
     auto skill_line_ability = GetSpellSkill(sp->getId());
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
-        SpellInfo* sp1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->next);
+        SpellInfo const* sp1 = sSpellMgr.getSpellInfo(skill_line_ability->next);
         if (sp1 && sp1->getBaseLevel() <= level)   // check level
         {
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
@@ -1163,7 +1163,7 @@ void ObjectMgr::LoadVendors()
             LOG_ERROR("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
 #else
         DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
@@ -1218,99 +1218,6 @@ void ObjectMgr::ReloadVendors()
 std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
 {
     return mVendors[entry];
-}
-
-void ObjectMgr::LoadAIThreatToSpellId()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_threattospellid");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(fields[0].GetUInt32());
-            if (sp != nullptr)
-            {
-                sp->custom_ThreatForSpell = fields[1].GetInt32();
-                sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
-            }
-            else
-            {
-                LogDebugFlag(LF_DB_TABLES, "AIThreatSpell : Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
-            }
-
-        } while (result->NextRow());
-
-        delete result;
-    }
-}
-
-void ObjectMgr::LoadSpellEffectsOverride()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM spell_effects_override");
-    if (result)
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            uint32 seo_SpellId = f[0].GetUInt32();
-            uint8 seo_EffectId = f[1].GetUInt8();
-            uint32 seo_Disable = f[2].GetUInt32();
-            uint32 seo_Effect = f[3].GetUInt32();
-            uint32 seo_BasePoints = f[4].GetUInt32();
-            uint32 seo_ApplyAuraName = f[5].GetUInt32();
-            //uint32 seo_SpellGroupRelation = f[6].GetUInt32();
-            uint32 seo_MiscValue = f[7].GetUInt32();
-            uint32 seo_TriggerSpell = f[8].GetUInt32();
-            uint32 seo_ImplicitTargetA = f[9].GetUInt32();
-            uint32 seo_ImplicitTargetB = f[10].GetUInt32();
-            uint32 seo_EffectCustomFlag = f[11].GetUInt32();
-
-            if (seo_SpellId)
-            {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(seo_SpellId);
-                if (sp != nullptr)
-                {
-                    if (seo_Disable)
-                        sp->setEffect(SPELL_EFFECT_NULL, seo_EffectId);
-
-                    if (seo_Effect)
-                        sp->setEffect(seo_Effect, seo_EffectId);
-
-                    if (seo_BasePoints)
-                        sp->setEffectBasePoints(seo_BasePoints, seo_EffectId);
-
-                    if (seo_ApplyAuraName)
-                        sp->setEffectApplyAuraName(seo_ApplyAuraName, seo_EffectId);
-
-                    //                    if (seo_SpellGroupRelation)
-                    //                        sp->EffectSpellGroupRelation[seo_EffectId] = seo_SpellGroupRelation;
-
-                    if (seo_MiscValue)
-                        sp->setEffectMiscValue(seo_MiscValue, seo_EffectId);
-
-                    if (seo_TriggerSpell)
-                        sp->setEffectTriggerSpell(seo_TriggerSpell, seo_EffectId);
-
-                    if (seo_ImplicitTargetA)
-                        sp->setEffectImplicitTargetA(seo_ImplicitTargetA, seo_EffectId);
-
-                    if (seo_ImplicitTargetB)
-                        sp->setEffectImplicitTargetB(seo_ImplicitTargetB, seo_EffectId);
-
-                    if (seo_EffectCustomFlag != 0)
-                        sp->EffectCustomFlag[seo_Effect] = seo_EffectCustomFlag;
-                }
-                else
-                {
-                    LogDebugFlag(LF_DB_TABLES, "Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
-                }
-            }
-
-        }
-        while (result->NextRow());
-        delete result;
-    }
 }
 
 Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
@@ -1412,7 +1319,7 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
 
 void ObjectMgr::LoadAchievementCriteriaList()
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
         auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
@@ -1448,7 +1355,7 @@ void ObjectMgr::CorpseCollectorUnload()
     _corpseslock.Release();
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 //move to spellmgr or mysqldatastore todo danko
 void ObjectMgr::LoadSkillLineAbilityMap()
 {
@@ -1634,7 +1541,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
     }
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void ObjectMgr::LoadTrainers()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
@@ -1750,7 +1657,7 @@ void ObjectMgr::LoadTrainers()
                     if (ts.learnedSpell[i])
                     {
                         /*
-                        SpellEntry const* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(ts.learnedSpell[i]);
+                        SpellEntry const* learnedSpellInfo = sSpellMgr.getSpellInfo(ts.learnedSpell[i]);
                         if (learnedSpellInfo && learnedSpellInfo->)
                         tr->TrainerType = 2;
                         */
@@ -1859,14 +1766,14 @@ void ObjectMgr::LoadTrainers()
 
                 if (CastSpellID != 0)
                 {
-                    ts.pCastSpell = sSpellCustomizations.GetSpellInfo(CastSpellID);
+                    ts.pCastSpell = sSpellMgr.getSpellInfo(CastSpellID);
                     if (ts.pCastSpell)
                     {
                         for (uint8 k = 0; k < 3; ++k)
                         {
                             if (ts.pCastSpell->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
                             {
-                                ts.pCastRealSpell = sSpellCustomizations.GetSpellInfo(ts.pCastSpell->getEffectTriggerSpell(k));
+                                ts.pCastRealSpell = sSpellMgr.getSpellInfo(ts.pCastSpell->getEffectTriggerSpell(k));
                                 if (ts.pCastRealSpell == NULL)
                                 {
                                     LOG_ERROR("Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
@@ -1883,7 +1790,7 @@ void ObjectMgr::LoadTrainers()
 
                 if (LearnSpellID != 0)
                 {
-                    ts.pLearnSpell = sSpellCustomizations.GetSpellInfo(LearnSpellID);
+                    ts.pLearnSpell = sSpellMgr.getSpellInfo(LearnSpellID);
                 }
 
                 if (ts.pCastSpell == NULL && ts.pLearnSpell == NULL)
@@ -2248,7 +2155,7 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
     if (itr != mPetSpellCooldowns.end())
         return itr->second;
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellId);
+    SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellId);
     if (sp->getRecoveryTime() > sp->getCategoryRecoveryTime())
         return sp->getRecoveryTime();
     else
@@ -3643,7 +3550,7 @@ void ObjectMgr::LoadCreatureAIAgents()
             Field* fields = result->Fetch();
             uint32 entry = fields[0].GetUInt32();
             CreatureProperties const* cn = sMySQLStore.getCreatureProperties(entry);
-            SpellInfo* spe = sSpellCustomizations.GetSpellInfo(fields[6].GetUInt32());
+            SpellInfo const* spe = sSpellMgr.getSpellInfo(fields[6].GetUInt32());
 
             if (spe == nullptr)
             {

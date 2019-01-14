@@ -1,12 +1,11 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellMgr.h"
 
 enum QuestEvents
 {
@@ -242,7 +241,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (BuffedChanneler && BuffedChanneler != Channeler && BuffedChanneler->isAlive())
                         {
                             // We apply Soul Transfer Aura to channeler who should be buffed
-                            Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(SOUL_TRANSFER), (uint32) - 1, BuffedChanneler, BuffedChanneler);
+                            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SOUL_TRANSFER), (uint32) - 1, BuffedChanneler, BuffedChanneler);
                             BuffedChanneler->AddAura(aura);
                         }
                     }
@@ -493,7 +492,7 @@ public:
             return;
 
         // We set player to channel spell "on Cube"
-        pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(SHADOW_GRASP2), false);
+        pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(SHADOW_GRASP2), false);
 
         // We trigger channeling spell on Magtheridon for Cube Trigger
         CubeTrigger->setChannelObjectGuid(Magtheridon->getGuid());
@@ -594,7 +593,7 @@ public:
         // If we have all req. Cubes active we may banish Magtheridon
         if (Counter >= ACTIVE_CUBES_TO_BANISH && Magtheridon && Magtheridon->isAlive())
         {
-            Magtheridon->CastSpell(Magtheridon, sSpellCustomizations.GetSpellInfo(BANISH), true);
+            Magtheridon->castSpell(Magtheridon, sSpellMgr.getSpellInfo(BANISH), true);
             Magtheridon->GetAIInterface()->StopMovement(3000);
             Magtheridon->setAttackTimer(MELEE, 3000);
 
@@ -602,7 +601,7 @@ public:
                 Magtheridon->interruptSpell();
 
             // We add channeling player aura that does not allow that go to be used again in 1.3 min
-            Aura* auraT = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(MIND_EXHAUSTION), (int32)78000, Magtheridon, Channeler);
+            Aura* auraT = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MIND_EXHAUSTION), (int32)78000, Magtheridon, Channeler);
             Channeler->AddAura(auraT);
 
             MagYell = true;
@@ -721,7 +720,7 @@ class HellfireChannelerAI : public CreatureAIScript
                 getCreature()->setChannelObjectGuid(Magtheridon->getGuid());
                 getCreature()->setChannelSpellId(SHADOW_GRASP);
 
-                Magtheridon->CastSpell(Magtheridon, sSpellCustomizations.GetSpellInfo(BANISH), true);
+                Magtheridon->castSpell(Magtheridon, sSpellMgr.getSpellInfo(BANISH), true);
             }
         }
     }
@@ -770,10 +769,10 @@ class MagtheridonAI : public CreatureAIScript
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
-        Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
+        Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
         getCreature()->AddAura(aura);
 
-        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BANISH), true);
+        getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BANISH), true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->setSheathType(SHEATH_STATE_MELEE);
 
@@ -843,14 +842,14 @@ class MagtheridonAI : public CreatureAIScript
         {
             if (timer_quake < 33)
             {
-                getCreature()->CastSpell(getCreature(), quake1->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), quake1->mSpellInfo, true);
 
                 for (uint8 i = 0; i < 6; i++)
                 {
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)
                     {
-                        Trigger->CastSpell(Trigger, quake2->mSpellInfo, true);
+                        Trigger->castSpell(Trigger, quake2->mSpellInfo, true);
                     }
                 }
             }
@@ -868,7 +867,7 @@ class MagtheridonAI : public CreatureAIScript
             getCreature()->GetAIInterface()->StopMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BLAST_NOVA), false);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
 
             timer_blastNova = 0;
             timer_quake = 0;
@@ -877,7 +876,7 @@ class MagtheridonAI : public CreatureAIScript
 
         if (timer_enrage > 667 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(ENRAGE), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(ENRAGE), true);
 
             timer_enrage = 0;
         }
@@ -895,14 +894,14 @@ class MagtheridonAI : public CreatureAIScript
         {
             if (timer_quake < 33)
             {
-                getCreature()->CastSpell(getCreature(), quake1->mSpellInfo, true);
+                getCreature()->castSpell(getCreature(), quake1->mSpellInfo, true);
 
                 for (uint8 i = 0; i < 6; i++)
                 {
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)
                     {
-                        Trigger->CastSpell(Trigger, quake2->mSpellInfo, true);
+                        Trigger->castSpell(Trigger, quake2->mSpellInfo, true);
                     }
                 }
             }
@@ -920,7 +919,7 @@ class MagtheridonAI : public CreatureAIScript
             getCreature()->GetAIInterface()->StopMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BLAST_NOVA), false);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
 
             timer_blastNova = 0;
             timer_quake = 0;
@@ -937,7 +936,7 @@ class MagtheridonAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->StopMovement(2000);
                 getCreature()->setAttackTimer(MELEE, 2000);
 
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CAMERA_SHAKE), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CAMERA_SHAKE), true);
                 return;
             }
 
@@ -963,7 +962,7 @@ class MagtheridonAI : public CreatureAIScript
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)
                     {
-                        Trigger->CastSpellAoF(LocationVector(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z), caveIn->mSpellInfo, true);
+                        Trigger->castSpellLoc(LocationVector(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z), caveIn->mSpellInfo, true);
                     }
                 }
 
@@ -973,7 +972,7 @@ class MagtheridonAI : public CreatureAIScript
 
         if (timer_enrage > 667 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(ENRAGE), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(ENRAGE), true);
 
             timer_enrage = 0;
         }

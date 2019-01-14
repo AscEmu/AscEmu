@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Spell)
 
@@ -17,7 +17,7 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/SpellHelpers.h
    ${PATH_PREFIX}/SpellInfo.cpp
    ${PATH_PREFIX}/SpellInfo.hpp
-   ${PATH_PREFIX}/SpellMgr.Legacy.cpp
+   ${PATH_PREFIX}/SpellMgr.cpp
    ${PATH_PREFIX}/SpellMgr.h
    ${PATH_PREFIX}/SpellProc.Legacy.cpp
    ${PATH_PREFIX}/SpellProc.h

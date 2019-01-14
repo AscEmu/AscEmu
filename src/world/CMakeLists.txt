@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(world CXX)
@@ -33,6 +33,9 @@ include(Spell/Customization/CMakeLists.txt)
 include(Spell/Definitions/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   include(Storage/DB2/CMakeLists.txt)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "Mop")
    include(Storage/DB2/CMakeLists.txt)
 endif()
 include(Storage/DBC/CMakeLists.txt)
@@ -81,6 +84,17 @@ set(sources
    ${SRC_GAMECATA_UNITS_FILES}
    ${SRC_GAMECATA_UNITS_PLAYERS_FILES}
    ${SRC_GAMECATA_SPELL_FILES}
+   
+   ${SRC_GAMEMOP_FILES}
+   ${SRC_GAMEMOP_DATA_FILES}
+   ${SRC_GAMEMOP_HANDLER_FILES}
+   ${SRC_GAMEMOP_MANAGEMENT_FILES}
+   ${SRC_GAMEMOP_MOVEMENT_FILES}
+   ${SRC_GAMEMOP_NETWORK_FILES}
+   ${SRC_GAMEMOP_STORAGE_FILES}
+   ${SRC_GAMEMOP_UNITS_FILES}
+   ${SRC_GAMEMOP_UNITS_PLAYERS_FILES}
+   ${SRC_GAMEMOP_SPELL_FILES}
 
    ${SRC_AI_FILES}
    ${SRC_CHAT_FILES}
@@ -130,6 +144,11 @@ set(sources
 )
 
 if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   set(sources
+      ${sources}
+      ${SRC_STORAGE_DB2_FILES})
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "Mop")
    set(sources
       ${sources}
       ${SRC_STORAGE_DB2_FILES})

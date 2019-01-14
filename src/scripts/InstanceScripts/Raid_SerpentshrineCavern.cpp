@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
@@ -142,14 +142,14 @@ class HydrossTheUnstableAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI);
     explicit HydrossTheUnstableAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        /*spells[0].info = sSpellCustomizations.GetSpellInfo(WATER_TOMB);
+        /*spells[0].info = sSpellMgr.getSpellInfo(WATER_TOMB);
         spells[0].targettype = TARGET_RANDOM_SINGLE;
         spells[0].instant = true;
         spells[0].cooldown = 7;
         spells[0].attackstoptimer = 1000;
         m_spellcheck[0] = false;
 
-        spells[1].info = sSpellCustomizations.GetSpellInfo(VILE_SLUDGE);
+        spells[1].info = sSpellMgr.getSpellInfo(VILE_SLUDGE);
         spells[1].targettype = TARGET_RANDOM_SINGLE;
         spells[1].instant = true;
         spells[1].cooldown = 15;
@@ -244,27 +244,27 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (MarkCount)
                     {
                         case 0:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS1), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS1), true);
                             break;
 
                         case 1:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS2), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS2), true);
                             break;
 
                         case 2:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS3), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS3), true);
                             break;
 
                         case 3:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS4), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS4), true);
                             break;
 
                         case 4:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS5), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS5), true);
                             break;
 
                         case 5:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS6), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_HYDROSS6), true);
                             break;
                     }
 
@@ -328,27 +328,27 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (MarkCount)
                     {
                         case 0:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION1), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION1), true);
                             break;
 
                         case 1:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION2), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION2), true);
                             break;
 
                         case 2:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION3), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION3), true);
                             break;
 
                         case 3:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION4), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION4), true);
                             break;
 
                         case 4:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION5), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION5), true);
                             break;
 
                         case 5:
-                            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION6), true);
+                            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(MARK_OF_CORRUPTION6), true);
                             break;
                     }
 
@@ -407,7 +407,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             EnrageTimer--;
             if (!EnrageTimer)
             {
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(HYDROSS_ENRAGE), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(HYDROSS_ENRAGE), true);
                 Enraged = true;
             }
         }
@@ -429,7 +429,7 @@ class LurkerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(LurkerAI);
     explicit LurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //spells[0].info = sSpellCustomizations.GetSpellInfo(WHIRL);
+        //spells[0].info = sSpellMgr.getSpellInfo(WHIRL);
         //spells[0].targettype = TARGET_ATTACKING;
         //spells[0].instant = true;
         //spells[0].cooldown = 30;
@@ -437,21 +437,21 @@ class LurkerAI : public CreatureAIScript
         //spells[0].attackstoptimer = 1000; // 1sec
         //m_spellcheck[0] = true;
 
-        //spells[1].info = sSpellCustomizations.GetSpellInfo(GEYSER);
+        //spells[1].info = sSpellMgr.getSpellInfo(GEYSER);
         //spells[1].targettype = TARGET_VARIOUS;
         //spells[1].instant = true;
         //spells[1].cooldown = 10;
         //spells[1].perctrigger = 10.0f;
         //spells[1].attackstoptimer = 2000; // 2sec
 
-        //spells[2].info = sSpellCustomizations.GetSpellInfo(SPOUT);
+        //spells[2].info = sSpellMgr.getSpellInfo(SPOUT);
         //spells[2].targettype = TARGET_ATTACKING;
         //spells[2].instant = false;
         //spells[2].cooldown = 60;
         //spells[2].perctrigger = 5.0f;
         //spells[2].attackstoptimer = 2000; // 2sec
 
-        //spells[3].info = sSpellCustomizations.GetSpellInfo(SUBMERGE);
+        //spells[3].info = sSpellMgr.getSpellInfo(SUBMERGE);
         //spells[3].targettype = TARGET_SELF;
         //spells[3].instant = true;
         //spells[3].cooldown = 120;
@@ -480,15 +480,15 @@ class LeotherasAI : public CreatureAIScript
         ////Insidious Whisper (inner demons)
         ////"We all have our demons..."
         //////Debuff that summons an Inner Demon from up to five raid members. Each Inner Demon can be attacked only by the person it spawned from. If you do not kill your Inner Demon before Leotheras gets back into humanoid form you will become Mind Controlled for 10 minutes and can't get out of it unless killed. Inner Demons take increased damage from arcane, nature, and holy spells.
-        //spells[0].info = sSpellCustomizations.GetSpellInfo(INSIDIOUS_WHISPER);
+        //spells[0].info = sSpellMgr.getSpellInfo(INSIDIOUS_WHISPER);
         //spells[0].targettype = TARGET_VARIOUS;
         //spells[0].instant = true;
         //spells[0].perctrigger = 2.0f;
         //spells[0].attackstoptimer = 2000;
         //m_spellcheck[0] = false;
 
-        info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
-        info_whirlwind = sSpellCustomizations.GetSpellInfo(WHIRLWINDLEO);
+        info_chaos_blast = sSpellMgr.getSpellInfo(CHAOS_BLAST_ANIMATION);
+        info_whirlwind = sSpellMgr.getSpellInfo(WHIRLWINDLEO);
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -628,7 +628,7 @@ class LeotherasAI : public CreatureAIScript
                 {
                     if (!mInWhirlwind)
                     {
-                        getCreature()->CastSpell(getCreature(), info_whirlwind, true);
+                        getCreature()->castSpell(getCreature(), info_whirlwind, true);
                         getCreature()->setAttackTimer(MELEE, 15000);
                         getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
                         WhirlwindTimer = 15;
@@ -717,7 +717,7 @@ class LeotherasAI : public CreatureAIScript
                 EnrageTimer--;
                 if (!EnrageTimer)
                 {
-                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(LEO_ENRAGE), true);
+                    getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(LEO_ENRAGE), true);
                     Enraged = true;
                 }
             }
@@ -731,7 +731,7 @@ class LeotherasAI : public CreatureAIScript
                 {
                     if (Util::getRandomUInt(1))
                     {
-                        getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
+                        getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                     }
                 }
 
@@ -765,8 +765,8 @@ protected:
     bool mInWhirlwind;
     bool IsMorphing;
     uint32 Phase;
-    SpellInfo* info_whirlwind;
-    SpellInfo* info_chaos_blast;
+    SpellInfo const* info_whirlwind;
+    SpellInfo const* info_chaos_blast;
     uint32 FinalPhaseSubphase;
     uint32 FinalPhaseTimer;
 };
@@ -776,7 +776,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GreyheartSpellbinderAI);
     explicit GreyheartSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        /*spells[0].info = sSpellCustomizations.GetSpellInfo(MIND_BLAST);
+        /*spells[0].info = sSpellMgr.getSpellInfo(MIND_BLAST);
         spells[0].targettype = TARGET_RANDOM_SINGLE;
         spells[0].instant = true;
         spells[0].perctrigger = 50.0f;
@@ -841,7 +841,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ShadowofLeotherasAI);
     explicit ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
+        info_chaos_blast = sSpellMgr.getSpellInfo(CHAOS_BLAST_ANIMATION);
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -872,7 +872,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             {
                 if (Util::getRandomUInt(1))
                 {
-                    getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
+                    getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                 }
             }
 
@@ -886,7 +886,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
     }
 
 protected:
-    SpellInfo* info_chaos_blast;
+    SpellInfo const* info_chaos_blast;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -896,7 +896,7 @@ class KarathressAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KarathressAI);
     explicit KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        info_cataclysmic_bolt = sSpellCustomizations.GetSpellInfo(CATACLYSMIC_BOLT);
+        info_cataclysmic_bolt = sSpellMgr.getSpellInfo(CATACLYSMIC_BOLT);
         AdvisorsLeft = 3;
         BlessingOfTidesCounter = 0;
 
@@ -959,8 +959,7 @@ class KarathressAI : public CreatureAIScript
             if (random_target == nullptr)
                 return;
             //let's force this effect
-            info_cataclysmic_bolt->setEffectBasePoints(random_target->getMaxHealth() / 2, 0);
-            getCreature()->CastSpell(random_target, info_cataclysmic_bolt, true);
+            getCreature()->castSpell(random_target, info_cataclysmic_bolt, random_target->getMaxHealth() / 2, true);
             TargetTable.clear();
         }
 
@@ -970,7 +969,7 @@ class KarathressAI : public CreatureAIScript
             if (BlessingOfTidesCounter < AdvisorsLeft)
             {
                 sendDBChatMessage(4741);     // Your overconfidence will be your undoing! Guards, lend me your strength!
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BLESSING_OF_THE_TIDES), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLESSING_OF_THE_TIDES), true);
                 BlessingOfTidesCounter++;
             }
         }
@@ -981,7 +980,7 @@ class KarathressAI : public CreatureAIScript
             EnrageTimer--;
             if (!EnrageTimer)
             {
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(KARATHRESS_ENRAGE), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(KARATHRESS_ENRAGE), true);
                 Enraged = true;
             }
         }
@@ -990,7 +989,7 @@ class KarathressAI : public CreatureAIScript
     uint32 AdvisorsLeft;
 
 private:
-    SpellInfo* info_cataclysmic_bolt;
+    SpellInfo const* info_cataclysmic_bolt;
     uint32 CataclysmicBoltTimer;
     uint32 EnrageTimer;
     uint32 BlessingOfTidesCounter;
@@ -1021,7 +1020,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
         Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
         if (FLK)
         {
-            FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38455), true); //Power of Sharkkis
+            FLK->castSpell(FLK, sSpellMgr.getSpellInfo(38455), true); //Power of Sharkkis
             FLK->SendScriptTextChatMessage(4743);     // I am more powerful than ever!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1076,7 +1075,7 @@ class FathomGuardTidalvessAI : public CreatureAIScript
         Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
         if (FLK)
         {
-            FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38452), true); //Power of Tidalvess
+            FLK->castSpell(FLK, sSpellMgr.getSpellInfo(38452), true); //Power of Tidalvess
             FLK->SendScriptTextChatMessage(4742);     // Go on, kill them! I'll be the better for it!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1107,7 +1106,7 @@ public:
         Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
         if (FLK)
         {
-            FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38451), true); // Power of Caribdis
+            FLK->castSpell(FLK, sSpellMgr.getSpellInfo(38451), true); // Power of Caribdis
             FLK->SendScriptTextChatMessage(4744); // More knowledge, more power!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1271,8 +1270,8 @@ class VashjAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VashjAI);
     explicit VashjAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        info_multishot = sSpellCustomizations.GetSpellInfo(EEMULTI_SHOT);
-        info_shot = sSpellCustomizations.GetSpellInfo(VASHJ_AI_SHOOT);
+        info_multishot = sSpellMgr.getSpellInfo(EEMULTI_SHOT);
+        info_shot = sSpellMgr.getSpellInfo(VASHJ_AI_SHOOT);
 
         Movement::WayPoint* wp = getCreature()->CreateWaypointStruct();
         wp->id = 1;
@@ -1400,7 +1399,7 @@ class VashjAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->setWayPointToMove(1);
                 sendDBChatMessage(4764);     // The time is now! Leave none standing!
                 getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(VASHJ_SHIELD), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(VASHJ_SHIELD), true);
                 getCreature()->GetAIInterface()->setOutOfCombatRange(3000);
                 Phase = 2;
             }
@@ -1558,10 +1557,10 @@ class VashjAI : public CreatureAIScript
         switch (Util::getRandomUInt(1))
         {
             case 0: //shoot
-                getCreature()->CastSpell(target, info_shot, true);
+                getCreature()->castSpell(target, info_shot, true);
                 break;
             case 1: //multishot
-                getCreature()->CastSpell(target, info_multishot, true);
+                getCreature()->castSpell(target, info_multishot, true);
                 break;
         }
 
@@ -1612,8 +1611,8 @@ protected:
     uint32 CoilfangEliteTimer;
     uint32 SporebatTimer;
     uint32 ForkedLightningTimer;
-    SpellInfo* info_multishot;
-    SpellInfo* info_shot;
+    SpellInfo const* info_multishot;
+    SpellInfo const* info_shot;
 };
 
 class TaintedElementalAI : public CreatureAIScript
@@ -1624,7 +1623,7 @@ class TaintedElementalAI : public CreatureAIScript
         spell_poison_spit = new AI_Spell();
         spell_poison_spit->agent = AGENT_SPELL;
         spell_poison_spit->procChance = 0;
-        spell_poison_spit->spell = sSpellCustomizations.GetSpellInfo(POISON_SPIT);
+        spell_poison_spit->spell = sSpellMgr.getSpellInfo(POISON_SPIT);
         spell_poison_spit->spellType = STYPE_DAMAGE;
         spell_poison_spit->spelltargetType = TTYPE_SINGLETARGET;
         spell_poison_spit->cooldown = 2000;
@@ -1724,7 +1723,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
 
-        /*spells[0].info = sSpellCustomizations.GetSpellInfo(TOXIC_SPORES);
+        /*spells[0].info = sSpellMgr.getSpellInfo(TOXIC_SPORES);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = true;
         spells[0].cooldown = 0;
@@ -1821,7 +1820,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                         break;
                 }
             }
-            //getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
+            //getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
         if (Meteor != true)
@@ -1856,12 +1855,12 @@ class ToxicSporeBatAI : public CreatureAIScript
         /*if (getCreature()->getHealthPct() == 0)
         {
             Phase = 2;
-            getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
+            getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
         if (!PhoenixSummon--)
         {
-            getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
+            getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
             PhoenixSummon = Util::getRandomUInt(17, 23);
         }*/
 
@@ -2093,7 +2092,7 @@ class UnderbogColossusAI : public CreatureAIScript
         {
             case 0:
                 //cast toxic pool
-                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(TOXIC_POOL), true);
+                getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(TOXIC_POOL), true);
                 break;
             case 1:
                 //spawn two colossus lurkers

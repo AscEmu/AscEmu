@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -42,7 +42,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.h"
 #include "Data/WoWPlayer.h"
@@ -1072,14 +1072,22 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     auto size_object = OBJECT_END * sizeof(uint32_t);
     auto size_object_struct = sizeof(WoWObject);
 
+    std::cout << "Struct size of object: " << size_object_struct << " enum: " << size_object << std::endl;
+
     auto size_player = PLAYER_END * sizeof(uint32_t);
     auto size_player_struct = sizeof(WoWPlayer);
+
+    std::cout << "Struct size of player: " << size_player_struct << " enum: " << size_player << std::endl;
 
     auto size_unit = UNIT_END * sizeof(uint32_t);
     auto size_unit_struct = sizeof(WoWUnit);
 
+    std::cout << "Struct size of unit: " << size_unit_struct << " enum: " << size_unit << std::endl;
+
     auto size_gobj = GAMEOBJECT_END * sizeof(uint32_t);
     auto size_gobj_struct = sizeof(WoWGameObject);
+
+    std::cout << "Struct size of gobj: " << size_gobj_struct << " enum: " << size_gobj << std::endl;
 #endif
 }
 
@@ -1214,7 +1222,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
     uint16 updateflags = m_updateFlag;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (target == this)
     {
         updateflags |= UPDATEFLAG_SELF;
@@ -1827,7 +1835,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 }
 #endif
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
@@ -2384,7 +2392,7 @@ bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false 
 
     m_position = const_cast<LocationVector &>(v);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!allowPorting && v.z < -500)
     {
         m_position.z = 500;
@@ -2419,7 +2427,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
     m_position.ChangeCoords(newX, newY, newZ, newOrientation);
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (!allowPorting && newZ < -500)
     {
         m_position.z = 500;
@@ -2963,7 +2971,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim == nullptr || !pVictim->isAlive())
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellID);
     if (spellInfo == nullptr)
         return;
 
@@ -3109,15 +3117,11 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             if (spellpower > hp)
                 spellpower = hp;
 
-            SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
+            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
             if (!entry)
                 return;
 
-            Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, nullptr);
-            sp->getSpellInfo()->setEffectBasePoints(spellpower, 0);
-            SpellCastTargets targets;
-            targets.m_unitTarget = pl->getGuid();
-            sp->prepare(&targets);
+            pl->castSpell(pl->getGuid(), entry, spellpower, true);
         }
     }
 
@@ -3512,7 +3516,7 @@ uint32 Object::GetTeam()
 
 Transporter* Object::GetTransport() const
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
     return nullptr;
@@ -3697,7 +3701,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 // replace text with content
                 std::string newText = text;
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #if VERSION_STRING > Classic
                 static const char* races[NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
 #else
@@ -3998,8 +4002,12 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     return true;
 }
 
+#if VERSION_STRING >= Cata
 #if VERSION_STRING == Cata
-#include "GameCata/Movement/MovementStructures.h"
+    #include "GameCata/Movement/MovementStructures.h"
+#elif VERSION_STRING == Mop
+    #include "GameMop/Movement/MovementStructures.h"
+#endif
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {

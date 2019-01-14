@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -149,7 +149,7 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_UNK9                              = 0x00000080,
     ATTRIBUTESEXC_TARGET_ONLY_PLAYERS               = 0x00000100,   // Requires player target
     ATTRIBUTESEXC_UNK11                             = 0x00000200,
-    ATTRIBUTESEXC_UNK12                             = 0x00000400,
+    ATTRIBUTESEXC_REQUIRES_MAIN_HAND_WEAPON         = 0x00000400,   // Requires main hand weapon
     ATTRIBUTESEXC_BG_ONLY                           = 0x00000800,
     ATTRIBUTESEXC_TARGET_ONLY_GHOSTS                = 0x00001000,   // Requires ghost target
     ATTRIBUTESEXC_UNK15                             = 0x00002000,
@@ -161,9 +161,9 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_UNK21                             = 0x00080000,   // e.g. Totemic mastery
     ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD = 0x00100000,
     ATTRIBUTESEXC_UNK23                             = 0x00200000,
-    ATTRIBUTESEXC_PLAYER_REQUIRED_WAND              = 0x00400000,   // required wand
+    ATTRIBUTESEXC_REQUIRES_WAND                     = 0x00400000,   // Requires wand
     ATTRIBUTESEXC_UNK25                             = 0x00800000,
-    ATTRIBUTESEXC_TYPE_OFFHAND                      = 0x01000000,   // required offhand
+    ATTRIBUTESEXC_REQUIRES_OFFHAND_WEAPON           = 0x01000000,   // Requires offhand weapon
     ATTRIBUTESEXC_NO_HEALING_BONUS                  = 0x02000000,
     ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED             = 0x04000000,
     ATTRIBUTESEXC_DRAIN_SOUL                        = 0x08000000,   // just drain soul has this flag
@@ -214,7 +214,7 @@ enum SpellAttributesExE
 {
     ATTRIBUTESEXE_NULL                              = 0x00000000,
     ATTRIBUTESEXE_UNK2                              = 0x00000001,
-    ATTRIBUTESEXE_REAGENT_REMOVAL                   = 0x00000002,
+    ATTRIBUTESEXE_REAGENT_REMOVAL                   = 0x00000002,   // if player has UNIT_FLAG_NO_REAGANT_COST, spells with this attribute won't use reagents
     ATTRIBUTESEXE_UNK4                              = 0x00000004,
     ATTRIBUTESEXE_USABLE_WHILE_STUNNED              = 0x00000008,   // usable while stunned
     ATTRIBUTESEXE_UNK6                              = 0x00000010,
@@ -321,7 +321,7 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK32                             = 0x80000000
 };
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 enum SpellAttributesExH
 {
     ATTRIBUTESEXH_UNK0                              = 0x00000001,   // 0

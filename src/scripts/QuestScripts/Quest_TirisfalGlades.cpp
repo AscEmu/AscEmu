@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2008 WEmu Team
  *
  * This program is free software: you can redistribute it and/or modify
@@ -69,7 +69,7 @@ class CalvinMontague : public CreatureAIScript
             getCreature()->RemoveNegativeAuras();
             getCreature()->SetFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
@@ -118,7 +118,7 @@ class Zealot : public CreatureAIScript
 
         if (iWaypointId == 7)
         {
-            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(5), true);
+            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(5), true);
         }
     }
 };

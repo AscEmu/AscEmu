@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -23,11 +23,10 @@
 #include "SpellMgr.h"
 #include "../../scripts/Battlegrounds/EyeOfTheStorm.h"
 #include "Definitions/ProcFlags.h"
-#include "Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(SpellProcMgr);
 
-bool SpellProc::CanProc(Unit* /*victim*/, SpellInfo* /*CastingSpell*/)
+bool SpellProc::CanProc(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
 {
     return true;
 }
@@ -48,7 +47,7 @@ bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 /*misc*/)
     return false;
 }
 
-bool SpellProc::CheckClassMask(Unit* /*victim*/, SpellInfo* CastingSpell)
+bool SpellProc::CheckClassMask(Unit* /*victim*/, SpellInfo const* CastingSpell)
 {
     if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
         mProcClassMask[0] & CastingSpell->getSpellFamilyFlags(0) ||
@@ -59,7 +58,7 @@ bool SpellProc::CheckClassMask(Unit* /*victim*/, SpellInfo* CastingSpell)
     return false;
 }
 
-bool SpellProc::DoEffect(Unit* /*victim*/, SpellInfo* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
+bool SpellProc::DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
 {
     return false;
 }
@@ -68,7 +67,7 @@ void SpellProc::Init(Object* /*obj*/)
 {
 }
 
-uint32 SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo* /*CastingSpell*/)
+uint32 SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
 {
     // Check if proc chance is based on combo points
     if (mTarget->isPlayer() && mOrigSpell && mOrigSpell->getAttributesEx() & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->getAttributesExD() & ATTRIBUTESEXD_PROCCHANCE_COMBOBASED)
@@ -77,14 +76,14 @@ uint32 SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo* /*CastingSpell*/)
         return mProcChance;
 }
 
-bool SpellProc::CanProcOnTriggered(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
+bool SpellProc::CanProcOnTriggered(Unit* /*victim*/, SpellInfo const* /*castingSpell*/)
 {
     if (mOrigSpell != nullptr && mOrigSpell->getAttributesExC() & ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED)
         return true;
     return false;
 }
 
-void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwrite)
+void SpellProc::CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_overwrite)
 {
     SpellCastTargets targets;
     if (mProcFlags & PROC_TARGET_SELF)
@@ -92,7 +91,7 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwr
     else
         targets.m_unitTarget = victim->getGuid();
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(mTarget, mSpell, true, nullptr);
+    Spell* spell = sSpellMgr.newSpell(mTarget, mSpell, true, nullptr);
     spell->forced_basepoints[0] = dmg_overwrite[0];
     spell->forced_basepoints[1] = dmg_overwrite[1];
     spell->forced_basepoints[2] = dmg_overwrite[2];
@@ -106,10 +105,10 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwr
 
 SpellProc* SpellProcMgr::NewSpellProc(Unit* target, uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
-    return NewSpellProc(target, sSpellCustomizations.GetSpellInfo(spell_id), sSpellCustomizations.GetSpellInfo(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
+    return NewSpellProc(target, sSpellMgr.getSpellInfo(spell_id), sSpellMgr.getSpellInfo(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
 }
 
-SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
+SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo const* spell, SpellInfo const* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
     if (spell == nullptr)
         return nullptr;

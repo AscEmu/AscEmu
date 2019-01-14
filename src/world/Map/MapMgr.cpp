@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -871,7 +871,7 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
     static float no_distance = 0.0f;
 
     // unlimited distance for people on same boat
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.isOnTransport() && plObj->obj_movement_info.transport_data.transportGuid == static_cast< Player* >(curObj)->obj_movement_info.transport_data.transportGuid)
 #else
     if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && !plObj->obj_movement_info.getTransportGuid().IsEmpty() && plObj->obj_movement_info.getTransportGuid() == static_cast< Player* >(curObj)->obj_movement_info.getTransportGuid())

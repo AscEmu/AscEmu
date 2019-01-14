@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 
 class SERVER_DECL WorldPacket : public ByteBuffer
 {
+#if VERSION_STRING != Mop
     public:
         __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
         __inline WorldPacket(uint16 opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
@@ -47,6 +48,27 @@ class SERVER_DECL WorldPacket : public ByteBuffer
 
     protected:
         uint16 m_opcode;
+#else
+public:
+    __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
+    __inline WorldPacket(uint32 opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
+    __inline WorldPacket(size_t res) : ByteBuffer(res), m_opcode(0) { }
+    __inline WorldPacket(const WorldPacket & packet) : ByteBuffer(packet), m_opcode(packet.m_opcode) {}
+
+    //! Clear packet and set opcode all in one mighty blow
+    __inline void Initialize(uint16 opcode, size_t newres = 200)
+    {
+        clear();
+        _storage.reserve(newres);
+        m_opcode = opcode;
+    }
+
+    __inline uint32 GetOpcode() const { return m_opcode; }
+    __inline void SetOpcode(uint32 opcode) { m_opcode = opcode; }
+
+protected:
+    uint16 m_opcode;
+#endif
 };
 
 template<uint32 Size>

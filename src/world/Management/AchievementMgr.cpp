@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -28,7 +28,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellMechanics.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Guild.h"
 
@@ -382,7 +382,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     {
         // allocate enough space
         guidList = new uint32[sWorld.getSessionCount() + 256];
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
@@ -1308,7 +1308,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 uint32 nm = 0;
                 while (sl != GetPlayer()->mSpells.end())
                 {
-                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*sl);
+                    SpellInfo const* sp = sSpellMgr.getSpellInfo(*sl);
                     if (achievementCriteria->number_of_mounts.unknown == 777 && sp && sp->getMechanicsType() == MECHANIC_MOUNTED)
                     {
                         // mount spell
@@ -1635,6 +1635,7 @@ void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry cons
 /// Sends all achievement data to the player. Also used for achievement inspection.
 void AchievementMgr::SendAllAchievementData(Player* player)
 {
+#if VERSION_STRING != Mop
     // maximum size for the SMSG_ALL_ACHIEVEMENT_DATA packet without causing client problems seems to be 0x7fff
     uint32 packetSize = 18 + ((uint32)m_completedAchievements.size() * 8) + (GetCriteriaProgressCount() * 36);
     bool doneCompleted = false;
@@ -1747,6 +1748,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         // a SMSG_ALL_ACHIEVEMENT_DATA packet has been sent to the player, so the achievement manager can send SMSG_CRITERIA_UPDATE and SMSG_ACHIEVEMENT_EARNED when it gets them
         isCharacterLoading = false;
     }
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

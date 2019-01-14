@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Instance_TheMechanar.h"
@@ -42,7 +42,7 @@ class BloodwarderCenturionAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
+        getCreature()->castSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
     }
 
 protected:
@@ -70,7 +70,7 @@ class BloodwarderPhysicianAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
+        getCreature()->castSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
     }
 
 protected:
@@ -149,7 +149,7 @@ class MechanarTinkererAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->CastSpell(getCreature(), netherExplosion->mSpellInfo, netherExplosion->mIsTriggered);
+        getCreature()->castSpell(getCreature(), netherExplosion->mSpellInfo, netherExplosion->mIsTriggered);
     }
 
 protected:
@@ -206,7 +206,7 @@ class SunseekerAstromageAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
+        getCreature()->castSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
     }
 
 protected:
@@ -234,7 +234,7 @@ class SunseekerEngineerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->CastSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
+        getCreature()->castSpell(getCreature(), etherealTeleport->mSpellInfo, etherealTeleport->mIsTriggered);
     }
 
 protected:
@@ -416,7 +416,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
 
         if (!SummonTimer && getScriptPhase() == 1)
         {
-            getCreature()->CastSpell(getCreature(), summonRaginFlames->mSpellInfo, summonRaginFlames->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonRaginFlames->mSpellInfo, summonRaginFlames->mIsTriggered);
             sendDBChatMessage(SAY_NETH_SEPETHREA_02);
         }
     }
@@ -486,10 +486,10 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         if (!SummonTimer && getScriptPhase() == 1)
         {
-            getCreature()->CastSpell(getCreature(), summonNetherWraith1->mSpellInfo, summonNetherWraith1->mIsTriggered);
-            getCreature()->CastSpell(getCreature(), summonNetherWraith2->mSpellInfo, summonNetherWraith2->mIsTriggered);
-            getCreature()->CastSpell(getCreature(), summonNetherWraith3->mSpellInfo, summonNetherWraith3->mIsTriggered);
-            getCreature()->CastSpell(getCreature(), summonNetherWraith4->mSpellInfo, summonNetherWraith4->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonNetherWraith1->mSpellInfo, summonNetherWraith1->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonNetherWraith2->mSpellInfo, summonNetherWraith2->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonNetherWraith3->mSpellInfo, summonNetherWraith3->mIsTriggered);
+            getCreature()->castSpell(getCreature(), summonNetherWraith4->mSpellInfo, summonNetherWraith4->mIsTriggered);
             SummonTimer = Util::getRandomUInt(30, 45);    // 30 - 45
             sendDBChatMessage(SAY_PATHALEON_04);
         }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -54,7 +54,7 @@ void Item::create(uint32_t itemId, Player* owner)
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    for (uint8_t i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         setSpellCharges(i, m_itemProperties->Spells[i].Charges);
 
     setDurability(m_itemProperties->MaxDurability);

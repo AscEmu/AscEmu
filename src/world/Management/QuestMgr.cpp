@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -28,7 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Server/Packets/MsgQuestPushResult.h"
 
 using namespace AscEmu::Packets;
@@ -330,7 +330,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     return questCount;
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 /*menutype*/, uint32 language, Player* plr)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
@@ -429,7 +429,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 /*menutype*/, uint32 language, Player* plr)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
@@ -541,7 +541,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
@@ -616,7 +616,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 }
 #endif
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
     uint32 xp;
@@ -645,14 +645,14 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
 	// Some spells applied at quest reward
-	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
+	SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
 	if (saBounds.first != saBounds.second)
 	{
 		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
 		{
-			if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+			if (itr->second->autoCast && itr->second->fitsToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
 				if (!plr->HasAura(itr->second->spellId))
-					plr->CastSpell(plr, itr->second->spellId, true);
+					plr->castSpell(plr, itr->second->spellId, true);
 		}
 	}
 
@@ -1280,10 +1280,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // cast Effect Spell
         if (qst->effect_on_player)
         {
-            SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(qst->effect_on_player);
+            SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(qst->effect_on_player);
             if (spell_entry)
             {
-                Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
+                Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
                 tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);
@@ -1427,10 +1427,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // cast Effect Spell
         if (qst->effect_on_player)
         {
-            SpellInfo* spell_entry = sSpellCustomizations.GetSpellInfo(qst->effect_on_player);
+            SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(qst->effect_on_player);
             if (spell_entry)
             {
-                Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
+                Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
                 tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);

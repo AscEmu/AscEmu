@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -653,7 +653,7 @@ void WorldSession::fullLogin(Player* player)
     m_MoverGuid = player->getGuid();
     m_MoverWoWGuid.Init(player->getGuid());
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
     memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 #endif
@@ -677,13 +677,15 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // dance moves - unknown 2x uint32_t(0)
+#if VERSION_STRING != Mop
     SendPacket(SmsgLearnedDanceMoves(0, 0).serialise().get());
+#endif
     //////////////////////////////////////////////////////////////////////////////////////////
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // hotfix data for cata
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     //\todo send Hotfixdata
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -742,7 +744,7 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Send Equipment set list - not sure what the intend was here.
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     player->SendEquipmentSetList();
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////

@@ -1,11 +1,11 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Objects/ObjectMgr.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
+#include <Spell/SpellMgr.h>
 
 enum UnorderedEntry
 {
@@ -31,7 +31,7 @@ public:
         {
             case 1:
             {
-                static_cast<Creature*>(pObject)->CastSpell(Plr, sSpellCustomizations.GetSpellInfo(50135), true);
+                static_cast<Creature*>(pObject)->castSpell(Plr, sSpellMgr.getSpellInfo(50135), true);
                 Arcemu::Gossip::Menu::Complete(Plr);
             } break;
         }

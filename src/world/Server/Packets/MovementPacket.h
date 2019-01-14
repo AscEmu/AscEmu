@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -8,7 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
+#if VERSION_STRING != Mop
 
 #include "Data/MovementInfo.h"
 
@@ -202,4 +203,5 @@ namespace AscEmu { namespace Packets
     };
 }}
 
+#endif
 #endif

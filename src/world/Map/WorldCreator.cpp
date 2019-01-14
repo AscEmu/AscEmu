@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -960,7 +960,7 @@ void InstanceMgr::CheckForExpiredInstances()
 
 void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data(4);
     Instance* in;
     InstanceMap::iterator itr;
@@ -1010,7 +1010,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 
 void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 200);
 #else
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
@@ -1046,7 +1046,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                     else
                         data << uint32(0);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
                     data << uint32(0);
 #endif
 

@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Server/WorldSession.h"
@@ -43,7 +43,7 @@ public:
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39099, true);
+                    dynamic_cast<Creature*>(pObject)->castSpell(plr, 39099, true);
                     plr->modCoinage(-600);
                 }
             }
@@ -110,7 +110,7 @@ public:
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39097, true);
+                    dynamic_cast<Creature*>(pObject)->castSpell(plr, 39097, true);
                     plr->modCoinage(-600);
                 }
             }
@@ -174,7 +174,7 @@ public:
                 {
                     //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                     textid = 20006;
-                    dynamic_cast<Creature*>(pObject)->CastSpell(plr, 39098, true);
+                    dynamic_cast<Creature*>(pObject)->castSpell(plr, 39098, true);
                     plr->modCoinage(-600);
                 }
             }

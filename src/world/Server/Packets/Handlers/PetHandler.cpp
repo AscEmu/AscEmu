@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -142,7 +142,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             case PET_ACTION_SPELL_1:
             case PET_ACTION_SPELL:
             {
-                const auto spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.misc);
+                const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.misc);
                 if (spellInfo == nullptr)
                     return;
 
@@ -168,9 +168,9 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         if (aiSpell->autocast_type != AUTOCAST_EVENT_ATTACK)
                         {
                             if (aiSpell->autocast_type == AUTOCAST_EVENT_OWNER_ATTACKED)
-                                summonedPet->CastSpell(_player, aiSpell->spell, false);
+                                summonedPet->castSpell(_player, aiSpell->spell, false);
                             else
-                                summonedPet->CastSpell(summonedPet, aiSpell->spell, false);
+                                summonedPet->castSpell(summonedPet, aiSpell->spell, false);
                         }
                         else
                         {
@@ -311,7 +311,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
 {
     uint32_t stable_cost = 0;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
     const auto stableSlotPrices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
 
     if (stableSlotPrices != nullptr)
@@ -341,7 +341,7 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
         return;
 
     const auto pet = _player->GetSummon();
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spell);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell);
     if (spellInfo == nullptr)
         return;
 
@@ -436,7 +436,7 @@ void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
         return;
 
@@ -456,7 +456,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(srlPacket.spellId);
+    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
     if (spellInfo != nullptr && spellInfo->getAttributes() & static_cast<uint32_t>(ATTRIBUTES_CANT_CANCEL))
         return;
 
@@ -465,7 +465,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
         creature->RemoveAura(srlPacket.spellId);
 }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
@@ -512,7 +512,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (srlPacket.talentCol > 0 && talent->RankID[srlPacket.talentCol - 1] != 0)
         pet->RemoveSpell(talent->RankID[srlPacket.talentCol - 1]);
 
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(talent->RankID[srlPacket.talentCol]);
+    const auto spellInfo = sSpellMgr.getSpellInfo(talent->RankID[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
         pet->AddSpell(spellInfo, true);
@@ -573,7 +573,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (srlPacket.talentCol > 0 && talentEntry->RankID[srlPacket.talentCol - 1] != 0)
         pet->RemoveSpell(talentEntry->RankID[srlPacket.talentCol - 1]);
 
-    const auto spellInfo = sSpellCustomizations.GetSpellInfo(talentEntry->RankID[srlPacket.talentCol]);
+    const auto spellInfo = sSpellMgr.getSpellInfo(talentEntry->RankID[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
         pet->AddSpell(spellInfo, true);

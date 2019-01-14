@@ -1,10 +1,8 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2008 WEmu Team
- *
- * Script by Fer0x
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "Setup.h"
 
@@ -43,7 +40,7 @@ void AHumbleTask(Player* /*pPlayer*/, Object* pObject)
 void Yorus_Barleybrew(Player* pPlayer, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_POINT);
-    pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(8554), true);
+    pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(8554), true);
 }
 
 void Menara_Voidrender(Player* /*pPlayer*/, Object* pObject)

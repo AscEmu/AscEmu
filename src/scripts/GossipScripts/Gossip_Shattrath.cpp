@@ -1,12 +1,12 @@
 /*
- Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
- This file is released under the MIT license. See README-MIT for more information.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Storage/WorldStrings.h"
 #include "Server/WorldSession.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellMgr.h"
 #include "Units/Creatures/Creature.h"
 #include "Management/Gossip/Gossip.h"
 #include "Server/Script/ScriptMgr.h"
@@ -65,7 +65,7 @@ public:
     {
         if (plr->GetStanding(989) >= 21000)
         //plr->SafeTeleport( 1, 0, -8170.441406f, -4751.321777f, 33.457771f, 5.136f);
-            static_cast<Creature*>(pObject)->CastSpell(plr, sSpellCustomizations.GetSpellInfo(37778), true);
+            static_cast<Creature*>(pObject)->castSpell(plr, sSpellMgr.getSpellInfo(37778), true);
         else
             plr->BroadcastMessage(plr->GetSession()->LocalizedWorldSrv(ServerString::SHATT_ZEPH_KOT)); // Dunno what the correct text is ^^
         Arcemu::Gossip::Menu::Complete(plr);

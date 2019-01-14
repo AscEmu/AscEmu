@@ -1,7 +1,7 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
+ * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
+ * Copyright (C) 2008-2011 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
         }
     }
 
-    caster->CastSpell(target, spell_id, false);
+    caster->castSpell(target, spell_id, false);
 
     return true;
 }
@@ -275,7 +275,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
         }
     }
 
-    caster->CastSpell(target, id, true);
+    caster->castSpell(target, id, true);
 
     // Cast judgement spell
     switch (pSpell->getSpellInfo()->getId())
@@ -306,7 +306,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
         }
     }
 
-    caster->CastSpell(target, id, true);
+    caster->castSpell(target, id, true);
 
     caster->setSingleTargetGuidForAura(pSpell->getSpellInfo()->getId(), target->getGuid());
 
@@ -398,7 +398,7 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
         {
             if (s->p_caster == NULL)
                 return false;
-            SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->getSpellInfo();
+            SpellInfo const* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->getSpellInfo();
             s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
         }
         break;
@@ -414,7 +414,7 @@ bool JudgementOfTheWise(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     s->p_caster->Energize(s->p_caster, 31930, uint32(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
-    s->p_caster->CastSpell(s->p_caster, 57669, false);
+    s->p_caster->castSpell(s->p_caster, 57669, false);
 
     return true;
 }

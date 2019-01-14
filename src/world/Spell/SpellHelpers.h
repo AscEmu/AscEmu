@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -24,7 +24,7 @@ namespace ascemu { namespace World { namespace Spell { namespace Helpers
 {
     inline uint32_t decimalToMask(uint32_t dec) { return (static_cast<uint32_t>(1) << (dec - 1)); }
 
-    inline void spellModFlatFloatValue(int* m, float* v, uint32_t* group)
+    inline void spellModFlatFloatValue(int* m, float* v, const uint32_t* group)
     {
         if (m == nullptr)
             return;
@@ -32,7 +32,7 @@ namespace ascemu { namespace World { namespace Spell { namespace Helpers
         SPELL_GROUP_FOREACH(*v += m[bit]);
     }
 
-    inline void spellModFlatIntValue(int* m, int* v, uint32_t* group)
+    inline void spellModFlatIntValue(int* m, int* v, const uint32_t* group)
     {
         if (m == nullptr)
             return;
@@ -40,7 +40,7 @@ namespace ascemu { namespace World { namespace Spell { namespace Helpers
         SPELL_GROUP_FOREACH(*v += m[bit]);
     }
 
-    inline void spellModPercentageFloatValue(int* m, float* v, uint32_t* group)
+    inline void spellModPercentageFloatValue(int* m, float* v, const uint32_t* group)
     {
         if (m == nullptr)
             return;
@@ -48,7 +48,7 @@ namespace ascemu { namespace World { namespace Spell { namespace Helpers
         SPELL_GROUP_FOREACH(*v += ((*v) * m[bit]) / 100.0f);
     }
 
-    inline void spellModPercentageIntValue(int* m, int* v, uint32_t* group)
+    inline void spellModPercentageIntValue(int* m, int* v, const uint32_t* group)
     {
         if (m == nullptr)
             return;
