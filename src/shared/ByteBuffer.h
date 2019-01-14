@@ -725,7 +725,7 @@ template <typename K, typename V> ByteBuffer & operator>>(ByteBuffer & b, std::m
         K k;
         V v;
         b >> k >> v;
-        m.insert(make_pair(k, v));
+        m.insert(std::make_pair(k, v));
     }
     return b;
 }

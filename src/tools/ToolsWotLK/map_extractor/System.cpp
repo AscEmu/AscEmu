@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
-
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "../../src/world/WorldConf.h"
@@ -27,10 +25,13 @@
 #include <deque>
 #include <set>
 #include <cstdlib>
+#include <list>
+#include <cstring>
 
 #ifdef _WIN32
 #include "direct.h"
 #else
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
@@ -129,7 +130,7 @@ void CreateDir(std::string const& path)
 #endif
 }
 
-bool FileExists( const char* FileName )
+bool FileExists(const char* FileName)
 {
     int fp = _open(FileName, OPEN_FLAGS);
     if(fp != -1)

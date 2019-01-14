@@ -18,6 +18,7 @@
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
+
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -25,13 +26,13 @@
 #include <errno.h>
 
 #ifdef WIN32
-    #include <Windows.h>
-    #include <sys/stat.h>
-    #include <direct.h>
-    #define mkdir _mkdir
+#include <Windows.h>
+#include <sys/stat.h>
+#include <direct.h>
+#define mkdir _mkdir
 #else
-    #include <sys/stat.h>
-    #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
+#include <sys/stat.h>
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #undef min
@@ -112,7 +113,7 @@ typedef struct
 
 map_id * map_ids;
 uint16 *LiqType = 0;
-uint32 map_count;
+size_t map_count;
 char output_path[128]=".";
 char input_path[1024]=".";
 bool preciseVectorData = false;
@@ -121,7 +122,7 @@ bool preciseVectorData = false;
 
 //static const char * szWorkDirMaps = ".\\Maps";
 const char* szWorkDirWmo = "./Buildings";
-const char* szRawVMAPMagic = "VMAP041";
+const char* szRawVMAPMagic = "VMAP042";
 
 bool LoadLocaleMPQFile(int locale)
 {
@@ -570,13 +571,13 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=dbc->getRecordCount ();
-        map_ids=new map_id[map_count];
-        for (unsigned int x=0;x<map_count;++x)
+        map_count = dbc->getRecordCount();
+        map_ids = new map_id[map_count];
+        for (unsigned int x = 0; x < map_count; ++x)
         {
-            map_ids[x].id=dbc->getRecord (x).getUInt(0);
-            strcpy(map_ids[x].name,dbc->getRecord(x).getString(1));
-            printf("Map - %s\n",map_ids[x].name);
+            map_ids[x].id = dbc->getRecord(x).getUInt(0);
+            strcpy(map_ids[x].name, dbc->getRecord(x).getString(1));
+            printf("Map - %s\n", map_ids[x].name);
         }
 
 

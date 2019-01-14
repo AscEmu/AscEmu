@@ -2,9 +2,13 @@
 
 # Opensource software in this folder:
 
+## Folder: StormLib
+- Web: https://github.com/ladislav-zezula/StormLib
+- Version: 5987f7c5c2a9fb43833f750b56b2da852cf55dca (2018/11/08)
+
 ## Folder: recastnavigation
-- Web: https://github.com/memononen/recastnavigation
-- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
+- Web: https://github.com/recastnavigation/recastnavigation
+- Version: 2c85309280dbc9c82029e7ab16dfb01b9235c74e (2017/06/13)
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
@@ -29,10 +33,6 @@
 ## Folder: libmpq
 - Web: https://github.com/mbroemme/libmpq
 - Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
-
-## Folder: StormLib
-- Web: http://www.zezula.net/en/mpq/stormlib.html
-- Version: (2012/06/05)
 
 ## Folder: bzip2
 - Web: http://www.bzip.org

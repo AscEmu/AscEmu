@@ -173,7 +173,7 @@ void LootMgr::LoadLootProp()
             {
                 RandomPropertyVector v;
                 v.push_back(std::make_pair(item_random_properties, ch));
-                _randomprops.insert(make_pair(id, v));
+                _randomprops.insert(std::make_pair(id, v));
             }
             else
             {
@@ -203,7 +203,7 @@ void LootMgr::LoadLootProp()
             {
                 RandomSuffixVector v;
                 v.push_back(std::make_pair(item_random_suffix, ch));
-                _randomsuffix.insert(make_pair(id, v));
+                _randomsuffix.insert(std::make_pair(id, v));
             }
             else
             {
@@ -262,7 +262,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
         if (entry_id != last_entry)
         {
             if (last_entry != 0)
-                db_cache.push_back(make_pair(last_entry, ttab));
+                db_cache.push_back(std::make_pair(last_entry, ttab));
             ttab.clear();
         }
         t.itemid = fields[1].GetUInt32();
@@ -278,7 +278,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     while (result->NextRow());
     //last list was not pushed in
     if (last_entry != 0 && ttab.size())
-        db_cache.push_back(make_pair(last_entry, ttab));
+        db_cache.push_back(std::make_pair(last_entry, ttab));
     pos = 0;
     total = (uint32)db_cache.size();
 

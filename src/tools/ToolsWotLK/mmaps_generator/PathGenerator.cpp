@@ -293,6 +293,6 @@ int main(int argc, char** argv)
         builder.buildAllMaps(threads);
 
     if (!silent)
-        printf("Finished. MMAPS were built in %I64d ms!\n", Util::GetTimeDifferenceToNow(startTime));
+        printf("Finished. MMAPS were built in %lld ms!\n", Util::GetTimeDifferenceToNow(startTime));
     return 0;
 }

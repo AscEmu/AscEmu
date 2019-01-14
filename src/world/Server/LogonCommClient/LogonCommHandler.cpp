@@ -104,7 +104,7 @@ void LogonCommHandler::loadAccountPermissions()
             uint32_t id = result->Fetch()[0].GetUInt32();
             std::string perm = result->Fetch()[1].GetString();
 
-            accountPermissionsStore.insert(make_pair(id, perm));
+            accountPermissionsStore.insert(std::make_pair(id, perm));
 
         } while (result->NextRow());
 
@@ -243,7 +243,7 @@ void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
     }
 
     LogNotice("LogonCommClient : Permission set to %s for account %u", perm.c_str(), acct);
-    accountPermissionsStore.insert(make_pair(acct, perm));
+    accountPermissionsStore.insert(std::make_pair(acct, perm));
 
 }
 

@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
-
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "../../src/world/WorldConf.h"
@@ -31,6 +29,7 @@
 #ifdef _WIN32
 #include "direct.h"
 #else
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
@@ -126,7 +125,7 @@ void CreateDir(std::string const& path)
 #endif
 }
 
-bool FileExists( const char* FileName )
+bool FileExists(const char* FileName)
 {
     int fp = _open(FileName, OPEN_FLAGS);
     if(fp != -1)
@@ -232,7 +231,7 @@ uint32 ReadMapDBC()
         map_ids[x].name[max_map_name_length - 1] = '\0';
     }
     printf("Done! (%u maps loaded)\n", (uint32)map_count);
-    return map_count;
+    return static_cast<uint32_t>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -254,7 +253,7 @@ void ReadAreaTableDBC()
     for(uint32 x = 0; x < area_count; ++x)
         areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
-    maxAreaId = dbc.getMaxId();
+    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
     printf("Done! (%u areas loaded)\n", (uint32)area_count);
 }

@@ -104,7 +104,7 @@ public:
 
     float length() const
     {
-        return sqrt(x*x + y*y + z*z);
+        return std::sqrt(x*x + y*y + z*z);
     }
 
     Vec3D& normalize()
@@ -210,7 +210,7 @@ public:
 
     float length() const
     {
-        return sqrt(x*x + y*y);
+        return std::sqrt(x*x + y*y);
     }
 
     Vec2D& normalize()
