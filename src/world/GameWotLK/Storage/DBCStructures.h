@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
-#include "Spell/SpellDefines.hpp"
 
 struct WMOAreaTableTripple
 {
@@ -1160,8 +1159,9 @@ namespace DBC
         };
 
         #define MAX_SPELL_EFFECTS 3
-        #define MAX_EFFECT_MASK 7
         #define MAX_SPELL_REAGENTS 8
+        #define MAX_SPELL_TOTEMS 2
+        #define MAX_SPELL_TOTEM_CATEGORIES 2
 
         struct SpellEntry
         {

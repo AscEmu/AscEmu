@@ -4931,7 +4931,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
-            for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
+            for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
             {
                 m_Unit->setResistance(i, properties_difficulty->Resistances[i]);
             }
@@ -4965,7 +4965,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->setNpcFlags(properties_difficulty->NPCFLags);
 
             // resistances
-            for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
+            for (uint8 j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
             {
                 m_Unit->BaseResistance[j] = m_Unit->getResistance(j);
             }

@@ -462,6 +462,10 @@ public:
     float getMaxRangedDamage() const;
     void setMaxRangedDamage(float damage);
 
+    uint32_t getPowerCostModifier(uint16_t school) const;
+    void setPowerCostModifier(uint16_t school, uint32_t modifier);
+    void modPowerCostModifier(uint16_t school, int32_t modifier);
+
     float getPowerCostMultiplier(uint16_t school) const;
     void setPowerCostMultiplier(uint16_t school, float multiplier);
     void modPowerCostMultiplier(uint16_t school, float multiplier);
@@ -946,17 +950,17 @@ public:
     void Energize(Unit* target, uint32 SpellId, uint32 amount, uint32 type);
 
     Loot loot;
-    uint32 SchoolCastPrevent[SCHOOL_COUNT];
+    uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS];
     int32 MechanicDurationPctMod[28];
 
     virtual int32 GetDamageDoneMod(uint16_t /*school*/) { return 0; }
     virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
 
-    int32 DamageTakenMod[SCHOOL_COUNT];
-    float DamageTakenPctMod[SCHOOL_COUNT];
+    int32 DamageTakenMod[TOTAL_SPELL_SCHOOLS];
+    float DamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
     float DamageTakenPctModOnHP35;
-    float CritMeleeDamageTakenPctMod[SCHOOL_COUNT];
-    float CritRangedDamageTakenPctMod[SCHOOL_COUNT];
+    float CritMeleeDamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
+    float CritRangedDamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
     int32 RangedDamageTaken;
     void CalcDamage();
     float BaseDamage[2];
@@ -971,7 +975,7 @@ public:
     uint32 MechanicsDispels[32];
     float MechanicsResistancesPCT[32];
     float ModDamageTakenByMechPCT[32];
-    int32 DoTPctIncrease[SCHOOL_COUNT];
+    int32 DoTPctIncrease[TOTAL_SPELL_SCHOOLS];
     float AOEDmgMod;
     float m_ignoreArmorPctMaceSpec;
     float m_ignoreArmorPct;
@@ -1124,23 +1128,23 @@ public:
 
     std::map<uint32, Aura*> tmpAura;
 
-    uint32 BaseResistance[SCHOOL_COUNT];        //there are resistances for silence, fear, mechanics ....
+    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS];        //there are resistances for silence, fear, mechanics ....
     uint32 BaseStats[5];
 
-    int32 HealDoneMod[SCHOOL_COUNT];
-    float HealDonePctMod[SCHOOL_COUNT];
+    int32 HealDoneMod[TOTAL_SPELL_SCHOOLS];
+    float HealDonePctMod[TOTAL_SPELL_SCHOOLS];
 
-    int32 HealTakenMod[SCHOOL_COUNT];
-    float HealTakenPctMod[SCHOOL_COUNT];
+    int32 HealTakenMod[TOTAL_SPELL_SCHOOLS];
+    float HealTakenPctMod[TOTAL_SPELL_SCHOOLS];
 
-    uint32 SchoolImmunityList[SCHOOL_COUNT];
-    float SpellCritChanceSchool[SCHOOL_COUNT];
+    uint32 SchoolImmunityList[TOTAL_SPELL_SCHOOLS];
+    float SpellCritChanceSchool[TOTAL_SPELL_SCHOOLS];
 
-    int32 PowerCostMod[SCHOOL_COUNT];
-    float PowerCostPctMod[SCHOOL_COUNT];        // armor penetration & spell penetration
+    int32 PowerCostMod[TOTAL_SPELL_SCHOOLS];
+    float PowerCostPctMod[TOTAL_SPELL_SCHOOLS];        // armor penetration & spell penetration
 
-    int32 AttackerCritChanceMod[SCHOOL_COUNT];
-    uint32 SpellDelayResist[SCHOOL_COUNT];
+    int32 AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS];
+    uint32 SpellDelayResist[TOTAL_SPELL_SCHOOLS];
 
     int32 CreatureAttackPowerMod[12];
     int32 CreatureRangedAttackPowerMod[12];
@@ -1328,7 +1332,7 @@ protected:
     bool m_useAI;
     bool can_parry;         //will be enabled by block spell
     int32 m_threatModifyer;
-    int32 m_generatedThreatModifyer[SCHOOL_COUNT];
+    int32 m_generatedThreatModifyer[TOTAL_SPELL_SCHOOLS];
 
     int32 m_manashieldamt;
     uint32 m_manaShieldId;

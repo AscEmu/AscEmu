@@ -49,20 +49,50 @@ class SERVER_DECL Spell : public EventableObject
     public:
         // APGL Ends
         // MIT Starts
-        int32_t getFullCastTime() const { return m_castTime; }
-        int32_t getCastTimeLeft() const { return m_timer; }
 
-        virtual SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2);
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Spell cast checks
+
+        // Second check in ::cast() should not be as strict as initial check
+        virtual SpellCastResult canCast(bool secondCheck, uint32_t* parameter1, uint32_t* parameter2);
 
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
-        SpellCastResult getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
+        SpellCastResult checkCasterState() const;
+        SpellCastResult checkRange(bool secondCheck) const;
+        SpellCastResult checkPower() const;
+        SpellCastResult checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // Spell packets
         void sendCastResult(SpellCastResult result, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
         void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Cast time
+        int32_t getFullCastTime() const;
+        int32_t getCastTimeLeft() const;
+
+    private:
+        int32_t m_castTime;
+        int32_t m_timer;
+
+    public:
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Power cost
+        uint32_t getPowerCost() const;
+
+    private:
+        uint32_t calculatePowerCost() const;
+
+        uint32_t m_powerCost;
+
+    public:
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Misc
         bool canAttackCreatureType(Creature* target) const;
+
         SpellInfo const* getSpellInfo() const;
+
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -119,8 +149,6 @@ class SERVER_DECL Spell : public EventableObject
 
         // Take Power from the caster based on spell power usage
         bool TakePower();
-        // Has power?
-        bool HasPower();
         // Trigger Spell function that triggers triggered spells
         //void TriggerSpell();
 
@@ -423,8 +451,6 @@ class SERVER_DECL Spell : public EventableObject
         bool hadEffect;
 
         uint32 m_spellState;
-        int32 m_castTime;
-        int32 m_timer;
         int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler

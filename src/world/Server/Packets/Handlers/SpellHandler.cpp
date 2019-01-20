@@ -102,7 +102,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
         const auto spellInfo = sSpellMgr.getSpellInfo(spellClickData->SpellID);
         if (spellInfo == nullptr)
         {
-            LOG_ERROR("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
+            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
             return;
         }
 
@@ -114,7 +114,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     else
     {
         sChatHandler.BlueSystemMessage(this, "NPC ID %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
+        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
         return;
     }
 }
@@ -130,7 +130,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell_id);
     if (spellInfo == nullptr)
     {
-        LOG_ERROR("Unknown spell id %u in handleCastSpellOpcode().", srlPacket.spell_id);
+        LogError("Unknown spell id %u in handleCastSpellOpcode().", srlPacket.spell_id);
         return;
     }
 
@@ -319,14 +319,14 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
 
     if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->getCharmGuid() == 0)
     {
-        LOG_ERROR("Received opcode but player %u has no pet.", _player->getGuidLow());
+        LogError("Received opcode but player %u has no pet.", _player->getGuidLow());
         return;
     }
 
     Unit* petUnit = _player->GetMapMgr()->GetUnit(srlPacket.petGuid);
     if (petUnit == nullptr)
     {
-        LOG_ERROR("Pet entity cannot be found for player %u.", _player->getGuidLow());
+        LogError("Pet entity cannot be found for player %u.", _player->getGuidLow());
         return;
     }
 
@@ -389,7 +389,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     }
     else
     {
-        LOG_ERROR("Pet doesn't belong to player %u", _player->getGuidLow());
+        LogError("Pet doesn't belong to player %u", _player->getGuidLow());
         return;
     }
 
@@ -438,7 +438,7 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
 
     if (totemSlot >= UNIT_SUMMON_SLOTS)
     {
-        LOG_ERROR("Player %u tried to cancel summon from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
+        LogError("Player %u tried to cancel summon from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
         return;
     }
 

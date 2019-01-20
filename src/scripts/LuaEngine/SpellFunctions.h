@@ -335,7 +335,7 @@ namespace LuaSpell
     int HasPower(lua_State* L, Spell* sp)
     {
         if (!sp) return 0;
-        lua_pushboolean(L, sp->HasPower() ? 1 : 0);
+        lua_pushboolean(L, sp->checkPower() ? 1 : 0);
         return 1;
     }
 

@@ -1612,7 +1612,7 @@ void Aura::SpellAuraModBaseResistancePerc(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -3299,7 +3299,7 @@ void Aura::SpellAuraModResistance(bool apply)
 
     if (m_target->isPlayer())
     {
-        for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+        for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
         {
             if (Flag & (((uint32)1) << x))
             {
@@ -3313,7 +3313,7 @@ void Aura::SpellAuraModResistance(bool apply)
     }
     else if (m_target->isCreature())
     {
-        for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+        for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
         {
             if (Flag & (((uint32)1) << (uint32)x))
             {
@@ -4387,7 +4387,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
             SetPositive();
 
         LogDebugFlag(LF_AURA, "SpellAuraModSchoolImmunity called with misValue = %x", mod->m_miscValue);
-        for (uint8 i = 0; i < SCHOOL_COUNT; i++)
+        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (mod->m_miscValue & (1 << i))
             {
@@ -4398,7 +4398,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
     }
     else
     {
-        for (uint8 i = 0; i < SCHOOL_COUNT; i++)
+        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (mod->m_miscValue & (1 << i) &&
                 m_target->SchoolImmunityList[i] > 0)
@@ -5457,7 +5457,7 @@ void Aura::SpellAuraModSpellCritChanceSchool(bool apply)
 {
     if (apply)
     {
-        for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+        for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
             if (mod->m_miscValue & (((uint32)1) << x))
                 m_target->SpellCritChanceSchool[x] += mod->m_amount;
         if (mod->m_amount < 0)
@@ -5571,7 +5571,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
 {
     if (apply)
     {
-        ARCEMU_ASSERT(mod->m_miscValue < MECHANIC_END);
+        ARCEMU_ASSERT(mod->m_miscValue < TOTAL_SPELL_MECHANICS);
         m_target->MechanicsDispels[mod->m_miscValue]++;
 
         if (mod->m_miscValue != 16 && mod->m_miscValue != 25 && mod->m_miscValue != 19) // don't remove bandages, Power Word and protection effect
@@ -5745,7 +5745,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
     {
         if (GetSpellInfo()->getEquippedItemClass() == -1)  //does not depend on weapon
         {
-            for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+            for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
             {
                 if (mod->m_miscValue & ((uint32)1 << x))
                 {
@@ -6303,7 +6303,7 @@ void Aura::SpellAuraModResistancePCT(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -6871,7 +6871,7 @@ void Aura::SpellAuraModMechanicResistance(bool apply)
     //mecanics=9 ?
     if (apply)
     {
-        ARCEMU_ASSERT(mod->m_miscValue < MECHANIC_END);
+        ARCEMU_ASSERT(mod->m_miscValue < TOTAL_SPELL_MECHANICS);
         m_target->MechanicsResistancesPCT[mod->m_miscValue] += mod->m_amount;
 
         if (mod->m_miscValue != MECHANIC_HEALING && mod->m_miscValue != MECHANIC_INVULNARABLE && mod->m_miscValue != MECHANIC_SHIELDED)  // don't remove bandages, Power Word and protection effect
@@ -7311,7 +7311,7 @@ void Aura::SpellAuraResistPushback(bool apply)
         else
             val = -mod->m_amount;
 
-        for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+        for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
         {
             if (mod->m_miscValue & (((uint32)1) << x))
             {
@@ -7662,7 +7662,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
 
     if (m_target->isPlayer())
     {
-        for (uint8_t x = 1; x < SCHOOL_COUNT; x++)
+        for (uint8_t x = 1; x < TOTAL_SPELL_SCHOOLS; x++)
         {
             if (mod->m_miscValue & (((uint32)1) << x))
             {
@@ -7741,7 +7741,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
 
     if (p_target != nullptr)
     {
-        for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+        for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
         {
             p_target->SpellHealDoneByAttribute[stat][x] += (float)val / 100.0f;
         }
@@ -7782,7 +7782,7 @@ void Aura::SpellAuraModHealingByAP(bool apply)
 
 
 
-    for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
         if (mod->m_miscValue  & (((uint32)1) << x))
         {
@@ -8011,7 +8011,7 @@ void Aura::SpellAuraModHealingDone(bool apply)
     if (player_class == DRUID || player_class == PALADIN || player_class == SHAMAN || player_class == PRIEST)
         val = float2int32(val * 1.88f);
 
-    for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
         if (mod->m_miscValue  & (((uint32)1) << x))
         {
@@ -8159,7 +8159,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
     int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
     amt *= (!apply) ? -1 : 1;
 
-    for (uint8_t x = 0; x < SCHOOL_COUNT; x++)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
         if (mod->m_miscValue & (((uint32)1) << x))
         {
@@ -8201,7 +8201,7 @@ void Aura::SpellAuraReduceAttackerSHitChance(bool apply)
 {
     if (p_target == nullptr)
         return;
-    for (uint8 i = 0; i < SCHOOL_COUNT; i++)
+    for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
     {
         if (mod->m_miscValue & (1 << i))     // check school
         {

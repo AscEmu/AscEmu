@@ -671,7 +671,7 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     BaseRangedDamage[1] = 0;
 
     m_CombatUpdateTimer = 0;
-    for (i = 0; i < SCHOOL_COUNT; i++)
+    for (i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
     {
         SchoolImmunityList[i] = 0;
         BaseResistance[i] = 0;
@@ -1356,7 +1356,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     }
 }
 
-uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell, bool is_triggered, uint32 dmg, uint32 abs, uint32 weapon_damage_type)
+uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell, bool /*is_triggered*/, uint32 dmg, uint32 abs, uint32 weapon_damage_type)
 {
     uint32 resisted_dmg = 0;
     ++m_procCounter;

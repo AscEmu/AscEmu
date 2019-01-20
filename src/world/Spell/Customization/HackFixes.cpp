@@ -680,7 +680,7 @@ void SpellMgr::applyHackFixes()
 #else
         // Save School as custom_SchoolMask, and set School as an index
         sp->custom_SchoolMask = sp->getSchool();
-        for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
+        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
         {
             if (sp->getSchool() & (1 << i))
             {
@@ -689,7 +689,7 @@ void SpellMgr::applyHackFixes()
             }
         }
 #endif
-        ARCEMU_ASSERT(sp->getSchool() < SCHOOL_COUNT);
+        ARCEMU_ASSERT(sp->getSchool() < TOTAL_SPELL_SCHOOLS);
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
@@ -869,34 +869,6 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        // Set default mechanics if we don't already have one
-        if (!sp->getMechanicsType())
-        {
-            //Set Silencing spells mechanic.
-            if (sp->getEffectApplyAuraName(0) == SPELL_AURA_MOD_SILENCE ||
-                sp->getEffectApplyAuraName(1) == SPELL_AURA_MOD_SILENCE ||
-                sp->getEffectApplyAuraName(2) == SPELL_AURA_MOD_SILENCE)
-                sp->setMechanicsType(MECHANIC_SILENCED);
-
-            //Set Stunning spells mechanic.
-            if (sp->getEffectApplyAuraName(0) == SPELL_AURA_MOD_STUN ||
-                sp->getEffectApplyAuraName(1) == SPELL_AURA_MOD_STUN ||
-                sp->getEffectApplyAuraName(2) == SPELL_AURA_MOD_STUN)
-                sp->setMechanicsType(MECHANIC_STUNNED);
-
-            //Set Fearing spells mechanic
-            if (sp->getEffectApplyAuraName(0) == SPELL_AURA_MOD_FEAR ||
-                sp->getEffectApplyAuraName(1) == SPELL_AURA_MOD_FEAR ||
-                sp->getEffectApplyAuraName(2) == SPELL_AURA_MOD_FEAR)
-                sp->setMechanicsType(MECHANIC_FLEEING);
-
-            //Set Interrupted spells mech
-            if (sp->getEffect(0) == SPELL_EFFECT_INTERRUPT_CAST ||
-                sp->getEffect(1) == SPELL_EFFECT_INTERRUPT_CAST ||
-                sp->getEffect(2) == SPELL_EFFECT_INTERRUPT_CAST)
-                sp->setMechanicsType(MECHANIC_INTERRUPTED);
-        }
-
         if (sp->custom_proc_interval > 0)      // if (sp->custom_proc_interval != 0)
             sp->addProcFlags(PROC_REMOVEONUSE);
 
@@ -964,101 +936,6 @@ void SpellMgr::applyHackFixes()
             case 71550:
             {
                 sp->setMechanicsType(MECHANIC_INVULNARABLE);
-            } break;
-            // SPELL_HASH_SHRED
-            case 3252:
-            case 5221:      // Shred Rank 1
-            case 6800:      // Shred Rank 2
-            case 8992:      // Shred Rank 3
-            case 9829:      // Shred Rank 4
-            case 9830:      // Shred Rank 5
-            case 27001:     // Shred Rank 6
-            case 27002:     // Shred Rank 7
-            case 27555:
-            case 48571:     // Shred Rank 8
-            case 48572:     // Shred Rank 9
-            case 49121:
-            case 49165:
-            case 61548:
-            case 61549:
-            // SPELL_HASH_BACKSTAB
-            case 53:        // Backstab Rank 1
-            case 2589:      // Backstab Rank 2
-            case 2590:      // Backstab Rank 3
-            case 2591:      // Backstab Rank 4
-            case 7159:
-            case 8721:      // Backstab Rank 5
-            case 11279:     // Backstab Rank 6
-            case 11280:     // Backstab Rank 7
-            case 11281:     // Backstab Rank 8
-            case 15582:
-            case 15657:
-            case 22416:
-            case 25300:     // Backstab Rank 9
-            case 26863:     // Backstab Rank 10
-            case 30992:
-            case 34614:
-            case 37685:
-            case 48656:     // Backstab Rank 11
-            case 48657:     // Backstab Rank 12
-            case 52540:
-            case 58471:
-            case 63754:
-            case 71410:
-            case 72427:
-            // SPELL_HASH_AMBUSH
-            case 8676:      // Ambush Rank 1
-            case 8724:      // Ambush Rank 2
-            case 8725:      // Ambush Rank 3
-            case 11267:     // Ambush Rank 4
-            case 11268:     // Ambush Rank 5
-            case 11269:     // Ambush Rank 6
-            case 24337:
-            case 27441:     // Ambush Rank 7
-            case 39668:
-            case 39669:
-            case 41390:
-            case 48689:     // Ambush Rank 8
-            case 48690:     // Ambush Rank 9
-            case 48691:     // Ambush Rank 10
-            case 56239:
-            // SPELL_HASH_GARROTE
-            case 703:       // Garrote Rank 1
-            case 8631:      // Garrote Rank 2
-            case 8632:      // Garrote Rank 3
-            case 8633:      // Garrote Rank 4
-            case 8818:      // Garrote Rank 4
-            case 11289:     // Garrote Rank 5
-            case 11290:     // Garrote Rank 6
-            case 26839:     // Garrote Rank 7
-            case 26884:     // Garrote Rank 8
-            case 37066:
-            case 48675:     // Garrote Rank 9
-            case 48676:     // Garrote Rank 10
-            // SPELL_HASH_RAVAGE
-            case 3242:
-            case 3446:
-            case 6785:      // Ravage Rank 1
-            case 6787:      // Ravage Rank 2
-            case 8391:
-            case 9866:      // Ravage Rank 3
-            case 9867:      // Ravage Rank 4
-            case 24213:
-            case 24333:
-            case 27005:     // Ravage Rank 5
-            case 29906:
-            case 33781:
-            case 48578:     // Ravage Rank 6
-            case 48579:     // Ravage Rank 7
-            case 50518:     // Ravage Rank 1
-            case 53558:     // Ravage Rank 2
-            case 53559:     // Ravage Rank 3
-            case 53560:     // Ravage Rank 4
-            case 53561:     // Ravage Rank 5
-            case 53562:     // Ravage Rank 6
-            {
-                // FIX ME: needs different flag check
-                sp->setFacingCasterFlags(SPELL_INFRONT_STATUS_REQUIRE_INBACK);
             } break;
         }
 

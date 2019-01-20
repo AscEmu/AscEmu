@@ -720,7 +720,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.RangedMinDamage = fields[32].GetFloat();
             creatureProperties.RangedMaxDamage = fields[33].GetFloat();
             creatureProperties.RespawnTime = fields[34].GetUInt32();
-            for (uint8_t i = 0; i < SCHOOL_COUNT; ++i)
+            for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
             {
                 creatureProperties.Resistances[i] = fields[35 + i].GetUInt32();
             }

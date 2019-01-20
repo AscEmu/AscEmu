@@ -157,7 +157,7 @@ void SpellMgr::addSpellById(const uint32_t spellId, SpellScriptLinker spellScrip
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LOG_ERROR("SpellMgr::addSpellById : Unknown spell id %u tried to register a spell script, skipped");
+        LogError("SpellMgr::addSpellById : Unknown spell id %u tried to register a spell script, skipped");
         return;
     }
     addSpellBySpellInfo(spellInfo, spellScript);
@@ -168,7 +168,7 @@ void SpellMgr::addAuraById(const uint32_t spellId, AuraScriptLinker auraScript)
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LOG_ERROR("SpellMgr::addAuraById : Unknown spell id %u tried to register an aura script, skipped");
+        LogError("SpellMgr::addAuraById : Unknown spell id %u tried to register an aura script, skipped");
         return;
     }
     addAuraBySpellInfo(spellInfo, auraScript);
@@ -323,6 +323,9 @@ void SpellMgr::loadSpellInfoData()
 #endif
 
 #if VERSION_STRING < Cata
+        spellInfo.setCategory(dbcSpellEntry->Category);
+        spellInfo.setDispelType(dbcSpellEntry->DispelType);
+        spellInfo.setMechanicsType(dbcSpellEntry->MechanicsType);
         spellInfo.setRequiredShapeShift(dbcSpellEntry->Shapeshifts);
         spellInfo.setShapeshiftExclude(dbcSpellEntry->ShapeshiftsExcluded);
         spellInfo.setTargets(dbcSpellEntry->Targets);
@@ -424,7 +427,7 @@ void SpellMgr::loadSpellInfoData()
         for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             spellInfo.setEffectBonusMultiplier(dbcSpellEntry->EffectBonusMultiplier[j], j);
 #endif
-        // Cataclysm begins
+        // Cataclysm and MoP begins
 #else
         spellInfo.setAttributesExH(dbcSpellEntry->AttributesExH);
         spellInfo.setAttributesExI(dbcSpellEntry->AttributesExI);
@@ -632,7 +635,7 @@ void SpellMgr::loadSpellCoefficientOverride()
         auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
         if (spellInfo == nullptr)
         {
-            LOG_ERROR("Table `spell_coefficient_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
+            LogError("Table `spell_coefficient_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
             continue;
         }
 
@@ -671,7 +674,7 @@ void SpellMgr::loadSpellCustomOverride()
         auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
         if (spellInfo == nullptr)
         {
-            LOG_ERROR("Table `spell_custom_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
+            LogError("Table `spell_custom_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
             continue;
         }
 
@@ -760,7 +763,7 @@ void SpellMgr::loadSpellAIThreat()
         auto spellInfo = getMutableSpellInfo(spellId);
         if (spellInfo == nullptr)
         {
-            LOG_ERROR("Table `ai_threattospellid` has invalid spell entry %u, skipped", spellId);
+            LogError("Table `ai_threattospellid` has invalid spell entry %u, skipped", spellId);
             continue;
         }
 
@@ -803,7 +806,7 @@ void SpellMgr::loadSpellEffectOverride()
         auto spellInfo = getMutableSpellInfo(seo_SpellId);
         if (spellInfo == nullptr)
         {
-            LOG_ERROR("Table `spell_effects_override` has invalid spell entry %u, skipped", seo_SpellId);
+            LogError("Table `spell_effects_override` has invalid spell entry %u, skipped", seo_SpellId);
             continue;
         }
 
@@ -902,7 +905,7 @@ void SpellMgr::loadSpellAreas()
 
         if (duplicate)
         {
-            LOG_ERROR("Table `spell_area` has duplicate spell entry (%u) with similiar requirements, skipped", spellId);
+            LogError("Table `spell_area` has duplicate spell entry (%u) with similiar requirements, skipped", spellId);
             continue;
         }
 
@@ -912,7 +915,7 @@ void SpellMgr::loadSpellAreas()
             const auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(spellArea.areaId);
             if (areaEntry == nullptr)
             {
-                LOG_ERROR("Table `spell_area` has invalid area id %u for spell entry %u, skipped", spellArea.areaId, spellId);
+                LogError("Table `spell_area` has invalid area id %u for spell entry %u, skipped", spellArea.areaId, spellId);
                 continue;
             }
         }
@@ -923,7 +926,7 @@ void SpellMgr::loadSpellAreas()
             const auto startQuest = sMySQLStore.getQuestProperties(spellArea.questStart);
             if (startQuest == nullptr)
             {
-                LOG_ERROR("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questStart, spellId);
+                LogError("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questStart, spellId);
                 continue;
             }
         }
@@ -934,14 +937,14 @@ void SpellMgr::loadSpellAreas()
             const auto endQuest = sMySQLStore.getQuestProperties(spellArea.questEnd);
             if (endQuest == nullptr)
             {
-                LOG_ERROR("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questEnd, spellId);
+                LogError("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questEnd, spellId);
                 continue;
             }
 
             // Check if the end quest is same as start quest
             if (spellArea.questEnd == spellArea.questStart && !spellArea.questStartCanActive)
             {
-                LOG_ERROR("Table `spell_area` has quest (id %u) requirement for spell entry %u for start and end at the same time, skipped", spellArea.questEnd, spellId);
+                LogError("Table `spell_area` has quest (id %u) requirement for spell entry %u for start and end at the same time, skipped", spellArea.questEnd, spellId);
                 continue;
             }
         }
@@ -952,13 +955,13 @@ void SpellMgr::loadSpellAreas()
             const auto spellInfo = getSpellInfo(abs(spellArea.auraSpell));
             if (spellInfo == nullptr)
             {
-                LOG_ERROR("Table `spell_area` has invalid aura spell entry %u for spell %u, skipped", abs(spellArea.auraSpell), spellId);
+                LogError("Table `spell_area` has invalid aura spell entry %u for spell %u, skipped", abs(spellArea.auraSpell), spellId);
                 continue;
             }
 
             if (uint32_t(abs(spellArea.auraSpell)) == spellArea.spellId)
             {
-                LOG_ERROR("Table `spell_area` has aura spell requirements for itself (id %u), skipped", spellId);
+                LogError("Table `spell_area` has aura spell requirements for itself (id %u), skipped", spellId);
                 continue;
             }
 
@@ -977,7 +980,7 @@ void SpellMgr::loadSpellAreas()
 
                 if (chain)
                 {
-                    LOG_ERROR("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
+                    LogError("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
                     continue;
                 }
 
@@ -993,7 +996,7 @@ void SpellMgr::loadSpellAreas()
 
                 if (chain)
                 {
-                    LOG_ERROR("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
+                    LogError("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
                     continue;
                 }
             }
@@ -1001,13 +1004,13 @@ void SpellMgr::loadSpellAreas()
 
         if (spellArea.raceMask > 0 && !(spellArea.raceMask & RACEMASK_ALL_PLAYABLE))
         {
-            LOG_ERROR("Table `spell_area` has invalid racemask for spell entry %u, skipped", spellId);
+            LogError("Table `spell_area` has invalid racemask for spell entry %u, skipped", spellId);
             continue;
         }
 
         if (spellArea.gender != GENDER_NONE && spellArea.gender != GENDER_MALE && spellArea.gender != GENDER_FEMALE)
         {
-            LOG_ERROR("Table `spell_area` has invalid gender for spell entry %u, skipped", spellId);
+            LogError("Table `spell_area` has invalid gender for spell entry %u, skipped", spellId);
             continue;
         }
 

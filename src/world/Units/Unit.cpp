@@ -412,6 +412,15 @@ void Unit::setMinRangedDamage(float damage) { write(unitData()->minimum_ranged_d
 float Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
 void Unit::setMaxRangedDamage(float damage) { write(unitData()->maximum_ranged_ddamage, damage); }
 
+uint32_t Unit::getPowerCostModifier(uint16_t school) const { return unitData()->power_cost_modifier[school]; }
+void Unit::setPowerCostModifier(uint16_t school, uint32_t modifier) { write(unitData()->power_cost_modifier[school], modifier); }
+void Unit::modPowerCostModifier(uint16_t school, int32_t modifier)
+{
+    uint32_t currentModifier = getPowerCostModifier(school);
+    currentModifier += modifier;
+    setPowerCostModifier(school, currentModifier);
+}
+
 float Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
 void Unit::setPowerCostMultiplier(uint16_t school, float multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
 void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)

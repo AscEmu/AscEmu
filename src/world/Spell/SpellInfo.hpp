@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "SpellDefines.hpp"
-#include "WorldConf.h"
+
 #include "CommonTypes.hpp"
+#include "WorldConf.h"
 #include <string>
 
 class Player;
@@ -37,6 +38,9 @@ public:
 
     // Checks if spell (in most cases an aura) affects another spell, based on spell group mask
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
+
+    // Returns true if powertype is valid for current expansion
+    bool hasValidPowerType() const;
 
     uint32_t getSpellDefaultDuration(Unit const* caster) const;
 
@@ -276,11 +280,13 @@ public:
         return EffectDamageMultiplier[idx];
     }
 
+#if VERSION_STRING > Classic
     uint32_t getTotemCategory(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
         return TotemCategory[idx];
     }
+#endif
 
     int32_t getRequiresAreaId() const { return AreaGroupId; }
     uint32_t getSchool() const { return School; }
@@ -551,11 +557,13 @@ private:
         EffectDamageMultiplier[idx] = dmgMultiplier;
     }
 
+#if VERSION_STRING > Classic
     void setTotemCategory(uint32_t category, uint8_t idx)
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
         TotemCategory[idx] = category;
     }
+#endif
 
     void setRequiresAreaId(int32_t value) { AreaGroupId = value; }
     void setSchool(uint32_t value) { School = value; }                  // used in HackFixes.cpp
@@ -714,8 +722,10 @@ private:
     uint32_t PreventionType;
     // Data from SpellEffect.dbc (in Cataclysm)
     float EffectDamageMultiplier[MAX_SPELL_EFFECTS];
+#if VERSION_STRING > Classic
     // Data from SpellTotems.dbc (in Cataclysm)
     uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];     // not used!
+#endif
     // Data from SpellCastingRequirements.dbc (in Cataclysm)
     int32_t AreaGroupId;
     // Data from Spell.dbc (in Cataclysm)

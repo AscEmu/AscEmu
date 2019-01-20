@@ -1440,7 +1440,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 x = 0; x < SCHOOL_COUNT; ++x)
+    for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
         BaseResistance[x] = getResistance(x);
     for (uint8 x = 0; x < STAT_COUNT; ++x)
         BaseStats[x] = getStat(x);
@@ -1677,7 +1677,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
 
     //load resistances
-    for (uint8 j = 0; j < SCHOOL_COUNT; ++j)
+    for (uint8 j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
         BaseResistance[j] = getResistance(j);
     for (uint8 j = 0; j < STAT_COUNT; ++j)
         BaseStats[j] = getStat(j);
@@ -2042,7 +2042,7 @@ Group* Creature::GetGroup()
 
 int32 Creature::GetDamageDoneMod(uint16_t school)
 {
-    if (school >= SCHOOL_COUNT)
+    if (school >= TOTAL_SPELL_SCHOOLS)
         return 0;
 
     return ModDamageDone[ school ];
@@ -2050,7 +2050,7 @@ int32 Creature::GetDamageDoneMod(uint16_t school)
 
 float Creature::GetDamageDonePctMod(uint16_t school)
 {
-    if (school >= SCHOOL_COUNT)
+    if (school >= TOTAL_SPELL_SCHOOLS)
         return 0;
 
     return ModDamageDonePct[ school ];

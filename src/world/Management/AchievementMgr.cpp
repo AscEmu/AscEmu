@@ -376,7 +376,6 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
-            Guild* guild = GetPlayer()->GetGuild();
             WorldPacket data(SMSG_MESSAGECHAT, 200);
             data << uint8_t(CHAT_MSG_GUILD_ACHIEVEMENT);
             data << uint32_t(LANG_UNIVERSAL);

@@ -245,10 +245,19 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     m_missilePitch = 0;
     m_missileTravelTime = 0;
     m_IsCastedOnSelf = false;
-    m_castTime = 0;
-    m_timer = 0;
     m_magnetTarget = 0;
     Dur = 0;
+
+    // APGL End
+    // MIT Start
+
+    m_castTime = 0;
+    m_timer = 0;
+
+    m_powerCost = 0;
+
+    // MIT End
+    // APGL Start
 }
 
 Spell::~Spell()
@@ -688,7 +697,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /*************************************************************************/
     /* Check if the target is immune to this mechanic                        */
     /*************************************************************************/
-    if (m_spellInfo->getMechanicsType() < MECHANIC_END && u_victim->MechanicsDispels[m_spellInfo->getMechanicsType()])
+    if (m_spellInfo->getMechanicsType() < TOTAL_SPELL_MECHANICS && u_victim->MechanicsDispels[m_spellInfo->getMechanicsType()])
 
     {
         // Immune - IF, and ONLY IF, there is no damage component!
@@ -716,7 +725,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the target has a % resistance to this mechanic              */
     /************************************************************************/
-    if (m_spellInfo->getMechanicsType() < MECHANIC_END)
+    if (m_spellInfo->getMechanicsType() < TOTAL_SPELL_MECHANICS)
     {
         float res = u_victim->MechanicsResistancesPCT[m_spellInfo->getMechanicsType()];
         if (Rand(res))
@@ -776,7 +785,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         }
     }
     ///\todo SB@L - This mechanic resist chance is handled twice, once several lines above, then as part of resistchance here check mechanical resistance i have no idea what is the best pace for this code
-    if (getSpellInfo()->getMechanicsType() < MECHANIC_END)
+    if (getSpellInfo()->getMechanicsType() < TOTAL_SPELL_MECHANICS)
     {
         resistchance += u_victim->MechanicsResistancesPCT[getSpellInfo()->getMechanicsType()];
     }
@@ -791,7 +800,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     if (p_victim != nullptr && getSpellInfo()->custom_SchoolMask > 0)
     {
         int32 min = 100;
-        for (uint8 i = 0; i < SCHOOL_COUNT; i++)
+        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (getSpellInfo()->custom_SchoolMask & (1 << i) && min > p_victim->m_resist_hit_spell[i])
                 min = p_victim->m_resist_hit_spell[i];
@@ -906,6 +915,8 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     //if (p_caster != NULL)
     //   m_castTime -= 100; // session update time
 
+    // Triggered spells or spells casted from items should not use any power
+    m_powerCost = i_caster != nullptr || m_triggeredSpell ? 0 : calculatePowerCost();
 
     m_spellState = SPELL_STATE_PREPARING;
 
@@ -1125,7 +1136,7 @@ void Spell::castMe(bool check)
             if (!m_triggeredSpell)
             {
                 // on next attack - we don't take the mana till it actually attacks.
-                if (!HasPower())
+                if (checkPower() != SPELL_CANCAST_OK)
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
                     sendCastResult(SPELL_FAILED_NO_POWER);
@@ -2743,155 +2754,6 @@ void Spell::SendTameFailure(uint8 result)
     }
 }
 
-bool Spell::HasPower()
-{
-    uint16_t powerField;
-    if (u_caster != nullptr)
-        if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
-            return true;
-
-    if (p_caster && p_caster->m_cheats.PowerCheat)
-        return true;
-
-    //Items do not use owner's power
-    if (i_caster != nullptr)
-        return true;
-
-    // Free cast for battle preparation
-    if (p_caster && p_caster->HasAura(44521))
-        return true;
-    if (p_caster && p_caster->HasAura(44535))
-        return true;
-    if (p_caster && p_caster->HasAura(32727))
-        return true;
-
-    switch (getSpellInfo()->getPowerType())
-    {
-        case POWER_TYPE_HEALTH:
-        { powerField = UNIT_FIELD_HEALTH; }
-        break;
-        case POWER_TYPE_MANA:
-        { powerField = UNIT_FIELD_POWER1; m_usesMana = true; }
-        break;
-        case POWER_TYPE_RAGE:
-        { powerField = UNIT_FIELD_POWER2; }
-        break;
-        case POWER_TYPE_FOCUS:
-        { powerField = UNIT_FIELD_POWER3; }
-        break;
-        case POWER_TYPE_ENERGY:
-        { powerField = UNIT_FIELD_POWER4; }
-        break;
-        case POWER_TYPE_HAPPINESS:
-        { powerField = UNIT_FIELD_POWER5; }
-        break;
-#if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNIC_POWER:
-        { powerField = UNIT_FIELD_POWER7; }
-        break;
-
-        case POWER_TYPE_RUNES:
-        {
-            if (getSpellInfo()->getRuneCostID() && p_caster)
-            {
-                auto spell_rune_cost = sSpellRuneCostStore.LookupEntry(getSpellInfo()->getRuneCostID());
-                if (!spell_rune_cost)
-                    return false;
-
-                DeathKnight* dk = static_cast<DeathKnight*>(p_caster);
-                uint32 credit = dk->HasRunes(RUNE_BLOOD, spell_rune_cost->bloodRuneCost) +
-                    dk->HasRunes(RUNE_FROST, spell_rune_cost->frostRuneCost) +
-                    dk->HasRunes(RUNE_UNHOLY, spell_rune_cost->unholyRuneCost);
-                if (credit > 0 && dk->HasRunes(RUNE_DEATH, credit) > 0)
-                    return false;
-            }
-            return true;
-        }
-#endif
-        default:
-        {
-            LogDebugFlag(LF_SPELL, "unknown power type");
-            // we shouldn't be here to return
-            return false;
-        }
-        break;
-    }
-
-
-    //FIX ME: add handler for UNIT_FIELD_POWER_COST_MODIFIER
-    //UNIT_FIELD_POWER_COST_MULTIPLIER
-    if (u_caster != nullptr)
-    {
-        if (hasAttributeEx(ATTRIBUTESEX_DRAIN_WHOLE_POWER))  // Uses %100 power
-        {
-            m_caster->setUInt32Value(powerField, 0);
-            return true;
-        }
-    }
-
-    uint32_t currentPower = m_caster->getUInt32Value(powerField);
-    int32 cost = 0;
-
-    if (getSpellInfo()->getManaCostPercentage()) //Percentage spells cost % of !!!BASE!!! mana
-    {
-        if (u_caster != nullptr)
-        {
-            if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->getBaseMana() * getSpellInfo()->getManaCostPercentage()) / 100;
-            else
-                cost = (u_caster->getBaseHealth() * getSpellInfo()->getManaCostPercentage()) / 100;
-        }
-    }
-    else
-    {
-        cost = getSpellInfo()->getManaCost();
-    }
-
-    if ((int32)getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
-        cost -= getSpellInfo()->getBaseLevel();//FIX for life tap
-    else if (u_caster != nullptr)
-    {
-        if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-            cost += u_caster->PowerCostMod[getSpellInfo()->getSchool()];//this is not percent!
-        else
-            cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(getSpellInfo()->getSchool())));
-    }
-
-    //hackfix for shiv's energy cost
-    if (p_caster != nullptr && (m_spellInfo->getId() == 5938 || m_spellInfo->getId() == 5940))
-    {
-        Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-        if (it != nullptr)
-            cost += (uint32)(10 * (it->getItemProperties()->Delay / 1000.0f));
-    }
-
-    //apply modifiers
-    if (u_caster != nullptr)
-    {
-        spellModFlatIntValue(u_caster->SM_FCost, &cost, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PCost, &cost, getSpellInfo()->getSpellFamilyFlags());
-    }
-
-    if (cost <= 0)
-        return true;
-
-    //FIXME:DK:if field value < cost what happens
-    if (powerField == UNIT_FIELD_HEALTH)
-    {
-        return true;
-    }
-    else
-    {
-        if (cost <= static_cast<int32_t>(currentPower)) // Unit has enough power (needed for creatures)
-        {
-            return true;
-        }
-        else
-            return false;
-    }
-}
-
 bool Spell::TakePower()
 {
     uint16_t powerField;
@@ -3753,7 +3615,7 @@ uint32 Spell::GetMechanic(SpellInfo* sp)
     return 0;
 }
 
-uint8 Spell::CanCast(bool tolerate)
+uint8 Spell::CanCast(bool /*tolerate*/)
 {
     /**
      * Object cast checks
@@ -3883,12 +3745,6 @@ uint8 Spell::CanCast(bool tolerate)
             if (!p_caster->m_bg->HasStarted() && (m_spellInfo->getId() == 1953 || m_spellInfo->getId() == 36554))  //Don't allow blink or shadowstep  if in a BG and the BG hasn't started.
                 return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
-
-        /**
-         * Mana check
-         */
-        if (!HasPower())
-            return SPELL_FAILED_NO_POWER;
 
         /**
          * Duel request check
@@ -4166,66 +4022,6 @@ uint8 Spell::CanCast(bool tolerate)
     } // end targeted item
 
     /**
-     * set up our max range
-     * latency compensation!!
-     * figure out how much extra distance we need to allow for based on our
-     * movespeed and latency.
-     */
-    float maxRange = 0;
-
-    auto spell_range = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
-    if (spell_range != nullptr)
-    {
-        if (m_caster->IsInWorld())
-        {
-            Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-#if VERSION_STRING > TBC
-            if (target != nullptr && isFriendly(m_caster, target))
-                maxRange = spell_range->maxRangeFriendly;
-            else
-                maxRange = spell_range->maxRange;
-#else
-            maxRange = spell_range->maxRange;
-#endif
-        }
-        else
-            maxRange = spell_range->maxRange;
-    }
-
-    if (u_caster && m_caster->GetMapMgr() && m_targets.m_unitTarget)
-    {
-        Unit* utarget = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-
-        if (utarget && utarget->isPlayer() && static_cast<Player*>(utarget)->m_isMoving)
-        {
-            // this only applies to PvP.
-            uint32 lat = static_cast<Player*>(utarget)->GetSession() ? static_cast<Player*>(utarget)->GetSession()->GetLatency() : 0;
-
-            // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
-            lat = (lat > 500) ? 500 : lat;
-
-            // calculate the added distance
-            maxRange += u_caster->getSpeedForType(TYPE_RUN) * 0.001f * lat;
-        }
-    }
-
-    /**
-     * Some Unit caster range check
-     */
-    if (u_caster != nullptr)
-    {
-        spellModFlatFloatValue(u_caster->SM_FRange, &maxRange, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageFloatValue(u_caster->SM_PRange, &maxRange, getSpellInfo()->getSpellFamilyFlags());
-    }
-
-    // Targeted Location Checks (AoE spells)
-    if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION)
-    {
-        if (!m_caster->isInRange(m_targets.destination(), (maxRange * maxRange)))
-            return SPELL_FAILED_OUT_OF_RANGE;
-    }
-
-    /**
      * Targeted Unit Checks
      */
     if (m_targets.m_unitTarget)
@@ -4234,21 +4030,6 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (target)
         {
-            // getBoundingRadius()+ 1.5f; seems to match the client range
-
-            if (tolerate)   // add an extra 33% to range on final check (squared = 1.78x)
-            {
-                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
-                if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange * 1.78f)))
-                    return SPELL_FAILED_OUT_OF_RANGE;
-            }
-            else
-            {
-                float localrange = maxRange + target->getBoundingRadius() + 1.5f;
-                if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange)))
-                    return SPELL_FAILED_OUT_OF_RANGE;
-            }
-
             if (p_caster != nullptr)
             {
                 if (target->isPlayer())
@@ -4643,218 +4424,7 @@ uint8 Spell::CanCast(bool tolerate)
             uint32 now_ = Util::getMSTime();
             if (now_ > u_caster->SchoolCastPrevent[getSpellInfo()->getSchool()]) //this limit has expired,remove
                 u_caster->SchoolCastPrevent[getSpellInfo()->getSchool()] = 0;
-            else
-            {
-                switch (getSpellInfo()->getId())
-                {
-                    //SPELL_HASH_BERSERKER_RAGE
-                    case 18499:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR))
-                            break;
-                    } break;
-
-                    //SPELL_HASH_WILL_OF_THE_FORSAKEN
-                    case 7744:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM))
-                            break;
-                    } break;
-
-                    // {Insignia|Medallion} of the {Horde|Alliance}
-                    //SPELL_HASH_PVP_TRINKET
-                    case 42292:
-                    case 65547:
-                    // SPELL_HASH_EVERY_MAN_FOR_HIMSELF:
-                    case 59752:
-                    //SPELL_HASH_DIVINE_SHIELD
-                    case 642:
-                    case 13874:
-                    case 29382:
-                    case 33581:
-                    case 40733:
-                    case 41367:
-                    case 54322:
-                    case 63148:
-                    case 66010:
-                    case 67251:
-                    case 71550:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_STUN | UNIT_STATE_CONFUSE) || u_caster->hasUnitMovementFlag(MOVEFLAG_ROOTED))
-                            break;
-                    } break;
-
-                    // SPELL_HASH_DEATH_WISH:
-                    case 12292:
-                    // SPELL_HASH_FEAR_WARD:
-                    case 6346:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR))
-                            break;
-                    } break;
-
-                    // SPELL_HASH_BARKSKIN:
-                    case 20655:
-                    case 22812:
-                    case 63408:
-                    case 63409:
-                    case 65860:
-                    {
-                        // This spell is usable while stunned, frozen, incapacitated, feared or asleep.  Lasts 12 sec.
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_STUN | UNIT_STATE_FEAR))     // Uh, what unit_state is Frozen? (freezing trap...)
-                            break;
-                    } break;
-
-                    // SPELL_HASH_DISPERSION:
-                    case 47218:
-                    case 47585:
-                    case 49766:
-                    case 49768:
-                    case 60069:
-                    case 63230:
-                    case 65544:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_STUN | UNIT_STATE_SILENCE))
-                            break;
-                    } break;
-
-                    default:
-                        return SPELL_FAILED_SILENCED;
-                }
-            }
         }
-
-        // can only silence non-physical
-        if (u_caster->m_silenced && getSpellInfo()->getSchool() != SCHOOL_NORMAL)
-        {
-            switch (getSpellInfo()->getId())
-            {
-                // SPELL_HASH_ICE_BLOCK: //Ice Block
-                case 27619:
-                case 36911:
-                case 41590:
-                case 45438:
-                case 45776:
-                case 46604:
-                case 46882:
-                case 56124:
-                case 56644:
-                case 62766:
-                case 65802:
-                case 69924:
-                // SPELL_HASH_DIVINE_SHIELD: //Divine Shield
-                case 642:
-                case 13874:
-                case 29382:
-                case 33581:
-                case 40733:
-                case 41367:
-                case 54322:
-                case 63148:
-                case 66010:
-                case 67251:
-                case 71550:
-                // SPELL_HASH_DISPERSION:
-                case 47218:
-                case 47585:
-                case 49766:
-                case 49768:
-                case 60069:
-                case 63230:
-                case 65544:
-                    break;
-
-                default:
-                    return SPELL_FAILED_SILENCED;
-            }
-        }
-
-        Unit* target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget) : NULL;
-        if (target)  /* -Supalosa- Shouldn't this be handled on Spell Apply? */
-        {
-            for (uint8_t i = 0; i < 3; i++)  // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
-            {
-                if (getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MECHANIC_IMMUNITY)
-                {
-                    target->RemoveAllAurasByMechanic(getSpellInfo()->getEffectMiscValue(i), 0, true);
-                    // Remove all debuffs of that mechanic type.
-                    // This is also done in SpellAuras.cpp - wtf?
-                }
-                /*
-                if (GetProto()->EffectApplyAuraName[i] == SPELL_AURA_MECHANIC_IMMUNITY && (GetProto()->EffectMiscValue[i] == 12 || GetProto()->EffectMiscValue[i] == 17))
-                {
-                for (uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
-                if (target->m_auras[x])
-                if (target->m_auras[x]->GetSpellProto()->MechanicsType == GetProto()->EffectMiscValue[i])
-                target->m_auras[x]->Remove();
-                }
-                */
-            }
-        }
-
-        // only affects physical damage
-        if (u_caster->IsPacified() && getSpellInfo()->getSchool() == SCHOOL_NORMAL)
-        {
-            // HACK FIX
-            switch (getSpellInfo()->getId())
-            {
-                // SPELL_HASH_ICE_BLOCK: //Ice Block
-                case 27619:
-                case 36911:
-                case 41590:
-                case 45438:
-                case 45776:
-                case 46604:
-                case 46882:
-                case 56124:
-                case 56644:
-                case 62766:
-                case 65802:
-                case 69924:
-                // SPELL_HASH_DIVINE_SHIELD: //Divine Shield
-                case 642:
-                case 13874:
-                case 29382:
-                case 33581:
-                case 40733:
-                case 41367:
-                case 54322:
-                case 63148:
-                case 66010:
-                case 67251:
-                case 71550:
-                // SPELL_HASH_WILL_OF_THE_FORSAKEN: //Will of the Forsaken
-                case 7744:
-                // SPELL_HASH_EVERY_MAN_FOR_HIMSELF: // Every Man for Himself
-                case 59752:
-                {
-                    if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM))
-                        break;
-                }
-                break;
-
-                default:
-                    return SPELL_FAILED_PACIFIED;
-            }
-        }
-
-        /**
-         * Stun check
-         */
-        if (u_caster->IsStunned() && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) == 0)
-            return SPELL_FAILED_STUNNED;
-
-        /**
-         * Fear check
-         */
-        if (u_caster->IsFeared() && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED) == 0)
-            return SPELL_FAILED_FLEEING;
-
-        /**
-         * Confuse check
-         */
-        if (u_caster->hasUnitFlags(UNIT_FLAG_CONFUSED) && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
-            return SPELL_FAILED_CONFUSED;
     }
 
     /**

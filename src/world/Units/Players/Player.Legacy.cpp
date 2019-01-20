@@ -430,7 +430,7 @@ Player::Player(uint32 guid)
     for (i = 0; i < 3; i++)
         m_attack_speed[i] = 1.0f;
 
-    for (i = 0; i < SCHOOL_COUNT; i++)
+    for (i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         m_resist_hit_spell[i] = 0;
 
     m_resist_hit[MOD_MELEE] = 0.0f;
@@ -983,7 +983,7 @@ bool Player::Create(CharCreate& charCreateContent)
     // Gold Starting Amount
     setCoinage(worldConfig.player.startGoldAmount);
 
-    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
         setModDamageDonePct(1.00f, x);
 
     //\todo not sure if this is what we want.
@@ -3107,7 +3107,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         CalcStat(i);
 
 #if VERSION_STRING != Classic
-    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
         setModDamageDonePct(1.00f, x);
 #endif
 
@@ -3853,7 +3853,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     ///    SetFloatValue(x, 0.0f);
 
 #if VERSION_STRING != Classic
-    for (uint8_t x = 0; x < SCHOOL_COUNT; ++x)
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
         setModDamageDonePct(1.00f, x);
 #endif
 
@@ -6868,45 +6868,6 @@ bool Player::HasDeletedSpell(uint32 spell)
     return (mDeletedSpells.count(spell) > 0);
 }
 
-void Player::removeSpellByHashName(uint32 hash)
-{
-    for (SpellSet::iterator iter = mSpells.begin(); iter != mSpells.end();)
-    {
-        SpellSet::iterator it = iter++;
-        uint32 SpellID = *it;
-        SpellInfo const* e = sSpellMgr.getSpellInfo(SpellID);
-        if (e->custom_NameHash == hash)
-        {
-            if (info->spell_list.find(e->getId()) != info->spell_list.end())
-                continue;
-
-            RemoveAura(SpellID, getGuid());
-
-            m_session->OutPacket(SMSG_REMOVED_SPELL, 4, &SpellID);
-
-            mSpells.erase(it);
-        }
-    }
-
-    for (SpellSet::iterator iter = mDeletedSpells.begin(); iter != mDeletedSpells.end();)
-    {
-        SpellSet::iterator it = iter++;
-        uint32 SpellID = *it;
-        SpellInfo const* e = sSpellMgr.getSpellInfo(SpellID);
-        if (e->custom_NameHash == hash)
-        {
-            if (info->spell_list.find(e->getId()) != info->spell_list.end())
-                continue;
-
-            RemoveAura(SpellID, getGuid());
-
-            m_session->OutPacket(SMSG_REMOVED_SPELL, 4, &SpellID);
-
-            mDeletedSpells.erase(it);
-        }
-    }
-}
-
 bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID)
 {
     SpellSet::iterator iter = mSpells.find(SpellID);
@@ -9774,7 +9735,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
 #if VERSION_STRING > Classic
         case SPELL_HEALING_DONE:
         {
-            for (uint8 school = 1; school < SCHOOL_COUNT; ++school)
+            for (uint8 school = 1; school < TOTAL_SPELL_SCHOOLS; ++school)
             {
                 HealDoneMod[school] += val;
             }
@@ -9784,7 +9745,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
 #endif
         case SPELL_DAMAGE_DONE:
         {
-            for (uint8 school = 1; school < SCHOOL_COUNT; ++school)
+            for (uint8 school = 1; school < TOTAL_SPELL_SCHOOLS; ++school)
             {
                 modModDamageDonePositive(school, val);
             }
@@ -11954,7 +11915,7 @@ void Player::UpdateGlyphs()
 #endif
 
 // Fills fields from firstField to firstField+fieldsNum-1 with integers from the string
-void Player::LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum)
+void Player::LoadFieldsFromString(const char* string, uint16 /*firstField*/, uint32 fieldsNum)
 {
     if (string == nullptr)
         return;
