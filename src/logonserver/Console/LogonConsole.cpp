@@ -277,6 +277,8 @@ void LogonConsole::AccountCreate(char* str)
     query << 24 << "','' );";
 #elif VERSION_STRING == Cata
     query << 32 << "','' );";
+#elif VERSION_STRING == Mop
+    query << 40 << "','' );";
 #endif
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
