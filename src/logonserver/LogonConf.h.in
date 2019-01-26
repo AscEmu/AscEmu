@@ -19,5 +19,6 @@
     #define AE_EXPANSION_VERSION 128  // Warlords of Draenor (untested)
 #elif VERSION_STRING == Legion
     #define AE_EXPANSION_VERSION 256  // Legion (untested)
+#endif
 
 #endif // LOGON_CONF_HPP
