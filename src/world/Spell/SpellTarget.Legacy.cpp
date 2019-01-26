@@ -487,7 +487,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
             }
 
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-            bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), x, y, z + 2.0f, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2.0f);
+            bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), x, y, z + 2.0f, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2.0f, VMAP::ModelIgnoreFlags::M2);
 
             if (!isInLOS)
                 return false;
@@ -650,7 +650,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 t->m_targetMask = TARGET_FLAG_DEST_LOCATION;
 
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), lv.x, lv.y, lv.z);
+                isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), lv.x, lv.y, lv.z, VMAP::ModelIgnoreFlags::M2);
             }
             while (worldConfig.terrainCollision.isCollisionEnabled && !isInLOS);
             result = true;

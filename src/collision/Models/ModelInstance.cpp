@@ -20,6 +20,7 @@
 #include "ModelInstance.h"
 #include "WorldModel.h"
 #include "MapTree.h"
+#include "VMapDefinitions.h"
 
 using G3D::Vector3;
 using G3D::Ray;
@@ -32,7 +33,7 @@ namespace VMAP
         iInvScale = 1.f/iScale;
     }
 
-    bool ModelInstance::intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit) const
+    bool ModelInstance::intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit, ModelIgnoreFlags ignoreFlags) const
     {
         if (!iModel)
         {
@@ -56,7 +57,7 @@ namespace VMAP
         Vector3 p = iInvRot * (pRay.origin() - iPos) * iInvScale;
         Ray modRay(p, iInvRot * pRay.direction());
         float distance = pMaxDist * iInvScale;
-        bool hit = iModel->IntersectRay(modRay, distance, pStopAtFirstHit);
+        bool hit = iModel->IntersectRay(modRay, distance, pStopAtFirstHit, ignoreFlags);
         if (hit)
         {
             distance *= iScale;

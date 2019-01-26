@@ -20,6 +20,8 @@
 #include "WorldModel.h"
 #include "VMapDefinitions.h"
 #include "MapTree.h"
+#include "ModelIgnoreFlags.h"
+#include "ModelInstance.h"
 
 using G3D::Vector3;
 using G3D::Ray;
@@ -167,7 +169,6 @@ namespace VMAP
         float dy = ty_f - (float)ty;
 
         /* Tesselate tile to two triangles (not sure if client does it exactly like this)
-
             ^ dy
             |
           1 x---------x (1, 1)
@@ -456,8 +457,16 @@ namespace VMAP
         bool hit;
     };
 
-    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
+    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, ModelIgnoreFlags ignoreFlags) const
     {
+        // If the caller asked us to ignore certain objects we should check flags
+        if ((ignoreFlags & ModelIgnoreFlags::M2) != ModelIgnoreFlags::Nothing)
+        {
+            // M2 models are not taken into account for LoS calculation if caller requested their ignoring.
+            if (Flags & MOD_M2)
+                return false;
+        }
+
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
         if (groupModels.size() == 1)

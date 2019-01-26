@@ -1896,7 +1896,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY(), getNextTarget()->GetPositionZ());
+                    los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY(), getNextTarget()->GetPositionZ(), VMAP::ModelIgnoreFlags::M2);
                 }
 
                 float distance = m_Unit->CalcDistance(getNextTarget());
@@ -2304,7 +2304,7 @@ Unit* AIInterface::FindTarget()
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), tmpPlr->GetPositionX(), tmpPlr->GetPositionY(), tmpPlr->GetPositionZ());
+                    bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), tmpPlr->GetPositionX(), tmpPlr->GetPositionY(), tmpPlr->GetPositionZ(), VMAP::ModelIgnoreFlags::M2);
                     if (los)
                     {
                         distance = dist;

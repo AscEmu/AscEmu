@@ -1149,7 +1149,7 @@ bool MapMgr::isInLineOfSight(float x, float y, float z, float x2, float y2, floa
 {
     VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
 
-    return vmgr->isInLineOfSight(GetMapId(), x, y, z, x2, y2, z2);
+    return vmgr->isInLineOfSight(GetMapId(), x, y, z, x2, y2, z2, VMAP::ModelIgnoreFlags::M2);
 }
 
 uint32 MapMgr::GetMapId()

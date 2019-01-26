@@ -47,10 +47,10 @@ namespace MMAP
                 dtFreeNavMesh(navMesh);
         }
 
-        dtNavMesh* navMesh;
-
         // we have to use single dtNavMeshQuery for every instance, since those are not thread safe
         NavMeshQuerySet navMeshQueries;     // instanceId to query
+
+        dtNavMesh* navMesh;
         MMapTileSet mmapLoadedTiles;        // maps [map grid coords] to [dtTile]
     };
 

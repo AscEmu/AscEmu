@@ -419,7 +419,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
+                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), VMAP::ModelIgnoreFlags::M2);
 
                     if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
                         continue;
@@ -486,7 +486,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
+                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), VMAP::ModelIgnoreFlags::M2);
 
                     if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
                         continue;
@@ -6940,7 +6940,7 @@ void Spell::HandleTargetNoObject()
     newz = m_caster->GetMapMgr()->GetLandHeight(newx, newy, newz);
 
     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2.0f, newx, newy, newz + 2.0f);
+    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2.0f, newx, newy, newz + 2.0f, VMAP::ModelIgnoreFlags::M2);
     //if not in line of sight, or too far away we summon inside caster
     if (fabs(newz - m_caster->GetPositionZ()) > 10 || !isInLOS)
     {

@@ -2723,7 +2723,7 @@ bool Object::IsWithinLOS(LocationVector location)
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-        return mgr->isInLineOfSight(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f);
+        return mgr->isInLineOfSight(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f, VMAP::ModelIgnoreFlags::M2);
     }
     else
     {
