@@ -27,22 +27,28 @@
 #include "vmapexport.h"
 
 #ifdef WIN32
-    #include <sys/stat.h>
-    #include <direct.h>
-    #define mkdir _mkdir
+#include <sys/stat.h>
+#include <direct.h>
+#define mkdir _mkdir
 #else
-    #include <sys/stat.h>
+#include <sys/stat.h>
+#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
-
-#undef min
-#undef max
 
 #include <cstdio>
 #include <iostream>
 #include <vector>
 #include <errno.h>
 
+#undef min
+#undef max
+
+//------------------------------------------------------------------------------
+// Defines
+
 #define MPQ_BLOCK_SIZE 0x1000
+
+//-----------------------------------------------------------------------------
 
 extern ArchiveSet gOpenArchives;
 

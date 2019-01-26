@@ -1202,10 +1202,10 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     //	float targetscale = pVictim->getScale();
     //	float selfscale = getScale();
 
-    //float distance = sqrt(getDistanceSq(pVictim));
+    //float distance = std::sqrt(getDistanceSq(pVictim));
     float delta_x = pVictim->GetPositionX() - GetPositionX();
     float delta_y = pVictim->GetPositionY() - GetPositionY();
-    float distance = sqrt(delta_x * delta_x + delta_y * delta_y);
+    float distance = std::sqrt(delta_x * delta_x + delta_y * delta_y);
 
 
     //	float attackreach = (((targetradius*targetscale) + selfreach) + (((selfradius*selfradius)*selfscale)+1.50f));

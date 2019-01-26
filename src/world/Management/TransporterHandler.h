@@ -53,7 +53,7 @@ class TransportPath
                 xd = i_nodes[ idx ].x - i_nodes[ idx - 1 ].x;
                 yd = i_nodes[ idx ].y - i_nodes[ idx - 1 ].y;
                 zd = i_nodes[ idx ].z - i_nodes[ idx - 1 ].z;
-                len += (float)sqrt(xd * xd + yd * yd + zd * zd);
+                len += (float)std::sqrt(xd * xd + yd * yd + zd * zd);
             }
             return len;
         }

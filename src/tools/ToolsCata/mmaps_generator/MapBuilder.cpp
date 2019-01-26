@@ -164,7 +164,7 @@ namespace MMAP
     {
         while (1)
         {
-            uint32 mapId = 0;
+            uint32_t mapId = 0;
 
             _queue.WaitAndPop(mapId);
 
@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        const auto maxTiles = static_cast<int>(tiles->size());
+        int maxTiles = static_cast<int>(tiles->size());
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
@@ -755,8 +755,8 @@ namespace MMAP
         params.walkableHeight = BASE_UNIT_DIM*config.walkableHeight;    // agent height
         params.walkableRadius = BASE_UNIT_DIM*config.walkableRadius;    // agent radius
         params.walkableClimb = BASE_UNIT_DIM*config.walkableClimb;      // keep less that walkableHeight (aka agent height)!
-        params.tileX = static_cast<int>(((bmin[0] + bmax[0]) / 2 - navMesh->getParams()->orig[0]) / GRID_SIZE);
-        params.tileY = static_cast<int>(((bmin[2] + bmax[2]) / 2 - navMesh->getParams()->orig[2]) / GRID_SIZE);
+        params.tileX = static_cast<int>((((bmin[0] + bmax[0]) / 2) - navMesh->getParams()->orig[0]) / GRID_SIZE);
+        params.tileY = static_cast<int>((((bmin[2] + bmax[2]) / 2) - navMesh->getParams()->orig[2]) / GRID_SIZE);
         rcVcopy(params.bmin, bmin);
         rcVcopy(params.bmax, bmax);
         params.cs = config.cs;
@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        const auto count = fread(&header, sizeof(MmapTileHeader), 1, file);
+        int count = static_cast<int>(fread(&header, sizeof(MmapTileHeader), 1, file));
         fclose(file);
         if (count != 1)
             return false;

@@ -4513,7 +4513,7 @@ class IllidanStormrageAI : public CreatureAIScript
         float xchange  = Util::getRandomFloat(15.0f);
         float distance = 15.0f;
 
-        float ychange = sqrt(distance * distance - xchange * xchange);
+        float ychange = std::sqrt(distance * distance - xchange * xchange);
 
         if (Util::getRandomUInt(1) == 1)
             xchange *= -1;

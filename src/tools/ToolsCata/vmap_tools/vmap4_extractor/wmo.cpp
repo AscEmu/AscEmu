@@ -20,14 +20,14 @@
 #include "vmapexport.h"
 #include "wmo.h"
 #include "vec3d.h"
+#include "mpqfile.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
-#include <map>
-#include <fstream>
+
 #undef min
 #undef max
-#include "mpqfile.h"
 
 using namespace std;
 extern uint16 *LiqType;
@@ -531,7 +531,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-    const auto count = fread(&nVertices, sizeof (int), 1, input);
+    int count = static_cast<int>(fread(&nVertices, sizeof(int), 1, input));
     fclose(input);
 
     if (count != 1 || nVertices == 0)
@@ -564,7 +564,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     fwrite(&scale, sizeof(float), 1, pDirfile);
     fwrite(&pos2, sizeof(float), 3, pDirfile);
     fwrite(&pos3, sizeof(float), 3, pDirfile);
-    const auto nlen = static_cast<uint32_t>(strlen(WmoInstName));
+    uint32_t nlen = static_cast<uint32_t>(strlen(WmoInstName));
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(WmoInstName, sizeof(char), nlen, pDirfile);
 

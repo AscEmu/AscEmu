@@ -69,8 +69,8 @@ class MPQFile
     size_t pointer, size;
 
     // disable copying
-    MPQFile(const MPQFile &f);
-    void operator=(const MPQFile &f);
+    MPQFile(const MPQFile& /*f*/) = delete;
+    void operator=(const MPQFile& /*f*/) = delete;
 
 public:
     MPQFile(HANDLE mpq, const char* filename, bool warnNoExist = true);    // filenames are not case sensitive

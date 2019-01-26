@@ -92,8 +92,8 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 
     uint32 size;
 
-    string xMap;
-    string yMap;
+    std::string xMap;
+    std::string yMap;
 
     Adtfilename.erase(Adtfilename.find(".adt"), 4);
     string TempMapNumber;
@@ -214,7 +214,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
         }
 
         //======================
-        ADT.seek(nextpos);
+        ADT.seek(static_cast<int>(nextpos));
     }
 
     ADT.close();

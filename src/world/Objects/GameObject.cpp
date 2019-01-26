@@ -574,7 +574,7 @@ struct QuaternionCompressed
         double z = (double)(m_raw << 43 >> 43) / (double)PACK_COEFF_YZ;
         double w = 1 - (x * x + y * y + z * z);
         ARCEMU_ASSERT(w >= 0);
-        w = sqrt(w);
+        w = std::sqrt(w);
 
         return Quat(float(x), float(y), float(z), float(w));
     }
@@ -926,7 +926,7 @@ void GameObject_Trap::InitAI()
     if (cooldown < 1000)
         cooldown = 1000;
 
-    maxdistance = sqrt(float(gameobject_properties->trap.radius));
+    maxdistance = std::sqrt(float(gameobject_properties->trap.radius));
     if (maxdistance == 0.0f)
         maxdistance = 1.0f;
 

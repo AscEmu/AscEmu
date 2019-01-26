@@ -811,8 +811,8 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     sp->entryId = getEntry();
     sp->floatMisc1 = 0;
     sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
-    if (sp->maxrange < sqrt(info->custom_base_range_or_radius_sqr))
-        sp->maxrange = sqrt(info->custom_base_range_or_radius_sqr);
+    if (sp->maxrange < std::sqrt(info->custom_base_range_or_radius_sqr))
+        sp->maxrange = std::sqrt(info->custom_base_range_or_radius_sqr);
 
     sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     sp->Misc2 = 0;

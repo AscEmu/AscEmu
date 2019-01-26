@@ -28,7 +28,7 @@ DBCFile::DBCFile(HANDLE mpq, const char* filename) :
 
 bool DBCFile::open()
 {
-    if (!SFileOpenFileEx(_mpq, _filename, SFILE_OPEN_PATCHED_FILE, &_file))
+    if (!SFileOpenFileEx(_mpq, _filename, SFILE_OPEN_FROM_MPQ, &_file))
         return false;
 
     char header[4];
@@ -74,7 +74,7 @@ bool DBCFile::open()
 
     size_t data_size = _recordSize * _recordCount + _stringSize;
     readBytes = 0;
-    SFileReadFile(_file, _data, data_size, &readBytes, NULL);
+    SFileReadFile(_file, _data, (DWORD)data_size, &readBytes, NULL);
     if (readBytes != data_size)
         return false;
 

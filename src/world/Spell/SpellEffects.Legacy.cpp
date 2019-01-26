@@ -3446,7 +3446,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         d = destination.z - t->GetPositionZ();
         r += d * d;
 
-        if (sqrt(r) > spellRadius) continue;
+        if (std::sqrt(r) > spellRadius) continue;
 
         if (!isAttackable(m_caster, itr))   //Fix Me: only enemy targets?
             continue;

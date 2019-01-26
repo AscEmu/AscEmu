@@ -491,14 +491,14 @@ class AdamantAI : public CreatureAIScript
                 // (currentWP - perviousLocation) *(currentWP - perviousLocation)
                 distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX()) * (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX());
                 distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY()) * (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY());
-                distance = sqrt(distanceX - distanceY);
+                distance = std::sqrt(distanceX - distanceY);
             }
             else if (i != adamantWpCount - 1)
             {
                 // (currentWP - perviousWP) *(currentWP - perviousWP)
                 distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - DeathstalkerAdamantWPS[i - 1].wp_location.x) * (DeathstalkerAdamantWPS[i].wp_location.x - DeathstalkerAdamantWPS[i - 1].wp_location.x);
                 distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - DeathstalkerAdamantWPS[i - 1].wp_location.y) * (DeathstalkerAdamantWPS[i].wp_location.y - DeathstalkerAdamantWPS[i - 1].wp_location.y);
-                distance = sqrt(distanceX + distanceY);
+                distance = std::sqrt(distanceX + distanceY);
             }
             waitTime = 1000 * std::abs(DeathstalkerAdamantWPS[i].wp_flag == Movement::WP_MOVE_TYPE_WALK ? distance / walkSpeed : distance / runSpeed);
 

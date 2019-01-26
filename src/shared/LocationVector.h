@@ -41,7 +41,7 @@ class SERVER_DECL LocationVector
     bool isSet() const;
     // MIT End
 
-        // sqrt(dx * dx + dy * dy + dz * dz)
+        // std::sqrt(dx * dx + dy * dy + dz * dz)
         float Distance(const LocationVector & comp)
         {
             float delta_x = comp.x - x;

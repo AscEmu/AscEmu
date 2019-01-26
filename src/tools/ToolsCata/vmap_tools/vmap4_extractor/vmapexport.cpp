@@ -19,14 +19,15 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include <cstdio>
-#include <iostream>
-#include <vector>
-#include <list>
-#include <errno.h>
+#include "adtfile.h"
+#include "wdtfile.h"
+#include "dbcfile.h"
+#include "wmo.h"
+#include "mpqfile.h"
+#include "vmapexport.h"
+
 
 #ifdef WIN32
-#include <Windows.h>
 #include <sys/stat.h>
 #include <direct.h>
 #define mkdir _mkdir
@@ -35,22 +36,13 @@
 #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <errno.h>
+
 #undef min
 #undef max
-
-//#pragma warning(disable : 4505)
-//#pragma comment(lib, "Winmm.lib")
-
-#include <map>
-
-//From Extractor
-#include "adtfile.h"
-#include "wdtfile.h"
-#include "dbcfile.h"
-#include "wmo.h"
-#include "mpqfile.h"
-
-#include "vmapexport.h"
 
 //------------------------------------------------------------------------------
 // Defines

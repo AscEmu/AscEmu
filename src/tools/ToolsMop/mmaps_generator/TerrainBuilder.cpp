@@ -188,8 +188,8 @@ namespace MMAP
                 uint8 v9[V9_SIZE_SQ];
                 uint8 v8[V8_SIZE_SQ];
                 int count = 0;
-                count += fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -206,8 +206,8 @@ namespace MMAP
                 uint16 v9[V9_SIZE_SQ];
                 uint16 v8[V8_SIZE_SQ];
                 int count = 0;
-                count += fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -222,8 +222,8 @@ namespace MMAP
             else
             {
                 int count = 0;
-                count += fread(V9, sizeof(float), V9_SIZE_SQ, mapFile);
-                count += fread(V8, sizeof(float), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(V9, sizeof(float), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(V8, sizeof(float), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
             }
@@ -674,8 +674,9 @@ namespace MMAP
 
                 // transform data
                 float scale = instance.iScale;
-                G3D::Matrix3 rotation = G3D::Matrix3::fromEulerAnglesXYZ(G3D::pi()*instance.iRot.z/-180.f, G3D::pi()*instance.iRot.x/-180.f, G3D::pi()*instance.iRot.y/-180.f);
-                G3D::Vector3 position = instance.iPos;
+                const float pi = static_cast<float>(G3D::pi());
+                auto rotation = G3D::Matrix3::fromEulerAnglesXYZ(pi*instance.iRot.z/-180.f, pi*instance.iRot.x/-180.f, pi*instance.iRot.y/-180.f);
+                auto position = instance.iPos;
                 position.x -= 32*GRID_SIZE;
                 position.y -= 32*GRID_SIZE;
 
@@ -765,12 +766,12 @@ namespace MMAP
                                     }
 
                                     uint32 liqOffset = meshData.liquidVerts.size() / 3;
-                                    for (uint32 i = 0; i < liqVerts.size(); ++i)
-                                        meshData.liquidVerts.append(liqVerts[i].y, liqVerts[i].z, liqVerts[i].x);
+                                    for (uint32 j = 0; j < liqVerts.size(); ++j)
+                                        meshData.liquidVerts.append(liqVerts[j].y, liqVerts[j].z, liqVerts[j].x);
 
-                                    for (uint32 i = 0; i < liqTris.size() / 3; ++i)
+                                    for (uint32 j = 0; j < liqTris.size() / 3; ++j)
                                     {
-                                        meshData.liquidTris.append(liqTris[i*3+1] + liqOffset, liqTris[i*3+2] + liqOffset, liqTris[i*3] + liqOffset);
+                                        meshData.liquidTris.append(liqTris[j*3+1] + liqOffset, liqTris[j*3+2] + liqOffset, liqTris[j*3] + liqOffset);
                                         meshData.liquidType.append(type);
                                     }
                     }

@@ -254,7 +254,7 @@ class MrSmiteAI : public CreatureAIScript
             float XDiff, YDiff;
             XDiff = getCreature()->GetPositionX() - 1.100060f;
             YDiff = getCreature()->GetPositionY() + 780.026367f;
-            float Distance = static_cast<float>(sqrt(XDiff * XDiff + YDiff * YDiff));
+            float Distance = static_cast<float>(std::sqrt(XDiff * XDiff + YDiff * YDiff));
             if (Distance <= 5.0f)
                 return true;
         }

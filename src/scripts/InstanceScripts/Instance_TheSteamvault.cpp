@@ -425,7 +425,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                 continue;
 
             pDistiller = Unit2Check;
-            distance = sqrt(Dist2Unit);
+            distance = std::sqrt(Dist2Unit);
             DistillerNumber = i;
         }
 

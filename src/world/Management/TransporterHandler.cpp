@@ -340,7 +340,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
         else
         {
             keyFrames[i].distFromPrev =
-                sqrt(pow(keyFrames[i].x - keyFrames[i - 1].x, 2) +
+                std::sqrt(pow(keyFrames[i].x - keyFrames[i - 1].x, 2) +
                 pow(keyFrames[i].y - keyFrames[i - 1].y, 2) +
                 pow(keyFrames[i].z - keyFrames[i - 1].z, 2));
         }
@@ -376,12 +376,12 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
         if (keyFrames[i].distSinceStop < (30 * 30 * 0.5f))
-            keyFrames[i].tFrom = sqrt(2 * keyFrames[i].distSinceStop);
+            keyFrames[i].tFrom = std::sqrt(2 * keyFrames[i].distSinceStop);
         else
             keyFrames[i].tFrom = ((keyFrames[i].distSinceStop - (30 * 30 * 0.5f)) / 30) + 30;
 
         if (keyFrames[i].distUntilStop < (30 * 30 * 0.5f))
-            keyFrames[i].tTo = sqrt(2 * keyFrames[i].distUntilStop);
+            keyFrames[i].tTo = std::sqrt(2 * keyFrames[i].distUntilStop);
         else
             keyFrames[i].tTo = ((keyFrames[i].distUntilStop - (30 * 30 * 0.5f)) / 30) + 30;
 

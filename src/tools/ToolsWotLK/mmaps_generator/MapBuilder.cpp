@@ -164,7 +164,7 @@ namespace MMAP
     {
         while (1)
         {
-            uint32 mapId = 0;
+            uint32_t mapId = 0;
 
             _queue.WaitAndPop(mapId);
 
