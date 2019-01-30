@@ -22,7 +22,7 @@
 #include "dbcfile.h"
 
 DBCFile::DBCFile(HANDLE mpq, const char* filename) :
-    _mpq(mpq), _filename(filename), _file(NULL), _data(NULL), _stringTable(NULL)
+    _mpq(mpq), _filename(filename), _file(nullptr), _data(nullptr), _stringTable(nullptr)
 {
 }
 

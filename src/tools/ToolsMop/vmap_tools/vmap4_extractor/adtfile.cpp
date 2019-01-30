@@ -31,7 +31,7 @@ char const* GetPlainName(char const* FileName)
 {
     const char * szTemp;
 
-    if ((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != nullptr)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -40,7 +40,7 @@ char* GetPlainName(char* FileName)
 {
     char * szTemp;
 
-    if ((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != nullptr)
         FileName = szTemp + 1;
     return FileName;
 }

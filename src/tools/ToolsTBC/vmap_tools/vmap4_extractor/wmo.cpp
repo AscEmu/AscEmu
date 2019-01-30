@@ -475,17 +475,17 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
 
 WMOGroup::~WMOGroup()
 {
-    delete [] MOPY;
-    delete [] MOVI;
-    delete [] MOVT;
-    delete [] MOBA;
+    delete[] MOPY;
+    delete[] MOVI;
+    delete[] MOVT;
+    delete[] MOBA;
     delete hlq;
-    delete [] LiquEx;
-    delete [] LiquBytes;
+    delete[] LiquEx;
+    delete[] LiquBytes;
 }
 
 WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile)
-    : currx(0), curry(0), wmo(NULL), doodadset(0), pos(), indx(0), id(0)
+    : currx(0), curry(0), wmo(nullptr), doodadset(0), pos(), indx(0), id(0)
 {
     float ff[3];
     f.read(&id, 4);
@@ -520,7 +520,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     FILE *input;
     input = fopen(tempname, "r+b");
 
-    if(!input)
+    if (!input)
     {
         printf("WMOInstance::WMOInstance: couldn't open %s\n", tempname);
         return;
@@ -534,13 +534,13 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     if (count != 1 || nVertices == 0)
         return;
 
-    float x,z;
+    float x, z;
     x = pos.x;
     z = pos.z;
-    if(x==0 && z == 0)
+    if (x == 0 && z == 0)
     {
-        pos.x = 533.33333f*32;
-        pos.z = 533.33333f*32;
+        pos.x = 533.33333f * 32;
+        pos.z = 533.33333f * 32;
     }
     pos = fixCoords(pos);
     pos2 = fixCoords(pos2);
@@ -548,7 +548,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
 
     float scale = 1.0f;
     uint32 flags = MOD_HAS_BOUND;
-    if(tileX == 65 && tileY == 65) flags |= MOD_WORLDSPAWN;
+    if (tileX == 65 && tileY == 65) flags |= MOD_WORLDSPAWN;
     //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
     fwrite(&mapID, sizeof(uint32), 1, pDirfile);
     fwrite(&tileX, sizeof(uint32), 1, pDirfile);

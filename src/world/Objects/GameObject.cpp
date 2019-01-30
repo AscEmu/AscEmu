@@ -545,12 +545,11 @@ uint32 GameObject::GetGOReqSkill()
     return 0;
 }
 
-using G3D::Quat;
 struct QuaternionCompressed
 {
     QuaternionCompressed() : m_raw(0) {}
     QuaternionCompressed(int64 val) : m_raw(val) {}
-    QuaternionCompressed(const Quat& quat) { Set(quat); }
+    QuaternionCompressed(const G3D::Quat& quat) { Set(quat); }
 
     enum
     {
@@ -558,7 +557,7 @@ struct QuaternionCompressed
         PACK_COEFF_X = 1 << 21,
     };
 
-    void Set(const Quat& quat)
+    void Set(const G3D::Quat& quat)
     {
         int8 w_sign = (quat.w >= 0 ? 1 : -1);
         int64 X = int32(quat.x * PACK_COEFF_X) * w_sign & ((1 << 22) - 1);
@@ -567,7 +566,7 @@ struct QuaternionCompressed
         m_raw = Z | (Y << 21) | (X << 42);
     }
 
-    Quat Unpack() const
+    G3D::Quat Unpack() const
     {
         double x = (double)(m_raw >> 42) / (double)PACK_COEFF_X;
         double y = (double)(m_raw << 22 >> 43) / (double)PACK_COEFF_YZ;
@@ -576,7 +575,7 @@ struct QuaternionCompressed
         ARCEMU_ASSERT(w >= 0);
         w = std::sqrt(w);
 
-        return Quat(float(x), float(y), float(z), float(w));
+        return G3D::Quat(float(x), float(y), float(z), float(w));
     }
 
     int64 m_raw;
@@ -584,10 +583,10 @@ struct QuaternionCompressed
 
 void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
 {
-    Quat quat(qx, qy, qz, qw);
+    G3D::Quat quat(qx, qy, qz, qw);
     // Temporary solution for gameobjects that has no rotation data in DB:
     if (qz == 0 && qw == 0)
-        quat = Quat::fromAxisAngleRotation(G3D::Vector3::unitZ(), GetOrientation());
+        quat = G3D::Quat::fromAxisAngleRotation(G3D::Vector3::unitZ(), GetOrientation());
 
     quat.unitize();
     m_rotation = QuaternionCompressed(quat).m_raw;
@@ -599,7 +598,7 @@ void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
 
 void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
 {
-    Quat quat(G3D::Matrix3::fromEulerAnglesZYX(z_rot, y_rot, x_rot));
+    G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(z_rot, y_rot, x_rot));
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 

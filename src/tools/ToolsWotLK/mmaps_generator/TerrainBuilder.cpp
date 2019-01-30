@@ -18,12 +18,11 @@
  */
 
 #include "TerrainBuilder.h"
-
 #include "MapBuilder.h"
-
 #include "VMapManager2.h"
 #include "MapTree.h"
 #include "ModelInstance.h"
+#include <map>
 
 // ******************************************
 // Map file format defines
@@ -281,7 +280,7 @@ namespace MMAP
                 printf("TerrainBuilder::loadMap: Failed to read some data expected 1, read 0\n");
 
 
-            float* liquid_map = NULL;
+            float* liquid_map = nullptr;
 
             if (!(lheader.flags & MAP_LIQUID_NO_TYPE))
                 if (fread(liquid_type, sizeof(liquid_type), 1, mapFile) != 1)
@@ -374,7 +373,7 @@ namespace MMAP
 
         // make a copy of liquid vertices
         // used to pad right-bottom frame due to lost vertex data at extraction
-        float* lverts_copy = NULL;
+        float* lverts_copy = nullptr;
         if (meshData.liquidVerts.size())
         {
             lverts_copy = new float[meshData.liquidVerts.size()];
@@ -647,7 +646,7 @@ namespace MMAP
             if (!instanceTrees[mapID])
                 break;
 
-            ModelInstance* models = NULL;
+            ModelInstance* models = nullptr;
             uint32 count = 0;
             instanceTrees[mapID]->getModelInstances(models, count);
 
@@ -743,37 +742,41 @@ namespace MMAP
                                 liqVerts.push_back(vert);
                             }
 
-                            int idx1, idx2, idx3, idx4;
-                            uint32 square;
-                            for (uint32 x = 0; x < tilesX; ++x)
-                                for (uint32 y = 0; y < tilesY; ++y)
-                                    if ((flags[x+y*tilesX] & 0x0f) != 0x0f)
-                                    {
-                                        square = x * tilesY + y;
-                                        idx1 = square+x;
-                                        idx2 = square+1+x;
-                                        idx3 = square+tilesY+1+1+x;
-                                        idx4 = square+tilesY+1+x;
+                        int idx1, idx2, idx3, idx4;
+                        uint32 square;
+                        for (uint32 x = 0; x < tilesX; ++x)
+                        {
+                            for (uint32 y = 0; y < tilesY; ++y)
+                            {
+                                if ((flags[x + y*tilesX] & 0x0f) != 0x0f)
+                                {
+                                    square = x * tilesY + y;
+                                    idx1 = square + x;
+                                    idx2 = square + 1 + x;
+                                    idx3 = square + tilesY + 1 + 1 + x;
+                                    idx4 = square + tilesY + 1 + x;
 
-                                        // top triangle
-                                        liqTris.push_back(idx3);
-                                        liqTris.push_back(idx2);
-                                        liqTris.push_back(idx1);
-                                        // bottom triangle
-                                        liqTris.push_back(idx4);
-                                        liqTris.push_back(idx3);
-                                        liqTris.push_back(idx1);
-                                    }
+                                    // top triangle
+                                    liqTris.push_back(idx3);
+                                    liqTris.push_back(idx2);
+                                    liqTris.push_back(idx1);
+                                    // bottom triangle
+                                    liqTris.push_back(idx4);
+                                    liqTris.push_back(idx3);
+                                    liqTris.push_back(idx1);
+                                }
+                            }
+                        }
 
-                                    uint32 liqOffset = meshData.liquidVerts.size() / 3;
-                                    for (uint32 j = 0; j < liqVerts.size(); ++j)
-                                        meshData.liquidVerts.append(liqVerts[j].y, liqVerts[j].z, liqVerts[j].x);
+                        uint32 liqOffset = meshData.liquidVerts.size() / 3;
+                        for (uint32 j = 0; j < liqVerts.size(); ++j)
+                            meshData.liquidVerts.append(liqVerts[j].y, liqVerts[j].z, liqVerts[j].x);
 
-                                    for (uint32 j = 0; j < liqTris.size() / 3; ++j)
-                                    {
-                                        meshData.liquidTris.append(liqTris[j*3+1] + liqOffset, liqTris[j*3+2] + liqOffset, liqTris[j*3] + liqOffset);
-                                        meshData.liquidType.append(type);
-                                    }
+                        for (uint32 j = 0; j < liqTris.size() / 3; ++j)
+                        {
+                            meshData.liquidTris.append(liqTris[j * 3 + 1] + liqOffset, liqTris[j * 3 + 2] + liqOffset, liqTris[j * 3] + liqOffset);
+                            meshData.liquidType.append(type);
+                        }
                     }
                 }
             }
@@ -885,10 +888,10 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, const char* offMeshFilePath)
+    void TerrainBuilder::loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, char const* offMeshFilePath)
     {
         // no meshfile input given?
-        if (offMeshFilePath == NULL)
+        if (offMeshFilePath == nullptr)
             return;
 
         FILE* fp = fopen(offMeshFilePath, "rb");

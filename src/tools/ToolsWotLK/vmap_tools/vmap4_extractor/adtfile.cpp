@@ -31,7 +31,7 @@ char const* GetPlainName(char const* FileName)
 {
     const char * szTemp;
 
-    if((szTemp = strrchr(FileName, '\\')) != NULL)
+    if((szTemp = strrchr(FileName, '\\')) != nullptr)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -40,7 +40,7 @@ char* GetPlainName(char* FileName)
 {
     char * szTemp;
 
-    if((szTemp = strrchr(FileName, '\\')) != NULL)
+    if((szTemp = strrchr(FileName, '\\')) != nullptr)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -61,7 +61,7 @@ void fixnamen(char* name, size_t len)
 
 void fixname2(char* name, size_t len)
 {
-    for (size_t i=0; i<len-3; i++)
+    for (size_t i = 0; i<len-3; i++)
     {
         if(name[i] == ' ')
         name[i] = '_';
@@ -72,10 +72,10 @@ char* GetExtension(char* FileName)
 {
     if (char* szTemp = strrchr(FileName, '.'))
         return szTemp;
-    return NULL;
+    return nullptr;
 }
 
-ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(NULL), ModelInstansName(NULL)
+ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(nullptr), ModelInstansName(nullptr)
 {
     Adtfilename.append(filename);
 }
@@ -180,7 +180,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                     ModelInstance inst(ADT,ModelInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] ModelInstansName;
-                ModelInstansName = NULL;
+                ModelInstansName = nullptr;
             }
         }
         else if (!strcmp(fourcc,"MODF"))
@@ -195,7 +195,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                     WMOInstance inst(ADT,WmoInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] WmoInstansName;
-                WmoInstansName = NULL;
+                WmoInstansName = nullptr;
             }
         }
         //======================

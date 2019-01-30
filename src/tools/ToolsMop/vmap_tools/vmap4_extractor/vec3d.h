@@ -173,30 +173,30 @@ public:
 
     Vec2D operator* (float d) const
     {
-        Vec2D r(x*d, y*d);
+        Vec2D r(x * d, y * d);
         return r;
     }
 
-    friend Vec2D operator* (float d, const Vec2D& v)
+    friend Vec2D operator*(float d, Vec2D const& v)
     {
         return v * d;
     }
 
-    Vec2D& operator+= (const Vec2D &v)
+    Vec2D& operator+=(Vec2D const& v)
     {
         x += v.x;
         y += v.y;
         return *this;
     }
 
-    Vec2D& operator-= (const Vec2D &v)
+    Vec2D& operator-=(Vec2D const& v)
     {
         x -= v.x;
         y -= v.y;
         return *this;
     }
 
-    Vec2D& operator*= (float d)
+    Vec2D& operator*=(float d)
     {
         x *= d;
         y *= d;
@@ -205,7 +205,7 @@ public:
 
     float lengthSquared() const
     {
-        return x*x + y*y;
+        return x * x + y * y;
     }
 
     float length() const
@@ -215,17 +215,16 @@ public:
 
     Vec2D& normalize()
     {
-        this->operator*= (1.0f / length());
+        *this *= (1.0f / length());
         return *this;
     }
 
-    Vec2D operator~ () const
+    Vec2D operator~() const
     {
         Vec2D r(*this);
         r.normalize();
         return r;
     }
-
 
     friend std::istream& operator >> (std::istream& in, Vec2D& v)
     {
@@ -239,9 +238,10 @@ public:
     }
 };
 
-inline void rotate(float x0, float y0, float *x, float *y, float angle)
+inline void rotate(float x0, float y0, float* x, float* y, float angle)
 {
-    float xa = *x - x0, ya = *y - y0;
+    float xa = *x - x0;
+    float ya = *y - y0;
     *x = xa*cosf(angle) - ya*sinf(angle) + x0;
     *y = xa*sinf(angle) + ya*cosf(angle) + y0;
 }

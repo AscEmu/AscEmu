@@ -70,7 +70,7 @@ bool Model::open()
 
 bool Model::ConvertToVMAPModel(const char * outfilename)
 {
-    int N[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+    int N[12] = { };
     FILE* output = fopen(outfilename, "wb");
     if (!output)
     {

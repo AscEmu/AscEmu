@@ -72,7 +72,7 @@ bool Model::open()
 
 bool Model::ConvertToVMAPModel(const char * outfilename)
 {
-    int N[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int N[12] = { };
     FILE* output = fopen(outfilename, "wb");
     if (!output)
     {
@@ -117,7 +117,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
     wsize = sizeof(int) + sizeof(float) * 3 * nVertices;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&nVertices, sizeof(int), 1, output);
-    if (nVertices >0)
+    if (nVertices > 0)
     {
         for (uint32 vpos = 0; vpos < nVertices; ++vpos)
         {

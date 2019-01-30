@@ -17,22 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include "adtfile.h"
 #include "wdtfile.h"
 #include "dbcfile.h"
 #include "wmo.h"
 #include "mpqfile.h"
 #include "vmapexport.h"
-
+#include <sys/stat.h>
 
 #ifdef WIN32
-#include <sys/stat.h>
 #include <direct.h>
 #define mkdir _mkdir
 #else
-#include <sys/stat.h>
 #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
@@ -113,8 +109,8 @@ bool preciseVectorData = false;
 // Constants
 
 //static const char * szWorkDirMaps = ".\\Maps";
-const char* szWorkDirWmo = "./Buildings";
-const char* szRawVMAPMagic = "VMAP042";
+char const* szWorkDirWmo = "./Buildings";
+char const* szRawVMAPMagic = "VMAP042";
 
 bool LoadLocaleMPQFile(int locale)
 {
@@ -232,7 +228,7 @@ void LoadCommonMPQFiles(uint32 build)
 
 // Local testing functions
 
-bool FileExists(const char* file)
+bool FileExists(char const* file)
 {
     if (FILE* n = fopen(file, "rb"))
     {
@@ -244,9 +240,9 @@ bool FileExists(const char* file)
 
 void strToLower(char* str)
 {
-    while(*str)
+    while (*str)
     {
-        *str=tolower(*str);
+        *str = tolower(*str);
         ++str;
     }
 }
@@ -278,7 +274,7 @@ bool ExtractWmo()
 {
     bool success = false;
 
-    //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
+    //char const* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
 
     SFILE_FIND_DATA data;
     HANDLE find = SFileFindFirstFile(WorldMpq, "*.wmo", &data, NULL);
@@ -315,7 +311,7 @@ bool ExtractSingleWmo(std::string& fname)
     int p = 0;
     // Select root wmo files
     char const* rchr = strrchr(plain_name, '_');
-    if (rchr != NULL)
+    if (rchr != nullptr)
     {
         char cpy[4];
         memcpy(cpy, rchr, 4);
@@ -520,7 +516,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    printf("Extract %s. Beginning work ....\n\n",versionString);
+    printf("Extract %s. Beginning work ....\n", versionString);
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Create the working directory
     if (mkdir(szWorkDirWmo
@@ -563,7 +559,7 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count = dbc->getRecordCount();
+        map_count = static_cast<uint32_t>(dbc->getRecordCount());
         map_ids = new map_id[map_count];
         for (unsigned int x = 0; x < map_count; ++x)
         {
@@ -575,7 +571,7 @@ int main(int argc, char ** argv)
 
         delete dbc;
         ParsMapFiles();
-        delete [] map_ids;
+        delete[] map_ids;
         //nError = ERROR_SUCCESS;
         // Extract models, listed in GameObjectDisplayInfo.dbc
         ExtractGameobjectModels();
@@ -587,11 +583,11 @@ int main(int argc, char ** argv)
     printf("\n");
     if (!success)
     {
-        printf("ERROR: Extract %s. Work NOT complete.\n   Precise vector data=%d.\nPress any key.\n",versionString, preciseVectorData);
+        printf("ERROR: Extract %s. Work NOT complete.\n   Precise vector data=%d.\nPress any key.\n", versionString, preciseVectorData);
         getchar();
     }
 
-    printf("Extract %s. Work complete. No errors.\n",versionString);
-    delete [] LiqType;
+    printf("Extract %s. Work complete. No errors.\n", versionString);
+    delete[] LiqType;
     return 0;
 }

@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include "../../src/world/WorldConf.h"
 
 #include <stdio.h>
@@ -106,7 +104,7 @@ char const* CONF_mpq_list[] =
 
 #define LOCALES_COUNT 12
 
-char const* Locales[LOCALES_COUNT] =
+static char const* const Locales[LOCALES_COUNT] =
 {
     "enGB", "enUS",
     "deDE", "esES",
@@ -162,7 +160,7 @@ void HandleArgs(int argc, char * arg[])
         if(arg[c][0] != '-')
             Usage(arg[0]);
 
-        switch(arg[c][1])
+        switch (arg[c][1])
         {
             case 'i':
                 if (c + 1 < argc && strlen(arg[c + 1]) < MAX_PATH_LENGTH) // all ok
@@ -183,15 +181,15 @@ void HandleArgs(int argc, char * arg[])
                     Usage(arg[0]);
                 break;
             case 'f':
-                if(c + 1 < argc)                            // all ok
-                    CONF_allow_float_to_int=atoi(arg[(c++) + 1])!=0;
+                if (c + 1 < argc)                            // all ok
+                    CONF_allow_float_to_int = atoi(arg[(c++) + 1]) != 0;
                 else
                     Usage(arg[0]);
                 break;
             case 'e':
-                if(c + 1 < argc)                            // all ok
+                if (c + 1 < argc)                            // all ok
                 {
-                    CONF_extract=atoi(arg[(c++) + 1]);
+                    CONF_extract = atoi(arg[(c++) + 1]);
                     if(!(CONF_extract > 0 && CONF_extract < 4))
                         Usage(arg[0]);
                 }
@@ -219,7 +217,7 @@ uint32 ReadMapDBC()
     {
         map_ids[x].id = dbc.getRecord(x).getUInt(0);
 
-        const char* map_name = dbc.getRecord(x).getString(1);
+        char const* map_name = dbc.getRecord(x).getString(1);
         size_t max_map_name_length = sizeof(map_ids[x].name);
         if (strlen(map_name) >= max_map_name_length)
         {
@@ -590,12 +588,12 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
             float diff = maxHeight - minHeight;
             if (diff < CONF_float_to_int8_limit)      // As uint8 (max accuracy = CONF_float_to_int8_limit/256)
             {
-                heightHeader.flags|=MAP_HEIGHT_AS_INT8;
+                heightHeader.flags |= MAP_HEIGHT_AS_INT8;
                 step = selectUInt8StepStore(diff);
             }
             else if (diff<CONF_float_to_int16_limit)  // As uint16 (max accuracy = CONF_float_to_int16_limit/65536)
             {
-                heightHeader.flags|=MAP_HEIGHT_AS_INT16;
+                heightHeader.flags |= MAP_HEIGHT_AS_INT16;
                 step = selectUInt16StepStore(diff);
             }
         }
@@ -603,21 +601,21 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
         // Pack it to int values if need
         if (heightHeader.flags&MAP_HEIGHT_AS_INT8)
         {
-            for (int y=0; y<ADT_GRID_SIZE; y++)
-                for(int x=0;x<ADT_GRID_SIZE;x++)
+            for (int y = 0; y < ADT_GRID_SIZE; y++)
+                for(int x = 0; x < ADT_GRID_SIZE;x++)
                     uint8_V8[y][x] = uint8((V8[y][x] - minHeight) * step + 0.5f);
-            for (int y=0; y<=ADT_GRID_SIZE; y++)
-                for(int x=0;x<=ADT_GRID_SIZE;x++)
+            for (int y = 0; y <= ADT_GRID_SIZE; y++)
+                for(int x = 0; x <= ADT_GRID_SIZE;x++)
                     uint8_V9[y][x] = uint8((V9[y][x] - minHeight) * step + 0.5f);
             map.heightMapSize+= sizeof(uint8_V9) + sizeof(uint8_V8);
         }
         else if (heightHeader.flags&MAP_HEIGHT_AS_INT16)
         {
-            for (int y=0; y<ADT_GRID_SIZE; y++)
-                for(int x=0;x<ADT_GRID_SIZE;x++)
+            for (int y = 0; y < ADT_GRID_SIZE; y++)
+                for(int x = 0; x < ADT_GRID_SIZE;x++)
                     uint16_V8[y][x] = uint16((V8[y][x] - minHeight) * step + 0.5f);
-            for (int y=0; y<=ADT_GRID_SIZE; y++)
-                for(int x=0;x<=ADT_GRID_SIZE;x++)
+            for (int y = 0; y <= ADT_GRID_SIZE; y++)
+                for(int x = 0;x <= ADT_GRID_SIZE;x++)
                     uint16_V9[y][x] = uint16((V9[y][x] - minHeight) * step + 0.5f);
             map.heightMapSize+= sizeof(uint16_V9) + sizeof(uint16_V8);
         }
@@ -970,8 +968,8 @@ void ExtractMapsFromMpq()
         }
     }
     printf("\n");
-    delete [] areas;
-    delete [] map_ids;
+    delete[] areas;
+    delete[] map_ids;
 }
 
 bool ExtractFile( char const* mpq_name, std::string const& filename )

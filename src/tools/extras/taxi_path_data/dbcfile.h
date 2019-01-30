@@ -123,7 +123,7 @@ class DBCFile
                 }
                 /// Return address of current instance
                 Record const& operator*() const { return record; }
-                const Record* operator->() const { return &record; }
+                Record const* operator->() const { return &record; }
 
                 /// Comparison
                 bool operator==(const Iterator& b) const

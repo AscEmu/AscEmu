@@ -26,7 +26,7 @@ char * wdtGetPlainName(char * FileName)
 {
     char * szTemp;
 
-    if ((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != nullptr)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -124,7 +124,7 @@ WDTFile::~WDTFile(void)
 ADTFile* WDTFile::GetMap(int x, int z)
 {
     if (!(x >= 0 && z >= 0 && x<64 && z<64))
-        return NULL;
+        return nullptr;
 
     char name[512];
 

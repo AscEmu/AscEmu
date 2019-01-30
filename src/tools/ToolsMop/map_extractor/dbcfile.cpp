@@ -22,7 +22,7 @@
 #include "dbcfile.h"
 
 DBCFile::DBCFile(HANDLE file) :
-    _file(file), _data(NULL), _stringTable(NULL)
+    _file(file), _data(nullptr), _stringTable(nullptr)
 {
 }
 

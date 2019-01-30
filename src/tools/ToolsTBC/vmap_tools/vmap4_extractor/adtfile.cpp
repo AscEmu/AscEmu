@@ -71,12 +71,12 @@ void fixname2(char* name, size_t len)
 char const* GetExtension(char const* FileName)
 {
     char const* szTemp;
-    if ((szTemp = strrchr(FileName, '.')) != NULL)
+    if ((szTemp = strrchr(FileName, '.')) != nullptr)
         return szTemp;
-    return NULL;
+    return nullptr;
 }
 
-ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(NULL), ModelInstansName(NULL)
+ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(nullptr), ModelInstansName(nullptr)
 {
     Adtfilename.append(filename);
 }
@@ -181,7 +181,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
                     ModelInstance inst(ADT,ModelInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] ModelInstansName;
-                ModelInstansName = NULL;
+                ModelInstansName = nullptr;
             }
         }
         else if (!strcmp(fourcc,"MODF"))
@@ -196,7 +196,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
                     WMOInstance inst(ADT,WmoInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] WmoInstansName;
-                WmoInstansName = NULL;
+                WmoInstansName = nullptr;
             }
         }
         //======================

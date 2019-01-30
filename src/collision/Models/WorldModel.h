@@ -108,7 +108,7 @@ namespace VMAP
     class WorldModel
     {
         public:
-            WorldModel(): RootWMOID(0) { }
+            WorldModel(): Flags(0), RootWMOID(0) { }
 
             //! pass group models to WorldModel and create BIH. Passed vector is swapped with old geometry!
             void setGroupModels(std::vector<GroupModel> &models);
