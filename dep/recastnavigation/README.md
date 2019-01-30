@@ -5,6 +5,11 @@ Recast & Detour
 [![Travis (Linux) Build Status](https://travis-ci.org/recastnavigation/recastnavigation.svg?branch=master)](https://travis-ci.org/recastnavigation/recastnavigation)
 [![Appveyor (Windows) Build  Status](https://ci.appveyor.com/api/projects/status/20w84u25b3f8h179/branch/master?svg=true)](https://ci.appveyor.com/project/recastnavigation/recastnavigation/branch/master)
 
+[![Issue Stats](http://www.issuestats.com/github/recastnavigation/recastnavigation/badge/pr?style=flat)](http://www.issuestats.com/github/recastnavigation/recastnavigation)
+[![Issue Stats](http://www.issuestats.com/github/recastnavigation/recastnavigation/badge/issue?style=flat)](http://www.issuestats.com/github/recastnavigation/recastnavigation)
+
+![screenshot of a navmesh baked with the sample program](https://github.com/recastnavigation/recastnavigation/raw/master/RecastDemo/screenshot.png?raw=true)
+
 ## Recast
 
 Recast is state of the art navigation mesh construction toolset for games.
@@ -40,7 +45,7 @@ RecastDemo uses [premake5](http://premake.github.io/) to build platform specific
 
 #### Linux
 
-- Install SDl2 and its dependencies according to your distro's guidelines.
+- Install SDL2 and its dependencies according to your distro's guidelines.
 - run `premake5 gmake` from the `RecastDemo` folder.
 - `cd Build/gmake` then `make`
 - Run `RecastDemo\Bin\RecastDemo`
