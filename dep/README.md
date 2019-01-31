@@ -8,7 +8,7 @@
 
 ## Folder: recastnavigation
 - Web: https://github.com/recastnavigation/recastnavigation
-- Version: 2c85309280dbc9c82029e7ab16dfb01b9235c74e (2017/06/13)
+- Version: 14b2631527c4792e95b2c78ebfa8ac4cd3413363 (2018/11/21)
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
