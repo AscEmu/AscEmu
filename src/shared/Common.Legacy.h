@@ -161,7 +161,6 @@ enum MsTimeVariables
     #define I64FMT "%016I64X"
     #define I64FMTD "%I64u"
     #define SI64FMTD "%I64d"
-    #define snprintf _snprintf
     #define atoll __atoi64
 #else
     #define stricmp strcasecmp
