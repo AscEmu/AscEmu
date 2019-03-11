@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     {
 #if VERSION_STRING > TBC
     public:
-        uint8_t difficulty;
+        uint32_t difficulty;
         uint32_t unknown;
         bool isInGroup;
 
@@ -23,7 +23,7 @@ namespace AscEmu { namespace Packets
         }
 
         MsgSetRaidDifficulty(uint8_t difficulty, uint32_t unknown, bool isInGroup) :
-            ManagedPacket(MSG_SET_RAID_DIFFICULTY, 12),
+            ManagedPacket(MSG_SET_RAID_DIFFICULTY, 0),
             difficulty(difficulty),
             unknown(unknown),
             isInGroup(isInGroup)
@@ -31,6 +31,11 @@ namespace AscEmu { namespace Packets
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return 12;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
