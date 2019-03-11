@@ -483,7 +483,7 @@ class SERVER_DECL GameObjectAIScript
 
         // Data sharing between scripts
         virtual void setGameObjectData(uint32 /*type*/) {}
-        virtual uint32 gettGameObjectData(uint32 /*type*/) const { return 0; }
+        virtual uint32 getGameObjectData(uint32 /*type*/) const { return 0; }
         virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
         virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
 
