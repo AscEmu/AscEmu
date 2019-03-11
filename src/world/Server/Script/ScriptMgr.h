@@ -452,6 +452,12 @@ class SERVER_DECL EventScript
         virtual void UpdateEvent() {}
         virtual void Destroy() {}
 
+        // Data sharing between scripts
+        virtual void setInstanceData(uint32 /*dataType*/, uint32 /*value*/) {}
+        virtual uint32 getInstanceData(uint32 /*data*/) const { return 0;  }
+        virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
+        virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
+
         // UpdateEvent
         void RegisterUpdateEvent(uint32 pFrequency);
         void ModifyUpdateEvent(uint32 pNewFrequency);
@@ -474,6 +480,12 @@ class SERVER_DECL GameObjectAIScript
         virtual void OnDestroyed(){}
         virtual void AIUpdate() {}
         virtual void Destroy() { delete this; }
+
+        // Data sharing between scripts
+        virtual void setGameObjectData(uint32 /*type*/) {}
+        virtual uint32 getGameObjectData(uint32 /*type*/) const { return 0; }
+        virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
+        virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
 
         void RegisterAIUpdateEvent(uint32 frequency);
         void ModifyAIUpdateEvent(uint32 newfrequency);
