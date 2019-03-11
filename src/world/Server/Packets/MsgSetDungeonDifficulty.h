@@ -22,7 +22,7 @@ namespace AscEmu { namespace Packets
         }
 
         MsgSetDungeonDifficulty(uint8_t difficulty, uint32_t unknown, bool isInGroup) :
-            ManagedPacket(MSG_SET_DUNGEON_DIFFICULTY, 12),
+            ManagedPacket(MSG_SET_DUNGEON_DIFFICULTY, 0),
             difficulty(difficulty),
             unknown(unknown),
             isInGroup(isInGroup)
@@ -30,6 +30,11 @@ namespace AscEmu { namespace Packets
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return 12;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
