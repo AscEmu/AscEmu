@@ -879,8 +879,11 @@ bool Player::Create(CharCreate& charCreateContent)
         setPower(POWER_TYPE_MANA, info->mana);
         setMaxPower(POWER_TYPE_MANA, info->mana);
         setBaseMana(info->mana);
-        setPower(POWER_TYPE_FOCUS, info->focus);
-        setMaxPower(POWER_TYPE_FOCUS, info->focus);
+        if (info->focus)
+        {
+            setPower(POWER_TYPE_FOCUS, info->focus);
+            setMaxPower(POWER_TYPE_FOCUS, info->focus);
+        }
         break;
     }
 
