@@ -188,6 +188,12 @@ public:
     virtual void OnScriptPhaseChange(uint32_t /*_phaseId*/) {}
     virtual void OnHitBySpell(uint32_t /*_spellId*/, Unit* /*_caster*/) {}
 
+    // Data sharing between scripts
+    virtual void setCreatureData(uint32 /*type*/) {}
+    virtual uint32 getCreatureData(uint32 /*type*/) const { return 0; }
+    virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
+    virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
+
     virtual void Destroy() { delete this; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
