@@ -1085,8 +1085,8 @@ bool Player::Create(CharCreate& charCreateContent)
     }
 
     sHookInterface.OnCharacterCreate(this);
-    load_health = getHealth();
-    load_mana = getPower(POWER_TYPE_MANA);
+    load_health = getMaxHealth();
+    load_mana = getMaxPower(POWER_TYPE_MANA);
     return true;
 }
 
@@ -4751,19 +4751,6 @@ void Player::OnPushToWorld()
 
     Unit::OnPushToWorld();
 
-    if (m_FirstLogin)
-    {
-        if (class_ == DEATHKNIGHT)
-            startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
-        else
-            startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
-
-        sHookInterface.OnFirstEnterWorld(this);
-        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
-        ApplyLevelInfo(Info, startlevel);
-        setInitialTalentPoints();
-        m_FirstLogin = false;
-    }
 
     sHookInterface.OnEnterWorld(this);
     CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
@@ -4796,6 +4783,27 @@ void Player::OnPushToWorld()
 
     setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
     setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+
+	if (m_FirstLogin)
+	{
+		if (class_ == DEATHKNIGHT)
+			startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
+		else
+			startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
+
+		sHookInterface.OnFirstEnterWorld(this);
+		LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
+		ApplyLevelInfo(Info, startlevel);
+		setInitialTalentPoints();
+		SetHealthPct(100);
+		if (getPowerType() == POWER_TYPE_MANA)
+			setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+
+		if (getPowerType() == POWER_TYPE_ENERGY)
+			setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
+
+		m_FirstLogin = false;
+	}
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
