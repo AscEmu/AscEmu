@@ -860,26 +860,39 @@ bool Player::Create(CharCreate& charCreateContent)
     //setScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     setScale(1.0f);
     setHealth(info->health);
-    setPower(POWER_TYPE_MANA, info->mana);
-    setPower(POWER_TYPE_RAGE, 0);
-    setPower(POWER_TYPE_FOCUS, info->focus); // focus
-    setPower(POWER_TYPE_ENERGY, info->energy);
+    switch (charCreateContent._class)
+    {
+    case WARRIOR:
+        setPower(POWER_TYPE_RAGE, 0);
+        setMaxPower(POWER_TYPE_RAGE, info->rage);
+        break;
+    case ROGUE:
+        setPower(POWER_TYPE_ENERGY, info->energy);
+        setMaxPower(POWER_TYPE_ENERGY, info->energy);
+        break;
+    case DEATHKNIGHT:
+        setPower(POWER_TYPE_RUNES, 8);
+        setMaxPower(POWER_TYPE_RUNES, 8);
+        setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+        break;
+    default:
+        setPower(POWER_TYPE_MANA, info->mana);
+        setMaxPower(POWER_TYPE_MANA, info->mana);
+        setBaseMana(info->mana);
+        setPower(POWER_TYPE_FOCUS, info->focus);
+        setMaxPower(POWER_TYPE_FOCUS, info->focus);
+        break;
+    }
 
     setMaxHealth(info->health);
-    setMaxPower(POWER_TYPE_MANA, info->mana);
-    setMaxPower(POWER_TYPE_RAGE, info->rage);
-    setMaxPower(POWER_TYPE_FOCUS, info->focus);
-    setMaxPower(POWER_TYPE_ENERGY, info->energy);
 
 #if VERSION_STRING == WotLK
-    setPower(POWER_TYPE_RUNES, 8);
-    setMaxPower(POWER_TYPE_RUNES, 8);
-    setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+
 #endif
 
     //THIS IS NEEDED
     setBaseHealth(info->health);
-    setBaseMana(info->mana);
+
     if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
         SetFaction(raceEntry->faction_id);
     else
@@ -4782,28 +4795,49 @@ void Player::OnPushToWorld()
     sWeatherMgr.SendWeather(this);
 
     setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
-    setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+    if (getPowerType() == POWER_TYPE_MANA)
+        setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
-	if (m_FirstLogin)
-	{
-		if (class_ == DEATHKNIGHT)
-			startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
-		else
-			startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
+    if (m_FirstLogin)
+    {
+        if (class_ == DEATHKNIGHT)
+            startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
+        else
+            startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
 
-		sHookInterface.OnFirstEnterWorld(this);
-		LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
-		ApplyLevelInfo(Info, startlevel);
-		setInitialTalentPoints();
-		SetHealthPct(100);
-		if (getPowerType() == POWER_TYPE_MANA)
-			setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+        sHookInterface.OnFirstEnterWorld(this);
+        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
+        ApplyLevelInfo(Info, startlevel);
+        setInitialTalentPoints();
+        SetHealthPct(100);
 
-		if (getPowerType() == POWER_TYPE_ENERGY)
-			setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
-
-		m_FirstLogin = false;
-	}
+        // Sometimes power types aren't initialized - so initialize it again
+        switch (getClass())
+        {
+        case WARRIOR:
+            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            setPower(POWER_TYPE_RAGE, 0);
+            break;
+        case ROGUE:
+            setMaxPower(POWER_TYPE_ENERGY, info->energy);
+            setPower(POWER_TYPE_ENERGY, info->energy);
+            break;
+        case DEATHKNIGHT:
+            setMaxPower(POWER_TYPE_RUNES, 8);
+            setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+            setPower(POWER_TYPE_RUNES, 8);
+            break;
+        default:
+            setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+            if (info->focus)
+            {
+                setPower(POWER_TYPE_FOCUS, 0);
+                setMaxPower(POWER_TYPE_FOCUS, info->focus);
+            }
+            break;
+        }
+        m_FirstLogin = false;
+    }
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
