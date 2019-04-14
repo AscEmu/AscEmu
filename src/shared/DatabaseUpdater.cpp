@@ -127,7 +127,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
     Field* fields = result->Fetch();
     const std::string dbLastUpdate = fields[0].GetString();
 
-    LogDetail(" %s Database Version : %s", database.c_str(), dbLastUpdate.c_str());
+    LogDetail("Database %s Version : %s", database.c_str(), dbLastUpdate.c_str());
 
     const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
     const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);

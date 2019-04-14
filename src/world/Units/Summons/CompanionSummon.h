@@ -35,7 +35,7 @@ class CompanionSummon : public Summon
         CompanionSummon(uint64 GUID);
         ~CompanionSummon();
 
-        virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector& position, uint32 spellid, int32 summonslot);
+        virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector& position, uint32_t spellid, int32_t summonslot);
 
         void OnPushToWorld();
         void OnPreRemoveFromWorld();

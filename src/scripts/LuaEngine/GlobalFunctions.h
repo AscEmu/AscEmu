@@ -294,7 +294,7 @@ namespace luaGlobalFunctions
         return 0;
     }
 
-    static int GetArcemuRevision(lua_State* L)
+    static int GetAERevision(lua_State* L)
     {
         lua_pushstring(L, BUILD_HASH_STR);
         return 1;
@@ -739,7 +739,7 @@ void RegisterGlobalFunctions(lua_State* L)
     lua_register(L, "Rehash", &luaGlobalFunctions::Rehash);
     lua_register(L, "logcol", &luaGlobalFunctions::logcol);
     lua_register(L, "GetPlayersInWorld", &luaGlobalFunctions::GetPlayersInWorld);
-    lua_register(L, "GetArcemuRevision", &luaGlobalFunctions::GetArcemuRevision);
+    lua_register(L, "GetAERevision", &luaGlobalFunctions::GetAERevision);
     lua_register(L, "GetPlayersInMap", &luaGlobalFunctions::GetPlayersInMap);
     lua_register(L, "GetPlayersInZone", &luaGlobalFunctions::GetPlayersInZone);
     lua_register(L, "SendMail", &luaGlobalFunctions::SendMail);

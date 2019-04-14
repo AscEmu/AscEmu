@@ -4687,33 +4687,29 @@ void Player::OnPushToWorld()
         // Process create packet
         ProcessPendingUpdates();
 
-        TaxiStart(GetTaxiPath(),
-                  getMountDisplayId(),
-                  lastNode);
+        TaxiStart(GetTaxiPath(), getMountDisplayId(), lastNode);
 
         m_taxiMapChangeNode = 0;
     }
 
+    // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
-        // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);
         flying_aura = 0;
     }
 
-    /* send weather */
+    // send weather
     sWeatherMgr.SendWeather(this);
 
-    setHealth((load_health > getMaxHealth() ? getMaxHealth() : load_health));
+    setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
     setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
 
     if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
-    {
         m_mapMgr->m_battleground->PortPlayer(this, true);
-    }
 
     if (m_bg != nullptr)
     {

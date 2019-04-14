@@ -39,38 +39,42 @@ struct QuestProperties;
 
 enum ServerHookEvents
 {
-    SERVER_HOOK_EVENT_ON_NEW_CHARACTER      = 1,
-    SERVER_HOOK_EVENT_ON_KILL_PLAYER        = 2,
-    SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD  = 3,
-    SERVER_HOOK_EVENT_ON_ENTER_WORLD        = 4,
-    SERVER_HOOK_EVENT_ON_GUILD_JOIN         = 5,
-    SERVER_HOOK_EVENT_ON_DEATH              = 6,
-    SERVER_HOOK_EVENT_ON_REPOP              = 7,
-    SERVER_HOOK_EVENT_ON_EMOTE              = 8,
-    SERVER_HOOK_EVENT_ON_ENTER_COMBAT       = 9,
-    SERVER_HOOK_EVENT_ON_CAST_SPELL         = 10,
-    SERVER_HOOK_EVENT_ON_TICK               = 11,
-    SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST     = 12,
-    SERVER_HOOK_EVENT_ON_LOGOUT             = 13,
-    SERVER_HOOK_EVENT_ON_QUEST_ACCEPT       = 14,
-    SERVER_HOOK_EVENT_ON_ZONE               = 15,
-    SERVER_HOOK_EVENT_ON_CHAT               = 16,
-    SERVER_HOOK_EVENT_ON_LOOT               = 17,
-    SERVER_HOOK_EVENT_ON_GUILD_CREATE       = 18,
-    SERVER_HOOK_EVENT_ON_FULL_LOGIN         = 19,
-    SERVER_HOOK_EVENT_ON_CHARACTER_CREATE   = 20,
-    SERVER_HOOK_EVENT_ON_QUEST_CANCELLED    = 21,
-    SERVER_HOOK_EVENT_ON_QUEST_FINISHED     = 22,
-    SERVER_HOOK_EVENT_ON_HONORABLE_KILL     = 23,
-    SERVER_HOOK_EVENT_ON_ARENA_FINISH       = 24,
-    SERVER_HOOK_EVENT_ON_OBJECTLOOT         = 25,
-    SERVER_HOOK_EVENT_ON_AREATRIGGER        = 26,
-    SERVER_HOOK_EVENT_ON_POST_LEVELUP       = 27,
-    SERVER_HOOK_EVENT_ON_PRE_DIE            = 28, // general unit die, not only based on players
-    SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE  = 29,
-    SERVER_HOOK_EVENT_ON_DUEL_FINISHED      = 30,
-    SERVER_HOOK_EVENT_ON_AURA_REMOVE        = 31,
-    SERVER_HOOK_EVENT_ON_RESURRECT          = 32,
+    //////////////////////////////////////////////////////////////////////////////////////////   
+    //Register Server Hooks
+    // Server Hook callbacks can be made by using the function RegisterServerHook(EventId, function)
+
+    SERVER_HOOK_EVENT_ON_NEW_CHARACTER                   = 1,  // -- (event, pName, int Race, int Class)
+    SERVER_HOOK_EVENT_ON_KILL_PLAYER                     = 2,  // -- (event, pKiller, pVictim)
+    SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD               = 3,  // -- (event, pPlayer)                 / a new created character enters for first time the world
+    SERVER_HOOK_EVENT_ON_ENTER_WORLD                     = 4,  // -- (event, pPlayer)                 / a character enters the world (login) or moves to another map
+    SERVER_HOOK_EVENT_ON_GUILD_JOIN                      = 5,  // -- (event, pPlayer, str GuildName)
+    SERVER_HOOK_EVENT_ON_DEATH                           = 6,  // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_REPOP                           = 7,  // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_EMOTE                           = 8,  // -- (event, pPlayer, pUnit, EmoteId)
+    SERVER_HOOK_EVENT_ON_ENTER_COMBAT                    = 9,  // -- (event, pPlayer, pTarget)
+    SERVER_HOOK_EVENT_ON_CAST_SPELL                      = 10, // -- (event, pPlayer, SpellId, pSpellObject)
+    SERVER_HOOK_EVENT_ON_TICK                            = 11, // -- No arguments passed.
+    SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST                  = 12, // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_LOGOUT                          = 13, // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_QUEST_ACCEPT                    = 14, // -- (event, pPlayer, QuestId, pQuestGiver)
+    SERVER_HOOK_EVENT_ON_ZONE                            = 15, // -- (event, pPlayer, ZoneId, OldZoneId)
+    SERVER_HOOK_EVENT_ON_CHAT                            = 16, // -- (event, pPlayer, str Message, Type, Language, Misc)
+    SERVER_HOOK_EVENT_ON_LOOT                            = 17, // -- (event, pPlayer, pTarget, Money, ItemId)
+    SERVER_HOOK_EVENT_ON_GUILD_CREATE                    = 18, // -- (event, pPlayer, pGuildName)
+    SERVER_HOOK_EVENT_ON_FULL_LOGIN                      = 19, // -- (event, pPlayer)                 / a character enters the world (login)
+    SERVER_HOOK_EVENT_ON_CHARACTER_CREATE                = 20, // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_QUEST_CANCELLED                 = 21, // -- (event, pPlayer, QuestId)
+    SERVER_HOOK_EVENT_ON_QUEST_FINISHED                  = 22, // -- (event, pPlayer, QuestId, pQuestGiver)
+    SERVER_HOOK_EVENT_ON_HONORABLE_KILL                  = 23, // -- (event, pPlayer, pKilled)
+    SERVER_HOOK_EVENT_ON_ARENA_FINISH                    = 24, // -- (event, pPlayer, str TeamName, bWinner, bRated)
+    SERVER_HOOK_EVENT_ON_OBJECTLOOT                      = 25, // -- (event, pPlayer, pTarget, Money, ItemId)
+    SERVER_HOOK_EVENT_ON_AREATRIGGER                     = 26, // -- (event, pPlayer, AreaTriggerId)
+    SERVER_HOOK_EVENT_ON_POST_LEVELUP                    = 27, // -- (event, pPlayer)
+    SERVER_HOOK_EVENT_ON_PRE_DIE                         = 28, // -- (event, pKiller, pDied)          / general unit die, not only based on players
+    SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE               = 29, // -- (event, pPlayer, SkillId, SkillLevel)
+    SERVER_HOOK_EVENT_ON_DUEL_FINISHED                   = 30, // -- (event, pWinner, pLoser)
+    SERVER_HOOK_EVENT_ON_AURA_REMOVE                     = 31, // -- (event, pAuraObject)
+    SERVER_HOOK_EVENT_ON_RESURRECT                       = 32, // -- (event, pPlayer)
     NUM_SERVER_HOOKS
 };
 
@@ -513,8 +517,7 @@ class SERVER_DECL QuestScript
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Instanced class created for each instance of the map, holds all scriptable exports
-//////////////////////////////////////////////////////////////////////////////////////////
+// Instanced class created for each instance of the map, holds all scriptable exports
 #include "Map/WorldCreator.h"
 
 //#define UseNewMapScriptsProject
