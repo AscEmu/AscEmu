@@ -35,7 +35,7 @@ class PossessedSummon : public Summon
         PossessedSummon(uint64 GUID);
         ~PossessedSummon();
 
-        void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
+        void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32_t spellid, int32_t summonslot);
 
         void OnPushToWorld();
         void OnPreRemoveFromWorld();

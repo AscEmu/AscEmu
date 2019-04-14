@@ -36,7 +36,6 @@ namespace QuestStatus
     };
 }
 
-
 enum QUESTGIVER_QUEST_TYPE
 {
     QUESTGIVER_QUEST_START  = 0x01,
@@ -89,10 +88,10 @@ enum INVALID_REASON
     INVALID_REASON_COMPLETED_QUEST          = 7,
     INVALID_REASON_HAVE_TIMED_QUEST         = 12,
     INVALID_REASON_HAVE_QUEST               = 13,
-//	INVALID_REASON_DONT_HAVE_REQ_ITEMS      = 0x13,
-//	INVALID_REASON_DONT_HAVE_REQ_MONEY      = 0x15,
+//  INVALID_REASON_DONT_HAVE_REQ_ITEMS      = 0x13,
+//  INVALID_REASON_DONT_HAVE_REQ_MONEY      = 0x15,
     INVALID_REASON_DONT_HAVE_EXP_ACCOUNT    = 16,
-    INVALID_REASON_DONT_HAVE_REQ_ITEMS      = 21,       //changed for 2.1.3
+    INVALID_REASON_DONT_HAVE_REQ_ITEMS      = 21,       // changed for 2.1.3
     INVALID_REASON_DONT_HAVE_REQ_MONEY      = 23,
     INVALID_REASON_REACHED_DAILY_LIMIT      = 26,       /// "you have completed xx daily quests today" confirmed :)
     INVALID_REASON_UNKNOW27                 = 27,       /// "You cannot completed quests once you have reached tired time"
@@ -104,11 +103,11 @@ enum QUEST_SHARE
     QUEST_SHARE_MSG_CANT_TAKE_QUEST         = 1,
     QUEST_SHARE_MSG_ACCEPT_QUEST            = 2,
     QUEST_SHARE_MSG_REFUSE_QUEST            = 3,
-    //QUEST_SHARE_MSG_TOO_FAR				= 4,        /// This message seems to be non-existent as of 3.2.x, plus it isn't used in ArcEmu, so it is safe to get rid of it.
+//  QUEST_SHARE_MSG_TOO_FAR                 = 4,        /// This message seems to be non-existent as of 3.2.x, plus it isn't used in ArcEmu, so it is safe to get rid of it.
     QUEST_SHARE_MSG_BUSY                    = 4,
     QUEST_SHARE_MSG_LOG_FULL                = 5,
     QUEST_SHARE_MSG_HAVE_QUEST              = 6,
-    QUEST_SHARE_MSG_FINISH_QUEST			= 7,
+    QUEST_SHARE_MSG_FINISH_QUEST            = 7,
     QUEST_SHARE_MSG_CANT_BE_SHARED_TODAY    = 8,        /// The following 4 messages (from 8 to 11) are unused on ArcEmu, but for completeness I have included them here, maybe we'll need them later...
     QUEST_SHARE_MSG_SHARING_TIMER_EXPIRED   = 9,
     QUEST_SHARE_MSG_NOT_IN_PARTY            = 10,
@@ -123,7 +122,7 @@ enum QUEST_MOB_TYPES
 
 enum QuestCompletionStatus
 {
-	QUEST_INCOMPLETE = 0,
-	QUEST_COMPLETE   = 1,
-	QUEST_FAILED     = 2
+    QUEST_INCOMPLETE = 0,
+    QUEST_COMPLETE   = 1,
+    QUEST_FAILED     = 2
 };

@@ -1,45 +1,24 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2011 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef WILDSUMMON_HPP_
-#define WILDSUMMON_HPP_
+#pragma once
 
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Class that implement wild summons. Wild summonned creatures don't follow or
-/// protect their owner, however they can be hostile, and attack (not the owner)
-//////////////////////////////////////////////////////////////////////////////////////////
+// Class that implement wild summons. Wild summonned creatures don't follow or
+// protect their owner, however they can be hostile, and attack (not the owner)
 class WildSummon : public Summon
 {
-    public:
+public:
 
-        WildSummon(uint64 GUID);
-        ~WildSummon();
+    WildSummon(uint64_t GUID);
+    ~WildSummon();
 
-        void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
-
-        void OnPushToWorld();
-
-        void OnPreRemoveFromWorld();
+    void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32_t spellid, int32_t summonslot);
+    void OnPushToWorld();
+    void OnPreRemoveFromWorld();
 };
-
-#endif      //WILDSUMMON_HPP_

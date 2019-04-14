@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobal.h"
 #include "LUAEngine.h"
+
 std::unique_ptr<LuaGlobal> LuaGlobal::s_instance;
 
 LuaGlobal::LuaGlobal(): m_menu(nullptr)

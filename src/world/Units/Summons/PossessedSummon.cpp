@@ -28,7 +28,7 @@ PossessedSummon::PossessedSummon(uint64 GUID) : Summon(GUID)
 PossessedSummon::~PossessedSummon()
 {}
 
-void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
+void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32_t spellid, int32_t pSummonslot)
 {
     Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
 

@@ -30,7 +30,7 @@ GuardianSummon::GuardianSummon(uint64 GUID) : Summon(GUID)
 GuardianSummon::~GuardianSummon()
 {}
 
-void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
+void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32_t spellid, int32_t pSummonslot)
 {
     Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
 
