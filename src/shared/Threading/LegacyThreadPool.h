@@ -16,11 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 #pragma once
 #include "../Common.hpp"
-
-#ifndef __THREADPOOL_H
-#define __THREADPOOL_H
 
  // This HAS to be called outside the threads __try / __except block!
 void SetThreadName(const char* format, ...);
@@ -244,5 +242,3 @@ long Sync_Add(volatile long* value);
 long Sync_Sub(volatile long* value);
 
 extern SERVER_DECL CThreadPool ThreadPool;
-
-#endif
