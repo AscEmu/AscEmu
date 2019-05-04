@@ -268,16 +268,7 @@ void LogonConsole::AccountCreate(char* str)
     query << name << "',";
     query << "SHA( UPPER( '" << pass << "' ) ),'0','";
     query << email << "','";
-
-#if VERSION_STRING == Classic
-    query << 0 << "','' );";
-#elif VERSION_STRING == TBC
-    query << 8 << "','' );";
-#elif VERSION_STRING == WotLK
-    query << 24 << "','' );";
-#elif VERSION_STRING == Cata
-    query << 32 << "','' );";
-#endif
+    query << AE_EXPANSION_VERSION << "','' );";
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
     {

@@ -14,7 +14,7 @@ namespace AscEmu { namespace Packets
     {
     public:
         uint32_t difficulty;
-        uint32_t unk1;
+        uint32_t isHeroic;
 
         SmsgInstanceDifficulty() : SmsgInstanceDifficulty(0)
         {
@@ -23,7 +23,7 @@ namespace AscEmu { namespace Packets
         SmsgInstanceDifficulty(uint32_t difficulty) :
             ManagedPacket(SMSG_INSTANCE_DIFFICULTY, 0),
             difficulty(difficulty),
-            unk1(0)
+            isHeroic(difficulty == MODE_HEROIC_10MEN || difficulty == MODE_HEROIC_25MEN)
         {
         }
 
@@ -35,7 +35,7 @@ namespace AscEmu { namespace Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << difficulty << unk1;
+            packet << difficulty << isHeroic;
             return true;
         }
 

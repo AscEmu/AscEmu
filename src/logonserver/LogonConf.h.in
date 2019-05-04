@@ -3,4 +3,22 @@
 
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 
+#if VERSION_STRING == Classic
+    #define AE_EXPANSION_VERSION 0    // Classic WoW
+#elif VERSION_STRING == TBC
+    #define AE_EXPANSION_VERSION 8    // The Burning Crusade
+#elif VERSION_STRING == WotLK
+//    #define AE_EXPANSION_VERSION 16 // Wrath of the Lich King
+//#elif VERSION_STRING == WotLK
+    #define AE_EXPANSION_VERSION 24   // Wrath of the Lich King & The Burning Crusade
+#elif VERSION_STRING == Cata
+    #define AE_EXPANSION_VERSION 32   // Cataclysm
+#elif VERSION_STRING == Mop
+    #define AE_EXPANSION_VERSION 64   //  Mists of Pandaria (untested)
+#elif VERSION_STRING == WoD
+    #define AE_EXPANSION_VERSION 128  // Warlords of Draenor (untested)
+#elif VERSION_STRING == Legion
+    #define AE_EXPANSION_VERSION 256  // Legion (untested)
+#endif
+
 #endif // LOGON_CONF_HPP

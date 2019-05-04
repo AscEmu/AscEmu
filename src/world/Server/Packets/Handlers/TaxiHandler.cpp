@@ -166,7 +166,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->hasEnoughCoinage(taxiPath->GetPrice()))
+    if (!_player->hasEnoughCoinage(taxiPath->GetPrice()))
     {
         SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
         return;

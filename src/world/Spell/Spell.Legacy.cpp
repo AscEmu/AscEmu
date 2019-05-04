@@ -4305,7 +4305,7 @@ uint8 Spell::CanCast(bool tolerate)
                 }
             }
 
-            // \todo Replace this awful hack with a better solution
+            // \todo Replace this awful hacks with a better solution
             // Nestlewood Owlkin - Quest 9303
             if (getSpellInfo()->getId() == 29528 && target->isCreature() && target->getEntry() == 16518)
             {
@@ -4317,6 +4317,18 @@ uint8 Spell::CanCast(bool tolerate)
                 target->setTargetGuid(p_caster->getGuid());
                 return SPELL_FAILED_SUCCESS;
             }
+
+            // Lazy Peons - Quest 5441
+            if (getSpellInfo()->getId() == 19938 && target->isCreature() && target->getEntry() == 10556)
+            {
+                if (!target->HasAura(17743))
+                {
+                    return SPELL_FAILED_BAD_TARGETS;
+                }
+
+                return SPELL_FAILED_SUCCESS;
+            }
+
             ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////
 
             if (m_target_constraint != nullptr)
