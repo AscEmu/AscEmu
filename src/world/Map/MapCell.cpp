@@ -30,10 +30,8 @@
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
 
-#define MAX_MAP 800
-
 Mutex m_cellloadLock;
-uint32 m_celltilesLoaded[MAX_MAP][64][64];
+uint32 m_celltilesLoaded[MAX_NUM_MAPS][64][64];
 
 extern bool bServerShutdown;
 

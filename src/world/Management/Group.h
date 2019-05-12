@@ -242,7 +242,7 @@ class SERVER_DECL Group
         inline PlayerInfo* GetMainTank() { return m_mainTank; }
         inline PlayerInfo* GetMainAssist() { return m_mainAssist; }
 
-        uint32 m_instanceIds[NUM_MAPS][NUM_INSTANCE_MODES];
+        uint32 m_instanceIds[MAX_NUM_MAPS][NUM_INSTANCE_MODES];
 
         void SetDungeonDifficulty(uint8 diff);
         void SetRaidDifficulty(uint8 diff);

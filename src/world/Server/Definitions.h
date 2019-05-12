@@ -6,30 +6,30 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// NUM_MAPS
+// MAX_NUM_MAPS
 //
 // \param Max maps 
 //
-// Vanilla = untested
-// The Burning Crusade = untested
-// Wrath of the Lich King = untested
-// Cataclysm = untested
-// Mists of Pandaria = untested
+// Vanilla = 600 - untested
+// The Burning Crusade = 600 - untested
+// Wrath of the Lich King = 800
+// Cataclysm = 975
+// Mists of Pandaria = 975 - untested
 // Warlords of Draenor = untested
 // Legion = untested
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
-    #define NUM_MAPS 600
+    #define MAX_NUM_MAPS 600
 #elif VERSION_STRING == TBC
-    #define NUM_MAPS 600
+    #define MAX_NUM_MAPS 600
 #elif VERSION_STRING == WotLK
-    #define NUM_MAPS 800
+    #define MAX_NUM_MAPS 800
 #elif VERSION_STRING == Cata
-    #define NUM_MAPS 975
+    #define MAX_NUM_MAPS 975
 #elif VERSION_STRING == Mop
-    #define NUM_MAPS 975
+    #define MAX_NUM_MAPS 975
 #endif
 
 const unsigned NUM_INSTANCE_MODES = 4;

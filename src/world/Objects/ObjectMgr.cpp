@@ -59,7 +59,7 @@ m_hiArenaTeamId(0),
 TransportersCount(0),
 m_hiPlayerGuid(1)
 {
-    memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * NUM_MAPS);
+    memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * MAX_NUM_MAPS);
 }
 
 
@@ -185,7 +185,7 @@ ObjectMgr::~ObjectMgr()
         delete(*itr);
 
     LogNotice("ObjectMgr : Deleting Boss Information...");
-    for (uint32 i = 0; i < NUM_MAPS; i++)
+    for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
     {
         if (this->m_InstanceBossInfoMap[i] != nullptr)
         {
@@ -425,7 +425,7 @@ void ObjectMgr::LoadPlayersInfo()
                     uint32 instanceId = result2->Fetch()[0].GetUInt32();
                     uint32 mode = result2->Fetch()[1].GetUInt32();
                     uint32 mapId = result2->Fetch()[2].GetUInt32();
-                    if (mode >= NUM_INSTANCE_MODES || mapId >= NUM_MAPS)
+                    if (mode >= NUM_INSTANCE_MODES || mapId >= MAX_NUM_MAPS)
                     {
                         continue;
                     }
@@ -639,7 +639,7 @@ void ObjectMgr::LoadInstanceBossInfos()
             delete bossInfo;
             continue;
         }
-        if (bossInfo->mapid >= NUM_MAPS)
+        if (bossInfo->mapid >= MAX_NUM_MAPS)
         {
             LogDebugFlag(LF_DB_TABLES, "Not loading boss information for map %u! (map id out of range)", bossInfo->mapid);
             delete bossInfo;

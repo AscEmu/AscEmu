@@ -29,10 +29,10 @@ SERVER_DECL InstanceMgr sInstanceMgr;
 
 InstanceMgr::InstanceMgr()
 {
-    memset(m_maps, 0, sizeof(Map*)* NUM_MAPS);
-    memset(m_instances, 0, sizeof(InstanceMap*) * NUM_MAPS);
-    memset(m_singleMaps, 0, sizeof(MapMgr*) * NUM_MAPS);
-    memset(&m_nextInstanceReset, 0, sizeof(time_t) * NUM_MAPS);
+    memset(m_maps, 0, sizeof(Map*)* MAX_NUM_MAPS);
+    memset(m_instances, 0, sizeof(InstanceMap*) * MAX_NUM_MAPS);
+    memset(m_singleMaps, 0, sizeof(MapMgr*) * MAX_NUM_MAPS);
+    memset(&m_nextInstanceReset, 0, sizeof(time_t) * MAX_NUM_MAPS);
     m_InstanceHigh = 0;
 }
 
@@ -57,7 +57,7 @@ void InstanceMgr::Load(TaskList* l)
             if (sMySQLStore.getWorldMapInfo(result->Fetch()[0].GetUInt32()) == nullptr)
                 continue;
 
-            if (result->Fetch()[0].GetUInt32() >= NUM_MAPS)
+            if (result->Fetch()[0].GetUInt32() >= MAX_NUM_MAPS)
             {
                 LOG_ERROR("One or more of your creature_spawns rows specifies an invalid map: %u", result->Fetch()[0].GetUInt32());
                 continue;
@@ -76,7 +76,7 @@ void InstanceMgr::Load(TaskList* l)
     MySQLDataStore::WorldMapInfoContainer const* its = sMySQLStore.getWorldMapInfoStore();
     for (MySQLDataStore::WorldMapInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        if (itr->second.mapid >= NUM_MAPS)
+        if (itr->second.mapid >= MAX_NUM_MAPS)
         {
             LOG_ERROR("One or more of your worldmap_info rows specifies an invalid map: %u", itr->second.mapid);
             continue;
@@ -101,7 +101,7 @@ void InstanceMgr::Load(TaskList* l)
             if (strlen(id) <= 20)
                 continue;
             uint32 mapId = atoi(id + 20);
-            if (mapId >= NUM_MAPS)
+            if (mapId >= MAX_NUM_MAPS)
                 continue;
             m_nextInstanceReset[mapId] = value;
         }
@@ -120,7 +120,7 @@ void InstanceMgr::Shutdown()
 {
     uint32 i;
     InstanceMap::iterator itr;
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
@@ -160,7 +160,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     InstanceMap* instancemap;
     Instance* in;
 
-    if (inf == NULL || mapid >= NUM_MAPS)
+    if (inf == NULL || mapid >= MAX_NUM_MAPS)
         return INSTANCE_ABORT_NOT_FOUND;
 
     // main continent check.
@@ -527,7 +527,7 @@ MapMgr* InstanceMgr::GetMapMgr(uint32 mapId)
 MapMgr* InstanceMgr::GetInstance(Object* obj)
 {
     MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(obj->GetMapId());
-    if (inf == nullptr || obj->GetMapId() >= NUM_MAPS)
+    if (inf == nullptr || obj->GetMapId() >= MAX_NUM_MAPS)
         return nullptr;
 
     if (obj->isPlayer())
@@ -633,7 +633,7 @@ MapMgr* InstanceMgr::_CreateInstance(uint32 mapid, uint32 instanceid)
     MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
 
     ARCEMU_ASSERT(inf != nullptr && inf->type == INSTANCE_NULL);
-    ARCEMU_ASSERT(mapid < NUM_MAPS && m_maps[mapid] != NULL);
+    ARCEMU_ASSERT(mapid < MAX_NUM_MAPS && m_maps[mapid] != NULL);
 
     LogNotice("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
@@ -668,7 +668,7 @@ MapMgr* InstanceMgr::_CreateInstance(Instance* in)
 
 void InstanceMgr::_CreateMap(uint32 mapid)
 {
-    if (mapid >= NUM_MAPS)
+    if (mapid >= MAX_NUM_MAPS)
         return;
 
     MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
@@ -715,7 +715,7 @@ void InstanceMgr::_LoadInstances()
         do
         {
             inf = sMySQLStore.getWorldMapInfo(result->Fetch()[1].GetUInt32());
-            if (inf == NULL || result->Fetch()[1].GetUInt32() >= NUM_MAPS)
+            if (inf == NULL || result->Fetch()[1].GetUInt32() >= MAX_NUM_MAPS)
             {
                 CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", result->Fetch()[1].GetUInt32());
                 continue;
@@ -792,7 +792,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
         return;
 
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
@@ -833,7 +833,7 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
     uint32 i;
 
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         instancemap = m_instances[i];
         if (instancemap)
@@ -938,7 +938,7 @@ void InstanceMgr::CheckForExpiredInstances()
     uint32 i;
 
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         instancemap = m_instances[i];
         if (instancemap)
@@ -970,7 +970,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
     if (!plr->IsInWorld() || plr->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
     {
         m_mapLock.Acquire();
-        for (i = 0; i < NUM_MAPS; ++i)
+        for (i = 0; i < MAX_NUM_MAPS; ++i)
         {
             if (m_instances[i] != NULL)
             {
@@ -1023,7 +1023,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 
     data << counter;
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
@@ -1107,7 +1107,7 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
     uint32 i;
 
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         instancemap = m_instances[i];
         if (instancemap)
@@ -1142,7 +1142,7 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
 MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
 {
     // shouldn't happen
-    if (mapid >= NUM_MAPS)
+    if (mapid >= MAX_NUM_MAPS)
         return NULL;
 
     if (!m_maps[mapid])
@@ -1178,7 +1178,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
 MapMgr* InstanceMgr::CreateInstance(uint32 /*instanceType*/, uint32 mapid)
 {
     // shouldn't happen
-    if (mapid >= NUM_MAPS)
+    if (mapid >= MAX_NUM_MAPS)
         return NULL;
 
     if (!m_maps[mapid])

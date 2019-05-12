@@ -38,7 +38,7 @@ Group::Group(bool Assign)
     memset(m_SubGroups, 0, sizeof(SubGroup*) * 8);
     m_SubGroups[0] = new SubGroup(this, 0);
 
-    memset(m_instanceIds, 0, sizeof(uint32) * NUM_MAPS * NUM_INSTANCE_MODES);
+    memset(m_instanceIds, 0, sizeof(uint32) * MAX_NUM_MAPS * NUM_INSTANCE_MODES);
 
     m_Leader = NULL;
     m_Looter = NULL;
@@ -814,7 +814,7 @@ void Group::LoadFromDB(Field* fields)
         uint32 mode = atoi(r + 1);
         uint32 instanceId = atoi(s + 1);
 
-        if (mapId >= NUM_MAPS)
+        if (mapId >= MAX_NUM_MAPS)
             continue;
 
         m_instanceIds[mapId][mode] = instanceId;
@@ -914,7 +914,7 @@ void Group::SaveToDB()
     ss << (uint32)UNIXTIME << ",'";
 
     // instanceids (52/52)
-    for (uint32 i = 0; i < NUM_MAPS; i++)
+    for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
     {
         for (uint32 j = 0; j < NUM_INSTANCE_MODES; j++)
         {
