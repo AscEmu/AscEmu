@@ -240,10 +240,7 @@ void Player::setCoinage(uint32_t coinage) { write(playerData()->field_coinage, c
 bool Player::hasEnoughCoinage(uint32_t coinage) const { return getCoinage() >= coinage; }
 void Player::modCoinage(int32_t coinage)
 {
-    if (coinage < 0)
-        setCoinage(getCoinage() - coinage);
-    else
-        setCoinage(getCoinage() + coinage);
+    setCoinage(getCoinage() + coinage);
 }
 #else
 uint64_t Player::getCoinage() const { return playerData()->field_coinage; }
@@ -251,10 +248,7 @@ void Player::setCoinage(uint64_t coinage) { write(playerData()->field_coinage, c
 bool Player::hasEnoughCoinage(uint64_t coinage) const { return getCoinage() >= coinage; }
 void Player::modCoinage(int64_t coinage)
 {
-    if (coinage < 0)
-        setCoinage(getCoinage() - coinage);
-    else
-        setCoinage(getCoinage() + coinage);
+    setCoinage(getCoinage() + coinage);
 }
 #endif
 

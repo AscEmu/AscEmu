@@ -1,26 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef TRANSPORTERHANDLER_H
-#define TRANSPORTERHANDLER_H
+#pragma once
 
 #include "Management/TransportSpawn.hpp"
 #include "Objects/GameObject.h"
@@ -53,7 +36,7 @@ class TransportPath
                 xd = i_nodes[ idx ].x - i_nodes[ idx - 1 ].x;
                 yd = i_nodes[ idx ].y - i_nodes[ idx - 1 ].y;
                 zd = i_nodes[ idx ].z - i_nodes[ idx - 1 ].z;
-                len += (float)sqrt(xd * xd + yd * yd + zd * zd);
+                len += (float)std::sqrt(xd * xd + yd * yd + zd * zd);
             }
             return len;
         }
@@ -108,101 +91,100 @@ struct TWayPoint
     bool delayed;
 };
 
-
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
 class SERVER_DECL Transporter : public GameObject
 {
 protected:
+
     std::vector<TransportSpawn> m_creatureSpawns;
 
-    public:
-        Transporter(uint64 guid);
-        ~Transporter();
-        
-        void AddCreature(TransportSpawn creature);
-        void RespawnCreaturePassengers();
+public:
 
-        // Creates The Transporter
-        bool Create(uint32 entry, int32 Time);
+    Transporter(uint64 guid);
+    ~Transporter();
+    
+    void AddCreature(TransportSpawn creature);
+    void RespawnCreaturePassengers();
 
-        // Start Generating of the Waypoints
-        bool GenerateWaypoints(uint32 pathid);
+    // Creates The Transporter
+    bool Create(uint32 entry, int32 Time);
 
-        // Update Transporter Position and Transport Passengers
-        void Update();
+    // Start Generating of the Waypoints
+    bool GenerateWaypoints(uint32 pathid);
 
-        // Add Passenger to Transporter
-        bool AddPassenger(Player* passenger);
+    // Update Transporter Position and Transport Passengers
+    void Update();
 
-        // Remove Passenger from Transporter
-        bool RemovePassenger(Player* passenger);
+    // Add Passenger to Transporter
+    bool AddPassenger(Player* passenger);
 
-        // Start Update EVent on Transporter push to World
-        void OnPushToWorld();
+    // Remove Passenger from Transporter
+    bool RemovePassenger(Player* passenger);
 
-        // Build Update for Player
-        uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+    // Start Update EVent on Transporter push to World
+    void OnPushToWorld();
 
-        std::set<uint32> const& GetPassengers() const { return m_passengers; }
+    // Build Update for Player
+    uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
 
-        typedef std::set<Creature*> CreatureSet;
-        CreatureSet m_NPCPassengerSet;
+    std::set<uint32> const& GetPassengers() const { return m_passengers; }
 
-        // Spawning of the Creatures on Continent Transports
-        uint32 AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
+    typedef std::set<Creature*> CreatureSet;
+    CreatureSet m_NPCPassengerSet;
 
-        // Spawning of the Creatures in Instance Transports
-        Creature* AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
+    // Spawning of the Creatures on Continent Transports
+    uint32 AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
 
-        // Removes NPC Passenger
-        void RemovePassenger(Creature* passenger) { m_NPCPassengerSet.erase(passenger); }
+    // Spawning of the Creatures in Instance Transports
+    Creature* AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
 
-        // Update NPC Position
-        void UpdateNPCPositions(float x, float y, float z, float o);
+    // Removes NPC Passenger
+    void RemovePassenger(Creature* passenger) { m_NPCPassengerSet.erase(passenger); }
 
-        // Update Player POsition
-        void UpdatePlayerPositions(float x, float y, float z, float o);
+    // Update NPC Position
+    void UpdateNPCPositions(float x, float y, float z, float o);
 
-        // Builds Start Move Packet
-        void BuildStartMovePacket(MapMgr* targetMap);
+    // Update Player POsition
+    void UpdatePlayerPositions(float x, float y, float z, float o);
 
-        // Builds Stop Move Packet
-        void BuildStopMovePacket(MapMgr* targetMap);
+    // Builds Start Move Packet
+    void BuildStartMovePacket(MapMgr* targetMap);
 
-        // Transport Gossip
-        void TransportGossip(uint32 route);
+    // Builds Stop Move Packet
+    void BuildStopMovePacket(MapMgr* targetMap);
+
+    // Transport Gossip
+    void TransportGossip(uint32 route);
 
     void SetPeriod(int32 val);
     int32 GetPeriod();
 
-        uint32 m_pathTime;
-        uint32 m_timer;
+    uint32 m_pathTime;
+    uint32 m_timer;
 
-        std::set<uint32> m_passengers;
+    std::set<uint32> m_passengers;
 
-        uint32 currenttguid;
+    uint32 currenttguid;
 
-    private:
+private:
 
-        typedef std::map<uint32, TWayPoint> WaypointMap;
+    typedef std::map<uint32, TWayPoint> WaypointMap;
 
-        WaypointMap::const_iterator mCurrentWaypoint;
-        WaypointMap::const_iterator mNextWaypoint;
+    WaypointMap::const_iterator mCurrentWaypoint;
+    WaypointMap::const_iterator mNextWaypoint;
 
-    public:
+public:
 
-        WaypointMap m_WayPoints;
+    WaypointMap m_WayPoints;
 
-    private:
+private:
 
-        void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
-        void GetNextWaypoint();
-        int32 m_period;
+    void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
+    void GetNextWaypoint();
+    int32 m_period;
 
-    protected:
+protected:
 
-        Mutex m_creatureSetMutex;
+    Mutex m_creatureSetMutex;
 };
-
-#endif

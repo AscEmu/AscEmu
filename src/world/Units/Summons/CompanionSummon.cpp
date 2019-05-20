@@ -28,7 +28,7 @@ CompanionSummon::CompanionSummon(uint64 GUID) : Summon(GUID)
 CompanionSummon::~CompanionSummon()
 { }
 
-void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector & position, uint32 spellid, int32 summonSlot)
+void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector & position, uint32_t spellid, int32_t summonSlot)
 {
     Summon::Load(properties_, companionOwner, position, spellid, summonSlot);
 

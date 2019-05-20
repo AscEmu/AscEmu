@@ -860,26 +860,42 @@ bool Player::Create(CharCreate& charCreateContent)
     //setScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     setScale(1.0f);
     setHealth(info->health);
-    setPower(POWER_TYPE_MANA, info->mana);
-    setPower(POWER_TYPE_RAGE, 0);
-    setPower(POWER_TYPE_FOCUS, info->focus); // focus
-    setPower(POWER_TYPE_ENERGY, info->energy);
+    switch (charCreateContent._class)
+    {
+    case WARRIOR:
+        setPower(POWER_TYPE_RAGE, 0);
+        setMaxPower(POWER_TYPE_RAGE, info->rage);
+        break;
+    case ROGUE:
+        setPower(POWER_TYPE_ENERGY, info->energy);
+        setMaxPower(POWER_TYPE_ENERGY, info->energy);
+        break;
+    case DEATHKNIGHT:
+        setPower(POWER_TYPE_RUNES, 8);
+        setMaxPower(POWER_TYPE_RUNES, 8);
+        setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+        break;
+    default:
+        setPower(POWER_TYPE_MANA, info->mana);
+        setMaxPower(POWER_TYPE_MANA, info->mana);
+        setBaseMana(info->mana);
+        if (info->focus)
+        {
+            setPower(POWER_TYPE_FOCUS, info->focus);
+            setMaxPower(POWER_TYPE_FOCUS, info->focus);
+        }
+        break;
+    }
 
     setMaxHealth(info->health);
-    setMaxPower(POWER_TYPE_MANA, info->mana);
-    setMaxPower(POWER_TYPE_RAGE, info->rage);
-    setMaxPower(POWER_TYPE_FOCUS, info->focus);
-    setMaxPower(POWER_TYPE_ENERGY, info->energy);
 
 #if VERSION_STRING == WotLK
-    setPower(POWER_TYPE_RUNES, 8);
-    setMaxPower(POWER_TYPE_RUNES, 8);
-    setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+
 #endif
 
     //THIS IS NEEDED
     setBaseHealth(info->health);
-    setBaseMana(info->mana);
+
     if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
         SetFaction(raceEntry->faction_id);
     else
@@ -1085,8 +1101,8 @@ bool Player::Create(CharCreate& charCreateContent)
     }
 
     sHookInterface.OnCharacterCreate(this);
-    load_health = getHealth();
-    load_mana = getPower(POWER_TYPE_MANA);
+    load_health = getMaxHealth();
+    load_mana = getMaxPower(POWER_TYPE_MANA);
     return true;
 }
 
@@ -4671,33 +4687,29 @@ void Player::OnPushToWorld()
         // Process create packet
         ProcessPendingUpdates();
 
-        TaxiStart(GetTaxiPath(),
-                  getMountDisplayId(),
-                  lastNode);
+        TaxiStart(GetTaxiPath(), getMountDisplayId(), lastNode);
 
         m_taxiMapChangeNode = 0;
     }
 
+    // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
-        // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);
         flying_aura = 0;
     }
 
-    /* send weather */
+    // send weather
     sWeatherMgr.SendWeather(this);
 
-    setHealth((load_health > getMaxHealth() ? getMaxHealth() : load_health));
+    setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
     setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
 
     if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
-    {
         m_mapMgr->m_battleground->PortPlayer(this, true);
-    }
 
     if (m_bg != nullptr)
     {
@@ -4751,19 +4763,6 @@ void Player::OnPushToWorld()
 
     Unit::OnPushToWorld();
 
-    if (m_FirstLogin)
-    {
-        if (class_ == DEATHKNIGHT)
-            startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
-        else
-            startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
-
-        sHookInterface.OnFirstEnterWorld(this);
-        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
-        ApplyLevelInfo(Info, startlevel);
-        setInitialTalentPoints();
-        m_FirstLogin = false;
-    }
 
     sHookInterface.OnEnterWorld(this);
     CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
@@ -4795,7 +4794,49 @@ void Player::OnPushToWorld()
     sWeatherMgr.SendWeather(this);
 
     setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
-    setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+    if (getPowerType() == POWER_TYPE_MANA)
+        setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+
+    if (m_FirstLogin)
+    {
+        if (class_ == DEATHKNIGHT)
+            startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
+        else
+            startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
+
+        sHookInterface.OnFirstEnterWorld(this);
+        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
+        ApplyLevelInfo(Info, startlevel);
+        setInitialTalentPoints();
+        SetHealthPct(100);
+
+        // Sometimes power types aren't initialized - so initialize it again
+        switch (getClass())
+        {
+        case WARRIOR:
+            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            setPower(POWER_TYPE_RAGE, 0);
+            break;
+        case ROGUE:
+            setMaxPower(POWER_TYPE_ENERGY, info->energy);
+            setPower(POWER_TYPE_ENERGY, info->energy);
+            break;
+        case DEATHKNIGHT:
+            setMaxPower(POWER_TYPE_RUNES, 8);
+            setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+            setPower(POWER_TYPE_RUNES, 8);
+            break;
+        default:
+            setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+            if (info->focus)
+            {
+                setPower(POWER_TYPE_FOCUS, 0);
+                setMaxPower(POWER_TYPE_FOCUS, info->focus);
+            }
+            break;
+        }
+        m_FirstLogin = false;
+    }
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();

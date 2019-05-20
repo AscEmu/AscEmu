@@ -1,1 +1,0 @@
-AscConfigs.cmake - script contains base cmake options for AscEmu project

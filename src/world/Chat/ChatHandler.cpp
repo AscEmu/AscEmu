@@ -163,7 +163,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     return 1;
 }
 
-WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const char* message, uint64 guid , uint8 flag) const
+WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const char* message, uint64 guid, uint8 flag) const
 {
     ARCEMU_ASSERT(type != CHAT_MSG_CHANNEL);
     //channels are handled in channel handler and so on

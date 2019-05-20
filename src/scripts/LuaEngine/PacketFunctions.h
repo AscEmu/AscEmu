@@ -17,17 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LUAPACKET_H
-#define _LUAPACKET_H
+#pragma once
 
 #include "LUAEngine.h"
 
 namespace luPacket
 {
-    /*
-        NORMAL OPERATIONS
-        */
-
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Normal operations
     int CreatePacket(lua_State* L, WorldPacket* /*packet*/)
     {
         uint16 opcode = static_cast<uint16>(luaL_checkinteger(L, 1));
@@ -57,9 +54,8 @@ namespace luPacket
             lua_pushinteger(L, packet->size());
         return 1;
     }
-    /*
-        READ OPERATIONS
-        */
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Read operations
     int ReadUByte(lua_State* L, WorldPacket* packet)
     {
         if (packet == NULL)
@@ -192,11 +188,8 @@ namespace luPacket
             lua_pushnil(L);
         return 1;
     }
-
-    /*
-        WRITE OPERATIONS
-        */
-
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Write operations
     int WriteByte(lua_State* L, WorldPacket* packet)
     {
         int8 byte = (int8)luaL_checkinteger(L, 1);
@@ -276,6 +269,3 @@ namespace luPacket
         return 1;
     }
 };
-
-
-#endif      // _LUAPACKET_H

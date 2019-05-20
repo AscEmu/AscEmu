@@ -1,0 +1,1 @@
+﻿Options.cmake - script contains base cmake options for AscEmu project.

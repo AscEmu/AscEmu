@@ -3,8 +3,7 @@ Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef __LUAENGINE_H
-#define __LUAENGINE_H
+#pragma once
 
 #include <Management/Gossip/Gossip.h>
 #include <Server/EventMgr.h>
@@ -21,10 +20,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 extern "C"
 {
-    // we're C++, and LUA is C, so the compiler needs to know to use C function names.
-    #include <lua/lua.h>
-    #include <lua/lauxlib.h>
-    #include <lua/lualib.h>
+// we're C++, and LUA is C, so the compiler needs to know to use C function names.
+#include <lua/lua.h>
+#include <lua/lauxlib.h>
+#include <lua/lualib.h>
 };
 
 #include <sys/stat.h>
@@ -50,67 +49,87 @@ class ArcLuna;
 
 enum QuestEvents
 {
-    QUEST_EVENT_ON_ACCEPT = 1,
-    QUEST_EVENT_ON_COMPLETE = 2,
-    QUEST_EVENT_ON_CANCEL = 3,
-    QUEST_EVENT_GAMEOBJECT_ACTIVATE = 4,
-    QUEST_EVENT_ON_CREATURE_KILL = 5,
-    QUEST_EVENT_ON_EXPLORE_AREA = 6,
-    QUEST_EVENT_ON_PLAYER_ITEMPICKUP = 7,
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //RegisterQuestEvent
+    // Quest callbacks are made by using the function RegisterQuestEvent (QuestId, EventId, function)
+
+    QUEST_EVENT_ON_ACCEPT                       = 1,  // -- (pPlayer, QuestId)
+    QUEST_EVENT_ON_COMPLETE                     = 2,  // -- (pPlayer, QuestId)
+    QUEST_EVENT_ON_CANCEL                       = 3,  // -- (pPlayer)
+    QUEST_EVENT_GAMEOBJECT_ACTIVATE             = 4,  // -- (GameObjectId, pPlayer, QuestId)
+    QUEST_EVENT_ON_CREATURE_KILL                = 5,  // -- (CreatureId, pPlayer, QuestId)
+    QUEST_EVENT_ON_EXPLORE_AREA                 = 6,  // -- (AreaTriggerId, pPlayer, QuestId)
+    QUEST_EVENT_ON_PLAYER_ITEMPICKUP            = 7,  // -- (ItemId, Count, pPlayer, QuestId)
     QUEST_EVENT_COUNT
 };
 
 enum CreatureEvents
 {
-    CREATURE_EVENT_ON_ENTER_COMBAT = 1,
-    CREATURE_EVENT_ON_LEAVE_COMBAT = 2,
-    CREATURE_EVENT_ON_TARGET_DIED = 3,
-    CREATURE_EVENT_ON_DIED = 4,
-    CREATURE_EVENT_ON_TARGET_PARRIED = 5,
-    CREATURE_EVENT_ON_TARGET_DODGED = 6,
-    CREATURE_EVENT_ON_TARGET_BLOCKED = 7,
-    CREATURE_EVENT_ON_TARGET_CRIT_HIT = 8,
-    CREATURE_EVENT_ON_PARRY = 9,
-    CREATURE_EVENT_ON_DODGED = 10,
-    CREATURE_EVENT_ON_BLOCKED = 11,
-    CREATURE_EVENT_ON_CRIT_HIT = 12,
-    CREATURE_EVENT_ON_HIT = 13,
-    CREATURE_EVENT_ON_ASSIST_TARGET_DIED = 14,
-    CREATURE_EVENT_ON_FEAR = 15,
-    CREATURE_EVENT_ON_FLEE = 16,
-    CREATURE_EVENT_ON_CALL_FOR_HELP = 17,
-    CREATURE_EVENT_ON_LOAD = 18,
-    CREATURE_EVENT_ON_REACH_WP = 19,
-    CREATURE_EVENT_ON_LOOT_TAKEN = 20,
-    CREATURE_EVENT_ON_AIUPDATE = 21,
-    CREATURE_EVENT_ON_EMOTE = 22,
-    CREATURE_EVENT_ON_DAMAGE_TAKEN = 23,
-    CREATURE_EVENT_ON_ENTER_VEHICLE = 24,
-    CREATURE_EVENT_ON_EXIT_VEHICLE = 25,
-    CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED = 26,
-    CREATURE_EVENT_ON_VEHICLE_FULL = 27,
-    CREATURE_EVENT_ON_LAST_PASSENGER_LEFT = 28,
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //RegisterUnitEvent
+    // Unit callbacks are made by using the function RegisterUnitEvent(UnitId, EventId, function)
+
+    CREATURE_EVENT_ON_ENTER_COMBAT              = 1,  // -- (pUnit, event, pAttacker)
+    CREATURE_EVENT_ON_LEAVE_COMBAT              = 2,  // -- (pUnit, event, pLastTarget)
+    CREATURE_EVENT_ON_TARGET_DIED               = 3,  // -- (pUnit, event, pDied)
+    CREATURE_EVENT_ON_DIED                      = 4,  // -- (pUnit, event, pLastTarget)
+    CREATURE_EVENT_ON_TARGET_PARRIED            = 5,  // -- (pUnit, event, pTarget)
+    CREATURE_EVENT_ON_TARGET_DODGED             = 6,  // -- (pUnit, event, pTarget)
+    CREATURE_EVENT_ON_TARGET_BLOCKED            = 7,  // -- (pUnit, event, pTarget, pAmount)
+    CREATURE_EVENT_ON_TARGET_CRIT_HIT           = 8,  // -- (pUnit, event, pTarget, pAmount)
+    CREATURE_EVENT_ON_PARRY                     = 9,  // -- (pUnit, event, pTarget)
+    CREATURE_EVENT_ON_DODGED                    = 10, // -- (pUnit, event, pTarget)
+    CREATURE_EVENT_ON_BLOCKED                   = 11, // -- (pUnit, event, pTarget, pAmount)
+    CREATURE_EVENT_ON_CRIT_HIT                  = 12, // -- (pUnit, event, pTarget, pAmount)
+    CREATURE_EVENT_ON_HIT                       = 13, // -- (pUnit, event, pTarget, pAmount)
+    CREATURE_EVENT_ON_ASSIST_TARGET_DIED        = 14, // -- (pUnit, event, pAssistTarget)
+    CREATURE_EVENT_ON_FEAR                      = 15, // -- (pUnit, event, pTarget, pSpell)
+    CREATURE_EVENT_ON_FLEE                      = 16, // -- (pUnit, event, pTarget)
+    CREATURE_EVENT_ON_CALL_FOR_HELP             = 17, // -- (pUnit, event)
+    CREATURE_EVENT_ON_LOAD                      = 18, // -- (pUnit, event)
+    CREATURE_EVENT_ON_REACH_WP                  = 19, // -- (pUnit, event, pWaypointId, pForwards)
+    CREATURE_EVENT_ON_LOOT_TAKEN                = 20, // -- (pUnit, event, pPlayer, pItemId)
+    CREATURE_EVENT_ON_AIUPDATE                  = 21, // -- (pUnit, event)
+    CREATURE_EVENT_ON_EMOTE                     = 22, // -- (pUnit, event, pPlayer, pEmote)
+    CREATURE_EVENT_ON_DAMAGE_TAKEN              = 23, // -- (pUnit, event, pAttacker, pAmount)
+    CREATURE_EVENT_ON_ENTER_VEHICLE             = 24, // -- (pUnit)
+    CREATURE_EVENT_ON_EXIT_VEHICLE              = 25, // -- (pUnit)
+    CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED   = 26, // -- (pUnit, Passenger)
+    CREATURE_EVENT_ON_VEHICLE_FULL              = 27, // -- (pUnit)
+    CREATURE_EVENT_ON_LAST_PASSENGER_LEFT       = 28, // -- (pUnit, Passenger)
     CREATURE_EVENT_COUNT
 };
 
 enum GameObjectEvents
 {
-    GAMEOBJECT_EVENT_ON_CREATE = 1,
-    GAMEOBJECT_EVENT_ON_SPAWN = 2,
-    GAMEOBJECT_EVENT_ON_LOOT_TAKEN = 3,
-    GAMEOBJECT_EVENT_ON_USE = 4,
-    GAMEOBJECT_EVENT_AIUPDATE = 5,
-    GAMEOBJECT_EVENT_ON_DESPAWN = 6,
-    GAMEOBJECT_EVENT_ON_DAMAGED = 7,
-    GAMEOBJECT_EVENT_ON_DESTROYED = 8,
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //RegisterGameObjectEvent
+    // GameObject callbacks are made by using the function RegisterGameObjectEvent(GameObjectId, EventId, function)
+
+    GAMEOBJECT_EVENT_ON_CREATE                  = 1,  // -- (pGameObject)
+    GAMEOBJECT_EVENT_ON_SPAWN                   = 2,  // -- (pGameObject)
+    GAMEOBJECT_EVENT_ON_LOOT_TAKEN              = 3,  // -- (pGameObject, event, pLooter, ItemId)
+    GAMEOBJECT_EVENT_ON_USE                     = 4,  // -- (pGameObject, event, pPlayer)
+    GAMEOBJECT_EVENT_AIUPDATE                   = 5,  // -- (pGameObject)
+    GAMEOBJECT_EVENT_ON_DESPAWN                 = 6,  // -- No arguments passed.
+    GAMEOBJECT_EVENT_ON_DAMAGED                 = 7,  // -- (pGameObject, damage)
+    GAMEOBJECT_EVENT_ON_DESTROYED               = 8,  // -- (pGameObject)
     GAMEOBJECT_EVENT_COUNT
 };
 
 enum GossipEvents
 {
-    GOSSIP_EVENT_ON_TALK = 1,
-    GOSSIP_EVENT_ON_SELECT_OPTION = 2,
-    GOSSIP_EVENT_ON_END = 3,
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //RegisterUnitGossipEvent
+    // Gossip Event callbacks can be made using any of the following functions. Note that the pUnit in the arguments of these functions variate depending on the register you use. 
+
+    // RegisterUnitGossipEvent(UnitId, EventId, function) (Applies to Creatures only) 
+    // RegisterGOGossipEvent(GameObjectId, EventId, function) 
+    // RegisterItemGossipEvent(ItemId, EventId, function)
+
+    GOSSIP_EVENT_ON_TALK                        = 1,  // -- (pUnit, event, pPlayer)
+    GOSSIP_EVENT_ON_SELECT_OPTION               = 2,  // -- (pUnit, event, pPlayer, id, intid, code)
+    GOSSIP_EVENT_ON_END                         = 3,  // -- (pUnit, event)
     GOSSIP_EVENT_COUNT
 };
 
@@ -129,16 +148,20 @@ enum RandomFlags
 
 enum InstanceHooks
 {
-    INSTANCE_EVENT_ON_PLAYER_DEATH = 1,
-    INSTANCE_EVENT_ON_PLAYER_ENTER = 2,
-    INSTANCE_EVENT_ON_AREA_TRIGGER = 3,
-    INSTANCE_EVENT_ON_ZONE_CHANGE = 4,
-    INSTANCE_EVENT_ON_CREATURE_DEATH = 5,
-    INSTANCE_EVENT_ON_CREATURE_PUSH = 6,
-    INSTANCE_EVENT_ON_GO_ACTIVATE = 7,
-    INSTANCE_EVENT_ON_GO_PUSH = 8,
-    INSTANCE_EVENT_ONLOAD = 9,
-    INSTANCE_EVENT_DESTROY = 10,
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //RegisterInstanceEvent
+    // Instance Hook callbacks can be made by using the function RegisterInstanceEvent(MapId, EventId, function)
+    
+    INSTANCE_EVENT_ON_PLAYER_DEATH              = 1,  // -- (InstanceID, pPlayer, pKiller)
+    INSTANCE_EVENT_ON_PLAYER_ENTER              = 2,  // -- (InstanceID, pPlayer)
+    INSTANCE_EVENT_ON_AREA_TRIGGER              = 3,  // -- (InstanceID, pPlayer, nAreaId)
+    INSTANCE_EVENT_ON_ZONE_CHANGE               = 4,  // -- (InstanceID, pPlayer, nNewZone, nOldZone)
+    INSTANCE_EVENT_ON_CREATURE_DEATH            = 5,  // -- (InstanceID, pVictim, pKiller)
+    INSTANCE_EVENT_ON_CREATURE_PUSH             = 6,  // -- (InstanceID, pUnit) {AKA "OnSpawn" but for within an instance}
+    INSTANCE_EVENT_ON_GO_ACTIVATE               = 7,  // -- (InstanceID, pGo, pPlayer)
+    INSTANCE_EVENT_ON_GO_PUSH                   = 8,  // -- (InstanceID, pGo) {AKA "OnSpawn" but for within an instance}
+    INSTANCE_EVENT_ONLOAD                       = 9,  // -- (InstanceID) {When the instance is created}
+    INSTANCE_EVENT_DESTROY                      = 10, // -- (InstanceID) {When the instance is destroyed, happens when the instance resets.}
     INSTANCE_EVENT_COUNT
 };
 
@@ -828,5 +851,3 @@ static int RemoveTimedEvents(lua_State* L);
 static int RegisterDummySpell(lua_State* L);
 static int RegisterInstanceEvent(lua_State* L);
 void RegisterGlobalFunctions(lua_State*);
-
-#endif      // __LUAENGINE_H

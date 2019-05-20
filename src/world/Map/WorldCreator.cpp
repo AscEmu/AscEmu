@@ -1015,27 +1015,24 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 #else
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
 #endif
-    Instance* in;
-    InstanceMap::iterator itr;
-    InstanceMap* instancemap;
-    uint32 i;
     uint32 counter = 0;
 
     data << counter;
     m_mapLock.Acquire();
+  
     for (i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
-            instancemap = m_instances[i];
-            for (itr = instancemap->begin(); itr != instancemap->end();)
+            InstanceMap* instancemap = m_instances[i];
+            for (InstanceMap::iterator itr = instancemap->begin(); itr != instancemap->end();)
             {
-                in = itr->second;
+                Instance* in = itr->second;
                 ++itr;
 
                 if (in->m_persistent && PlayerOwnsInstance(in, plr))
                 {
-                    data << uint32(in->m_mapId);                        // obviously the mapid
+                    data << uint32(in->m_mapId);                         // obviously the mapid
                     data << uint32(in->m_difficulty);                    // instance difficulty
                     data << uint64(in->m_instanceId);                    // self-explanatory
                     data << uint8(1);                                    // expired = 0
