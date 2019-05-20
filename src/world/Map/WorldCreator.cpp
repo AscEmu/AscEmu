@@ -1020,7 +1020,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
     data << counter;
     m_mapLock.Acquire();
   
-    for (i = 0; i < MAX_NUM_MAPS; ++i)
+    for (uint32_t i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
