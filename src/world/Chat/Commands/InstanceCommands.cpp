@@ -66,7 +66,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (sscanf(args, "%u", (unsigned int*)&entry) != 1)
         return false;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, plr->GetInstanceID());
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, plr->GetInstanceID());
     if (instance == nullptr)
         return true;
 
@@ -106,7 +106,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
             return false;
     }
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
     if (instance == nullptr)
     {
         if (userInput)
@@ -208,7 +208,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         return true;
     }
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
     if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
@@ -315,7 +315,7 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
     if (instanceId == 0)
         return false;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
     if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
@@ -352,7 +352,7 @@ bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_
     if (instanceId == 0)
         return true;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
 
     if (instance && instance->m_mapMgr != nullptr && instance->m_mapMgr->GetScript() != nullptr)
         instance->m_mapMgr->GetScript()->displayTimerList(player);

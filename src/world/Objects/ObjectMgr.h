@@ -417,7 +417,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         // object holders
         GmTicketList GM_TicketList;
-        InstanceBossInfoMap* m_InstanceBossInfoMap[NUM_MAPS];
+        InstanceBossInfoMap* m_InstanceBossInfoMap[MAX_NUM_MAPS];
         PlayerCacheMap m_playerCache;
         FastMutex m_playerCacheLock;
 

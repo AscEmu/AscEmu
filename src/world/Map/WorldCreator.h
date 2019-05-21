@@ -72,7 +72,7 @@ class SERVER_DECL InstanceMgr
 
         inline Map* GetMap(uint32 mapid)
         {
-            if (mapid >= NUM_MAPS)
+            if (mapid >= MAX_NUM_MAPS)
                 return NULL;
             else
                 return m_maps[mapid];
@@ -156,12 +156,12 @@ class SERVER_DECL InstanceMgr
 
         Instance* GetInstanceByIds(uint32 mapid, uint32 instanceId)
         {
-            if (mapid > NUM_MAPS)
+            if (mapid > MAX_NUM_MAPS)
                 return NULL;
-            if (mapid == NUM_MAPS)
+            if (mapid == MAX_NUM_MAPS)
             {
                 Instance* in;
-                for (uint32 i = 0; i < NUM_MAPS; ++i)
+                for (uint32 i = 0; i < MAX_NUM_MAPS; ++i)
                 {
                     in = GetInstanceByIds(i, instanceId);
                     if (in != NULL)
@@ -187,10 +187,10 @@ class SERVER_DECL InstanceMgr
         uint32 m_InstanceHigh;
 
         Mutex m_mapLock;
-        Map* m_maps[NUM_MAPS];
-        InstanceMap* m_instances[NUM_MAPS];
-        MapMgr* m_singleMaps[NUM_MAPS];
-        time_t m_nextInstanceReset[NUM_MAPS];
+        Map* m_maps[MAX_NUM_MAPS];
+        InstanceMap* m_instances[MAX_NUM_MAPS];
+        MapMgr* m_singleMaps[MAX_NUM_MAPS];
+        time_t m_nextInstanceReset[MAX_NUM_MAPS];
 };
 
 extern SERVER_DECL InstanceMgr sInstanceMgr;

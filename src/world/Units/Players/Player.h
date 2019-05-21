@@ -1712,7 +1712,7 @@ public:
         // Instance IDs
         uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)
         {
-            if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
+            if (mapId >= MAX_NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
                 return 0;
 
             m_playerInfo->savedInstanceIdsLock.Acquire();

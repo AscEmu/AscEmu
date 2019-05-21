@@ -4033,7 +4033,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     float dx = x - prev.pos.x;
     float dy = y - prev.pos.y;
     float dz = z - prev.pos.z;
-    float dist = sqrt(dx * dx + dy * dy + dz * dz);
+    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
 
     uint32 movetime;
 
@@ -5021,7 +5021,7 @@ uint8 AIInterface::GetDifficultyType()
 {
     uint8 difficulty_type;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
+    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, m_Unit->GetInstanceID());
     if (instance != nullptr)
         difficulty_type = instance->m_difficulty;
     else

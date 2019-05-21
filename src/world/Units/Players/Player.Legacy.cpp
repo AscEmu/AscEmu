@@ -4446,7 +4446,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
 
 void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId)
 {
-    if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == nullptr)
+    if (mapId >= MAX_NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == nullptr)
         return;
 
     m_playerInfo->savedInstanceIdsLock.Acquire();
