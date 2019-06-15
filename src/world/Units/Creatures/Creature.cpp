@@ -586,8 +586,8 @@ void Creature::SaveToDB()
         ss << 0 << ",";
 
     ss << m_phase << ","
-        << "0,"             // event_entry
-        << "0,"             // waypoint_group
+        << "0"  // event_entry
+        << ",0" // waypoint_group
         << ")";
 
     WorldDatabase.Execute(ss.str().c_str());
