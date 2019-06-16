@@ -182,7 +182,7 @@ public:
 
     /** Componentwise absolute value */
     Vector2 abs() const {
-        return Vector2(fabs(x), fabs(y));
+        return Vector2((float)fabs(x), (float)fabs(y));
     }
 
     /** Component-wise minimum */

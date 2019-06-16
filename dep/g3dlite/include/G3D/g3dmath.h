@@ -216,7 +216,7 @@ inline double round(double f) {
 }
 
 inline float round(float f) {
-    return floor(f + 0.5f);
+    return (float)floor((float)f + 0.5f);
 }
     
 /** 
@@ -285,7 +285,7 @@ int iMod3(int x);
 float uniformRandom(float low = 0.0f, float hi = 1.0f);
 
 /**
- Normally distributed random number. 
+ Normally distributed random number.
 
  @deprecated 
  @sa Random::gaussian
@@ -633,7 +633,7 @@ inline double aCos (double fValue) {
 inline float acos (float fValue) {
     if ( -1.0f < fValue ) {
         if ( fValue < 1.0f ) {
-            return ::acos(fValue);
+            return (float)::acos(fValue);
         } else {
             return 0.0f;
         }
@@ -734,7 +734,7 @@ inline double distance(double x, double y) {
 
 //----------------------------------------------------------------------------
 inline float distance(float x, float y) {
-    return sqrt(sumSquares(x, y));
+    return (float)sqrt(sumSquares(x, y));
 }
 
 //----------------------------------------------------------------------------
@@ -744,7 +744,7 @@ inline double distance(double x, double y, double z) {
 
 //----------------------------------------------------------------------------
 inline float distance(float x, float y, float z) {
-    return sqrt(sumSquares(x, y, z));
+    return (float)sqrt(sumSquares(x, y, z));
 }
 
 //----------------------------------------------------------------------------
@@ -943,4 +943,3 @@ inline int pow(int a, int b) {
 #endif
 
 #endif
-
