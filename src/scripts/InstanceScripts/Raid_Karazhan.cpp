@@ -1786,7 +1786,7 @@ class FiendPortal : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
 
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -2252,7 +2252,7 @@ class MAxesAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
     explicit MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 
         /*spells[0].info = sSpellMgr.getSpellInfo(DEMONIC_FRENZY);
         spells[0].targettype = TARGET_SELF;
@@ -2409,7 +2409,7 @@ class VoidZoneAI : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
         getCreature()->DisableAI();
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -3097,7 +3097,7 @@ class CycloneOZ : public CreatureAIScript
     explicit CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CYCLONE_VISUAL), true);
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
