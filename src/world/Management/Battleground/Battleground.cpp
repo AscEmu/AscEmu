@@ -884,7 +884,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->setVirtualItemSlotId(MELEE, 22802);
 
-    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
+    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_PVP); // 4928
 
     pCreature->setBaseAttackTime(MELEE, 2000);
     pCreature->setBaseAttackTime(OFFHAND, 2000);

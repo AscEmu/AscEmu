@@ -2702,7 +2702,7 @@ class GenericTriggerAI : public CreatureAIScript
 
         if (OnSpawn)
         {
-            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
             _applyAura(mSpellId);
             _setMeleeDisabled(false);
             despawn(mDespawnTimer, 0);
@@ -2716,7 +2716,7 @@ class GenericTriggerAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _applyAura(mSpellId);
         _setMeleeDisabled(false);
         despawn(mDespawnTimer, 0);
@@ -2737,7 +2737,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI);
     explicit EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         getCreature()->m_noRespawn = true;
 
@@ -3477,7 +3477,7 @@ class MaievAI : public CreatureAIScript
 
         // HACK!
         //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->setMaxHealth(1000000);
         getCreature()->setHealth(1000000);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -4200,7 +4200,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             pBlade->setChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                         }
                     }
-                    getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                    getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                     break;
                 case 4:
                     {
@@ -4251,7 +4251,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         setRooted(false);
                         _clearHateList();
                         setScriptPhase(3);
-                        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                        getCreature()->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 
                         SetAIUpdateFreq(1000);
 
@@ -4541,7 +4541,7 @@ class IllidanStormrageAI : public CreatureAIScript
         _setMeleeDisabled(true);
         setRooted(false);
 
-        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 
         mScenePart = 0;
     }
@@ -4624,7 +4624,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 setRooted(false);
                 setScriptPhase(5);
 
-                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+                getCreature()->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 
                 pMaievAI->RegisterAIUpdateEvent(1000);
                 pMaievAI->mYellTimer = pMaievAI->_addTimer((Util::getRandomUInt(20) + 20) * 1000);

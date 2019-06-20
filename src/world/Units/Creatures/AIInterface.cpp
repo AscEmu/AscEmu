@@ -2259,7 +2259,7 @@ Unit* AIInterface::FindTarget()
 
     //target is immune to all form of attacks, cant attack either.
     // not attackable creatures sometimes fight enemies in scripted fights though
-    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2))
+    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE))
     {
         return nullptr;
     }

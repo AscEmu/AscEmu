@@ -660,7 +660,7 @@ class Worm : public CreatureAIScript
     void OnLoad() override
     {
         getCreature()->setMoveRoot(true);
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
     }
 };

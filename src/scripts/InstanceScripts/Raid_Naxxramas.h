@@ -1838,7 +1838,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
 #ifdef DISABLE_FROST_BREATH
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 #else
-        _unit->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 #endif
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1862,7 +1862,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI);
     explicit FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->castSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1891,7 +1891,7 @@ public:
     explicit ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpellLoc(getCreature()->GetPosition(), sSpellMgr.getSpellInfo(28547), true);
-        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;

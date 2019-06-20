@@ -6192,7 +6192,7 @@ void Aura::SpellAuraModUnattackable(bool /*apply*/)
     /*
             Also known as Apply Aura: Mod Unintractable
             Used by: Spirit of Redemption, Divine Intervention, Phase Shift, Flask of Petrification
-            It uses one of the UNIT_FIELD_FLAGS, either UNIT_FLAG_NOT_SELECTABLE or UNIT_FLAG_NOT_ATTACKABLE_2
+            It uses one of the UNIT_FIELD_FLAGS, either UNIT_FLAG_NOT_SELECTABLE or UNIT_FLAG_NON_ATTACKABLE
             */
 }
 
