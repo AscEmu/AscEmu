@@ -13,7 +13,6 @@ set(sources
     Setup.cpp
     NeutralGuards.cpp
     # Required for linker
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
 )
 

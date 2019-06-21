@@ -26,7 +26,6 @@ set(sources
     Gossip_XpEliminator.cpp
     Setup.cpp
     # Required for linker
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
 )
 

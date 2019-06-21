@@ -63,7 +63,6 @@ SET(sources
     Quest_Wetlands.cpp
     Quest_Zangarmarsh.cpp
     # Required for linker
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
 )
 

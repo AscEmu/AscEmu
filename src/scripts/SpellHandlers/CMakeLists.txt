@@ -20,7 +20,6 @@ set(sources
     WarriorSpells.cpp
     MiscSpells.cpp
     # Required for linker
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
     ../../world/Spell/SpellCastTargets.cpp
     ../../shared/Util.cpp

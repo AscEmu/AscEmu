@@ -41,7 +41,6 @@ set(sources
     Event_Zalzanes_Fall.cpp
     Setup.cpp
     # Required for linker
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
     ../../shared/Util.cpp
 )

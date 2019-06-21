@@ -74,8 +74,6 @@ set(sources
     Raid_ZulAman.cpp 
     Setup.cpp
     # Required for linker
-    ../Common/AITimerCollection.cpp
-    ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
     ../../shared/Util.cpp
     )
@@ -144,8 +142,6 @@ set(headers
     Raid_WorldBosses.h 
     Raid_ZulAman.h
     Setup.h
-    
-    ../Common/AITimerCollection.h
 )
 
 include_directories(

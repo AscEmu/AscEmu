@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Instance_Deadmines.h"
-#include "Server/LazyTimer.h"
 #include <Units/Creatures/Pet.h>
 
 
@@ -150,16 +149,13 @@ static Movement::Location Guards[] =
 class RhahkZorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
-
-    // Just for testing
-    LazyTimer debugTimer;
-
-    explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
+    explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(6304, 8.0f, TARGET_ATTACKING, 0, 3);    // Rhahk'Zor Slam
+        addAISpell(6304, 8.0f, TARGET_ATTACKING, 1500, 3);    // Rhahk'Zor Slam
 
         addEmoteForEvent(Event_OnCombatStart, 5495);     // VanCleef pay big for you heads!
     }
+
 };
 
 
@@ -351,7 +347,7 @@ class VanCleefAI : public CreatureAIScript
 
 void SetupDeadmines(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(NPC_RHAHK_ZOR, &RhahkZorAI::Create);
+    //mgr->register_creature_script(NPC_RHAHK_ZOR, &RhahkZorAI::Create);
     mgr->register_creature_script(NPC_MR_SMITE, &MrSmiteAI::Create);
     mgr->register_creature_script(NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);
 }
