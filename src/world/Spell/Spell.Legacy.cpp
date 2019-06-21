@@ -22,7 +22,6 @@
 #include "SpellTarget.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
-#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.h"
 #include "Definitions/SpellCastTargetFlags.h"
@@ -6964,4 +6963,3 @@ void Spell::HandleTargetNoObject()
     m_targets.m_targetMask |= TARGET_FLAG_DEST_LOCATION;
     m_targets.setDestination(LocationVector(newx, newy, newz));
 }
-#endif

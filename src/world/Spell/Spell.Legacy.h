@@ -20,7 +20,6 @@
 
 #pragma once
 
-#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "SpellCastTargets.h"
 #include "Definitions/SpellTargetMod.h"
 #include "Spell/SpellInfo.hpp"
@@ -485,4 +484,3 @@ class SERVER_DECL Spell : public EventableObject
         SpellInfo const* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 };
 
-#endif // USE_EXPERIMENTAL_SPELL_SYSTEM
