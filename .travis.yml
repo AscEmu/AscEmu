@@ -19,7 +19,7 @@ env:
 
 before_install:
   - if [ "$COMPILER" = "g++-8" ]; then export CXX="g++-8" CC="gcc-8"; fi
-  - if [ "$COMPILER" = "clang++-3.8" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
+  - if [ "$COMPILER" = "clang++-7" ]; then export CXX="clang++-7" CC="clang-7"; fi
     
 matrix:
   #allow_failures:
@@ -48,6 +48,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -55,11 +56,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-            - clang-3.8
-            - clang++-3.8
-      env: ASC_VERSION=WotLK COMPILER=clang++-3.8 
+            - clang-7
+            - g++-7
+      env: ASC_VERSION=WotLK COMPILER=clang++-7 
   # Cata
     - os: linux
       compiler: gcc
@@ -83,6 +82,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -90,11 +90,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-            - clang-3.8
-            - clang++-3.8
-      env: ASC_VERSION=Cata COMPILER=clang++-3.8 
+            - clang-7
+            - g++-7
+      env: ASC_VERSION=Cata COMPILER=clang++-7
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
