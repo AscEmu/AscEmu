@@ -60,11 +60,9 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-#ifdef USE_EXPERIMENTAL_FILESYSTEM
     DatabaseUpdater::initBaseIfNeeded(logonConfig.logonDb.db, "logon", *sLogonSQL);
 
     DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("logon", *sLogonSQL);
-#endif
 
     if (!CheckDBVersion())
     {
