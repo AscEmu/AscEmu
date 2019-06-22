@@ -1,10 +1,10 @@
 # Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX14)
+CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
 
-if(NOT COMPILER_SUPPORTS_CXX14)
-    message(FATAL_ERROR "AscEmu requires at least GCC 6.2! Current version ${CMAKE_CXX_COMPILER} does not support c++14 feature")
+if(NOT COMPILER_SUPPORTS_CXX17)
+    message(FATAL_ERROR "AscEmu requires at least GCC 8! Current version ${CMAKE_CXX_COMPILER} does not support c++17 feature")
 endif()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
