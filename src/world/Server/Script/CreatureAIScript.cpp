@@ -1065,7 +1065,8 @@ void CreatureAIScript::newAIUpdateSpellSystem()
         CreatureAISpells* usedSpell = nullptr;
 
         float randomChance = Util::getRandomFloat(100.0f);
-        std::random_shuffle(mCreatureAISpells.begin(), mCreatureAISpells.end());
+        //\todo deprecated since c++14
+        //std::random_shuffle(mCreatureAISpells.begin(), mCreatureAISpells.end());
         for (const auto& AISpell : mCreatureAISpells)
         {
             if (AISpell != nullptr)

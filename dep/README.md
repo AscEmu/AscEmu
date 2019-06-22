@@ -37,3 +37,7 @@
 ## Folder: bzip2
 - Web: http://www.bzip.org
 - Version: 1.0.6 (2010/09/20)
+
+## Folder: cotire
+- Web: https://github.com/sakra/cotire
+- Version: 1.8.0 (2018/03/18)

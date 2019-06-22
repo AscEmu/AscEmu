@@ -41,8 +41,8 @@ link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
 add_executable(${PROJECT_NAME} ${sources})
 
-if(USE_PCH AND PCHSupport_FOUND)
-    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
+if(USE_PCH)
+    gen_cxx_pch(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
 endif()
 
 if(NOT WIN32)

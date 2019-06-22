@@ -173,8 +173,8 @@ include_directories(
 
 add_executable(${PROJECT_NAME} ${sources})
 
-if(USE_PCH AND PCHSupport_FOUND)
-    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
+if(USE_PCH)
+    gen_cxx_pch(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
 endif()
 
 if(WIN32 AND NOT USE_PCH)

@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
 
-#We have our own custom modules that we use. This tells cmakes where to find them.
-set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_SOURCE_DIR}/cmake/Modules)
+#We have our own custom modules and dep modules that we use. This tells cmakes where to find them.
+list(APPEND CMAKE_MODULE_PATH 
+    ${CMAKE_SOURCE_DIR}/cmake/Modules
+    ${CMAKE_SOURCE_DIR}/dep/cotire/CMake)
 
 # get git information
 include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)
