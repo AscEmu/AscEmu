@@ -972,7 +972,7 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(setterGuid[7]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
-        _player->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
+        _player->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(targetGuid), rankId, WoWGuid::getGuidLowPartFromUInt64(setterGuid));
 
     if (Guild* guild = _player->GetGuild())
         guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
@@ -1602,7 +1602,7 @@ void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guildGuid[2]);
     recvPacket.ReadByteSeq(guildGuid[7]);
 
-    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
 }
 
 void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)

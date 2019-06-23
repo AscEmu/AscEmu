@@ -320,7 +320,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 {
     WorldPacket data(SMSG_LF_GUILD_APPLICANT_LIST_UPDATED, 0);
-    if (Player* player = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(guild.getLeaderGUID())))
+    if (Player* player = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
     {
         player->SendMessageToSet(&data, false);
     }

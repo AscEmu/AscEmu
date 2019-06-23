@@ -2061,7 +2061,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
     member->changeRank(static_cast<uint8_t>(rank));
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANKS_UPDATE target: %u, issuer: %u, rankId: %u",
-        Arcemu::Util::GUID_LOPART(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
+        WoWGuid::getGuidLowPartFromUInt64(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
 #endif
 }
 
