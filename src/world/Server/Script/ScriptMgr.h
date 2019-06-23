@@ -594,7 +594,7 @@ class SERVER_DECL InstanceScript
         virtual void SetInstanceData(uint32_t /*type*/, uint32_t /*data*/) {}
         virtual void SetInstanceData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t GetInstanceData(uint32_t /*type*/) const { return 0; }
-        virtual uint64_t GetInstanceData(uint32_t /*type*/) const { return 0; }
+        virtual uint64_t GetInstanceData64(uint32_t /*type*/) const { return 0; }
         
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);
