@@ -25,7 +25,6 @@
 #include "Log.hpp"
 #include "Database/Database.h"
 #include "WoWGuid.h"
-#include "Server/WUtil.h"
 #include "WorldPacket.h"
 
 namespace Arcemu
@@ -180,7 +179,7 @@ namespace Arcemu
 
             for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
             {
-                data << WoWGuid(uint64(Arcemu::Util::MAKE_ITEM_GUID(set->ItemGUID[i])));
+                data << WoWGuid(uint64(WoWGuid::createItemGuid(set->ItemGUID[i])));
             }
 #if VERSION_STRING >= Cata
             ++count;

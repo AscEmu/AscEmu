@@ -18,6 +18,7 @@
 #pragma once
 
 #include "Management/LFG/LFGGroupData.h"
+#include <string>
 
 /// Stores all lfg data needed about the player.
 class LfgPlayerData

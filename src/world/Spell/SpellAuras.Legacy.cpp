@@ -712,7 +712,7 @@ Player* Aura::GetPlayerCaster()
 
     if (m_target->GetMapMgr())
     {
-        return m_target->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(m_casterGuid));
+        return m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(m_casterGuid));
     }
     else
     {
@@ -1117,7 +1117,7 @@ void Aura::EventUpdateGroupAA(float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(*itr2));
+        Player* tp = m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
 
         bool removable = false;
         if (tp == nullptr)
@@ -1236,7 +1236,7 @@ void Aura::EventUpdateRaidAA(float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(*itr2));
+        Player* tp = m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
         bool removable = false;
 
         if (tp == nullptr)

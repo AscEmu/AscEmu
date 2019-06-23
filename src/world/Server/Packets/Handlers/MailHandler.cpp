@@ -266,7 +266,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
             case MAIL_TYPE_COD:
             case MAIL_TYPE_AUCTION:
             case MAIL_TYPE_ITEM:
-                data << uint32_t(Arcemu::Util::GUID_LOPART(message.second.sender_guid));
+                data << uint32_t(WoWGuid::getGuidLowPartFromUInt64(message.second.sender_guid));
                 break;
             case MAIL_TYPE_GAMEOBJECT:
             case MAIL_TYPE_CREATURE:

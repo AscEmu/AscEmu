@@ -21,7 +21,7 @@
 #ifndef UPDATEMASK_H
 #define UPDATEMASK_H
 
-#include "WUtil.h"
+#include "Errors.h"
 #include <cstring>
 
 class UpdateMask

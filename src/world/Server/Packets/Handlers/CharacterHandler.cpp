@@ -892,7 +892,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
             if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER)
             {
                 QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u "
-                    "AND MOD(active, 10) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(charEnum.guid));
+                    "AND MOD(active, 10) = 1 AND alive = TRUE;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
                 if (player_pet_db_result)
                 {
                     petLevel = player_pet_db_result->Fetch()[1].GetUInt32();
@@ -914,7 +914,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
             QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "
                 "WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '20'",
-                Arcemu::Util::GUID_LOPART(charEnum.guid));
+                WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
 #if VERSION_STRING >= WotLK
             memset(charEnum.player_items, 0, sizeof(PlayerItem) * INVENTORY_SLOT_BAG_END);
 #else

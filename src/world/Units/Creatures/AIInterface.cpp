@@ -2435,7 +2435,7 @@ Unit* AIInterface::FindTarget()
         {
             uint64 charmer = target->getCharmedByGuid();
 
-            Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
+            Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
 
             if (target2)
             {

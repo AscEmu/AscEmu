@@ -1193,7 +1193,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guid[4]);
 #endif
 
-    LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
+    LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", WoWGuid::getGuidLowPartFromUInt64(guid));
 
     if (_player == nullptr)
         return;
@@ -1996,7 +1996,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
             recvPacket >> unk2;                              // probably mail id
             recvPacket >> unk3;                              // const 0
 
-            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3);
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3);
 
         } break;
         case 1:
@@ -2007,7 +2007,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
             recvPacket >> unk4;                              // unk random value
             recvPacket >> description;                       // spam description string (messagetype, channel name, player name, message)
 
-            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
 
         } break;
     }

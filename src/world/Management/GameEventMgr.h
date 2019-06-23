@@ -23,6 +23,7 @@
 #include <ctime>
 
 #include "../../shared/Singleton.h"
+#include <string>
 
 class GameEvent;
 

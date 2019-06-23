@@ -32,8 +32,6 @@ set(SRC_SERVER_FILES
    ${PATH_PREFIX}/WorldSession.h
    ${PATH_PREFIX}/WorldSocket.cpp
    ${PATH_PREFIX}/WorldSocket.h
-   ${PATH_PREFIX}/WUtil.cpp
-   ${PATH_PREFIX}/WUtil.h
 )
 
 source_group(Server FILES ${SRC_SERVER_FILES})

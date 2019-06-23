@@ -387,7 +387,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
 {
     GameObject* go = m_mapMgr->CreateGameObject(entry);
 
-    Arcemu::Util::ArcemuAssert(go != nullptr);
+    ARCEMU_ASSERT(go != nullptr);
 
     //Zyres: CID 104108 coverity ignores the assert so double check this
     if (go != nullptr)
@@ -420,7 +420,7 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
 
     Creature* c = m_mapMgr->CreateCreature(entry);
 
-    Arcemu::Util::ArcemuAssert(c != nullptr);
+    ARCEMU_ASSERT(c != nullptr);
 
     c->Load(cp, x, y, z, o);
 

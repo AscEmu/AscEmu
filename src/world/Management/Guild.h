@@ -314,13 +314,13 @@ private:
 
     inline const GuildMember* getMember(uint64_t guid) const
     {
-        GuildMembersStore::const_iterator itr = _guildMembersStore.find(Arcemu::Util::GUID_LOPART(guid));
+        GuildMembersStore::const_iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
         return itr != _guildMembersStore.end() ? itr->second : nullptr;
     }
 
     inline GuildMember* getMember(uint64_t guid)
     {
-        GuildMembersStore::iterator itr = _guildMembersStore.find(Arcemu::Util::GUID_LOPART(guid));
+        GuildMembersStore::iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
         return itr != _guildMembersStore.end() ? itr->second : nullptr;
     }
 

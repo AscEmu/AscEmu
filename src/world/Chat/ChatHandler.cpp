@@ -331,7 +331,7 @@ uint32 ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
         return 0;
     }
 
-    return Arcemu::Util::GUID_LOPART(guid);
+    return WoWGuid::getGuidLowPartFromUInt64(guid);
 }
 
 const char* ChatHandler::GetMapTypeString(uint8 type)

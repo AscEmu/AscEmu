@@ -22,6 +22,32 @@ namespace fs = std::experimental::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
+namespace TimeBitmask
+{
+    enum
+    {
+        Minute = 0x0000003F,
+        Hour = 0x000007C0,
+        Weekday = 0x00003800,
+        Day = 0x000FC000,
+        Month = 0x00F00000,
+        Year = 0x1F000000
+    };
+}
+
+namespace TimeShiftmask
+{
+    enum
+    {
+        Minute = 0,
+        Hour = 6,
+        Weekday = 11,
+        Day = 14,
+        Month = 20,
+        Year = 24
+    };
+}
+
 namespace Util
 {
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +104,9 @@ namespace Util
 
     /*! \brief Returns calculated time based on (second) values e.g. 5h will return 5 * 60 * 60 */
     uint32_t GetTimePeriodFromString(const char* str);
+
+    /*! \brief Returns generated time value for client packets */
+    uint32_t getGameTime();
 
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray = false);
 

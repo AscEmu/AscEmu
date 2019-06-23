@@ -23,6 +23,7 @@
 #include <set>
 #include "Singleton.h"
 #include <map>
+#include <string>
 
 enum CalendarFlags
 {

@@ -205,14 +205,49 @@ class SERVER_DECL WoWGuid
             return lowGuid & 0x00FFFFFF;
         }
 
+        static uint32_t getGuidLowPartFromUInt64(uint64_t guid)
+        {
+            uint32_t lowGuid = *reinterpret_cast<const uint32_t*>(&guid);
+            return lowGuid;
+        }
+
         uint32_t getGuidHigh() const { return static_cast<uint32_t>(m_rawGuid >> 32); }
         uint32_t getGuidHighPart() const
         {
             const uint32_t highGuid = *(reinterpret_cast<const uint32_t*>(&m_rawGuid) + 1);
             return highGuid & 0xFFF00000;
         }
+
+        static uint32_t getGuidHighPartFromUInt64(uint64_t guid)
+        {
+            uint32_t highGuid = *(reinterpret_cast<const uint32_t*>(&guid) + 1);
+            return highGuid;
+        }
         
         HighGuid getHigh() const { return static_cast<HighGuid>(getGuidHighPart()); }
+
+        static uint64_t createPetGuid(uint32_t entry, uint32_t lowGuid)
+        {
+            uint64_t rawGuid = 0;
+
+            rawGuid = uint64_t(HIGHGUID_TYPE_PET) << 32;
+            rawGuid = rawGuid | uint64_t(entry) << 24;
+            rawGuid = rawGuid | lowGuid;
+
+            return rawGuid;
+        }
+
+        static uint64_t createItemGuid(uint32_t lowguid)
+        {
+            uint64_t rawGuid = 0;
+
+            uint32_t* guidPart = reinterpret_cast<uint32_t*>(&rawGuid);
+
+            guidPart[0] = lowguid;
+            guidPart[1] = HIGHGUID_TYPE_ITEM;
+
+            return rawGuid;
+        }
 
         uint64_t GetOldGuid() const { return m_rawGuid; }
         const uint8_t* GetNewGuid() const { return m_guidfields; }

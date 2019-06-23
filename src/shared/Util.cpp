@@ -242,6 +242,31 @@ namespace Util
         return time_period;
     }
 
+    uint32_t getGameTime()
+    {
+        const auto now = std::chrono::system_clock::now();
+        auto inTimeT = std::chrono::system_clock::to_time_t(now);
+
+        const uint32_t currentYear = localtime(&inTimeT)->tm_year - 100;
+        const uint32_t currentMonth = localtime(&inTimeT)->tm_mon;
+        const uint32_t currentDayInMonth = localtime(&inTimeT)->tm_mday - 1;
+
+        const uint32_t currentDayInWeek = localtime(&inTimeT)->tm_wday == 0 ? 6 : localtime(&inTimeT)->tm_wday - 1;
+
+        const uint32_t currentHours = localtime(&inTimeT)->tm_hour;
+        const uint32_t currentMinutes = localtime(&inTimeT)->tm_min;
+
+
+        uint32_t gameTimeValue = currentMinutes << TimeShiftmask::Minute & TimeBitmask::Minute;
+        gameTimeValue |= currentHours << TimeShiftmask::Hour & TimeBitmask::Hour;
+        gameTimeValue |= currentDayInWeek << TimeShiftmask::Weekday & TimeBitmask::Weekday;
+        gameTimeValue |= currentDayInMonth << TimeShiftmask::Day & TimeBitmask::Day;
+        gameTimeValue |= currentMonth << TimeShiftmask::Month & TimeBitmask::Month;
+        gameTimeValue |= currentYear << TimeShiftmask::Year & TimeBitmask::Year;
+
+        return gameTimeValue;
+    }
+
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray)
     {
         int32_t initPos = 0;

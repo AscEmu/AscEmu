@@ -27,7 +27,6 @@
 
 #include "Threading/Mutex.h"
 #include <set>
-#include "Server/WUtil.h"
 #include <map>
 #include "Units/Players/Player.h"
 

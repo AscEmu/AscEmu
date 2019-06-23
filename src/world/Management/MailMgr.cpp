@@ -132,7 +132,7 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     msg.money = money;
     msg.cod = cod;
     for (std::vector<uint64>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
-        msg.items.push_back(Arcemu::Util::GUID_LOPART(*itr));
+        msg.items.push_back(WoWGuid::getGuidLowPartFromUInt64(*itr));
 
     msg.stationery = stationery;
     msg.delivery_time = (uint32)UNIXTIME + deliverdelay;

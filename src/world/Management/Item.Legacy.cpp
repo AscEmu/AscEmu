@@ -326,8 +326,8 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     ss << getGuidLow() << ",";
     ss << getEntry() << ",";
     ss << wrapped_item_id << ",";
-    ss << (Arcemu::Util::GUID_LOPART(GiftCreatorGUID)) << ",";
-    ss << (Arcemu::Util::GUID_LOPART(CreatorGUID)) << ",";
+    ss << (WoWGuid::getGuidLowPartFromUInt64(GiftCreatorGUID)) << ",";
+    ss << (WoWGuid::getGuidLowPartFromUInt64(CreatorGUID)) << ",";
 
     ss << getStackCount() << ",";
     ss << int32(GetChargesLeft()) << ",";

@@ -818,7 +818,7 @@ void Creature::EnslaveExpire()
 
     uint64 charmer = getCharmedByGuid();
 
-    Player* caster = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(charmer));
+    Player* caster = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
     if (caster)
     {
         caster->setCharmGuid(0);
@@ -2350,7 +2350,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
+                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         return;
 
@@ -2558,37 +2558,38 @@ void Creature::SetType(uint32 t)
 
 void Creature::BuildPetSpellList(WorldPacket& data)
 {
-    data << uint64(getGuid());
-    data << uint16(creature_properties->Family);
-    data << uint32(0);
+    data << uint64_t(getGuid());
+    data << uint16_t(creature_properties->Family);
+    data << uint32_t(0);
 
     if (!isVehicle())
-        data << uint32(0);
+        data << uint32_t(0);
     else
-        data << uint32(0x8000101);
+        data << uint32_t(0x8000101);
 
-    std::vector< uint32 >::const_iterator itr = creature_properties->castable_spells.begin();
+    std::vector<uint32_t>::const_iterator itr = creature_properties->castable_spells.begin();
 
     // Send the actionbar
-    for (uint8 i = 0; i < 10; ++i)
+    for (uint8_t i = 0; i < 10; ++i)
     {
         if (itr != creature_properties->castable_spells.end())
         {
-            uint32 spell = *itr;
-            data << uint32(Arcemu::Util::MAKE_UNIT_ACTION_BUTTON(spell, i + 8));
+            const auto spell = *itr;
+            const uint32_t actionButton = uint32_t(spell) | uint32_t(i + 8) << 24;
+            data << uint32_t(actionButton);
             ++itr;
         }
         else
         {
-            data << uint16(0);
-            data << uint8(0);
-            data << uint8(i + 8);
+            data << uint16_t(0);
+            data << uint8_t(0);
+            data << uint8_t(i + 8);
         }
     }
 
-    data << uint8(0);
+    data << uint8_t(0);
     // cooldowns
-    data << uint8(0);
+    data << uint8_t(0);
 }
 
 void Creature::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)

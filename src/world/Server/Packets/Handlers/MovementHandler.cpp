@@ -392,7 +392,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     if (mover->obj_movement_info.transport_data.transportGuid != 0 && movement_info.transport_data.transportGuid == 0)
     {
         // Leaving transport we were on
-        if (auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->obj_movement_info.transport_data.transportGuid)))
+        if (auto transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_data.transportGuid)))
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
         mover->obj_movement_info.transport_data.transportGuid = 0;
@@ -405,7 +405,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
             if (mover->obj_movement_info.transport_data.transportGuid == 0)
             {
-                Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transport_data.transportGuid));
+                Transporter *transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_data.transportGuid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
@@ -887,7 +887,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     {
         /* we left the transporter we were on */
 
-        Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->obj_movement_info.transport_data.transportGuid));
+        Transporter *transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_data.transportGuid));
         if (transporter != NULL)
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
@@ -902,7 +902,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
             if (mover->obj_movement_info.transport_data.transportGuid == 0)
             {
-                Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transport_data.transportGuid));
+                Transporter *transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_data.transportGuid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
@@ -1271,7 +1271,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //{
         //    /* we left the transporter we were on */
 
-        //    Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->obj_movement_info.transporter_info.guid));
+        //    Transporter *transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transporter_info.guid));
         //    if (transporter != NULL)
         //        transporter->RemovePassenger(static_cast<Player*>(mover));
 
@@ -1286,7 +1286,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
         //        if (mover->obj_movement_info.transporter_info.guid == 0)
         //        {
-        //            Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transporter_info.transGuid));
+        //            Transporter *transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transporter_info.transGuid));
         //            if (transporter != NULL)
         //                transporter->AddPassenger(static_cast<Player*>(mover));
 

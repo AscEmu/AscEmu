@@ -189,7 +189,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldRunnable.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSocket.h"
-#include "Server/WUtil.h"
 
 // Server/Console
 #include "Server/Console/BaseConsole.h"

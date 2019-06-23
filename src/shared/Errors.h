@@ -42,4 +42,7 @@
 
 #define ASSERT WPAssert
 
+
+#define ARCEMU_ASSERT WPAssert
+
 #endif      //_ERRORS_H

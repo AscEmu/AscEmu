@@ -21,7 +21,7 @@
 
 #include "EquipmentSetMgr.h"
 #include "ItemPrototype.h"
-#include "../Server/WUtil.h"
+#include "Common.hpp"
 
 class Creature;
 

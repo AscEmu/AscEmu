@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellDefines.hpp"
 #include "WorldConf.h"
 #include "CommonTypes.hpp"
-#include "../Server/WUtil.h"
 #include <string>
 
 class Player;

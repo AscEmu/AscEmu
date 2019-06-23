@@ -3259,7 +3259,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
+        Transporter* t = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         obj_movement_info.transport_data.transportGuid = t ? t->getGuid() : 0;
     }
 
@@ -4012,7 +4012,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
+        Transporter* t = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         obj_movement_info.transport_data.transportGuid = t ? t->getGuid() : 0;
     }
 
@@ -8729,7 +8729,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
+        Transporter* pTrans = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
@@ -8818,7 +8818,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.getTransportGuid())
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.getTransportGuid()));
+        Transporter* pTrans = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.getTransportGuid()));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
@@ -8958,7 +8958,7 @@ Guild* Player::GetGuild()
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid));
     if (result)
     {
         Field* fields = result->Fetch();
@@ -8970,7 +8970,7 @@ uint32 Player::GetGuildIdFromDB(uint64 guid)
 
 int8 Player::GetRankFromDB(uint64 guid)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", Arcemu::Util::GUID_LOPART(guid));
+    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid));
     if (result)
     {
         Field* fields = result->Fetch();
@@ -12499,7 +12499,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         if (pVictim->isLootable())
         {
-            Player* tagger = GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(pVictim->GetTaggerGUID()));
+            Player* tagger = GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(pVictim->GetTaggerGUID()));
 
             // Tagger might have left the map so we need to check
             if (tagger != nullptr)
@@ -12719,7 +12719,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
+                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         continue;
 
@@ -14204,7 +14204,7 @@ void Player::SendInitialLogonPackets()
     StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
     data.Initialize(SMSG_LOGIN_SETTIMESPEED);
 
-    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    data << uint32(Util::getGameTime());
     data << float(0.0166666669777748f);    // Normal Game Speed
 
     m_session->SendPacket(&data);
@@ -14274,16 +14274,16 @@ void Player::SendInitialLogonPackets()
     data.Initialize(SMSG_LOGIN_SETTIMESPEED);
 
 #if VERSION_STRING != Mop
-    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    data << uint32(Util::getGameTime());
     data << float(0.0166666669777748f);    // Normal Game Speed
 #if VERSION_STRING > TBC
     data << uint32(0);   // 3.1.2
 #endif
 #elif VERSION_STRING == Mop
     data << uint32_t(0);
-    data << uint32_t(Arcemu::Util::MAKE_GAME_TIME());
+    data << uint32_t(Util::getGameTime());
     data << uint32_t(0);
-    data << uint32_t(Arcemu::Util::MAKE_GAME_TIME());
+    data << uint32_t(Util::getGameTime());
     data << float(0.0166666669777748f);    // Normal Game Speed
 #endif
 

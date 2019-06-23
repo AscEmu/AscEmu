@@ -2323,7 +2323,7 @@ Pet* ObjectMgr::CreatePet(uint32 entry)
 {
     uint32 guid;
     guid = ++m_hiPetGuid;
-    return new Pet(Arcemu::Util::MAKE_PET_GUID(entry, guid));
+    return new Pet(WoWGuid::createPetGuid(entry, guid));
 }
 
 Player* ObjectMgr::CreatePlayer(uint8 _class)

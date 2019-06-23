@@ -150,7 +150,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
     m_todayExperience = 0;
     createLogHolders();
 
-    LogDebug("GUILD: creating guild %s for leader %s (%u)", name.c_str(), pLeader->getName().c_str(), Arcemu::Util::GUID_LOPART(m_leaderGuid));
+    LogDebug("GUILD: creating guild %s for leader %s (%u)", name.c_str(), pLeader->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid));
 
     CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", m_id);
 
@@ -647,7 +647,7 @@ void Guild::handleBuyBankTab(WorldSession* session, uint8_t tabId)
 void Guild::handleAcceptMember(WorldSession* session)
 {
     Player* player = session->GetPlayer();
-    Player* leader = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(getLeaderGUID()));
+    Player* leader = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(getLeaderGUID()));
     if (worldConfig.player.isInterfactionGuildEnabled == false && player->getTeam() != leader->getTeam())
         return;
 
@@ -705,7 +705,7 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
             else
             {
                 deleteMember(guid, false, true);
-                logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(guid));
+                logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), WoWGuid::getGuidLowPartFromUInt64(guid));
                 broadcastEvent(GE_REMOVED, 0, { name, player->getName() });
                 session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS).serialise().get());
             }
@@ -760,7 +760,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         const uint32_t newRankId = member->getRankId() + (demote ? 1 : -1);
         member->changeRank(static_cast<uint8_t>(newRankId));
 
-        logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), Arcemu::Util::GUID_LOPART(member->getGUID()), static_cast<uint8_t>(newRankId));
+        logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), WoWGuid::getGuidLowPartFromUInt64(member->getGUID()), static_cast<uint8_t>(newRankId));
         broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, { player->getName(), name, getRankName(static_cast<uint8_t>(newRankId)) });
     }
 }
@@ -1484,7 +1484,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
 void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 {
-    uint32_t lowguid = Arcemu::Util::GUID_LOPART(guid);
+    uint32_t lowguid = WoWGuid::getGuidLowPartFromUInt64(guid);
     Player* player = objmgr.GetPlayer(lowguid);
 
     if (m_leaderGuid == guid && !isDisbanding)
@@ -1564,7 +1564,7 @@ bool Guild::changeMemberRank(uint64_t guid, uint8_t newRank)
 
 bool Guild::isMember(uint64_t guid) const
 {
-    auto itr = _guildMembersStore.find(Arcemu::Util::GUID_LOPART(guid));
+    auto itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
     return itr != _guildMembersStore.end();
 }
 
@@ -1685,7 +1685,7 @@ void Guild::setLeaderGuid(GuildMember* pLeader)
     m_leaderGuid = pLeader->getGUID();
     pLeader->changeRank(GR_GUILDMASTER);
 
-    CharacterDatabase.Execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", Arcemu::Util::GUID_LOPART(m_leaderGuid), m_id);
+    CharacterDatabase.Execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid), m_id);
 }
 
 void Guild::setRankBankMoneyPerDay(uint8_t rankId, uint32_t moneyPerDay)
@@ -2061,7 +2061,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
     member->changeRank(static_cast<uint8_t>(rank));
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANKS_UPDATE target: %u, issuer: %u, rankId: %u",
-        Arcemu::Util::GUID_LOPART(targetGuid), Arcemu::Util::GUID_LOPART(setterGuid), rank);
+        Arcemu::Util::GUID_LOPART(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
 #endif
 }
 
@@ -2170,7 +2170,7 @@ void Guild::resetTimes(bool weekly)
 void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value)
 {
 #if VERSION_STRING >= Cata
-    uint32_t lowGuid = Arcemu::Util::GUID_LOPART(guid);
+    uint32_t lowGuid = WoWGuid::getGuidLowPartFromUInt64(guid);
     GuildNewsLogEntry* news = new GuildNewsLogEntry(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
 
     mNewsLog->addEvent(news);
@@ -2598,13 +2598,13 @@ bool Guild::GuildMember::checkStats() const
 {
     if (mLevel < 1)
     {
-        LogError("Player (GUID: %u) has a broken data in field `characters`.`level`, deleting him from guild!", Arcemu::Util::GUID_LOPART(mGuid));
+        LogError("Player (GUID: %u) has a broken data in field `characters`.`level`, deleting him from guild!", WoWGuid::getGuidLowPartFromUInt64(mGuid));
         return false;
     }
 
     if (mClass < 1 || mClass >= 12)
     {
-        LogError("Player (GUID: %u) has a broken data in field `characters`.`class`, deleting him from guild!", Arcemu::Util::GUID_LOPART(mGuid));
+        LogError("Player (GUID: %u) has a broken data in field `characters`.`class`, deleting him from guild!", WoWGuid::getGuidLowPartFromUInt64(mGuid));
         return false;
     }
 
@@ -2618,7 +2618,7 @@ void Guild::GuildMember::setPublicNote(std::string const& publicNote)
 
     mPublicNote = publicNote;
 
-    CharacterDatabase.Execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), Arcemu::Util::GUID_LOPART(mGuid));
+    CharacterDatabase.Execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
@@ -2628,7 +2628,7 @@ void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
 
     mOfficerNote = officerNote;
 
-    CharacterDatabase.Execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), Arcemu::Util::GUID_LOPART(mGuid));
+    CharacterDatabase.Execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::setZoneId(uint32_t id)
@@ -2686,8 +2686,8 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 
     if (!mZoneId)
     {
-        LogError("Player (GUID: %u) has broken zone-data", Arcemu::Util::GUID_LOPART(mGuid));
-        mZoneId = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(mGuid))->GetZoneId();
+        LogError("Player (GUID: %u) has broken zone-data", WoWGuid::getGuidLowPartFromUInt64(mGuid));
+        mZoneId = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->GetZoneId();
     }
 
     resetFlags();
@@ -2698,7 +2698,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 void Guild::GuildMember::saveGuildMembersToDB(bool /*_delete*/) const
 {
     CharacterDatabase.Execute("REPLACE INTO guild_members VALUES (%u, %u, %u, '%s', '%s')",
-        mGuildId, Arcemu::Util::GUID_LOPART(mGuid), static_cast<uint32_t>(mRankId), mPublicNote.c_str(), mOfficerNote.c_str());
+        mGuildId, WoWGuid::getGuidLowPartFromUInt64(mGuid), static_cast<uint32_t>(mRankId), mPublicNote.c_str(), mOfficerNote.c_str());
 }
 
 uint64_t Guild::GuildMember::getGUID() const
@@ -2795,10 +2795,10 @@ void Guild::GuildMember::changeRank(uint8_t newRank)
 {
     mRankId = newRank;
 
-    if (Player* player = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(mGuid)))
+    if (Player* player = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid)))
         player->setGuildRank(newRank);
 
-    CharacterDatabase.Execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), Arcemu::Util::GUID_LOPART(mGuid));
+    CharacterDatabase.Execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::updateLogoutTime()
@@ -2826,7 +2826,7 @@ void Guild::GuildMember::updateBankWithdrawValue(uint8_t tabId, uint32_t amount)
     mBankWithdraw[tabId] += amount;
 
     CharacterDatabase.Execute("REPLACE INTO guild_members_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
-        Arcemu::Util::GUID_LOPART(mGuid),
+        WoWGuid::getGuidLowPartFromUInt64(mGuid),
         mBankWithdraw[0], mBankWithdraw[1], mBankWithdraw[2], mBankWithdraw[3], mBankWithdraw[4],
         mBankWithdraw[5], mBankWithdraw[6], 0, 0);
 }
@@ -2853,5 +2853,5 @@ int32_t Guild::GuildMember::getBankWithdrawValue(uint8_t tabId) const
 
 Player* Guild::GuildMember::getPlayerByGuid(uint64_t m_guid)
 {
-    return objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(m_guid));
+    return objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(m_guid));
 }

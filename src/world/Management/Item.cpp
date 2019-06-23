@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWItem.h"
 #include "Item.h"
 #include "Map/MapMgrDefines.hpp"
-#include "Server/WUtil.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Storage/MySQLDataStore.hpp"
 

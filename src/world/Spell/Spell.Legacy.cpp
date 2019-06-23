@@ -1035,7 +1035,7 @@ void Spell::cancel()
                 {
                     uint64 guid = p_caster->getChannelObjectGuid();
 
-                    DynamicObject* dynObj = m_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
+                    DynamicObject* dynObj = m_caster->GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (dynObj)
                         dynObj->Remove();
                 }
@@ -2665,7 +2665,7 @@ void Spell::SendChannelUpdate(uint32 time)
         {
             uint64 guid = u_caster->getChannelObjectGuid();
 
-            DynamicObject* dynObj = u_caster->GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
+            DynamicObject* dynObj = u_caster->GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
             if (dynObj)
                 dynObj->Remove();
 
