@@ -191,8 +191,8 @@ public:
     // Data sharing between scripts
     virtual void SetCreatureData(uint32_t /*type*/, uint32_t /*data*/) {}
     virtual void SetCreatureData64(uint32_t /*type*/, uint64_t /*data*/) {}
-    virtual uint32 GetCreatureData(uint32 /*type*/) const { return 0; }
-    virtual uint64 GetCreatureData64(uint32 /*type*/) const { return 0; }
+    virtual uint32_t GetCreatureData(uint32_t /*type*/) const { return 0; }
+    virtual uint64_t GetCreatureData64(uint32_t /*type*/) const { return 0; }
     
     virtual void Destroy() { delete this; }
 
