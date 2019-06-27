@@ -217,10 +217,10 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::getGridBounds(uint32 mapID, uint32 &minX, uint32 &minY, uint32 &maxX, uint32 &maxY) const
     {
-        maxX = 0;
-        maxY = 0;
-        minX = std::numeric_limits<uint32>::max();
-        minY = std::numeric_limits<uint32>::max();
+        maxX = std::numeric_limits<uint32>::max();
+        maxY = std::numeric_limits<uint32>::max();
+        minX = std::numeric_limits<uint32>::min();
+        minY = std::numeric_limits<uint32>::min();
 
         float bmin[3] = { 0, 0, 0 };
         float bmax[3] = { 0, 0, 0 };
