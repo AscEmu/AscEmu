@@ -518,6 +518,15 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     GreenSystemMessage(m_session, "-- Offhand: %u (displayid)", creature_target->getVirtualItemSlotId(OFFHAND));
     GreenSystemMessage(m_session, "-- Ranged: %u (displayid)", creature_target->getVirtualItemSlotId(RANGED));
 
+    if (sScriptMgr.has_creature_script(creature_target->getEntry()))
+        SystemMessage(m_session, "Creature has C++/LUA script");
+    else
+        SystemMessage(m_session, "Creature doesn't have C++/LUA script");
+
+    if (sScriptMgr.has_creature_gossip(creature_target->getEntry()))
+        SystemMessage(m_session, "Creature has C++/LUA gossip script");
+    else
+        SystemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
 
     return true;
 }
