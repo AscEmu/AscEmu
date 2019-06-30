@@ -52,6 +52,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/dep/lualib/src
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${ZLIB_INCLUDE_DIRS}
+   ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})

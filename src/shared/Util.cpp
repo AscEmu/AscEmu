@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <random>
 
 #include <fstream>
-#include "../utf8cpp/utf8.h"
+#include "utf8.h"
 
 namespace Util
 {
