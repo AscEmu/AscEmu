@@ -41,3 +41,7 @@
 ## Folder: cotire
 - Web: https://github.com/sakra/cotire
 - Version: 1.8.0 (2018/03/18)
+
+## Folder: utf8cpp
+- Web: http://utfcpp.sourceforge.net/
+- Version: 2.4.3

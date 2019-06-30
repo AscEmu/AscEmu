@@ -117,7 +117,7 @@ struct CharCreate
 };
 
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
-extern CharacterErrorCodes VerifyName(const char* name, size_t nlen);
+extern CharacterErrorCodes VerifyName(std::string name);
 
 class SERVER_DECL WorldSession
 {

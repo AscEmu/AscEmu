@@ -38,49 +38,33 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-CharacterErrorCodes VerifyName(const char* name, size_t nlen)
+CharacterErrorCodes VerifyName(std::string name)
 {
-    const char* p;
-    size_t i;
+    static const wchar_t* bannedCharacters = L"\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static const wchar_t* allowedCharacters = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    std::wstring wname;
+    if (!Util::Utf8toWStr(name, wname))
+        return E_CHAR_NAME_NO_NAME;
+
+
+    if (wname.find_first_of(bannedCharacters) != wname.npos)
+        return E_CHAR_NAME_INVALID_CHARACTER;
+
 
     if (worldConfig.server.enableLimitedNames)
     {
-        if (nlen == 0)
+        if (wname.find_first_not_of(allowedCharacters) != wname.npos)
+            return E_CHAR_NAME_INVALID_CHARACTER;
+
+        if (wname.length() == 0)
             return E_CHAR_NAME_NO_NAME;
 
-        if (nlen < 2)
+        if (wname.length() < 2)
             return E_CHAR_NAME_TOO_SHORT;
 
-        if (nlen > 12)
+        if (wname.length() > 12)
             return E_CHAR_NAME_TOO_LONG;
-
-        for (i = 0; i < nlen; ++i)
-        {
-            p = allowedCharacters;
-            for (; *p != 0; ++p)
-            {
-                if (name[i] == *p)
-                    goto cont;
-            }
-            return E_CHAR_NAME_INVALID_CHARACTER;
-        cont:
-            continue;
-        }
-    }
-    else
-    {
-        for (i = 0; i < nlen; ++i)
-        {
-            p = bannedCharacters;
-            while (*p != 0 && name[i] != *p && name[i] != 0)
-                ++p;
-
-            if (*p != 0)
-                return E_CHAR_NAME_INVALID_CHARACTER;
-        }
     }
 
     return E_CHAR_NAME_SUCCESS;
@@ -150,7 +134,7 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         return;
     }
 
-    const auto loginErrorCode = VerifyName(srlPacket.charCreate.name.c_str(), srlPacket.charCreate.name.length());
+    const auto loginErrorCode = VerifyName(srlPacket.charCreate.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharFactionChange(loginErrorCode).serialise().get());
@@ -228,7 +212,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     if (result == nullptr)
         return;
 
-    const auto loginErrorCode = VerifyName(srlPacket.name.c_str(), srlPacket.name.length());
+    const auto loginErrorCode = VerifyName(srlPacket.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharRename(srlPacket.size, loginErrorCode, srlPacket.guid, srlPacket.name).serialise().get());
@@ -426,7 +410,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto loginErrorCode = VerifyName(srlPacket.createStruct.name.c_str(), srlPacket.createStruct.name.length());
+    const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
@@ -564,7 +548,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto loginErrorCode = VerifyName(srlPacket.createStruct.name.c_str(), srlPacket.createStruct.name.length());
+    const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
         SendPacket(SmsgCharCustomize(loginErrorCode).serialise().get());
