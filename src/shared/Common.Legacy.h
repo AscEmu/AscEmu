@@ -244,16 +244,6 @@ static inline int long2int32(const double value)
     #define TRUE  1
 #endif
 
-inline void reverse_array(uint8* pointer, size_t count)
-{
-    size_t x;
-    uint8* temp = (uint8*)malloc(count);
-    memcpy(temp, pointer, count);
-    for(x = 0; x < count; ++x)
-        pointer[x] = temp[count - x - 1];
-    free(temp);
-}
-
 // returns true if the ip hits the mask, otherwise false
 inline static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBits)
 {

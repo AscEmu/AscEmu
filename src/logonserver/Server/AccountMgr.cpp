@@ -60,12 +60,12 @@ void AccountMgr::addAccount(Field* field)
             for (auto n = bn.GetNumBytes(); n <= 19; n++)
                 account->SrpHash[n] = static_cast<uint8_t>(0);
 
-            reverse_array(account->SrpHash, 20);
+            std::reverse(std::begin(account->SrpHash), std::end(account->SrpHash));
         }
         else
         {
             memcpy(account->SrpHash, bn.AsByteArray(), 20);
-            reverse_array(account->SrpHash, 20);
+            std::reverse(std::begin(account->SrpHash), std::end(account->SrpHash));
         }
     }
     else
@@ -136,12 +136,12 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
             for (auto n = bn.GetNumBytes(); n <= 19; n++)
                 account->SrpHash[n] = static_cast<uint8_t>(0);
 
-            reverse_array(account->SrpHash, 20);
+            std::reverse(std::begin(account->SrpHash), std::end(account->SrpHash));
         }
         else
         {
             memcpy(account->SrpHash, bn.AsByteArray(), 20);
-            reverse_array(account->SrpHash, 20);
+            std::reverse(std::begin(account->SrpHash), std::end(account->SrpHash));
         }
     }
     else
