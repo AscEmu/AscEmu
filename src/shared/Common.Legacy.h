@@ -20,12 +20,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-/* Define these if you are creating a repack */
-/*
-#define REPACK "Moocow's Repack"
-#define REPACK_AUTHOR "Trelorn"
-#define REPACK_WEBSITE "www.google.com"*/
-
 enum TimeVariables
 {
     TIME_SECOND = 1,
@@ -99,7 +93,7 @@ enum MsTimeVariables
 #endif
 
 #if _WIN32
-#define PLATFORM_TEXT "Win32"
+    #define PLATFORM_TEXT "Win32"
 #elif __APPLE__
     #define PLATFORM_TEXT "OSX"
 #elif defined(BSD)
@@ -191,7 +185,7 @@ static inline uint32 int32abs2uint32(const int value)
     return (uint32)(value ^ (value >> 31)) - (value >> 31);
 }
 
-/// Fastest Method of float2int32
+// Fastest Method of float2int32
 static inline int float2int32(const float value)
 {
 #if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
@@ -211,7 +205,7 @@ static inline int float2int32(const float value)
 #endif
 }
 
-/// Fastest Method of long2int32
+// Fastest Method of long2int32
 static inline int long2int32(const double value)
 {
 #if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
@@ -313,19 +307,19 @@ inline static unsigned int MakeIP(const char* str)
 #include "PerformanceCounter.hpp"
 
 #ifndef EOL
-#ifdef WIN32
-#define EOL "\r\n"
-#else
-#define EOL "\n"
-#endif
+    #ifdef WIN32
+        #define EOL "\r\n"
+    #else
+        #define EOL "\n"
+    #endif
 #endif
 
 #ifndef EOL_SIZE
-#ifdef WIN32
-#define EOL_SIZE 2
-#else
-#define EOL_SIZE 1
-#endif
+    #ifdef WIN32
+        #define EOL_SIZE 2
+    #else
+        #define EOL_SIZE 1
+    #endif
 #endif
 
 #endif      //_COMMON_H
