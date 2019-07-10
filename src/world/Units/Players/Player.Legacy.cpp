@@ -870,11 +870,13 @@ bool Player::Create(CharCreate& charCreateContent)
         setPower(POWER_TYPE_ENERGY, info->energy);
         setMaxPower(POWER_TYPE_ENERGY, info->energy);
         break;
+#if VERSION_STRING >= WotLK
     case DEATHKNIGHT:
         setPower(POWER_TYPE_RUNES, 8);
         setMaxPower(POWER_TYPE_RUNES, 8);
         setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
         break;
+#endif
     default:
         setPower(POWER_TYPE_MANA, info->mana);
         setMaxPower(POWER_TYPE_MANA, info->mana);
@@ -4821,11 +4823,13 @@ void Player::OnPushToWorld()
             setMaxPower(POWER_TYPE_ENERGY, info->energy);
             setPower(POWER_TYPE_ENERGY, info->energy);
             break;
+#if VERSION_STRING >= WotLK
         case DEATHKNIGHT:
             setMaxPower(POWER_TYPE_RUNES, 8);
             setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
             setPower(POWER_TYPE_RUNES, 8);
             break;
+#endif
         default:
             setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             if (info->focus)
@@ -6295,7 +6299,7 @@ void Player::UpdateStats()
             break;
 
         case WARRIOR:
-#if VERSION_STRING > TBC
+#if VERSION_STRING >= WotLK
         case DEATHKNIGHT:
             //(Strength x 2) + (Character Level x 3) - 20
             AP = (str * 2) + (lev * 3) - 20;
