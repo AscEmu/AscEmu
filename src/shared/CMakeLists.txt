@@ -30,7 +30,6 @@ set(sources
     CThreads.cpp
     DatabaseUpdater.cpp
     DynLib.cpp
-    FindFiles.cpp
     LocationVector.cpp
     Log.cpp
     MapFile.cpp
@@ -62,8 +61,6 @@ set(headers
     DynLib.hpp
     Errors.h
     FastQueue.h
-    FindFiles.hpp
-    FindFilesResult.hpp
     LocationVector.h
     LogonCommDefines.h
     MapFile.h

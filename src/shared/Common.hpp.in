@@ -12,3 +12,14 @@ This file is released under the MIT license. See README-MIT for more information
 #else
     #define RIGHT_MODE "r"
 #endif
+
+#ifdef WIN32
+    #define LIBMASK ".dll";
+#else
+    #ifndef __APPLE__
+        #define LIBMASK ".so";
+    #else
+        #define LIBMASK ".dylib";
+    #endif
+#endif
+

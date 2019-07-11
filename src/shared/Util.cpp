@@ -389,6 +389,40 @@ namespace Util
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions
+    std::map<uint32_t, std::string> getDirectoryContent(std::string pathName, std::string specialSuffix)
+    {
+        std::map<uint32_t, std::string> directoryContentMap;
+
+        uint32_t count = 0;
+        for (auto& p : fs::recursive_directory_iterator(pathName))
+        {
+            const std::string filePathName = p.path().string();
+
+            if (!specialSuffix.empty())
+            {
+                if (filePathName.size() >= specialSuffix.size() &&
+                    filePathName.compare(filePathName.size() - specialSuffix.size(), specialSuffix.size(), specialSuffix) == 0)
+                {
+                    std::string fileName = filePathName;
+                    fileName.erase(0, pathName.size());
+
+                    directoryContentMap.insert(std::pair<uint32_t, std::string>(count, fileName));
+                    ++count;
+                }
+            }
+            else
+            {
+                std::string fileName = filePathName;
+                fileName.erase(0, pathName.size());
+
+                directoryContentMap.insert(std::pair<uint32_t, std::string>(count, fileName));
+                ++count;
+            }
+        }
+
+        return directoryContentMap;
+    }
+
     std::string readFileIntoString(fs::path path)
     {
         std::ifstream fileStream{ path };
