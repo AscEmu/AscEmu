@@ -304,20 +304,5 @@ inline static unsigned int MakeIP(const char* str)
 #include "SysInfo.hpp"
 #include "PerformanceCounter.hpp"
 
-#ifndef EOL
-    #ifdef WIN32
-        #define EOL "\r\n"
-    #else
-        #define EOL "\n"
-    #endif
-#endif
-
-#ifndef EOL_SIZE
-    #ifdef WIN32
-        #define EOL_SIZE 2
-    #else
-        #define EOL_SIZE 1
-    #endif
-#endif
 
 #endif      //_COMMON_H

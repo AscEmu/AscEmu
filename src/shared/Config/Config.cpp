@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.hpp"
 #include "Config.h"
 #include "Log.hpp"
+#include "Util.hpp"
 
 
 ConfigFile::ConfigFile() {}
@@ -18,53 +19,9 @@ bool ConfigFile::openAndLoadConfigFile(std::string configFileName)
 
     if (!configFileName.empty())
     {
-        FILE* configFile = fopen(configFileName.c_str(), RIGHT_MODE);
-        if (configFile == nullptr)
-        {
-            LogError("Could not open %s.", configFileName.c_str());
-            return false;
-        }
+        const auto configFile = Util::readFileIntoString(configFileName);
 
-        // go to the end of the file
-        fseek(configFile, 0, SEEK_END);
-
-        long fileLength = ftell(configFile);
-        if (fileLength <= 0)
-        {
-            fclose(configFile);
-            return false;
-        }
-
-        char* fileBufffer = new char[fileLength + 1];
-
-        // go to the begin of the file
-        fseek(configFile, 0, SEEK_SET);
-        if (fread(fileBufffer, fileLength, 1, configFile) != 1)
-        {
-            LogError("Could not read %s.", configFileName.c_str());
-
-            // delete fileBuffer 
-            delete[] fileBufffer;
-
-            // close invalid file
-            fclose(configFile);
-
-            return false;
-        }
-
-        // null terminate string
-        fileBufffer[fileLength] = '\0';
-
-        // set as std::string
-        std::string fileBufferString = std::string(fileBufffer);
-
-        // delete fileBuffer no longer needed!
-        delete[] fileBufffer;
-
-        // close it no longer needed!
-        fclose(configFile);
-
-        return parseConfigValues(fileBufferString);
+        return parseConfigValues(configFile);
     }
     return false;
 }
@@ -92,7 +49,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
         for (;;)
         {
             // grab current line
-            lineEnding = fileBufferString.find(EOL);
+            lineEnding = fileBufferString.find('\n');
             if (lineEnding == std::string::npos)
             {
                 if (fileBufferString.size() == 0)
@@ -105,7 +62,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
             }
 
             currentLine = fileBufferString.substr(0, lineEnding);
-            fileBufferString.erase(0, lineEnding + EOL_SIZE);
+            fileBufferString.erase(0, lineEnding + 1);  // eol size 1
 
             goto parse;
 
@@ -140,7 +97,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     continue;
 
                 // remove up to the end of the comment block
-                currentLine.erase(0, lineOffset + EOL_SIZE);
+                currentLine.erase(0, lineOffset + 1);   // eol size 1
                 isInMultilineComment = false;
             }
 
