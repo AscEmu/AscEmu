@@ -1372,8 +1372,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     original_emotestate = spawn->emote_state;
 
     // set position
-    m_position.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
-    m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
+    m_position.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
+    m_spawnLocation.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
     m_aiInterface->setWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
     m_aiInterface->LoadWaypointMapFromDB(spawn->id);
 
@@ -1613,8 +1613,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     original_emotestate = 0;
 
     // set position
-    m_position.ChangeCoords(x, y, z, o);
-    m_spawnLocation.ChangeCoords(x, y, z, o);
+    m_position.ChangeCoords({ x, y, z, o });
+    m_spawnLocation.ChangeCoords({ x, y, z, o });
 
     // not a neutral creature
     if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))

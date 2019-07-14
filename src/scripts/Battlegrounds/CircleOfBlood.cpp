@@ -83,7 +83,7 @@ LocationVector CircleOfBlood::GetStartingCoords(uint32 Team)
 bool CircleOfBlood::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
-    dest.ChangeCoords(6241.171875f, 261.067322f, 0.891833f);
+    dest.ChangeCoords({ 6241.171875f, 261.067322f, 0.891833f });
     plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }

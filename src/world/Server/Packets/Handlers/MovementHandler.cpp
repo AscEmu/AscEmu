@@ -269,7 +269,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 {
                     if (_player->getSpeedForType(TYPE_RUN) < 50.f && !_player->obj_movement_info.isOnTransport())
                     {
-                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
+                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
                         Disconnect();
                         return;
                     }
@@ -705,10 +705,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /************************************************************************/
         /* Anti-Teleport                                                        */
         /************************************************************************/
-        if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y) > 3025.0f
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y }) > 3025.0f
             && _player->getSpeedForType(TYPE_RUN) < 50.0f && !_player->obj_movement_info.transport_data.transportGuid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
             Disconnect();
             return;
         }
@@ -1488,7 +1488,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {
             _player->m_position = _player->m_sentTeleportPosition;
-            _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
+            _player->m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
         }
     }
 }

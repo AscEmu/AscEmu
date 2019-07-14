@@ -250,7 +250,7 @@ bool EyeOfTheStorm::HookHandleRepop(Player* plr)
     float distcur;
     LocationVector dest;
 
-    dest.ChangeCoords(EOTSStartLocations[t][0], EOTSStartLocations[t][1], EOTSStartLocations[t][2], 0);
+    dest.ChangeCoords({ EOTSStartLocations[t][0], EOTSStartLocations[t][1], EOTSStartLocations[t][2] });
 
     for (uint8 i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
@@ -258,11 +258,11 @@ bool EyeOfTheStorm::HookHandleRepop(Player* plr)
             (((m_CPBanner[i]->getEntry() == EOTS_BANNER_ALLIANCE) && (t == TEAM_ALLIANCE)) ||
                 ((m_CPBanner[i]->getEntry() == EOTS_BANNER_HORDE) && (t == TEAM_HORDE))))
         {
-            distcur = plr->GetPositionNC().Distance2DSq(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1]);
+            distcur = plr->GetPositionNC().Distance2DSq({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1] });
             if (distcur < dist)
             {
                 dist = distcur;
-                dest.ChangeCoords(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2], 0);
+                dest.ChangeCoords({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2] });
             }
         }
     }

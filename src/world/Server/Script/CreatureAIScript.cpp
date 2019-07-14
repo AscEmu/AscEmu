@@ -1022,7 +1022,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
                 {
                     // interrupt spell if we are not in  required range
-                    const float targetDistance = getCreature()->GetPosition().Distance2DSq(mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY());
+                    const float targetDistance = getCreature()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
                         LogDebugFlag(LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);

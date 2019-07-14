@@ -614,7 +614,7 @@ bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
         }
     }
 
-    dest.ChangeCoords(sotaTransDest[closest_platform][0], sotaTransDest[closest_platform][1], sotaTransDest[closest_platform][2], sotaTransDest[closest_platform][3]);
+    dest.ChangeCoords({ sotaTransDest[closest_platform][0], sotaTransDest[closest_platform][1], sotaTransDest[closest_platform][2], sotaTransDest[closest_platform][3] });
 
     plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
     return true;

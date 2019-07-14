@@ -664,15 +664,15 @@ bool ArathiBasin::HookHandleRepop(Player* plr)
     {
         if (m_basesOwnedBy[2] == static_cast<int32>(plr->getBgTeam()))
         {
-            dest.ChangeCoords(GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2]);
+            dest.ChangeCoords({ GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2] });
         }
         else if (m_basesOwnedBy[i] == static_cast<int32>(plr->getBgTeam()))
         {
-            dist = plr->GetPositionV()->Distance2DSq(GraveyardLocations[i][0], GraveyardLocations[i][1]);
+            dist = plr->GetPositionV()->Distance2DSq({ GraveyardLocations[i][0], GraveyardLocations[i][1] });
             if (dist < current_distance)
             {
                 current_distance = dist;
-                dest.ChangeCoords(GraveyardLocations[i][0], GraveyardLocations[i][1], GraveyardLocations[i][2]);
+                dest.ChangeCoords({ GraveyardLocations[i][0], GraveyardLocations[i][1], GraveyardLocations[i][2] });
             }
         }
     }

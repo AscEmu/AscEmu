@@ -1975,12 +1975,12 @@ void Player::logIntoBattleground()
         {
             if (!IS_INSTANCE(m_bgEntryPointMap))
             {
-                m_position.ChangeCoords(m_bgEntryPointX, m_bgEntryPointY, m_bgEntryPointZ, m_bgEntryPointO);
+                m_position.ChangeCoords({ m_bgEntryPointX, m_bgEntryPointY, m_bgEntryPointZ, m_bgEntryPointO });
                 m_mapId = m_bgEntryPointMap;
             }
             else
             {
-                m_position.ChangeCoords(GetBindPositionX(), GetBindPositionY(), GetBindPositionZ(), 0.0f);
+                m_position.ChangeCoords({ GetBindPositionX(), GetBindPositionY(), GetBindPositionZ() });
                 m_mapId = GetBindMapId();
             }
         }
@@ -2046,7 +2046,7 @@ void Player::setLoginPosition()
 
     if (startOnGMIsland)
     {
-        m_position.ChangeCoords(position_x, position_y, position_z, orientation);
+        m_position.ChangeCoords({ position_x, position_y, position_z, orientation });
         m_mapId = mapId;
 
         SetBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetZoneId());

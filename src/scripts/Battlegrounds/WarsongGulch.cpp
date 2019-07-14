@@ -478,9 +478,9 @@ bool WarsongGulch::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     if (plr->isTeamHorde())
-        dest.ChangeCoords(1032.644775f, 1388.316040f, 340.559937f, 0.043200f);
+        dest.ChangeCoords({ 1032.644775f, 1388.316040f, 340.559937f, 0.043200f });
     else
-        dest.ChangeCoords(1423.218872f, 1554.663574f, 342.833801f, 3.124139f);
+        dest.ChangeCoords({ 1423.218872f, 1554.663574f, 342.833801f, 3.124139f });
     plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
     return true;
 }

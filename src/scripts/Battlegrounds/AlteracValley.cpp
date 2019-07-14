@@ -1006,9 +1006,9 @@ bool AlteracValley::HookHandleRepop(Player* plr)
     float dt;
     LocationVector dest_pos;
     if (plr->isTeamHorde())
-        dest_pos.ChangeCoords(-1433.550903f, -608.329529f, 51.149689f);
+        dest_pos.ChangeCoords({ -1433.550903f, -608.329529f, 51.149689f });
     else
-        dest_pos.ChangeCoords(876.434448f, -489.599579f, 96.517174f);
+        dest_pos.ChangeCoords({ 876.434448f, -489.599579f, 96.517174f });
 
     if (m_started)
     {
@@ -1022,11 +1022,11 @@ bool AlteracValley::HookHandleRepop(Player* plr)
             if ((plr->isTeamAlliance() && m_nodes[x]->m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED) ||
                 (plr->isTeamHorde() && m_nodes[x]->m_state == AV_NODE_STATE_HORDE_CONTROLLED))
             {
-                dt = plr->GetPositionNC().Distance2DSq(m_nodes[x]->m_template->m_graveyardLocation.x, m_nodes[x]->m_template->m_graveyardLocation.y);
+                dt = plr->GetPositionNC().Distance2DSq({ m_nodes[x]->m_template->m_graveyardLocation.x, m_nodes[x]->m_template->m_graveyardLocation.y });
                 if (dt < dist)
                 {
                     // new one
-                    dest_pos.ChangeCoords(m_nodes[x]->m_template->m_graveyardLocation.x, m_nodes[x]->m_template->m_graveyardLocation.y, m_nodes[x]->m_template->m_graveyardLocation.z);
+                    dest_pos.ChangeCoords({ m_nodes[x]->m_template->m_graveyardLocation.x, m_nodes[x]->m_template->m_graveyardLocation.y, m_nodes[x]->m_template->m_graveyardLocation.z });
                     dist = dt;
                 }
             }

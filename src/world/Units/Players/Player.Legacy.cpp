@@ -477,7 +477,7 @@ Player::Player(uint32 guid)
     m_retainComboPoints = false;
     last_heal_spell = nullptr;
     m_playerInfo = nullptr;
-    m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
+    m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
     m_speedChangeCounter = 1;
     memset(&m_bgScore, 0, sizeof(BGScore));
     m_arenateaminviteguid = 0;
@@ -822,7 +822,7 @@ bool Player::Create(CharCreate& charCreateContent)
 
     m_mapId = info->mapId;
     SetZoneId(info->zoneId);
-    m_position.ChangeCoords(info->positionX, info->positionY, info->positionZ, info->orientation);
+    m_position.ChangeCoords({ info->positionX, info->positionY, info->positionZ, info->orientation });
     m_bind_pos_x = info->positionX;
     m_bind_pos_y = info->positionY;
     m_bind_pos_z = info->positionZ;
@@ -5657,7 +5657,7 @@ void Player::SpawnCorpseBody()
     }
     else
     {
-        myCorpseLocation.ChangeCoords(0, 0, 0, 0);
+        myCorpseLocation.ChangeCoords({ 0, 0, 0, 0 });
         myCorpseInstanceId = 0;
     }
 }
@@ -5665,7 +5665,7 @@ void Player::SpawnCorpseBody()
 void Player::SpawnCorpseBones()
 {
     Corpse* pCorpse = objmgr.GetCorpseByOwner(getGuidLow());
-    myCorpseLocation.ChangeCoords(0, 0, 0, 0);
+    myCorpseLocation.ChangeCoords({ 0, 0, 0, 0 });
     myCorpseInstanceId = 0;
     if (pCorpse)
     {
@@ -5732,7 +5732,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
             pGrave = sMySQLStore.getGraveyard(itr->second.id);
             if (pGrave->mapId == mapid && (pGrave->factionId == getTeam() || pGrave->factionId == 3))
             {
-                temp.ChangeCoords(pGrave->position_x, pGrave->position_y, pGrave->position_z);
+                temp.ChangeCoords({ pGrave->position_x, pGrave->position_y, pGrave->position_z });
                 float dist = src.distanceSquare(temp);
                 if (first || dist < closest_dist)
                 {
@@ -5746,7 +5746,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
         Keeps the player from hanging out to dry.*/
         if (first && pGrave != nullptr)//crappy Databases with no graveyards.
         {
-            dest.ChangeCoords(pGrave->position_x, pGrave->position_y, pGrave->position_z);
+            dest.ChangeCoords({ pGrave->position_x, pGrave->position_y, pGrave->position_z });
             first = false;
         }
     }

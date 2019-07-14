@@ -31,7 +31,7 @@ MovementAI & Unit::getMovementAI()
 
 void Unit::setLocationWithoutUpdate(LocationVector & location)
 {
-    m_position.ChangeCoords(location.x, location.y, location.z);
+    m_position.ChangeCoords({ location.x, location.y, location.z });
 }
 
 uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
