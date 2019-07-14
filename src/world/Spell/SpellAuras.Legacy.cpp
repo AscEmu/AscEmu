@@ -3059,14 +3059,14 @@ void Aura::SpellAuraModStealth(bool apply)
                             case 31665:
                             case 31666:
                             {
-                                tmp_duration = MSTIME_6SECONDS;
+                                tmp_duration = TimeVarsMs::Second * 6;
                             } break;
 
                             //SPELL_HASH_OVERKILL
                             case 58426:
                             case 58427:
                             {
-                                tmp_duration = MSTIME_SECOND * 20;
+                                tmp_duration = TimeVarsMs::Second * 20;
                             } break;
                         }
 

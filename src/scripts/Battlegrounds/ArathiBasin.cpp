@@ -921,7 +921,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
                 }
             }
         }
-        sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;
         UpdatePvPData();
     }
@@ -931,7 +931,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", ControlPointNames[Id],
             Team ? "Horde" : "Alliance");
         PlaySoundToAll(8192);
-        sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 

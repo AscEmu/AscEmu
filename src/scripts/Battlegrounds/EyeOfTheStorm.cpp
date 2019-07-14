@@ -347,7 +347,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick    player from server.
-        plr->Kick(MSTIME_6SECONDS);
+        plr->Kick(TimeVarsMs::Second * 6);
         return;
     }
 #endif

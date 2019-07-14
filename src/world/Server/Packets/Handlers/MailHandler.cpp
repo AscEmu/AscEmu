@@ -38,7 +38,7 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
     mailMessage->checked_flag |= MAIL_CHECK_MASK_READ;
 
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
-        mailMessage->expire_time = static_cast<uint32_t>(UNIXTIME) + (TIME_DAY * 30);
+        mailMessage->expire_time = static_cast<uint32_t>(UNIXTIME) + (TimeVars::Day * 30);
 
     CharacterDatabase.WaitExecute("UPDATE mailbox SET checked_flag = %u, expiry_time = %u WHERE message_id = %u",
         mailMessage->checked_flag, mailMessage->expire_time, mailMessage->message_id);
@@ -542,7 +542,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     msg.body = srlPacket.body;
 
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
-        msg.expire_time = static_cast<uint32_t>(UNIXTIME) + (TIME_DAY * MAIL_DEFAULT_EXPIRATION_TIME);
+        msg.expire_time = static_cast<uint32_t>(UNIXTIME) + (TimeVars::Day * MAIL_DEFAULT_EXPIRATION_TIME);
     else
         msg.expire_time = 0;
 

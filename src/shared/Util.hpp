@@ -9,44 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <chrono>
 #include <iomanip>
 
-//\ brief: C++17 filesystem. It is currently experimental.
-//         On MSVC it is included wit <filesystem> (which includes <experimental/filesystem>
-//         On GCC and Clang you have to include <experimental/filesystem> and set the
-//         compilerflag =stdc++17 and link stdc++fs.
-//         We use the namespace fs to simplify it. On GCC it is v1.
-#if (WIN32 || _WIN64)
-#include <filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem::v1;
-#endif
-
-namespace TimeBitmask
-{
-    enum
-    {
-        Minute = 0x0000003F,
-        Hour = 0x000007C0,
-        Weekday = 0x00003800,
-        Day = 0x000FC000,
-        Month = 0x00F00000,
-        Year = 0x1F000000
-    };
-}
-
-namespace TimeShiftmask
-{
-    enum
-    {
-        Minute = 0,
-        Hour = 6,
-        Weekday = 11,
-        Day = 14,
-        Month = 20,
-        Year = 24
-    };
-}
 
 namespace Util
 {

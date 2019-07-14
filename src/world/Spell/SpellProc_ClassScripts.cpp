@@ -427,7 +427,7 @@ public:
         if (aura)
         {
             // Duration of 5 combo maximum
-            int32 dur = 21 * MSTIME_SECOND;
+            int32 dur = 21 * TimeVarsMs::Second;
 
             spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());
             spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());

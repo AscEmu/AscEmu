@@ -279,15 +279,15 @@ namespace Util
         Util::StringToLowerCase(time_var);
 
         if (time_var.compare("y") == 0)
-            multiplier = TIME_YEAR;
+            multiplier = TimeVars::Year;
         else if (time_var.compare("m") == 0)
-            multiplier = TIME_MONTH;
+            multiplier = TimeVars::Month;
         else if (time_var.compare("d") == 0)
-            multiplier = TIME_DAY;
+            multiplier = TimeVars::Day;
         else if (time_var.compare("h") == 0)
-            multiplier = TIME_HOUR;
+            multiplier = TimeVars::Hour;
         else
-            multiplier = TIME_MINUTE;
+            multiplier = TimeVars::Minute;
 
         time_period = (multiplier * time_period);
 

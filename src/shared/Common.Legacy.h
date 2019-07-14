@@ -20,24 +20,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-enum TimeVariables
-{
-    TIME_SECOND = 1,
-    TIME_MINUTE = TIME_SECOND * 60,
-    TIME_HOUR   = TIME_MINUTE * 60,
-    TIME_DAY    = TIME_HOUR * 24,
-    TIME_MONTH  = TIME_DAY * 30,
-    TIME_YEAR   = TIME_MONTH * 12
-};
-
-enum MsTimeVariables
-{
-    MSTIME_SECOND   = 1000,
-    MSTIME_6SECONDS = MSTIME_SECOND * 6,
-    MSTIME_MINUTE   = MSTIME_SECOND * 60,
-    MSTIME_HOUR     = MSTIME_MINUTE * 60,
-    MSTIME_DAY      = MSTIME_HOUR * 24
-};
 
 #include "AscemuServerDefines.hpp"
 

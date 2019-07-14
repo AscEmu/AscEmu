@@ -464,7 +464,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     if (worldConfig.instance.isRelativeExpirationEnabled)
     {
         if (inf->type == INSTANCE_MULTIMODE && in->m_difficulty == MODE_HEROIC)
-            in->m_expiration = UNIXTIME + TIME_DAY;
+            in->m_expiration = UNIXTIME + TimeVars::Day;
         else
             in->m_expiration = (inf->type == INSTANCE_NONRAID || (inf->type == INSTANCE_MULTIMODE && in->m_difficulty == MODE_NORMAL)) ? 0 : UNIXTIME + inf->cooldown;
     }
@@ -472,25 +472,25 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     {
         if (inf->type == INSTANCE_MULTIMODE && in->m_difficulty >= MODE_HEROIC)
         {
-            in->m_expiration = UNIXTIME - (UNIXTIME % TIME_DAY) + ((UNIXTIME % TIME_DAY) > (worldConfig.instance.relativeDailyHeroicInstanceResetHour * TIME_HOUR) ? 82800 : -3600) + ((worldConfig.instance.relativeDailyHeroicInstanceResetHour - worldConfig.server.gmtTimeZone) * TIME_HOUR);
+            in->m_expiration = UNIXTIME - (UNIXTIME % TimeVars::Day) + ((UNIXTIME % TimeVars::Day) > (worldConfig.instance.relativeDailyHeroicInstanceResetHour * TimeVars::Hour) ? 82800 : -3600) + ((worldConfig.instance.relativeDailyHeroicInstanceResetHour - worldConfig.server.gmtTimeZone) * TimeVars::Hour);
         }
         else if (IS_PERSISTENT_INSTANCE(in))
         {
             if (m_nextInstanceReset[in->m_mapId] == 0)
             {
-                m_nextInstanceReset[in->m_mapId] = UNIXTIME - (UNIXTIME % TIME_DAY) - ((worldConfig.server.gmtTimeZone + 1) * TIME_HOUR) + (in->m_mapInfo->cooldown == 0 ? TIME_DAY : in->m_mapInfo->cooldown);
+                m_nextInstanceReset[in->m_mapId] = UNIXTIME - (UNIXTIME % TimeVars::Day) - ((worldConfig.server.gmtTimeZone + 1) * TimeVars::Hour) + (in->m_mapInfo->cooldown == 0 ? TimeVars::Day : in->m_mapInfo->cooldown);
                 CharacterDatabase.Execute("DELETE FROM server_settings WHERE setting_id LIKE 'next_instance_reset_%u';", in->m_mapId);
                 CharacterDatabase.Execute("INSERT INTO server_settings VALUES ('next_instance_reset_%u', '%u')", in->m_mapId, m_nextInstanceReset[in->m_mapId]);
             }
-            if (m_nextInstanceReset[in->m_mapId] + (TIME_MINUTE * 15) < UNIXTIME)
+            if (m_nextInstanceReset[in->m_mapId] + (TimeVars::Minute * 15) < UNIXTIME)
             {
                 do
                 {
                     time_t tmp = m_nextInstanceReset[in->m_mapId];
-                    if (tmp + (TIME_MINUTE * 15) < UNIXTIME)
-                        m_nextInstanceReset[in->m_mapId] = tmp + (in->m_mapInfo->cooldown == 0 ? TIME_DAY : in->m_mapInfo->cooldown);
+                    if (tmp + (TimeVars::Minute * 15) < UNIXTIME)
+                        m_nextInstanceReset[in->m_mapId] = tmp + (in->m_mapInfo->cooldown == 0 ? TimeVars::Day : in->m_mapInfo->cooldown);
                 }
-                while (m_nextInstanceReset[in->m_mapId] + (TIME_MINUTE * 15) < UNIXTIME);
+                while (m_nextInstanceReset[in->m_mapId] + (TimeVars::Minute * 15) < UNIXTIME);
                 CharacterDatabase.Execute("DELETE FROM server_settings WHERE setting_id LIKE 'next_instance_reset_%u';", in->m_mapId);
                 CharacterDatabase.Execute("INSERT INTO server_settings VALUES ('next_instance_reset_%u', '%u')", in->m_mapId, m_nextInstanceReset[in->m_mapId]);
             }

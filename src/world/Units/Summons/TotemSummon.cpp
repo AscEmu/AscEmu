@@ -125,6 +125,6 @@ void TotemSummon::SetupSpells()
         EnableAI();
         m_aiInterface->totemspell = totemSpell;
         m_aiInterface->m_totemspelltimer = 0;
-        m_aiInterface->m_totemspelltime = 3 * MSTIME_SECOND;
+        m_aiInterface->m_totemspelltime = 3 * TimeVarsMs::Second;
     }
 }
