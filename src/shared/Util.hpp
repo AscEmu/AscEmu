@@ -152,6 +152,9 @@ namespace Util
     // C++17 filesystem dependent functions
 
     /*! \brief Returns map of directory file names. */
+    std::map<uint32_t, std::string> getDirectoryContentWithPath(std::string pathName, std::string specialSuffix = "");
+
+    /*! \brief Returns map of directory file names. */
     std::map<uint32_t, std::string> getDirectoryContent(std::string pathName, std::string specialSuffix = "");
 
     /*! \brief Reads the file into a string based on the given path. */

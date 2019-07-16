@@ -79,107 +79,14 @@ LuaEngine::LuaEngine() :
 
 void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 {
-#ifdef WIN32
     DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname);
-    HANDLE hFile;
-    WIN32_FIND_DATA FindData;
-    memset(&FindData, 0, sizeof(FindData));
 
-    char SearchName[MAX_PATH];
-
-    strcpy(SearchName, Dirname);
-    strcat(SearchName, "\\*.*");
-
-    hFile = FindFirstFile(SearchName, &FindData);
-    FindNextFile(hFile, &FindData);
-
-    while (FindNextFile(hFile, &FindData))
+    auto luaScripts = Util::getDirectoryContentWithPath(Dirname, ".lua");
+    for (auto& luaScript : luaScripts)
     {
-        if (FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)  //Credits for this 'if' go to Cebernic from ArcScripts Team. Thanks, you saved me some work ;-)
-        {
-            strcpy(SearchName, Dirname);
-            strcat(SearchName, "\\");
-            strcat(SearchName, FindData.cFileName);
-            ScriptLoadDir(SearchName, pak);
-        }
-        else
-        {
-            std::string fname = Dirname;
-            fname += "\\";
-            fname += FindData.cFileName;
-
-            size_t len = strlen(fname.c_str());
-            int i = 0;
-            char ext[MAX_PATH];
-
-            while (len > 0)
-            {
-                ext[i++] = fname[--len];
-                if (fname[len] == '.')
-                {
-                    break;
-                }
-            }
-            ext[i++] = '\0';
-            if (!_stricmp(ext, "aul."))
-            {
-                pak->luaFiles.insert(fname);
-            }
-        }
+        std::string fileName = luaScript.second;
+        pak->luaFiles.insert(fileName);
     }
-    FindClose(hFile);
-#else
-    char* pch = strrchr(Dirname, '/');
-    if (strcmp(Dirname, "..") == 0 || strcmp(Dirname, ".") == 0)
-    {
-        return;    //Against Endless-Loop
-    }
-    if (pch != nullptr && (strcmp(pch, "/..") == 0 || strcmp(pch, "/.") == 0 || strcmp(pch, "/.svn") == 0))
-    {
-        return;
-    }
-    struct dirent** list;
-    int filecount = scandir(Dirname, &list, 0, 0);
-
-    if (filecount <= 0 || !list)
-    {
-        return;
-    }
-
-    struct stat attributes;
-    bool err;
-    LogNotice("LuaEngine : Scanning Directory %s", Dirname);
-    while (filecount--)
-    {
-        char dottedrelpath[200];
-        sprintf(dottedrelpath, "%s/%s", Dirname, list[filecount]->d_name);
-        if (stat(dottedrelpath, &attributes) == -1)
-        {
-            err = true;
-            LOG_ERROR("Error opening %s: %s", dottedrelpath, strerror(errno));
-        }
-        else
-        {
-            err = false;
-        }
-
-        if (!err && S_ISDIR(attributes.st_mode))
-        {
-            ScriptLoadDir((char*)dottedrelpath, pak);  //Subdirectory
-        }
-        else
-        {
-            char* ext = strrchr(list[filecount]->d_name, '.');
-            if (ext != nullptr && !strcmp(ext, ".lua"))
-            {
-                pak->luaFiles.insert(dottedrelpath);
-            }
-        }
-
-        free(list[filecount]);
-    }
-    free(list);
-#endif
 }
 
 #define MAX_FILENAME_LENGTH 200
