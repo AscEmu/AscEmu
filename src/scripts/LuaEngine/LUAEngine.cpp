@@ -77,9 +77,9 @@ LuaEngine::LuaEngine() :
     lu(nullptr)
 {}
 
-void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
+void LuaEngine::ScriptLoadDir(std::string Dirname, LUALoadScripts* pak)
 {
-    DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname);
+    DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname.c_str());
 
     auto luaScripts = Util::getDirectoryContentWithPath(Dirname, ".lua");
     for (auto& luaScript : luaScripts)
@@ -89,46 +89,44 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
     }
 }
 
-#define MAX_FILENAME_LENGTH 200
+//#define MAX_FILENAME_LENGTH 200
 void LuaEngine::LoadScripts()
 {
-    LUALoadScripts rtn;
     DLLLogDetail("LuaEngine : Scanning Script-Directories...");
-    ScriptLoadDir((char*)"scripts", &rtn);
 
-    unsigned int cnt_uncomp = 0;
+    LUALoadScripts rtn;
+    ScriptLoadDir("scripts", &rtn);
 
     luaL_openlibs(lu);
+
     RegisterCoreFunctions();
+
     DLLLogDetail("LuaEngine : Loading Scripts...");
 
-    char filename[MAX_FILENAME_LENGTH];
-
-    for (std::set<std::string>::iterator itr = rtn.luaFiles.begin(); itr != rtn.luaFiles.end(); ++itr)
+    unsigned int cntUncomp = 0;
+    for (auto& itr : rtn.luaFiles)
     {
-        strncpy(filename, itr->c_str(), MAX_FILENAME_LENGTH);
-        filename[MAX_FILENAME_LENGTH - 1] = '\0';
-        int errorCode = luaL_loadfile(lu, filename);
+        const auto errorCode = luaL_loadfile(lu, itr.c_str());
         if (errorCode)
         {
-            DLLLogDetail("loading %s failed.(could not load). Error code %i", itr->c_str(), errorCode);
+            DLLLogDetail("loading %s failed.(could not load). Error code %i", itr.c_str(), errorCode);
             report(lu);
         }
         else
         {
             if (errorCode != lua_pcall(lu, 0, 0, 0))
             {
-                DLLLogDetail("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
+                DLLLogDetail("%s failed.(could not run). Error code %i", itr.c_str(), errorCode);
                 report(lu);
             }
             else
             {
-                DLLLogDetail("LuaEngine : loaded %s.", itr->c_str());
+                DLLLogDetail("LuaEngine : loaded %s", itr.c_str());
             }
         }
-        cnt_uncomp++;
+        cntUncomp++;
     }
-    DLLLogDetail("LuaEngine : Loaded %u Lua scripts.", cnt_uncomp);
+    DLLLogDetail("LuaEngine : Loaded %u Lua scripts.", cntUncomp);
 }
 
 
@@ -386,7 +384,7 @@ void LuaEngine::HyperCallFunction(const char* FuncName, int ref)  //hyper as in 
         {
             free((void*)FuncName);
             luaL_unref(lu, LUA_REGISTRYINDEX, ref);
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
+            const auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
             LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.erase(itr);
         }
         else
@@ -449,7 +447,7 @@ void LuaEngine::DestroyAllLuaEvents()
     GET_LOCK
 
         //Clean up for all events.
-        for (std::set<int>::iterator itr = m_functionRefs.begin(); itr != m_functionRefs.end(); ++itr)
+        for (auto itr = m_functionRefs.begin(); itr != m_functionRefs.end(); ++itr)
         {
             sEventMgr.RemoveEvents(World::getSingletonPtr(), (*itr) + LUA_EVENTS_END);
             luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));

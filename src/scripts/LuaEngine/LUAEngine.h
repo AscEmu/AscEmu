@@ -363,43 +363,43 @@ public:
 
     LuaObjectBinding* getUnitBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_unitBinding.find(Id);
-        return (itr == m_unitBinding.end()) ? NULL : &itr->second;
+        auto itr = m_unitBinding.find(Id);
+        return itr == m_unitBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getQuestBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_questBinding.find(Id);
-        return (itr == m_questBinding.end()) ? NULL : &itr->second;
+        auto itr = m_questBinding.find(Id);
+        return itr == m_questBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getGameObjectBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_gameobjectBinding.find(Id);
-        return (itr == m_gameobjectBinding.end()) ? NULL : &itr->second;
+        auto itr = m_gameobjectBinding.find(Id);
+        return itr == m_gameobjectBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getInstanceBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_instanceBinding.find(Id);
-        return (itr == m_instanceBinding.end()) ? NULL : &itr->second;
+        auto itr = m_instanceBinding.find(Id);
+        return itr == m_instanceBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getLuaUnitGossipBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_unit_gossipBinding.find(Id);
-        return (itr == m_unit_gossipBinding.end()) ? NULL : &itr->second;
+        auto itr = m_unit_gossipBinding.find(Id);
+        return itr == m_unit_gossipBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getLuaItemGossipBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_item_gossipBinding.find(Id);
-        return (itr == m_item_gossipBinding.end()) ? NULL : &itr->second;
+        auto itr = m_item_gossipBinding.find(Id);
+        return itr == m_item_gossipBinding.end() ? nullptr : &itr->second;
     }
     LuaObjectBinding* getLuaGOGossipBinding(uint32 Id)
     {
-        LuaObjectBindingMap::iterator itr = m_go_gossipBinding.find(Id);
-        return (itr == m_go_gossipBinding.end()) ? NULL : &itr->second;
+        auto itr = m_go_gossipBinding.find(Id);
+        return itr == m_go_gossipBinding.end() ? nullptr : &itr->second;
     }
     LuaQuest* getLuaQuest(uint32 id)
     {
-    std::unordered_map<uint32, LuaQuest*>::iterator itr = m_qAIScripts.find(id);
-        return (itr == m_qAIScripts.end()) ? NULL : itr->second;
+        const auto itr = m_qAIScripts.find(id);
+        return itr == m_qAIScripts.end() ? nullptr : itr->second;
     }
         /*int getPendingThread(lua_State * threadtosearch) {
             set<lua_State*>::iterator itr = m_pendingThreads.find(threadtosearch);
@@ -407,18 +407,18 @@ public:
             }*/
     LuaGossip* getUnitGossipInterface(uint32 id)
     {
-        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_unitgAIScripts.find(id);
-        return (itr == m_unitgAIScripts.end()) ? NULL : itr->second;
+        const auto itr = m_unitgAIScripts.find(id);
+        return itr == m_unitgAIScripts.end() ? nullptr : itr->second;
     }
     LuaGossip* getItemGossipInterface(uint32 id)
     {
-        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_itemgAIScripts.find(id);
-        return (itr == m_itemgAIScripts.end()) ? NULL : itr->second;
+        const auto itr = m_itemgAIScripts.find(id);
+        return itr == m_itemgAIScripts.end() ? nullptr : itr->second;
     }
     LuaGossip* getGameObjectGossipInterface(uint32 id)
     {
-        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_gogAIScripts.find(id);
-        return (itr == m_gogAIScripts.end()) ? NULL : itr->second;
+        const auto itr = m_gogAIScripts.find(id);
+        return itr == m_gogAIScripts.end() ? nullptr : itr->second;
     }
     inline std::multimap<uint32, LuaCreature*> & getLuCreatureMap() { return m_cAIScripts; }
     inline std::multimap<uint32, LuaGameObjectScript*> & getLuGameObjectMap() { return m_gAIScripts; }
@@ -449,15 +449,14 @@ public:
     public:
         bool HasEvent(int ref)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
-            return (itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end());
+            const auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
+            return itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end();
         }
         bool HasEventInTable(const char* table)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
-            for (; itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end(); ++itr)
+            for (auto& itr : LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents)
             {
-                if (strncmp(itr->second->funcName, table, strlen(table)) == 0)
+                if (strncmp(itr.second->funcName, table, strlen(table)) == 0)
                 {
                     return true;
                 }
@@ -466,10 +465,9 @@ public:
         }
         bool HasEventWithName(const char* name)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
-            for (; itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end(); ++itr)
+            for (auto& itr: LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents)
             {
-                if (strcmp(itr->second->funcName, name) == 0)
+                if (strcmp(itr.second->funcName, name) == 0)
                 {
                     return true;
                 }
@@ -478,10 +476,10 @@ public:
         }
         void RemoveEventsInTable(const char* table)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin(), itr2;
+            auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
             for (; itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end();)
             {
-                itr2 = itr++;
+                const auto itr2 = itr++;
                 if (strncmp(itr2->second->funcName, table, strlen(table)) == 0)
                 {
                     event_RemoveByPointer(itr2->second->te);
@@ -493,10 +491,10 @@ public:
         }
         void RemoveEventsByName(const char* name)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin(), itr2;
+            auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
             for (; itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end();)
             {
-                itr2 = itr++;
+                const auto itr2 = itr++;
                 if (strcmp(itr2->second->funcName, name) == 0)
                 {
                     event_RemoveByPointer(itr2->second->te);
@@ -508,7 +506,7 @@ public:
         }
         void RemoveEventByRef(int ref)
         {
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
+            auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
             if (itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end())
             {
                 event_RemoveByPointer(itr->second->te);
@@ -520,11 +518,10 @@ public:
         void RemoveEvents()
         {
             event_RemoveEvents(EVENT_LUA_TIMED);
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
-            for (; itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end(); ++itr)
+            for (auto& itr : LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents)
             {
-                free((void*)itr->second->funcName);
-                luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, itr->first);
+                free((void*)itr.second->funcName);
+                luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, itr.first);
             }
             LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.clear();
         }
@@ -534,7 +531,7 @@ protected:
 
     //Hidden methods
     void Unload();
-    void ScriptLoadDir(char* Dirname, LUALoadScripts* pak);
+    void ScriptLoadDir(std::string Dirname, LUALoadScripts* pak);
 
 template <typename T>
 class ArcLuna
