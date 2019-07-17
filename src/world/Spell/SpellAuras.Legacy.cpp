@@ -45,11 +45,11 @@
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 
-using ascemu::World::Spell::Helpers::decimalToMask;
-using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
-using ascemu::World::Spell::Helpers::spellModFlatIntValue;
-using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
-using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
+using AscEmu::World::Spell::Helpers::decimalToMask;
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
@@ -4225,7 +4225,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
     else
     {
         if (shapeshift_form->id != FORM_STEALTH)
-            m_target->RemoveAllAurasByRequiredShapeShift(ascemu::World::Spell::Helpers::decimalToMask(mod->m_miscValue));
+            m_target->RemoveAllAurasByRequiredShapeShift(AscEmu::World::Spell::Helpers::decimalToMask(mod->m_miscValue));
 
         if (m_target->isCastingSpell())
         {

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgAttackStop : public ManagedPacket
     {
@@ -48,4 +48,4 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
-}}
+}

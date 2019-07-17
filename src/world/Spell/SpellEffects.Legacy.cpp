@@ -63,10 +63,10 @@
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 
-using ascemu::World::Spell::Helpers::spellModFlatIntValue;
-using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
-using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
-using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 using namespace AscEmu::Packets;
 

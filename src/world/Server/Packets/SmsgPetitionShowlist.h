@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildDefinitions.h"
 #include "Server/World.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgPetitionShowlist : public ManagedPacket
     {
@@ -63,4 +63,4 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
-}}
+}

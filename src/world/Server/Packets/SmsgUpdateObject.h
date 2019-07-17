@@ -10,38 +10,36 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 
 #ifdef AE_TBC
-namespace AscEmu
+namespace AscEmu::Packets
 {
-    namespace Packets
+    class SmsgUpdateObject : public ManagedPacket
     {
-        class SmsgUpdateObject : public ManagedPacket
+        std::vector<WoWGuid> m_out_of_range_guids;
+        uint32_t m_creation_count;
+
+    public:
+        SmsgUpdateObject() : ManagedPacket(SMSG_UPDATE_OBJECT, sizeof(uint8_t) + sizeof(uint32_t))
         {
-            std::vector<WoWGuid> m_out_of_range_guids;
-            uint32_t m_creation_count;
+        }
 
-        public:
-            SmsgUpdateObject() : ManagedPacket(SMSG_UPDATE_OBJECT, sizeof(uint8_t) + sizeof(uint32_t))
-            {
-            }
+    protected:
+        size_t expectedSize() const override
+        {
+            return m_minimum_size;
+        }
 
-        protected:
-            size_t expectedSize() const override
-            {
-                return m_minimum_size;
-            }
+        bool internalSerialise(WorldPacket& packet) override
+        {
+            packet << ((m_out_of_range_guids.size() > 0) ? m_creation_count + 1 : m_creation_count);
 
-            bool internalSerialise(WorldPacket& packet) override
-            {
-                packet << ((m_out_of_range_guids.size() > 0) ? m_creation_count + 1 : m_creation_count);
+            return true;
+        }
 
-                return true;
-            }
-
-            bool internalDeserialise(WorldPacket& /*packet*/) override
-            {
-                return true;
-            }
-        };
-    }
+        bool internalDeserialise(WorldPacket& /*packet*/) override
+        {
+            return true;
+        }
+    };
 }
+
 #endif

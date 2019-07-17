@@ -8,10 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.h"
 #include "Units/Unit.h"
 
-namespace Packets
+namespace Packets::Movement
 {
-    namespace Movement
-    {
-        void SendMoveToPacket(Unit* pUnit);
-    }
+    void SendMoveToPacket(Unit* pUnit);
 }

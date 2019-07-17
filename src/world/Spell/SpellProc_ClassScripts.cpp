@@ -31,8 +31,8 @@
 #include "Definitions/SpellEffectTarget.h"
 #include "SpellHelpers.h"
 
-using ascemu::World::Spell::Helpers::spellModFlatIntValue;
-using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

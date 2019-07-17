@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
             X; \
     }
 
-namespace ascemu { namespace World { namespace Spell { namespace Helpers
+namespace AscEmu::World::Spell::Helpers
 {
     inline uint32_t decimalToMask(uint32_t dec) { return (static_cast<uint32_t>(1) << (dec - 1)); }
 
@@ -55,6 +55,6 @@ namespace ascemu { namespace World { namespace Spell { namespace Helpers
 
         SPELL_GROUP_FOREACH(*v += ((*v) * m[bit]) / 100);
     }
-}}}}
+}
 
 #undef SPELL_GROUP_FOREACH

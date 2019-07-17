@@ -58,11 +58,11 @@
 #include "Map/WorldCreatorDefines.hpp"
 
 
-using ascemu::World::Spell::Helpers::decimalToMask;
-using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
-using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
-using ascemu::World::Spell::Helpers::spellModFlatIntValue;
-using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
+using AscEmu::World::Spell::Helpers::decimalToMask;
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 
@@ -3701,8 +3701,8 @@ uint32 Spell::GetDuration()
 
             if (u_caster != nullptr)
             {
-                ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, getSpellInfo()->getSpellFamilyFlags());
-                ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, getSpellInfo()->getSpellFamilyFlags());
+                AscEmu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, getSpellInfo()->getSpellFamilyFlags());
+                AscEmu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, getSpellInfo()->getSpellFamilyFlags());
             }
         }
         else
@@ -3726,8 +3726,8 @@ float Spell::GetRadius(uint32 i)
     Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(static_cast<uint8_t>(i))));
     if (u_caster != nullptr)
     {
-        ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], getSpellInfo()->getSpellFamilyFlags());
-        ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], getSpellInfo()->getSpellFamilyFlags());
+        AscEmu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], getSpellInfo()->getSpellFamilyFlags());
+        AscEmu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], getSpellInfo()->getSpellFamilyFlags());
     }
 
     return Rad[i];

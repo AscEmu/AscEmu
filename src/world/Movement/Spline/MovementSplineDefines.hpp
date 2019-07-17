@@ -6,7 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 
-namespace Movement { namespace Spline {
+namespace Movement::Spline
+{
     enum SplineFlagsEnum
     {
         /* The first 4 bytes of the SplineFlags are actually an animation id 
@@ -93,4 +94,4 @@ namespace Movement { namespace Spline {
         float VerticalAcceleration;
         int32_t StartTime;
     };
-}}
+}
