@@ -23,8 +23,8 @@ public:
 
     Arcemu::Gossip::Menu* m_menu;
     std::vector<uint32_t> m_onLoadInfo;
-    std::vector<uint16> EventAsToFuncName[NUM_SERVER_HOOKS];
-    std::map<uint32, uint16> m_luaDummySpells;
+    std::vector<uint16_t> EventAsToFuncName[NUM_SERVER_HOOKS];
+    std::map<uint32_t, uint16_t> m_luaDummySpells;
 
     std::unique_ptr<LuaEngine>& luaEngine();
 };

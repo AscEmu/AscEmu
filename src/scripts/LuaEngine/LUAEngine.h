@@ -36,11 +36,6 @@ class LuaQuest;
 class LuaInstance;
 class LuaGossip;
 class ArcLuna;
-//
-//#ifdef WIN32
-//#include <Windows.h>
-//HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-//#endif
 
 #define RegisterHook(evt, _func) { \
     if(LuaGlobal::instance()->EventAsToFuncName[(evt)].size() > 0 && !(LuaGlobal::instance()->luaEngine()->HookInfo.hooks[(evt)])) { \
@@ -188,7 +183,7 @@ struct EventInfoHolder
 
 struct LuaObjectBinding
 {
-    uint16 m_functionReferences[CREATURE_EVENT_COUNT];
+    uint16_t m_functionReferences[CREATURE_EVENT_COUNT];
 };
 
 class LuaEngine
@@ -197,21 +192,21 @@ class LuaEngine
     Mutex call_lock;
     Mutex co_lock;
 
-    typedef std::unordered_map<uint32, LuaObjectBinding> LuaObjectBindingMap;
+    typedef std::unordered_map<uint32_t, LuaObjectBinding> LuaObjectBindingMap;
 
     std::set<int> m_pendingThreads;
     std::set<int> m_functionRefs;
-    std::map< uint64, std::set<int> > m_objectFunctionRefs;
+    std::map< uint64_t, std::set<int> > m_objectFunctionRefs;
 
     //maps to creature, & go script interfaces
-    std::multimap<uint32, LuaCreature*> m_cAIScripts;
-    std::multimap<uint32, LuaGameObjectScript*> m_gAIScripts;
-    std::unordered_map<uint32, LuaQuest*> m_qAIScripts;
-    std::unordered_map<uint32, LuaInstance*> m_iAIScripts;
+    std::multimap<uint32_t, LuaCreature*> m_cAIScripts;
+    std::multimap<uint32_t, LuaGameObjectScript*> m_gAIScripts;
+    std::unordered_map<uint32_t, LuaQuest*> m_qAIScripts;
+    std::unordered_map<uint32_t, LuaInstance*> m_iAIScripts;
 
-    std::unordered_map<uint32, LuaGossip*> m_unitgAIScripts;
-    std::unordered_map<uint32, LuaGossip*> m_itemgAIScripts;
-    std::unordered_map<uint32, LuaGossip*> m_gogAIScripts;
+    std::unordered_map<uint32_t, LuaGossip*> m_unitgAIScripts;
+    std::unordered_map<uint32_t, LuaGossip*> m_itemgAIScripts;
+    std::unordered_map<uint32_t, LuaGossip*> m_gogAIScripts;
 
     LuaObjectBindingMap m_unitBinding;
     LuaObjectBindingMap m_questBinding;
@@ -229,214 +224,219 @@ public:
     void LoadScripts();
     void Restart();
 
-    void RegisterEvent(uint8, uint32, uint32, uint16);
+    void RegisterEvent(uint8_t, uint32_t, uint32_t, uint16_t);
     void ResumeLuaThread(int);
-    void BeginCall(uint16);
+    void BeginCall(uint16_t);
     void HyperCallFunction(const char*, int);
     void CallFunctionByReference(int);
     void DestroyAllLuaEvents();
-    inline bool ExecuteCall(uint8 params = 0, uint8 res = 0);
-    inline void EndCall(uint8 res = 0);
+    inline bool ExecuteCall(uint8_t params = 0, uint8_t res = 0);
+    inline void EndCall(uint8_t res = 0);
     // Wrappers
-    inline Unit* CheckUnit(lua_State* L, int narg)
+    Unit* CheckUnit(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<Unit>::check(lu, narg);
-        else
-            return ArcLuna<Unit>::check(L, narg);
+        return ArcLuna<Unit>::check(L, narg);
     }
-    inline GameObject* CheckGo(lua_State* L, int narg)
+
+    GameObject* CheckGo(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<GameObject>::check(lu, narg);
-        else
-            return ArcLuna<GameObject>::check(L, narg);
+        return ArcLuna<GameObject>::check(L, narg);
     }
-    inline Item* CheckItem(lua_State* L, int narg)
+
+    Item* CheckItem(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<Item>::check(lu, narg);
-        else
-            return ArcLuna<Item>::check(L, narg);
+        return ArcLuna<Item>::check(L, narg);
     }
-    inline WorldPacket* CheckPacket(lua_State* L, int narg)
+
+    WorldPacket* CheckPacket(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<WorldPacket>::check(lu, narg);
-        else
-            return ArcLuna<WorldPacket>::check(L, narg);
+        return ArcLuna<WorldPacket>::check(L, narg);
     }
-    inline uint64 CheckGuid(lua_State* L, int narg)
+
+    uint64_t CheckGuid(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return GUID_MGR::check(lu, narg);
-        else
-            return GUID_MGR::check(L, narg);
+        return GUID_MGR::check(L, narg);
     }
-    inline Object* CheckObject(lua_State* L, int narg)
+
+    Object* CheckObject(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<Object>::check(lu, narg);
-        else
-            return ArcLuna<Object>::check(L, narg);
+        return ArcLuna<Object>::check(L, narg);
     }
-    inline TaxiPath* CheckTaxiPath(lua_State* L, int narg)
+
+    TaxiPath* CheckTaxiPath(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<TaxiPath>::check(lu, narg);
-        else
-            return ArcLuna<TaxiPath>::check(L, narg);
+        return ArcLuna<TaxiPath>::check(L, narg);
     }
-    inline Spell* CheckSpell(lua_State* L, int narg)
+
+    Spell* CheckSpell(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<Spell>::check(lu, narg);
-        else
-            return ArcLuna<Spell>::check(L, narg);
+        return ArcLuna<Spell>::check(L, narg);
     }
-    inline Aura* CheckAura(lua_State* L, int narg)
+
+    Aura* CheckAura(lua_State* L, int narg)
     {
-        if (L == NULL)
+        if (L == nullptr)
             return ArcLuna<Aura>::check(lu, narg);
-        else
-            return ArcLuna<Aura>::check(L, narg);
+        return ArcLuna<Aura>::check(L, narg);
     }
     bool CheckBool(lua_State* L, int narg)
     {
         // first try with bool type
         if (lua_isboolean(L, narg))
             return lua_toboolean(L, narg) > 0;
+
         // then try with integer type
-        else if (lua_isnumber(L, narg))
+        if (lua_isnumber(L, narg))
             return lua_tonumber(L, narg) > 0;
-        // then return true by default
-        else
-            return true;
+            // then return true by default
+        return true;
     }
 
-    void PushUnit(Object* unit, lua_State* L = NULL);
-    void PushGo(Object* go, lua_State* L = NULL);
-    void PushItem(Object* item, lua_State* L = NULL);
-    void PushGuid(uint64 guid, lua_State* L = NULL);
-    void PushPacket(WorldPacket* packet, lua_State* L = NULL);
-    void PushTaxiPath(TaxiPath* tp, lua_State* L = NULL);
-    void PushSpell(Spell* sp, lua_State* L = NULL);
-    void PushSqlField(Field* field, lua_State* L = NULL);
-    void PushSqlResult(QueryResult* res, lua_State* L = NULL);
-    void PushAura(Aura* aura, lua_State* L = NULL);
+    void PushUnit(Object* unit, lua_State* L = nullptr);
+    void PushGo(Object* go, lua_State* L = nullptr);
+    void PushItem(Object* item, lua_State* L = nullptr);
+    void PushGuid(uint64_t guid, lua_State* L = nullptr);
+    void PushPacket(WorldPacket* packet, lua_State* L = nullptr);
+    void PushTaxiPath(TaxiPath* tp, lua_State* L = nullptr);
+    void PushSpell(Spell* sp, lua_State* L = nullptr);
+    void PushSqlField(Field* field, lua_State* L = nullptr);
+    void PushSqlResult(QueryResult* res, lua_State* L = nullptr);
+    void PushAura(Aura* aura, lua_State* L = nullptr);
 
-    inline void PUSH_BOOL(bool bewl)
+    void PUSH_BOOL(bool bewl)
     {
         if (bewl)
             lua_pushboolean(lu, 1);
         else
             lua_pushboolean(lu, 0);
     }
-    inline void PUSH_NIL(lua_State* L = NULL)
+
+    void PUSH_NIL(lua_State* L = nullptr)
     {
-        if (L == NULL)
+        if (L == nullptr)
             lua_pushnil(lu);
         else
             lua_pushnil(L);
     }
-    inline void PUSH_INT(int32 value)
+
+    void PUSH_INT(int32 value)
     {
         lua_pushinteger(lu, value);
     }
-    inline void PUSH_UINT(uint32 value)
+
+    void PUSH_UINT(uint32_t value)
     {
         lua_pushnumber(lu, value);
     }
-    inline void PUSH_FLOAT(float value)
+
+    void PUSH_FLOAT(float value)
     {
         lua_pushnumber(lu, value);
     }
-    inline void PUSH_STRING(const char* str)
+
+    void PUSH_STRING(const char* str)
     {
         lua_pushstring(lu, str);
     }
     void RegisterCoreFunctions();
 
-    inline Mutex & getLock() { return call_lock; }
-    inline Mutex & getcoLock() { return co_lock; }
-    inline lua_State* getluState() { return lu; }
+    Mutex & getLock() { return call_lock; }
+    Mutex & getcoLock() { return co_lock; }
+    lua_State* getluState() { return lu; }
 
-    LuaObjectBinding* getUnitBinding(uint32 Id)
+    LuaObjectBinding* getUnitBinding(uint32_t Id)
     {
         auto itr = m_unitBinding.find(Id);
         return itr == m_unitBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getQuestBinding(uint32 Id)
+    LuaObjectBinding* getQuestBinding(uint32_t Id)
     {
         auto itr = m_questBinding.find(Id);
         return itr == m_questBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getGameObjectBinding(uint32 Id)
+    LuaObjectBinding* getGameObjectBinding(uint32_t Id)
     {
         auto itr = m_gameobjectBinding.find(Id);
         return itr == m_gameobjectBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getInstanceBinding(uint32 Id)
+    LuaObjectBinding* getInstanceBinding(uint32_t Id)
     {
         auto itr = m_instanceBinding.find(Id);
         return itr == m_instanceBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getLuaUnitGossipBinding(uint32 Id)
+    LuaObjectBinding* getLuaUnitGossipBinding(uint32_t Id)
     {
         auto itr = m_unit_gossipBinding.find(Id);
         return itr == m_unit_gossipBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getLuaItemGossipBinding(uint32 Id)
+    LuaObjectBinding* getLuaItemGossipBinding(uint32_t Id)
     {
         auto itr = m_item_gossipBinding.find(Id);
         return itr == m_item_gossipBinding.end() ? nullptr : &itr->second;
     }
-    LuaObjectBinding* getLuaGOGossipBinding(uint32 Id)
+    LuaObjectBinding* getLuaGOGossipBinding(uint32_t Id)
     {
         auto itr = m_go_gossipBinding.find(Id);
         return itr == m_go_gossipBinding.end() ? nullptr : &itr->second;
     }
-    LuaQuest* getLuaQuest(uint32 id)
+    LuaQuest* getLuaQuest(uint32_t id)
     {
         const auto itr = m_qAIScripts.find(id);
         return itr == m_qAIScripts.end() ? nullptr : itr->second;
     }
         /*int getPendingThread(lua_State * threadtosearch) {
             set<lua_State*>::iterator itr = m_pendingThreads.find(threadtosearch);
-            return (itr == m_pendingThreads.end() )? NULL : (*itr);
+            return (itr == m_pendingThreads.end() )? nullptr : (*itr);
             }*/
-    LuaGossip* getUnitGossipInterface(uint32 id)
+    LuaGossip* getUnitGossipInterface(uint32_t id)
     {
         const auto itr = m_unitgAIScripts.find(id);
         return itr == m_unitgAIScripts.end() ? nullptr : itr->second;
     }
-    LuaGossip* getItemGossipInterface(uint32 id)
+    LuaGossip* getItemGossipInterface(uint32_t id)
     {
         const auto itr = m_itemgAIScripts.find(id);
         return itr == m_itemgAIScripts.end() ? nullptr : itr->second;
     }
-    LuaGossip* getGameObjectGossipInterface(uint32 id)
+    LuaGossip* getGameObjectGossipInterface(uint32_t id)
     {
         const auto itr = m_gogAIScripts.find(id);
         return itr == m_gogAIScripts.end() ? nullptr : itr->second;
     }
-    inline std::multimap<uint32, LuaCreature*> & getLuCreatureMap() { return m_cAIScripts; }
-    inline std::multimap<uint32, LuaGameObjectScript*> & getLuGameObjectMap() { return m_gAIScripts; }
-    inline std::unordered_map<uint32, LuaQuest*> & getLuQuestMap() { return m_qAIScripts; }
-    inline std::unordered_map<uint32, LuaInstance*> & getLuInstanceMap() { return m_iAIScripts; }
-    inline std::unordered_map<uint32, LuaGossip*> & getUnitGossipInterfaceMap() { return m_unitgAIScripts; }
-    inline std::unordered_map<uint32, LuaGossip*> & getItemGossipInterfaceMap() { return m_itemgAIScripts; }
-    inline std::unordered_map<uint32, LuaGossip*> & getGameObjectGossipInterfaceMap() { return m_gogAIScripts; }
-    inline std::set<int> & getThreadRefs() { return m_pendingThreads; }
-    inline std::set<int> & getFunctionRefs() { return m_functionRefs; }
-    inline std::map< uint64, std::set<int> > & getObjectFunctionRefs() { return m_objectFunctionRefs; }
+
+    std::multimap<uint32_t, LuaCreature*> & getLuCreatureMap() { return m_cAIScripts; }
+    std::multimap<uint32_t, LuaGameObjectScript*> & getLuGameObjectMap() { return m_gAIScripts; }
+    std::unordered_map<uint32_t, LuaQuest*> & getLuQuestMap() { return m_qAIScripts; }
+    std::unordered_map<uint32_t, LuaInstance*> & getLuInstanceMap() { return m_iAIScripts; }
+    std::unordered_map<uint32_t, LuaGossip*> & getUnitGossipInterfaceMap() { return m_unitgAIScripts; }
+    std::unordered_map<uint32_t, LuaGossip*> & getItemGossipInterfaceMap() { return m_itemgAIScripts; }
+    std::unordered_map<uint32_t, LuaGossip*> & getGameObjectGossipInterfaceMap() { return m_gogAIScripts; }
+    std::set<int> & getThreadRefs() { return m_pendingThreads; }
+    std::set<int> & getFunctionRefs() { return m_functionRefs; }
+    std::map< uint64_t, std::set<int> > & getObjectFunctionRefs() { return m_objectFunctionRefs; }
 
     std::unordered_map<int, EventInfoHolder*> m_registeredTimedEvents;
 
     struct _ENGINEHOOKINFO
     {
         bool hooks[NUM_SERVER_HOOKS];
-        std::vector<uint32> dummyHooks;
+        std::vector<uint32_t> dummyHooks;
         _ENGINEHOOKINFO()
         {
             for (int i = 0; i < NUM_SERVER_HOOKS; ++i)
@@ -452,28 +452,25 @@ public:
             const auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
             return itr != LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.end();
         }
+
         bool HasEventInTable(const char* table)
         {
             for (auto& itr : LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents)
-            {
                 if (strncmp(itr.second->funcName, table, strlen(table)) == 0)
-                {
                     return true;
-                }
-            }
+
             return false;
         }
+
         bool HasEventWithName(const char* name)
         {
             for (auto& itr: LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents)
-            {
                 if (strcmp(itr.second->funcName, name) == 0)
-                {
                     return true;
-                }
-            }
-                return false;
+
+            return false;
         }
+
         void RemoveEventsInTable(const char* table)
         {
             auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
@@ -489,6 +486,7 @@ public:
                 }
             }
         }
+
         void RemoveEventsByName(const char* name)
         {
             auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.begin();
@@ -504,6 +502,7 @@ public:
                 }
             }
         }
+
         void RemoveEventByRef(int ref)
         {
             auto itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
@@ -515,6 +514,7 @@ public:
                 LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.erase(itr);
             }
         }
+
         void RemoveEvents()
         {
             event_RemoveEvents(EVENT_LUA_TIMED);
@@ -599,7 +599,7 @@ public:
         int mt = lua_gettop(L);
         T** ptrHold = (T**)lua_newuserdata(L, sizeof(T**));
         int ud = lua_gettop(L);
-        if (ptrHold != NULL)
+        if (ptrHold != nullptr)
         {
             *ptrHold = obj;
             lua_pushvalue(L, mt);
@@ -630,8 +630,8 @@ public:
     static T* check(lua_State* L, int narg)
     {
         T** ptrHold = static_cast<T**>(lua_touserdata(L, narg));
-        if (ptrHold == NULL)
-            return NULL;
+        if (ptrHold == nullptr)
+            return nullptr;
         return *ptrHold;
     }
 
@@ -655,7 +655,7 @@ private:
     static int gc_T(lua_State* L)
     {
         T* obj = check(L, 1);
-        if (obj == NULL)
+        if (obj == nullptr)
             return 0;
 
         lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
@@ -667,7 +667,7 @@ private:
             if (lua_isnil(L, -1))
             {
                 delete obj;
-                obj = NULL;
+                obj = nullptr;
             }
         }
         lua_pop(L, 3);
@@ -682,7 +682,8 @@ private:
         lua_pushfstring(L, "%s (%s)", GetTClassName<T>(), buff);
         return 1;
     }
-    inline static void tostring(char* buff, void* obj)
+
+    static void tostring(char* buff, void* obj)
     {
         sprintf(buff, "%p", obj);
     }
@@ -764,15 +765,15 @@ public:
         // pop metatable
         lua_pop(L, 1);
     }
-    static uint64 check(lua_State* L, int narg)
+    static uint64_t check(lua_State* L, int narg)
     {
-        uint64 GUID = 0;
-        uint64* ptrHold = (uint64*)lua_touserdata(L, narg);
-        if (ptrHold != NULL)
+        uint64_t GUID = 0;
+        uint64_t* ptrHold = (uint64_t*)lua_touserdata(L, narg);
+        if (ptrHold != nullptr)
             GUID = *ptrHold;
         return GUID;
     }
-    static int push(lua_State* L, uint64 guid)
+    static int push(lua_State* L, uint64_t guid)
     {
         int index = 0;
         if (guid == 0)
@@ -784,14 +785,18 @@ public:
         {
             luaL_getmetatable(L, GetName());
             if (lua_isnoneornil(L, -1))
+            {
                 luaL_error(L, "%s metatable not found!. \n", GetName());
+            }
             else
             {
                 int mt = lua_gettop(L);
-                uint64* guidHold = (uint64*)lua_newuserdata(L, sizeof(uint64));
+                uint64_t* guidHold = (uint64_t*)lua_newuserdata(L, sizeof(uint64_t));
                 int ud = lua_gettop(L);
-                if (guidHold == NULL)
-                    luaL_error(L, "Lua tried to allocate size %d of memory and failed! \n", sizeof(uint64*));
+                if (guidHold == nullptr)
+                {
+                    luaL_error(L, "Lua tried to allocate size %d of memory and failed! \n", sizeof(uint64_t*));
+                }
                 else
                 {
                     (*guidHold) = guid;
@@ -812,9 +817,11 @@ public:
         //This method prints formats the GUID in hexform and pushes to the stack.
         static int _tostring(lua_State* L)
         {
-            uint64 GUID = GUID_MGR::check(L, 1);
+            uint64_t GUID = GUID_MGR::check(L, 1);
             if (GUID == 0)
+            {
                 lua_pushnil(L);
+            }
             else
             {
                 char buff[32];
