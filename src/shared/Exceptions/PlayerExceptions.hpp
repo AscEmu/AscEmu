@@ -7,14 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Exceptions.hpp"
 
-namespace AscEmu
+namespace AscEmu::Exception
 {
-    namespace Exception
+    class PlayerNotFoundException : public AscemuException
     {
-        class PlayerNotFoundException : public AscemuException
-        {
-        public:
-            explicit PlayerNotFoundException() : AscemuException("Player not found") { }
-        };
-    }
+    public:
+        explicit PlayerNotFoundException() : AscemuException("Player not found") { }
+    };
 }

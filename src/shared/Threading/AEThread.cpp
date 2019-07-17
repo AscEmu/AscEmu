@@ -16,7 +16,7 @@ using std::chrono::steady_clock;
 using std::chrono::milliseconds;
 using std::this_thread::sleep_for;
 
-namespace AscEmu { namespace Threading
+namespace AscEmu::Threading
 {
     atomic<unsigned int> AEThread::s_thread_id_counter(0);
 
@@ -136,4 +136,4 @@ namespace AscEmu { namespace Threading
         requestKill();
         join();
     }
-}}
+}

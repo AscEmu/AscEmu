@@ -23,14 +23,16 @@
 #ifndef ARCEMU_SYSINFO_HPP
 #define ARCEMU_SYSINFO_HPP
 
-namespace Arcemu{
+namespace Arcemu
+{
     ////////////////////////////////////////////////////////
     //class SysInfo
     //  Class with static methods capable of retrieving
     //  some basic system information
     //
     ///////////////////////////////////////////////////////
-    class SysInfo{
+    class SysInfo
+    {
     public:
         ////////////////////////////////////////////////////////////////////
         //static int GetCPUCount()
