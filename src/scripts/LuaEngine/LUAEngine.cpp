@@ -79,7 +79,7 @@ void LuaEngine::ScriptLoadDir(std::string Dirname, LUALoadScripts* pak)
 {
     DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname.c_str());
 
-    auto luaScripts = Util::getDirectoryContentWithPath(Dirname, ".lua");
+    auto luaScripts = Util::getDirectoryContent(Dirname, ".lua", true);
     for (auto& luaScript : luaScripts)
     {
         std::string fileName = luaScript.second;
