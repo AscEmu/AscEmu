@@ -8,13 +8,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 initialiseSingleton(AccountMgr);
 
-AccountMgr::AccountMgr()
+AccountMgr::AccountMgr(uint32_t reloadTime) : m_reloadThread(nullptr), m_reloadTime(reloadTime)
 {
     LogNotice("AccountMgr : Started precaching accounts...");
 
     reloadAccounts(true);
 
     LogDetail("AccountMgr : loaded %u accounts.", static_cast<uint32_t>(getCount()));
+
+    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& thread) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
+}
+
+AccountMgr::~AccountMgr()
+{
+    LogNotice("AccountMgr : Stop Manager...");
+
+    m_reloadThread->killAndJoin();
 }
 
 void AccountMgr::addAccount(Field* field)
@@ -198,11 +207,6 @@ void AccountMgr::reloadAccounts(bool silent)
         LogDefault("[AccountMgr] Found %u accounts.", _accountMap.size());
 
     accountMgrMutex.Release();
-}
-
-void AccountMgr::reloadAccountsCallback()
-{
-    reloadAccounts(true);
 }
 
 size_t AccountMgr::getCount() const

@@ -71,23 +71,12 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     }
 
     new IpBanMgr;
-    new AccountMgr;
+
+    new AccountMgr(logonConfig.rates.accountRefreshTime); //time in seconds
 
     new PatchMgr;
     
-
-    new RealmsMgr;
-    
-
-    // Spawn periodic function caller thread for account reload every 10mins
-    const uint32 accountReloadPeriod = logonConfig.rates.accountRefreshTime * 1000;
-
-    auto periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::reloadAccountsCallback, accountReloadPeriod);
-    ThreadPool.ExecuteTask(periodicReloadAccounts);
-
-    // periodic ping check for realm status
-    const auto checkRealmStatusFromPing = new PeriodicFunctionCaller<RealmsMgr>(RealmsMgr::getSingletonPtr(), &RealmsMgr::checkRealmStatus, 60000);
-    ThreadPool.ExecuteTask(checkRealmStatusFromPing);
+    new RealmsMgr(300); //time in seconds
 
     // Load conf settings..
     clientMinBuild = 5875;
@@ -150,9 +139,6 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         LOG_ERROR("Error creating sockets. Shutting down...");
     }
 
-    periodicReloadAccounts->kill();
-    checkRealmStatusFromPing->kill();
-
     realmlistSocket->Close();
     logonServerSocket->Close();
     sSocketMgr.CloseAll();
@@ -161,6 +147,8 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 #endif
     sLogonConsole.Kill();
     delete LogonConsole::getSingletonPtr();
+    delete AccountMgr::getSingletonPtr();
+    delete RealmsMgr::getSingletonPtr();
 
     // kill db
     LogDefault("Waiting for database to close..");
@@ -176,12 +164,11 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     else
         LOG_DEBUG("File logonserver.pid successfully deleted");
 
-    delete AccountMgr::getSingletonPtr();
     delete PatchMgr::getSingletonPtr();
     delete IpBanMgr::getSingletonPtr();
     delete SocketMgr::getSingletonPtr();
     delete SocketGarbageCollector::getSingletonPtr();
-    delete periodicReloadAccounts;
+    //delete periodicReloadAccounts;
     delete realmlistSocket;
     delete logonServerSocket;
     LOG_BASIC("Shutdown complete.");

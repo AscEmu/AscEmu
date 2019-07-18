@@ -67,7 +67,8 @@ class AccountMgr : public Singleton <AccountMgr>
 {
 public:
 
-    AccountMgr();
+    AccountMgr(uint32_t reloadTime);
+    ~AccountMgr();
 
     void addAccount(Field* field);
 
@@ -75,7 +76,6 @@ public:
 
     void updateAccount(std::shared_ptr<Account> account, Field* field);
     void reloadAccounts(bool silent);
-    void reloadAccountsCallback();
 
     size_t getCount() const;
 
@@ -86,6 +86,9 @@ private:
     std::shared_ptr<Account> _getAccountByNameLockFree(std::string& Name);
 
     std::map<std::string, std::shared_ptr<Account>> _accountMap;
+
+    std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
+    uint32_t m_reloadTime;
 
 protected:
 

@@ -19,6 +19,7 @@
 
 #ifndef _AUTOPATCHER_H
 #define _AUTOPATCHER_H
+#include "AuthSocket.h"
 
 struct Patch
 {

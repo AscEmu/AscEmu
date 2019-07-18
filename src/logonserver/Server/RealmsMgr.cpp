@@ -11,13 +11,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 initialiseSingleton(RealmsMgr);
 
-RealmsMgr::RealmsMgr()
+RealmsMgr::RealmsMgr(uint32_t checkTime) : m_checkTime(checkTime), m_checkThread(nullptr)
 {
     LogNotice("RealmsMgr : Starting...");
     usePings = !logonConfig.logonServer.disablePings;
 
     LoadRealms();
     LogDetail("RealmsMgr : Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
+
+    m_checkThread = std::make_unique<AscEmu::Threading::AEThread>("CheckRealmStatus", [this](AscEmu::Threading::AEThread& thread) { this->checkRealmStatus(false); }, std::chrono::seconds(m_checkTime));
+}
+
+RealmsMgr::~RealmsMgr()
+{
+    LogNotice("RealmsMgr : Stop Manager...");
+
+    m_checkThread->killAndJoin();
 }
 
 void RealmsMgr::LoadRealms()
@@ -89,8 +98,11 @@ void RealmsMgr::setLastPing(uint8_t realm_id)
     }
 }
 
-void RealmsMgr::checkRealmStatus()
+void RealmsMgr::checkRealmStatus(bool silent)
 {
+    if (!silent)
+        LogDefault("[RealmsMgr] Checking Realm stats...");
+
     for (auto& realm : _realmStore)
     {
         // if there was no ping in the last 2 minutes (in miliseconds) we set the status to the realm to offline.

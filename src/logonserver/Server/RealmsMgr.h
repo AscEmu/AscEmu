@@ -40,9 +40,13 @@ class RealmsMgr : public Singleton<RealmsMgr>
 
     bool usePings;
 
+    std::unique_ptr<AscEmu::Threading::AEThread> m_checkThread;
+    uint32_t m_checkTime;
+
 public:
 
-    RealmsMgr();
+    RealmsMgr(uint32_t checkTime);
+    ~RealmsMgr();
 
     void LoadRealms();
     std::vector<std::shared_ptr<Realms>> _realmStore;
@@ -53,7 +57,7 @@ public:
 
     void setLastPing(uint8_t realm_id);
 
-    void checkRealmStatus();
+    void checkRealmStatus(bool silent);
 
     void sendRealms(AuthSocket* Socket);
 
