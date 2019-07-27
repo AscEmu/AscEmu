@@ -297,6 +297,17 @@ void GameEventMgr::LoadFromDB()
     StartArenaEvents();
 }
 
+GameEventMgr::GameEventMgrThread::GameEventMgrThread()
+{
+    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& thread) { this->Update(); }, std::chrono::seconds(1));
+}
+
+GameEventMgr::GameEventMgrThread::~GameEventMgrThread()
+{
+    LogNotice("GameEventMgrThread : Stop Manager...");
+    m_reloadThread->killAndJoin();
+}
+
 void GameEventMgr::GameEventMgrThread::Update()
 {
     //LogNotice("GameEventMgr : Tick!");
@@ -331,103 +342,4 @@ void GameEventMgr::GameEventMgrThread::Update()
             gameEvent->StopEvent();
         }
     }
-}
-
-void GameEventMgr::GameEventMgrThread::onShutdown()
-{
-    LogNotice("GameEventMgr : Shutdown!");
-    ThreadState = THREADSTATE_TERMINATE;
-}
-
-void GameEventMgr::GameEventMgrThread::CleanupEntities()
-{
-    // DO NOT USE THIS FUNCTION UNLESS YOU KNOW WHAT YOU ARE DOING
-    ARCEMU_ASSERT(FALSE);
-    LogNotice("GameEventMgr : Cleaning up entity remnants");
-    // Better solution: don't have creatures save here in the first place
-    for (auto gameEventPair : sGameEventMgr.mGameEvents)
-    {
-        auto gameEvent = gameEventPair.second;
-        for (auto npc : gameEvent->npc_data)
-        {
-            const char* cleanCreaturesQuery = "DELETE FROM creature_spawns WHERE entry=%u";
-            WorldDatabase.Execute(cleanCreaturesQuery, npc.entry);
-        }
-        for (auto gameobject : gameEvent->gameobject_data)
-        {
-            const char* cleanGameObjectsQuery = "DELETE FROM gameobject_spawns WHERE entry=%u";
-            WorldDatabase.Execute(cleanGameObjectsQuery, gameobject.entry);
-        }
-    }
-    LogDetail("GameEventMgr : Entity remnants cleaned up, starting main thread");
-}
-
-void GameEventMgr::GameEventMgrThread::SpawnActiveEvents()
-{
-    for (auto gameEventPair : sGameEventMgr.mGameEvents)
-    {
-        if (gameEventPair.second->GetState() == GAMEEVENT_ACTIVE || gameEventPair.second->GetState() == GAMEEVENT_ACTIVE_FORCED)
-        {
-            gameEventPair.second->SpawnAllEntities();
-        }
-    }
-}
-
-bool GameEventMgr::GameEventMgrThread::runThread()
-{
-    LogNotice("GameEventMgr : Started.");
-
-    // Do NOT uncomment this unless you know what you're doing, debug code
-    //CleanupEntities();
-
-    SpawnActiveEvents();
-
-    THREAD_TRY_EXECUTION
-
-    while (GetThreadState() != THREADSTATE_TERMINATE)
-    {
-        while (GetThreadState() == THREADSTATE_PAUSED)
-        {
-            m_IsActive = false;
-            Arcemu::Sleep(200);
-        }
-
-        m_IsActive = true;
-
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-            break;
-
-        ThreadState = THREADSTATE_BUSY;
-        Update();
-
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-            break;
-
-        ThreadState = THREADSTATE_SLEEPING;
-        Arcemu::Sleep(1 * 1000); // 1 second
-    }
-
-    THREAD_HANDLE_CRASH
-        return true;
-}
-
-bool GameEventMgr::GameEventMgrThread::Pause(int timeout /*= 1500*/)
-{
-    sGameEventMgrThread.SetThreadState(THREADSTATE_PAUSED);
-
-    for (auto i = 0; i < timeout / 100; ++i)
-    {
-        Arcemu::Sleep(100);
-        if (!sGameEventMgrThread.m_IsActive)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void GameEventMgr::GameEventMgrThread::Resume()
-{
-    sGameEventMgrThread.SetThreadState(THREADSTATE_SLEEPING);
 }

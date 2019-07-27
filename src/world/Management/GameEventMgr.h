@@ -1,23 +1,11 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
 */
+
 #pragma once
 
-#include "CThreads.h"
+#include "Threading/AEThread.h"
 #include <set>
 #include <map>
 #include <ctime>
@@ -26,8 +14,6 @@
 #include <string>
 
 class GameEvent;
-
-#define max_ge_check_delay TIME_DAY  // 1 day in seconds
 
 enum GameEventState
 {
@@ -206,18 +192,19 @@ class GameEventMgr : public Singleton < GameEventMgr >
 {
     public:
 
-        class GameEventMgrThread : public CThread, public Singleton < GameEventMgrThread >
+        class GameEventMgrThread : public Singleton < GameEventMgrThread >
         {
             public:
 
                 bool m_IsActive = false;
-                bool Pause(int timeout = 1500);
-                void Resume();
-                bool runThread();
-                void onShutdown();
+
                 void Update();
-                void CleanupEntities();
-                void SpawnActiveEvents();
+
+                std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
+                uint32_t m_reloadTime;
+
+                GameEventMgrThread();
+                ~GameEventMgrThread();
         };
 
         GameEventMgr();

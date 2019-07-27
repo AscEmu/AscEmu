@@ -111,9 +111,6 @@ bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession*
 {
     SystemMessage(m_session, "Beginning reload of all game events");
     auto start = time(0);
-    // Wait for GameEventMgr thread to stop
-    if (!sGameEventMgrThread.Pause())
-        return false;
 
     // Stop all events, then clear storage
     for (auto eventPair : sGameEventMgr.mGameEvents)
@@ -128,9 +125,6 @@ bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession*
 
     // Reload events from DB
     sGameEventMgr.LoadFromDB();
-
-    // Restart GameEventMgr thread
-    sGameEventMgrThread.Resume();
 
     SystemMessage(m_session, "Reloaded all game events in %u ms", time(0)-start);
     return true;

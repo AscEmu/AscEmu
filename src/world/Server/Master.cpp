@@ -262,7 +262,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     LogDetail("Server : Ready for connections. Startup time: %u ms", Util::GetTimeDifferenceToNow(startTime));
 
-    ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
+    new GameEventMgr::GameEventMgrThread;
 
     StartRemoteConsole();
 
