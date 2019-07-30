@@ -109,7 +109,9 @@ private:
     SpellAreaMap mSpellAreaMap;
     SpellAreaForAreaMap mSpellAreaForAreaMap;
     SpellAreaForAuraMap mSpellAreaForAuraMap;
+public:
     SpellAreaForQuestMap mSpellAreaForQuestMap;
+private:
     SpellAreaForQuestMap mSpellAreaForActiveQuestMap;
     SpellAreaForQuestMap mSpellAreaForQuestEndMap;
 
