@@ -1865,7 +1865,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         uint32 status = sQuestMgr.CalcStatus(qst_giver, plr);
 
-        if ((status == QuestStatus::AvailableChat) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
+        if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
             sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);		// 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
