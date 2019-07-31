@@ -52,7 +52,7 @@
 #define __USE_ISOC9X1
 #define __USE_ISOC991
 
-#include <math.h>
+#include <cmath>
 
 #include "G3D/debug.h"
 
