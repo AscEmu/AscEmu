@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEThread.h"
 
-namespace AscEmu { namespace Threading
+namespace AscEmu::Threading
 {
     class AEThreadPool
     {
@@ -77,4 +77,4 @@ namespace AscEmu { namespace Threading
     private:
 #pragma endregion
     };
-}}
+}

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Guild/GuildDefinitions.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgPetitionShowSignatures : public ManagedPacket
     {
@@ -60,4 +60,4 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
-}}
+}

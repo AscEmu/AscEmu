@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-namespace AscEmu { namespace Threading
+namespace AscEmu::Threading
 {
     enum class ThreadState
     {
@@ -15,4 +15,4 @@ namespace AscEmu { namespace Threading
         Busy,
         Awaiting
     };
-}}
+}

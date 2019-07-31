@@ -3691,8 +3691,8 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attack
 
     if (sp != nullptr)
     {
-        ascemu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->getSpellFamilyFlags());
-        ascemu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->getSpellFamilyFlags());
+        AscEmu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->getSpellFamilyFlags());
+        AscEmu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->getSpellFamilyFlags());
     }
 
     if (Attacker->getClass() == ROGUE)

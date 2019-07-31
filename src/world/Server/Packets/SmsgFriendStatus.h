@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/PlayerDefines.hpp"
 
 //\todo send friend note based on status.
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgFriendStatus : public ManagedPacket
     {
@@ -61,4 +61,4 @@ namespace AscEmu { namespace Packets
             return false;
         }
     };
-}}
+}

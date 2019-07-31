@@ -18,7 +18,7 @@ struct PlayerStablePetList
     std::string name;
 };
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class MsgListStabledPets : public ManagedPacket
     {
@@ -59,4 +59,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 
 //\brief: this packet is not correct!
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgPetSetAction : public ManagedPacket
     {
@@ -47,4 +47,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

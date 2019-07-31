@@ -16,7 +16,7 @@ struct QuestgiverInrangeStatus
     uint8_t status;
 };
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgQuestgiverStatusMultiple : public ManagedPacket
     {
@@ -50,4 +50,4 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
-}}
+}

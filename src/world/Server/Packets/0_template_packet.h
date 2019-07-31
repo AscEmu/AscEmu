@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class PACKET_NAME_REPLACE_ME : public ManagedPacket
     {
@@ -43,4 +43,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

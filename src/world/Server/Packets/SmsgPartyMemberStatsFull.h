@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Units/Creatures/Pet.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class SmsgPartyMemberStatsFull : public ManagedPacket
     {
@@ -110,4 +110,4 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
-}}
+}

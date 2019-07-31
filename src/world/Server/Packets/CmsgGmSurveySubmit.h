@@ -17,7 +17,7 @@ struct GmSubServey
     std::string comment;
 };
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgGmSurveySubmit : public ManagedPacket
     {
@@ -59,4 +59,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

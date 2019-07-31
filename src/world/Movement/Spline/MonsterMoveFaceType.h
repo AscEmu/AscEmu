@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 #include "MovementSplineDefines.hpp"
 
-namespace Movement { namespace Spline {
+namespace Movement::Spline
+{
     /* NOT ALL DATA FIELDS IN THIS STRUCT ARE FILLED 
      * 
      * Read the MoveFlag to calculate which fields are filled */
@@ -60,4 +61,4 @@ namespace Movement { namespace Spline {
         /* MonsterMoveFacingAngle */
         float TargetAngle;
     };
-}}
+}

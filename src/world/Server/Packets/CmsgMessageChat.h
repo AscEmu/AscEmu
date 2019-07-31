@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Chat/ChatDefines.hpp"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgMessageChat : public ManagedPacket
     {
@@ -95,4 +95,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

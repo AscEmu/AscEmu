@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <functional>
 
 // Lightweight wrapper for std::thread to provide extensibility
-namespace AscEmu { namespace Threading
+namespace AscEmu::Threading
 {
     class AEThread
     {
@@ -56,4 +56,4 @@ namespace AscEmu { namespace Threading
         void setWork(ThreadFunc work);
         bool isWorking() const;
     };
-}}
+}

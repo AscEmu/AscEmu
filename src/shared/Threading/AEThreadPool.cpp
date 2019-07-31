@@ -16,7 +16,7 @@ using std::string;
 using std::unique_ptr;
 
 
-namespace AscEmu { namespace Threading
+namespace AscEmu::Threading
 {
     unique_ptr<AEThreadPool> AEThreadPool::s_global_thread_pool;
 
@@ -213,4 +213,4 @@ namespace AscEmu { namespace Threading
                                               [this](AEThread& thread) { this->pulse(thread); }, m_pulseFrequency,
                                               true);
     }
-}}
+}

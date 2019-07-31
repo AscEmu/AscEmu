@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/MovementInfo.h"
 #endif
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgChangeSeatsOnControlledVehicle : public ManagedPacket
     {
@@ -74,4 +74,4 @@ namespace AscEmu { namespace Packets
         }
 #endif
     };
-}}
+}

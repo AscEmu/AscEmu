@@ -6,7 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/Spline/MovementSpline.hpp"
 
-namespace Movement {
+namespace Movement
+{
     class UnitMovementManager
     {
     protected:

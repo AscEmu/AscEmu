@@ -11,8 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "G3D/Vector3.h"
 #include "MonsterMoveFaceType.h"
 
-namespace Movement { namespace Spline {
-    //Assume previous point can be reached through linked list or current creature position.
+namespace Movement::Spline
+{
+    // Assume previous point can be reached through linked list or current creature position.
     struct SplinePoint
     {
         G3D::Vector3 pos;
@@ -69,4 +70,4 @@ namespace Movement { namespace Spline {
         MoveSpline();
         MoveSpline(uint32_t pInitialFlags);
     };
-}}
+}

@@ -16,7 +16,7 @@ struct MultipleTalents
     uint32_t talentRank;
 };
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgLearnTalentMultiple : public ManagedPacket
     {
@@ -58,4 +58,4 @@ namespace AscEmu { namespace Packets
         }
 #endif
     };
-}}
+}

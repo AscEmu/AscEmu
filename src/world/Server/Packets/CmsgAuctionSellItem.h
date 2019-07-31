@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Management/AuctionHouse.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgAuctionSellItem : public ManagedPacket
     {
@@ -64,4 +64,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

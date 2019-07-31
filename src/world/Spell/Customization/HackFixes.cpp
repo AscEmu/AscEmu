@@ -38,7 +38,7 @@
 #include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 
-using ascemu::World::Spell::Helpers::decimalToMask;
+using AscEmu::World::Spell::Helpers::decimalToMask;
 
 void SpellMgr::createDummySpell(uint32_t id)
 {

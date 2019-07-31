@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgGmReportLag : public ManagedPacket
     {
@@ -46,4 +46,4 @@ namespace AscEmu { namespace Packets
         }
 #endif
     };
-}}
+}

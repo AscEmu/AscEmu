@@ -19,7 +19,7 @@ struct ArenaTeamsList
     uint32_t playedSeason;
 };
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class MsgInspectArenaTeams : public ManagedPacket
     {
@@ -57,4 +57,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Guild.h"
 
-namespace AscEmu { namespace Packets
+namespace AscEmu::Packets
 {
     class CmsgGuildSetRank : public ManagedPacket
     {
@@ -73,4 +73,4 @@ namespace AscEmu { namespace Packets
             return true;
         }
     };
-}}
+}
