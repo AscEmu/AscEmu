@@ -24,7 +24,7 @@ namespace AscEmu { namespace Packets
         }
 
         MsgMoveTeleportAck(uint32_t flags, uint32_t time) :
-            ManagedPacket(MSG_MOVE_TELEPORT_ACK, 4 + 4 + 8),
+            ManagedPacket(MSG_MOVE_TELEPORT_ACK, 8),
             flags(flags),
             time(time)
         {
@@ -39,7 +39,7 @@ namespace AscEmu { namespace Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
 #if VERSION_STRING < Cata
-            packet >> guid >> flags >> time;
+            packet >> guid;
 #else
             packet >> flags >> time;
 
