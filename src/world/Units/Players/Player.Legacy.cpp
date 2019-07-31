@@ -13586,6 +13586,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
     data2.append(GetNewGUID());
     BuildMovementPacket(&data2, x, y, z, o);
     SendMessageToSet(&data2, false);
+    SetPosition({ x, y, z, o });
 #else
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     LocationVector pos = LocationVector(x, y, z, o);
