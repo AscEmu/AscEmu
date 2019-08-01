@@ -94,13 +94,13 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
         auto requireCombat = true;
         if (u_caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
         {
-            for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+            for (auto& aura : u_caster->m_auras)
             {
-                if (u_caster->m_auras[i] == nullptr)
+                if (aura == nullptr)
                     continue;
-                if (!u_caster->m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+                if (!aura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                     continue;
-                if (u_caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
+                if (aura->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
                 {
                     // Warrior's Overpower uses "combo points" based on dbc data
                     // This allows usage of Overpower if we have an affecting aura (i.e. Taste for Blood)
@@ -108,7 +108,7 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
 
                     // All these aura effects use effect index 0
                     // Allow Warrior's Charge to be casted on combat if caster has Juggernaut or Warbringer talent
-                    if (u_caster->m_auras[i]->GetSpellInfo()->getEffectMiscValue(0) == 1)
+                    if (aura->GetSpellInfo()->getEffectMiscValue(0) == 1)
                     {
                         // TODO: currently not working, serverside everything was OK but client still gives "You are in combat" error
                         requireCombat = false;
@@ -150,15 +150,15 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
             {
                 // Shapeshift check
                 auto hasIgnoreShapeshiftAura = false;
-                for (auto u = MAX_TOTAL_AURAS_START; u < MAX_TOTAL_AURAS_END; ++u)
+                for (auto& aura : u_caster->m_auras)
                 {
-                    if (u_caster->m_auras[u] == nullptr)
+                    if (aura == nullptr)
                         continue;
                     // If aura has ignore shapeshift type, you can use spells regardless of stance / form
                     // Auras with this type: Shadow Dance, Metamorphosis, Warbringer (in 3.3.5a)
-                    if (!u_caster->m_auras[u]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
+                    if (!aura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
                         continue;
-                    if (u_caster->m_auras[u]->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
+                    if (aura->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
                     {
                         hasIgnoreShapeshiftAura = true;
                         break;
@@ -426,16 +426,16 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
             auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
             while (areaGroup != nullptr)
             {
-                for (auto i = 0; i < 6; ++i)
+                for (unsigned int i : areaGroup->AreaId)
                 {
-                    if (areaGroup->AreaId[i] == areaEntry->id || (areaEntry->zone != 0 && areaGroup->AreaId[i] == areaEntry->zone))
+                    if (i == areaEntry->id || (areaEntry->zone != 0 && i == areaEntry->zone))
                     {
                         found = true;
                         *parameter1 = 0;
                         break;
                     }
-                    else if (areaGroup->AreaId[i] != 0)
-                        *parameter1 = areaGroup->AreaId[i];
+                    else if (i != 0)
+                        *parameter1 = i;
                 }
 
                 if (found || areaGroup->next_group == 0)
@@ -679,7 +679,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             case ITEM_CLASS_ARMOR:
             {
                 // Check first if spell requires a shield equipped
-                Item* inventoryItem = nullptr;
+                Item* inventoryItem;
                 if (getSpellInfo()->getEquippedItemSubClass() & (1 << ITEM_SUBCLASS_ARMOR_SHIELD))
                 {
                     inventoryItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
@@ -950,11 +950,11 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
                 auto hasOnUseEffect = false;
                 const auto itemProperties = targetItem->getItemProperties();
-                for (uint8_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+                for (const auto& spell : itemProperties->Spells)
                 {
-                    if (itemProperties->Spells[x].Id == 0)
+                    if (spell.Id == 0)
                         continue;
-                    if (itemProperties->Spells[x].Trigger == USE || itemProperties->Spells[x].Trigger == APPLY_AURA_ON_PICKUP)
+                    if (spell.Trigger == USE || spell.Trigger == APPLY_AURA_ON_PICKUP)
                     {
                         hasOnUseEffect = true;
                         break;
@@ -969,9 +969,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 }
 
                 // Loop through enchantment's types
-                for (uint8_t x = 0; x < 3; ++x)
+                for (unsigned int type : enchantEntry->type)
                 {
-                    switch (enchantEntry->type[x])
+                    switch (type)
                     {
                         // todo: declare these in a header file and figure out other values
                         case 7: // Enchants 'on use' enchantment to item
@@ -1305,11 +1305,11 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
 #elif VERSION_STRING >= WotLK
                 // Send the first area id from areagroup to player
                 auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
-                for (auto i = 0; i < 6; ++i)
+                for (unsigned int areaId : areaGroup->AreaId)
                 {
-                    if (areaGroup->AreaId[i] != 0)
+                    if (areaId != 0)
                     {
-                        parameter1 = areaGroup->AreaId[i];
+                        parameter1 = areaId;
                         break;
                     }
                 }
@@ -1384,7 +1384,7 @@ bool Spell::canAttackCreatureType(Creature* target) const
 
     const auto typeMask = getSpellInfo()->getTargetCreatureType();
     const auto mask = 1 << (target->GetCreatureProperties()->Type - 1);
-    return (target->GetCreatureProperties()->Type != 0 && typeMask != 0 && (typeMask & mask) == 0) ? false : true;
+    return !(target->GetCreatureProperties()->Type != 0 && typeMask != 0 && (typeMask & mask) == 0);
 }
 
 SpellInfo const* Spell::getSpellInfo() const
