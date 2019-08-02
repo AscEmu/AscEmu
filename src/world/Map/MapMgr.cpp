@@ -1265,7 +1265,6 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
 
 bool MapMgr::runThread()
 {
-    LogNotice("MapMgr : runThread....");
     bool rv = true;
 
     THREAD_TRY_EXECUTION
@@ -1277,7 +1276,6 @@ bool MapMgr::runThread()
 
 bool MapMgr::Do()
 {
-    LogNotice("MapMgr : Tick!");
 #ifdef WIN32
     threadid = GetCurrentThreadId();
 #endif
