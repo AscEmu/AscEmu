@@ -10,12 +10,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 
+
 namespace AscEmu::Packets
 {
     class CmsgBattlemasterJoin : public ManagedPacket
     {
     public:
+#if VERSION_STRING < Cata
+        uint64_t guid;
+#else
         ObjectGuid guid;
+#endif
         uint32_t bgType;
         uint32_t instanceId;
         uint8_t asGroup;
