@@ -29,6 +29,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaError.h"
+#include "Server/Packets/CmsgBattlemasterJoin.h"
 
 using namespace AscEmu::Packets;
 
@@ -70,8 +71,7 @@ void CBattlegroundManager::RegisterBgFactory(uint32 map, BattlegroundFactoryMeth
 
 void CBattlegroundManager::RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
 {
-    std::vector< uint32 >::iterator itr =
-        std::find(arenaMaps.begin(), arenaMaps.end(), map);
+    std::vector< uint32 >::iterator itr = std::find(arenaMaps.begin(), arenaMaps.end(), map);
     if (itr != arenaMaps.end())
         return;
     arenaMaps.push_back(map);
@@ -89,6 +89,88 @@ void CBattlegroundManager::RegisterMapForBgType(uint32 type, uint32 map)
 
 void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session, uint32 BattlegroundType, uint8 from)
 {
+#if VERSION_STRING == Cata
+    //todo: correct packet 
+    WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
+
+    ObjectGuid guid;
+
+    // Send 0 instead of GUID when using the BG UI instead of Battlemaster
+    if (from == 0)
+        guid = m_session->GetPlayer()->getGuid();
+    else
+        guid = 0;
+
+    data << uint32_t(0);
+    data << uint32_t(0);
+    data << uint32_t(0);
+    data << uint32_t(BattlegroundType);
+    data << uint32_t(0);
+    data << uint32_t(0);
+    data << uint32_t(0);
+    data << uint8(0);                                      // unk
+    data << uint8(0);                                      // unk
+
+    // new
+
+    // Rewards
+    data << uint8(0);                                      // 3.3.3 hasWin
+    data << uint32(0);                                     // 3.3.3 winHonor
+    data << uint32(0);                                     // 3.3.3 winArena
+    data << uint32(0);                                     // 3.3.3 lossHonor
+
+    uint8 isRandom = BattlegroundType == BATTLEGROUND_RANDOM;
+    data << uint8(isRandom);                               // 3.3.3 isRandom
+
+    // Random bgs
+    if (isRandom == 1)
+    {
+        auto hasWonRbgToday = m_session->GetPlayer()->HasWonRbgToday();
+        uint32 honorPointsForWinning, honorPointsForLosing, arenaPointsForWinning, arenaPointsForLosing;
+
+        m_session->GetPlayer()->FillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
+        m_session->GetPlayer()->FillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
+
+        // rewards
+        data << uint8(hasWonRbgToday);
+        data << uint32(honorPointsForWinning);
+        data << uint32(arenaPointsForWinning);
+        data << uint32(honorPointsForLosing);
+    }
+
+    if (isArena(BattlegroundType))
+    {
+        data << uint32(0);
+        m_session->SendPacket(&data);
+        return;
+    }
+
+    if (BattlegroundType >= BATTLEGROUND_NUM_TYPES)     //VLack: Nasty hackers might try to abuse this packet to crash us...
+        return;
+
+    uint32 Count = 0;
+    size_t pos = data.wpos();
+
+    data << uint32(0);      // Count
+
+    // Append the battlegrounds
+    m_instanceLock.Acquire();
+    for (std::map<uint32, CBattleground*>::iterator itr = m_instances[BattlegroundType].begin(); itr != m_instances[BattlegroundType].end(); ++itr)
+    {
+        if (itr->second->CanPlayerJoin(m_session->GetPlayer(), BattlegroundType) && !itr->second->HasEnded())
+        {
+            data << uint32(itr->first);
+            ++Count;
+        }
+    }
+    m_instanceLock.Release();
+
+    data.put< uint32 >(pos, Count);
+
+    m_session->SendPacket(&data);
+
+#endif
+#if VERSION_STRING == WotLK
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
@@ -157,45 +239,37 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data.put< uint32 >(pos, Count);
 
     m_session->SendPacket(&data);
+#endif
 }
 
 void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, WorldPacket& pck)
 {
     Player* plr = m_session->GetPlayer();
-    uint64 guid;
     uint32 pguid = plr->getGuidLow();
     uint32 lgroup = GetLevelGrouping(plr->getLevel());
-    uint32 bgtype;
-    uint32 instance;
 
-    pck >> guid;
-    pck >> bgtype;
-    pck >> instance;
+    CmsgBattlemasterJoin srlPacket;
+    if (!srlPacket.deserialise(pck))
+        return;
 
-    if (bgtype == BATTLEGROUND_RANDOM)
-    {
+    if (srlPacket.bgType == BATTLEGROUND_RANDOM)
         plr->SetQueuedForRbg(true);
-    }
     else
-    {
         plr->SetQueuedForRbg(false);
-    }
 
-    if ((bgtype >= BATTLEGROUND_NUM_TYPES) || (bgtype == 0) || ((bgMaps.find(bgtype) == bgMaps.end()) && bgtype != BATTLEGROUND_RANDOM))
+    if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 || bgMaps.find(srlPacket.bgType) == bgMaps.end() && srlPacket.bgType != BATTLEGROUND_RANDOM)
     {
         sCheatLog.writefromsession(m_session, "tried to crash the server by joining battleground that does not exist (0)");
         m_session->Disconnect();
-        return;      // cheater!
+        return;
     }
 
-    // Check the instance id
-    if (instance)
+    if (srlPacket.instanceId)
     {
         // We haven't picked the first instance. This means we've specified an instance to join
         m_instanceLock.Acquire();
-        std::map<uint32, CBattleground*>::iterator itr = m_instances[bgtype].find(instance);
-
-        if (itr == m_instances[bgtype].end())
+        const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
+        if (itr == m_instances[srlPacket.bgType].end())
         {
             sChatHandler.SystemMessage(m_session, m_session->LocalizedWorldSrv(51));
             m_instanceLock.Release();
@@ -207,12 +281,12 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
 
     // Queue him!
     m_queueLock.Acquire();
-    m_queuedPlayers[bgtype][lgroup].push_back(pguid);
-    LogNotice("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->getGuidLow(), (instance + 1));
+    m_queuedPlayers[srlPacket.bgType][lgroup].push_back(pguid);
+    LogNotice("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->getGuidLow(), (srlPacket.instanceId + 1));
 
     plr->m_bgIsQueued = true;
-    plr->m_bgQueueInstanceId = instance;
-    plr->m_bgQueueType = bgtype;
+    plr->m_bgQueueInstanceId = srlPacket.instanceId;
+    plr->m_bgQueueType = srlPacket.bgType;
 
     // Set battleground entry point
     plr->m_bgEntryPointX = plr->GetPositionX();
@@ -221,7 +295,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     plr->m_bgEntryPointMap = plr->GetMapId();
     plr->m_bgEntryPointInstance = plr->GetInstanceID();
 
-    SendBattlefieldStatus(plr, BGSTATUS_INQUEUE, bgtype, instance, 0, bgMaps[bgtype], 0);
+    SendBattlefieldStatus(plr, BGSTATUS_INQUEUE, srlPacket.bgType, srlPacket.instanceId, 0, bgMaps[srlPacket.bgType], 0);
 
     m_queueLock.Release();
 }

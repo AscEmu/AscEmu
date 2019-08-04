@@ -36,6 +36,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgBattlefieldList.h
    ${PATH_PREFIX}/CmsgBattlefieldPort.h
    ${PATH_PREFIX}/CmsgBattlemasterHello.h
+   ${PATH_PREFIX}/CmsgBattlemasterJoin.h
    ${PATH_PREFIX}/CmsgBattlemasterJoinArena.h
    ${PATH_PREFIX}/CmsgBinderActivate.h
    ${PATH_PREFIX}/CmsgBug.h

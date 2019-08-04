@@ -421,6 +421,18 @@ public:
             return _wpos;
         }
 
+        size_t bitwpos() const
+        {
+            return _wpos * 8 + 8 - _bitpos;
+        }
+
+        size_t bitwpos(size_t newPos)
+        {
+            _wpos = newPos / 8;
+            _bitpos = 8 - (newPos % 8);
+            return _wpos * 8 + 8 - _bitpos;
+        }
+
         template <typename T> T read()
         {
             T r = read<T>(_rpos);
@@ -570,6 +582,19 @@ public:
         {
             assert(pos + cnt <= size());
             memcpy(&_storage[pos], src, cnt);
+        }
+
+        template <typename T> void PutBits(size_t pos, T value, uint32 bitCount)
+        {
+            for (uint32 i = 0; i < bitCount; ++i)
+            {
+                size_t wp = (pos + i) / 8;
+                size_t bit = (pos + i) % 8;
+                if ((value >> (bitCount - i - 1)) & 1)
+                    _storage[wp] |= 1 << (7 - bit);
+                else
+                    _storage[wp] &= ~(1 << (7 - bit));
+            }
         }
 
         void hexlike()
