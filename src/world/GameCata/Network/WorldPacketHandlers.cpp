@@ -599,11 +599,12 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].handler = &WorldSession::handleCalendarEventModeratorStatus;
     //WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].status = STATUS_LOGGEDIN;
 
-    //Misc - Unhandled
+    //Misc - wanted to be unhandled
     WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_PET_LEVEL_CHEAT].handler = &WorldSession::Unhandled;
+    WorldPacketHandlers[CMSG_QUERY_BATTLEFIELD_STATE].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 
     WorldPacketHandlers[CMSG_ADDON_REGISTERED_PREFIXES].handler = &WorldSession::handleAddonRegisteredPrefixesOpcode;
