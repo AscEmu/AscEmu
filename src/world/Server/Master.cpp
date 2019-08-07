@@ -116,6 +116,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 
 void createExtendedLogDir()
 {
+    Util::BenchmarkTime benchmark;
     std::string logDir = worldConfig.log.extendedLogsDir;
 
     if (!logDir.empty())

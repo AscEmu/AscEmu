@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.hpp"
 #include <chrono>
 #include <iomanip>
+#include <iostream>
 
 
 namespace Util
@@ -161,6 +162,38 @@ namespace Util
     uint32_t readMajorVersionFromString(std::string fileName);
 
     uint32_t readMinorVersionFromString(std::string fileName);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Benchmark
+    class BenchmarkTime
+    {
+    public:
+        BenchmarkTime()
+        {
+            m_startTime = std::chrono::high_resolution_clock::now();
+        }
+
+        ~BenchmarkTime()
+        {
+            Stop();
+        }
+
+        void Stop()
+        {
+            auto endTime = std::chrono::high_resolution_clock::now();
+
+            auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startTime).time_since_epoch().count();
+            auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch().count();
+
+            auto duration = end - start;
+            double ms = duration * 0.001;
+
+            std::cout << "BenchmarkTime: " << duration << " microseconds (" << ms << "ms)\n";
+        }
+
+    private:
+        std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
+    };
 }
 
 struct SmallTimeTracker
