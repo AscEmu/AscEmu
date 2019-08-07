@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20190806-00_spell_required";
+static const char* REQUIRED_WORLD_DB_VERSION = "20190807-00_recall";
 
 void Master::_OnSignal(int s)
 {
