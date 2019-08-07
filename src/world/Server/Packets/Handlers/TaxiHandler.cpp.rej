@@ -1,0 +1,61 @@
+diff a/src/world/Server/Packets/Handlers/TaxiHandler.cpp b/src/world/Server/Packets/Handlers/TaxiHandler.cpp	(rejected hunks)
+@@ -26,7 +26,7 @@ void WorldSession::sendTaxiList(Creature* creature)
+     if (nearestNode == 0)
+         return;
+ 
+-    const uint8_t field = static_cast<uint8_t>((nearestNode - 1) / 32);
++    const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
+     const uint32_t subMask = 1 << ((nearestNode - 1) % 32);
+ 
+     if (!(_player->GetTaximask(field) & subMask) && !_player->m_cheats.TaxiCheat)
+@@ -117,13 +117,13 @@ uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
+ {
+     if (player->isTeamHorde())
+     {
+-        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->horde_mount);
++        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->hordeMount);
+         if (creatureProperties != nullptr)
+             return creatureProperties->Male_DisplayID;
+     }
+     else
+     {
+-        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->alliance_mount);
++        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->allianceMount);
+         if (creatureProperties != nullptr)
+             return creatureProperties->Male_DisplayID;
+     }
+@@ -151,7 +151,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
+         return;
+ 
+     const uint32_t currentNode = taxiNode->id;
+-    const uint8_t field = static_cast<uint8_t>((currentNode - 1) / 32);
++    const auto field = static_cast<uint8_t>((currentNode - 1) / 32);
+     const uint32_t subMask = 1 << ((currentNode - 1) % 32);
+ 
+     if ((_player->GetTaximask(field) & subMask) != subMask)
+@@ -166,7 +166,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
+         return;
+     }
+ 
+-    if (!_player->hasEnoughCoinage(taxiPath->GetPrice()))
++    if (!_player->hasEnoughCoinage(taxiPath->getPrice()))
+     {
+         SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
+         return;
+@@ -227,14 +227,14 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
+         return;
+     }
+ 
+-    uint32_t totalCost = taxiPath->GetPrice();
++    uint32_t totalCost = taxiPath->getPrice();
+     for (uint32_t i = 2; i < srlPacket.nodeCount; ++i)
+     {
+         const auto additionalTaxiPath = sTaxiMgr.GetTaxiPath(srlPacket.pathParts[i - 1], srlPacket.pathParts[i]);
+         if (additionalTaxiPath == nullptr)
+             return;
+ 
+-        totalCost += additionalTaxiPath->GetPrice();
++        totalCost += additionalTaxiPath->getPrice();
+     }
+ 
+     if (!_player->hasEnoughCoinage(totalCost))

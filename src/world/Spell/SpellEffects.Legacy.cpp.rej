@@ -1,0 +1,28 @@
+diff a/src/world/Spell/SpellEffects.Legacy.cpp b/src/world/Spell/SpellEffects.Legacy.cpp	(rejected hunks)
+@@ -5912,7 +5912,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
+     if (!taxipath)
+         return;
+ 
+-    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(taxipath->GetSourceNode());
++    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(taxipath->getSourceNode());
+ 
+     if (!taxinode)
+         return;
+@@ -5921,7 +5921,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
+ 
+     if (playerTarget->isTeamHorde())
+     {
+-        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
++        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->hordeMount);
+         if (!ci)
+             return;
+         modelid = ci->Male_DisplayID;
+@@ -5930,7 +5930,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
+     }
+     else
+     {
+-        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
++        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->allianceMount);
+         if (!ci)
+             return;
+         modelid = ci->Male_DisplayID;

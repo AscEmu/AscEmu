@@ -7357,7 +7357,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
     if (mapchangeid < 0)
     {
         TaxiPathNode* pn = path->GetPathNode((uint32)path->GetNodeCount() - 1);
-        sEventMgr.AddEvent(this, &Player::EventDismount, path->GetPrice(),
+        sEventMgr.AddEvent(this, &Player::EventDismount, path->getPrice(),
                            pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
@@ -7373,7 +7373,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     if (!pathnode)
         return;
 
-    modCoinage(-(int32)path->GetPrice());
+    modCoinage(-(int32)path->getPrice());
 
     SetTaxiState(false);
     SetTaxiPath(nullptr);
