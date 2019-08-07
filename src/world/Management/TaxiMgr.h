@@ -45,17 +45,17 @@ class Player;
 
 struct TaxiNode
 {
-    uint32 id;
+    uint32_t id;
     float x, y, z;
-    uint32 mapid;
-    uint32 horde_mount;
-    uint32 alliance_mount;
+    uint32_t mapid;
+    uint32_t hordeMount;
+    uint32_t allianceMount;
 };
 
 struct TaxiPathNode
 {
     float x, y, z;
-    uint32 mapid;
+    uint32_t mapid;
 };
 
 class TaxiPath
@@ -65,19 +65,19 @@ class TaxiPath
     public:
         TaxiPath()
         {
-            price = 0;
-            id = 0;
+            m_price = 0;
+            m_id = 0;
             m_length1 = 0;
             m_map1 = 0;
             m_length2 = 0;
             m_map2 = 0;
-            to = 0;
-            from = 0;
+            m_to = 0;
+            m_from = 0;
         }
 
         ~TaxiPath()
         {
-            while(m_pathNodes.size())
+            while(!m_pathNodes.empty())
             {
                 TaxiPathNode* pn = m_pathNodes.begin()->second;
                 m_pathNodes.erase(m_pathNodes.begin());
@@ -86,25 +86,29 @@ class TaxiPath
         }
 
         void ComputeLen();
-        void SetPosForTime(float & x, float & y, float & z, uint32 time, uint32* lastnode, uint32 mapid);
-        inline uint32 GetID() { return id; }
-        void SendMoveForTime(Player* riding, Player* to, uint32 time);
-        void AddPathNode(uint32 index, TaxiPathNode* pn) { m_pathNodes[index] = pn; }
+        void SetPosForTime(float & x, float & y, float & z, uint32_t time, uint32_t* lastNode, uint32_t mapid);
+        inline uint32_t GetID() { return m_id; }
+        void SendMoveForTime(Player* riding, Player* to, uint32_t time);
+        void AddPathNode(uint32_t index, TaxiPathNode* pn) { m_pathNodes[index] = pn; }
         inline size_t GetNodeCount() { return m_pathNodes.size(); }
-        TaxiPathNode* GetPathNode(uint32 i);
-        inline uint32 GetPrice() { return price; }
-        inline uint32 GetSourceNode() { return from; }
+        TaxiPathNode* GetPathNode(uint32_t i);
+        inline uint32_t getPrice() { return m_price; }
+        inline uint32_t getSourceNode() { return m_from; }
 
     protected:
 
-        std::map<uint32, TaxiPathNode*> m_pathNodes;
+        std::map<uint32_t, TaxiPathNode*> m_pathNodes;
 
         float m_length1;
-        uint32 m_map1;
+        uint32_t m_map1;
 
         float m_length2;
-        uint32 m_map2;
-        uint32 id, to, from, price;
+        uint32_t m_map2;
+
+		uint32_t m_id;
+		uint32_t m_to;
+		uint32_t m_from;
+		uint32_t m_price;
 };
 
 
@@ -119,13 +123,13 @@ class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
 
         ~TaxiMgr()
         {
-            while(m_taxiPaths.size())
+            while(!m_taxiPaths.empty())
             {
                 TaxiPath* p = m_taxiPaths.begin()->second;
                 m_taxiPaths.erase(m_taxiPaths.begin());
                 delete p;
             }
-            while(m_taxiNodes.size())
+            while(!m_taxiNodes.empty())
             {
                 TaxiNode* n = m_taxiNodes.begin()->second;
                 m_taxiNodes.erase(m_taxiNodes.begin());
@@ -133,23 +137,23 @@ class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
             }
         }
 
-        TaxiPath* GetTaxiPath(uint32 path);
-        TaxiPath* GetTaxiPath(uint32 from, uint32 to);
-        TaxiNode* GetTaxiNode(uint32 node);
+        TaxiPath* GetTaxiPath(uint32_t path);
+        TaxiPath* GetTaxiPath(uint32_t from, uint32 to);
+        TaxiNode* GetTaxiNode(uint32_t node);
 
         //MIT
         uint32_t getNearestNodeForPlayer(Player* player);
 
         uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid);
-        bool GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask);
+        bool GetGlobalTaxiNodeMask(uint32_t curloc, uint32_t* mask);
 
 
     private:
         void _LoadTaxiNodes();
         void _LoadTaxiPaths();
 
-        std::unordered_map<uint32, TaxiNode*> m_taxiNodes;
-        std::unordered_map<uint32, TaxiPath*> m_taxiPaths;
+        std::unordered_map<uint32_t, TaxiNode*> m_taxiNodes;
+        std::unordered_map<uint32_t, TaxiPath*> m_taxiPaths;
 };
 
 #define sTaxiMgr TaxiMgr::getSingleton()
