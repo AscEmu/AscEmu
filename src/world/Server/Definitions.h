@@ -5,6 +5,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#if VERSION_STRING == Classic
+    #define IS_INSTANCE(a) ((a > 1)                                                          // Classic WoW
+#elif VERSION_STRING == TBC
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530))                                           // The Burning Crusade
+#elif VERSION_STRING == WotLK
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))                             // Wrath of the Lich King
+#elif VERSION_STRING == Cata
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637))               // Cataclysm
+#elif VERSION_STRING == Mop
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // MAX_NUM_MAPS
 //
