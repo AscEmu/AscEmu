@@ -31,8 +31,6 @@
 #include <string>
 #include <vector>
 
-#define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))
-
 class Object;
 class WorldPacket;
 class WorldSession;
