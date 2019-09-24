@@ -2082,11 +2082,10 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
-        playerInfo->m_loggedInPlayer = this;
-
         objmgr.AddPlayerInfo(playerInfo);
     }
 
+    playerInfo->m_loggedInPlayer = this;
     m_playerInfo = playerInfo;
 }
 
