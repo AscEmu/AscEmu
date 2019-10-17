@@ -69,13 +69,13 @@ namespace TimeShiftmask
 }
 
 //\ brief: C++17 filesystem. It is currently experimental.
-//         On MSVC it is included wit <filesystem> (which includes <experimental/filesystem>
+//         On MSVC it is included with <filesystem> (Since VS 2019 16.3.5)
 //         On GCC and Clang you have to include <experimental/filesystem> and set the
 //         compilerflag =stdc++17 and link stdc++fs.
 //         We use the namespace fs to simplify it. On GCC it is v1.
 #if (WIN32 || _WIN64)
     #include <filesystem>
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
 #else
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem::v1;
