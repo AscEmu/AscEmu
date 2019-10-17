@@ -6,6 +6,10 @@ branches:
 
 environment:
   matrix:
+  - ASC_VERSION: TBC
+    VS_VER: Visual Studio 16 2019
+  - ASC_VERSION: TBC
+    VS_VER: Visual Studio 16 2019 Win64
   - ASC_VERSION: WotLK
     VS_VER: Visual Studio 16 2019
   - ASC_VERSION: WotLK

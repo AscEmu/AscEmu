@@ -25,6 +25,40 @@ matrix:
   #allow_failures:
   #  - compiler: clang
   include:
+  # tbc
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - gcc-8
+            - g++-8
+      env: ASC_VERSION=TBC COMPILER=g++-8
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
+          packages:
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-7
+            - g++-7
+      env: ASC_VERSION=TBC COMPILER=clang++-7
   # wotlk
     - os: linux
       compiler: gcc
