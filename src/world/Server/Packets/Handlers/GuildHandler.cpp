@@ -694,11 +694,11 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         const auto arenaTeam = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
         arenaTeam->m_name = charter->GuildName;
-        arenaTeam->m_emblemColour = srlPacket.iconColor;
-        arenaTeam->m_emblemStyle = srlPacket.icon;
-        arenaTeam->m_borderColour = srlPacket.borderColor;
-        arenaTeam->m_borderStyle = srlPacket.border;
-        arenaTeam->m_backgroundColour = srlPacket.background;
+        arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
+        arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
+        arenaTeam->m_emblem.borderColour = srlPacket.borderColor;
+        arenaTeam->m_emblem.borderStyle = srlPacket.border;
+        arenaTeam->m_emblem.backgroundColour = srlPacket.background;
         arenaTeam->m_leader = _player->getGuidLow();
         arenaTeam->m_stats.rating = 1500;
 

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamLeader.h"
 #include "Server/Packets/CmsgArenaTeamRoster.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
+#include "Server/Packets/SmsgArenaTeamQueryResponse.h"
 
 using namespace AscEmu::Packets;
 
@@ -27,9 +28,8 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 
     if (auto arenaTeam = objmgr.GetArenaTeamById(srlPacket.teamId))
     {
-        WorldPacket data(1000);
-        arenaTeam->Query(data);
-        SendPacket(&data);
+        SendPacket(SmsgArenaTeamQueryResponse(arenaTeam->m_id, arenaTeam->m_name,
+            arenaTeam->GetPlayersPerTeam(), arenaTeam->m_emblem).serialise().get());
 
         SendPacket(SmsgArenaTeamStats(arenaTeam->m_id, arenaTeam->m_stats).serialise().get());
     }

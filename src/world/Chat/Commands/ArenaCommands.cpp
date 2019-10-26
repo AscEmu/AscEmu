@@ -60,11 +60,11 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     }
 
     auto arena_team = new ArenaTeam(uint32(internal_type), objmgr.GenerateArenaTeamId());
-    arena_team->m_emblemStyle = 22;
-    arena_team->m_emblemColour = 4292133532UL;
-    arena_team->m_borderColour = 4294931722UL;
-    arena_team->m_borderStyle = 1;
-    arena_team->m_backgroundColour = 4284906803UL;
+    arena_team->m_emblem.emblemStyle = 22;
+    arena_team->m_emblem.emblemColour = 4292133532UL;
+    arena_team->m_emblem.borderColour = 4294931722UL;
+    arena_team->m_emblem.borderStyle = 1;
+    arena_team->m_emblem.backgroundColour = 4284906803UL;
     arena_team->m_leader = player->getGuidLow();
     arena_team->m_name = std::string(team_name);
     arena_team->AddMember(player->getPlayerInfo());

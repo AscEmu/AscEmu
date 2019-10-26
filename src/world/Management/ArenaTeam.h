@@ -33,6 +33,15 @@ struct ArenaTeamMember
     uint32 PersonalRating;
 };
 
+struct ArenaTeamEmblem
+{
+    uint32_t emblemStyle;
+    uint32_t emblemColour;
+    uint32_t borderStyle;
+    uint32_t borderColour;
+    uint32_t backgroundColour;
+};
+
 struct ArenaTeamStats
 {
     uint32_t rating;
@@ -71,11 +80,7 @@ class SERVER_DECL ArenaTeam
         uint32 m_memberCount;
         ArenaTeamMember* m_members;
 
-        uint32 m_emblemStyle;
-        uint32 m_emblemColour;
-        uint32 m_borderStyle;
-        uint32 m_borderColour;
-        uint32 m_backgroundColour;
+        ArenaTeamEmblem m_emblem;
 
         ArenaTeamStats m_stats;
 
@@ -87,7 +92,6 @@ class SERVER_DECL ArenaTeam
         }
 
         void SendPacket(WorldPacket* data);
-        void Query(WorldPacket& data);
         void Roster(WorldPacket& data);
         void Inspect(WorldPacket& data);
         void Destroy();

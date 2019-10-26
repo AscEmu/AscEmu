@@ -52,17 +52,8 @@ ArenaTeam::ArenaTeam(uint16 Type, uint32 Id)
     m_type = Type;
     AllocateSlots(Type);
     m_leader = 0;
-    m_emblemStyle = 0;
-    m_emblemColour = 0;
-    m_borderColour = 0;
-    m_borderStyle = 0;
-    m_backgroundColour = 0;
-    m_stats.rating = 1500;
-    m_stats.played_week = 0;
-    m_stats.played_season = 0;
-    m_stats.won_season = 0;
-    m_stats.won_week = 0;
-    m_stats.ranking = 0;
+    m_emblem = {0, 0,0,0,0};
+    m_stats = { 1500, 0, 0,0,0, 0 };
 }
 
 ArenaTeam::ArenaTeam(Field* f)
@@ -75,11 +66,11 @@ ArenaTeam::ArenaTeam(Field* f)
     m_type = f[z++].GetUInt16();
     m_leader = f[z++].GetUInt32();
     m_name = f[z++].GetString();
-    m_emblemStyle = f[z++].GetUInt32();
-    m_emblemColour = f[z++].GetUInt32();
-    m_borderStyle = f[z++].GetUInt32();
-    m_borderColour = f[z++].GetUInt32();
-    m_backgroundColour = f[z++].GetUInt32();
+    m_emblem.emblemStyle = f[z++].GetUInt32();
+    m_emblem.emblemColour = f[z++].GetUInt32();
+    m_emblem.borderStyle = f[z++].GetUInt32();
+    m_emblem.borderColour = f[z++].GetUInt32();
+    m_emblem.backgroundColour = f[z++].GetUInt32();
     m_stats.rating = f[z++].GetUInt32();
     AllocateSlots(m_type);
 
@@ -209,19 +200,6 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
     return false;
 }
 
-void ArenaTeam::Query(WorldPacket& data)
-{
-    data.Initialize(SMSG_ARENA_TEAM_QUERY_RESPONSE);
-    data << m_id;
-    data << m_name;
-    data << GetPlayersPerTeam();
-    data << m_emblemColour;
-    data << m_emblemStyle;
-    data << m_borderColour;
-    data << m_borderStyle;
-    data << m_backgroundColour;
-}
-
 void ArenaTeam::Roster(WorldPacket& data)
 {
     data.Initialize(SMSG_ARENA_TEAM_ROSTER);
@@ -270,11 +248,11 @@ void ArenaTeam::SaveToDB()
         << m_type << ","
         << m_leader << ",'"
         << m_name << "',"
-        << m_emblemStyle << ","
-        << m_emblemColour << ","
-        << m_borderStyle << ","
-        << m_borderColour << ","
-        << m_backgroundColour << ","
+        << m_emblem.emblemStyle << ","
+        << m_emblem.emblemColour << ","
+        << m_emblem.borderStyle << ","
+        << m_emblem.borderColour << ","
+        << m_emblem.backgroundColour << ","
         << m_stats.rating << ",'"
         << m_stats.played_week << " " << m_stats.won_week << " "
         << m_stats.played_season << " " << m_stats.won_season << "',"
