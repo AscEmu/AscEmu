@@ -367,6 +367,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgRatedBgInfo.h
+   ${PATH_PREFIX}/SmsgRatedBgStats.h
    ${PATH_PREFIX}/SmsgReadItemFailed.h
    ${PATH_PREFIX}/SmsgReadItemOk.h
    ${PATH_PREFIX}/SmsgRealmSplit.h

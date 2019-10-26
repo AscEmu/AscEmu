@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgRequestRatedBgInfo.h"
 #include "Server/Packets/SmsgRatedBgInfo.h"
+#include "Server/Packets/SmsgRatedBgStats.h"
 
 using namespace AscEmu::Packets;
 
@@ -290,17 +291,7 @@ void WorldSession::handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
 
-    WorldPacket data(SMSG_RATED_BG_STATS, 29);
-    data << uint32_t(0);    // unknown
-    data << uint8_t(3);     // unknown - always 3?... type?
-    data << uint32_t(0);    // unknown
-    data << uint32_t(0);    // unknown
-    data << uint32_t(0);    // unknown
-    data << uint32_t(0);    // unknown
-    data << uint32_t(0);    // unknown
-    data << uint32_t(0);    // unknown
-
-    SendPacket(&data);
+    SendPacket(SmsgRatedBgStats(3).serialise().get());
 }
 
 void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
