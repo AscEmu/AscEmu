@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Packets/CmsgRequestRatedBgInfo.h"
 
 using namespace AscEmu::Packets;
 
@@ -275,10 +276,11 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
 #if VERSION_STRING >= Cata
 void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
 {
-    uint8_t unk_type;
-    recvPacket >> unk_type;
+    CmsgRequestRatedBgInfo srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", unk_type);
+    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", srlPacket.type);
 
     WorldPacket data(SMSG_RATED_BG_INFO, 72);
     for (int i = 0; i < 18; ++i)

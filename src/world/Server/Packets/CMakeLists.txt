@@ -187,6 +187,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgRemoveGlyph.h
    ${PATH_PREFIX}/CmsgRepairItem.h
    ${PATH_PREFIX}/CmsgRequestPartyMemberStats.h
+   ${PATH_PREFIX}/CmsgRequestRatedBgInfo.h
    ${PATH_PREFIX}/CmsgRequestVehicleSwitchSeat.h
    ${PATH_PREFIX}/CmsgResurrectResponse.h
    ${PATH_PREFIX}/CmsgSearchLfgJoin.h
