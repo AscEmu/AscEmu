@@ -24,6 +24,7 @@
 #include "Server/WorldSession.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgArenaTeamStats.h"
 
 static const uint32 TeamCountToId[6] =
 {
@@ -56,12 +57,12 @@ ArenaTeam::ArenaTeam(uint16 Type, uint32 Id)
     m_borderColour = 0;
     m_borderStyle = 0;
     m_backgroundColour = 0;
-    m_stat_rating = 1500;
-    m_stat_gamesplayedweek = 0;
-    m_stat_gamesplayedseason = 0;
-    m_stat_gameswonseason = 0;
-    m_stat_gameswonweek = 0;
-    m_stat_ranking = 0;
+    m_stats.rating = 1500;
+    m_stats.played_week = 0;
+    m_stats.played_season = 0;
+    m_stats.won_season = 0;
+    m_stats.won_week = 0;
+    m_stats.ranking = 0;
 }
 
 ArenaTeam::ArenaTeam(Field* f)
@@ -79,18 +80,18 @@ ArenaTeam::ArenaTeam(Field* f)
     m_borderStyle = f[z++].GetUInt32();
     m_borderColour = f[z++].GetUInt32();
     m_backgroundColour = f[z++].GetUInt32();
-    m_stat_rating = f[z++].GetUInt32();
+    m_stats.rating = f[z++].GetUInt32();
     AllocateSlots(m_type);
 
-    m_stat_gamesplayedweek = 0;
-    m_stat_gamesplayedseason = 0;
-    m_stat_gameswonseason = 0;
-    m_stat_gameswonweek = 0;
-    m_stat_ranking = 0;
-    if (sscanf(f[z++].GetString(), "%u %u %u %u", &m_stat_gamesplayedweek, &m_stat_gameswonweek, &m_stat_gamesplayedseason, &m_stat_gameswonseason) != 3)
+    m_stats.played_week = 0;
+    m_stats.played_season = 0;
+    m_stats.won_season = 0;
+    m_stats.won_week = 0;
+    m_stats.ranking = 0;
+    if (sscanf(f[z++].GetString(), "%u %u %u %u", &m_stats.played_week, &m_stats.won_week, &m_stats.played_season, &m_stats.won_season) != 3)
         return;
 
-    m_stat_ranking = f[z++].GetUInt32();
+    m_stats.ranking = f[z++].GetUInt32();
     for (i = 0; i < m_slots; ++i)
     {
         data = f[z++].GetString();
@@ -104,7 +105,7 @@ ArenaTeam::ArenaTeam(Field* f)
             if (ret == 5)
             {
                 // In case PersonalRating is not in the string just set the rating to the team rating
-                m_members[i].PersonalRating = m_stat_rating;
+                m_members[i].PersonalRating = m_stats.rating;
             }
         }
         else
@@ -208,18 +209,6 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
     return false;
 }
 
-void ArenaTeam::Stat(WorldPacket& data)
-{
-    data.Initialize(SMSG_ARENA_TEAM_STATS);
-    data << m_id;
-    data << m_stat_rating;
-    data << m_stat_gamesplayedweek;
-    data << m_stat_gameswonweek;
-    data << m_stat_gamesplayedseason;
-    data << m_stat_gameswonseason;
-    data << m_stat_ranking;
-}
-
 void ArenaTeam::Query(WorldPacket& data)
 {
     data.Initialize(SMSG_ARENA_TEAM_QUERY_RESPONSE);
@@ -286,10 +275,10 @@ void ArenaTeam::SaveToDB()
         << m_borderStyle << ","
         << m_borderColour << ","
         << m_backgroundColour << ","
-        << m_stat_rating << ",'"
-        << m_stat_gamesplayedweek << " " << m_stat_gameswonweek << " "
-        << m_stat_gamesplayedseason << " " << m_stat_gameswonseason << "',"
-        << m_stat_ranking;
+        << m_stats.rating << ",'"
+        << m_stats.played_week << " " << m_stats.won_week << " "
+        << m_stats.played_season << " " << m_stats.won_season << "',"
+        << m_stats.ranking;
 
     for (i = 0; i < m_memberCount; ++i)
     {

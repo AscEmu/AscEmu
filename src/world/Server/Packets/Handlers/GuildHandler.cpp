@@ -700,7 +700,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         arenaTeam->m_borderStyle = srlPacket.border;
         arenaTeam->m_backgroundColour = srlPacket.background;
         arenaTeam->m_leader = _player->getGuidLow();
-        arenaTeam->m_stat_rating = 1500;
+        arenaTeam->m_stats.rating = 1500;
 
         objmgr.AddArenaTeam(arenaTeam);
         objmgr.UpdateArenaTeamRankings();

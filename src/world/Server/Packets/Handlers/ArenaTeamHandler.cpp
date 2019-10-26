@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamDisband.h"
 #include "Server/Packets/CmsgArenaTeamLeader.h"
 #include "Server/Packets/CmsgArenaTeamRoster.h"
+#include "Server/Packets/SmsgArenaTeamStats.h"
 
 using namespace AscEmu::Packets;
 
@@ -30,8 +31,7 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
         arenaTeam->Query(data);
         SendPacket(&data);
 
-        arenaTeam->Stat(data);
-        SendPacket(&data);
+        SendPacket(SmsgArenaTeamStats(arenaTeam->m_id, arenaTeam->m_stats).serialise().get());
     }
 }
 
@@ -375,10 +375,10 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
                 tempList.playerGuid = player->getGuid();
                 tempList.teamType = arenaTeam->m_type;
                 tempList.teamId = arenaTeam->m_id;
-                tempList.teamRating = arenaTeam->m_stat_rating;
-                tempList.playedWeek = arenaTeam->m_stat_gamesplayedweek;
-                tempList.wonWeek = arenaTeam->m_stat_gameswonweek;
-                tempList.playedSeason = arenaTeam->m_stat_gamesplayedseason;
+                tempList.teamRating = arenaTeam->m_stats.rating;
+                tempList.playedWeek = arenaTeam->m_stats.played_week;
+                tempList.wonWeek = arenaTeam->m_stats.won_week;
+                tempList.playedSeason = arenaTeam->m_stats.played_season;
 
                 arenaTeamList.push_back(tempList);
             }

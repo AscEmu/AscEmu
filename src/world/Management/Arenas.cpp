@@ -130,13 +130,13 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
             outcome = (i == winningTeam);
             if (outcome)
             {
-                m_teams[i]->m_stat_gameswonseason++;
-                m_teams[i]->m_stat_gameswonweek++;
+                m_teams[i]->m_stats.won_season++;
+                m_teams[i]->m_stats.won_week++;
             }
 
-            m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stat_rating, m_teams[j]->m_stat_rating, outcome);
-            m_teams[i]->m_stat_rating += m_deltaRating[i];
-            if (static_cast<int32>(m_teams[i]->m_stat_rating) < 0) m_teams[i]->m_stat_rating = 0;
+            m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stats.rating, m_teams[j]->m_stats.rating, outcome);
+            m_teams[i]->m_stats.rating += m_deltaRating[i];
+            if (static_cast<int32>(m_teams[i]->m_stats.rating) < 0) m_teams[i]->m_stats.rating = 0;
 
             for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
@@ -147,7 +147,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
                     if (tp != NULL)
                     {
-                        tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stat_rating, outcome);
+                        tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stats.rating, outcome);
                         if (static_cast<int32>(tp->PersonalRating) < 0)
                             tp->PersonalRating = 0;
 
@@ -337,8 +337,8 @@ void Arena::OnStart()
         if (m_teams[i] == NULL)
             continue;
 
-        m_teams[i]->m_stat_gamesplayedseason++;
-        m_teams[i]->m_stat_gamesplayedweek++;
+        m_teams[i]->m_stats.played_season++;
+        m_teams[i]->m_stats.played_week++;
         m_teams[i]->SaveToDB();
     }
 

@@ -2936,12 +2936,12 @@ class ArenaSorter
 
         bool operator()(ArenaTeam* const & a, ArenaTeam* const & b)
         {
-            return (a->m_stat_rating > b->m_stat_rating);
+            return (a->m_stats.rating > b->m_stats.rating);
         }
 
         bool operator()(ArenaTeam*& a, ArenaTeam*& b)
         {
-            return (a->m_stat_rating > b->m_stat_rating);
+            return (a->m_stats.rating > b->m_stats.rating);
         }
 };
 
@@ -2959,9 +2959,9 @@ void ObjectMgr::UpdateArenaTeamRankings()
         uint32 rank = 1;
         for (std::vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
         {
-            if ((*itr)->m_stat_ranking != rank)
+            if ((*itr)->m_stats.ranking != rank)
             {
-                (*itr)->m_stat_ranking = rank;
+                (*itr)->m_stats.ranking = rank;
                 (*itr)->SaveToDB();
             }
             ++rank;
@@ -2980,11 +2980,11 @@ void ObjectMgr::ResetArenaTeamRatings()
             ArenaTeam* team = itr->second;
             if (team)
             {
-                team->m_stat_gamesplayedseason = 0;
-                team->m_stat_gamesplayedweek = 0;
-                team->m_stat_gameswonseason = 0;
-                team->m_stat_gameswonweek = 0;
-                team->m_stat_rating = 1500;
+                team->m_stats.played_season = 0;
+                team->m_stats.played_week = 0;
+                team->m_stats.won_season = 0;
+                team->m_stats.won_week = 0;
+                team->m_stats.rating = 1500;
                 for (uint32 j = 0; j < team->m_memberCount; ++j)
                 {
                     team->m_members[j].Played_ThisSeason = 0;
@@ -3013,8 +3013,8 @@ void ObjectMgr::UpdateArenaTeamWeekly()
             ArenaTeam* team = itr->second;
             if (team)
             {
-                team->m_stat_gamesplayedweek = 0;
-                team->m_stat_gameswonweek = 0;
+                team->m_stats.played_week = 0;
+                team->m_stats.won_week = 0;
                 for (uint32 j = 0; j < team->m_memberCount; ++j)
                 {
                     team->m_members[j].Played_ThisWeek = 0;

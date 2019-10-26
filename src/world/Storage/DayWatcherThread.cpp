@@ -212,10 +212,10 @@ void DayWatcherThread::update_arena()
                 if (team != nullptr)
                 {
                     const auto arenaTeamMember = team->GetMemberByGuid(guid);
-                    if (arenaTeamMember == nullptr || team->m_stat_gamesplayedweek < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stat_gamesplayedweek < 30)
+                    if (arenaTeamMember == nullptr || team->m_stats.played_week < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stats.played_week < 30)
                         continue;
 
-                    const double arenaStatsRating = static_cast<double>(team->m_stat_rating);
+                    const double arenaStatsRating = static_cast<double>(team->m_stats.rating);
                     double anrenaPoints;
 
                     if (arenaStatsRating <= 510.0)
