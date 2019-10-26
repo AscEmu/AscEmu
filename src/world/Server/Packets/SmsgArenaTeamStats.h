@@ -15,13 +15,13 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t id;
-        ArenaStats stats;
+        ArenaTeamStats stats;
         
         SmsgArenaTeamStats() : SmsgArenaTeamStats(0, {0})
         {
         }
 
-        SmsgArenaTeamStats(uint32_t id, ArenaStats stats) :
+        SmsgArenaTeamStats(uint32_t id, ArenaTeamStats stats) :
             ManagedPacket(SMSG_ARENA_TEAM_STATS, 4 * 7),
             id(id),
             stats(stats)

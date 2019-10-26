@@ -33,7 +33,7 @@ struct ArenaTeamMember
     uint32 PersonalRating;
 };
 
-struct ArenaStats
+struct ArenaTeamStats
 {
     uint32_t rating;
     uint32_t played_week;
@@ -77,7 +77,7 @@ class SERVER_DECL ArenaTeam
         uint32 m_borderColour;
         uint32 m_backgroundColour;
 
-        ArenaStats m_stats;
+        ArenaTeamStats m_stats;
 
         ArenaTeam(uint16 Type, uint32 Id);
         ArenaTeam(Field* f);
