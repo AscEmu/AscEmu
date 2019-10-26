@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgRequestRatedBgInfo.h"
 #include "Server/Packets/SmsgRatedBgInfo.h"
 #include "Server/Packets/SmsgRatedBgStats.h"
+#include "Server/Packets/SmsgPvpOptionsEnabled.h"
 
 using namespace AscEmu::Packets;
 
@@ -313,15 +314,6 @@ void WorldSession::handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
 
-    WorldPacket data(SMSG_PVP_OPTIONS_ENABLED, 1);
-    data.writeBit(1);       // unknown 
-    data.writeBit(1);       // unknown wargames enabled
-    data.writeBit(1);       // unknown 
-    data.writeBit(1);       // unknown rated battlegrounds enabled
-    data.writeBit(1);       // unknown rated arenas enabled
-
-    data.flushBits();
-
-    SendPacket(&data);
+    SendPacket(SmsgPvpOptionsEnabled(true, true, true).serialise().get());
 }
 #endif
