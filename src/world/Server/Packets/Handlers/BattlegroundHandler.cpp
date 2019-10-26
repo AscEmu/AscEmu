@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgRequestRatedBgInfo.h"
+#include "Server/Packets/SmsgRatedBgInfo.h"
 
 using namespace AscEmu::Packets;
 
@@ -282,13 +283,7 @@ void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", srlPacket.type);
 
-    WorldPacket data(SMSG_RATED_BG_INFO, 72);
-    for (int i = 0; i < 18; ++i)
-    {
-        data << uint32_t(0);    // unknown
-    }
-
-    SendPacket(&data);
+    SendPacket(SmsgRatedBgInfo(0).serialise().get());
 }
 
 void WorldSession::handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
