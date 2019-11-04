@@ -52,8 +52,8 @@ ArenaTeam::ArenaTeam(uint16 Type, uint32 Id)
     m_type = Type;
     AllocateSlots(Type);
     m_leader = 0;
-    m_emblem = {0, 0,0,0,0};
-    m_stats = { 1500, 0, 0,0,0, 0 };
+    m_emblem = { 0, 0, 0, 0, 0 };
+    m_stats = { 1500, 0, 0, 0, 0, 0 };
 }
 
 ArenaTeam::ArenaTeam(Field* f)

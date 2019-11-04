@@ -141,9 +141,9 @@ void LfgMgr::LoadRewards()
             otherQuestId = 0;
         }
 
-#if VERSION_STRING < Cata
-		//DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
-#endif
+//#if VERSION_STRING < Cata
+        //DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
+//#endif
         m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
         ++count;
     }
@@ -1535,7 +1535,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
             m_teleport.push_back(pguid);
             if(Player* plr = objmgr.GetPlayer(static_cast<uint32>(pguid)))
-				plr->SetRoles(pProposal->players[pguid]->role);
+                plr->SetRoles(pProposal->players[pguid]->role);
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 
@@ -2149,7 +2149,7 @@ const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 {
-	LOG_DEBUG("Get Reward dungeon id = %u level = %u", dungeon, level);
+    LOG_DEBUG("Get Reward dungeon id = %u level = %u", dungeon, level);
     LfgReward const* rew = NULL;
     LfgRewardMapBounds bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
     for (LfgRewardMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)

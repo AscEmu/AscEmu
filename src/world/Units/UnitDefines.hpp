@@ -605,7 +605,6 @@ enum UnitStates
     UNIT_STATE_SILENCE   = 0x0100
 };
 
-
 // byte flags value (UNIT_FIELD_BYTES_1,0)
 enum StandState : uint16_t
 {

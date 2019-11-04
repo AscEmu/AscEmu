@@ -499,7 +499,7 @@ bool Vehicle::IsControler(Unit* aura)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == aura->getGuid()))
             return seats[i]->GetSeatInfo()->IsController();
 
-	return 0;
+    return 0;
 }
 
 void Vehicle::MovePassengers(float x, float y, float z, float o)

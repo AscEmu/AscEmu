@@ -881,7 +881,7 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
         data << uint8(128);
         data << uint8(128);
     }
-    data << uint8(0);	// Requires research - possibly related to disenchanting of loot
+    data << uint8(0); // Requires research - possibly related to disenchanting of loot
     if (player->InGroup())
         player->GetGroup()->SendPacketToAll(&data);
     else

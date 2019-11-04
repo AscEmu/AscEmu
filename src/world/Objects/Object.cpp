@@ -1578,7 +1578,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     if (splinebuf != nullptr)
     {
-        flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
+        flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD; //1=move forward
         if (isCreature())
         {
             if (static_cast<Unit*>(this)->GetAIInterface()->hasWalkMode(WALKMODE_WALK))
@@ -1803,7 +1803,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (isCreatureOrPlayer())
-            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid());	//some compressed GUID
+            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
         else
             *data << uint64(0);
     }
@@ -2422,7 +2422,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
     //if (m_position.x != newX || m_position.y != newY)
     //updateMap = true;
-    if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f)		/* 2.0f */
+    if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
         updateMap = true;
 
     m_position.ChangeCoords({ newX, newY, newZ, newOrientation });

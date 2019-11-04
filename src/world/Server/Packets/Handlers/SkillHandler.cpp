@@ -72,14 +72,14 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
     _player->smsg_TalentsInfo(false);
 #endif
 }
-#else	
+#else
 void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
 {
     int32_t current_tab;
     uint32_t talent_count;
     uint32_t talent_id;
     uint32_t talent_rank;
-    //if currentTab -1 player has already the spec.	
+    //if currentTab -1 player has already the spec.
     recvPacket >> current_tab;
     recvPacket >> talent_count;
 

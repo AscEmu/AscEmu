@@ -5390,8 +5390,8 @@ void Player::BuildPlayerRepop()
 
 void Player::RepopRequestedPlayer()
 {
-    //if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
-    //	return;
+    //  if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
+    //      return;
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
@@ -13688,7 +13688,7 @@ void Player::CastSpellArea()
     uint32 ZoneId = at->zone;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Cheks for Casting a Spell in Specified Area / Zone :D										  //
+    // Cheks for Casting a Spell in Specified Area / Zone :D                                          //
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Spells get Casted in specified Area
@@ -13724,16 +13724,16 @@ void Player::CastSpellArea()
 
 void Player::SetGroupUpdateFlags(uint32 flags)
 {
-	if (GetGroup() == nullptr)
-		return;
-	GroupUpdateFlags = flags;
+    if (GetGroup() == nullptr)
+        return;
+    GroupUpdateFlags = flags;
 }
 
 void Player::AddGroupUpdateFlag(uint32 flag)
 {
-	if (GetGroup() == nullptr)
-		return;
-	GroupUpdateFlags |= flag;
+    if (GetGroup() == nullptr)
+        return;
+    GroupUpdateFlags |= flag;
 }
 
 uint16 Player::GetGroupStatus()
@@ -13761,11 +13761,11 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
         return;
 
     if (Group* group = GetGroup())
-		group->UpdateOutOfRangePlayer(this, true, nullptr);
+        group->UpdateOutOfRangePlayer(this, true, nullptr);
 
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
-	if (Pet* pet = GetSummon())
-		pet->ResetAuraUpdateMaskForRaid();
+    if (Pet* pet = GetSummon())
+        pet->ResetAuraUpdateMaskForRaid();
 }
 
 void Player::SendCinematicCamera(uint32 id)
@@ -14077,7 +14077,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
             // if all people passed anyone can loot it? :P
             if (iter->passed)
-                slottype = 0;					// All players passed on the loot
+                slottype = 0; // All players passed on the loot
 
             //if it is ffa loot and not an masterlooter
             if (iter->ffa_loot)
@@ -14142,8 +14142,8 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                         data2 << uint32(0);
 
                     data2 << uint32(iter->iItemsCount);
-                    data2 << uint32(60000);	// countdown
-                    data2 << uint8(7);		// some sort of flags that require research
+                    data2 << uint32(60000); // countdown
+                    data2 << uint8(7);      // some sort of flags that require research
                 }
 
                 if (Group* pGroup = m_playerInfo->m_Group)
@@ -14157,7 +14157,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                             if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
                             {
                                 if (pinfo->m_loggedInPlayer->m_passOnLoot)
-                                    iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3);		// passed
+                                    iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3); // passed
                                 else
                                     pinfo->m_loggedInPlayer->SendPacket(&data2);
                             }

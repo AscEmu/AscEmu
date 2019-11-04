@@ -3176,20 +3176,20 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), 0);
                 m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), 0);
-                /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
+                /*  m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
+                    m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
             }
         }
     }
 #else
-    if (srcslot < INVENTORY_SLOT_BAG_END)	// source item is equiped
+    if (srcslot < INVENTORY_SLOT_BAG_END)   // source item is equiped
     {
-        if (m_pItems[(int)srcslot]) // dstitem goes into here.
+        if (m_pItems[(int)srcslot])         // dstitem goes into here.
         {
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)

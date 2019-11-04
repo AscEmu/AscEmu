@@ -34,10 +34,10 @@
 
 enum LOOTTYPE
 {
-    LOOT_NORMAL10,	    // normal dungeon / old raid (10/25/40 men) / normal 10 raid
-    LOOT_NORMAL25,	    // heroic dungeon / normal 25 raid
-    LOOT_HEROIC10,	    // heroic 10 men raid
-    LOOT_HEROIC25,	    // heroic 25 men raid
+    LOOT_NORMAL10,      // normal dungeon / old raid (10/25/40 men) / normal 10 raid
+    LOOT_NORMAL25,      // heroic dungeon / normal 25 raid
+    LOOT_HEROIC10,      // heroic 10 men raid
+    LOOT_HEROIC25,      // heroic 25 men raid
     NUM_LOOT_TYPES
 };
 
@@ -138,14 +138,14 @@ class ItemIsNotLooted
 
 struct StoreLootItem
 {
-    _LootItem item;	    /// the item that drops
-    float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
-    float chance2;	    /// heroic dungeon / normal 25men raid
-    float chance3;	    /// heroic 10men raid
-    float chance4;	    /// heroic 25men raid
-    uint32 mincount;	/// minimum quantity to drop
-    uint32 maxcount;	/// maximum quantity to drop
-    uint32 ffa_loot;	/// can everyone from the group loot the item?
+    _LootItem item;     /// the item that drops
+    float chance;       /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
+    float chance2;      /// heroic dungeon / normal 25men raid
+    float chance3;      /// heroic 10men raid
+    float chance4;      /// heroic 25men raid
+    uint32 mincount;    /// minimum quantity to drop
+    uint32 maxcount;    /// maximum quantity to drop
+    uint32 ffa_loot;    /// can everyone from the group loot the item?
 };
 
 struct StoreLootList

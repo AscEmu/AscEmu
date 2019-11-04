@@ -296,7 +296,7 @@ public:
         uint32 getEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
         void setEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
 
-		void setTextId(uint32 textId);
+        void setTextId(uint32 textId);
 #endif
 
         // DB Serialization
@@ -413,7 +413,7 @@ public:
 
         void RemoveFromWorld();
 
-    Loot* loot;
+        Loot* loot;
         bool locked;
         bool m_isDirty;
 

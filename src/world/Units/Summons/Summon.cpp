@@ -53,7 +53,6 @@ void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner,
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
-
 void Summon::OnPushToWorld()
 {
     if (m_summonSlot != -1)

@@ -2976,7 +2976,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     //these are some creatures that have your faction and do not respawn
     //number of creatures is actually dmg (the usual formula), sometimes =3 sometimes =1
     //if( u_caster == NULL || !u_caster->IsInWorld() )
-    //	return;
+    //  return;
 
     if ((!m_caster->isGameObject() && !m_caster->isCreatureOrPlayer()) || !m_caster->IsInWorld())
         return;

@@ -73,7 +73,7 @@ bool TotemSummon::isTotem() const { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
-void TotemSummon::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
+void TotemSummon::Die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {
     Despawn(1, 0);
 }

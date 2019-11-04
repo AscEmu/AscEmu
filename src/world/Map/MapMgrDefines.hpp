@@ -44,9 +44,9 @@ enum MapMgrTimers
 
 enum ObjectActiveState
 {
-    OBJECT_STATE_NONE		= 0,
-    OBJECT_STATE_INACTIVE	= 1,
-    OBJECT_STATE_ACTIVE		= 2
+    OBJECT_STATE_NONE       = 0,
+    OBJECT_STATE_INACTIVE   = 1,
+    OBJECT_STATE_ACTIVE     = 2
 };
 
 #define MAX_TRANSPORTERS_PER_MAP 25

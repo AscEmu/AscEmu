@@ -655,8 +655,8 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     m_H_regenTimer = 2000;
     m_P_regenTimer = 2000;
 
-    //	if (getObjectTypeId() == TYPEID_PLAYER) //only player for now
-    //		CalculateActualArmor();
+    //  if (getObjectTypeId() == TYPEID_PLAYER) // only player for now
+    //      CalculateActualArmor();
 
     m_aiInterface = new AIInterface();
     m_aiInterface->Init(this, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -726,11 +726,11 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     RangedDamageTaken = 0;
     m_procCounter = 0;
     m_damgeShieldsInUse = false;
-    //	fearSpell = 0;
+    // fearSpell = 0;
     m_extraAttackCounter = false;
     CombatStatus.SetUnit(this);
     m_chargeSpellsInUse = false;
-    //	m_spellsbusy=false;
+    // m_spellsbusy=false;
     m_interruptedRegenTime = 0;
     m_hitfrommeleespell = 0;
     m_damageSplitTarget = NULL;
@@ -1175,9 +1175,9 @@ void Unit::Update(unsigned long time_passed)
                 m_diminishActive = false;
         }
 
-        /*		//if health changed since last time. Would be perfect if it would work for creatures too :)
-                if (m_updateMask.GetBit(UNIT_FIELD_HEALTH))
-                EventHealthChangeSinceLastUpdate();*/
+        // if health changed since last time. Would be perfect if it would work for creatures too :)
+        // if (m_updateMask.GetBit(UNIT_FIELD_HEALTH))
+        // EventHealthChangeSinceLastUpdate();
     }
 }
 
@@ -1186,7 +1186,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     if (GetMapId() != pVictim->GetMapId())
         return false;
 
-    //	float targetreach = pVictim->getCombatReach();
+    // float targetreach = pVictim->getCombatReach();
     float selfreach;
     if (isPlayer())
         selfreach = 5.0f; // minimum melee range, getCombatReach() is too small and used eg. in melee spells
@@ -1194,13 +1194,13 @@ bool Unit::canReachWithAttack(Unit* pVictim)
         selfreach = getCombatReach();
 
     float targetradius;
-    //	targetradius = pVictim->getBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
+    // targetradius = pVictim->getBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
     targetradius = pVictim->GetModelHalfSize();
     float selfradius;
-    //	selfradius = getBoundingRadius();
+    // selfradius = getBoundingRadius();
     selfradius = GetModelHalfSize();
-    //	float targetscale = pVictim->getScale();
-    //	float selfscale = getScale();
+    // float targetscale = pVictim->getScale();
+    // float selfscale = getScale();
 
     //float distance = sqrt(getDistanceSq(pVictim));
     float delta_x = pVictim->GetPositionX() - GetPositionX();
@@ -1208,7 +1208,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     float distance = sqrt(delta_x * delta_x + delta_y * delta_y);
 
 
-    //	float attackreach = (((targetradius*targetscale) + selfreach) + (((selfradius*selfradius)*selfscale)+1.50f));
+    // float attackreach = (((targetradius*targetscale) + selfreach) + (((selfradius*selfradius)*selfscale)+1.50f));
     float attackreach = targetradius + selfreach + selfradius;
 
     //formula adjustment for player side.
@@ -4859,9 +4859,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 }
                 break;
 
-                //////////////////////////////////////////
-                // WARRIOR								//
-                //////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////////////
+                // WARRIOR
 
                 // Warrior - Improved Revenge
                 case 12798:
@@ -5565,7 +5564,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 }
                 break;
                 case 45062: // Vial of the Sunwell
-                case 39950:	// Wave Trance
+                case 39950: // Wave Trance
                 {
                     if (!CastingSpell || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
@@ -6603,7 +6602,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         }
                         break;
                         case 17116: // Shaman - Nature's Swiftness
-                        case 16188:	// Druid - Nature's Swiftness
+                        case 16188: // Druid - Nature's Swiftness
                         {
                             //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
                             if (CastingSpell->getSchool() != SCHOOL_NATURE || spell_cast_time->CastTime == 0)
@@ -6759,7 +6758,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 }
                 else
                 {
-                    //--(iter2->second.count);		// done in Aura::Remove
+                    //--(iter2->second.count); // done in Aura::Remove
                     this->RemoveAura(iter2->second.spellId);
                 }
             }
@@ -6819,7 +6818,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
             }
             else
             {
-                SpellInfo const*	ability = sSpellMgr.getSpellInfo((*i2).m_spellId);
+                SpellInfo const* ability = sSpellMgr.getSpellInfo((*i2).m_spellId);
                 this->Strike(attacker, RANGED, ability, 0, 0, (*i2).m_damage, true, true);  //can dmg shields miss at all ?
             }
         }
@@ -6994,18 +6993,18 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     float AverageResistance = 0.0f;
     float ArmorReduce;
 
-    if ((*dmg).school_type == 0)        //physical
+    if ((*dmg).school_type == 0) // physical
     {
         if (this->isPlayer())
             ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
         else
             ArmorReduce = 0.0f;
 
-        if (ArmorReduce >= pVictim->getResistance(0))		// fully penetrated :O
+        if (ArmorReduce >= pVictim->getResistance(0)) // fully penetrated :O
             return;
 
-        //		double Reduction = double(pVictim->getResistance(0)) / double(pVictim->getResistance(0)+400+(85*getLevel()));
-        //dmg reduction formula from xinef
+        // double Reduction = double(pVictim->getResistance(0)) / double(pVictim->getResistance(0)+400+(85*getLevel()));
+        // dmg reduction formula from xinef
         double Reduction = 0;
         if (getLevel() < 60)
             Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 400 + (85 * getLevel()));
@@ -7021,7 +7020,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
             Reduction = 0;
 
         if (Reduction)
-            dmg[0].full_damage = (uint32)(dmg[0].full_damage * (1 - Reduction));	 // no multiply by 0
+            dmg[0].full_damage = (uint32)(dmg[0].full_damage * (1 - Reduction)); // no multiply by 0
     }
     else
     {
@@ -7732,7 +7731,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             targetEvent = 1;
             vstate = DODGE;
             vproc |= PROC_ON_DODGE_VICTIM;
-            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
+            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
             if (this->isPlayer() && this->getClass() == WARRIOR)
             {
@@ -7757,31 +7756,31 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             else sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
             break;
         case 2:     //parry
-            if (pVictim->isCreature() && pVictim->GetAIInterface()->getNextTarget() == NULL)    // dirty ai agro fix
+            if (pVictim->isCreature() && pVictim->GetAIInterface()->getNextTarget() == NULL) // dirty ai agro fix
                 pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
 
             CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
             CALL_SCRIPT_EVENT(this, OnParried)(this);
             targetEvent = 3;
             vstate = PARRY;
-            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
+            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
             if (pVictim->isPlayer())
             {
 #if VERSION_STRING > TBC
                 // Rune strike
-                if (pVictim->getClass() == DEATHKNIGHT)         // omg! dirty hack!
+                if (pVictim->getClass() == DEATHKNIGHT) // omg! dirty hack!
                     pVictim->castSpell(pVictim, 56817, true);
 #endif
 
-                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_PARRY);	                        //SB@L: Enables spells requiring parry
+                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_PARRY); // SB@L: Enables spells requiring parry
                 if (!sEventMgr.HasEvent(pVictim, EVENT_PARRY_FLAG_EXPIRE))
                     sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_PARRY_FLAG_EXPIRE, 5000);
-                if (static_cast<Player*>(pVictim)->getClass() == 1 || static_cast<Player*>(pVictim)->getClass() == 4)     //warriors for 'revenge' and rogues for 'riposte'
+                if (static_cast<Player*>(pVictim)->getClass() == 1 || static_cast<Player*>(pVictim)->getClass() == 4) // warriors for 'revenge' and rogues for 'riposte'
                 {
-                    pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	                //SB@L: Enables spells requiring dodge
+                    pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY); // SB@L: Enables spells requiring dodge
                     if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
                         sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                     else
@@ -7830,16 +7829,16 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                 dmg.full_damage += add_damage;
 
                 // \todo Don't really know why it was here. It should be calculated on Spel::CalculateEffect. Maybe it was bugged there...
-                //			if (ability && ability->SpellGroupType)
-                //			{
-                //				spellModFlatIntValue(TO_UNIT(this)->SM_FDamageBonus, &dmg.full_damage, ability->SpellGroupType);
-                //				spellModPercentageIntValue(TO_UNIT(this)->SM_PDamageBonus, &dmg.full_damage, ability->SpellGroupType);
-                //			}
-                //			else
-                //			{
-                //				spellModFlatIntValue(((Unit*)this)->SM_FMiscEffect,&dmg.full_damage,(uint64)1<<63);
-                //				spellModPercentageIntValue(((Unit*)this)->SM_PMiscEffect,&dmg.full_damage,(uint64)1<<63);
-                //			}
+                //  if (ability && ability->SpellGroupType)
+                //  {
+                //      spellModFlatIntValue(TO_UNIT(this)->SM_FDamageBonus, &dmg.full_damage, ability->SpellGroupType);
+                //      spellModPercentageIntValue(TO_UNIT(this)->SM_PDamageBonus, &dmg.full_damage, ability->SpellGroupType);
+                //  }
+                //  else
+                //  {
+                //      spellModFlatIntValue(((Unit*)this)->SM_FMiscEffect,&dmg.full_damage,(uint64)1<<63);
+                //      spellModPercentageIntValue(((Unit*)this)->SM_PMiscEffect,&dmg.full_damage,(uint64)1<<63);
+                //  }
 
                 dmg.full_damage += pVictim->DamageTakenMod[dmg.school_type];
                 if (weapon_damage_type == RANGED)
@@ -7979,7 +7978,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                             }
                             if (pVictim->isPlayer())  //not necessary now but we'll have blocking mobs in future
                             {
-                                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);	//SB@L: Enables spells requiring dodge
+                                pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY); //SB@L: Enables spells requiring dodge
                                 if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
                                     sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
                                 else
@@ -8282,7 +8281,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         {
             DealDamage(pVictim, realdamage, 0, targetEvent, 0);
             //pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
-            //		HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
+            // HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
             if (pVictim->isCastingSpell())
             {
@@ -8427,7 +8426,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                     // Sweeping Strikes hits cannot be dodged, missed or parried (from wowhead)
                     bool skip_hit_check2 = ex->spell_info->getId() == 12328 ? true : false;
                     //zack : should we use the spell id the registered this extra strike when striking ? It would solve a few proc on proc problems if so ;)
-                    //					Strike(TO<Unit*>(*itr), weapon_damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check);
+                    // Strike(TO<Unit*>(*itr), weapon_damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check);
                     Strike(static_cast<Unit*>(itr), weapon_damage_type, ex->spell_info, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check2);
                     break;
                 }
@@ -9008,7 +9007,7 @@ void Unit::AddAura(Aura* aur)
                 break;
             }
         }
-        //			else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
+        // else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
     }
 
 
@@ -9061,7 +9060,7 @@ void Unit::AddAura(Aura* aur)
     aur->RelocateEvents();
 
     // Reaction from enemy AI
-    if (!aur->IsPositive() && aur->IsCombatStateAffecting())	  // Creature
+    if (!aur->IsPositive() && aur->IsCombatStateAffecting()) // Creature
     {
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster && pCaster->isAlive() && this->isAlive())
@@ -9584,7 +9583,7 @@ void Unit::AddAura(Aura* aur)
                 break;
             }
         }
-        //			else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
+        // else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
     }
 
 
@@ -9639,11 +9638,11 @@ void Unit::AddAura(Aura* aur)
                            EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
     }
 
-    //have to hate these relocate events. They run in a separate thread :P
+    // have to hate these relocate events. They run in a separate thread :P
     aur->RelocateEvents();
 
     // Reaction from enemy AI
-    if (!aur->IsPositive() && aur->IsCombatStateAffecting())	  // Creature
+    if (!aur->IsPositive() && aur->IsCombatStateAffecting()) // Creature
     {
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster && pCaster->isAlive() && this->isAlive())
@@ -10114,7 +10113,7 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
     data << type;
     data << lang;
     data << getGuid();
-    data << uint32(0);			// new in 2.1.0
+    data << uint32(0); // new in 2.1.0
     data << uint32(UnitNameLength);
     data << ci->Name;
     data << uint64(0);
@@ -10226,8 +10225,8 @@ void Unit::CalcDamage()
         r = (BaseDamage[1] + bonus) * mult + delta;
         setMaxDamage(r > 0 ? (isPet() ? r * 1.1f : r) : 0);
 
-        //	setMinRangedDamage(BaseRangedDamage[0]*mult+delta);
-        //	setMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
+        // setMinRangedDamage(BaseRangedDamage[0]*mult+delta);
+        // setMaxRangedDamage(BaseRangedDamage[1]*mult+delta);
     }
 }
 
@@ -10742,7 +10741,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                         }
                     }
                     break;
-                    case 34936:	// Backlash
+                    case 34936: // Backlash
                     {
                         if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
@@ -11979,7 +11978,7 @@ void Unit::UpdateVisibility()
             }
         }
     }
-    else			// For units we can save a lot of work
+    else // For units we can save a lot of work
     {
         for (const auto& it2 : getInRangePlayersSet())
         {
@@ -12038,7 +12037,7 @@ int32 Unit::GetAP()
     float totalap = baseap * (getAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);
-    return	0;
+    return 0;
 }
 
 int32 Unit::GetRAP()
@@ -12047,7 +12046,7 @@ int32 Unit::GetRAP()
     float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);
-    return	0;
+    return 0;
 }
 
 bool Unit::GetSpeedDecrease()
@@ -12224,7 +12223,7 @@ void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
     m_attackTargets.insert(guid);
     //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->getGuid());
     if (m_Unit->isPlayer() &&
-        m_primaryAttackTarget != guid)			// players can only have one attack target.
+        m_primaryAttackTarget != guid) // players can only have one attack target.
     {
         if (m_primaryAttackTarget)
             ClearPrimaryAttackTarget();
@@ -12945,7 +12944,7 @@ void Unit::RemoveAllMovementImpairing()
 
 void Unit::ReplaceAIInterface(AIInterface* new_interface)
 {
-    delete m_aiInterface;	//be careful when you do this. Might screw unit states !
+    delete m_aiInterface; //be careful when you do this. Might screw unit states !
     m_aiInterface = new_interface;
 }
 
@@ -13609,7 +13608,7 @@ float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spel
     {
         // the bonuses are halved by 50% (funky blizzard math :S)
         float b;
-        if (spell->getSchool() == 0 || spell->custom_is_melee_spell || spell->custom_is_ranged_spell)		// physical || hackfix SoCommand/JoCommand
+        if (spell->getSchool() == 0 || spell->custom_is_melee_spell || spell->custom_is_ranged_spell) // physical || hackfix SoCommand/JoCommand
             b = critical_bonus / 100.0f + 1.0f;
         else
             b = critical_bonus / 200.0f + 1.0f;

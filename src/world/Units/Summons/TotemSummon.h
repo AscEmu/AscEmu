@@ -8,11 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
-
 class TotemSummon : public Summon
 {
 public:
-
     TotemSummon(uint64_t guid);
     ~TotemSummon();
 
@@ -26,7 +24,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Unit functions
-    void Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/) override;
+    void Die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/) override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc

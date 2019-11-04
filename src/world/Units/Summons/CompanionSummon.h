@@ -1,45 +1,24 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef COMPANIONSUMMON_H
-#define COMPANIONSUMMON_H
+#pragma once
 
 #include "Units/Summons/Summon.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// \note   Class implementing companions/vanity pets/critterpets
-///         These are totally passive and inattackable, they only serve iCandy purposes
-//////////////////////////////////////////////////////////////////////////////////////////
+// Class implementing companions/vanity pets/critterpets
+// These are totally passive and inattackable, they only serve iCandy purposes
 class CompanionSummon : public Summon
 {
-    public:
+public:
+    CompanionSummon(uint64_t GUID);
+    ~CompanionSummon();
 
-        CompanionSummon(uint64 GUID);
-        ~CompanionSummon();
+    virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector& position, uint32_t spellid, int32_t summonslot);
 
-        virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector& position, uint32_t spellid, int32_t summonslot);
-
-        void OnPushToWorld();
-        void OnPreRemoveFromWorld();
-
+    void OnPushToWorld();
+    void OnPreRemoveFromWorld();
 };
-
-#endif // COMPANIONSUMMON_H
