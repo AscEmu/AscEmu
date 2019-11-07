@@ -12,6 +12,7 @@ set(SRC_UNITS_PLAYERS_FILES
    ${PATH_PREFIX}/PlayerCache.cpp
    ${PATH_PREFIX}/PlayerCache.h
    ${PATH_PREFIX}/ReputationHandler.Legacy.cpp
+   ${PATH_PREFIX}/ReputationHandler.hpp
 )
 
 source_group(Units\\Players FILES ${SRC_UNITS_PLAYERS_FILES})
