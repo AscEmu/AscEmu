@@ -785,10 +785,10 @@ void SpellMgr::applyHackFixes()
             }
 
             if (sp->getEffectApplyAuraName(b) == SPELL_AURA_PREVENT_RESURRECTION)
-			{
-				sp->addAttributes(ATTRIBUTES_NEGATIVE);
-				sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
-			}
+            {
+                sp->addAttributes(ATTRIBUTES_NEGATIVE);
+                sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
+            }
         }
 
         // DankoDJ: Refactoring session 16/02/2016 new functions
@@ -4181,30 +4181,30 @@ void SpellMgr::applyHackFixes()
     }
     //Persistent Shield
     sp = getMutableSpellInfo(26467);
-	if (sp)
-	{
-		sp->setEffectTriggerSpell(26470, 0);
-		sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
-		sp->setDurationIndex(0);
-		sp->setProcFlags(PROC_ON_CAST_SPELL);
-	}
+    if (sp)
+    {
+        sp->setEffectTriggerSpell(26470, 0);
+        sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
+        sp->setDurationIndex(0);
+        sp->setProcFlags(PROC_ON_CAST_SPELL);
+    }
     //Gravity Bomb
     sp = getMutableSpellInfo(63024);
-	if (sp)
-	{
-		sp->setEffectBasePoints(0, 0);
-		sp->setEffect(SPELL_EFFECT_NULL, 1);
-		sp->setEffect(SPELL_EFFECT_NULL, 2);
-		sp->setTargetAuraState(0);
-		sp->setCasterAuraSpell(0);
-		sp->setCasterAuraState(0);
-		sp->setCasterAuraStateNot(0);
-		sp->setTargetAuraStateNot(0);
-		sp->setTargetAuraSpell(0);
-		sp->setCasterAuraSpellNot(0);
-		sp->setTargetAuraSpellNot(0);
-		sp->addAttributes(ATTRIBUTES_NEGATIVE);
-	}
+    if (sp)
+    {
+        sp->setEffectBasePoints(0, 0);
+        sp->setEffect(SPELL_EFFECT_NULL, 1);
+        sp->setEffect(SPELL_EFFECT_NULL, 2);
+        sp->setTargetAuraState(0);
+        sp->setCasterAuraSpell(0);
+        sp->setCasterAuraState(0);
+        sp->setCasterAuraStateNot(0);
+        sp->setTargetAuraStateNot(0);
+        sp->setTargetAuraSpell(0);
+        sp->setCasterAuraSpellNot(0);
+        sp->setTargetAuraSpellNot(0);
+        sp->addAttributes(ATTRIBUTES_NEGATIVE);
+    }
     // War Stomp
     sp = getMutableSpellInfo(20549);
     if (sp)
@@ -4238,4 +4238,3 @@ void SpellMgr::applyHackFixes()
         sp->setProcFlags(PROC_ON_CAST_SPELL);
     }
 }
-

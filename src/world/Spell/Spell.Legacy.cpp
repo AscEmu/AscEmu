@@ -663,8 +663,8 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         return SPELL_DID_HIT_EVADE;
 
     /************************************************************************/
-    /* Check if the player target is able to deflect spells					*/
-    /* Currently (3.3.5a) there is only spell doing that: Deterrence		*/
+    /* Check if the player target is able to deflect spells                 */
+    /* Currently (3.3.5a) there is only spell doing that: Deterrence        */
     /************************************************************************/
     if (p_victim && p_victim->HasAuraWithName(SPELL_AURA_DEFLECT_SPELLS))
     {
@@ -824,7 +824,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
         if (res == SPELL_DID_HIT_SUCCESS)  // proc handling. mb should be moved outside this function
         {
-            //			u_caster->HandleProc(PROC_ON_SPELL_LAND,target,GetProto());
+            // u_caster->HandleProc(PROC_ON_SPELL_LAND,target,GetProto());
         }
 
         return res;
@@ -904,7 +904,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     m_magnetTarget = 0;
 
     //if (p_caster != NULL)
-    //   m_castTime -= 100;	  // session update time
+    //   m_castTime -= 100; // session update time
 
 
     m_spellState = SPELL_STATE_PREPARING;
@@ -1054,7 +1054,7 @@ void Spell::cancel()
                 {
                     RemoveItems();
                 }
-                //				p_caster->setAttackTimer(1000, false);
+                // p_caster->setAttackTimer(1000, false);
             }
         }
     }
@@ -1421,38 +1421,38 @@ void Spell::castMe(bool check)
                     } break;
                         // cases for stealth - etc
                         // we can cast the spell, but we drop the flag (if we have it)
-                    case 1784:		// Stealth rank 1
-                    case 1785:		// Stealth rank 2
-                    case 1786:		// Stealth rank 3
-                    case 1787:		// Stealth rank 4
-                    case 5215:		// Prowl rank 1
-                    case 6783:		// Prowl rank 2
-                    case 9913:		// Prowl rank 3
-                    case 498:		// Divine protection
-                    case 5573:		// Unknown spell
-                    case 642:		// Divine shield
-                    case 1020:		// Unknown spell
-                    case 1022:		// Hand of Protection rank 1 (ex blessing of protection)
-                    case 5599:		// Hand of Protection rank 2 (ex blessing of protection)
-                    case 10278:		// Hand of Protection rank 3 (ex blessing of protection)
-                    case 1856:		// Vanish rank 1
-                    case 1857:		// Vanish rank 2
-                    case 26889:		// Vanish rank 3
-                    case 45438:		// Ice block
-                    case 20580:		// Unknown spell
-                    case 58984:		// Shadowmeld
-                    case 17624:		// Petrification-> http://www.wowhead.com/?spell=17624
-                    case 66:		// Invisibility
+                    case 1784:      // Stealth rank 1
+                    case 1785:      // Stealth rank 2
+                    case 1786:      // Stealth rank 3
+                    case 1787:      // Stealth rank 4
+                    case 5215:      // Prowl rank 1
+                    case 6783:      // Prowl rank 2
+                    case 9913:      // Prowl rank 3
+                    case 498:       // Divine protection
+                    case 5573:      // Unknown spell
+                    case 642:       // Divine shield
+                    case 1020:      // Unknown spell
+                    case 1022:      // Hand of Protection rank 1 (ex blessing of protection)
+                    case 5599:      // Hand of Protection rank 2 (ex blessing of protection)
+                    case 10278:     // Hand of Protection rank 3 (ex blessing of protection)
+                    case 1856:      // Vanish rank 1
+                    case 1857:      // Vanish rank 2
+                    case 26889:     // Vanish rank 3
+                    case 45438:     // Ice block
+                    case 20580:     // Unknown spell
+                    case 58984:     // Shadowmeld
+                    case 17624:     // Petrification-> http://www.wowhead.com/?spell=17624
+                    case 66:        // Invisibility
                         if (p_caster->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
                         {
                             if (p_caster->getTeam() == 0)
-                                p_caster->RemoveAura(23333);	// ally player drop horde flag if they have it
+                                p_caster->RemoveAura(23333);    // ally player drop horde flag if they have it
                             else
-                                p_caster->RemoveAura(23335); 	// horde player drop ally flag if they have it
+                                p_caster->RemoveAura(23335);    // horde player drop ally flag if they have it
                         }
                         if (p_caster->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
 
-                            p_caster->RemoveAura(34976);	// drop the flag
+                            p_caster->RemoveAura(34976);        // drop the flag
                         break;
                 }
             }
@@ -1696,7 +1696,7 @@ void Spell::castMe(bool check)
         }
 
         //if (u_caster != NULL)
-        //	u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, GetProto()->getId());
+        //  u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, GetProto()->getId());
     }
     else
     {
@@ -1758,7 +1758,7 @@ void Spell::AddTime(uint32 type)
             //in case cast is delayed, make sure we do not exit combat
             else
             {
-                //				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,attackTimeoutInterval,true);
+                // sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,attackTimeoutInterval,true);
                 // also add a new delay to offhand and main hand attacks to avoid cutting the cast short
 
                 // TODO: should spell cast time pushback reset swing timers again? -Appled
@@ -1792,7 +1792,7 @@ void Spell::Update(unsigned long time_passed)
     // XD, it's already there!
     if ((getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT) &&
         ((m_castTime / 1.5f) > m_timer) &&
-        //		float(m_castTime)/float(m_timer) >= 2.0f		&&
+        // float(m_castTime)/float(m_timer) >= 2.0f &&
         (
         m_castPositionX != m_caster->GetPositionX() ||
         m_castPositionY != m_caster->GetPositionY() ||
@@ -1900,7 +1900,7 @@ void Spell::finish(bool successful)
     /* Mana Regenerates while in combat but not for 5 seconds after each spell */
     /* Only if the spell uses mana, will it cause a regen delay.
        is this correct? is there any spell that doesn't use mana that does cause a delay?
-       this is for creatures as effects like chill (when they have frost armor on) prevents regening of mana	*/
+       this is for creatures as effects like chill (when they have frost armor on) prevents regening of mana */
 
        //moved to spellhandler.cpp -> remove item when click on it! not when it finishes
 
@@ -2313,7 +2313,7 @@ void Spell::SendSpellStart()
                 }
                 else
                 {
-                    ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
+                    ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
                 }
             }
         }
@@ -2323,7 +2323,7 @@ void Spell::SendSpellStart()
             if (p_caster != nullptr)
                 ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else
-                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
         }
 #endif
 
@@ -2342,7 +2342,7 @@ void Spell::SendSpellStart()
     }
 
 #if VERSION_STRING >= WotLK
-    data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
+    data << (uint32)139; // 3.0.2 seems to be some small value around 250 for shadow bolt.
 #endif
     m_caster->SendMessageToSet(&data, true);
 }
@@ -2469,7 +2469,7 @@ void Spell::SendSpellGo()
                     ip = it->getItemProperties();
             }
             else
-                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
         }
         else
         {
@@ -2477,7 +2477,7 @@ void Spell::SendSpellGo()
             if (p_caster != nullptr)
                 ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
-                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
 #endif
         }
         if (ip != nullptr)
@@ -2585,7 +2585,7 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
             Unit* target = u_caster->GetMapMgr()->GetUnit(moderated_target.targetGuid);
             if (target && target->isAlive())
             {
-                u_caster->HandleProc(PROC_ON_RESIST_VICTIM, target, getSpellInfo()/*,damage*/);		/** Damage is uninitialized at this point - burlex */
+                u_caster->HandleProc(PROC_ON_RESIST_VICTIM, target, getSpellInfo()/*,damage*/); /** Damage is uninitialized at this point - burlex */
                 target->CombatStatusHandler_ResetPvPTimeout(); // aaa
                 u_caster->CombatStatusHandler_ResetPvPTimeout(); // bbb
             }
@@ -2768,26 +2768,26 @@ bool Spell::HasPower()
     switch (getSpellInfo()->getPowerType())
     {
         case POWER_TYPE_HEALTH:
-        {	powerField = UNIT_FIELD_HEALTH;						}
+        { powerField = UNIT_FIELD_HEALTH; }
         break;
         case POWER_TYPE_MANA:
-        {	powerField = UNIT_FIELD_POWER1;	m_usesMana = true;	}
+        { powerField = UNIT_FIELD_POWER1; m_usesMana = true; }
         break;
         case POWER_TYPE_RAGE:
-        {	powerField = UNIT_FIELD_POWER2;						}
+        { powerField = UNIT_FIELD_POWER2; }
         break;
         case POWER_TYPE_FOCUS:
-        {	powerField = UNIT_FIELD_POWER3;						}
+        { powerField = UNIT_FIELD_POWER3; }
         break;
         case POWER_TYPE_ENERGY:
-        {	powerField = UNIT_FIELD_POWER4;						}
+        { powerField = UNIT_FIELD_POWER4; }
         break;
         case POWER_TYPE_HAPPINESS:
-        {	powerField = UNIT_FIELD_POWER5;						}
+        { powerField = UNIT_FIELD_POWER5; }
         break;
 #if VERSION_STRING == WotLK
         case POWER_TYPE_RUNIC_POWER:
-        {	powerField = UNIT_FIELD_POWER7;						}
+        { powerField = UNIT_FIELD_POWER7; }
         break;
 
         case POWER_TYPE_RUNES:
@@ -2917,26 +2917,26 @@ bool Spell::TakePower()
     switch (getSpellInfo()->getPowerType())
     {
         case POWER_TYPE_HEALTH:
-        {	powerField = UNIT_FIELD_HEALTH;						}
+        {   powerField = UNIT_FIELD_HEALTH; }
         break;
         case POWER_TYPE_MANA:
-        {	powerField = UNIT_FIELD_POWER1;	m_usesMana = true;	}
+        {   powerField = UNIT_FIELD_POWER1; m_usesMana = true; }
         break;
         case POWER_TYPE_RAGE:
-        {	powerField = UNIT_FIELD_POWER2;						}
+        {   powerField = UNIT_FIELD_POWER2; }
         break;
         case POWER_TYPE_FOCUS:
-        {	powerField = UNIT_FIELD_POWER3;						}
+        {   powerField = UNIT_FIELD_POWER3; }
         break;
         case POWER_TYPE_ENERGY:
-        {	powerField = UNIT_FIELD_POWER4;						}
+        {   powerField = UNIT_FIELD_POWER4; }
         break;
         case POWER_TYPE_HAPPINESS:
-        {	powerField = UNIT_FIELD_POWER5;						}
+        {   powerField = UNIT_FIELD_POWER5; }
         break;
 #if VERSION_STRING == WotLK
         case POWER_TYPE_RUNIC_POWER:
-        {	powerField = UNIT_FIELD_POWER7;						}
+        {   powerField = UNIT_FIELD_POWER7; }
         break;
 
         case POWER_TYPE_RUNES:
@@ -3756,14 +3756,14 @@ uint32 Spell::GetMechanic(SpellInfo* sp)
 uint8 Spell::CanCast(bool tolerate)
 {
     /**
-     *	Object cast checks
+     * Object cast checks
      */
     if (m_caster && m_caster->IsInWorld())
     {
         Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
 
         /**
-         *	Check for valid targets
+         * Check for valid targets
          */
         if (target)
         {
@@ -3814,7 +3814,7 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Check for valid location
+         * Check for valid location
          */
         if (getSpellInfo()->getId() == 32146)
         {
@@ -3859,12 +3859,12 @@ uint8 Spell::CanCast(bool tolerate)
     }
 
     /**
-     *	Player caster checks
+     * Player caster checks
      */
     if (p_caster)
     {
         /**
-         *	Indoor/Outdoor check
+         * Indoor/Outdoor check
          */
         if (worldConfig.terrainCollision.isCollisionEnabled)
         {
@@ -3876,7 +3876,7 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Battlegrounds/Arena check
+         * Battlegrounds/Arena check
          */
         if (p_caster->m_bg)
         {
@@ -3891,7 +3891,7 @@ uint8 Spell::CanCast(bool tolerate)
             return SPELL_FAILED_NO_POWER;
 
         /**
-         *	Duel request check
+         * Duel request check
          */
         if (p_caster->GetDuelState() == DUEL_STATE_REQUESTED)
         {
@@ -3906,7 +3906,7 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Duel area check
+         * Duel area check
          */
         if (getSpellInfo()->getId() == 7266)
         {
@@ -3921,11 +3921,11 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	On taxi check
+         * On taxi check
          */
         if (p_caster->m_onTaxi)
         {
-            if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE))    //Are mount castable spells allowed on a taxi?
+            if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE)) // Are mount castable spells allowed on a taxi?
             {
                 if (m_spellInfo->getId() != 33836 && m_spellInfo->getId() != 45072 && m_spellInfo->getId() != 45115 && m_spellInfo->getId() != 31958)   // exception for taxi bombs
                     return SPELL_FAILED_NOT_ON_TAXI;
@@ -3938,11 +3938,11 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Is mounted check
+         * Is mounted check
          */
         if (!p_caster->IsMounted())
         {
-            if (getSpellInfo()->getId() == 25860)  // Reindeer Transformation
+            if (getSpellInfo()->getId() == 25860) // Reindeer Transformation
                 return SPELL_FAILED_ONLY_MOUNTED;
         }
 
@@ -4002,17 +4002,17 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	check if spell requires shapeshift
+         * check if spell requires shapeshift
          */
          // I think Spell prototype's RequiredShapeShift is not entirely accurate ....
          //if (GetProto()->RequiredShapeShift && !(GetProto()->RequiredShapeShift == (uint32)1 << (FORM_SHADOW - 1)) && !((uint32)1 << (p_caster->GetShapeShift()-1) & GetProto()->RequiredShapeShift))
          //{
-         //	return SPELL_FAILED_ONLY_SHAPESHIFT;
+         // return SPELL_FAILED_ONLY_SHAPESHIFT;
          //}
 
 
          /**
-          *	check if spell is allowed while we have a battleground flag
+          * check if spell is allowed while we have a battleground flag
           */
         if (p_caster->m_bgHasFlag)
         {
@@ -4043,7 +4043,7 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	check if we have the required gameobject focus
+         * check if we have the required gameobject focus
          */
         float focusRange;
 
@@ -4093,7 +4093,7 @@ uint8 Spell::CanCast(bool tolerate)
     }
 
     /**
-    *	Targeted Item Checks
+    * Targeted Item Checks
     */
     if (p_caster && m_targets.m_itemTarget)
     {
@@ -4166,10 +4166,10 @@ uint8 Spell::CanCast(bool tolerate)
     } // end targeted item
 
     /**
-     *	set up our max range
-     *	latency compensation!!
-     *	figure out how much extra distance we need to allow for based on our
-     *	movespeed and latency.
+     * set up our max range
+     * latency compensation!!
+     * figure out how much extra distance we need to allow for based on our
+     * movespeed and latency.
      */
     float maxRange = 0;
 
@@ -4210,7 +4210,7 @@ uint8 Spell::CanCast(bool tolerate)
     }
 
     /**
-     *	Some Unit caster range check
+     * Some Unit caster range check
      */
     if (u_caster != nullptr)
     {
@@ -4226,7 +4226,7 @@ uint8 Spell::CanCast(bool tolerate)
     }
 
     /**
-     *	Targeted Unit Checks
+     * Targeted Unit Checks
      */
     if (m_targets.m_unitTarget)
     {
@@ -4589,11 +4589,11 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 if (target->dispels[getSpellInfo()->getDispelType()])
-                    return SPELL_FAILED_DAMAGE_IMMUNE;			// hackfix - burlex
+                    return SPELL_FAILED_DAMAGE_IMMUNE; // hackfix - burlex
 
                 // Removed by Supalosa and moved to 'completed cast'
-                //if (target->MechanicsDispels[GetProto()->MechanicsType])
-                //	return SPELL_FAILED_PREVENTED_BY_MECHANIC-1; // Why not just use 	SPELL_FAILED_DAMAGE_IMMUNE                                   = 144,
+                //  if (target->MechanicsDispels[GetProto()->MechanicsType])
+                //      return SPELL_FAILED_PREVENTED_BY_MECHANIC-1; // Why not just use SPELL_FAILED_DAMAGE_IMMUNE = 144,
             }
 
             // if we're replacing a higher rank, deny it
@@ -4839,19 +4839,19 @@ uint8 Spell::CanCast(bool tolerate)
         }
 
         /**
-         *	Stun check
+         * Stun check
          */
         if (u_caster->IsStunned() && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) == 0)
             return SPELL_FAILED_STUNNED;
 
         /**
-         *	Fear check
+         * Fear check
          */
         if (u_caster->IsFeared() && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED) == 0)
             return SPELL_FAILED_FLEEING;
 
         /**
-         *	Confuse check
+         * Confuse check
          */
         if (u_caster->hasUnitFlags(UNIT_FLAG_CONFUSED) && (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
             return SPELL_FAILED_CONFUSED;
@@ -5384,7 +5384,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 float ap = float(u_caster->GetAP());
                 if (i == 0)
-                    value += float2int32(ceilf(ap * 0.01f));	// / 100
+                    value += float2int32(ceilf(ap * 0.01f)); // / 100
                 else if (i == 1)
                     value += float2int32(ap * 0.06f);
             }
@@ -6337,22 +6337,22 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
             switch (value)
             {
                 case 75:
-                {	spellid = 55428; }
+                {   spellid = 55428; }
                 break;// Rank 1
                 case 150:
-                {	spellid = 55480; }
+                {   spellid = 55480; }
                 break;// Rank 2
                 case 225:
-                {	spellid = 55500; }
+                {   spellid = 55500; }
                 break;// Rank 3
                 case 300:
-                {	spellid = 55501; }
+                {   spellid = 55501; }
                 break;// Rank 4
                 case 375:
-                {	spellid = 55502; }
+                {   spellid = 55502; }
                 break;// Rank 5
                 case 450:
-                {	spellid = 55503; }
+                {   spellid = 55503; }
                 break;// Rank 6
                 case 525:
                 {    spellid = 74497; }
@@ -6366,22 +6366,22 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
             switch (value)
             {
                 case 75:
-                {	spellid = 53120; }
+                {   spellid = 53120; }
                 break;// Rank 1
                 case 150:
-                {	spellid = 53121; }
+                {   spellid = 53121; }
                 break;// Rank 2
                 case 225:
-                {	spellid = 53122; }
+                {   spellid = 53122; }
                 break;// Rank 3
                 case 300:
-                {	spellid = 53123; }
+                {   spellid = 53123; }
                 break;// Rank 4
                 case 375:
-                {	spellid = 53124; }
+                {   spellid = 53124; }
                 break;// Rank 5
                 case 450:
-                {	spellid = 53040; }
+                {   spellid = 53040; }
                 break;// Rank 6
                 case 525:
                 {    spellid = 74496; }
@@ -6396,25 +6396,25 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
             switch (value)
             {
                 case 75:
-                {	spellid = 53125; }
+                {   spellid = 53125; }
                 break;// Rank 1
                 case 150:
-                {	spellid = 53662; }
+                {   spellid = 53662; }
                 break;// Rank 2
                 case 225:
-                {	spellid = 53663; }
+                {   spellid = 53663; }
                 break;// Rank 3
                 case 300:
-                {	spellid = 53664; }
+                {   spellid = 53664; }
                 break;// Rank 4
                 case 375:
-                {	spellid = 53665; }
+                {   spellid = 53665; }
                 break;// Rank 5
                 case 450:
-                {	spellid = 53666; }
+                {   spellid = 53666; }
                 break;// Rank 6
                 case 525:
-                {    spellid = 74495; }
+                {   spellid = 74495; }
                 break;// Rank 7
             }
         }
@@ -6541,9 +6541,9 @@ bool Spell::Reflect(Unit* refunit)
                     (*i)->charges--;
                     if ((*i)->charges <= 0)
                     {
-                        if (!refunit->RemoveAura((*i)->spellId))	// should delete + erase RSS too, if unit hasn't such an aura...
+                        if (!refunit->RemoveAura((*i)->spellId)) // should delete + erase RSS too, if unit hasn't such an aura...
                         {
-                            delete *i;								// ...do it manually
+                            delete *i;  // ...do it manually
                             refunit->m_reflectSpellSchool.erase(i);
                         }
                     }
@@ -6719,7 +6719,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
             ///\todo arcemu doesn't support reflected spells
             //if (reflected)
-            //	time *= 1.25; //reflected projectiles move back 4x faster
+            //  time *= 1.25; //reflected projectiles move back 4x faster
 
             sEventMgr.AddEvent(this, &Spell::HandleEffects, guid, i, EVENT_SPELL_HIT, float2int32(time), 1, 0);
             AddRef();
@@ -6784,7 +6784,7 @@ void Spell::HandleModeratedTarget(uint64 guid)
             float time = dist * 1000.0f / m_spellInfo->getSpeed();
             //todo: arcemu doesn't support reflected spells
             //if (reflected)
-            //	time *= 1.25; //reflected projectiles move back 4x faster
+            //  time *= 1.25; //reflected projectiles move back 4x faster
             sEventMgr.AddEvent(this, &Spell::HandleModeratedEffects, guid, EVENT_SPELL_HIT, float2int32(time), 1, 0);
             AddRef();
         }

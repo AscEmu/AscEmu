@@ -599,7 +599,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         plrMover = dynamic_cast<Player*>(mover);
 
     /************************************************************************/
-    /* Clear standing state to stand.				                        */
+    /* Clear standing state to stand.                                       */
     /************************************************************************/
     if (recvPacket.GetOpcode() == MSG_MOVE_START_FORWARD)
         _player->setStandState(STANDSTATE_STAND);
@@ -799,7 +799,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
 
     /************************************************************************/
-    /* Hack Detection by Classic	                                        */
+    /* Hack Detection by Classic                                            */
     /************************************************************************/
     if (!movement_info.transport_data.transportGuid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
@@ -1021,7 +1021,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
 
     /************************************************************************/
-    /* Clear standing state to stand.				                        */
+    /* Clear standing state to stand.                                       */
     /************************************************************************/
     if (opcode == MSG_MOVE_START_FORWARD)
         mover->setStandState(STANDSTATE_STAND);
@@ -1184,7 +1184,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //}
 
         ///************************************************************************/
-        ///* Hack Detection by Classic	                                        */
+        ///* Hack Detection by Classic                                            */
         ///************************************************************************/
         //if (!movement_info.transporter_info.guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
         //{

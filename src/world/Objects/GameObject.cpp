@@ -1005,7 +1005,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
 
                 if (spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT || spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)
                 {
-                    return;	 // on area don't continue.
+                    return; // on area don't continue.
                 }
             }
         }

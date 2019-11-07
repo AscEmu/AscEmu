@@ -491,11 +491,11 @@ class SERVER_DECL Aura : public EventableObject
         Unit* m_target;
         Player* p_target;
         uint32 expirytime;
-        int32 m_duration;       // In Milliseconds
-        //	bool m_positive;
+        int32 m_duration; // In Milliseconds
+        // bool m_positive;
         signed char m_positive;
-        uint32	m_dynamicValue;
-        uint32	m_flags;
+        uint32 m_dynamicValue;
+        uint32 m_flags;
         uint32 m_modcount;
         Modifier m_modList[3];
         Modifier* mod;
@@ -506,7 +506,7 @@ class SERVER_DECL Aura : public EventableObject
 
     public:
         uint32_t getExpiryTime() const { return expirytime; }
-        bool m_temporary;	    // Skip saving
+        bool m_temporary;       // Skip saving
         bool m_deleted;
         int16 m_interrupted;
         bool m_ignoreunapply;   // \\\"special\\\" case, for unapply

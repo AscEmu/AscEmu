@@ -98,7 +98,7 @@ void Item::modStackCount(int32_t mod)
 #ifdef AE_TBC
 void Item::setTextId(const uint32 textId)
 {
-	write(itemData()->item_text_id, textId);
+    write(itemData()->item_text_id, textId);
 }
 #endif
 

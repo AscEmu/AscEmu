@@ -328,8 +328,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         void SetRoles(uint64 guid, uint8 roles);
         void SetSelectedDungeons(uint64 guid, const LfgDungeonSet& dungeons);
 
-	private:
-		
+    private:
         uint8 GetRoles(uint64 guid);
         const std::string& GetComment(uint64 gguid);
         void RestoreState(uint64 guid);

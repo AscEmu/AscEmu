@@ -91,8 +91,8 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32_t time, uin
     auto itr = m_pathNodes.begin();
 
     float nx = 0.0f;
-	float ny = 0.0f;
-	float nz = 0.0f;
+    float ny = 0.0f;
+    float nz = 0.0f;
     bool set = false;
     uint32_t nodecounter = 0;
 
@@ -115,8 +115,8 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32_t time, uin
         }
 
         auto len = static_cast<uint32_t>(sqrt((itr->second->x - nx) * (itr->second->x - nx) +
-	        (itr->second->y - ny) * (itr->second->y - ny) +
-	        (itr->second->z - nz) * (itr->second->z - nz)));
+            (itr->second->y - ny) * (itr->second->y - ny) +
+            (itr->second->z - nz) * (itr->second->z - nz)));
 
         if (len >= traveledLen)
         {
@@ -171,8 +171,8 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
     auto itr = m_pathNodes.begin();
 
     float nx = 0.0f;
-	float ny = 0.0f;
-	float nz = 0.0f;
+    float ny = 0.0f;
+    float nz = 0.0f;
     bool set = false;
     uint32_t nodecounter = 1;
 
@@ -195,8 +195,8 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
         }
 
         auto len = static_cast<uint32_t>(sqrt((itr->second->x - nx) * (itr->second->x - nx) +
-	        (itr->second->y - ny) * (itr->second->y - ny) +
-	        (itr->second->z - nz) * (itr->second->z - nz)));
+            (itr->second->y - ny) * (itr->second->y - ny) +
+            (itr->second->z - nz) * (itr->second->z - nz)));
 
         if (len >= traveledLen)
         {
@@ -258,7 +258,7 @@ void TaxiMgr::_LoadTaxiNodes()
         auto taxiNodes = sTaxiNodesStore.LookupEntry(i);
         if (taxiNodes)
         {
-	        auto* n = new TaxiNode;
+            auto* n = new TaxiNode;
             n->id = taxiNodes->id;
             n->mapid = taxiNodes->mapid;
             n->allianceMount = taxiNodes->alliance_mount;
@@ -281,7 +281,7 @@ void TaxiMgr::_LoadTaxiPaths()
         auto taxiPath = sTaxiPathStore.LookupEntry(i);
         if (taxiPath)
         {
-	        auto* p = new TaxiPath;
+            auto* p = new TaxiPath;
             p->m_from = taxiPath->from;
             p->m_to = taxiPath->to;
             p->m_id = taxiPath->id;
@@ -295,7 +295,7 @@ void TaxiMgr::_LoadTaxiPaths()
                 {
                     if (taxiPathNode->path == p->m_id)
                     {
-	                    auto* pn = new TaxiPathNode;
+                        auto* pn = new TaxiPathNode;
                         pn->x = taxiPathNode->x;
                         pn->y = taxiPathNode->y;
                         pn->z = taxiPathNode->z;
@@ -312,17 +312,17 @@ void TaxiMgr::_LoadTaxiPaths()
 
 TaxiPath* TaxiMgr::GetTaxiPath(uint32_t path)
 {
-	auto itr = this->m_taxiPaths.find(path);
+    auto itr = this->m_taxiPaths.find(path);
     if (itr == m_taxiPaths.end())
         return nullptr;
-	
-	return itr->second;
+    
+    return itr->second;
 }
 
 TaxiPath* TaxiMgr::GetTaxiPath(uint32_t from, uint32_t to)
 {
-	for (auto& taxiPath : m_taxiPaths)
-		if (taxiPath.second->m_to == to && taxiPath.second->m_from == from)
+    for (auto& taxiPath : m_taxiPaths)
+        if (taxiPath.second->m_to == to && taxiPath.second->m_from == from)
             return taxiPath.second;
 
     return nullptr;
@@ -330,12 +330,12 @@ TaxiPath* TaxiMgr::GetTaxiPath(uint32_t from, uint32_t to)
 
 TaxiNode* TaxiMgr::GetTaxiNode(uint32_t node)
 {
-	auto itr = this->m_taxiNodes.find(node);
+    auto itr = this->m_taxiNodes.find(node);
 
     if (itr == m_taxiNodes.end())
         return nullptr;
-	
-	return itr->second;
+
+    return itr->second;
 }
 
 //MIT
@@ -369,12 +369,12 @@ uint32_t TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32_t mapid)
 
 bool TaxiMgr::GetGlobalTaxiNodeMask(uint32_t /*curloc*/, uint32_t* mask)
 {
-	for (auto& taxiPath : m_taxiPaths)
-	{
+    for (auto& taxiPath : m_taxiPaths)
+    {
         /*if (itr->second->from == curloc)
         {*/
         auto field = static_cast<uint8_t>((taxiPath.second->m_to - 1) / 32);
-        if (field >= 12)    //The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
+        if (field >= 12) // The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
             continue;
         mask[field] |= 1 << ((taxiPath.second->m_to - 1) % 32);
         //}

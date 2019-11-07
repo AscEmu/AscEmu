@@ -262,7 +262,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     for (itr = q_begin; itr != q_end; ++itr)
     {
-        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, *itr);	// save a call
+        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, *itr); // save a call
         if (tmp_status > status)
             status = tmp_status;
     }
@@ -437,11 +437,11 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
-    *data << qst_giver->getGuid();			// npc guid
+    *data << qst_giver->getGuid(); // npc guid
 #if VERSION_STRING > TBC
-    *data << uint64(qst_giver->isPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
+    *data << uint64(qst_giver->isPlayer() ? qst_giver->getGuid() : 0); // (questsharer?) guid
 #endif
-    *data << qst->id;						// quest id
+    *data << qst->id; // quest id
 
     if (lq != nullptr)
     {
@@ -457,12 +457,12 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     }
 
 #if VERSION_STRING > TBC
-    *data << uint8(1);						// Activate accept
+    *data << uint8(1);                      // Activate accept
     *data << qst->quest_flags;
-    *data << qst->suggestedplayers;			// "Suggested players"
-    *data << uint8(0);						// MANGOS: IsFinished? value is sent back to server in quest accept packet
+    *data << qst->suggestedplayers;         // "Suggested players"
+    *data << uint8(0);                      // MANGOS: IsFinished? value is sent back to server in quest accept packet
 #else
-    *data << uint32_t(1);   // active quest
+    *data << uint32_t(1);                   // active quest
     *data << qst->suggestedplayers;
 #endif
 
@@ -497,21 +497,21 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << (ip ? ip->DisplayInfoID : uint32(0));
     }
 
-    *data << GenerateRewardMoney(plr, qst);	// Money reward
+    *data << GenerateRewardMoney(plr, qst);     // Money reward
 
 #if VERSION_STRING > TBC
-    *data << uint32(0); //New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
-    *data << (qst->bonushonor * 10);					// Honor reward
-    *data << float(0); //New 3.3
+    *data << uint32(0);                         // New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
+    *data << (qst->bonushonor * 10);            // Honor reward
+    *data << float(0);                          // New 3.3
 #endif
 
-    *data << qst->reward_spell;					// this is the spell (id) the quest finisher teaches you, or the icon of the spell if effect_on_player is not 0
+    *data << qst->reward_spell;                 // this is the spell (id) the quest finisher teaches you, or the icon of the spell if effect_on_player is not 0
 
 #if VERSION_STRING > TBC
-    *data << qst->effect_on_player;				// this is the spell (id) the quest finisher casts on you as a reward
-    *data << qst->rewardtitleid;				// Title reward (ID)
-    *data << qst->rewardtalents;				// Talent reward
-    *data << qst->bonusarenapoints;				// Arena Points reward
+    *data << qst->effect_on_player;             // this is the spell (id) the quest finisher casts on you as a reward
+    *data << qst->rewardtitleid;                // Title reward (ID)
+    *data << qst->rewardtalents;                // Talent reward
+    *data << qst->bonusarenapoints;             // Arena Points reward
     *data << GenerateQuestXP(plr, qst);         // new 3.3.0
 
     for (uint8 i = 0; i < 5; ++i)
@@ -523,20 +523,20 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     for (uint8 i = 0; i < 5; ++i)
         *data << uint32(0);
 
-    *data << qst->detailemotecount;				// Amount of emotes (4?)
+    *data << qst->detailemotecount;             // Amount of emotes (4?)
 
     for (uint8 i = 0; i < qst->detailemotecount; i++)
     {
-        *data << qst->detailemote[i];			// Emote ID
-        *data << qst->detailemotedelay[i];		// Emote Delay
+        *data << qst->detailemote[i];           // Emote ID
+        *data << qst->detailemotedelay[i];      // Emote Delay
     }
 #else
-    *data << uint32_t(0);   //unk
-    *data << uint32_t(0);   //unk
-    *data << uint32_t(0);   //reward pvp title
-    *data << uint32_t(1);   //emotecount
+    *data << uint32_t(0);                       //unk
+    *data << uint32_t(0);                       //unk
+    *data << uint32_t(0);                       //reward pvp title
+    *data << uint32_t(1);                       //emotecount
     *data << uint32_t(EMOTE_ONESHOT_TALK);
-    *data << uint32_t(0);   // emote delay
+    *data << uint32_t(0);                       // emote delay
 #endif
 }
 #endif
@@ -577,7 +577,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(0);
     *data << qst->quest_flags;
     *data << qst->suggestedplayers;
-    *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0);	     // Required Money
+    *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
 
     // item count
     *data << qst->count_required_item;
@@ -644,17 +644,17 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     if (qst->rewardtitleid > 0)
         plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
-	// Some spells applied at quest reward
-	SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
-	if (saBounds.first != saBounds.second)
-	{
-		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-		{
-			if (itr->second->autoCast && itr->second->fitsToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
-				if (!plr->HasAura(itr->second->spellId))
-					plr->castSpell(plr, itr->second->spellId, true);
-		}
-	}
+    // Some spells applied at quest reward
+    SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
+    if (saBounds.first != saBounds.second)
+    {
+        for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+        {
+            if (itr->second->autoCast && itr->second->fitsToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+                if (!plr->HasAura(itr->second->spellId))
+                    plr->castSpell(plr, itr->second->spellId, true);
+        }
+    }
 
     WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
 
@@ -664,7 +664,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     data << uint32(qst->bonushonor * 10);
     data << uint32(rewardtalents);
     data << uint32(qst->bonusarenapoints);
-    data << uint32(qst->count_reward_item);   //Reward item count
+    data << uint32(qst->count_reward_item); // Reward item count
 
     for (uint8 i = 0; i < 4; ++i)
     {
@@ -690,9 +690,9 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
     *data << qst_giver->getGuid();
-    *data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
-    *data << uint32(1);//Emote Delay
-    *data << uint32(1);//Emote
+    *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; // Hello line
+    *data << uint32(1); // Emote Delay
+    *data << uint32(1); // Emote
 
     bool bValid = false;
     if (qst_giver->isGameObject())
@@ -1409,11 +1409,11 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 data.Initialize(SMSG_SPELL_GO);
                 data << qst_giver->GetNewGUID();
                 data << qst_giver->GetNewGUID();
-                data << uint32(7763);		    // spellID
+                data << uint32(7763);               // spellID
                 data << uint8(0);
-                data << uint8(1);               // flags
-                data << uint8(1);			    // amount of targets
-                data << plr->getGuid();		    // target
+                data << uint8(1);                   // flags
+                data << uint8(1);                   // amount of targets
+                data << plr->getGuid();             // target
                 data << uint8(0);
                 data << uint16(2);
                 data << plr->getGuid();
@@ -1867,7 +1867,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
-            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);		// 1 because we have 1 quest, and we want goodbye to function
+            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
             LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 

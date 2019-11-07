@@ -2087,7 +2087,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
     if (Image == nullptr)
-        return;					// ups no unit found with that GUID on the map. Spoofed packet?
+        return; // ups no unit found with that GUID on the map. Spoofed packet?
 
     if (Image->getCreatedByGuid() == 0)
         return;
@@ -2096,7 +2096,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
 
     if (Caster == nullptr)
-        return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
+        return; // apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
 
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
 

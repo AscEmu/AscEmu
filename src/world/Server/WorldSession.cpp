@@ -244,7 +244,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
             _socket = nullptr;
         }
 
-        m_lastPing = static_cast<uint32>(UNIXTIME);	// Prevent calling this code over and
+        m_lastPing = static_cast<uint32>(UNIXTIME); // Prevent calling this code over and
         // over.
         if (!_logoutTime)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
@@ -454,7 +454,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
         char c = securitystring.at(i);
         c = static_cast<char>(tolower(c));
         if (c == '4' || c == '3')
-            c = 'a';			// for the lazy people
+            c = 'a'; // for the lazy people
 
         if (c == 'a')
         {
@@ -496,7 +496,7 @@ bool WorldSession::CanUseCommand(char cmdstr)
         return false;
     if (cmdstr == 0)
         return true;
-    if (permissions[0] == 'a' && cmdstr != 'z')	// all
+    if (permissions[0] == 'a' && cmdstr != 'z') // all
         return true;
 
     for (int i = 0; i < permissioncount; ++i)

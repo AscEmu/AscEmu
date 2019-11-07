@@ -21,30 +21,30 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     std::string questTurnTargetName = "";
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
-    *data << uint64_t(qst_giver->getGuid());   // npc guid
-    *data << uint64_t(0);                      // (questsharer?) guid
+    *data << uint64_t(qst_giver->getGuid());                                // npc guid
+    *data << uint64_t(0);                                                   // (questsharer?) guid
     *data << uint32_t(qst->id);
 
     *data << (lq ? lq->title : qst->title);
     *data << (lq ? lq->details : qst->details);
     *data << (lq ? lq->objectives : qst->objectives);
 
-    *data << questGiverTextWindow;           // 4.x
-    *data << questGiverTargetName;           // 4.x
-    *data << questTurnTextWindow;            // 4.x
-    *data << questTurnTargetName;            // 4.x
+    *data << questGiverTextWindow;                                          // 4.x
+    *data << questGiverTargetName;                                          // 4.x
+    *data << questTurnTextWindow;                                           // 4.x
+    *data << questTurnTargetName;                                           // 4.x
 
-    *data << uint32_t(0);                      // 4.x - qgportait
-    *data << uint32_t(0);                      // 4.x - qgturninportrait
+    *data << uint32_t(0);                                                   // 4.x - qgportait
+    *data << uint32_t(0);                                                   // 4.x - qgturninportrait
 
-    *data << uint8_t(1);						// Activate accept
+    *data << uint8_t(1);                                                    // Activate accept
 
     *data << uint32_t(qst->quest_flags);
     *data << uint32_t(qst->suggestedplayers);
 
-    *data << uint8_t(0);                       // finished? value is sent back to server in quest accept packet
-    *data << uint8_t(0);                       // 4.x Starts at AreaTrigger
-    *data << uint32_t(0);                      // required spell
+    *data << uint8_t(0);                                                    // finished? value is sent back to server in quest accept packet
+    *data << uint8_t(0);                                                    // 4.x Starts at AreaTrigger
+    *data << uint32_t(0);                                                   // required spell
 
     *data << uint32_t(qst->count_reward_choiceitem);
     for (uint8_t i = 0; i < 6; ++i)
@@ -93,15 +93,15 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         }
     }
 
-    *data << uint32_t(GenerateRewardMoney(plr, qst));  // Money reward
+    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
     *data << uint32_t(GenerateQuestXP(plr, qst));
 
     *data << uint32_t(qst->rewardtitleid);
-    *data << uint32_t(0);                              // Honor reward
-    *data << float(0.0f);                            // New 3.3
-    *data << uint32_t(0);                              // reward talent
-    *data << uint32_t(0);                              // unk
-    *data << uint32_t(0);                              // reputationmask
+    *data << uint32_t(0);                                                   // Honor reward
+    *data << float(0.0f);                                                   // New 3.3
+    *data << uint32_t(0);                                                   // reward talent
+    *data << uint32_t(0);                                                   // unk
+    *data << uint32_t(0);                                                   // reputationmask
 
     for (uint8_t i = 0; i < 5; ++i)
     {
@@ -118,8 +118,8 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << uint32_t(0);
     }
 
-    *data << uint32_t(0);      // reward spell
-    *data << uint32_t(0);      // reward spell cast
+    *data << uint32_t(0);                                                   // reward spell
+    *data << uint32_t(0);                                                   // reward spell cast
 
     for (uint8_t i = 0; i < 4; ++i)
     {
@@ -131,10 +131,10 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << uint32_t(0);
     }
 
-    *data << uint32_t(0);      //rewskill
-    *data << uint32_t(0);      //rewskillpoint
+    *data << uint32_t(0);                                                   // rewskill
+    *data << uint32_t(0);                                                   // rewskillpoint
 
-    *data << uint32_t(4);      // emote count
+    *data << uint32_t(4);                                                   // emote count
 
     for (uint8_t i = 0; i < 4; ++i)
     {
@@ -164,8 +164,8 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     *data << questTurnTextWindow;
     *data << questTurnTargetName;
 
-    *data << uint32_t(0);                  // giver portrait
-    *data << uint32_t(0);                  // turn in portrait
+    *data << uint32_t(0);                                                   // giver portrait
+    *data << uint32_t(0);                                                   // turn in portrait
 
     *data << uint8_t(qst->next_quest_id ? 1 : 0);
     *data << uint32_t(qst->quest_flags);
@@ -224,15 +224,15 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         }
     }
 
-    *data << uint32_t(GenerateRewardMoney(plr, qst));  // Money reward
+    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
     *data << uint32_t(GenerateQuestXP(plr, qst));
 
     *data << uint32_t(qst->rewardtitleid);
-    *data << uint32_t(0);                              // Honor reward
-    *data << float(0.0f);                            // New 3.3
-    *data << uint32_t(0);                              // reward talent
-    *data << uint32_t(0);                              // unk
-    *data << uint32_t(0);                              // reputationmask
+    *data << uint32_t(0);                                                   // Honor reward
+    *data << float(0.0f);                                                   // New 3.3
+    *data << uint32_t(0);                                                   // reward talent
+    *data << uint32_t(0);                                                   // unk
+    *data << uint32_t(0);                                                   // reputationmask
 
     for (uint8_t i = 0; i < 5; ++i)
     {
@@ -249,8 +249,8 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         *data << uint32_t(0);
     }
 
-    *data << uint32_t(0);      // reward spell
-    *data << uint32_t(0);      // reward spell cast
+    *data << uint32_t(0);                                                   // reward spell
+    *data << uint32_t(0);                                                   // reward spell cast
 
     for (uint8_t i = 0; i < 4; ++i)
     {
@@ -262,10 +262,10 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         *data << uint32_t(0);
     }
 
-    *data << uint32_t(0);      //rewskill
-    *data << uint32_t(0);      //rewskillpoint
+    *data << uint32_t(0);                                                   // rewskill
+    *data << uint32_t(0);                                                   // rewskillpoint
 
-    *data << uint32_t(4);      // emote count
+    *data << uint32_t(4);                                                   // emote count
     for (uint8_t i = 0; i < 4; ++i)
     {
         *data << uint32_t(qst->detailemote[i]);
@@ -295,14 +295,13 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         *data << qst->completeemote;
     }
 
-    *data << uint32_t(1);          // close on cancel
+    *data << uint32_t(1);                                                   // close on cancel
     *data << uint32_t(qst->quest_flags);
     *data << uint32_t(qst->suggestedplayers);
 
-    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0);	     // Required Money
+    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0);      // Required Money
 
-                                                                         // item count
-    *data << uint32_t(qst->count_required_item);
+    *data << uint32_t(qst->count_required_item);                            // item count
 
     // (loop for each item)
     for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
@@ -324,12 +323,12 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         }
     }
 
-    *data << uint32_t(0);      // required currency count
+    *data << uint32_t(0);                                                   // required currency count
 
 
     if (status == QuestStatus::NotFinished)
     {
-        *data << uint32_t(0); //incomplete button
+        *data << uint32_t(0);                                               // incomplete button
     }
     else
     {
@@ -391,14 +390,14 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 
     WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
 
-    data << uint32_t(0);                  // talents?
-    data << uint32_t(0);                  // points?
+    data << uint32_t(0);                                // talents?
+    data << uint32_t(0);                                // points?
     data << uint32_t(GenerateRewardMoney(plr, qst));
     data << uint32_t(xp);
     data << uint32_t(qst->id);
-    data << uint32_t(0);                  // skill id?
+    data << uint32_t(0);                                // skill id?
 
-    data.writeBit(0);                   // unk
+    data.writeBit(0);                                   // unk
     data.writeBit(1);
     data.flushBits();
 

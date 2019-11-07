@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef WOWSERVER_QUEST_LOG_ENTRY_HPP
-#define WOWSERVER_QUEST_LOG_ENTRY_HPP
+#pragma once
 
 #include <Database/Field.h>
 #include "CommonDefines.hpp"
@@ -30,91 +14,85 @@
 
 class SERVER_DECL QuestLogEntry : public EventableObject
 {
-	friend class QuestMgr;
+    friend class QuestMgr;
 
-	public:
+public:
+    QuestLogEntry();
+    ~QuestLogEntry();
 
-		QuestLogEntry();
-		~QuestLogEntry();
+    inline QuestProperties const* GetQuest() { return m_quest; };
+    void Init(QuestProperties const* quest, Player* plr, uint16 slot);
 
-		inline QuestProperties const* GetQuest() { return m_quest; };
-		void Init(QuestProperties const* quest, Player* plr, uint16 slot);
+    bool CanBeFinished();
+    void Complete();
+    void SaveToDB(QueryBuffer* buf);
+    bool LoadFromDB(Field* fields);
+    void UpdatePlayerFields();
 
-		bool CanBeFinished();
-		void Complete();
-		void SaveToDB(QueryBuffer* buf);
-		bool LoadFromDB(Field* fields);
-		void UpdatePlayerFields();
+    void SetTrigger(uint32 i);
+    void SetMobCount(uint32 i, uint32 count);
+    void IncrementMobCount(uint32 i);
 
-		void SetTrigger(uint32 i);
-		void SetMobCount(uint32 i, uint32 count);
-		void IncrementMobCount(uint32 i);
+    bool IsUnitAffected(Unit* target);
+    inline bool IsCastQuest() { return iscastquest; }
+    inline bool IsEmoteQuest() { return isemotequest; }
+    void AddAffectedUnit(Unit* target);
+    void ClearAffectedUnits();
 
-		bool IsUnitAffected(Unit* target);
-		inline bool IsCastQuest() { return iscastquest; }
-		inline bool IsEmoteQuest() { return isemotequest; }
-		void AddAffectedUnit(Unit* target);
-		void ClearAffectedUnits();
-
-		void SetSlot(uint16 i);
-		void Finish();
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-		/// void Fail(bool timerexpired)
-		/// Marks the quest as failed
-        ///
-        /// \param bool timerexpired  -  true if the reason for failure is timer expiration.
-        ///
-        /// \return none
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-		void Fail(bool timerexpired);
+    void SetSlot(uint16 i);
+    void Finish();
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-		/// bool HasFailed()
-		/// Tells if the Quest has failed.
-		///
-		/// \param none
-		///
-		/// \return true if the quest has failed, false otherwise.
-		///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasFailed();
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// void Fail(bool timerexpired)
+    /// Marks the quest as failed
+    ///
+    /// \param bool timerexpired  -  true if the reason for failure is timer expiration.
+    ///
+    /// \return none
+    ///
+    //////////////////////////////////////////////////////////////////////////////////////////
+    void Fail(bool timerexpired);
 
 
-        void SendQuestComplete();
-		void SendUpdateAddKill(uint32 i);
-		inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
-		inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// bool HasFailed()
+    /// Tells if the Quest has failed.
+    ///
+    /// \param none
+    ///
+    /// \return true if the quest has failed, false otherwise.
+    ///
+    //////////////////////////////////////////////////////////////////////////////////////////
+    bool HasFailed();
 
-		uint16 GetBaseField(uint16 slot)
-		{
-			return PLAYER_QUEST_LOG_1_1 + (slot * 5);
-		}
-		uint16 GetSlot() { return m_slot; }
 
-	private:
+    void SendQuestComplete();
+    void SendUpdateAddKill(uint32 i);
+    inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
+    inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
 
-		uint32 completed;
+    uint16 GetBaseField(uint16 slot) { return PLAYER_QUEST_LOG_1_1 + (slot * 5); }
+    uint16 GetSlot() { return m_slot; }
 
-		bool mInitialized;
-		bool mDirty;
+private:
+    uint32 completed;
 
-        QuestProperties const* m_quest;
-		Player* m_plr;
+    bool mInitialized;
+    bool mDirty;
 
-		uint32 m_mobcount[4];
-		uint32 m_explored_areas[4];
+    QuestProperties const* m_quest;
+    Player* m_plr;
 
-		std::set<uint64> m_affected_units;
-		bool iscastquest;
-		bool isemotequest;
+    uint32 m_mobcount[4];
+    uint32 m_explored_areas[4];
 
-		uint32 expirytime;
-		uint16 m_slot;
+    std::set<uint64> m_affected_units;
+    bool iscastquest;
+    bool isemotequest;
+
+    uint32 expirytime;
+    uint16 m_slot;
 };
-#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
 
-#endif // WOWSERVER_QUEST_HPP
+#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func

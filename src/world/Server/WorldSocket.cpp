@@ -1133,7 +1133,7 @@ void WorldSocket::SendAuthResponseError(uint8_t code)
     packet.writeBit(0);                         // has queue info
     packet.writeBit(0);                         // has account info
     packet << uint8_t(code);                    // the error code
-		  
+
     SendPacket(&packet);
 }
 #endif
