@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/SpellEffects.h"
+#include "Server/Definitions.h"
 #include "Guild.h"
 
 #if VERSION_STRING > TBC
