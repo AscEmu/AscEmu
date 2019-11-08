@@ -25,10 +25,6 @@ if(NOT USE_PCH)
     set(ASCEMU_COMMENT_PCH //)
 endif()
 
-if(NOT WITH_EXPERIMENTAL_FILESYSTEM)
-    set(ASCEMU_COMMENT_WITH_EXPERIMENTAL_FILESYSTEM //)
-endif()
-
 # platform specific
 if(WIN32)
     set(ASCEMU_CONFIGSFILE_PATH configs CACHE PATH "Path to AscEmu configs." )
