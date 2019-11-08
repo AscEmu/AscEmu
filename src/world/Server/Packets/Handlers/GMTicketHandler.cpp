@@ -222,41 +222,15 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 }
 
 
-#if VERSION_STRING < Cata
 void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 {
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
-    if (ticket == nullptr)
-        SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0).serialise().get());
-    else
-        SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, static_cast<uint8_t>(ticket->map)).serialise().get());
-}
-#else
-void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
-{
-    if (GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid()))
+    if (const auto ticket = objmgr.GetGMTicketByPlayer(_player->getGuid()))
     {
-        if (ticket->deleted == false)
+        if (!ticket->deleted)
         {
-            WorldPacket data(SMSG_GMTICKET_GETTICKET, 4 + 4 + 1 + 4 + 4 + 4 + 1 + 1);
-
-            data << uint32_t(6);
-            data << uint32_t(ticket->guid);
-            data << ticket->message;
-            data << uint8_t(0);         // unk
-            data << float(ticket->timestamp);
-            data << float(0);           // unk
-            data << float(0);           // unk
-
-            data << uint8_t(2);         // escalate?
-            data << uint8_t(ticket->comment.empty() ? 0 : 1); // already comemnted
-
-            std::string unkstring;
-            data << unkstring;
-            data << uint32_t(0);        // wait time
-
-            SendPacket(&data);
+            SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, 0, ticket->guid, ticket->timestamp, ticket->comment).serialise().get());
         }
+#if VERSION_STRING > WotLK
         else
         {
             WorldPacket data(SMSG_GMRESPONSE_RECEIVED);
@@ -284,11 +258,10 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
             SendPacket(&data);
         }
     }
+#endif
     else
     {
-        WorldPacket data(SMSG_GMTICKET_GETTICKET, 4);
-        data << uint32_t(10);     // always 10
-        SendPacket(&data);
+        SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0, 0, 0, "").serialise().get());
     }
 }
-#endif
+
