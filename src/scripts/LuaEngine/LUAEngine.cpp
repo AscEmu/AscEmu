@@ -79,6 +79,12 @@ void LuaEngine::ScriptLoadDir(std::string Dirname, LUALoadScripts* pak)
 {
     DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname.c_str());
 
+    if (!fs::exists(Dirname))
+    {
+        DLLLogDetail("LuaEngine : Directory \"scripts\" does not exist.");
+        return;
+    }
+
     auto luaScripts = Util::getDirectoryContent(Dirname, ".lua", true);
     for (auto& luaScript : luaScripts)
     {
