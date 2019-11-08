@@ -257,8 +257,9 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 
             SendPacket(&data);
         }
-    }
 #endif
+    }
+
     else
     {
         SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0, 0, 0, "").serialise().get());
