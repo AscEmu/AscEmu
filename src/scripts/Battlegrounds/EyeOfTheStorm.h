@@ -37,7 +37,7 @@ class EyeOfTheStorm : public CBattleground
 {
 public:
 
-    EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    EyeOfTheStorm(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~EyeOfTheStorm();
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -45,7 +45,7 @@ public:
     void HookFlagDrop(Player* plr, GameObject* obj) override;
     void HookFlagStand(Player* plr, GameObject* obj) override;
     void HookOnMount(Player* plr) override;
-    void HookOnAreaTrigger(Player* plr, uint32 id) override;
+    void HookOnAreaTrigger(Player* plr, uint32_t id) override;
     bool HookHandleRepop(Player* plr) override;
     void OnAddPlayer(Player* plr) override;
     void OnRemovePlayer(Player* plr) override;
@@ -55,34 +55,34 @@ public:
     void HookOnHK(Player* plr) override;
     void HookOnShadowSight() override;
     void HookGenerateLoot(Player* plr, Object* pCorpse) override;
-    void SpawnBuff(uint32 x);
-    LocationVector GetStartingCoords(uint32 Team) override;
-    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new EyeOfTheStorm(m, i, l, t); }
-    uint64 GetFlagHolderGUID(uint32 /*faction*/) const override { return m_flagHolder; }
+    void SpawnBuff(uint32_t x);
+    LocationVector GetStartingCoords(uint32_t Team) override;
+    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new EyeOfTheStorm(m, i, l, t); }
+    uint64_t GetFlagHolderGUID(uint32_t /*faction*/) const override { return m_flagHolder; }
 
-    uint32 GetNameID() override { return 44; }
+    uint32_t GetNameID() override { return 44; }
     void OnStart() override;
 
     void UpdateCPs();
     void GeneratePoints();
 
     // returns true if that team won
-    bool GivePoints(uint32 team, uint32 points);
+    bool GivePoints(uint32_t team, uint32_t points);
 
-    void RespawnCPFlag(uint32 i, uint32 id); // 0 = Neutral, <0 = Leaning towards alliance, >0 Leaning towards horde
+    void RespawnCPFlag(uint32_t i, uint32_t id); // 0 = Neutral, <0 = Leaning towards alliance, >0 Leaning towards horde
 
     bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
-    void DropFlag2(Player* plr, uint32 id);
+    void DropFlag2(Player* plr, uint32_t id);
     void HookOnFlagDrop(Player* plr) override;
     void EventResetFlag();
-    void RepopPlayersOfTeam(int32 team, Creature* sh);
+    void RepopPlayersOfTeam(int32_t team, Creature* sh);
 
     void SetIsWeekend(bool isweekend) override;
 
 protected:
 
-    int32 m_CPStatus[EOTS_TOWER_COUNT];
-    uint32 m_flagHolder;
+    int32_t m_CPStatus[EOTS_TOWER_COUNT];
+    uint32_t m_flagHolder;
 
     GameObject* m_standFlag;
     GameObject* m_dropFlag;
@@ -97,7 +97,7 @@ protected:
     typedef std::set<Player*> EOTSCaptureDisplayList;
     EOTSCaptureDisplayList m_CPDisplay[EOTS_TOWER_COUNT];
 
-    uint32 m_lastHonorGainPoints[2];
-    uint32 m_points[2];
+    uint32_t m_lastHonorGainPoints[2];
+    uint32_t m_points[2];
     Creature* m_spiritGuides[EOTS_TOWER_COUNT];
 };

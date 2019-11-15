@@ -28,14 +28,14 @@
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"
 
-WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
+WarsongGulch::WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
 
     m_zoneid = 3277;
     m_scores[0] = m_scores[1] = 0;
     m_time_left = TIME_LEFT;
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -48,7 +48,7 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     m_lgroup = lgroup;
 
     // create the buffs
-    for (uint8 i = 0; i < 6; ++i)
+    for (uint8_t i = 0; i < 6; ++i)
         SpawnBuff(i);
 
     // take note: these are swapped around for performance bonus
@@ -73,7 +73,7 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     if (!m_dropFlags[0]->CreateFromProto(179786, 489, 0, 0, 0, 0))
         DLLLogDetail("WarsongGulch : Could not create dropped flag 0");
 
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         m_dropFlags[i]->setDynamic(1);
         m_dropFlags[i]->setScale(2.5f);
@@ -84,14 +84,14 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
 WarsongGulch::~WarsongGulch()
 {
     // gates are always spawned, so mapmgr will clean them up
-    for (uint8 i = 0; i < 6; ++i)
+    for (uint8_t i = 0; i < 6; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] && m_buffs[i]->IsInWorld() == false)
             delete m_buffs[i];
     }
 
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         if (m_dropFlags[i] && m_dropFlags[i]->IsInWorld() == false)
             delete m_dropFlags[i];
@@ -102,7 +102,7 @@ WarsongGulch::~WarsongGulch()
 
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        if ((*itr) != NULL)
+        if ((*itr) != nullptr)
         {
             if (!(*itr)->IsInWorld())
                 delete(*itr);
@@ -125,9 +125,9 @@ bool WarsongGulch::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningT
     return true;
 }
 
-void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
+void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
 {
-    int32 buffslot = -1;
+    int32_t buffslot = -1;
     switch (id)
     {
         case AREATRIGGER_A_SPEED:           // Speed
@@ -163,7 +163,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
 
     if (buffslot >= 0)
     {
-        if (m_buffs[buffslot] != 0 && m_buffs[buffslot]->IsInWorld())
+        if (m_buffs[buffslot] != nullptr && m_buffs[buffslot]->IsInWorld())
         {
             // apply the buff
             SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
@@ -220,9 +220,9 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         sEventMgr.AddEvent(this, &WarsongGulch::EventReturnFlags, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         // give each player on that team bonus honor and reputation
-        uint32 honorToAdd = 2 * m_honorPerKill;
-        uint32 repToAdd = m_isWeekend ? 45 : 35;
-        uint32 fact = plr->isTeamHorde() ? 889 : 890;   //Warsong Outriders : Sliverwing Sentinels
+        uint32_t honorToAdd = 2 * m_honorPerKill;
+        uint32_t repToAdd = m_isWeekend ? 45 : 35;
+        uint32_t fact = plr->isTeamHorde() ? 889 : 890;   //Warsong Outriders : Sliverwing Sentinels
         for (std::set<Player*>::iterator itr = m_players[plr->getTeam()].begin(); itr != m_players[plr->getTeam()].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
@@ -248,9 +248,9 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
 
 void WarsongGulch::EventReturnFlags()
 {
-    for (uint8 x = 0; x < 2; x++)
+    for (uint8_t x = 0; x < 2; x++)
     {
-        if (m_homeFlags[x] != NULL)
+        if (m_homeFlags[x] != nullptr)
             m_homeFlags[x]->PushToWorld(m_mapMgr);
     }
     PlaySoundToAll(SOUND_FLAG_RESPAWN);
@@ -294,7 +294,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         // are we returning it?
         if ((obj->getEntry() == SILVERWING_FLAG && plr->isTeamAlliance()) || (obj->getEntry() == WARSONG_FLAG && plr->isTeamHorde()))
         {
-            uint32 x = plr->getTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
+            uint32_t x = plr->getTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->isTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));
 
             if (m_dropFlags[x]->IsInWorld())
@@ -318,7 +318,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         return;
     }
 
-    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32_t, uint32_t>::iterator itr = plr->m_forcedReactions.find(1059);
     if (itr != plr->m_forcedReactions.end())
     {
         return;
@@ -391,7 +391,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         return;
     }
 
-    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32_t, uint32_t>::iterator itr = plr->m_forcedReactions.find(1059);
     if (itr != plr->m_forcedReactions.end())
     {
         return;
@@ -448,7 +448,7 @@ void WarsongGulch::OnRemovePlayer(Player* plr)
     plr->RemoveAura(BG_PREPARATION);
 }
 
-LocationVector WarsongGulch::GetStartingCoords(uint32 Team)
+LocationVector WarsongGulch::GetStartingCoords(uint32_t Team)
 {
     if (Team)        // Horde
         return LocationVector(933.989685f, 1430.735840f, 345.537140f, M_PI_FLOAT);
@@ -485,7 +485,7 @@ bool WarsongGulch::HookHandleRepop(Player* plr)
     return true;
 }
 
-void WarsongGulch::SpawnBuff(uint32 x)
+void WarsongGulch::SpawnBuff(uint32_t x)
 {
     switch (x)
     {
@@ -537,7 +537,7 @@ void WarsongGulch::SpawnBuff(uint32 x)
 void WarsongGulch::OnCreate()
 {
     // add the buffs to the world
-    for (uint8 i = 0; i < 6; ++i)
+    for (uint8_t i = 0; i < 6; ++i)
     {
         if (!m_buffs[i]->IsInWorld())
             m_buffs[i]->PushToWorld(m_mapMgr);
@@ -582,7 +582,7 @@ void WarsongGulch::OnCreate()
 
 void WarsongGulch::OnStart()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -600,7 +600,7 @@ void WarsongGulch::OnStart()
     DespawnGates(5000);
 
     // add the flags to the world
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         if (!m_homeFlags[i]->IsInWorld())
             m_homeFlags[i]->PushToWorld(m_mapMgr);
@@ -634,11 +634,11 @@ void WarsongGulch::SetIsWeekend(bool isweekend)
     m_isWeekend = isweekend;
 }
 
-void WarsongGulch::DespawnGates(uint32 delay)
+void WarsongGulch::DespawnGates(uint32_t delay)
 {
     if (delay != 0)
     {
-        sEventMgr.AddEvent(this, &WarsongGulch::DespawnGates, (uint32)0, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &WarsongGulch::DespawnGates, (uint32_t)0, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
     for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)

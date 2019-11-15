@@ -72,7 +72,7 @@
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 
-const uint32 GateGOIds[6] =
+const uint32_t GateGOIds[6] =
 {
     190722,    // Gate of the Green Emerald
     190727,    // Gate of the Yellow Moon
@@ -92,7 +92,7 @@ const float sotaGates[GATE_COUNT][4] =
 const float sotaChamberGate[4] = { 878.555f, -108.21f, 117.845f, 0.01f };
 
 // Things radiating out from the gates... same orientation as door.
-const uint32 GateSigilGOIds[5] = { 192687, 192685, 192689, 192690, 192691 };
+const uint32_t GateSigilGOIds[5] = { 192687, 192685, 192689, 192690, 192691 };
 const float sotaGateSigils[GATE_COUNT][4] =
 {
     { 1414.254f,  104.78f, 42.692f, 5.4411f }, // Sigil of the Green Emerald
@@ -170,7 +170,7 @@ static LocationVector sotaAttackerStartingPosition[SOTA_NUM_ROUND_STAGES] =
 static LocationVector sotaDefenderStartingPosition = LocationVector(1209.7f, -65.16f, 70.1f, 0.0f);
 
 // Npcs
-const uint32 sotaNPCsIds[3] = { 29260, 29262, 29 };
+const uint32_t sotaNPCsIds[3] = { 29260, 29262, 29 };
 static LocationVector sotaNPCSLocations[SOTA_NPCS] =
 {
     LocationVector(1348.644165f, -298.786469f, 31.080130f, 1.710423f),
@@ -265,21 +265,21 @@ static LocationVector FlagPositions[NUM_SOTA_CONTROL_POINTS] =
     LocationVector(1215.108032f,  -65.715767f, 70.084267f, -3.124123f)
 };
 
-static const uint32 FlagIDs[NUM_SOTA_CONTROL_POINTS][MAX_PLAYER_TEAMS] =
+static const uint32_t FlagIDs[NUM_SOTA_CONTROL_POINTS][MAX_PLAYER_TEAMS] =
 {
     { 191306, 191305 },
     { 191308, 191307 },
     { 191310, 191309 }
 };
 
-static const uint32 CPWorldstates[NUM_SOTA_CONTROL_POINTS][MAX_PLAYER_TEAMS] =
+static const uint32_t CPWorldstates[NUM_SOTA_CONTROL_POINTS][MAX_PLAYER_TEAMS] =
 {
     { WORLDSTATE_SOTA_GY_E_A, WORLDSTATE_SOTA_GY_E_H },
     { WORLDSTATE_SOTA_GY_W_A, WORLDSTATE_SOTA_GY_W_H },
     { WORLDSTATE_SOTA_GY_S_A, WORLDSTATE_SOTA_GY_S_H }
 };
 
-static const uint32 SOTA_FLAGPOLE_ID = 191311;
+static const uint32_t SOTA_FLAGPOLE_ID = 191311;
 
 const char* ControlPointNames[NUM_SOTA_CONTROL_POINTS] =
 {
@@ -297,18 +297,18 @@ static LocationVector GraveyardLocations[NUM_SOTA_GRAVEYARDS] =
     LocationVector(1457.19372559f, -53.7132720947f, 5.18109416962f, 0.0f)
 };
 
-static const uint32 TeamFactions[MAX_PLAYER_TEAMS] =
+static const uint32_t TeamFactions[MAX_PLAYER_TEAMS] =
 {
     1,
     2
 };
 
-StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t):CBattleground(mgr, id, lgroup, t)
+StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t):CBattleground(mgr, id, lgroup, t)
 {
     m_zoneid = 4384;
-    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(NULL));
-    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(NULL));
-    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(NULL));
+    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(nullptr));
 
     Attackers = 0;
     Defenders = 0;
@@ -316,22 +316,22 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
     RoundTime = 0;
     roundprogress = SOTA_ROUND_PREPARATION;
 
-    for (uint8 i = 0; i < BUFF_COUNT; ++i)
+    for (uint8_t i = 0; i < BUFF_COUNT; ++i)
     {
         m_buffs[i] = nullptr;
     }
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         m_boats[i] = nullptr;
     }
 
-    for (uint8 i = 0; i < SOTA_NPCS; ++i)
+    for (uint8_t i = 0; i < SOTA_NPCS; ++i)
     {
         npc[i] = nullptr;
     }
 
-    for (uint8 i = 0; i < GATE_COUNT; ++i)
+    for (uint8_t i = 0; i < GATE_COUNT; ++i)
     {
         m_gates[i] = nullptr;
         m_gateSigils[i] = nullptr;
@@ -341,7 +341,7 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
     m_relic = nullptr;
     m_endgate = nullptr;
 
-    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; ++i)
+    for (uint8_t i = 0; i < SOTA_NORTH_BOMBS; ++i)
     {
         m_bomb[i] = nullptr;
     }
@@ -350,12 +350,12 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
 
 StrandOfTheAncient::~StrandOfTheAncient()
 {
-    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(NULL));
-    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(NULL));
-    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(NULL));
+    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(nullptr));
 }
 
-void StrandOfTheAncient::HookOnAreaTrigger(Player* /*plr*/, uint32 /*id*/)
+void StrandOfTheAncient::HookOnAreaTrigger(Player* /*plr*/, uint32_t /*id*/)
 {}
 
 void StrandOfTheAncient::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
@@ -389,7 +389,7 @@ void StrandOfTheAncient::OnRemovePlayer(Player* plr)
     }
 }
 
-LocationVector StrandOfTheAncient::GetStartingCoords(uint32 team)
+LocationVector StrandOfTheAncient::GetStartingCoords(uint32_t team)
 {
     if (team == Attackers)
     {
@@ -425,14 +425,14 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
 {
     float dist = 999999.0f;
     LocationVector dest_pos;
-    uint32 id = 0;
+    uint32_t id = 0;
 
     // Let's find the closests GY
-    for (uint8 i = SOTA_GY_EAST; i < NUM_SOTA_GRAVEYARDS; i++)
+    for (uint8_t i = SOTA_GY_EAST; i < NUM_SOTA_GRAVEYARDS; i++)
     {
         if (graveyard[i].faction == plr->getTeam())
         {
-            if (graveyard[i].spiritguide == NULL)
+            if (graveyard[i].spiritguide == nullptr)
                 continue;
 
             float gydist = plr->CalcDistance(graveyard[i].spiritguide);
@@ -461,7 +461,7 @@ void StrandOfTheAncient::OnCreate()
     BattleRound = 1;
     roundprogress = SOTA_ROUND_PREPARATION;
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -474,7 +474,7 @@ void StrandOfTheAncient::OnCreate()
     /* Relic */
     m_relic = m_mapMgr->CreateAndSpawnGameObject(GO_RELIC, sotaTitanRelic[0], sotaTitanRelic[1], sotaTitanRelic[2], sotaTitanRelic[3], 0.6f);
 
-    for (uint8 i = 0; i < GATE_COUNT; i++)
+    for (uint8_t i = 0; i < GATE_COUNT; i++)
     {
         m_gates[i] = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[i], sotaGates[i][0], sotaGates[i][1], sotaGates[i][2], sotaGates[i][3], 1.0f);
         m_gateSigils[i] = m_mapMgr->CreateAndSpawnGameObject(GateSigilGOIds[i], sotaGateSigils[i][0], sotaGateSigils[i][1], sotaGateSigils[i][2], sotaGateSigils[i][3], 1.0f);
@@ -506,7 +506,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 {
     if (victim->isCreature())
     {
-        for (uint8 i = 0; i < SOTA_NUM_DEMOLISHERS; ++i)
+        for (uint8_t i = 0; i < SOTA_NUM_DEMOLISHERS; ++i)
         {
             Creature *c = demolisher[i];
             if (c == nullptr)
@@ -523,7 +523,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
             c->Despawn(1, 0);
         }
 
-        for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
+        for (uint8_t i = 0; i < SOTA_NUM_CANONS; i++)
         {
             if (canon[i] == nullptr)
             {
@@ -549,7 +549,7 @@ void StrandOfTheAncient::SetIsWeekend(bool isweekend)
 
 bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Spell* /*spell*/)
 {
-    uint32 goentry = go->getEntry();
+    uint32_t goentry = go->getEntry();
 
     switch (goentry)
     {
@@ -581,7 +581,7 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Sp
 
 bool StrandOfTheAncient::HookQuickLockOpen(GameObject* go, Player* /*player*/, Spell* /*spell*/)
 {
-    uint32 entry = go->getEntry();
+    uint32_t entry = go->getEntry();
     if (entry == GO_RELIC)
     {
         PlaySoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_ALLIANCE : SOTA_SOUND_VICTORY_HORDE);
@@ -596,11 +596,11 @@ void StrandOfTheAncient::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {}
 
 // time in seconds
-void StrandOfTheAncient::SetTime(uint32 secs)
+void StrandOfTheAncient::SetTime(uint32_t secs)
 {
-    uint32 minutes = secs / TimeVars::Minute;
-    uint32 seconds = secs % TimeVars::Minute;
-    uint32 digits[3];
+    uint32_t minutes = secs / TimeVars::Minute;
+    uint32_t seconds = secs % TimeVars::Minute;
+    uint32_t digits[3];
     digits[0] = minutes;
     digits[1] = seconds / 10;
     digits[2] = seconds % 10;
@@ -636,7 +636,7 @@ void StrandOfTheAncient::PrepareRound()
         std::swap(Attackers, Defenders);
     }
 
-    for (uint8 i = 0; i < GATE_COUNT; i++)
+    for (uint8_t i = 0; i < GATE_COUNT; i++)
     {
         static_cast<GameObject_Destructible*>(m_gates[i])->Rebuild();
         m_gates[i]->SetFaction(TeamFactions[Defenders]);
@@ -648,9 +648,9 @@ void StrandOfTheAncient::PrepareRound()
     m_relic->SetFaction(TeamFactions[Attackers]);
 
     // Boats
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
-        uint32 boatId = 0;
+        uint32_t boatId = 0;
         switch (i)
         {
             case SOTA_BOAT_WEST:
@@ -668,17 +668,17 @@ void StrandOfTheAncient::PrepareRound()
         m_boats[i] = m_mapMgr->CreateAndSpawnGameObject(boatId, sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3], 1.0f);
     }
 
-    for (uint8 i = 0; i < GATE_COUNT; ++i)
+    for (uint8_t i = 0; i < GATE_COUNT; ++i)
     {
         m_gateTransporters[i]->SetFaction(TeamFactions[Defenders]);
     }
 
-    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; ++i)
+    for (uint8_t i = 0; i < SOTA_NORTH_BOMBS; ++i)
     {
         m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
     }
 
-    for (uint8 i = 0; i < SOTA_NUM_CANONS; ++i)
+    for (uint8_t i = 0; i < SOTA_NUM_CANONS; ++i)
     {
         if (canon[i] != nullptr)
         {
@@ -688,7 +688,7 @@ void StrandOfTheAncient::PrepareRound()
         canon[i] = SpawnCreature(SOTA_ANTI_PERSONNAL_CANNON, CanonLocations[i], TeamFactions[Defenders]);
     }
 
-    for (uint8 i = 0; i < SOTA_NORTH_DEMOLISHERS; ++i)
+    for (uint8_t i = 0; i < SOTA_NORTH_DEMOLISHERS; ++i)
     {
         Creature* c = demolisher[i];
         demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
@@ -698,7 +698,7 @@ void StrandOfTheAncient::PrepareRound()
         }
     }
 
-    for (uint8 i = 0; i < SOTA_NPCS; ++i)
+    for (uint8_t i = 0; i < SOTA_NPCS; ++i)
     {
         if (npc[i] != nullptr)
         {
@@ -707,7 +707,7 @@ void StrandOfTheAncient::PrepareRound()
         }
     }
 
-    for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; ++i)
+    for (uint8_t i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; ++i)
     {
         if (demolisher[i] != nullptr)
         {
@@ -716,7 +716,7 @@ void StrandOfTheAncient::PrepareRound()
         }
     }
 
-    for (uint8 i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; ++i)
+    for (uint8_t i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; ++i)
     {
         if (demolisher[i] != nullptr)
         {
@@ -832,7 +832,7 @@ void StrandOfTheAncient::FinishRound()
     }
 }
 
-void StrandOfTheAncient::Finish(uint32 winningteam)
+void StrandOfTheAncient::Finish(uint32_t winningteam)
 {
     sEventMgr.RemoveEvents(this);
     sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, TimeVarsMs::Second * 120, 1, 0);
@@ -870,8 +870,8 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
     if (cp.worldstate != 0)
         SetWorldState(cp.worldstate, 0);
 
-    uint32 team = TEAM_ALLIANCE;
-    uint32 faction = 0;
+    uint32_t team = TEAM_ALLIANCE;
+    uint32_t faction = 0;
 
     switch (state)
     {
@@ -891,7 +891,7 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
     }
 
     // First time spawning
-    if (cp.pole == NULL)
+    if (cp.pole == nullptr)
     {
         cp.pole = SpawnGameObject(SOTA_FLAGPOLE_ID, FlagPolePositions[point], 0, 35, 1.0f);
         cp.pole->PushToWorld(m_mapMgr);
@@ -910,7 +910,7 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
     SetWorldState(cp.worldstate, 1);
 
     //Spawn graveyard
-    SpawnGraveyard(SOTAGraveyards(uint32(point)), team);
+    SpawnGraveyard(SOTAGraveyards(uint32_t(point)), team);
 }
 
 void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
@@ -944,22 +944,22 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
     switch (point)
     {
         case SOTA_CONTROL_POINT_EAST_GY:
-            for (uint8 i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
+            for (uint8_t i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
             {
                 demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             }
-            for (uint8 i = SOTA_EAST_BOMBS_INDEX; i < SOTA_WEST_BOMBS_INDEX; i++)
+            for (uint8_t i = SOTA_EAST_BOMBS_INDEX; i < SOTA_WEST_BOMBS_INDEX; i++)
             {
                 m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
             }
             npc[TEAM_ALLIANCE] = SpawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
             break;
         case SOTA_CONTROL_POINT_WEST_GY:
-            for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
+            for (uint8_t i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
             {
                 demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             }
-            for (uint8 i = SOTA_WEST_BOMBS_INDEX; i < SOTA_NUM_BOMBS; i++)
+            for (uint8_t i = SOTA_WEST_BOMBS_INDEX; i < SOTA_NUM_BOMBS; i++)
             {
                 m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
             }
@@ -968,7 +968,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
     }
 }
 
-void StrandOfTheAncient::SpawnGraveyard(SOTAGraveyards gyid, uint32 team)
+void StrandOfTheAncient::SpawnGraveyard(SOTAGraveyards gyid, uint32_t team)
 {
     if (gyid >= NUM_SOTA_GRAVEYARDS)
         return;

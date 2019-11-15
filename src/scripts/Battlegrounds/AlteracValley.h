@@ -83,7 +83,7 @@ enum AVNodeStates
 
 struct AVLocation { float x; float y; float z; };
 struct AVSpawnLocation { float x; float y; float z; float o; };
-struct AVGameObject { uint32 id[AV_NODE_STATE_COUNT]; float x; float y; float z; float o; float rot1; float rot2; };
+struct AVGameObject { uint32_t id[AV_NODE_STATE_COUNT]; float x; float y; float z; float o; float rot1; float rot2; };
 struct AVNodeTemplate
 {
     const char* m_name;                             // Stormpike Aid Station
@@ -93,14 +93,14 @@ struct AVNodeTemplate
     AVGameObject m_flagLocation;                    // Flag location (need to add GO id/properties here)
     AVGameObject m_auraLocation;                    // Aura location
     AVGameObject m_glowLocation;                    // Aura glow location
-    uint32 m_guardId[3];                            // Horde/alliance guard ids
-    uint32 m_guardCount;                            // Count of guards to spawn
-    uint32 m_bossId[3];                             // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
+    uint32_t m_guardId[3];                            // Horde/alliance guard ids
+    uint32_t m_guardCount;                            // Count of guards to spawn
+    uint32_t m_bossId[3];                             // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
     AVLocation* m_peonLocations;                    // Used by mines.
     AVLocation m_bossLocation;                      // Location of boss if there is one
-    uint32 m_initialSpawnId;                        // Initial spawn (Bowmen) ID
-    uint32 m_worldStateFields[AV_NODE_STATE_COUNT]; // State fields
-    uint32 m_defaultState;                          // State of the node when battleground is spawned
+    uint32_t m_initialSpawnId;                        // Initial spawn (Bowmen) ID
+    uint32_t m_worldStateFields[AV_NODE_STATE_COUNT]; // State fields
+    uint32_t m_defaultState;                          // State of the node when battleground is spawned
 };
 
 enum GameObjectEntry
@@ -146,22 +146,22 @@ class AlteracValley : public CBattleground
 protected:
 
     std::list<GameObject*> m_gates;
-    uint32 m_reinforcements[2];
+    uint32_t m_reinforcements[2];
     bool m_nearingVictory[2];
-    inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
+    std::map<Creature*, std::set<uint32_t> > Get_m_resurrectMap() const { return m_resurrectMap; }
 public:
 
-    AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    AlteracValley(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~AlteracValley();
 
-    void EventAssaultControlPoint(uint32 x);
+    void EventAssaultControlPoint(uint32_t x);
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
     void HookOnPlayerDeath(Player* plr) override;
     void HookFlagDrop(Player* plr, GameObject* obj) override;
     void HookFlagStand(Player* plr, GameObject* obj) override;
     void HookOnMount(Player* plr) override;
-    void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+    void HookOnAreaTrigger(Player* plr, uint32_t trigger) override;
     bool HookHandleRepop(Player* plr) override;
     void OnAddPlayer(Player* plr) override;
     void OnRemovePlayer(Player* plr) override;
@@ -169,10 +169,10 @@ public:
     void HookOnPlayerKill(Player* plr, Player* pVictim) override;
     void HookOnUnitKill(Player* plr, Unit* pVictim) override;
     void HookOnHK(Player* plr) override;
-    LocationVector GetStartingCoords(uint32 Team) override;
+    LocationVector GetStartingCoords(uint32_t Team) override;
     void DropFlag(Player* plr);
 
-    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
+    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new AlteracValley(m, i, l, t); }
 
     const char* GetName() { return "Alterac Valley"; }
     void OnStart() override;
@@ -181,9 +181,9 @@ public:
     bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
     // AV Functions
-    void AddReinforcements(uint32 teamId, uint32 amt);
-    void RemoveReinforcements(uint32 teamId, uint32 amt);
-    void Finish(uint32 losingTeam);
+    void AddReinforcements(uint32_t teamId, uint32_t amt);
+    void RemoveReinforcements(uint32_t teamId, uint32_t amt);
+    void Finish(uint32_t losingTeam);
 
     // loot
     bool SupportsPlayerLoot() { return true; }
@@ -223,9 +223,9 @@ public:
         bool m_destroyed;
 
         // state
-        uint32 m_state;
-        uint32 m_lastState;
-        uint32 m_nodeId;
+        uint32_t m_state;
+        uint32_t m_lastState;
+        uint32_t m_nodeId;
 
         // spirit guides
         Creature* m_spiritGuide;
@@ -235,7 +235,7 @@ public:
         friend class AlteracValley;
 
         // constructor
-        AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
+        AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32_t node_id);
         ~AVNode();
 
         // initial spawn
@@ -248,10 +248,10 @@ public:
         void Capture();
 
         // spawn guards
-        void SpawnGuards(uint32 x);
+        void SpawnGuards(uint32_t x);
 
         // state change
-        void ChangeState(uint32 new_state);
+        void ChangeState(uint32_t new_state);
 
         // spawn home buff guard
         void SpawnHomeGuard();

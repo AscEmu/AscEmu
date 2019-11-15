@@ -21,7 +21,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
 
-RingOfTrials::RingOfTrials(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+RingOfTrials::RingOfTrials(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -30,7 +30,7 @@ RingOfTrials::~RingOfTrials()
 
 void RingOfTrials::OnCreate()
 {
-    GameObject* obj = NULL;
+    GameObject* obj = nullptr;
 
     obj = SpawnGameObject(183979, 559, 4090.064453f, 2858.437744f, 10.236313f, 0.492805f, 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
@@ -72,7 +72,7 @@ void RingOfTrials::HookOnShadowSight()
     m_buffs[1]->PushToWorld(m_mapMgr);
 }
 
-LocationVector RingOfTrials::GetStartingCoords(uint32 Team)
+LocationVector RingOfTrials::GetStartingCoords(uint32_t Team)
 {
     if (Team)
         return LocationVector(4027.004883f, 2976.964844f, 11.600499f);

@@ -58,21 +58,21 @@ protected:
 
     std::list<GameObject*> m_gates;
 
-    uint32 m_resources[2];
-    uint32 m_capturedBases[2];
-    uint32 m_lastHonorGainResources[2];
-    uint32 m_lastRepGainResources[2];
-    int32 m_basesOwnedBy[AB_NUM_CONTROL_POINTS];
-    int32 m_basesLastOwnedBy[AB_NUM_CONTROL_POINTS];
-    int32 m_basesAssaultedBy[AB_NUM_CONTROL_POINTS];
+    uint32_t m_resources[2];
+    uint32_t m_capturedBases[2];
+    uint32_t m_lastHonorGainResources[2];
+    uint32_t m_lastRepGainResources[2];
+    int32_t m_basesOwnedBy[AB_NUM_CONTROL_POINTS];
+    int32_t m_basesLastOwnedBy[AB_NUM_CONTROL_POINTS];
+    int32_t m_basesAssaultedBy[AB_NUM_CONTROL_POINTS];
     Creature* m_spiritGuides[AB_NUM_CONTROL_POINTS];
     bool m_nearingVictory[2];
-    uint32 m_lgroup;
+    uint32_t m_lgroup;
     bool DefFlag[AB_NUM_CONTROL_POINTS][2];
 
 public:
 
-    ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    ArathiBasin(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~ArathiBasin();
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -80,7 +80,7 @@ public:
     void HookFlagDrop(Player* plr, GameObject* obj) override;
     void HookFlagStand(Player* plr, GameObject* obj) override;
     void HookOnMount(Player* plr) override;
-    void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+    void HookOnAreaTrigger(Player* plr, uint32_t trigger) override;
     bool HookHandleRepop(Player* plr) override;
     void OnAddPlayer(Player* plr) override;
     void OnRemovePlayer(Player* plr) override;
@@ -90,22 +90,22 @@ public:
     void HookOnHK(Player* plr) override;
     void HookOnShadowSight() override;
     void HookGenerateLoot(Player* plr, Object* pCorpse) override;
-    void SpawnBuff(uint32 x);
-    LocationVector GetStartingCoords(uint32 Team) override;
+    void SpawnBuff(uint32_t x);
+    LocationVector GetStartingCoords(uint32_t Team) override;
     void HookOnFlagDrop(Player* plr) override;
 
-    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new ArathiBasin(m, i, l, t); }
+    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new ArathiBasin(m, i, l, t); }
 
-    uint32 GetNameID() override { return 40; }
+    uint32_t GetNameID() override { return 40; }
     void OnStart() override;
 
-    void EventUpdateResources(uint32 Team);
+    void EventUpdateResources(uint32_t Team);
     bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
 
     // AB Game Mechanics
-    void SpawnControlPoint(uint32 Id, uint32 Type);
-    void CaptureControlPoint(uint32 Id, uint32 Team);
-    void AssaultControlPoint(Player* pPlayer, uint32 Id);
+    void SpawnControlPoint(uint32_t Id, uint32_t Type);
+    void CaptureControlPoint(uint32_t Id, uint32_t Team);
+    void AssaultControlPoint(Player* pPlayer, uint32_t Id);
 
     void SetIsWeekend(bool isweekend) override;
 };

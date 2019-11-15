@@ -22,7 +22,7 @@
 #include "Objects/GameObject.h"
 #include "Server/Master.h"
 
-RuinsOfLordaeron::RuinsOfLordaeron(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+RuinsOfLordaeron::RuinsOfLordaeron(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -31,7 +31,7 @@ RuinsOfLordaeron::~RuinsOfLordaeron()
 
 void RuinsOfLordaeron::OnCreate()
 {
-    GameObject* obj = NULL;
+    GameObject* obj = nullptr;
 
     obj = SpawnGameObject(185917, 572, 1278.647705f, 1730.556641f, 31.605574f, 1.684245f, 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
@@ -64,7 +64,7 @@ void RuinsOfLordaeron::HookOnShadowSight()
 
 }
 
-LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
+LocationVector RuinsOfLordaeron::GetStartingCoords(uint32_t Team)
 {
     if (Team)
         return LocationVector(1277.105103f, 1743.956177f, 31.603209f);
@@ -73,7 +73,7 @@ LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
 
 }
 
-void RuinsOfLordaeron::HookOnAreaTrigger(Player* /*plr*/, uint32 trigger)
+void RuinsOfLordaeron::HookOnAreaTrigger(Player* /*plr*/, uint32_t trigger)
 {
     switch (trigger)
     {

@@ -27,7 +27,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 
-uint32 buffentries[3] = { 180380, 180362, 180146 };
+uint32_t buffentries[3] = { 180380, 180362, 180146 };
 
 static float GraveyardLocations[AB_NUM_CONTROL_POINTS][3] =
 {
@@ -53,7 +53,7 @@ static const char* ControlPointNames[AB_NUM_CONTROL_POINTS] =
     "Lumber Mill",
 };
 
-static uint32 ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
+static uint32_t ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
 {
     // NEUTRAL    ALLIANCE-ATTACK    HORDE-ATTACK    ALLIANCE-CONTROLLED    HORDE_CONTROLLED
     { 180087,       180085,            180086,         180076,                180078 },            // STABLE
@@ -99,7 +99,7 @@ static float BuffRotations[AB_NUM_CONTROL_POINTS][2] =
     { 0.113203197717667f, -0.993571877479553f },                        // LUMBERMILL
 };
 
-static uint32 AssaultFields[AB_NUM_CONTROL_POINTS][2] =
+static uint32_t AssaultFields[AB_NUM_CONTROL_POINTS][2] =
 {
     { WORLDSTATE_AB_CAPTURING_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURING_STABLES_HORDE },
     { WORLDSTATE_AB_CAPTURING_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURING_FARM_HORDE },
@@ -108,7 +108,7 @@ static uint32 AssaultFields[AB_NUM_CONTROL_POINTS][2] =
     { WORLDSTATE_AB_CAPTURING_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURING_LUMBERMILL_HORDE },
 };
 
-static uint32 OwnedFields[AB_NUM_CONTROL_POINTS][2] =
+static uint32_t OwnedFields[AB_NUM_CONTROL_POINTS][2] =
 {
     { WORLDSTATE_AB_CAPTURED_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURED_STABLES_HORDE },
     { WORLDSTATE_AB_CAPTURED_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURED_FARM_HORDE },
@@ -117,7 +117,7 @@ static uint32 OwnedFields[AB_NUM_CONTROL_POINTS][2] =
     { WORLDSTATE_AB_CAPTURED_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURED_LUMBERMILL_HORDE },
 };
 
-static uint32 NeutralFields[AB_NUM_CONTROL_POINTS] =
+static uint32_t NeutralFields[AB_NUM_CONTROL_POINTS] =
 {
     WORLDSTATE_AB_SHOW_STABLE_ICON,
     WORLDSTATE_AB_SHOW_FARM_ICON,
@@ -126,7 +126,7 @@ static uint32 NeutralFields[AB_NUM_CONTROL_POINTS] =
     WORLDSTATE_AB_SHOW_LUMBERMILL_ICON,
 };
 
-static uint32 ResourceUpdateIntervals[6] =
+static uint32_t ResourceUpdateIntervals[6] =
 {
     0,
     12000, // 12 secnods
@@ -136,7 +136,7 @@ static uint32 ResourceUpdateIntervals[6] =
     1000, // 1 second
 };
 
-static uint32 PointBonusPerUpdate[6] =
+static uint32_t PointBonusPerUpdate[6] =
 {
     0,
     10,
@@ -149,12 +149,12 @@ static uint32 PointBonusPerUpdate[6] =
 // End BG Data
 //////////////////////////////////////////////////////////////////////////////////////////
 
-static uint32 resourcesToGainBH = 260;
-static uint32 resourcesToGainBR = 160;
+static uint32_t resourcesToGainBH = 260;
+static uint32_t resourcesToGainBR = 160;
 
-void ArathiBasin::SpawnBuff(uint32 x)
+void ArathiBasin::SpawnBuff(uint32_t x)
 {
-    uint32 chosen_buffid = buffentries[Util::getRandomUInt(2)];
+    uint32_t chosen_buffid = buffentries[Util::getRandomUInt(2)];
     auto gameobject_info = sMySQLStore.getGameObjectProperties(chosen_buffid);
     if (gameobject_info == nullptr)
         return;
@@ -187,7 +187,7 @@ void ArathiBasin::SpawnBuff(uint32 x)
     }
 }
 
-void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
+void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(ControlPointGoIds[Id][Type]);
     if (gameobject_info == nullptr)
@@ -202,7 +202,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         m_controlPoints[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
         m_controlPoints[Id]->setState(GO_STATE_CLOSED);
-        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
         m_controlPoints[Id]->setAnimationProgress(100);
         m_controlPoints[Id]->setDynamic(1);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
@@ -235,7 +235,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
-        m_controlPoints[Id]->setGoType(static_cast<uint8>(gameobject_info->type));
+        m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
 
         switch (Type)
         {
@@ -330,7 +330,7 @@ void ArathiBasin::OnCreate()
 
 void ArathiBasin::OnStart()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -350,9 +350,9 @@ void ArathiBasin::OnStart()
     m_started = true;
 }
 
-ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
+ArathiBasin::ArathiBasin(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -361,7 +361,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
     m_pvpData.clear();
     m_resurrectMap.clear();
 
-    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8_t i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         m_buffs[i] = nullptr;
         m_controlPointAuras[i] = nullptr;
@@ -372,7 +372,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
         m_basesLastOwnedBy[i] = -1;
     }
 
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         m_resources[i] = 0;
         m_capturedBases[i] = 0;
@@ -383,7 +383,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 
     m_lgroup = lgroup;
 
-    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8_t i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         DefFlag[i][0] = false;
         DefFlag[i][1] = true;
@@ -395,7 +395,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 ArathiBasin::~ArathiBasin()
 {
     // gates are always spawned, so mapmgr will clean them up
-    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8_t i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] != nullptr)
@@ -454,12 +454,12 @@ bool ArathiBasin::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTe
     return true;
 }
 
-void ArathiBasin::EventUpdateResources(uint32 Team)
+void ArathiBasin::EventUpdateResources(uint32_t Team)
 {
-    uint32 resource_fields[2] = { WORLDSTATE_AB_ALLIANCE_RESOURCES, WORLDSTATE_AB_HORDE_RESOURCES };
+    uint32_t resource_fields[2] = { WORLDSTATE_AB_ALLIANCE_RESOURCES, WORLDSTATE_AB_HORDE_RESOURCES };
 
-    uint32 current_resources = m_resources[Team];
-    uint32 current_bases = m_capturedBases[Team];
+    uint32_t current_resources = m_resources[Team];
+    uint32_t current_bases = m_capturedBases[Team];
 
     if (current_bases > 5)
         current_bases = 5;
@@ -481,7 +481,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
-            uint32 fact = (*itr)->isTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
+            uint32_t fact = (*itr)->isTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
             (*itr)->ModStanding(fact, 10);
         }
         m_lastRepGainResources[Team] += resourcesToGainBR;
@@ -489,7 +489,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
 
     if ((current_resources - m_lastHonorGainResources[Team]) >= resourcesToGainBH)
     {
-        uint32 honorToAdd = m_honorPerKill;
+        uint32_t honorToAdd = m_honorPerKill;
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
@@ -507,8 +507,8 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     if (current_resources >= RESOURCES_WARNING_THRESHOLD && !m_nearingVictory[Team])
     {
         m_nearingVictory[Team] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
-        uint32 sound = SOUND_ALLIANCE_BGALMOSTEND - Team;
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64_t>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
+        uint32_t sound = SOUND_ALLIANCE_BGALMOSTEND - Team;
         PlaySoundToAll(sound);
     }
 
@@ -572,7 +572,7 @@ void ArathiBasin::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
     // nothing?
 }
 
-LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
+LocationVector ArathiBasin::GetStartingCoords(uint32_t Team)
 {
     if (Team)
         return LocationVector(684.75629f, 681.945007f, -12.915456f, 0.881211f);
@@ -580,9 +580,9 @@ LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
     return LocationVector(1314.932495f, 1311.246948f, -9.00952f, 3.802896f);
 }
 
-void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
+void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32_t trigger)
 {
-    int32 buffslot = -1;
+    int32_t buffslot = -1;
     switch (trigger)
     {
         case 3866:            // stables
@@ -639,7 +639,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
             m_buffs[buffslot]->RemoveFromWorld(false);
 
             // respawn it in buffrespawntime
-            sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, static_cast<uint32>(buffslot), EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, static_cast<uint32_t>(buffslot), EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             // cast the spell on the player
             const auto sp = sSpellMgr.getSpellInfo(spellid);
@@ -660,13 +660,13 @@ bool ArathiBasin::HookHandleRepop(Player* plr)
     float current_distance = 999999.0f;
     float dist;
 
-    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8_t i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
-        if (m_basesOwnedBy[2] == static_cast<int32>(plr->getBgTeam()))
+        if (m_basesOwnedBy[2] == static_cast<int32_t>(plr->getBgTeam()))
         {
             dest.ChangeCoords({ GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2] });
         }
-        else if (m_basesOwnedBy[i] == static_cast<int32>(plr->getBgTeam()))
+        else if (m_basesOwnedBy[i] == static_cast<int32_t>(plr->getBgTeam()))
         {
             dist = plr->GetPositionV()->Distance2DSq({ GraveyardLocations[i][0], GraveyardLocations[i][1] });
             if (dist < current_distance)
@@ -682,7 +682,7 @@ bool ArathiBasin::HookHandleRepop(Player* plr)
     return true;
 }
 
-void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
+void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
 {
     if (m_basesOwnedBy[Id] != -1)
     {
@@ -692,7 +692,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     }
 
     // anti cheat, not really necessary because this is a server method but anyway
-    if (m_basesAssaultedBy[Id] != static_cast<int32>(Team))
+    if (m_basesAssaultedBy[Id] != static_cast<int32_t>(Team))
         return;
 
     m_basesOwnedBy[Id] = Team;
@@ -754,7 +754,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     if (m_capturedBases[Team] == 1)
     {
         // first
-        sEventMgr.AddEvent(this, &ArathiBasin::EventUpdateResources, static_cast<uint32>(Team), EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Team, ResourceUpdateIntervals[1], 0,
+        sEventMgr.AddEvent(this, &ArathiBasin::EventUpdateResources, static_cast<uint32_t>(Team), EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Team, ResourceUpdateIntervals[1], 0,
             EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
@@ -764,7 +764,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     }
 }
 
-void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
+void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
 {
 #ifdef ANTI_CHEAT
     if (!m_started)
@@ -779,8 +779,8 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     }
 #endif
 
-    uint32 Team = pPlayer->getBgTeam();
-    uint32 Owner;
+    uint32_t Team = pPlayer->getBgTeam();
+    uint32_t Owner;
 
     pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;
 
@@ -801,10 +801,10 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         // this control point just got taken over by someone! oh noes!
         if (m_spiritGuides[Id] != nullptr)
         {
-            std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
+            std::map<Creature*, std::set<uint32_t> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
             if (itr != m_resurrectMap.end())
             {
-                for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     Player* r_plr = m_mapMgr->GetPlayer(*it2);
                     if (r_plr != nullptr && r_plr->isDead())
@@ -841,9 +841,9 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
         // make sure the event does not trigger
         sEventMgr.RemoveEvents(this, EVENT_AB_CAPTURE_CP_1 + Id);
-        if (m_basesLastOwnedBy[Id] == static_cast<int32>(Team))
+        if (m_basesLastOwnedBy[Id] == static_cast<int32_t>(Team))
         {
-            m_basesAssaultedBy[Id] = static_cast<int32>(Team);
+            m_basesAssaultedBy[Id] = static_cast<int32_t>(Team);
             CaptureControlPoint(Id, Team);
             return;
         }
@@ -937,10 +937,10 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
 bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pSpell*/)
 {
-    uint32 cpid = 0; //control point id, not child porn id!
+    uint32_t cpid = 0; //control point id, not child porn id!
     for (cpid = 0; cpid < AB_NUM_CONTROL_POINTS; cpid++)
     {
-        if (m_controlPoints[cpid] == NULL)
+        if (m_controlPoints[cpid] == nullptr)
             continue;
         if (m_controlPoints[cpid]->getGuid() == pGo->getGuid())
             break;

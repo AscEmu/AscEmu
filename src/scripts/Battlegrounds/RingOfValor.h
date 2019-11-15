@@ -12,16 +12,16 @@ class RingOfValor : public Arena
 {
 public:
 
-    RingOfValor(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+    RingOfValor(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side);
     ~RingOfValor();
 
-    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t, uint32_t players_per_side)
     {
         return new RingOfValor(m, i, l, t, players_per_side);
     }
 
     void OnCreate() override;
-    LocationVector GetStartingCoords(uint32 Team) override;
-    void HookOnAreaTrigger(Player* plr, uint32 trigger) override;
+    LocationVector GetStartingCoords(uint32_t Team) override;
+    void HookOnAreaTrigger(Player* plr, uint32_t trigger) override;
     bool HookHandleRepop(Player* plr) override;
 };

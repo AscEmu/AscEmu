@@ -78,7 +78,7 @@ SpellCastTargets::~SpellCastTargets()
     m_strTarget.clear();
 }
 
-uint32 SpellCastTargets::GetTargetMask() const
+uint32_t SpellCastTargets::GetTargetMask() const
 {
     return m_targetMask;
 }
@@ -96,7 +96,7 @@ void SpellCastTargets::reset()
     m_strTarget = std::string();
 }
 
-void SpellCastTargets::read(WorldPacket& data, uint64 caster)
+void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
 {
     reset();
 

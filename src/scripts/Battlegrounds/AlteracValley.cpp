@@ -247,7 +247,7 @@ const AVSpawnLocation g_initalGuardLocations[AV_NUM_CONTROL_POINTS][30] =
 //////////////////////////////////////////////////////////////////////////////////////////
 // Home NPCs (that sit in the base)
 
-struct AVHomeNPC { uint32 id_a; uint32 id_h; float a_x; float a_y; float a_z; float a_o; float h_x; float h_y; float h_z; float h_o; };
+struct AVHomeNPC { uint32_t id_a; uint32_t id_h; float a_x; float a_y; float a_z; float a_o; float h_x; float h_y; float h_z; float h_o; };
 const AVHomeNPC g_HomeNpcInfo[AV_NUM_CONTROL_POINTS] =
 {
     { 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },                                                                        // stormpike aid station
@@ -285,7 +285,7 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 180102, 180102, 180100, 180102, 180101 }, 639.184326f, -31.640333f, 46.202557f, 1.3546723f, 0.0f, 0.0f },
     // Guard IDs
     //N,   A,     H   guardC  boss ids peon locs   boss location  fire locations
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0,
     // World State Fields
     WORLDSTATE_AV_STORMPIKE_AID_STATION_ALLIANCE_ASSAULTING, WORLDSTATE_AV_STORMPIKE_AID_STATION_ALLIANCE_CONTROLLED,
     WORLDSTATE_AV_STORMPIKE_AID_STATION_HORDE_ASSAULTING, WORLDSTATE_AV_STORMPIKE_AID_STATION_HORDE_CONTROLLED,
@@ -295,7 +295,7 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 179286, 179286, 179284, 179287, 179285 }, 670.904175f, -294.181641f, 30.283506f, 4.232887f, 0.4067366f, 0.9135454f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, 670.904175f, -294.181641f, 30.283506f, 4.232887f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0,
     WORLDSTATE_AV_STORMPIKE_GRAVE_ALLIANCE_ASSAULTING, WORLDSTATE_AV_STORMPIKE_GRAVE_ALLIANCE_CONTROLLED,
     WORLDSTATE_AV_STORMPIKE_GRAVE_HORDE_ASSAULTING, WORLDSTATE_AV_STORMPIKE_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
@@ -303,7 +303,7 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 179286, 179286, 179284, 179287, 179285 }, 78.367012f, -404.769928f, 47.051014f, 4.350670f, 0.2672384f, 0.9636304f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, 78.367012f, -404.769928f, 47.051014f, 4.350670f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_STONEHEARTH_GRAVE_ALLIANCE_ASSAULTING,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_STONEHEARTH_GRAVE_ALLIANCE_ASSAULTING,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_ALLIANCE_CONTROLLED, WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_ASSAULTING,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
@@ -311,25 +311,25 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 180418, 179286, 179284, 179287, 179285 }, -202.571854f, -112.612862f, 78.489014f, 1.666146f, 0.9366722f, 0.3502073f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, -202.571854f, -112.612862f, 78.489014f, 1.666146f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_SNOWFALL_GRAVE_NEUTRAL_CONTROLLED,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_SNOWFALL_GRAVE_NEUTRAL_CONTROLLED,
     WORLDSTATE_AV_SNOWFALL_GRAVE_ALLIANCE_ASSAULTING, WORLDSTATE_AV_SNOWFALL_GRAVE_ALLIANCE_CONTROLLED,
     WORLDSTATE_AV_SNOWFALL_GRAVE_HORDE_ASSAULTING, WORLDSTATE_AV_SNOWFALL_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
     { "Coldtooth Mine", false, true, { 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_COLDTOOTH_MINE_KOBOLD_CONTROLLED, 0,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_COLDTOOTH_MINE_KOBOLD_CONTROLLED, 0,
     WORLDSTATE_AV_COLDTOOTH_MINE_ALLIANCE_CONTROLLED, 0, WORLDSTATE_AV_COLDTOOTH_MINE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
     { "Irondeep Mine", false, true, { 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_IRONDEEP_MINE_TROGG_CONTROLLED, 0,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_IRONDEEP_MINE_TROGG_CONTROLLED, 0,
     WORLDSTATE_AV_IRONDEEP_MINE_ALLIANCE_CONTROLLED, 0, WORLDSTATE_AV_IRONDEEP_MINE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
     { "Iceblood Graveyard", true, true, { -531.067627f, -405.459778f, 49.552971f },
     { { 179286, 179286, 179284, 179287, 179285 }, -611.891113f, -395.925751f, 60.798248f, 3.193738f, 0.9135455f, -0.4067366f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, -611.891113f, -395.925751f, 60.798248f, 3.193738f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_ICEBLOOD_GRAVE_ALLIANCE_ASSAULTING,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_ICEBLOOD_GRAVE_ALLIANCE_ASSAULTING,
     WORLDSTATE_AV_ICEBLOOD_GRAVE_ALLIANCE_CONTROLLED, WORLDSTATE_AV_ICEBLOOD_GRAVE_HORDE_ASSAULTING,
     WORLDSTATE_AV_ICEBLOOD_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
@@ -337,7 +337,7 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 179286, 179286, 179284, 179287, 179285 }, -1082.267578f, -344.454590f, 55.272388f, 1.579743f, 0.9025853f, -0.4305111f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, -1082.267578f, -344.454590f, 55.272388f, 1.579743f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_FROSTWOLF_GRAVE_ALLIANCE_ASSAULTING,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_FROSTWOLF_GRAVE_ALLIANCE_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_GRAVE_ALLIANCE_CONTROLLED, WORLDSTATE_AV_FROSTWOLF_GRAVE_HORDE_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
@@ -345,7 +345,7 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 179286, 179286, 179284, 179287, 179285 }, -1401.263550f, -309.601624f, 89.412560f, 3.538534f, 0.4067366f, 0.9135454f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 180102, 180102, 180100, 180102, 180101 }, -1401.263550f, -309.601624f, 89.412560f, 3.538534f, 0.0f, 0.0f },
-    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_FROSTWOLF_RELIEF_HUT_ALLIANCE_ASSAULTING,
+    { 0, 12050, 12053 }, 5, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, 0, WORLDSTATE_AV_FROSTWOLF_RELIEF_HUT_ALLIANCE_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_RELIEF_HUT_ALLIANCE_CONTROLLED, WORLDSTATE_AV_FROSTWOLF_RELIEF_HUT_HORDE_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_RELIEF_HUT_HORDE_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
@@ -353,61 +353,61 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     { { 0, 179286, 179284, 179287, 0 }, 673.361877f, -144.169357f, 63.651852f, 0.969958f, 0.2672384f, 0.9636304f },
     { { 0, 179446, 178927, 179446, 0 }, 678.393250f, -136.145126f, 76.004265f, 4.515254f, 0.0f, 0.0f },
     { { 0, 180423, 180421, 180423, 0 }, 678.393250f, -136.145126f, 76.004265f, 4.515254f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_DUN_BALDAR_NORTH_BUNKER_CONTROLLED,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_DUN_BALDAR_NORTH_BUNKER_CONTROLLED,
     WORLDSTATE_AV_DUN_BALDAR_NORTH_BUNKER_ASSAULTING, WORLDSTATE_AV_DUN_BALDAR_NORTH_BUNKER_DESTROYED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
     { "South Dun Baldar Bunker", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 179284, 179287, 0 }, 552.990234f, -77.527374f, 51.926868f, 3.5410520f, 0.9366722f, 0.3502073f },
     { { 0, 179450, 178932, 179450, 0 }, 556.081543f, -84.437355f, 64.411903f, 5.006125f, 0.0f, 0.0f },
     { { 0, 180423, 180421, 180423, 0 }, 556.081543f, -84.437355f, 64.411903f, 5.006125f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_DUN_BALDAR_SOUTH_BUNKER_CONTROLLED,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_DUN_BALDAR_SOUTH_BUNKER_CONTROLLED,
     WORLDSTATE_AV_DUN_BALDAR_SOUTH_BUNKER_ASSAULTING, WORLDSTATE_AV_DUN_BALDAR_SOUTH_BUNKER_DESTROYED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
     { "Icewing Bunker", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 179284, 179287, 0 }, 201.845840f, -358.886963f, 56.370701f, 5.403111f, 0.9135455f, -0.4067366f },
     { { 0, 179454, 178947, 179454, 0 }, 208.691223f, -367.553314f, 68.696632f, 3.317518f, 0.0f, 0.0f },
     { { 0, 180423, 180421, 180423, 0 }, 208.691223f, -367.553314f, 68.696632f, 3.317518f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_ICEWING_BUNKER_CONTROLLED,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_ICEWING_BUNKER_CONTROLLED,
     WORLDSTATE_AV_ICEWING_BUNKER_ASSAULTING, WORLDSTATE_AV_ICEWING_BUNKER_DESTROYED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
     { "Stonehearth Bunker", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 179284, 179287, 0 }, -151.776291f, -439.776245f, 40.381840f, 4.319230f, 0.9025853f, -0.4305111f },
     { { 0, 179458, 178948, 179458, 0 }, -156.257721f, -448.993652f, 52.797112f, 2.803080f, 0.0f, 0.0f },
     { { 0, 180423, 180421, 180423, 0 }, -156.257721f, -448.993652f, 52.797112f, 2.803080f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_STONEHEARTH_BUNKER_CONTROLLED,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13358, 0, 0, WORLDSTATE_AV_STONEHEARTH_BUNKER_CONTROLLED,
     WORLDSTATE_AV_STONEHEARTH_BUNKER_ASSAULTING, WORLDSTATE_AV_STONEHEARTH_BUNKER_DESTROYED, AV_NODE_STATE_ALLIANCE_CONTROLLED, },
 
     { "Iceblood Tower", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 0, 179287, 179285 }, -572.502869f, -262.418365f, 75.008713f, 5.483192f, 0.4067366f, 0.9135454f },
     { { 0, 179436, 0, 179436, 178955 }, -572.408386f, -262.620422f, 88.636307f, 0.712354f, 0.0f, 0.0f },
     { { 0, 180423, 0, 180423, 180422 }, -572.408386f, -262.620422f, 88.636307f, 0.712354f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_ICEBLOOD_TOWER_ASSAULTING,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_ICEBLOOD_TOWER_ASSAULTING,
     WORLDSTATE_AV_ICEBLOOD_TOWER_DESTROYED, 0, WORLDSTATE_AV_ICEBLOOD_TOWER_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
     { "Tower Point", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 0, 179287, 179285 }, -767.986511f, -363.091064f, 90.894920f, 4.265791f, 0.2672384f, 0.9636304f },
     { { 0, 179440, 0, 179440, 178956 }, -768.181519f, -362.942719f, 104.553452f, 4.761085f, 0.0f, 0.0f },
     { { 0, 180423, 0, 180423, 180422 }, -768.181519f, -362.942719f, 104.553452f, 4.761085f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_TOWERPOINT_ASSAULTING,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_TOWERPOINT_ASSAULTING,
     WORLDSTATE_AV_TOWERPOINT_DESTROYED, 0, WORLDSTATE_AV_TOWERPOINT_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
     { "East Frostwolf Tower", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 0, 179287, 179285 }, -1302.814453f, -315.957458f, 113.867195f, 1.956738f, 0.9366722f, 0.3502073f },
     { { 0, 179442, 0, 179442, 178957 }, -1302.916626f, -316.606079f, 127.526337f, 6.176374f, 0.0f, 0.0f },
     { { 0, 180423, 0, 180423, 180422 }, -1302.916626f, -316.606079f, 127.526337f, 6.176374f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_FROSTWOLF_EAST_TOWER_ASSAULTING,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_FROSTWOLF_EAST_TOWER_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_EAST_TOWER_DESTROYED, 0, WORLDSTATE_AV_FROSTWOLF_EAST_TOWER_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 
     { "West Frostwolf Tower", false, false, { 0.0f, 0.0f, 0.0f },
     { { 0, 179286, 0, 179287, 179285 }, -1296.913818f, -266.521271f, 114.151245f, 3.336680f, 0.9135455f, -0.4067366f },
     { { 0, 179444, 0, 179444, 178958 }, -1297.889404f, -266.714233f, 127.789467f, 5.931325f, 0.0f, 0.0f },
     { { 0, 180423, 0, 180423, 180422 }, -1297.889404f, -266.714233f, 127.789467f, 5.931325f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, NULL, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_FROSTWOLF_WEST_TOWER_ASSAULTING,
+    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 13359, 0, WORLDSTATE_AV_FROSTWOLF_WEST_TOWER_ASSAULTING,
     WORLDSTATE_AV_FROSTWOLF_WEST_TOWER_DESTROYED, 0, WORLDSTATE_AV_FROSTWOLF_WEST_TOWER_CONTROLLED, AV_NODE_STATE_HORDE_CONTROLLED, },
 };
 
 // gameobject faction def'n
-static uint32 g_gameObjectFactions[AV_NODE_STATE_COUNT] =
+static uint32_t g_gameObjectFactions[AV_NODE_STATE_COUNT] =
 {
     35,               // neutral
     2,                // alliance assault
@@ -416,7 +416,7 @@ static uint32 g_gameObjectFactions[AV_NODE_STATE_COUNT] =
     1,                // horde controlled
 };
 
-const static int32 g_stateToGuardType[AV_NODE_STATE_COUNT] =
+const static int32_t g_stateToGuardType[AV_NODE_STATE_COUNT] =
 {
     0,                // neutral
     -1,               // alliance assault
@@ -434,20 +434,20 @@ static const char* g_stateNames[AV_NODE_STATE_COUNT] =
     "AV_NODE_STATE_HORDE_CONTROLLED",
 };
 
-AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 nodeid)
+AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32_t nodeid)
 {
     m_bg = parent;
     m_template = tmpl;
     m_nodeId = nodeid;
-    m_boss = NULL;
-    m_flag = NULL;
-    m_aura = NULL;
-    m_glow = NULL;
+    m_boss = nullptr;
+    m_flag = nullptr;
+    m_aura = nullptr;
+    m_glow = nullptr;
     m_state = tmpl->m_defaultState;
     m_lastState = tmpl->m_defaultState;
     m_destroyed = false;
-    m_homeNPC = NULL;
-    m_spiritGuide = NULL;
+    m_homeNPC = nullptr;
+    m_spiritGuide = nullptr;
 
     // set state
     ChangeState(m_state);
@@ -561,11 +561,11 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_flagLocation.id[m_state] == 0)
     {
         // no flag should be spawned, despawn if one exists
-        if (m_flag != NULL)
+        if (m_flag != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning main flag", m_template->m_name);
             m_flag->Despawn(0, 0);
-            m_flag = NULL;
+            m_flag = nullptr;
         }
     }
     else
@@ -573,7 +573,7 @@ void AlteracValley::AVNode::Spawn()
         // spawn the flag.
         const AVGameObject* g = &m_template->m_flagLocation;
         DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning main flag", m_template->m_name);
-        if (m_flag == NULL)
+        if (m_flag == nullptr)
         {
             // initial spawn
             m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
@@ -593,7 +593,7 @@ void AlteracValley::AVNode::Spawn()
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->setDisplayId(gameobject_info->display_id);
-                m_flag->setGoType(static_cast<uint8>(gameobject_info->type));
+                m_flag->setGoType(static_cast<uint8_t>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
                 m_flag->setAnimationProgress(100);
                 m_flag->setDynamic(1);
@@ -606,11 +606,11 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_auraLocation.id[m_state] == 0)
     {
         // no flag should be spawned, despawn if one exists
-        if (m_aura != NULL)
+        if (m_aura != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning secondary flag", m_template->m_name);
             m_aura->Despawn(0, 0);
-            m_aura = NULL;
+            m_aura = nullptr;
         }
     }
     else
@@ -618,7 +618,7 @@ void AlteracValley::AVNode::Spawn()
         // spawn the flag.
         const AVGameObject* g = &m_template->m_auraLocation;
         DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning secondary flag", m_template->m_name);
-        if (m_aura == NULL)
+        if (m_aura == nullptr)
         {
             // initial spawn
             m_aura = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 3.0f);
@@ -639,7 +639,7 @@ void AlteracValley::AVNode::Spawn()
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->setDisplayId(gameobject_info->display_id);
-                m_aura->setGoType(static_cast<uint8>(gameobject_info->type));
+                m_aura->setGoType(static_cast<uint8_t>(gameobject_info->type));
                 m_aura->SetFaction(g_gameObjectFactions[m_state]);
                 m_aura->setAnimationProgress(100);
                 m_aura->setFlags(GO_FLAG_NONSELECTABLE);
@@ -653,11 +653,11 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_glowLocation.id[m_state] == 0)
     {
         // no flag should be spawned, despawn if one exists
-        if (m_glow != NULL)
+        if (m_glow != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning glow", m_template->m_name);
             m_glow->Despawn(0, 0);
-            m_glow = NULL;
+            m_glow = nullptr;
         }
     }
     else
@@ -665,7 +665,7 @@ void AlteracValley::AVNode::Spawn()
         // spawn the flag.
         const AVGameObject* g = &m_template->m_glowLocation;
         DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Spawning glow", m_template->m_name);
-        if (m_glow == NULL)
+        if (m_glow == nullptr)
         {
             // initial spawn
             m_glow = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
@@ -690,7 +690,7 @@ void AlteracValley::AVNode::Spawn()
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
                 m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->setDisplayId(gameobject_info->display_id);
-                m_glow->setGoType(static_cast<uint8>(gameobject_info->type));
+                m_glow->setGoType(static_cast<uint8_t>(gameobject_info->type));
                 m_glow->SetFaction(g_gameObjectFactions[m_state]);
                 m_glow->setAnimationProgress(100);
                 m_glow->setFlags(GO_FLAG_NONSELECTABLE);
@@ -721,11 +721,11 @@ void AlteracValley::AVNode::Spawn()
         m_guards.clear();
 
         // spawn guards if needed
-        uint32 t = g_stateToGuardType[m_state];
+        uint32_t t = g_stateToGuardType[m_state];
         if (t > 0 && m_template->m_guardId[t] != 0)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning %u guards of %u", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);
-            for (uint32 i = 0; i < m_template->m_guardCount; ++i)
+            for (uint32_t i = 0; i < m_template->m_guardCount; ++i)
             {
                 float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
                 float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
@@ -742,18 +742,18 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_isGraveyard)
     {
         // should one be spawned
-        if (m_spiritGuide != NULL)
+        if (m_spiritGuide != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : despawning spirit guide", m_template->m_name);
             // move everyone in the revive queue to a different node
-            std::map<Creature*, std::set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
+            std::map<Creature*, std::set<uint32_t> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
             if (itr != m_bg->m_resurrectMap.end())
             {
-                for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     // repop him at a new GY
                     Player* plr_tmp = m_bg->GetMapMgr()->GetPlayer(*it2);
-                    if (plr_tmp != NULL)
+                    if (plr_tmp != nullptr)
                     {
                         m_bg->HookHandleRepop(plr_tmp);
                         m_bg->QueueAtNearestSpiritGuide(plr_tmp, m_spiritGuide);
@@ -763,7 +763,7 @@ void AlteracValley::AVNode::Spawn()
             }
             m_bg->RemoveSpiritGuide(m_spiritGuide);
             m_spiritGuide->Despawn(0, 0);
-            m_spiritGuide = NULL;
+            m_spiritGuide = nullptr;
         }
 
         if (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED)
@@ -792,12 +792,12 @@ void AlteracValley::AVNode::Spawn()
     DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : completed for state %u %s", m_template->m_name, m_state, g_stateNames[m_state]);
 }
 
-void AlteracValley::AVNode::SpawnGuards(uint32 /*x*/)
+void AlteracValley::AVNode::SpawnGuards(uint32_t /*x*/)
 {
     DLLLogDetail("AlteracValley : AVNode::SpawnGuards(%s) : spawning %u guards", m_template->m_name, m_template->m_guardCount);
 }
 
-void AlteracValley::AVNode::ChangeState(uint32 new_state)
+void AlteracValley::AVNode::ChangeState(uint32_t new_state)
 {
     DLLLogDetail("AlteracValley : AVNode::ChangeState(%s) : changing to state %u %s, old state was %u %s", m_template->m_name, new_state, g_stateNames[new_state], m_state, g_stateNames[m_state]);
     m_lastState = m_state;
@@ -839,7 +839,7 @@ void AlteracValley::AVNode::Capture()
             }
 
             // disable the flag
-            if (m_flag != NULL)
+            if (m_flag != nullptr)
             {
                 m_flag->setFlags(GO_FLAG_NONSELECTABLE);
                 m_flag->setDynamic(0);
@@ -874,7 +874,7 @@ void AlteracValley::AVNode::Capture()
             }
 
             // the npc at our home has to change.
-            if (m_homeNPC != NULL)
+            if (m_homeNPC != nullptr)
                 m_homeNPC->Despawn(0, 0);
 
             // respawn if we have one
@@ -912,7 +912,7 @@ void AlteracValley::AVNode::Capture()
     }
 }
 
-AlteracValley::AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
+AlteracValley::AlteracValley(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
     m_playerCountPerTeam = 40;
     m_reinforcements[0] = AV_NUM_REINFORCEMENTS;
@@ -924,20 +924,20 @@ AlteracValley::AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : 
 
 AlteracValley::~AlteracValley()
 {
-    for (uint8 x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
+    for (uint8_t x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
         delete m_nodes[x];
 }
 
 bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pSpell*/)
 {
-    uint32 nodeid = 0;
+    uint32_t nodeid = 0;
 
     for (nodeid = 0; nodeid < AV_NUM_CONTROL_POINTS; nodeid++)
     {
-        if (m_nodes[nodeid] == NULL)
+        if (m_nodes[nodeid] == nullptr)
             continue;
 
-        if (m_nodes[nodeid]->m_flag == NULL)
+        if (m_nodes[nodeid]->m_flag == nullptr)
             continue;
 
         if (m_nodes[nodeid]->m_flag->getGuid() == pGo->getGuid())
@@ -967,7 +967,7 @@ void AlteracValley::HookOnMount(Player* /*plr*/)
 
 }
 
-void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
+void AlteracValley::HookOnAreaTrigger(Player* plr, uint32_t trigger)
 {
     switch (trigger)
     {
@@ -1012,7 +1012,7 @@ bool AlteracValley::HookHandleRepop(Player* plr)
 
     if (m_started)
     {
-        for (uint8 x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
+        for (uint8_t x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
         {
             // skip non-graveyards
             if (!m_nodes[x]->m_template->m_isGraveyard)
@@ -1063,7 +1063,7 @@ void AlteracValley::OnCreate()
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
-    for (uint8 x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
+    for (uint8_t x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
         m_nodes[x] = new AVNode(this, &g_nodeTemplates[x], x);
 
     // generals/leaders!
@@ -1081,7 +1081,7 @@ void AlteracValley::OnCreate()
 
 void AlteracValley::OnStart()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -1125,7 +1125,7 @@ void AlteracValley::OnRemovePlayer(Player* plr)
     plr->RemoveAura(BG_PREPARATION);
 }
 
-LocationVector AlteracValley::GetStartingCoords(uint32 Team)
+LocationVector AlteracValley::GetStartingCoords(uint32_t Team)
 {
     if (Team)
         return LocationVector(-1433.550903f, -608.329529f, 51.149689f, 1.140702f);
@@ -1138,9 +1138,9 @@ void AlteracValley::HookOnPlayerDeath(Player* plr)
     RemoveReinforcements(plr->getTeam(), AV_POINTS_ON_KILL);
 }
 
-void AlteracValley::AddReinforcements(uint32 teamId, uint32 amt)
+void AlteracValley::AddReinforcements(uint32_t teamId, uint32_t amt)
 {
-    if (((int32)(m_reinforcements[teamId] + amt)) > AV_NUM_REINFORCEMENTS)
+    if (((int32_t)(m_reinforcements[teamId] + amt)) > AV_NUM_REINFORCEMENTS)
         m_reinforcements[teamId] = AV_NUM_REINFORCEMENTS;
     else
         m_reinforcements[teamId] += amt;
@@ -1148,9 +1148,9 @@ void AlteracValley::AddReinforcements(uint32 teamId, uint32 amt)
     SetWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
 }
 
-void AlteracValley::RemoveReinforcements(uint32 teamId, uint32 amt)
+void AlteracValley::RemoveReinforcements(uint32_t teamId, uint32_t amt)
 {
-    if (((int32)(m_reinforcements[teamId] - amt)) < 0)
+    if (((int32_t)(m_reinforcements[teamId] - amt)) < 0)
         m_reinforcements[teamId] = 0;
     else
         m_reinforcements[teamId] -= amt;
@@ -1229,7 +1229,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
     }
 }
 
-void AlteracValley::Finish(uint32 losingTeam)
+void AlteracValley::Finish(uint32_t losingTeam)
 {
     if (this->HasEnded()) return;
 
@@ -1242,11 +1242,11 @@ void AlteracValley::Finish(uint32 losingTeam)
 // Static AV Loot Table
 struct AVLoot
 {
-    uint32 ItemId;
-    int8 Faction;
+    uint32_t ItemId;
+    int8_t Faction;
     float Chance;
-    uint32 MinCount;
-    uint32 MaxCount;
+    uint32_t MinCount;
+    uint32_t MaxCount;
 };
 
 const static AVLoot g_avLoot[] =
@@ -1279,7 +1279,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     const AVLoot* loot_ptr = &g_avLoot[0];
     while (loot_ptr->ItemId != 0)
     {
-        if (loot_ptr->Faction == -1 || loot_ptr->Faction == static_cast<int8>(plr->getTeam()))
+        if (loot_ptr->Faction == -1 || loot_ptr->Faction == static_cast<int8_t>(plr->getTeam()))
         {
             if (Rand(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
@@ -1295,10 +1295,10 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     else
                         li.iItemsCount = loot_ptr->MinCount;
 
-                    li.iRandomProperty = NULL;
-                    li.iRandomSuffix = NULL;
+                    li.iRandomProperty = nullptr;
+                    li.iRandomSuffix = nullptr;
                     li.passed = false;
-                    li.roll = NULL;
+                    li.roll = nullptr;
 
                     // push to vector
                     static_cast<Corpse*>(pCorpse)->loot.items.push_back(li);
@@ -1319,14 +1319,14 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
 
 void AlteracValley::EventUpdateResources()
 {
-    /*    for(uint32 i = 0; i < 2; i++)
+    /*    for(uint32_t i = 0; i < 2; i++)
         {
             AddReinforcements( i, m_mineControl[i] );
         }
         sEventMgr.AddEvent(this, &AlteracValley::EventUpdateResources, EVENT_BATTLEGROUND_RESOURCEUPDATE, 45000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);*/
 }
 
-void AlteracValley::EventAssaultControlPoint(uint32 x)
+void AlteracValley::EventAssaultControlPoint(uint32_t x)
 {
     m_nodes[x]->Capture();
 }
@@ -1351,16 +1351,16 @@ void AlteracValley::Herald(const char* format, ...)
     va_end(ap);
     msglen = strlen(msgbuf);
 
-    data << uint8(CHAT_MSG_MONSTER_YELL);
-    data << uint32(LANG_UNIVERSAL);
-    data << uint64(0);
-    data << uint32(0);            // new in 2.1.0
-    data << uint32(7);            // Herald
+    data << uint8_t(CHAT_MSG_MONSTER_YELL);
+    data << uint32_t(LANG_UNIVERSAL);
+    data << uint64_t(0);
+    data << uint32_t(0);            // new in 2.1.0
+    data << uint32_t(7);            // Herald
     data << "Herald";             // Herald
-    data << uint64(0);
-    data << uint32(msglen + 1);
+    data << uint64_t(0);
+    data << uint32_t(msglen + 1);
     data << msgbuf;
-    data << uint8(0x00);
+    data << uint8_t(0x00);
     DistributePacketToAll(&data);
 }
 

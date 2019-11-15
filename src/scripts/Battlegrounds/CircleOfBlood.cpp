@@ -21,7 +21,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
 
-CircleOfBlood::CircleOfBlood(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+CircleOfBlood::CircleOfBlood(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -30,7 +30,7 @@ CircleOfBlood::~CircleOfBlood()
 
 void CircleOfBlood::OnCreate()
 {
-    GameObject* obj = NULL;
+    GameObject* obj = nullptr;
 
     obj = SpawnGameObject(183972, 562, 6177.707520f, 227.348145f, 3.604374f, -2.260201f, 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
@@ -72,7 +72,7 @@ void CircleOfBlood::HookOnShadowSight()
     m_buffs[1]->PushToWorld(m_mapMgr);
 }
 
-LocationVector CircleOfBlood::GetStartingCoords(uint32 Team)
+LocationVector CircleOfBlood::GetStartingCoords(uint32_t Team)
 {
     if (Team)
         return LocationVector(6292.032227f, 287.570343f, 5.003577f);

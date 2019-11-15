@@ -12,16 +12,16 @@ class RingOfTrials : public Arena
 {
 public:
 
-    RingOfTrials(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+    RingOfTrials(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side);
     ~RingOfTrials();
 
-    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t, uint32_t players_per_side)
     {
         return new RingOfTrials(m, i, l, t, players_per_side);
     }
 
     void OnCreate() override;
     void HookOnShadowSight() override;
-    LocationVector GetStartingCoords(uint32 Team) override;
+    LocationVector GetStartingCoords(uint32_t Team) override;
     bool HookHandleRepop(Player* plr) override;
 };
