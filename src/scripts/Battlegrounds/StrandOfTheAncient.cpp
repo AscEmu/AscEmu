@@ -306,9 +306,9 @@ static const uint32_t TeamFactions[MAX_PLAYER_TEAMS] =
 StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t):CBattleground(mgr, id, lgroup, t)
 {
     m_zoneid = 4384;
-    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(nullptr));
-    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(nullptr));
-    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&npc[0], &npc[SOTA_NPCS], nullptr);
+    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], nullptr);
+    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], nullptr);
 
     Attackers = 0;
     Defenders = 0;
@@ -350,9 +350,9 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32_t id, uint32_t lgroup
 
 StrandOfTheAncient::~StrandOfTheAncient()
 {
-    std::fill(&npc[0], &npc[SOTA_NPCS], reinterpret_cast<Creature*>(nullptr));
-    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(nullptr));
-    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(nullptr));
+    std::fill(&npc[0], &npc[SOTA_NPCS], nullptr);
+    std::fill(&canon[0], &canon[SOTA_NUM_CANONS], nullptr);
+    std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], nullptr);
 }
 
 void StrandOfTheAncient::HookOnAreaTrigger(Player* /*plr*/, uint32_t /*id*/)
