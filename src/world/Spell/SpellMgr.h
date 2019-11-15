@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Singleton.h"
-
 #include "Spell.h"
 #include "SpellAuras.h"
 #include "SpellInfo.hpp"
@@ -44,12 +42,21 @@ typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::cons
 
 // This class loads spells from Spell.dbc and stores them as SpellInfo objects
 // Also, this class registers spell scripts to spells and aura scripts to auras
-class SERVER_DECL SpellMgr : public Singleton<SpellMgr>
+class SERVER_DECL SpellMgr
 {
-public:
-    SpellMgr();
-    ~SpellMgr();
+private:
+    SpellMgr() = default;
+    ~SpellMgr() = default;
 
+public:
+    static SpellMgr& getInstance();
+
+    SpellMgr(SpellMgr&&) = delete;
+    SpellMgr(SpellMgr const&) = delete;
+    SpellMgr& operator=(SpellMgr&&) = delete;
+    SpellMgr& operator=(SpellMgr const&) = delete;
+
+    // todo: Appled should implement a finalize method here
     void startSpellMgr();
     void loadSpellDataFromDatabase();
     void loadSpellScripts();
@@ -126,4 +133,4 @@ private:
     void setupSpellClassScripts();
 };
 
-#define sSpellMgr SpellMgr::getSingleton()
+#define sSpellMgr SpellMgr::getInstance()

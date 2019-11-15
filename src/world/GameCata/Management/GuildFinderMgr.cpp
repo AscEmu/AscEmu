@@ -12,14 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 
-initialiseSingleton(GuildFinderMgr);
-
-GuildFinderMgr::GuildFinderMgr()
+GuildFinderMgr& GuildFinderMgr::getInstance()
 {
-}
-
-GuildFinderMgr::~GuildFinderMgr()
-{
+    static GuildFinderMgr mInstance;
+    return mInstance;
 }
 
 void GuildFinderMgr::loadGuildFinderDataFromDB()
@@ -121,7 +117,7 @@ void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest 
         request.getGuildId(), request.getPlayerGUID(), request.getAvailability(), request.getClassRoles(),
         request.getInterests(), request.getComment().c_str(),request.getSubmitTime());
   
-    if (Player* player = objmgr.GetPlayer(request.getPlayerGUID()))
+    if (Player* player = sObjectMgr.GetPlayer(request.getPlayerGUID()))
     {
         sendMembershipRequestListUpdate(*player);
     }
@@ -181,7 +177,7 @@ void GuildFinderMgr::removeMembershipRequest(uint32_t playerId, uint32_t guildId
 
     _membershipRequestStore[guildId].erase(itr);
 
-    if (Player* player = objmgr.GetPlayer(playerId))
+    if (Player* player = sObjectMgr.GetPlayer(playerId))
     {
         sendMembershipRequestListUpdate(*player);
     }
@@ -300,7 +296,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 
         CharacterDatabase.Execute("DELETE FROM guild_finder_guild_settings WHERE guildId = %u", itr->getGuildId());
 
-        if (Player* player = objmgr.GetPlayer(applicant))
+        if (Player* player = sObjectMgr.GetPlayer(applicant))
         {
             sendMembershipRequestListUpdate(*player);
         }
@@ -320,7 +316,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 {
     WorldPacket data(SMSG_LF_GUILD_APPLICANT_LIST_UPDATED, 0);
-    if (Player* player = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
+    if (Player* player = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
     {
         player->SendMessageToSet(&data, false);
     }

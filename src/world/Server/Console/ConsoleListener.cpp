@@ -88,7 +88,7 @@ bool StartConsoleListener()
         return false;
     }
 
-    new ConsoleAuthMgr;
+    sConsoleAuthMgr.initialize();
     return true;
 }
 

@@ -20,7 +20,11 @@
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
 
-initialiseSingleton(MailSystem);
+MailSystem& MailSystem::getInstance()
+{
+    static MailSystem mInstance;
+    return mInstance;
+}
 
 /// \todo refactoring
 void MailSystem::StartMailSystem()
@@ -29,9 +33,9 @@ void MailSystem::StartMailSystem()
 MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
 {
     // assign a new id
-    message->message_id = objmgr.GenerateMailID();
+    message->message_id = sObjectMgr.GenerateMailID();
 
-    Player* plr = objmgr.GetPlayer((uint32)recipent);
+    Player* plr = sObjectMgr.GetPlayer((uint32)recipent);
     if (plr != NULL)
     {
         plr->m_mailBox.AddMessage(message);

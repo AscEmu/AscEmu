@@ -1310,8 +1310,8 @@ bool MapMgr::Do()
     }
 
     // load corpses
-    objmgr.LoadCorpses(this);
-    worldstateshandler.InitWorldStates(objmgr.GetWorldStatesForMap(_mapId));
+    sObjectMgr.LoadCorpses(this);
+    worldstateshandler.InitWorldStates(sObjectMgr.GetWorldStatesForMap(_mapId));
     worldstateshandler.setObserver(this);
 
     while (GetThreadState() != THREADSTATE_TERMINATE && !_shutdown)
@@ -1352,7 +1352,7 @@ bool MapMgr::Do()
     // Clear the instance's reference to us.
     if (m_battleground)
     {
-        BattlegroundManager.DeleteBattleground(m_battleground);
+        sBattlegroundManager.DeleteBattleground(m_battleground);
         sInstanceMgr.DeleteBattlegroundInstance(GetMapId(), GetInstanceID());
     }
 
@@ -1470,7 +1470,7 @@ Object* MapMgr::_GetObject(const uint64 & guid)
         case HighGuid::DynamicObject:
             return GetDynamicObject(wowGuid.getGuidLowPart());
         case HighGuid::Transporter:
-            return objmgr.GetTransporter(wowGuid.getGuidLowPart());
+            return sObjectMgr.GetTransporter(wowGuid.getGuidLowPart());
         default:
             return GetUnit(guid);
     }
@@ -1591,7 +1591,7 @@ void MapMgr::_PerformObjectDuties()
 
 void MapMgr::EventCorpseDespawn(uint64 guid)
 {
-    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+    Corpse* pCorpse = sObjectMgr.GetCorpse((uint32)guid);
     if (pCorpse == nullptr)     // Already Deleted
         return;
 
@@ -1846,7 +1846,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
     go_spawn->entry = go->getEntry();
-    go_spawn->id = objmgr.GenerateGameObjectSpawnID();
+    go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
     go_spawn->map = go->GetMapId();
     go_spawn->position_x = go->GetPositionX();
     go_spawn->position_y = go->GetPositionY();

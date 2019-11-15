@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
-#include "Singleton.h"
 #include "GameEventMgr.h"
 #include "Log.hpp"
 #include "Server/World.h"
@@ -14,16 +13,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "CrashHandler.h"
 
-initialiseSingleton(GameEventMgr);
-initialiseSingleton(GameEventMgr::GameEventMgrThread);
+GameEventMgr& GameEventMgr::getInstance()
+{
+    static GameEventMgr mInstance;
+    return mInstance;
+}
 
-GameEventMgr::GameEventMgr()
+void GameEventMgr::initialize()
 {
     mGameEvents.clear();
-}
-GameEventMgr::~GameEventMgr()
-{
-
 }
 
 GameEvent* GameEventMgr::GetEventById(uint32 pEventId)
@@ -297,12 +295,18 @@ void GameEventMgr::LoadFromDB()
     StartArenaEvents();
 }
 
-GameEventMgr::GameEventMgrThread::GameEventMgrThread()
+GameEventMgr::GameEventMgrThread& GameEventMgr::GameEventMgrThread::getInstance()
+{
+    static GameEventMgr::GameEventMgrThread mInstance;
+    return mInstance;
+}
+
+void GameEventMgr::GameEventMgrThread::initialize()
 {
     m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("UpdateGameEvents", [this](AscEmu::Threading::AEThread& thread) { this->Update(); }, std::chrono::seconds(1));
 }
 
-GameEventMgr::GameEventMgrThread::~GameEventMgrThread()
+void GameEventMgr::GameEventMgrThread::finalize()
 {
     LogNotice("GameEventMgrThread : Stop Manager...");
     m_reloadThread->killAndJoin();

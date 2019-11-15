@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Singleton.h"
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/SpellClickSpell.h"
 #include "Spell/Definitions/TeleportCoords.h"
@@ -23,12 +22,22 @@ extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 
-class SERVER_DECL MySQLDataStore : public Singleton <MySQLDataStore>
+class SERVER_DECL MySQLDataStore
 {
+private:
+
+    MySQLDataStore() = default;
+    ~MySQLDataStore() = default;
+
 public:
 
-    MySQLDataStore();
-    ~MySQLDataStore();
+    static MySQLDataStore& getInstance();
+    void finalize();
+
+    MySQLDataStore(MySQLDataStore&&) = delete;
+    MySQLDataStore(MySQLDataStore const&) = delete;
+    MySQLDataStore& operator=(MySQLDataStore&&) = delete;
+    MySQLDataStore& operator=(MySQLDataStore const&) = delete;
 
     //maps
     typedef std::unordered_map<uint32_t, MySQLStructure::ItemPage> ItemPageContainer;
@@ -369,4 +378,4 @@ public:
     GossipMenuItemsContainer _gossipMenuItemsStores;
 };
 
-#define sMySQLStore MySQLDataStore::getSingleton()
+#define sMySQLStore MySQLDataStore::getInstance()

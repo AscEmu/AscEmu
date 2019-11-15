@@ -38,14 +38,11 @@
 #include "Objects/Faction.h"
 #include "Common.hpp"
 
-initialiseSingleton(ScriptMgr);
-initialiseSingleton(HookInterface);
-
-ScriptMgr::ScriptMgr()
-{}
-
-ScriptMgr::~ScriptMgr()
-{}
+ScriptMgr& ScriptMgr::getInstance()
+{
+    static ScriptMgr mInstance;
+    return mInstance;
+}
 
 struct ScriptingEngine_dl
 {
@@ -63,9 +60,6 @@ struct ScriptingEngine_dl
 
 void ScriptMgr::LoadScripts()
 {
-    if (HookInterface::getSingletonPtr() == nullptr)
-        new HookInterface;
-
     LogNotice("ScriptMgr : Loading External Script Libraries...");
 
     std::string modulePath = PREFIX;
@@ -173,9 +167,6 @@ void ScriptMgr::LoadScripts()
 
 void ScriptMgr::UnloadScripts()
 {
-    if (HookInterface::getSingletonPtr())
-        delete HookInterface::getSingletonPtr();
-
     for (CustomGossipScripts::iterator itr = _customgossipscripts.begin(); itr != _customgossipscripts.end(); ++itr)
         (*itr)->Destroy();
     _customgossipscripts.clear();
@@ -613,7 +604,7 @@ std::string InstanceScript::getDataStateString(uint32_t bossEntry)
 // encounters
 void InstanceScript::generateBossDataState()
 {
-    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
+    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
     if (bossInfoMap != nullptr)
     {
         for (const auto& encounter : *bossInfoMap)
@@ -1165,6 +1156,12 @@ void ScriptMgr::UnloadScriptEngines()
 }
 
 /* Hook Implementations */
+HookInterface& HookInterface::getInstance()
+{
+    static HookInterface mInstance;
+    return mInstance;
+}
+
 bool HookInterface::OnNewCharacter(uint32 Race, uint32 Class, WorldSession* Session, const char* Name)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_NEW_CHARACTER];

@@ -54,8 +54,6 @@ enum WeatherSounds
     WEATHER_SANDSTORMHEAVY      = 8558
 };
 
-initialiseSingleton(WeatherMgr);
-
 uint32 GetSound(uint32 Effect, float Density)
 {
     uint32 sound;
@@ -96,10 +94,13 @@ uint32 GetSound(uint32 Effect, float Density)
     return sound;
 }
 
-WeatherMgr::WeatherMgr()
-{}
+WeatherMgr& WeatherMgr::getInstance()
+{
+    static WeatherMgr mInstance;
+    return mInstance;
+}
 
-WeatherMgr::~WeatherMgr()
+void WeatherMgr::finalize()
 {
     std::map<uint32, WeatherInfo*>::iterator itr;
     for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)

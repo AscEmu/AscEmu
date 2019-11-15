@@ -255,7 +255,7 @@ namespace luaItem
                 WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        lootmgr.AddLoot(ptr->loot, itemid, mincount, maxcount);
+        sLootMgr.AddLoot(ptr->loot, itemid, mincount, maxcount);
         return 1;
     }
 
@@ -447,7 +447,7 @@ namespace luaItem
     {
         uint32 id = CHECK_ULONG(L, 1);
         uint32 stackcount = CHECK_ULONG(L, 2);
-        Item* pItem = objmgr.CreateItem(id, NULL);
+        Item* pItem = sObjectMgr.CreateItem(id, NULL);
         if (!pItem)
             RET_NIL();
         pItem->setStackCount(stackcount);

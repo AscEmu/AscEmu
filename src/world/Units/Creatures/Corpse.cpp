@@ -108,12 +108,12 @@ Corpse::Corpse(uint32 high, uint32 low)
     _loadedfromdb = false;
 
     if (high != 0)
-        objmgr.AddCorpse(this);
+        sObjectMgr.AddCorpse(this);
 }
 
 Corpse::~Corpse()
 {
-    objmgr.RemoveCorpse(this);
+    sObjectMgr.RemoveCorpse(this);
     //just in case
 }
 
@@ -186,7 +186,7 @@ void Corpse::SpawnBones()
             setItem(i, 0);
     }
     DeleteFromDB();
-    objmgr.CorpseAddEventDespawn(this);
+    sObjectMgr.CorpseAddEventDespawn(this);
     SetCorpseState(CORPSE_STATE_BONES);
 }
 

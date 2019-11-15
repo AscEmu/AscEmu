@@ -228,7 +228,7 @@ public:
         {
             if (pPlayer->getItemInterface()->GetItemCount(32971, false) == 0)
             {
-                auto itm = objmgr.CreateItem(32971, pPlayer);
+                auto itm = sObjectMgr.CreateItem(32971, pPlayer);
                 if (itm == nullptr)
                     return;
 

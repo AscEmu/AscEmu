@@ -255,7 +255,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
         WoWGuid wowGuid;
         wowGuid.Init(guid);
 
-        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         data << uint8_t(player ? player->getLevel() : 0);    // Level
 
         for (const auto rolePair : pRoleCheck->roles)
@@ -272,7 +272,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
             data << uint8_t(roles > 0);                      // Ready
             data << uint32_t(roles);                         // Roles
 
-            player = objmgr.GetPlayer(guidItr.getGuidLowPart());
+            player = sObjectMgr.GetPlayer(guidItr.getGuidLowPart());
             data << uint8_t(player ? player->getLevel() : 0);     // Level
         }
     }
@@ -399,7 +399,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     bool isSameDungeon = false;
     bool isContinue = false;
 
-    Group* grp = dLowGuid ? objmgr.GetGroupById(dLowGuid) : nullptr;
+    Group* grp = dLowGuid ? sObjectMgr.GetGroupById(dLowGuid) : nullptr;
     const uint32_t completedEncounters = 0;
     if (grp)
     {

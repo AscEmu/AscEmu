@@ -153,7 +153,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto item = objmgr.CreateItem(8383, _player);
+    auto item = sObjectMgr.CreateItem(8383, _player);
     if (item == nullptr)
         return;
 
@@ -299,7 +299,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
         {
             for (auto itemEntry : message.second.items)
             {
-                const auto item = objmgr.LoadItem(itemEntry);
+                const auto item = sObjectMgr.LoadItem(itemEntry);
                 if (item == nullptr)
                     continue;
 
@@ -369,7 +369,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    auto item = objmgr.LoadItem(srlPacket.lowGuid);
+    auto item = sObjectMgr.LoadItem(srlPacket.lowGuid);
     if (item == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -440,7 +440,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerReceiverInfo = objmgr.GetPlayerInfoByName(srlPacket.receiverName.c_str());
+    const auto playerReceiverInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.receiverName.c_str());
     if (playerReceiverInfo == nullptr)
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());

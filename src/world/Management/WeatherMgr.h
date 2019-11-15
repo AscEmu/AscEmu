@@ -22,7 +22,6 @@
 
 #define WEATHER_DENSITY_UPDATE 0.05f
 
-#include "Singleton.h"
 #include "Server/EventableObject.h"
 #include "Server/Packets/SmsgWeather.h"
 
@@ -31,12 +30,22 @@ class WeatherInfo;
 
 uint32 GetSound(uint32 Effect, float Density);
 
-class SERVER_DECL WeatherMgr : public Singleton<WeatherMgr>
+class SERVER_DECL WeatherMgr
 {
+    private:
+
+        WeatherMgr() = default;
+        ~WeatherMgr() = default;
+
     public:
 
-        WeatherMgr();
-        ~WeatherMgr();
+        static WeatherMgr& getInstance();
+        void finalize();
+
+        WeatherMgr(WeatherMgr&&) = delete;
+        WeatherMgr(WeatherMgr const&) = delete;
+        WeatherMgr& operator=(WeatherMgr&&) = delete;
+        WeatherMgr& operator=(WeatherMgr const&) = delete;
 
         void LoadFromDB();
         void SendWeather(Player* plr);
@@ -79,4 +88,4 @@ class WeatherInfo : public EventableObject
         std::map<uint32, uint32> m_effectValues;
 };
 
-#define sWeatherMgr WeatherMgr::getSingleton()
+#define sWeatherMgr WeatherMgr::getInstance()

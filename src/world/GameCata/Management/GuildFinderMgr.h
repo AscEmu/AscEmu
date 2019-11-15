@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Singleton.h"
 #include "Management/Guild.h"
 #include <string>
 #include <map>
@@ -178,12 +177,21 @@ struct LFGuildSettings : public LFGuildPlayer
 typedef std::map<uint32_t, LFGuildSettings> LFGuildStore;
 typedef std::map<uint32_t, std::vector<MembershipRequest>> MembershipRequestStore;
 
-class SERVER_DECL GuildFinderMgr : public Singleton <GuildFinderMgr>
+class SERVER_DECL GuildFinderMgr
 {
+    private:
+
+        GuildFinderMgr() = default;
+        ~GuildFinderMgr() = default;
+
     public:
 
-        GuildFinderMgr();
-        ~GuildFinderMgr();
+        static GuildFinderMgr& getInstance();
+
+        GuildFinderMgr(GuildFinderMgr&&) = delete;
+        GuildFinderMgr(GuildFinderMgr const&) = delete;
+        GuildFinderMgr& operator=(GuildFinderMgr&&) = delete;
+        GuildFinderMgr& operator=(GuildFinderMgr const&) = delete;
 
         LFGuildStore _lfgGuildStore;
 
@@ -216,6 +224,6 @@ class SERVER_DECL GuildFinderMgr : public Singleton <GuildFinderMgr>
         void sendMembershipRequestListUpdate(Player& player);
 };
 
-#define sGuildFinderMgr GuildFinderMgr::getSingleton()
+#define sGuildFinderMgr GuildFinderMgr::getInstance()
 
 #endif

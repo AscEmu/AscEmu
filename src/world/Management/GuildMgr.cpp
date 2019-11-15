@@ -10,14 +10,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 
-initialiseSingleton(GuildMgr);
-
-GuildMgr::GuildMgr() {}
-
-GuildMgr::~GuildMgr()
+GuildMgr& GuildMgr::getInstance()
 {
-    for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
-        delete itr->second;
+    static GuildMgr mInstance;
+    return mInstance;
+}
+
+void GuildMgr::finalize()
+{
+    for (auto itr : GuildStore)
+        delete itr.second;
 }
 
 void GuildMgr::update(uint32_t /*diff*/)
@@ -400,7 +402,7 @@ void GuildMgr::loadGuildDataFromDB()
 
 uint32_t GuildMgr::getNextGuildId()
 {
-    return objmgr.GenerateGuildId();
+    return sObjectMgr.GenerateGuildId();
 }
 
 // Guild collection

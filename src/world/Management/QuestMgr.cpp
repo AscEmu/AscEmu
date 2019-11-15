@@ -33,7 +33,11 @@
 
 using namespace AscEmu::Packets;
 
-initialiseSingleton(QuestMgr);
+QuestMgr& QuestMgr::getInstance()
+{
+    static QuestMgr mInstance;
+    return mInstance;
+}
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {
@@ -1211,7 +1215,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qst->reward_item[i], plr);
+                            auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
                             if (!item)
                                 return;
 
@@ -1249,7 +1253,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        auto item = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                        auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
                         if (!item)
                             return;
 
@@ -1324,7 +1328,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qst->reward_item[i], plr);
+                            auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
                             if (!item)
                                 return;
 
@@ -1362,7 +1366,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        auto item = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                        auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
                         if (!item)
                             return;
 
@@ -1477,7 +1481,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (qst->MailSendItem != 0)
             {
                 // the way it's done in World::PollMailboxInsertQueue
-                Item* pItem = objmgr.CreateItem(qst->MailSendItem, NULL);
+                Item* pItem = sObjectMgr.CreateItem(qst->MailSendItem, NULL);
                 if (pItem != NULL)
                 {
                     pItem->setStackCount(1);
@@ -1897,7 +1901,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
     return true;
 }
 
-QuestMgr::~QuestMgr()
+void QuestMgr::finalize()
 {
     std::unordered_map<uint32, QuestProperties*>::iterator itr1;
     std::unordered_map<uint32, std::list<QuestRelation*>* >::iterator itr2;
@@ -2227,7 +2231,7 @@ void QuestMgr::LoadExtraQuestStuff()
             delete pResult;
         }
     }
-    //objmgr.ProcessGameobjectQuests();
+    //sObjectMgr.ProcessGameobjectQuests();
 
     //load item quest associations
     uint32 item;

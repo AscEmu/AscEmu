@@ -51,7 +51,7 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    auto player_cache = objmgr.GetPlayerCache(args, false);
+    auto player_cache = sObjectMgr.GetPlayerCache(args, false);
     if (player_cache == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
@@ -98,7 +98,7 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    auto player_cache = objmgr.GetPlayerCache(args, false);
+    auto player_cache = sObjectMgr.GetPlayerCache(args, false);
     if (player_cache == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
@@ -149,8 +149,8 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
     bool is_gamemaster = m_session->GetPermissionCount() != 0;
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession()->GetPermissionCount())
         {
@@ -188,7 +188,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
             }
         }
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     if (print_headline)
     {

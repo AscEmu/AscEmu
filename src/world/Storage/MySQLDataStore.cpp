@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Spell/SpellMgr.h"
 
-initialiseSingleton(MySQLDataStore);
-
 SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
@@ -22,9 +20,13 @@ SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
-MySQLDataStore::MySQLDataStore() {}
+MySQLDataStore& MySQLDataStore::getInstance()
+{
+    static MySQLDataStore mInstance;
+    return mInstance;
+}
 
-MySQLDataStore::~MySQLDataStore()
+void MySQLDataStore::finalize()
 {
     for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
     {

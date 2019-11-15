@@ -6,9 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Chat/ChatCommand.hpp"
-#include "Singleton.h"
+#include "CommonTypes.hpp"
 
-class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
+class SERVER_DECL CommandTableStorage
 {
     ChatCommand* _modifyCommandTable;
     ChatCommand* _debugCommandTable;
@@ -52,7 +52,19 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* GetGOSubCommandTable(const char* name);
     ChatCommand* GetReloadCommandTable(const char* name);
 
+private:
+
+    CommandTableStorage() = default;
+    ~CommandTableStorage() = default;
+
 public:
+
+    static CommandTableStorage& getInstance();
+
+    CommandTableStorage(CommandTableStorage&&) = delete;
+    CommandTableStorage(CommandTableStorage const&) = delete;
+    CommandTableStorage& operator=(CommandTableStorage&&) = delete;
+    CommandTableStorage& operator=(CommandTableStorage const&) = delete;
 
     void Init();
     void Dealloc();
@@ -61,4 +73,4 @@ public:
     inline ChatCommand* Get() { return _commandTable; }
 };
 
-#define sCommandTableStorag CommandTableStorage::getSingleton()
+#define sCommandTableStorage CommandTableStorage::getInstance()

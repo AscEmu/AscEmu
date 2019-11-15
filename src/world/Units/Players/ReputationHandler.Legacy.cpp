@@ -402,7 +402,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     }
 
     uint32 team = getTeam();
-    ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->getEntry(), pUnit->m_factionEntry->ID);
+    ReputationModifier* modifier = sObjectMgr.GetReputationModifier(pUnit->getEntry(), pUnit->m_factionEntry->ID);
     if (modifier != nullptr)
     {
         // Apply this data.
@@ -425,7 +425,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     }
     else
     {
-        if (IS_INSTANCE(GetMapId()) && objmgr.HandleInstanceReputationModifiers(this, pUnit))
+        if (IS_INSTANCE(GetMapId()) && sObjectMgr.HandleInstanceReputationModifiers(this, pUnit))
             return;
 
         if (pUnit->m_factionEntry->RepListId < 0)

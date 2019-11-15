@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Common.hpp"
 #include "LogDefines.hpp"
-#include "Singleton.h"
 #include "Config/Config.h"
 
 class WorldPacket;
@@ -17,17 +16,26 @@ extern SERVER_DECL tm g_localTime;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WorldPacketLog
-class WorldPacketLog : public Singleton<WorldPacketLog>
+class WorldPacketLog
 {
     FILE* mPacketLogFile;
     bool isLogEnabled;
 
     Mutex mPacketLogMutex;
 
-    public:
+    private:
+        WorldPacketLog() = default;
+        ~WorldPacketLog() = default;
 
-        WorldPacketLog();
-        ~WorldPacketLog();
+    public:
+        static WorldPacketLog& getInstance();
+        void initialize();
+        void finalize();
+
+        WorldPacketLog(WorldPacketLog&&) = delete;
+        WorldPacketLog(WorldPacketLog const&) = delete;
+        WorldPacketLog& operator=(WorldPacketLog&&) = delete;
+        WorldPacketLog& operator=(WorldPacketLog const&) = delete;
 
         void initWorldPacketLog(bool enableLog);
         void enablePacketLog();
@@ -36,7 +44,7 @@ class WorldPacketLog : public Singleton<WorldPacketLog>
         //WorldSocket.cpp
         void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
 };
-#define sWorldPacketLog WorldPacketLog::getSingleton()
+#define sWorldPacketLog WorldPacketLog::getInstance()
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +87,7 @@ namespace AELog
 #endif
 }
 
-class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
+class SERVER_DECL AscEmuLog
 {
     FILE* normal_log_file;
     FILE* error_log_file;
@@ -91,10 +99,14 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
     HANDLE handle_stdout;
 #endif
 
-    public:
+    private:
+        AscEmuLog() = default;
+        ~AscEmuLog() = default;
 
-        AscEmuLog() : normal_log_file(nullptr), error_log_file(nullptr), aelog_file_log_level(0), aelog_debug_flags(0) {}
-        ~AscEmuLog()
+    public:
+        static AscEmuLog& getInstance();
+        void initialize();
+        void finalize()
         {
             if (normal_log_file != nullptr)
             {
@@ -110,6 +122,11 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
                 error_log_file = nullptr;
             }
         }
+
+        AscEmuLog(AscEmuLog&&) = delete;
+        AscEmuLog(AscEmuLog const&) = delete;
+        AscEmuLog& operator=(AscEmuLog&&) = delete;
+        AscEmuLog& operator=(AscEmuLog const&) = delete;
 
         void InitalizeLogFiles(std::string file_prefix);
 
@@ -138,7 +155,7 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
         void ConsoleLogMajorError(std::string line1, std::string line2, std::string line3, std::string line4);
 };
 
-#define AscLog AscEmuLog::getSingleton()
+#define AscLog AscEmuLog::getInstance()
 
 /*! \brief Logging Level: Normal */
 #define LogDefault(msg, ...) AscLog.ConsoleLogDefault(false, msg, ##__VA_ARGS__)

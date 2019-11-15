@@ -21,14 +21,25 @@ class Unit;
 int32 GetSpellIDFromLink(const char* spelllink);
 uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
 
-class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
+class SERVER_DECL ChatHandler
 {
     friend class CommandTableStorage;
 
+    private:
+
+        ChatHandler() = default;
+        ~ChatHandler() = default;
+
     public:
 
-        ChatHandler();
-        ~ChatHandler();
+        static ChatHandler& getInstance();
+        void initialize();
+        void finalize();
+
+        ChatHandler(ChatHandler&&) = delete;
+        ChatHandler(ChatHandler const&) = delete;
+        ChatHandler& operator=(ChatHandler&&) = delete;
+        ChatHandler& operator=(ChatHandler const&) = delete;
 
         WorldPacket* FillMessageData(uint32 type, uint32 language,  const char* message, uint64 guid, uint8 flag = 0) const;
         WorldPacket* FillSystemMessageData(const char* message) const;
@@ -548,4 +559,4 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
 };
 
-#define sChatHandler ChatHandler::getSingleton()
+#define sChatHandler ChatHandler::getInstance()

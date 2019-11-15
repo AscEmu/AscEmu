@@ -225,7 +225,7 @@ void Channel::Part(Player* plr, bool send_packet)
     if (m_members.size() == 0)
     {
         m_lock.Release();
-        channelmgr.RemoveChannel(this);
+        sChannelMgr.RemoveChannel(this);
     }
     else
         m_lock.Release();
@@ -930,7 +930,14 @@ void Channel::GetOwner(Player* plr)
         }
     }
 }
-ChannelMgr::~ChannelMgr()
+
+ChannelMgr& ChannelMgr::getInstance()
+{
+    static ChannelMgr mInstance;
+    return mInstance;
+}
+
+void ChannelMgr::finalize()
 {
     for (uint8 i = 0; i < 2; ++i)
     {
@@ -1069,7 +1076,7 @@ void ChannelMgr::RemoveChannel(Channel* chn)
     lock.Release();
 }
 
-ChannelMgr::ChannelMgr()
+void ChannelMgr::initialize()
 {
     seperatechannels = false;
 }

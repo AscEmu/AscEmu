@@ -182,7 +182,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     {
                         if (qst->receive_items[i])
                         {
-                            Item* item = objmgr.CreateItem(qst->receive_items[i], plr);
+                            Item* item = sObjectMgr.CreateItem(qst->receive_items[i], plr);
                             if (item == NULL)
                                 return false;
 
@@ -193,7 +193,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 
                     if (qst->srcitem && qst->srcitem != qst->receive_items[0])
                     {
-                        Item* item = objmgr.CreateItem(qst->srcitem, plr);
+                        Item* item = sObjectMgr.CreateItem(qst->srcitem, plr);
                         if (item)
                         {
                             item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
@@ -383,7 +383,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             }
                             else
                             {
-                                auto item = objmgr.CreateItem(qst->reward_item[i], plr);
+                                auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
                                     item->setStackCount(uint32(qst->reward_itemcount[i]));
@@ -422,7 +422,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                            auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
                             if (item)
                             {
                                 item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));

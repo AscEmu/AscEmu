@@ -83,7 +83,7 @@ public:
         {
             case 1:
             {
-                Item* item = objmgr.CreateItem(33634, plr);
+                Item* item = sObjectMgr.CreateItem(33634, plr);
                 if (item == nullptr)
                     return;
 

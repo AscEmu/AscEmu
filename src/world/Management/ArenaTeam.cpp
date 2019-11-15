@@ -90,7 +90,7 @@ ArenaTeam::ArenaTeam(Field* f)
                      &m_members[i].Played_ThisSeason, &m_members[i].Won_ThisSeason, &m_members[i].PersonalRating);
         if (ret >= 5)
         {
-            m_members[i].Info = objmgr.GetPlayerInfo(guid);
+            m_members[i].Info = sObjectMgr.GetPlayerInfo(guid);
             if (m_members[i].Info)
                 ++m_memberCount;
             if (ret == 5)
@@ -138,7 +138,7 @@ void ArenaTeam::Destroy()
         RemoveMember(*itr);
     }
 
-    objmgr.RemoveArenaTeam(this);
+    sObjectMgr.RemoveArenaTeam(this);
     delete this;
 }
 

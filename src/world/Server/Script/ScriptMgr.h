@@ -161,11 +161,19 @@ typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
 
-class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
+class SERVER_DECL ScriptMgr
 {
+    private:
+        ScriptMgr() = default;
+        ~ScriptMgr() = default;
+
     public:
-        ScriptMgr();
-        ~ScriptMgr();
+        static ScriptMgr& getInstance();
+
+        ScriptMgr(ScriptMgr&&) = delete;
+        ScriptMgr(ScriptMgr const&) = delete;
+        ScriptMgr& operator=(ScriptMgr&&) = delete;
+        ScriptMgr& operator=(ScriptMgr const&) = delete;
 
         friend class HookInterface;
 
@@ -691,9 +699,21 @@ class SERVER_DECL InstanceScript
 };
 
 
-class SERVER_DECL HookInterface : public Singleton<HookInterface>
+class SERVER_DECL HookInterface
 {
+    private:
+
+        HookInterface() = default;
+        ~HookInterface() = default;
+
     public:
+
+        static HookInterface& getInstance();
+
+        HookInterface(HookInterface&&) = delete;
+        HookInterface(HookInterface const&) = delete;
+        HookInterface& operator=(HookInterface&&) = delete;
+        HookInterface& operator=(HookInterface const&) = delete;
 
         friend class ScriptMgr;
 
@@ -730,5 +750,5 @@ class SERVER_DECL HookInterface : public Singleton<HookInterface>
         bool OnResurrect(Player* pPlayer);
 };
 
-#define sScriptMgr ScriptMgr::getSingleton()
-#define sHookInterface HookInterface::getSingleton()
+#define sScriptMgr ScriptMgr::getInstance()
+#define sHookInterface HookInterface::getInstance()

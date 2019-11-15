@@ -140,7 +140,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
             for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
-                PlayerInfo* info = objmgr.GetPlayerInfo(*itr);
+                PlayerInfo* info = sObjectMgr.GetPlayerInfo(*itr);
                 if (info)
                 {
                     ArenaTeamMember* tp = m_teams[i]->GetMember(info);
@@ -164,7 +164,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
         }
     }
 
-    objmgr.UpdateArenaTeamRankings();
+    sObjectMgr.UpdateArenaTeamRankings();
 
     m_nextPvPUpdateTime = 0;
     UpdatePvPData();

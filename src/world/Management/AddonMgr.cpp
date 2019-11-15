@@ -9,17 +9,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Auth/MD5.h"
 
-initialiseSingleton(AddonMgr);
-
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 
-#if VERSION_STRING < Cata
-AddonMgr::AddonMgr()
+AddonMgr& AddonMgr::getInstance()
+{
+    static AddonMgr mInstance;
+    return mInstance;
+}
+
+void AddonMgr::initialize()
 {
     mKnownAddons.clear();
 }
 
-AddonMgr::~AddonMgr()
+#if VERSION_STRING < Cata
+void AddonMgr::finalize()
 {
     KnownAddonsItr itr;
     for (itr = mKnownAddons.begin(); itr != mKnownAddons.end(); ++itr)

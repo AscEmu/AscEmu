@@ -23,7 +23,6 @@
 
 #include "Threading/RWLock.h"
 #include "CallBack.h"
-#include "Singleton.h"
 #include <map>
 
 enum EventTypes
@@ -288,11 +287,23 @@ class EventMgr;
 class EventableObjectHolder;
 typedef std::map<int32, EventableObjectHolder*> HolderMap;
 
-class SERVER_DECL EventMgr : public Singleton < EventMgr >
+class SERVER_DECL EventMgr
 {
     friend class MiniEventMgr;
 
+    private:
+
+        EventMgr() = default;
+        ~EventMgr() = default;
+
     public:
+
+        static EventMgr& getInstance();
+
+        EventMgr(EventMgr&&) = delete;
+        EventMgr(EventMgr const&) = delete;
+        EventMgr& operator=(EventMgr&&) = delete;
+        EventMgr& operator=(EventMgr const&) = delete;
 
         template <class Class>
         void AddEvent(Class* obj, void (Class::*method)(), uint32 type, time_t time, uint32 repeats, uint32 flags)
@@ -426,6 +437,6 @@ class SERVER_DECL EventMgr : public Singleton < EventMgr >
         RWLock holderLock;
 };
 
-#define sEventMgr EventMgr::getSingleton()
+#define sEventMgr EventMgr::getInstance()
 
 #endif // EVENTMGR_H

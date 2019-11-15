@@ -6,11 +6,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonStdAfx.h"
 #include "AccountMgr.h"
 
-initialiseSingleton(AccountMgr);
+AccountMgr& AccountMgr::getInstance()
+{
+    static AccountMgr mInstance;
+    return mInstance;
+}
 
-AccountMgr::AccountMgr(uint32_t reloadTime) : m_reloadThread(nullptr), m_reloadTime(reloadTime)
+void AccountMgr::initialize(uint32_t reloadTime)
 {
     LogNotice("AccountMgr : Started precaching accounts...");
+    m_reloadThread = nullptr;
+    m_reloadTime = reloadTime;
 
     reloadAccounts(true);
 
@@ -19,7 +25,7 @@ AccountMgr::AccountMgr(uint32_t reloadTime) : m_reloadThread(nullptr), m_reloadT
     m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& thread) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
 }
 
-AccountMgr::~AccountMgr()
+void AccountMgr::finalize()
 {
     LogNotice("AccountMgr : Stop Manager...");
 

@@ -376,16 +376,26 @@ typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::cons
 
 
 class PlayerCache;
-class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableObject
+class SERVER_DECL ObjectMgr : public EventableObject
 {
+    private:
+        ObjectMgr() = default;
+        ~ObjectMgr() = default;
+
     public:
         //NIT
+        static ObjectMgr& getInstance();
+        void initialize();
+        void finalize();
+
+        ObjectMgr(ObjectMgr&&) = delete;
+        ObjectMgr(ObjectMgr const&) = delete;
+        ObjectMgr& operator=(ObjectMgr&&) = delete;
+        ObjectMgr& operator=(ObjectMgr const&) = delete;
+
         void createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
         void createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
         //NIT END
-
-        ObjectMgr();
-        ~ObjectMgr();
 
         void LoadCreatureWaypoints();
         void LoadCreatureTimedEmotes();
@@ -728,6 +738,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
 };
 
-#define objmgr ObjectMgr::getSingleton()
+#define sObjectMgr ObjectMgr::getInstance()
 
 #endif // OBJECTMGR_H

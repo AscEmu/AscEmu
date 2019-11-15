@@ -5,16 +5,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Singleton.h"
-
 #include "Guild.h"
 
-class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
+class SERVER_DECL GuildMgr
 {
+    private:
+
+        GuildMgr() = default;
+        ~GuildMgr() = default;
+
     public:
 
-        GuildMgr();
-        ~GuildMgr();
+        static GuildMgr& getInstance();
+        void finalize();
+
+        GuildMgr(GuildMgr&&) = delete;
+        GuildMgr(GuildMgr const&) = delete;
+        GuildMgr& operator=(GuildMgr&&) = delete;
+        GuildMgr& operator=(GuildMgr const&) = delete;
 
         void update(uint32_t diff);
         void saveGuilds();
@@ -52,4 +60,4 @@ class SERVER_DECL GuildMgr : public Singleton <GuildMgr>
         std::vector<GuildReward> GuildRewards;
 };
 
-#define sGuildMgr GuildMgr::getSingleton()
+#define sGuildMgr GuildMgr::getInstance()

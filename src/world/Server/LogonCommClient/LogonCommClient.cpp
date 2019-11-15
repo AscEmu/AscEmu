@@ -158,7 +158,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 
     LogDefault("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
 
-    LogonCommHandler::getSingleton().addRealmToRealmlistResult(_id, realmlid);
+    sLogonCommHandler.addRealmToRealmlistResult(_id, realmlid);
     realm_ids.insert(realmlid);
 }
 
@@ -447,7 +447,7 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
     // Send the result
     WorldPacket data(LRCMSG_REALM_POPULATION_RESULT, 16);
     data << realmId;
-    data << LogonCommHandler::getSingleton().getRealmPopulation();
+    data << sLogonCommHandler.getRealmPopulation();
     SendPacket(&data, false);
 }
 

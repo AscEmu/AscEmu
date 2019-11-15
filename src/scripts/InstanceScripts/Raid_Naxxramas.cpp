@@ -202,7 +202,7 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
     // Slower, but safer
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = objmgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
@@ -217,7 +217,7 @@ void WebWrapAI::AIUpdate()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = objmgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
         if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             mPlayerGuid = 0;
@@ -231,7 +231,7 @@ void WebWrapAI::Destroy()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = objmgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
@@ -892,7 +892,7 @@ void AnubRekhanAI::Destroy()
 //                spawnLocation = PlayerPtr->GetPosition();
 //            else if (PlayerPtr->getDeathState() == CORPSE)
 //            {
-//                Corpse* myCorpse = objmgr.GetCorpseByOwner(PlayerPtr->getGuidLow());
+//                Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(PlayerPtr->getGuidLow());
 //                if (myCorpse == NULL || myCorpse->GetCorpseState() != CORPSE_STATE_BODY)
 //                    continue;
 //

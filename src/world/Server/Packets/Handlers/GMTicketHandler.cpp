@@ -95,7 +95,7 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
+    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid());
     if (ticket == nullptr)
     {
         SendPacket(SmsgGmTicketUpdateText(GMTNoTicketFound).serialise().get());
@@ -104,13 +104,13 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     {
         ticket->message = srlPacket.message;
         ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
-        objmgr.UpdateGMTicket(ticket);
+        sObjectMgr.UpdateGMTicket(ticket);
 
         SendPacket(SmsgGmTicketUpdateText(GMTNoErrors).serialise().get());
     }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    Channel* channel = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+    Channel* channel = sChannelMgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;
@@ -125,13 +125,13 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 {
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
+    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid());
 
-    objmgr.RemoveGMTicketByPlayer(_player->getGuid());
+    sObjectMgr.RemoveGMTicketByPlayer(_player->getGuid());
 
     SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
-    Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
+    Channel* channel = sChannelMgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
     if (channel != nullptr && ticket != nullptr)
     {
         std::stringstream ss;
@@ -181,10 +181,10 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 #endif  
 
     // Remove pending tickets
-    objmgr.RemoveGMTicketByPlayer(_player->getGuid());
+    sObjectMgr.RemoveGMTicketByPlayer(_player->getGuid());
 
     auto ticket = new GM_Ticket;
-    ticket->guid = uint64_t(objmgr.GenerateTicketID());
+    ticket->guid = uint64_t(sObjectMgr.GenerateTicketID());
     ticket->playerGuid = _player->getGuid();
     ticket->map = srlPacket.map;
     ticket->posX = srlPacket.location.x;
@@ -198,12 +198,12 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
     ticket->assignedToPlayer = 0;
     ticket->comment = "";
 
-    objmgr.AddGMTicket(ticket, false);
+    sObjectMgr.AddGMTicket(ticket, false);
 
     SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
     // send message indicating new ticket
-    Channel* channel = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
+    Channel* channel = sChannelMgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;
@@ -224,7 +224,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (const auto ticket = objmgr.GetGMTicketByPlayer(_player->getGuid()))
+    if (const auto ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid()))
     {
         if (!ticket->deleted)
         {

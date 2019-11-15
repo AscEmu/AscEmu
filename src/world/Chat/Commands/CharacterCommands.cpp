@@ -156,7 +156,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
     if (levels > worldConfig.player.playerLevelCap)
         levels = worldConfig.player.playerLevelCap;
 
-    auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), levels);
+    auto level_info = sObjectMgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), levels);
     if (level_info == nullptr)
     {
         RedSystemMessage(m_session, "No LevelInfo for Leve: %u, Race: %u, Class: %u", levels, player_target->getRace(), player_target->getClass());
@@ -770,7 +770,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
     if (player == nullptr)
         return true;
 
-    /*auto item_set_list = objmgr.GetListForItemSet(setid);
+    /*auto item_set_list = sObjectMgr.GetListForItemSet(setid);
     if (!item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
@@ -795,7 +795,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
         }
         else
         {
-            auto item = objmgr.CreateItem(it->ItemId, m_session->GetPlayer());
+            auto item = sObjectMgr.CreateItem(it->ItemId, m_session->GetPlayer());
             if (item == nullptr)
                 continue;
 
@@ -1476,7 +1476,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
+    auto level_info = sObjectMgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
     if (level_info == nullptr)
     {
         RedSystemMessage(m_session, "Level information not found in table playercreateinfo!");
@@ -1561,25 +1561,25 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     std::string new_name = new_name_cmd;
     Util::CapitalizeString(new_name);
 
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(current_name);
+    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(current_name);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player not found with this name.");
         return true;
     }
 
-    if (objmgr.GetPlayerInfoByName(new_name.c_str()) != nullptr)
+    if (sObjectMgr.GetPlayerInfoByName(new_name.c_str()) != nullptr)
     {
         RedSystemMessage(m_session, "New name %s is already in use.", new_name.c_str());
         return true;
     }
 
-    objmgr.RenamePlayerInfo(pi, pi->name, new_name.c_str());
+    sObjectMgr.RenamePlayerInfo(pi, pi->name, new_name.c_str());
 
     free(pi->name);
     pi->name = strdup(new_name.c_str());
 
-    Player* plr = objmgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr != nullptr)
     {
         plr->setName(new_name);
@@ -1807,14 +1807,14 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
         return true;
     }
 
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, (uint32)pi->guid);
@@ -1840,14 +1840,14 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
         return true;
     }
 
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, (uint32)pi->guid);
@@ -1872,14 +1872,14 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
         return true;
     }
 
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, (uint32)pi->guid);
@@ -1904,14 +1904,14 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
         return true;
     }
 
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, (uint32)pi->guid);

@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <map>
 #include <ctime>
-
-#include "../../shared/Singleton.h"
 #include <string>
 
 class GameEvent;
@@ -188,13 +186,32 @@ typedef std::set<uint16> ActiveEvents;
 typedef std::map<uint32, uint32> NPCGuidList;
 typedef std::map<uint32, uint32> GOBGuidList;
 
-class GameEventMgr : public Singleton < GameEventMgr >
+class GameEventMgr
 {
+    private:
+
+        GameEventMgr() = default;
+        ~GameEventMgr() = default;
+
     public:
 
-        class GameEventMgrThread : public Singleton < GameEventMgrThread >
+        class GameEventMgrThread
         {
+            private:
+
+                GameEventMgrThread() = default;
+                ~GameEventMgrThread() = default;
+
             public:
+
+                static GameEventMgrThread& getInstance();
+                void initialize();
+                void finalize();
+
+                GameEventMgrThread(GameEventMgrThread&&) = delete;
+                GameEventMgrThread(GameEventMgrThread const&) = delete;
+                GameEventMgrThread& operator=(GameEventMgrThread&&) = delete;
+                GameEventMgrThread& operator=(GameEventMgrThread const&) = delete;
 
                 bool m_IsActive = false;
 
@@ -202,13 +219,15 @@ class GameEventMgr : public Singleton < GameEventMgr >
 
                 std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
                 uint32_t m_reloadTime;
-
-                GameEventMgrThread();
-                ~GameEventMgrThread();
         };
 
-        GameEventMgr();
-        ~GameEventMgr();
+        static GameEventMgr& getInstance();
+        void initialize();
+
+        GameEventMgr(GameEventMgr&&) = delete;
+        GameEventMgr(GameEventMgr const&) = delete;
+        GameEventMgr& operator=(GameEventMgr&&) = delete;
+        GameEventMgr& operator=(GameEventMgr const&) = delete;
 
         ActiveEvents const& GetActiveEventList() const { return mActiveEvents; }
         void StartArenaEvents();
@@ -221,5 +240,5 @@ class GameEventMgr : public Singleton < GameEventMgr >
         GOBGuidList mGOBGuidList;
 };
 
-#define sGameEventMgr GameEventMgr::getSingleton()
-#define sGameEventMgrThread GameEventMgr::GameEventMgrThread::getSingleton()
+#define sGameEventMgr GameEventMgr::getInstance()
+#define sGameEventMgrThread GameEventMgr::GameEventMgrThread::getInstance()

@@ -195,7 +195,7 @@ GameObject::~GameObject()
     uint32 guid = static_cast<uint32_t>(getCreatedByGuid());
     if (guid)
     {
-        Player* plr = objmgr.GetPlayer(guid);
+        Player* plr = sObjectMgr.GetPlayer(guid);
         if (plr && plr->GetSummonedObject() == this)
             plr->SetSummonedObject(NULL);
 
@@ -309,7 +309,7 @@ void GameObject::SaveToDB()
         // Create spawn instance
         m_spawn = new MySQLStructure::GameobjectSpawn;
         m_spawn->entry = getEntry();
-        m_spawn->id = objmgr.GenerateGameObjectSpawnID();
+        m_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
         m_spawn->map = GetMapId();
         m_spawn->position_x = GetPositionX();
         m_spawn->position_y = GetPositionY();
@@ -448,7 +448,7 @@ void GameObject::_Expire()
     if (IsInWorld())
         RemoveFromWorld(true);
 
-    //sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_DELETE_TIMER, 1000, 1);
+    //sEventMgr.AddEvent(sWorld, &World::DeleteObject, ((Object*)this), EVENT_DELETE_TIMER, 1000, 1);
     delete this;
     //this = NULL;
 }
@@ -1155,7 +1155,7 @@ void GameObject_FishingNode::OnPushToWorld()
         zone = GetZoneId();
 
     // Only set a 'splash' if there is any loot in this area / zone
-    if (lootmgr.IsFishable(zone))
+    if (sLootMgr.IsFishable(zone))
     {
         uint32 seconds[] = { 0, 4, 10, 14 };
         uint32 rnd = Util::getRandomUInt(3);
@@ -1204,9 +1204,9 @@ void GameObject_FishingNode::onUse(Player* player)
         if (school != nullptr)
         {
             if (school->GetMapMgr() != nullptr)
-                lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
+                sLootMgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
             else
-                lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
+                sLootMgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
 
             player->SendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
             EndFishing(false);
@@ -1215,7 +1215,7 @@ void GameObject_FishingNode::onUse(Player* player)
         }
         else if (maxskill != 0 && Rand(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
-            lootmgr.FillFishingLoot(&this->loot, zone);
+            sLootMgr.FillFishingLoot(&this->loot, zone);
             player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());
             EndFishing(false);
         }
@@ -1355,7 +1355,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (info == nullptr)
                 return;
 
-            Player* target = objmgr.GetPlayer(GetRitual()->GetTargetGUID());
+            Player* target = sObjectMgr.GetPlayer(GetRitual()->GetTargetGUID());
             if (target == nullptr || !target->IsInWorld())
                 return;
 
@@ -1472,7 +1472,7 @@ void GameObject_SpellCaster::onUse(Player* player)
 void GameObject_Meetingstone::onUse(Player* player)
 {
     // Use selection
-    Player* pPlayer = objmgr.GetPlayer(static_cast<uint32>(player->GetSelection()));
+    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32>(player->GetSelection()));
     if (pPlayer == nullptr)
         return;
 

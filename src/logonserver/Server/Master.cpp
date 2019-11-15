@@ -15,7 +15,6 @@ using std::chrono::milliseconds;
 
 // Database impl
 Database* sLogonSQL;
-initialiseSingleton(MasterLogon);
 std::atomic<bool> mrunning(true);
 Mutex _authSocketLock;
 std::set<AuthSocket*> _authSockets;
@@ -23,6 +22,12 @@ std::set<AuthSocket*> _authSockets;
 ConfigMgr Config;
 
 static const char* REQUIRED_LOGON_DB_VERSION = "20180810-00_realms";
+
+MasterLogon& MasterLogon::getInstance()
+{
+    static MasterLogon mInstance;
+    return mInstance;
+}
 
 void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 {
@@ -35,17 +40,16 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 
-    new Logon;
     LogDetail("Config : Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return;
     }
 
     if (!SetLogonConfiguration())
     {
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return;
     }
 
@@ -56,7 +60,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     if (!StartDb())
     {
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return;
     }
 
@@ -66,17 +70,17 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     if (!CheckDBVersion())
     {
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return;
     }
 
-    new IpBanMgr;
+    sIpBanMgr.initialize();
 
-    new AccountMgr(logonConfig.rates.accountRefreshTime); //time in seconds
+    sAccountMgr.initialize(logonConfig.rates.accountRefreshTime); // time in seconds
 
-    new PatchMgr;
-    
-    new RealmsMgr(300); //time in seconds
+    PatchMgr::getInstance().initialize();
+
+    sRealmsMgr.initialize(300); // time in seconds
 
     // Load conf settings..
     clientMinBuild = 5875;
@@ -84,8 +88,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     ThreadPool.ExecuteTask(new LogonConsoleThread);
 
-    new SocketMgr;
-    new SocketGarbageCollector;
+    sSocketMgr.initialize();
 
     auto realmlistSocket = new ListenSocket<AuthSocket>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
     auto logonServerSocket = new ListenSocket<LogonCommServerSocket>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
@@ -126,7 +129,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
                 g_localTime = *localtime(&UNIXTIME);
             }
 
-            PatchMgr::getSingleton().UpdateJobs();
+            PatchMgr::getInstance().UpdateJobs();
             Arcemu::Sleep(1000);
         }
 
@@ -146,9 +149,8 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sSocketMgr.ShutdownThreads();
 #endif
     sLogonConsole.Kill();
-    delete LogonConsole::getSingletonPtr();
-    delete AccountMgr::getSingletonPtr();
-    delete RealmsMgr::getSingletonPtr();
+    sAccountMgr.finalize();
+    sRealmsMgr.finalize();
 
     // kill db
     LogDefault("Waiting for database to close..");
@@ -164,15 +166,13 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     else
         LOG_DEBUG("File logonserver.pid successfully deleted");
 
-    delete PatchMgr::getSingletonPtr();
-    delete IpBanMgr::getSingletonPtr();
-    delete SocketMgr::getSingletonPtr();
-    delete SocketGarbageCollector::getSingletonPtr();
+    sSocketMgr.finalize();
+    sSocketGarbageCollector.finalize();
     //delete periodicReloadAccounts;
     delete realmlistSocket;
     delete logonServerSocket;
     LOG_BASIC("Shutdown complete.");
-    AscLog.~AscEmuLog();
+    AscLog.finalize();
 }
 
 void OnCrash(bool /*Terminate*/)
@@ -448,10 +448,7 @@ bool MasterLogon::SetLogonConfiguration()
         m_allowedModIps.push_back(tmp);
     }
 
-    //\todo always nullptr!
-    if (RealmsMgr::getSingletonPtr() != nullptr)
-        sRealmsMgr.checkServers();
-
+    sRealmsMgr.checkServers();
     m_allowedIpLock.Release();
 
     return true;
@@ -495,7 +492,7 @@ void MasterLogon::_OnSignal(int s)
         case SIGHUP:
         {
             LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
-            AccountMgr::getSingleton().reloadAccounts(true);
+            sAccountMgr.reloadAccounts(true);
         }
         break;
 #endif

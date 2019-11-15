@@ -21,7 +21,6 @@
 
 #include <vector>
 #include <set>
-#include "Singleton.h"
 #include <map>
 #include <string>
 
@@ -119,12 +118,21 @@ typedef std::vector<CalendarInvite*> CalendarInviteStore;
 typedef std::set<CalendarEvent*> CalendarEventStore;
 typedef std::map<uint64 /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
 
-class CalendarMgr : public Singleton< CalendarMgr >
+class CalendarMgr
 {
+    private:
+
+        CalendarMgr() = default;
+        ~CalendarMgr() = default;
+
     public:
 
-        CalendarMgr();
-        ~CalendarMgr();
+        static CalendarMgr& getInstance();
+
+        CalendarMgr(CalendarMgr&&) = delete;
+        CalendarMgr(CalendarMgr const&) = delete;
+        CalendarMgr& operator=(CalendarMgr&&) = delete;
+        CalendarMgr& operator=(CalendarMgr const&) = delete;
 
         CalendarEventStore _events;
         CalendarEventInviteStore _invites;
@@ -133,6 +141,6 @@ class CalendarMgr : public Singleton< CalendarMgr >
 
 };
 
-#define sCalendarMgr CalendarMgr::getSingleton()
+#define sCalendarMgr CalendarMgr::getInstance()
 
 #endif // CALENDARMGR_H

@@ -12,7 +12,6 @@
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
 #include "CircularBuffer.h"
-#include "Singleton.h"
 #include "Log.hpp"
 #include <string>
 #include <mutex>
@@ -239,18 +238,32 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
 /* Socket Garbage Collector */
 #define SOCKET_GC_TIMEOUT 15
 
-class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
+class SocketGarbageCollector
 {
         std::map<Socket*, time_t> deletionQueue;
         Mutex lock;
+    private:
+        SocketGarbageCollector() = default;
+        ~SocketGarbageCollector() = default;
+
     public:
 
-        ~SocketGarbageCollector()
+        static SocketGarbageCollector& getInstance()
         {
-            std::map<Socket*, time_t>::iterator i;
-            for(i = deletionQueue.begin(); i != deletionQueue.end(); ++i)
-                delete i->first;
+            static SocketGarbageCollector mInstance;
+            return mInstance;
         }
+
+        void finalize()
+        {
+            for (auto i : deletionQueue)
+                delete i.first;
+        }
+
+        SocketGarbageCollector(SocketGarbageCollector&&) = delete;
+        SocketGarbageCollector(SocketGarbageCollector const&) = delete;
+        SocketGarbageCollector& operator=(SocketGarbageCollector&&) = delete;
+        SocketGarbageCollector& operator=(SocketGarbageCollector const&) = delete;
 
         void Update()
         {
@@ -277,6 +290,6 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
         }
 };
 
-#define sSocketGarbageCollector SocketGarbageCollector::getSingleton()
+#define sSocketGarbageCollector SocketGarbageCollector::getInstance()
 
 #endif  //SOCKET_H

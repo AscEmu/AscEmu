@@ -192,7 +192,7 @@ typedef CBattleground* (*BattlegroundFactoryMethod)(MapMgr* mgr, uint32 iid, uin
 typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 group, uint32 type, uint32 players_per_side);
 
 
-class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
+class SERVER_DECL CBattlegroundManager : public EventableObject
 {
     // Battleground Instance Map
     std::map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
@@ -225,10 +225,20 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
     // All battlegrounds that are available in random BG queue
     std::vector<uint32> avalibleInRandom;
 
+    private:
+
+        CBattlegroundManager() = default;
+        ~CBattlegroundManager() = default;
+
     public:
 
-        CBattlegroundManager();
-        ~CBattlegroundManager();
+        static CBattlegroundManager& getInstance();
+        void initialize();
+
+        CBattlegroundManager(CBattlegroundManager&&) = delete;
+        CBattlegroundManager(CBattlegroundManager const&) = delete;
+        CBattlegroundManager& operator=(CBattlegroundManager&&) = delete;
+        CBattlegroundManager& operator=(CBattlegroundManager const&) = delete;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method)
@@ -312,6 +322,6 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         uint32 GetMaximumPlayers(uint32 dbcIndex);
 };
 
-#define BattlegroundManager CBattlegroundManager::getSingleton()
+#define sBattlegroundManager CBattlegroundManager::getInstance()
 
 #endif // BATTLEGROUNDMGR_H

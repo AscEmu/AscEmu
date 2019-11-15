@@ -119,8 +119,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     int onlineCount = 0;
     int avgLatency = 0;
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
@@ -130,7 +130,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
                 gmCount++;
         }
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     if (isWebClient)
     {
@@ -166,8 +166,8 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     baseConsole->Write("| %21s | %15s | % 03s  |\r\n", "Name", "Permissions", "Latency");
     baseConsole->Write("======================================================\r\n");
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession()->GetPermissionCount())
         {
@@ -175,7 +175,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
                 itr->second->GetSession()->GetLatency());
         }
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     baseConsole->Write("======================================================\r\n\r\n");
 
@@ -197,7 +197,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     if (characterName.empty())
         return false;
 
-    Player* player = objmgr.GetPlayer(characterName.c_str());
+    Player* player = sObjectMgr.GetPlayer(characterName.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player, %s.\r\n", characterName.c_str());
@@ -240,13 +240,13 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     baseConsole->Write("| %21s | %15s | % 03s  |\r\n", "Name", "Level", "Latency");
     baseConsole->Write("======================================================\r\n");
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->GetSession()->GetPlayer()->getLevel(),
             itr->second->GetSession()->GetLatency());
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     baseConsole->Write("======================================================\r\n\r\n");
     return true;
@@ -257,7 +257,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     if (argumentCount > 0 && consoleInput.empty())
         return false;
 
-    Player* player = objmgr.GetPlayer(consoleInput.c_str());
+    Player* player = sObjectMgr.GetPlayer(consoleInput.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Player not found.\r\n");
@@ -279,13 +279,13 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
 
     if (consoleInput.empty())
     {
-        objmgr._playerslock.AcquireReadLock();
-        for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+        sObjectMgr._playerslock.AcquireReadLock();
+        for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
             if (itr->second->GetSession())
                 itr->second->SaveToDB(false);
         }
-        objmgr._playerslock.ReleaseReadLock();
+        sObjectMgr._playerslock.ReleaseReadLock();
 
         exit(0);
     }
@@ -350,7 +350,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     if (whisperMessage.empty())
         return false;
 
-    Player* player = objmgr.GetPlayer(characterName.c_str());
+    Player* player = sObjectMgr.GetPlayer(characterName.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player, %s.\r\n", characterName.c_str());
@@ -382,7 +382,7 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
     if (argumentCount > 0 && consoleInput.empty())
         return false;
 
-    Player* player = objmgr.GetPlayer(consoleInput.c_str(), false);
+    Player* player = sObjectMgr.GetPlayer(consoleInput.c_str(), false);
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player %s.\r\n", consoleInput.c_str());

@@ -14,16 +14,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // World functions
-initialiseSingleton(WorldPacketLog);
-
 SERVER_DECL time_t UNIXTIME;
 SERVER_DECL tm g_localTime;
 
-WorldPacketLog::WorldPacketLog() : isLogEnabled(false), mPacketLogFile(nullptr)
+WorldPacketLog& WorldPacketLog::getInstance()
 {
+    static WorldPacketLog mInstance;
+    return mInstance;
 }
 
-WorldPacketLog::~WorldPacketLog()
+void WorldPacketLog::initialize()
+{
+    isLogEnabled = false;
+    mPacketLogFile = nullptr;
+}
+
+void WorldPacketLog::finalize()
 {
     if (mPacketLogFile)
     {
@@ -212,7 +218,20 @@ namespace AELog
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // AscEmuLog functions
-createFileSingleton(AscEmuLog);
+
+AscEmuLog& AscEmuLog::getInstance()
+{
+    static AscEmuLog mInstance;
+    return mInstance;
+}
+
+void AscEmuLog::initialize()
+{
+    normal_log_file = nullptr;
+    error_log_file = nullptr;
+    aelog_file_log_level = 0;
+    aelog_debug_flags = 0;
+}
 
 void AscEmuLog::InitalizeLogFiles(std::string file_prefix)
 {

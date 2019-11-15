@@ -46,12 +46,21 @@ class PatchJob
         bool Update();
 };
 
-class PatchMgr : public Singleton<PatchMgr>
+class PatchMgr
 {
-    public:
+    private:
+        PatchMgr() = default;
+        ~PatchMgr() = default;
 
-        PatchMgr();
-        ~PatchMgr();
+    public:
+        static PatchMgr& getInstance();
+        void initialize();
+
+        PatchMgr(PatchMgr&&) = delete;
+        PatchMgr(PatchMgr const&) = delete;
+        PatchMgr& operator=(PatchMgr&&) = delete;
+        PatchMgr& operator=(PatchMgr const&) = delete;
+
 
         Patch* FindPatchForClient(uint32 Version, const char* Locality);
         void BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip);

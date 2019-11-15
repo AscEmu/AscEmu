@@ -240,7 +240,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     else
         m_rune_avail_before = 0;
 
-    m_target_constraint = objmgr.GetSpellTargetConstraintForSpell(info->getId());
+    m_target_constraint = sObjectMgr.GetSpellTargetConstraintForSpell(info->getId());
 
     m_missilePitch = 0;
     m_missileTravelTime = 0;
@@ -910,7 +910,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     m_spellState = SPELL_STATE_PREPARING;
 
     uint32_t parameter1 = 0, parameter2 = 0;
-    if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
+    if (sObjectMgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else
         cancastresult = canCast(false, &parameter1, &parameter2);
@@ -1111,7 +1111,7 @@ void Spell::castMe(bool check)
     }
 
     uint32_t parameter1 = 0, parameter2 = 0;
-    if (objmgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
+    if (sObjectMgr.IsSpellDisabled(getSpellInfo()->getId()))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE;
     else if (check)
         cancastresult = canCast(true, &parameter1, &parameter2);
@@ -1458,10 +1458,10 @@ void Spell::castMe(bool check)
             }
         }
 
-        /*SpellExtraInfo* sp = objmgr.GetSpellExtraData(GetProto()->getId());
+        /*SpellExtraInfo* sp = sObjectMgr.GetSpellExtraData(GetProto()->getId());
         if (sp)
         {
-        Unit* Target = objmgr.GetUnit(m_targets.m_unitTarget);
+        Unit* Target = sObjectMgr.GetUnit(m_targets.m_unitTarget);
         if (Target)
         Target->RemoveBySpecialType(sp->specialtype, p_caster->getGuid());
         }*/
@@ -3150,7 +3150,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
                     gameObjTarget = m_caster->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Corpse:
-                    corpseTarget = objmgr.GetCorpse(wowGuid.getGuidLowPart());
+                    corpseTarget = sObjectMgr.GetCorpse(wowGuid.getGuidLowPart());
                     break;
                 default:
                     LOG_ERROR("unitTarget not set");
@@ -3577,7 +3577,7 @@ void Spell::DetermineSkillUp()
     if (p_caster == nullptr)
         return;
 
-    auto skill_line_ability = objmgr.GetSpellSkill(getSpellInfo()->getId());
+    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
     if (skill_line_ability == nullptr)
         return;
 
@@ -6432,7 +6432,7 @@ void Spell::DetermineSkillUp(uint32 skillid)
 
     float chance = 0.0f;
 
-    auto skill_line_ability = objmgr.GetSpellSkill(getSpellInfo()->getId());
+    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
     if (skill_line_ability != nullptr && skillid == skill_line_ability->skilline && p_caster->_HasSkillLine(skillid))
     {
         uint32 amt = p_caster->_GetSkillLineCurrent(skillid, false);

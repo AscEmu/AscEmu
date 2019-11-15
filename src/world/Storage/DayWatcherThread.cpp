@@ -181,7 +181,7 @@ void DayWatcherThread::update_daily()
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
     CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
 
-    objmgr.ResetDailies();
+    sObjectMgr.ResetDailies();
     m_lastDailyTime = UNIXTIME;
     dupe_tm_pointer(localtime(&m_lastDailyTime), &m_localLastDailyTime);
     m_updateDBSettings = true;
@@ -208,7 +208,7 @@ void DayWatcherThread::update_arena()
             // are we in any arena teams?
             for (uint8_t i = 0; i < 3; ++i)
             {
-                ArenaTeam* team = objmgr.GetArenaTeamByGuid(guid, i);
+                ArenaTeam* team = sObjectMgr.GetArenaTeamByGuid(guid, i);
                 if (team != nullptr)
                 {
                     const auto arenaTeamMember = team->GetMemberByGuid(guid);
@@ -262,7 +262,7 @@ void DayWatcherThread::update_arena()
 
             if (orig_arenapoints != arenapoints)
             {
-                auto player = objmgr.GetPlayer(guid);
+                auto player = sObjectMgr.GetPlayer(guid);
                 if (player != nullptr)
                 {
                     player->AddArenaPoints(arenapoints, false);
@@ -278,7 +278,7 @@ void DayWatcherThread::update_arena()
         delete result;
     }
 
-    objmgr.UpdateArenaTeamWeekly();
+    sObjectMgr.UpdateArenaTeamWeekly();
 
     m_lastArenaTime = UNIXTIME;
     dupe_tm_pointer(localtime(&m_lastArenaTime), &m_localLastArenaTime);

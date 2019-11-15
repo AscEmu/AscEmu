@@ -11,7 +11,6 @@
 
 //#define ENABLE_ANTI_DOS
 
-initialiseSingleton(SocketMgr);
 void SocketMgr::AddSocket(Socket* s)
 {
 #ifdef ENABLE_ANTI_DOS
@@ -121,11 +120,10 @@ bool SocketWorkerThread::runThread()
     Socket* ptr;
     int i;
     running = true;
-    SocketMgr* mgr = SocketMgr::getSingletonPtr();
 
     while(running)
     {
-        fd_count = epoll_wait(mgr->epoll_fd, events, THREAD_EVENT_SIZE, 5000);
+        fd_count = epoll_wait(sSocketMgr.epoll_fd, events, THREAD_EVENT_SIZE, 5000);
         for(i = 0; i < fd_count; ++i)
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
@@ -134,11 +132,11 @@ bool SocketWorkerThread::runThread()
                 continue;
             }
 
-            ptr = mgr->fds[events[i].data.fd];
+            ptr = sSocketMgr.fds[events[i].data.fd];
 
             if(ptr == NULL)
             {
-                if((ptr = ((Socket*)mgr->listenfds[events[i].data.fd])) != NULL)
+                if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].data.fd])) != NULL)
                     ((ListenSocketBase*)ptr)->OnAccept();
                 else
                     LOG_ERROR("Returned invalid fd (no pointer) of FD %u", events[i].data.fd);

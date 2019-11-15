@@ -9,7 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommandTableStorage.hpp"
 #include "ChatHandler.hpp"
 
-initialiseSingleton(CommandTableStorage);
+CommandTableStorage& CommandTableStorage::getInstance()
+{
+    static CommandTableStorage mInstance;
+    return mInstance;
+}
 
 ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
 {

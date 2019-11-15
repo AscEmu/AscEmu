@@ -457,7 +457,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     in->m_mapInfo = inf;
     in->m_mapMgr = NULL;        // always start off without a map manager, it is created in GetInstance()
     in->m_isBattleground = false;
-    in->m_persistent = IS_PERSISTENT_INSTANCE(in) && objmgr.m_InstanceBossInfoMap[mapid] == NULL;
+    in->m_persistent = IS_PERSISTENT_INSTANCE(in) && sObjectMgr.m_InstanceBossInfoMap[mapid] == NULL;
     in->m_creatorGuid = pGroup ? 0 : plr->getGuidLow();        // creator guid is 0 if its owned by a group.
     in->m_creatorGroup = pGroup ? pGroup->GetID() : 0;
 
@@ -726,7 +726,7 @@ void InstanceMgr::_LoadInstances()
             in->LoadFromDB(result->Fetch());
 
             // this assumes that groups are already loaded at this point.
-            if (!in->m_persistent && in->m_creatorGroup && objmgr.GetGroupById(in->m_creatorGroup) == NULL)
+            if (!in->m_persistent && in->m_creatorGroup && sObjectMgr.GetGroupById(in->m_creatorGroup) == NULL)
             {
                 CharacterDatabase.Execute("DELETE FROM `instances` WHERE `id` = %u", in->m_instanceId);
                 delete in;

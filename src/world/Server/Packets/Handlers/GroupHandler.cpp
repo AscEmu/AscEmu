@@ -51,7 +51,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         if (_player->GetGroup() != nullptr)
             return;
 
-        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        Player* group_inviter = sObjectMgr.GetPlayer(_player->GetInviter());
         if (!group_inviter)
             return;
 
@@ -87,7 +87,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        Player* group_inviter = sObjectMgr.GetPlayer(_player->GetInviter());
         if (group_inviter == nullptr)
             return;
 
@@ -279,7 +279,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     if (_player->HasBeenInvited())
         return;
 
-    Player* player = objmgr.GetPlayer(member_name.c_str(), false);
+    Player* player = sObjectMgr.GetPlayer(member_name.c_str(), false);
     if (player == nullptr)
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_CANNOT_FIND).serialise().get());
@@ -438,7 +438,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto invitedPlayer = objmgr.GetPlayer(srlPacket.name.c_str(), false);
+    auto invitedPlayer = sObjectMgr.GetPlayer(srlPacket.name.c_str(), false);
     if (invitedPlayer == nullptr)
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_CANNOT_FIND).serialise().get());
@@ -506,7 +506,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
 //       Check out handleGroupInviteResponseOpcode!
 void WorldSession::handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto inviter = objmgr.GetPlayer(_player->GetInviter());
+    const auto inviter = sObjectMgr.GetPlayer(_player->GetInviter());
     if (inviter == nullptr)
         return;
 
@@ -520,7 +520,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     if (_player->GetGroup())
         return;
 
-    const auto player = objmgr.GetPlayer(_player->GetInviter());
+    const auto player = sObjectMgr.GetPlayer(_player->GetInviter());
     if (player == nullptr)
         return;
 
@@ -562,7 +562,7 @@ void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_UNINVITE: %s (name)", srlPacket.name.c_str());
 
-    const auto uninvitePlayer = objmgr.GetPlayer(srlPacket.name.c_str(), false);
+    const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.name.c_str(), false);
     if (uninvitePlayer == nullptr)
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_CANNOT_FIND).serialise().get());
@@ -597,7 +597,7 @@ void WorldSession::handleGroupUninviteGuidOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_UNINVITE_GUID: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto uninvitePlayer = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+    const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (uninvitePlayer == nullptr)
     {
         SendPacket(SmsgPartyCommandResult(0, "unknown", ERR_PARTY_CANNOT_FIND).serialise().get());
@@ -664,7 +664,7 @@ void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_SET_LEADER: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto targetPlayer = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+    const auto targetPlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (targetPlayer == nullptr)
     {
         SendPacket(SmsgPartyCommandResult(0, _player->getName(), ERR_PARTY_CANNOT_FIND).serialise().get());
@@ -706,7 +706,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     if (group == nullptr)
         return;
 
-    const auto lootMasterPlayer = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+    const auto lootMasterPlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (lootMasterPlayer == nullptr)
         group->SetLooter(_player, static_cast<uint8_t>(srlPacket.method), static_cast<uint16_t>(srlPacket.threshold));
     else
@@ -807,7 +807,7 @@ void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerInfo = objmgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
     if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
         return;
 
@@ -835,7 +835,7 @@ void WorldSession::handleGroupAssistantLeader(WorldPacket& recvPacket)
 
     if (srlPacket.isActivated)
     {
-        const auto playerInfo = objmgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+        const auto playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
         if (playerInfo == nullptr)
         {
             group->SetAssistantLeader(nullptr);
@@ -867,7 +867,7 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     PlayerInfo* playerInfo = nullptr;
 
     if (srlPacket.isActivated)
-        playerInfo = objmgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+        playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
 
     if (srlPacket.promoteType == 1)
         group->SetMainAssist(playerInfo);

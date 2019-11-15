@@ -9,11 +9,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util.hpp"
 #include <Threading/AEThreadPool.h>
 
-initialiseSingleton(RealmsMgr);
+RealmsMgr& RealmsMgr::getInstance()
+{
+    static RealmsMgr mInstance;
+    return mInstance;
+}
 
-RealmsMgr::RealmsMgr(uint32_t checkTime) : m_checkTime(checkTime), m_checkThread(nullptr)
+void RealmsMgr::initialize(uint32_t checkTime)
 {
     LogNotice("RealmsMgr : Starting...");
+    m_checkTime = checkTime;
+    m_checkThread = nullptr;
     usePings = !logonConfig.logonServer.disablePings;
 
     LoadRealms();
@@ -22,7 +28,7 @@ RealmsMgr::RealmsMgr(uint32_t checkTime) : m_checkTime(checkTime), m_checkThread
     m_checkThread = std::make_unique<AscEmu::Threading::AEThread>("CheckRealmStatus", [this](AscEmu::Threading::AEThread& thread) { this->checkRealmStatus(false); }, std::chrono::seconds(m_checkTime));
 }
 
-RealmsMgr::~RealmsMgr()
+void RealmsMgr::finalize()
 {
     LogNotice("RealmsMgr : Stop Manager...");
 

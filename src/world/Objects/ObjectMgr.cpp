@@ -41,29 +41,33 @@
 #include "Management/Guild.h"
 #endif
 
-initialiseSingleton(ObjectMgr);
-
 const char* NormalTalkMessage = "DMSG";
 
-ObjectMgr::ObjectMgr() :
-m_hiItemGuid(0),
-m_hiGroupId(0),
-m_mailid(0),
-m_reportID(0),
-m_ticketid(0),
-m_setGUID(0),
-m_hiCorpseGuid(0),
-m_hiGuildId(0),
-m_hiPetGuid(0),
-m_hiArenaTeamId(0),
-TransportersCount(0),
-m_hiPlayerGuid(1)
+ObjectMgr& ObjectMgr::getInstance()
 {
+    static ObjectMgr mInstance;
+    return mInstance;
+}
+
+void ObjectMgr::initialize()
+{
+    m_hiItemGuid = 0;
+    m_hiGroupId = 0;
+    m_mailid = 0;
+    m_reportID = 0;
+    m_ticketid = 0;
+    m_setGUID = 0;
+    m_hiCorpseGuid = 0;
+    m_hiGuildId = 0;
+    m_hiPetGuid = 0;
+    m_hiArenaTeamId = 0;
+    TransportersCount = 0;
+    m_hiPlayerGuid = 1;
+
     memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * MAX_NUM_MAPS);
 }
 
-
-ObjectMgr::~ObjectMgr()
+void ObjectMgr::finalize()
 {
     LogNotice("ObjectMgr : Deleting Corpses...");
     CorpseCollectorUnload();
@@ -2550,7 +2554,7 @@ void Charter::RemoveSignature(uint32 PlayerGuid)
 
 void Charter::Destroy()
 {
-    objmgr.RemoveCharter(this);
+    sObjectMgr.RemoveCharter(this);
 
     CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
 
@@ -2559,7 +2563,7 @@ void Charter::Destroy()
         if (!Signatures[i])
             continue;
 
-        Player* p = objmgr.GetPlayer(Signatures[i]);
+        Player* p = sObjectMgr.GetPlayer(Signatures[i]);
         if (p != nullptr)
             p->m_charters[CharterType] = nullptr;
     }
@@ -3421,7 +3425,7 @@ SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
 
 bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
 {
-    EventScriptBounds EventScript = objmgr.GetEventScripts(event_id);
+    EventScriptBounds EventScript = sObjectMgr.GetEventScripts(event_id);
     if (EventScript.first == EventScript.second)
         return false;
 
@@ -3435,7 +3439,7 @@ bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
 
 bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
 {
-    SpellEffectMapBounds EventScript = objmgr.GetSpellEffectBounds(data_1);
+    SpellEffectMapBounds EventScript = sObjectMgr.GetSpellEffectBounds(data_1);
     if (EventScript.first == EventScript.second)
         return false;
 
@@ -3449,7 +3453,7 @@ bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
 
 void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 {
-    EventScriptBounds EventScript = objmgr.GetEventScripts(next_event);
+    EventScriptBounds EventScript = sObjectMgr.GetEventScripts(next_event);
 
     for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
@@ -3532,7 +3536,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 
         if (itr->second.nextevent != 0)
         {
-            objmgr.CheckforScripts(plr, itr->second.nextevent);
+            sObjectMgr.CheckforScripts(plr, itr->second.nextevent);
         }
     }
 }

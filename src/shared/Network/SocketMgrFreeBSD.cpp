@@ -9,7 +9,6 @@
 #include "Network.h"
 #ifdef CONFIG_USE_KQUEUE
 
-initialiseSingleton(SocketMgr);
 void SocketMgr::AddSocket(Socket* s)
 {
     assert(fds[s->GetFd()] == 0);
@@ -92,8 +91,7 @@ bool SocketWorkerThread::runThread()
     ts.tv_sec = 5;
     struct kevent ev2;
 
-    SocketMgr* mgr = SocketMgr::getSingletonPtr();
-    int kq = mgr->GetKq();
+    int kq = sSocketMgr.GetKq();
 
     while(running)
     {
@@ -106,11 +104,11 @@ bool SocketWorkerThread::runThread()
                 continue;
             }
 
-            ptr = mgr->fds[events[i].ident];
+            ptr = sSocketMgr.fds[events[i].ident];
 
             if(ptr == NULL)
             {
-                if((ptr = ((Socket*)mgr->listenfds[events[i].ident])) != NULL)
+                if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].ident])) != NULL)
                 {
                     ((ListenSocketBase*)ptr)->OnAccept();
                 }

@@ -12,9 +12,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 
-initialiseSingleton(LogonCommHandler);
+LogonCommHandler& LogonCommHandler::getInstance()
+{
+    static LogonCommHandler mInstance;
+    return mInstance;
+}
 
-LogonCommHandler::LogonCommHandler()
+void LogonCommHandler::initialize()
 {
     idhigh = 1;
     next_request = 1;
@@ -38,7 +42,7 @@ LogonCommHandler::LogonCommHandler()
     realms.clear();
 }
 
-LogonCommHandler::~LogonCommHandler()
+void LogonCommHandler::finalize()
 {
     for (std::set<LogonServerStructure*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
     {

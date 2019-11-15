@@ -21,15 +21,23 @@
 #ifndef CHANNEL_MGR_H
 #define CHANNEL_MGR_H
 
-#include "Singleton.h"
-
-
-class SERVER_DECL ChannelMgr : public Singleton<ChannelMgr>
+class SERVER_DECL ChannelMgr
 {
+    private:
+
+        ChannelMgr() = default;
+        ~ChannelMgr() = default;
+
     public:
 
-        ChannelMgr();
-        ~ChannelMgr();
+        static ChannelMgr& getInstance();
+        void initialize();
+        void finalize();
+
+        ChannelMgr(ChannelMgr&&) = delete;
+        ChannelMgr(ChannelMgr const&) = delete;
+        ChannelMgr& operator=(ChannelMgr&&) = delete;
+        ChannelMgr& operator=(ChannelMgr const&) = delete;
 
         Channel* GetCreateChannel(const char* name, Player* p, uint32 type_id);
         Channel* GetChannel(const char* name, Player* p);
@@ -46,7 +54,7 @@ class SERVER_DECL ChannelMgr : public Singleton<ChannelMgr>
         Mutex lock;
 };
 
-#define channelmgr ChannelMgr::getSingleton()
+#define sChannelMgr ChannelMgr::getInstance()
 
 
 #endif  // CHANNEL_MGR_H

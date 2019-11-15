@@ -40,7 +40,7 @@ class LogonConsoleThread : public ThreadBase
     bool runThread();
 };
 
-class LogonConsole : public Singleton < LogonConsole >
+class LogonConsole
 {
     friend class LogonConsoleThread;
 
@@ -50,7 +50,18 @@ class LogonConsole : public Singleton < LogonConsole >
     void demoTicker(AscEmu::Threading::AEThread& thread);
     void threadDemoCmd(char* str);
 
+    private:
+        LogonConsole() = default;
+        ~LogonConsole() = default;
+
     public:
+
+        static LogonConsole& getInstance();
+
+        LogonConsole(LogonConsole&&) = delete;
+        LogonConsole(LogonConsole const&) = delete;
+        LogonConsole& operator=(LogonConsole&&) = delete;
+        LogonConsole& operator=(LogonConsole const&) = delete;
 
         void Kill();
 
@@ -86,7 +97,7 @@ class LogonConsole : public Singleton < LogonConsole >
         void checkAccountName(std::string name, uint8 type);
 };
 
-#define sLogonConsole LogonConsole::getSingleton()
+#define sLogonConsole LogonConsole::getInstance()
 
 
 #endif      // __LOGONCONSOLE_H

@@ -212,7 +212,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
 
     _loaded = true;
     Instance* pInstance = _mapmgr->pInstance;
-    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[_mapmgr->GetMapId()];
+    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[_mapmgr->GetMapId()];
 
     if (sp->CreatureSpawns.size())      //got creatures
     {

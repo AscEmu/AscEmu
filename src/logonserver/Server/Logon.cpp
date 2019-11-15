@@ -5,15 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Logon.h"
 
-initialiseSingleton(Logon);
-
-Logon::Logon()
+Logon& Logon::getInstance()
 {
-    
+    static Logon mInstance;
+    return mInstance;
 }
-
-Logon::~Logon()
-{}
 
 void Logon::loadLogonConfigValues(bool reload /*false*/)
 {

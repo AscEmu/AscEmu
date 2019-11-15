@@ -1390,7 +1390,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
                     Creature* tamed = static_cast<Creature*>(m_target);
                     tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
 
-                    Pet* pPet = objmgr.CreatePet(tamed->getEntry());
+                    Pet* pPet = sObjectMgr.CreatePet(tamed->getEntry());
                     if (!pPet->CreateAsSummon(tamed->getEntry(), tamed->GetCreatureProperties(), tamed, p_caster, triggerspell, 2, 900000))
                     {
                         pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.

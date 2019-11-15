@@ -144,9 +144,20 @@ class Mailbox
 };
 
 
-class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObject
+class SERVER_DECL MailSystem : public EventableObject
 {
+    private:
+        MailSystem() = default;
+        ~MailSystem() = default;
+
     public:
+
+        static MailSystem& getInstance();
+
+        MailSystem(MailSystem&&) = delete;
+        MailSystem(MailSystem const&) = delete;
+        MailSystem& operator=(MailSystem&&) = delete;
+        MailSystem& operator=(MailSystem const&) = delete;
 
         void StartMailSystem();
         MailError DeliverMessage(uint64 recipent, MailMessage* message);
@@ -170,7 +181,7 @@ class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObj
 
 };
 
-#define sMailSystem MailSystem::getSingleton()
+#define sMailSystem MailSystem::getInstance()
 
 #define MAIL_DEFAULT_EXPIRATION_TIME 30
 

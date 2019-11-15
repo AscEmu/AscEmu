@@ -7,9 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "IpBanMgr.h"
 #include <utility>
 
-initialiseSingleton(IpBanMgr);
+IpBanMgr& IpBanMgr::getInstance()
+{
+    static IpBanMgr mInstance;
+    return mInstance;
+}
 
-IpBanMgr::IpBanMgr()
+void IpBanMgr::initialize()
 {
     LogNotice("IpBanMgr : Started loading bans");
 

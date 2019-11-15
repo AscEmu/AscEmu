@@ -33,8 +33,5 @@ int main(int argc, char** argv)
     }
 #endif
 
-    new MasterLogon;
-
     sMasterLogon.Run(argc, argv);
-    delete MasterLogon::getSingletonPtr();
 }
