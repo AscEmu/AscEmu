@@ -294,7 +294,7 @@ IsleOfConquest::IsleOfConquest(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32
     m_zoneid = 4710;
     m_reinforcements[0] = IOC_NUM_REINFORCEMENTS;
     m_reinforcements[1] = IOC_NUM_REINFORCEMENTS;
-    std::fill(&generals[0], &generals[MAX_PLAYER_TEAMS], reinterpret_cast<Unit*>(nullptr));
+    std::fill(&generals[0], &generals[MAX_PLAYER_TEAMS], nullptr);
 
     for (uint32_t team = TEAM_ALLIANCE; team < MAX_PLAYER_TEAMS; team++)
     {
@@ -307,7 +307,7 @@ IsleOfConquest::IsleOfConquest(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32
 
 IsleOfConquest::~IsleOfConquest()
 {
-    std::fill(&generals[0], &generals[MAX_PLAYER_TEAMS], reinterpret_cast<Unit*>(nullptr));
+    std::fill(&generals[0], &generals[MAX_PLAYER_TEAMS], nullptr);
 
     for (uint32_t team = TEAM_ALLIANCE; team < MAX_PLAYER_TEAMS; team++)
     {
