@@ -590,11 +590,11 @@ class SERVER_DECL InstanceScript
         uint32_t getData(uint32_t data);
         bool isDataStateFinished(uint32_t data);
 
-        // used for local instance data (not saved to database, only for scripting)
-        virtual void SetInstanceData(uint32_t /*type*/, uint32_t /*data*/) {}
-        virtual void SetInstanceData64(uint32_t /*type*/, uint64_t /*data*/) {}
-        virtual uint32_t GetInstanceData(uint32_t /*type*/) const { return 0; }
-        virtual uint64_t GetInstanceData64(uint32_t /*type*/) const { return 0; }
+        // not saved to database, only for scripting
+        virtual void setLocalData(uint32_t /*type*/, uint32_t /*data*/) {}
+        virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
+        virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
+        virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
         
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);
