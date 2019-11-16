@@ -32,6 +32,7 @@
 #include "Spell/SpellMgr.h"
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
+#include "Management/Battleground/Battleground.h"
 
 // MIT
 

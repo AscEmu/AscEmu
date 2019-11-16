@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Singleton.h"
-#include "../../scripts/Battlegrounds/IsleOfConquest/IsleOfConquest.h" //should not be here
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/SpellClickSpell.h"
 #include "Spell/Definitions/TeleportCoords.h"

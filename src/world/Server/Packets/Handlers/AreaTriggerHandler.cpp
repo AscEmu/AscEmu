@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Storage/WorldStrings.h"
+#include "Management/Battleground/Battleground.h"
 
 using namespace AscEmu::Packets;
 

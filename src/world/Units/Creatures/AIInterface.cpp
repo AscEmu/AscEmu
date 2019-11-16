@@ -31,7 +31,6 @@
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
-#include "scripts/Battlegrounds/AlteracValley/AlteracValley.h"  //should not be here
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/LockTypes.h"

@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "../../StdAfx.h"
 #include "Units/Summons/GuardianSummon.h"
-#include "../../../scripts/Battlegrounds/EyeOfTheStorm/EyeOfTheStorm.h"   //should not be here
 #include "Spell/Definitions/PowerType.h"
 
 GuardianSummon::GuardianSummon(uint64_t GUID) : Summon(GUID)
