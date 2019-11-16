@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "SpellMgr.h"
-#include "../../scripts/Battlegrounds/EyeOfTheStorm.h"
+#include "../../scripts/Battlegrounds/EyeOfTheStorm/EyeOfTheStorm.h"    //should not be here
 #include "Definitions/ProcFlags.h"
 
 initialiseSingleton(SpellProcMgr);

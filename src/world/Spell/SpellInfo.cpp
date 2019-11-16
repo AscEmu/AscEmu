@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Management/Skill.h"
-#include "../../scripts/Battlegrounds/AlteracValley.h"
+#include "../../scripts/Battlegrounds/AlteracValley/AlteracValley.h"        //should not be here
 #include "Definitions/SpellEffectTarget.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Spell/SpellAuras.h"

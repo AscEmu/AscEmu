@@ -3,37 +3,41 @@
 # set up our project name
 project(Battlegrounds CXX)
 
-set(sources
-    AlteracValley.cpp
-    ArathiBasin.cpp
-    CircleOfBlood.cpp
-    DalaranSewers.cpp
-    EyeOfTheStorm.cpp
-    IsleOfConquest.cpp
-    RingOfTrials.cpp
-    RingOfValor.cpp
-    RuinsOfLordaeron.cpp
-    StrandOfTheAncient.cpp
-    WarsongGulch.cpp
+include(AlteracValley/CMakeLists.txt)
+include(ArathiBasin/CMakeLists.txt)
+include(CircleOfBlood/CMakeLists.txt)
+include(DalaranSewers/CMakeLists.txt)
+include(EyeOfTheStorm/CMakeLists.txt)
+include(IsleOfConquest/CMakeLists.txt)
+include(RingOfTrials/CMakeLists.txt)
+include(RingOfValor/CMakeLists.txt)
+include(RuinsOfLordaeron/CMakeLists.txt)
+include(StrandOfTheAncient/CMakeLists.txt)
+include(WarsongGulch/CMakeLists.txt)
+
+set(SRC_BATTLEGROUNDS
     Setup.cpp
+    Setup.h
     # Required for linker
     ../../world/Server/ServerState.cpp
     ../../world/Spell/SpellCastTargets.cpp
 )
 
-set(headers
-    AlteracValley.h
-    ArathiBasin.h
-    CircleOfBlood.h
-    DalaranSewers.h
-    EyeOfTheStorm.h
-    IsleOfConquest.h
-    RingOfTrials.h
-    RingOfValor.h
-    RuinsOfLordaeron.h
-    StrandOfTheAncient.h
-    WarsongGulch.h
-    Setup.h
+source_group(Battlegrounds FILES ${SRC_BATTLEGROUNDS})
+
+set(SRC_BGS
+    ${SRC_AlteracValley}
+    ${SRC_ArathiBasin}
+    ${SRC_CircleOfBlood}
+    ${SRC_DalaranSewers}
+    ${SRC_EyeOfTheStorm}
+    ${SRC_IsleOfConquest}
+    ${SRC_RingOfTrials}
+    ${SRC_RingOfValor}
+    ${SRC_RuinsOfLordaeron}
+    ${SRC_StrandOfTheAncient}
+    ${SRC_WarsongGulch}
+    ${SRC_BATTLEGROUNDS}
 )
 
 include_directories(
@@ -51,7 +55,7 @@ include_directories(
    ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+add_library(${PROJECT_NAME} SHARED ${SRC_BGS})
 
 target_link_libraries(${PROJECT_NAME} world)
 
