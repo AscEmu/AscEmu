@@ -5,6 +5,7 @@ set(PATH_PREFIX ArathiBasin)
 set(SRC_ArathiBasin
     ${PATH_PREFIX}/ArathiBasin.cpp
     ${PATH_PREFIX}/ArathiBasin.h
+    ${PATH_PREFIX}/ArathiBasinDefinitions.h
 )
 
 source_group(ArathiBasin FILES ${SRC_ArathiBasin})

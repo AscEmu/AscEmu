@@ -5,6 +5,7 @@ set(PATH_PREFIX IsleOfConquest)
 set(SRC_IsleOfConquest
     ${PATH_PREFIX}/IsleOfConquest.cpp
     ${PATH_PREFIX}/IsleOfConquest.h
+    ${PATH_PREFIX}/IsleOfConquestDefinitions.h
 )
 
 source_group(IsleOfConquest FILES ${SRC_IsleOfConquest})

@@ -27,6 +27,7 @@
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"
+#include "WarsongGulchDefinitions.h"
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {

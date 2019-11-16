@@ -5,6 +5,7 @@ set(PATH_PREFIX AlteracValley)
 set(SRC_AlteracValley
     ${PATH_PREFIX}/AlteracValley.cpp
     ${PATH_PREFIX}/AlteracValley.h
+    ${PATH_PREFIX}/AlteracValleyDefinitions.h
 )
 
 source_group(AlteracValley FILES ${SRC_AlteracValley})
