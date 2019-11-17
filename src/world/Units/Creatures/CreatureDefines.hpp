@@ -159,6 +159,7 @@ struct CreatureProperties
     bool rooted;
     uint32 QuestItems[6];
     uint32 waypointid;
+    uint32 gossipId;
 
     std::string lowercase_name;
 

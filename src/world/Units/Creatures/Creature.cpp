@@ -593,6 +593,39 @@ void Creature::SaveToDB()
     WorldDatabase.Execute(ss.str().c_str());
 }
 
+//MIT
+//! brief: used to generate gossip menu based on db values from table gossip_menu, gossip_menu_item and gossip_menu_option. WIP.
+class DatabaseGossip : public Arcemu::Gossip::Script
+{
+    uint32_t m_gossipMenuId;
+
+public:
+
+    DatabaseGossip(uint32_t gossipId) : m_gossipMenuId(gossipId) {}
+
+    void OnHello(Object* object, Player* player) override
+    {
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), m_gossipMenuId, player);
+    }
+
+    void OnSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
+    {
+        if (intId > 0)
+        {
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
+        }
+    }
+};
+
+//MIT
+void Creature::registerDatabaseGossip()
+{
+    if (GetCreatureProperties()->gossipId)
+        sScriptMgr.register_creature_gossip(getEntry(), new DatabaseGossip(GetCreatureProperties()->gossipId));
+}
 
 void Creature::LoadScript()
 {
@@ -1743,6 +1776,9 @@ void Creature::OnPushToWorld()
 
         castSpell(this, sp, 0);
     }
+
+    if (!sScriptMgr.has_creature_script(getEntry()))
+        registerDatabaseGossip();
 
     if (GetScript() == NULL)
     {

@@ -55,7 +55,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20191108-00_duplicate_event_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20191117-00_creature_properties_gossip";
 
 void Master::_OnSignal(int s)
 {

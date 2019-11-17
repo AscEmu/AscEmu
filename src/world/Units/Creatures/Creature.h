@@ -265,6 +265,9 @@ public:
         CreatureAIScript* GetScript();
         void LoadScript();
 
+        //MIT
+        void registerDatabaseGossip();
+
         void CallScriptUpdate();
 
         CreatureProperties const* GetCreatureProperties();

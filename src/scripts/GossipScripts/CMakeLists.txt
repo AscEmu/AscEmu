@@ -12,7 +12,6 @@ project(GossipScripts CXX)
 set(sources
     Gossip_Dalaran.cpp
     Gossip_Innkeepers.cpp
-    Gossip_Guard.cpp
     Gossip_Trainer.cpp
     Gossip_Mulgore.cpp
     Gossip_Shattrath.cpp

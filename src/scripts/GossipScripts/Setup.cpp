@@ -21,7 +21,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
     SetupDalaranGossip(mgr);
     SetupInnkeepers(mgr);
-    SetupGuardGossip(mgr);
     SetupTrainerScript(mgr);
     SetupMulgoreGossip(mgr);
     SetupShattrathGossip(mgr);

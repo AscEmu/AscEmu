@@ -574,8 +574,8 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                                                                 "auras, boss, money, invisibility_type, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
         //                                                          55      56      57      58      59        60           61               62            63         64           65
                                                                 "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
-        //                                                          66         67        68          69          70          71          72          73         74
-                                                                "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid FROM %s base "
+        //                                                          66         67        68          69          70          71          72          73         74         75
+                                                                "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid, gossipId FROM %s base "
         //
                                                                 "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
@@ -795,6 +795,8 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 creatureProperties.QuestItems[i] = fields[68 + i].GetUInt32();
 
             creatureProperties.waypointid = fields[74].GetUInt32();
+
+            creatureProperties.gossipId = fields[75].GetUInt32();
 
             //process aura string
             if (creatureProperties.aura_string.size() != 0)

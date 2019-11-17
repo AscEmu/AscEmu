@@ -9,7 +9,6 @@ class ScriptMgr;
 
 void SetupDalaranGossip(ScriptMgr* mgr);
 void SetupInnkeepers(ScriptMgr* mgr);
-void SetupGuardGossip(ScriptMgr* mgr);
 void SetupTrainerScript(ScriptMgr* mgr);
 void SetupMulgoreGossip(ScriptMgr* mgr);
 void SetupShattrathGossip(ScriptMgr* mgr);
