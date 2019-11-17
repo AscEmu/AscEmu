@@ -1777,7 +1777,7 @@ void Creature::OnPushToWorld()
         castSpell(this, sp, 0);
     }
 
-    if (!sScriptMgr.has_creature_script(getEntry()))
+    if (!sScriptMgr.has_creature_gossip(getEntry()))
         registerDatabaseGossip();
 
     if (GetScript() == NULL)
