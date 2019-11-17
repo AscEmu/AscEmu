@@ -82,7 +82,7 @@ public:
         }
         else
         {
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
             menu.Send(plr);
         }
     }
@@ -103,14 +103,14 @@ public:
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 14785);
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
 
             if (Util::getRandomUInt(100) > 50)
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
+                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
 
             menu.Send(plr);
         }

@@ -64,7 +64,7 @@ namespace luaItem
             return 0;
         }
 
-        LuaGlobal::instance()->m_menu->AddItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
+        LuaGlobal::instance()->m_menu->addItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
 
         return 0;
     }

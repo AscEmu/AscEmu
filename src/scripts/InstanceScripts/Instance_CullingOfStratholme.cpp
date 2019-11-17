@@ -514,7 +514,7 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, 0);
 
-        menu.AddItem(0, "We're ready to go!", 1);  //find correct txt
+        menu.addItem(0, "We're ready to go!", 1);  //find correct txt
 
         menu.Send(Plr);
     }

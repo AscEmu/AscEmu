@@ -25,61 +25,23 @@
 
 using namespace Arcemu;
 
-Gossip::Item::Item(size_t itemid, uint8 icon)
-{
-    id_ = uint16(itemid);
-    icon_ = icon;
-    text_ = "";
-    boxmessage_ = "";
-    boxmoney_ = 0;
-    coded_ = false;
-}
-
-Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= false*/, size_t boxmoney/*=0*/, const char* boxmessage/*=NULL*/)
-{
-    id_ = uint16(itemid);
-    icon_ = icon;
-    text_ = (text != NULL) ? text : "";
-    coded_ = coded;
-    boxmoney_ = uint32(boxmoney);
-    boxmessage_ = (boxmessage != NULL) ? boxmessage : "";
-}
-
-Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language, uint32 gossip_id) : textid_(Text_Id), guid_(Creature_Guid), language_(language), gossipId(gossip_id)
+Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language, uint32 gossip_id) : 
+textid_(Text_Id), guid_(Creature_Guid), language_(language), gossipId(gossip_id)
 {}
 
-Gossip::Menu::Menu(Object* obj, uint32 textid, uint32 language, uint32 gossip_id)
+//MIT
+void Gossip::Menu::addItem(uint8_t icon, std::string text, uint32_t id, uint32_t boxMoney /*= 0*/, std::string boxMessage /*= ""*/, bool isCoded /*= false*/)
 {
-    guid_ = obj->getGuid();
-    textid_ = textid;
-    language_ = language;
-    gossipId = gossip_id;
+    const GossipItem item(icon, text, isCoded, boxMoney, boxMessage);
+    this->itemlist_.insert(std::make_pair(id, item));
 }
 
-void Gossip::Menu::AddItem(uint8 icon, const char* itemtext, uint32 itemid, bool coded/*=false*/)
+//MIT
+void Gossip::Menu::removeItem(uint32_t id)
 {
-    Gossip::Item item(itemid, icon);
-    item.text_ = (itemtext != NULL) ? itemtext : "";
-    item.coded_ = coded;
-    this->itemlist_.push_back(item);
-}
-
-void Gossip::Menu::AddItem(uint8 icon, const char* itemtext, uint32 itemid, uint32 boxmoney/*=0*/, const char* boxtext/*=NULL*/, bool coded/*=false*/)
-{
-    Gossip::Item item(itemid, icon, itemtext, coded, boxmoney, boxtext);
-    this->itemlist_.push_back(item);
-}
-
-void Gossip::Menu::RemoveItem(uint32 id)
-{
-    for (Gossip::ItemList::iterator itr = itemlist_.begin(); itr != itemlist_.end(); ++itr)
-    {
-        if ((*itr).id_ == id)
-        {
-            itemlist_.erase(itr);
-            break;
-        }
-    }
+    const auto itr = itemlist_.find(id);
+    if (itr != itemlist_.end())
+        itemlist_.erase(itr);
 }
 
 void Gossip::Menu::AddQuest(QuestProperties const* quest, uint8 icon)
@@ -104,12 +66,12 @@ void Gossip::Menu::Send(Player* plr) const
 
     for (const auto& itemListItem : itemlist_)
     {
-        packet << uint32(itemListItem.id_);
-        packet << itemListItem.icon_;
-        packet << itemListItem.coded_;
-        packet << itemListItem.boxmoney_;
-        packet << itemListItem.text_;
-        packet << itemListItem.boxmessage_;;
+        packet << uint32(itemListItem.first);
+        packet << itemListItem.second.icon;
+        packet << itemListItem.second.isCoded;
+        packet << itemListItem.second.boxMoney;
+        packet << itemListItem.second.text;
+        packet << itemListItem.second.boxMessage;
     }
 
     packet << uint32(questlist_.size());
@@ -268,7 +230,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     if (!Plr->CanBuyAt(vendor))
         menu.setTextID(vendor->cannotbuyattextid);
     else
-        menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1, false);
+        menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1, false);
 
     sQuestMgr.FillQuestMenu(creature, Plr, menu); //add any quests we have.
 
@@ -305,13 +267,13 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
             // I seek
             std::string msg = std::string(Plr->GetSession()->LocalizedGossipOption(ISEEK));
             msg += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
-            menu.AddItem(GOSSIP_ICON_TRAINER, msg.c_str(), 1);
+            menu.addItem(GOSSIP_ICON_TRAINER, msg.c_str(), 1);
 
             if (trainer->isVendor())
             {
                 MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(trainer->GetCreatureProperties()->Id);
                 if (Plr->CanBuyAt(vendor))
-                    menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
+                    menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
             }
         }
     }
@@ -337,7 +299,7 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->getGuid(), Text, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_FLIGHTMASTER, Plr->GetSession()->LocalizedGossipOption(FLIGHTMASTER), 1);
+    menu.addItem(GOSSIP_ICON_FLIGHTMASTER, Plr->GetSession()->LocalizedGossipOption(FLIGHTMASTER), 1);
     sQuestMgr.FillQuestMenu(flightmaster, Plr, menu);
 
     menu.Send(Plr);
@@ -373,13 +335,13 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->getGuid(), Text, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 1);
+    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 1);
     //inn keepers can sell stuff
     if (innkeeper->isVendor())
     {
         MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(innkeeper->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
-            menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
+            menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
     sQuestMgr.FillQuestMenu(innkeeper, Plr, menu);
     menu.Send(Plr);
@@ -402,7 +364,7 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(battlemaster->getGuid(), Text, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
+    menu.addItem(GOSSIP_ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
     sQuestMgr.FillQuestMenu(battlemaster, Plr, menu);
     menu.Send(Plr);
 }
@@ -451,15 +413,15 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(chartergiver->getGuid(), Text, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_TABARD, Plr->GetSession()->LocalizedGossipOption(TABARD), 1);
+    menu.addItem(GOSSIP_ICON_TABARD, Plr->GetSession()->LocalizedGossipOption(TABARD), 1);
     if (chartergiver->isCharterGiver())
-        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD), 2);
+        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD), 2);
 
     if (chartergiver->isVendor())
     {
         MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(chartergiver->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
-            menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
+            menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
     }
     menu.Send(Plr);
 }
@@ -510,9 +472,9 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->getGuid(), Text, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_TRAINER, Plr->GetSession()->LocalizedGossipOption(BEASTTRAINING), 1);
+    menu.addItem(GOSSIP_ICON_TRAINER, Plr->GetSession()->LocalizedGossipOption(BEASTTRAINING), 1);
     if (Plr->getClass() == ::HUNTER && Plr->GetSummon() != NULL)
-        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET), 2);
+        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET), 2);
     sQuestMgr.FillQuestMenu(petrain, Plr, menu);
 
     menu.Send(Plr);
@@ -599,15 +561,15 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
             itemname += " ";
             itemname += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
 
-            menu.AddItem(GOSSIP_ICON_TRAINER, itemname.c_str(), 1);
+            menu.addItem(GOSSIP_ICON_TRAINER, itemname.c_str(), 1);
 
             //talent reset option.
             if (trainer->getLevel() > TrainerTalentResetMinLevel && Plr->getLevel() > worldConfig.player.minTalentResetLevel && trainer->GetTrainer()->RequiredClass == playerclass)
             {
-                menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTRESET), 2);
+                menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTRESET), 2);
                 //dual speciliazation option.
                 if (Plr->getLevel() >= worldConfig.player.minDualSpecLevel && Plr->m_talentSpecsCount < 2)
-                    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(LEARN_DUAL_TS), 4);
+                    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(LEARN_DUAL_TS), 4);
             }
         }
     }

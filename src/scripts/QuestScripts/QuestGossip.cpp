@@ -35,7 +35,7 @@ public:
         if (plr->HasQuest(558))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
             menu.Send(plr);
         }
     }
@@ -56,7 +56,7 @@ public:
         if (plr->HasQuest(925))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
             menu.Send(plr);
         }
     }
@@ -83,7 +83,7 @@ public:
 
         if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->hasItem(39740))
         {
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
+            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
         }
         menu.Send(plr);
     }

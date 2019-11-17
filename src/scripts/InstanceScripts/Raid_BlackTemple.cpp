@@ -2876,13 +2876,13 @@ public:
         if (pAI->GetCurrentWaypoint() >= 10)
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
-            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
+            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
             menu.Send(pPlayer);
         }
         else
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
-            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
+            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
             menu.Send(pPlayer);
         }
     }

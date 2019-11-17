@@ -1503,7 +1503,7 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
         if (itr->first == gossipMenuId)
-            menu.AddItem(itr->second.icon, player->GetSession()->LocalizedGossipOption(itr->second.menuOptionText), itr->second.itemOrder);
+            menu.addItem(itr->second.icon, player->GetSession()->LocalizedGossipOption(itr->second.menuOptionText), itr->second.itemOrder);
     }
 
     menu.Send(player);

@@ -16,8 +16,8 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_LEARN), 1);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_UNLEARN), 2);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_LEARN), 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_UNLEARN), 2);
 
         menu.Send(plr);
     }
@@ -84,8 +84,8 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7247);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_LEARN), 1);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_UNLEARN), 2);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_LEARN), 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_UNLEARN), 2);
         menu.Send(plr);
     }
 
@@ -148,8 +148,8 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7243);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_LEARN), 1);
-        menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_UNLEARN), 2);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_LEARN), 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_UNLEARN), 2);
         menu.Send(plr);
     }
 

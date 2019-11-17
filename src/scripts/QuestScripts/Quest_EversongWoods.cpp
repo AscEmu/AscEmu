@@ -50,7 +50,7 @@ void ProspectorAnvilwardGossip::OnHello(Object* pObject, Player * Plr)
 {
     Arcemu::Gossip::Menu menu(pObject->getGuid(), ANVILWARD_1, Plr->GetSession()->language);
     if (Plr->HasQuest(8483))
-        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
+        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
 
     menu.Send(Plr);
 }
@@ -62,7 +62,7 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
         case 1:
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 8240, Plr->GetSession()->language);
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
+            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
             menu.Send(Plr);
         }break;
         case 2:

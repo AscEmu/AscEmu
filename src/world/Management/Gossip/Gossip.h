@@ -32,6 +32,20 @@ class Player;
 class Object;
 class GameObject;
 
+// MIT starts
+struct GossipItem
+{
+    GossipItem(uint8_t _icon, std::string _text, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
+        isCoded(_isCoded), icon(_icon), boxMoney(_boxMoney), boxMessage(_boxMessage), text(_text) {}
+
+    bool isCoded;
+    uint8_t icon;
+    uint32_t boxMoney;
+    std::string boxMessage;
+    std::string text;
+};
+// MIT ends
+
 namespace Arcemu
 {
     namespace Gossip
@@ -53,24 +67,7 @@ namespace Arcemu
         };
         
 
-        class Menu;
-        class Item
-        {
-            public:
-
-                uint16 id_;
-                bool coded_;
-                uint8 icon_;
-                uint32 boxmoney_;
-                std::string boxmessage_;
-                std::string text_;
-                Item(size_t, uint8);
-                Item(size_t, uint8, const char*, bool = false, size_t = 0, const char* = nullptr);
-
-                friend class Menu;
-        };
-
-        typedef std::vector<Gossip::Item> ItemList;
+        typedef std::map<uint32_t, GossipItem> ItemList;
         typedef std::map<QuestProperties const*, uint8> QuestList;
 
         class SERVER_DECL Menu
@@ -78,33 +75,13 @@ namespace Arcemu
             public:
 
                 Menu(uint64, uint32, uint32 = 0, uint32 = 0);
-                Menu(Object*, uint32, uint32 = 0, uint32 = 0);
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Adds a menu item.
-                // \param uint8 - the icon
-                // \param const char * - the text of the item.
-                // \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
-                // \param bool - whether or not to retrieve text input.
-                //////////////////////////////////////////////////////////////////////////////////////////
-                void AddItem(uint8, const char*, uint32, bool = false);
+                //MIT starts
+                void addItem(uint8_t icon, std::string text, uint32_t id, uint32_t boxMoney = 0, std::string boxMessage = "", bool isCoded = false);
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Adds a menu item.
-                // \param uint8 - the icon
-                // \param const char * - the text of the item.
-                // \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
-                // \param uint32 - box money
-                // \param const char* - box text
-                // \param bool - whether or not to retrieve text input.
-                //////////////////////////////////////////////////////////////////////////////////////////
-                void AddItem(uint8, const char*, uint32, uint32, const char*, bool = false);
+                void removeItem(uint32_t id);
+                //MIT ends
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Removes the item with the specified id.
-                // \param uint32 - the id of the item.
-                //////////////////////////////////////////////////////////////////////////////////////////
-                void RemoveItem(uint32);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // Adds a quest item to the menu

@@ -36,7 +36,7 @@ public:
 void CorenDirebrewGossip::OnHello(Object* pObject, Player * Plr)
 {
     Arcemu::Gossip::Menu menu(pObject->getGuid(), DIREBREW_1, Plr->GetSession()->language);
-    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
+    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
     menu.Send(Plr);
 }
 
@@ -49,8 +49,8 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
         case 1:
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), DIREBREW_2, Plr->GetSession()->language);
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
+            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
+            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
             menu.Send(Plr);
         }break;
         case 2:

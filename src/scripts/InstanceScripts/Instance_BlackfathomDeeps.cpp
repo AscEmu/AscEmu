@@ -85,9 +85,9 @@ class MorriduneGossip : public Arcemu::Gossip::Script
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
         if (pPlayer->isTeamAlliance())
-            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
         else
-            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
+            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
 
         menu.Send(pPlayer);
     }

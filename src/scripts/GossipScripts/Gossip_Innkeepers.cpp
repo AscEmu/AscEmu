@@ -64,17 +64,17 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     {
         if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
         {
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRICK_TREAT), 4);
+            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRICK_TREAT), 4);
         }
     }
 
     if (pCreature->isVendor())
     {
-        menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
+        menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
     }
 
-    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
-    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
+    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
+    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
 
     sQuestMgr.FillQuestMenu(pCreature, Plr, menu);
 
