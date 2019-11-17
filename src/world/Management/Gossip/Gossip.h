@@ -120,21 +120,14 @@ namespace Arcemu
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void RemoveQuest(QuestProperties const*);
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Fills the packet with the menu data.
-                // \param WorldPacket & - the packet to fill
-                //////////////////////////////////////////////////////////////////////////////////////////
-                void BuildPacket(WorldPacket &) const;
-                void BuildPacket(WorldPacket*) const;
 
-                template<uint32 size>
-                void BuildPacket(StackBuffer<size> &) const;
+                // MIT starts
+                uint32_t getTextID() const { return textid_; }
+                uint32_t getLanguage() const { return language_; }
 
-                uint32 getTextID() const { return textid_; }
-                uint32 getLanguage() const { return language_; }
-
-                inline void setTextID(uint32 textid) { textid_ = textid; }
-                inline void setLanguage(uint32 language) { language_ = language; }
+                void setTextID(uint32_t textid) { textid_ = textid; }
+                void setLanguage(uint32_t language) { language_ = language; }
+                // MIT ends
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.
@@ -142,14 +135,6 @@ namespace Arcemu
                 // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void Send(Player*) const;
-
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Creates a stackworldpacket SMSG_GOSSIP_MESSAGE, fills it and sends it to the specified player.
-                // \param Player*  - player to send to.
-                // \returns  void
-                //////////////////////////////////////////////////////////////////////////////////////////
-                template<uint32>
-                void StackSend(Player*) const;
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // Sends a menu with just the text id and no options.

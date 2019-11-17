@@ -45,30 +45,6 @@ Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= fa
     boxmessage_ = (boxmessage != NULL) ? boxmessage : "";
 }
 
-WorldPacket& operator<<(WorldPacket& packet, const Gossip::Item & item)
-{
-    packet << uint32(item.id_);
-    packet << item.icon_;
-    packet << item.coded_;
-    packet << item.boxmoney_;
-    packet << item.text_;
-    packet << item.boxmessage_;
-    return packet;
-}
-
-template<uint32 size>
-StackBuffer<size>& operator<<(StackBuffer<size>& packet, const Gossip::Item & item)
-{
-    packet << uint32(item.id_);
-    packet << item.icon_;
-    packet << item.coded_;
-    packet << item.boxmoney_;
-    packet << item.text_;
-    packet << item.boxmessage_;
-    return packet;
-}
-
-
 Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language, uint32 gossip_id) : textid_(Text_Id), guid_(Creature_Guid), language_(language), gossipId(gossip_id)
 {}
 
@@ -118,125 +94,59 @@ void Gossip::Menu::RemoveQuest(QuestProperties const* quest)
         questlist_.erase(itr);
 }
 
-WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
-{
-    packet << menu.guid_;
-    packet << menu.gossipId;
-    packet << menu.textid_;
-    packet << uint32(menu.itemlist_.size());
-    {
-        for (Gossip::ItemList::const_iterator itr = menu.itemlist_.begin(); itr != menu.itemlist_.end(); ++itr)
-            packet << *itr;
-    }
-    packet << uint32(menu.questlist_.size());
-    {
-        for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
-        {
-            packet << itr->first->id;
-            packet << uint32(itr->second);
-#if VERSION_STRING < WotLK
-            switch (itr->second)
-            {
-                case QuestStatus::NotFinished:
-                    packet << uint32_t(0);
-                    break;
-                case QuestStatus::Finished:
-                    packet << uint32_t(1);
-                    break;
-                case QuestStatus::AvailableChat:
-                    packet << uint32_t(0);
-                    break;
-                default:
-                    packet << uint32_t(0);
-                    break;
-            }
-#else
-            packet << itr->first->min_level;
-            packet << itr->first->quest_flags;
-            packet << uint8(0);
-#endif
-
-            MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
-            if (lq != nullptr)
-                packet << lq->title;
-            else
-                packet << itr->first->title;
-        }
-    }
-    return packet;
-}
-
-template<uint32 size>
-StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & menu)
-{
-    packet << menu.guid_;
-    packet << menu.gossipId;
-    packet << menu.textid_;
-    packet << uint32(menu.itemlist_.size());
-    {
-        for (Gossip::ItemList::const_iterator itr = menu.itemlist_.begin(); itr != menu.itemlist_.end(); ++itr)
-            packet << *itr;
-    }
-    packet << uint32(menu.questlist_.size());
-    {
-        std::string title;
-        for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
-        {
-            packet << itr->first->id;
-            packet << uint32(itr->second);
-#if VERSION_STRING < WotLK
-            switch (itr->second)
-            {
-                case QuestStatus::NotFinished:
-                    packet << uint32_t(0);
-                    break;
-                case QuestStatus::Finished:
-                    packet << uint32_t(1);
-                    break;
-                case QuestStatus::AvailableChat:
-                    packet << uint32_t(0);
-                    break;
-                default:
-                    packet << uint32_t(0);
-                    break;
-            }
-#else
-            packet << itr->first->min_level;
-            packet << itr->first->quest_flags;
-            packet << uint8(0);
-#endif
-            MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
-            if (lq != nullptr)
-                title = lq->title;
-            else
-                title = itr->first->title;
-            packet << title;
-        }
-    }
-    return packet;
-}
-
-void Gossip::Menu::BuildPacket(WorldPacket& packet) const
-{
-    packet << *this;
-}
-void Gossip::Menu::BuildPacket(WorldPacket* packet) const
-{
-    *packet << *this;
-}
-
 void Gossip::Menu::Send(Player* plr) const
 {
     WorldPacket packet(SMSG_GOSSIP_MESSAGE, 512);
-    BuildPacket(packet);
-    plr->GetSession()->SendPacket(&packet);
-}
+    packet << guid_;
+    packet << gossipId;
+    packet << textid_;
+    packet << uint32(itemlist_.size());
 
-template<uint32 size>
-void Gossip::Menu::StackSend(Player* plr) const
-{
-    StackWorldPacket<size> packet(SMSG_GOSSIP_MESSAGE);
-    packet << static_cast<Gossip::Menu>(*this);
+    for (const auto& itemListItem : itemlist_)
+    {
+        packet << uint32(itemListItem.id_);
+        packet << itemListItem.icon_;
+        packet << itemListItem.coded_;
+        packet << itemListItem.boxmoney_;
+        packet << itemListItem.text_;
+        packet << itemListItem.boxmessage_;;
+    }
+
+    packet << uint32(questlist_.size());
+    {
+        for (const auto& questListItem : questlist_)
+        {
+            packet << questListItem.first->id;
+            packet << uint32(questListItem.second);
+#if VERSION_STRING < WotLK
+            switch (questListItem.second)
+            {
+            case QuestStatus::NotFinished:
+                packet << uint32_t(0);
+                break;
+            case QuestStatus::Finished:
+                packet << uint32_t(1);
+                break;
+            case QuestStatus::AvailableChat:
+                packet << uint32_t(0);
+                break;
+            default:
+                packet << uint32_t(0);
+                break;
+            }
+#else
+            packet << questListItem.first->min_level;
+            packet << questListItem.first->quest_flags;
+            packet << uint8(0);
+#endif
+
+            const auto lq = language_ > 0 ? sMySQLStore.getLocalizedQuest(questListItem.first->id, language_) : nullptr;
+            if (lq != nullptr)
+                packet << lq->title;
+            else
+                packet << questListItem.first->title;
+        }
+    }
     plr->GetSession()->SendPacket(&packet);
 }
 
@@ -362,7 +272,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 
     sQuestMgr.FillQuestMenu(creature, Plr, menu); //add any quests we have.
 
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::Vendor::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -406,7 +316,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
         }
     }
     sQuestMgr.FillQuestMenu(trainer, Plr, menu);
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -430,7 +340,7 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
     menu.AddItem(GOSSIP_ICON_FLIGHTMASTER, Plr->GetSession()->LocalizedGossipOption(FLIGHTMASTER), 1);
     sQuestMgr.FillQuestMenu(flightmaster, Plr, menu);
 
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::FlightMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -472,7 +382,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
     sQuestMgr.FillQuestMenu(innkeeper, Plr, menu);
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -494,7 +404,7 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
     Gossip::Menu menu(battlemaster->getGuid(), Text, Plr->GetSession()->language);
     menu.AddItem(GOSSIP_ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
     sQuestMgr.FillQuestMenu(battlemaster, Plr, menu);
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::BattleMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -605,7 +515,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET), 2);
     sQuestMgr.FillQuestMenu(petrain, Plr, menu);
 
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -702,7 +612,7 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
         }
     }
     sQuestMgr.FillQuestMenu(trainer, Plr, menu);
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -752,7 +662,7 @@ void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
 
     Gossip::Menu menu(pObject->getGuid(), Text, Plr->GetSession()->language);
     sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), Plr, menu);
-    menu.StackSend<256>(Plr);
+    menu.Send(Plr);
 }
 
 void Arcemu::Gossip::Generic::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
