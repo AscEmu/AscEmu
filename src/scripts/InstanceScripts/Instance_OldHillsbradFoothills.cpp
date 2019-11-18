@@ -188,7 +188,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            menu.addItem(GOSSIP_ICON_CHAT, EROZION_NEED_PACKET, 1);
 //
 //        // It should give another menu if instance is done id: 10474, NYI
-//        menu.Send(Plr);
+//        menu.sendGossipPacket(Plr);
 //    }
 //
 //    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
@@ -213,7 +213,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    {
 //        Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
 //        menu.addItem(GOSSIP_ICON_CHAT, BRAZAN_DURNHOLDE_KEEP, 1);
-//        menu.Send(Plr);
+//        menu.sendGossipPacket(Plr);
 //    }
 //
 //    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
@@ -225,7 +225,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //                if (!Plr->HasItemCount(25853, 1))
 //                {
 //                    Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_NEED_ITEM, 0);
-//                    menu.Send(Plr);
+//                    menu.sendGossipPacket(Plr);
 //                }
 //                else
 //                {
@@ -306,7 +306,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    {
 //        Arcemu::Gossip::Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);
 //        menu.addItem(GOSSIP_ICON_CHAT, THRALL_START_ESCORT, 1);
-//        menu.Send(Plr);
+//        menu.sendGossipPacket(Plr);
 //    }
 //
 //    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)

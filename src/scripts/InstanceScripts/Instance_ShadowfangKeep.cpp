@@ -608,7 +608,7 @@ public:
             //TODO: move this to database
             menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
         }
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -775,7 +775,7 @@ public:
         {
             menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
         }
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override

@@ -45,7 +45,7 @@ public:
     //    if (pInstance->GetInstanceData(Data_EncounterState, CN_GENERAL_VEZAX) == State_Finished)
     //        menu.addItem(GOSSIP_ICON_CHAT, (529), 8);      // Prison of Yogg-Saron
 
-    //    menu.Send(player);
+    //    menu.sendGossipPacket(player);
     //}
 
     //void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
