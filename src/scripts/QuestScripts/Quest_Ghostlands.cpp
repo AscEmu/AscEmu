@@ -28,9 +28,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+            menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
@@ -52,9 +52,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+            menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
@@ -77,9 +77,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+            menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override

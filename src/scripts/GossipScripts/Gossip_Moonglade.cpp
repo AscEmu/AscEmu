@@ -20,19 +20,19 @@ public:
         if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
         {
             menu.setTextID(4914);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_VILLAGE), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, GI_MG_FLY_VILLAGE, 1);
         }
         else if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
             menu.setTextID(4915);
         else
             menu.setTextID(4913);
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
@@ -52,19 +52,19 @@ public:
         if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
         {
             menu.setTextID(4918);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_THUNDER_BLUFF), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, GI_MG_FLY_THUNDER_BLUFF, 1);
         }
         else if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
             menu.setTextID(4917);
         else
             menu.setTextID(4916);
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern

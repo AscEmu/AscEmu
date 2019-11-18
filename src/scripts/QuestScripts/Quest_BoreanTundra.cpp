@@ -244,9 +244,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(QUEST_THE_MECHAGNOMES))
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_1, 1);
 
-        menu.Send(pPlayer);
+        menu.sendGossipPacket(pPlayer);
     }
 
     void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -256,50 +256,50 @@ public:
             case 1:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 2);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 2:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 3);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 3:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 4);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 4:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 5);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 5:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 6);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 6:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 7);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 7:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 8);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 8:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
-                menu.Send(pPlayer);
+                menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 9);
+                menu.sendGossipPacket(pPlayer);
             }break;
             case 9:
             {
@@ -325,9 +325,9 @@ public:
         Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, pPlayer->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
 
-        menu.addItem(GOSSIP_ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
+        menu.addItem(GOSSIP_ICON_FLIGHTMASTER, GI_SURRISTRASZ, 1);
 
-        menu.Send(pPlayer);
+        menu.sendGossipPacket(pPlayer);
     }
 
     void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -557,8 +557,8 @@ public:
         if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
-            menu.Send(pPlayer);
+            menu.addItem(GOSSIP_ICON_CHAT, 603, 1);
+            menu.sendGossipPacket(pPlayer);
         }
     }
 
@@ -579,8 +579,8 @@ public:
         if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
-            menu.Send(pPlayer);
+            menu.addItem(GOSSIP_ICON_CHAT, 604, 1);
+            menu.sendGossipPacket(pPlayer);
         }
     }
 
@@ -601,8 +601,8 @@ public:
         if (pPlayer->HasQuest(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
-            menu.Send(pPlayer);
+            menu.addItem(GOSSIP_ICON_CHAT, 605, 1);
+            menu.sendGossipPacket(pPlayer);
         }
     }
 

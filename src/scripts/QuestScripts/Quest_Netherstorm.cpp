@@ -29,8 +29,8 @@ public:
         if (plr->HasQuest(10652))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 470, 1);     // I'm ready
+            menu.sendGossipPacket(plr);
         }
     }
 

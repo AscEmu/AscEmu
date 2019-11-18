@@ -16,16 +16,16 @@ public:
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
-        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
-        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(429), 2);     // Where is Medivh?
-        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(430), 3);     // How do you navigate the tower?
+        menu.addItem(GOSSIP_ICON_CHAT, 428, 1);     // What is this place?
+        menu.addItem(GOSSIP_ICON_CHAT, 429, 2);     // Where is Medivh?
+        menu.addItem(GOSSIP_ICON_CHAT, 430, 3);     // How do you navigate the tower?
 
         //Killing the Shade of Aran makes a teleport to medivh's available from Berthold the Doorman.
         Unit* soa = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-11165.2f, -1912.13f, 232.009f, 16524);
         if (!soa || !soa->isAlive())
-            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(431), 4); // Please teleport me to the Guardian's Library.
+            menu.addItem(GOSSIP_ICON_CHAT, 431, 4); // Please teleport me to the Guardian's Library.
 
-        menu.Send(Plr);
+        menu.sendGossipPacket(Plr);
     }
 
     void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
@@ -438,13 +438,13 @@ public:
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 8975, 0);
-            menu.Send(Plr);
+            menu.sendGossipPacket(Plr);
         }
         else
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 8970, 0);
-            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
-            menu.Send(Plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 432, 1);     // I'm not an actor.
+            menu.sendGossipPacket(Plr);
         }
     }
 
@@ -455,8 +455,8 @@ public:
             case 1:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 8971, 0);
-                menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(433), 2);     // Ok, I'll give it a try, then.
-                menu.Send(Plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 433, 2);     // Ok, I'll give it a try, then.
+                menu.sendGossipPacket(Plr);
             }
             break;
             case 2:
@@ -485,8 +485,8 @@ public:
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
-        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
-        menu.Send(Plr);
+        menu.addItem(GOSSIP_ICON_CHAT, 434, 1);         // What phat lewts you have Grandmother!
+        menu.sendGossipPacket(Plr);
     }
 
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
@@ -866,7 +866,7 @@ class CuratorAI : public CreatureAIScript
                 break;
         }
 
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getPower(POWER_TYPE_MANA) - (getCreature()->getMaxPower(POWER_TYPE_MANA) / 10));
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getPower(POWER_TYPE_MANA) - getCreature()->getMaxPower(POWER_TYPE_MANA) / 10);
         float dX = getCreature()->GetPositionX();
         float dY = getCreature()->GetPositionY();
         Creature* AstralFlare = NULL;
@@ -1225,8 +1225,8 @@ class ShadeofAranAI : public CreatureAIScript
         {
             sendDBChatMessage(2044);     // You've wasted enough of my time. Let these games be finished!
 
-            float ERX = 5 * cos(Util::getRandomFloat(6.28f)) + (getCreature()->GetPositionX());
-            float ERY = 5 * sin(Util::getRandomFloat(6.28f)) + (getCreature()->GetPositionY());
+            float ERX = 5 * cos(Util::getRandomFloat(6.28f)) + getCreature()->GetPositionX();
+            float ERY = 5 * sin(Util::getRandomFloat(6.28f)) + getCreature()->GetPositionY();
             float ERZ = getCreature()->GetPositionZ();
 
             for (uint8 i = 0; i < 4; i++)
@@ -1283,7 +1283,7 @@ class ShadeofAranAI : public CreatureAIScript
                 FlameWreathTarget[i] = (*itr)->getGuid();
                 FWTargPosX[i] = (*itr)->GetPositionX();
                 FWTargPosY[i] = (*itr)->GetPositionY();
-                getCreature()->castSpell((*itr), FLAME_WREATH, true);
+                getCreature()->castSpell(*itr, FLAME_WREATH, true);
             }
         }
 
@@ -1405,7 +1405,7 @@ class WaterEleAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        WaterBolt = (Util::getRandomUInt(3) + 5);
+        WaterBolt = Util::getRandomUInt(3) + 5;
         RegisterAIUpdateEvent(1250);
     }
 
@@ -1440,7 +1440,7 @@ class ShadowofAranAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        ShadowPyro = (Util::getRandomUInt(2) + 4);
+        ShadowPyro = Util::getRandomUInt(2) + 4;
         RegisterAIUpdateEvent(1250);
     }
 
@@ -1837,8 +1837,8 @@ class MalchezaarAI : public CreatureAIScript
     {
         m_phase = 1;
        
-        memset(Enfeeble_Targets, 0, sizeof(Enfeeble_Targets));
-        memset(Enfeeble_Health, 0, sizeof(Enfeeble_Health));
+        memset(Enfeeble_Targets, 0, sizeof Enfeeble_Targets);
+        memset(Enfeeble_Health, 0, sizeof Enfeeble_Health);
 
         /*spells[0].info = sSpellMgr.getSpellInfo(SW_PAIN);
         spells[0].targettype = TARGET_ATTACKING;
@@ -2659,9 +2659,9 @@ class NightbaneAI : public CreatureAIScript
             return;
 
         //Switch if needed
-        if ((m_phase == 0 && getCreature()->getHealthPct() <= 75)
-            || (m_phase == 2 && getCreature()->getHealthPct() <= 50)
-            || (m_phase == 4 && getCreature()->getHealthPct() <= 25))
+        if (m_phase == 0 && getCreature()->getHealthPct() <= 75
+            || m_phase == 2 && getCreature()->getHealthPct() <= 50
+            || m_phase == 4 && getCreature()->getHealthPct() <= 25)
         {
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();

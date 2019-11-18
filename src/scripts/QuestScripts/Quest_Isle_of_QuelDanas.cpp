@@ -63,12 +63,12 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
+            menu.addItem(GOSSIP_ICON_CHAT, 466, 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
+            menu.addItem(GOSSIP_ICON_CHAT, 467, 2);     // I need to intercept the Dawnblade reinforcements.
 
-        menu.Send(pPlayer);
+        menu.sendGossipPacket(pPlayer);
     }
 
     void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -101,9 +101,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1); // <Ride the dragonhawk to Sun's Reach>
+            menu.addItem(GOSSIP_ICON_CHAT, 468, 1); // <Ride the dragonhawk to Sun's Reach>
 
-        menu.Send(pPlayer);
+        menu.sendGossipPacket(pPlayer);
     }
 
     void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override

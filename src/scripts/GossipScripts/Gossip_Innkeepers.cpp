@@ -38,7 +38,7 @@ public:
 
 void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
+    Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
     if (pCreature == nullptr)
     {
         return;
@@ -64,26 +64,26 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     {
         if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
         {
-            menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRICK_TREAT), 4);
+            menu.addItem(GOSSIP_ICON_CHAT, GI_TRICK_TREAT, 4);
         }
     }
 
     if (pCreature->isVendor())
     {
-        menu.addItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
+        menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 1);
     }
 
-    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
-    menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
+    menu.addItem(GOSSIP_ICON_CHAT, INNKEEPER, 2);
+    menu.addItem(GOSSIP_ICON_CHAT, INNKEEPERASK, 3);
 
     sQuestMgr.FillQuestMenu(pCreature, Plr, menu);
 
-    menu.Send(Plr);
+    menu.sendGossipPacket(Plr);
 }
 
 void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
-    Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
+    Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
 
     if (pCreature == nullptr)
         return;

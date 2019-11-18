@@ -16,10 +16,10 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_LEARN), 1);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_UNLEARN), 2);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_HAMMERSMITH_LEARN, 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_HAMMERSMITH_UNLEARN, 2);
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -52,8 +52,8 @@ public:
         {
             if (!plr->HasSpell(17040))
                 textid = 20007;
-            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+            else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
+                || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)
                 textid = 20008;
             else
             {
@@ -84,9 +84,9 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7247);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_LEARN), 1);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_UNLEARN), 2);
-        menu.Send(plr);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_SWORDSMITH_LEARN, 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_SWORDSMITH_UNLEARN, 2);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -119,8 +119,8 @@ public:
         {
             if (!plr->HasSpell(17039))
                 textid = 20007;
-            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+            else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
+                || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)
                 textid = 20008;
             else
             {
@@ -148,9 +148,9 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 7243);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_LEARN), 1);
-        menu.addItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_UNLEARN), 2);
-        menu.Send(plr);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_AXESMITH_LEARN, 1);
+        menu.addItem(GOSSIP_ICON_TRAINER, GI_T_AXESMITH_UNLEARN, 2);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -183,8 +183,8 @@ public:
         {
             if (!plr->HasSpell(17041))
                 textid = 20007;
-            else if ((!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50) || (!plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                || (!plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65))
+            else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
+                || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)
                 textid = 20008;
             else
             {

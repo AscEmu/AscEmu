@@ -30,8 +30,8 @@ public:
         if (plr->HasQuest(4921))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 3557, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 498, 1);     // I inspect the body further.
+            menu.sendGossipPacket(plr);
         }
     }
 

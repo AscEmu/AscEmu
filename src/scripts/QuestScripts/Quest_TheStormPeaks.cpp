@@ -68,8 +68,8 @@ public:
         if (plr->HasQuest(12864))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 499, 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
+            menu.sendGossipPacket(plr);
         }
     }
 
@@ -80,14 +80,14 @@ public:
             case 1:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
-                menu.Send(plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 500, 2);     // I'm sorry that I didn't get here sooner. What happened?
+                menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 13613, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
-                menu.Send(plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 501, 3);     // I'll go get some help. Hang in there.
+                menu.sendGossipPacket(plr);
             } break;
             case 3:
             {

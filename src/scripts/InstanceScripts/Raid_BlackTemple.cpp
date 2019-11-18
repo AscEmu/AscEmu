@@ -2152,9 +2152,9 @@ class GathiosAI : public CreatureAIScript
     {
         for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
         {
-            if ((*itr) && (*itr)->isAlive() && (*itr)->getEntry() != pCreatureEntry)
+            if (*itr && (*itr)->isAlive() && (*itr)->getEntry() != pCreatureEntry)
             {
-                (*itr)->DealDamage((*itr), val, 0, 0, 0);
+                (*itr)->DealDamage(*itr, val, 0, 0, 0);
             }
         }
 
@@ -2876,14 +2876,14 @@ public:
         if (pAI->GetCurrentWaypoint() >= 10)
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
-            menu.Send(pPlayer);
+            menu.addItem(GOSSIP_ICON_CHAT, 444, 2);     // We're ready to face Illidan.
+            menu.sendGossipPacket(pPlayer);
         }
         else
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
-            menu.addItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
-            menu.Send(pPlayer);
+            menu.addItem(GOSSIP_ICON_CHAT, 445, 1);     // I'm ready, Akama.
+            menu.sendGossipPacket(pPlayer);
         }
     }
 
@@ -2980,7 +2980,7 @@ class AkamaAI : public CreatureAIScript
 
         GameObject* pGate = getNearestGameObject(774.7f, 304.6f, 314.85f, 185905);
         Unit* pDoorTrigger = getNearestCreature(771.5f, 304.7f, 319.0f, CN_DOOR_EVENT_TRIGGER);
-        if ((mScenePart <= 15 && pGate == NULL) || mScenePart == -1)
+        if (mScenePart <= 15 && pGate == NULL || mScenePart == -1)
         {
             sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "It's strange that Illidan doesn't protect himself against intruders.");
             _unsetTargetToChannel();
@@ -3570,7 +3570,7 @@ class MaievAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->StopMovement(2500);
                 }
 
-                _resetTimer(mTrapTimer, ((Util::getRandomUInt(5) + 25) * 1000));
+                _resetTimer(mTrapTimer, (Util::getRandomUInt(5) + 25) * 1000);
                 mSummonTrap = true;
                 return;
             }
@@ -3669,7 +3669,7 @@ class MaievAI : public CreatureAIScript
             despawn(500, 0);
             return;
         }
-        if ((mIllidanAI != NULL && mScenePart <= 6) || mScenePart > 6)
+        if (mIllidanAI != NULL && mScenePart <= 6 || mScenePart > 6)
         {
             mTimeLeft -= GetAIUpdateFreq();
             if (mTimeLeft > 0)
@@ -4751,7 +4751,7 @@ class IllidanStormrageAI : public CreatureAIScript
             return;
         }
 
-        if (mDemonTimer <= 0 || (_getHealthPercent() <= 30 && mPhaseBackup == 3))
+        if (mDemonTimer <= 0 || _getHealthPercent() <= 30 && mPhaseBackup == 3)
         {
             _setDisplayWeapon(true, true);
             stopMovement();

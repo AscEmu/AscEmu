@@ -606,7 +606,7 @@ public:
         if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
         {
             //TODO: move this to database
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(prisonerGossipOptionID), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
         }
         menu.Send(plr);
     }
@@ -773,7 +773,7 @@ public:
         ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
         if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
         {
-            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(prisonerGossipOptionID), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
         }
         menu.Send(plr);
     }

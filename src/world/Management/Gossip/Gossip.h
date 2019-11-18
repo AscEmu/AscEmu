@@ -35,13 +35,14 @@ class GameObject;
 // MIT starts
 struct GossipItem
 {
-    GossipItem(uint8_t _icon, std::string _text, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
-        isCoded(_isCoded), icon(_icon), boxMoney(_boxMoney), boxMessage(_boxMessage), text(_text) {}
+    GossipItem(uint8_t _icon, std::string _text, uint32_t _textId, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
+        isCoded(_isCoded), icon(_icon), boxMoney(_boxMoney), boxMessage(_boxMessage), textId(_textId), text(_text) {}
 
     bool isCoded;
     uint8_t icon;
     uint32_t boxMoney;
     std::string boxMessage;
+    uint32_t textId;
     std::string text;
 };
 // MIT ends
@@ -77,7 +78,7 @@ namespace Arcemu
                 Menu(uint64, uint32, uint32 = 0, uint32 = 0);
 
                 //MIT starts
-                void addItem(uint8_t icon, std::string text, uint32_t id, uint32_t boxMoney = 0, std::string boxMessage = "", bool isCoded = false);
+                void addItem(uint8_t icon, uint32_t textId, uint32_t id, std::string text = "", uint32_t boxMoney = 0, std::string boxMessage = "", bool isCoded = false);
 
                 void removeItem(uint32_t id);
                 //MIT ends
@@ -104,14 +105,9 @@ namespace Arcemu
 
                 void setTextID(uint32_t textid) { textid_ = textid; }
                 void setLanguage(uint32_t language) { language_ = language; }
-                // MIT ends
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.
-                // \param Player*  - player to send to.
-                // \returns  void
-                //////////////////////////////////////////////////////////////////////////////////////////
-                void Send(Player*) const;
+                void sendGossipPacket(Player* player) const;
+                // MIT ends
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // Sends a menu with just the text id and no options.

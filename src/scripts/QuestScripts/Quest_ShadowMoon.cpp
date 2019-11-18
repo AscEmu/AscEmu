@@ -257,9 +257,9 @@ public:
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
             if (plr->HasQuest(10583))
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
+                menu.addItem(GOSSIP_ICON_CHAT, 471, 1);     // I am listening, Dragon
 
-            menu.Send(plr);
+            menu.sendGossipPacket(plr);
         }
     }
 
@@ -270,20 +270,20 @@ public:
             case 1:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
-                menu.Send(plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 472, 2);     // But you are Dragons! How could orcs do this to you?
+                menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
-                menu.Send(plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 473, 3);     // Your mate?
+                menu.sendGossipPacket(plr);
             } break;
             case 3:
             {
                 Arcemu::Gossip::Menu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
-                menu.Send(plr);
+                menu.addItem(GOSSIP_ICON_CHAT, 474, 4);     // I have battled many beasts, Dragon. I will help you.
+                menu.sendGossipPacket(plr);
             } break;
             case 4:
             {
@@ -347,9 +347,9 @@ void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
 {
     Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
     if (plr->HasQuest(10583))
-        menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
+        menu.addItem(GOSSIP_ICON_CHAT, 475, 1);     // Examine the corpse
 
-    menu.Send(plr);
+    menu.sendGossipPacket(plr);
 };
 
 void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)

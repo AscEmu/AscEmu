@@ -159,17 +159,17 @@ public:
         switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_NOT_STARTED:
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                menu.addItem(GOSSIP_ICON_CHAT, 435, 1);     // We are ready to defend the Alliance base.
                 break;
             case HYJAL_PHASE_RAGE_WINTERCHILL_COMPLETE:
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                menu.addItem(GOSSIP_ICON_CHAT, 435, 1);     // We are ready to defend the Alliance base.
                 break;
             case HYJAL_PHASE_ANETHERON_COMPLETE:
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(436), 1);     // The defenses are holding up: we can continue.
+                menu.addItem(GOSSIP_ICON_CHAT, 436, 1);     // The defenses are holding up: we can continue.
                 break;
         }
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
@@ -211,14 +211,14 @@ public:
         switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_ANETHERON_COMPLETE:
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(437), 1);     // We're here to help! The Alliance are overrun.
+                menu.addItem(GOSSIP_ICON_CHAT, 437, 1);     // We're here to help! The Alliance are overrun.
                 break;
             case HYJAL_PHASE_KAZROGAL_COMPLETE:
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(438), 1);     // We're okay so far. Let's do this!
+                menu.addItem(GOSSIP_ICON_CHAT, 438, 1);     // We're okay so far. Let's do this!
                 break;
         }
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
@@ -398,7 +398,7 @@ class DoomfireAI : public CreatureAIScript
         }
         // After 4 sec of last direction change, doomfire has 33% chance to change direction
         DirChange++;
-        if ((DirChange == 4 && Util::getRandomUInt(3) == 1) || DirChange >= 5)
+        if (DirChange == 4 && Util::getRandomUInt(3) == 1 || DirChange >= 5)
         {
             if (getCreature()->GetAIInterface()->getUnitToFollow())
             {

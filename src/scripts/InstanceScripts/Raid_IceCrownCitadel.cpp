@@ -141,24 +141,24 @@ public:
             return;
 
         Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
-        menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
+        menu.addItem(GOSSIP_ICON_CHAT, 515, 0);     // Teleport to Light's Hammer.
 
         if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
+            menu.addItem(GOSSIP_ICON_CHAT, 516, 1);      // Teleport to Oratory of The Damned.
 
         if (pInstance->getData(CN_LADY_DEATHWHISPER) == Finished)
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
+            menu.addItem(GOSSIP_ICON_CHAT, 517, 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
+        //menu.addItem(GOSSIP_ICON_CHAT, (518), 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->getData(CN_VALITHRIA_DREAMWALKER) == Finished)
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
+            menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
 
         if (pInstance->getData(CN_COLDFLAME) == Finished)
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
+            menu.addItem(GOSSIP_ICON_CHAT, 520, 5);      // Teleport to Sindragosa's Lair.
 
-        menu.Send(player);
+        menu.sendGossipPacket(player);
     }
 
     void OnSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override

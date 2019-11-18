@@ -16,9 +16,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
         if (plr->HasQuest(11142))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
+            menu.addItem(GOSSIP_ICON_CHAT, GI_THERAMORE_CROMSONWING, 1);
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -50,10 +50,10 @@ public:
 
         Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
-        if (plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
+        if (plr->HasQuest(11123) || plr->GetQuestRewardStatus(11123) == 0)
+            menu.addItem(GOSSIP_ICON_CHAT, GI_THERAMORE_SHADY_REST, 0);
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override

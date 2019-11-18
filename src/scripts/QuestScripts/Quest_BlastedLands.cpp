@@ -61,9 +61,9 @@ public:
 
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(2702) || plr->HasFinishedQuest(2702))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(453), 1);     // I need to speak with Corporal.
+            menu.addItem(GOSSIP_ICON_CHAT, 453, 1);     // I need to speak with Corporal.
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override

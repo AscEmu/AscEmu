@@ -78,12 +78,12 @@ public:
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
         {
-            menu.Send(plr);
+            menu.sendGossipPacket(plr);
         }
         else
         {
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 446, 1);     // I'll take the flight.
+            menu.sendGossipPacket(plr);
         }
     }
 
@@ -103,16 +103,16 @@ public:
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 14785);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
+            menu.addItem(GOSSIP_ICON_CHAT, 447, 1);     // Borean Tundra
+            menu.addItem(GOSSIP_ICON_CHAT, 448, 2);     // Howling Fjord
+            menu.addItem(GOSSIP_ICON_CHAT, 449, 3);     // Sholazar Basin
+            menu.addItem(GOSSIP_ICON_CHAT, 450, 4);     // Icecrown
+            menu.addItem(GOSSIP_ICON_CHAT, 451, 5);     // Storm Peaks
 
             if (Util::getRandomUInt(100) > 50)
-                menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
+                menu.addItem(GOSSIP_ICON_CHAT, 452, 6);     // Underground...
 
-            menu.Send(plr);
+            menu.sendGossipPacket(plr);
         }
     }
 

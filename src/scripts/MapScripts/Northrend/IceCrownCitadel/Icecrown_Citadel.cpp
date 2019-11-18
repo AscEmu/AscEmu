@@ -28,24 +28,24 @@ public:
             return;
 
         Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
-        menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);          // Teleport to Light's Hammer.
+        menu.addItem(GOSSIP_ICON_CHAT, 515, 0);          // Teleport to Light's Hammer.
 
         if (pInstance->isDataStateFinished(CN_LORD_MARROWGAR))
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
+            menu.addItem(GOSSIP_ICON_CHAT, 516, 1);      // Teleport to Oratory of The Damned.
 
         if (pInstance->isDataStateFinished(CN_LADY_DEATHWHISPER))
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
+            menu.addItem(GOSSIP_ICON_CHAT, 517, 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
+        //menu.addItem(GOSSIP_ICON_CHAT, 518, 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->isDataStateFinished(CN_VALITHRIA_DREAMWALKER))
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
+            menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
 
         if (pInstance->isDataStateFinished(CN_COLDFLAME))
-            menu.addItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
+            menu.addItem(GOSSIP_ICON_CHAT, 520, 5);      // Teleport to Sindragosa's Lair.
 
-        menu.Send(player);
+        menu.sendGossipPacket(player);
     }
 
     void OnSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override

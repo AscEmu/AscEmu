@@ -35,9 +35,9 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(348) && plr->getItemInterface()->GetItemCount(2799, 0) && !plr->getItemInterface()->GetItemCount(2797, 0))
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
+            menu.addItem(GOSSIP_ICON_CHAT, 494, 1);     // I'm ready, Summon Him!
 
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override

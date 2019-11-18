@@ -21,12 +21,12 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 12227);
 #ifdef USE_THE_STATUS
-        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_1), 1);   // this is the status
-        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_2), 2);
+        menu.addItem(GOSSIP_ICON_CHAT, (GI_SHATT_EXARCH_NASUUN_1), 1);   // this is the status
+        menu.addItem(GOSSIP_ICON_CHAT, (GI_SHATT_EXARCH_NASUUN_2), 2);
 #else
-        menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_2), 3);
+        menu.addItem(GOSSIP_ICON_CHAT, GI_SHATT_EXARCH_NASUUN_2, 3);
 #endif
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override

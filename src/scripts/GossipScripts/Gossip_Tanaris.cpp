@@ -17,9 +17,9 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), definedGossipMenu);
-        menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_HIPPO), 1);
-        menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_GORDUNNI), 2);
-        menu.Send(plr);
+        menu.addItem(GOSSIP_ICON_CHAT, GI_TANARIS_CRANK_HIPPO, 1);
+        menu.addItem(GOSSIP_ICON_CHAT, GI_TANARIS_CRANK_GORDUNNI, 2);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
@@ -29,7 +29,7 @@ public:
             menu.setTextID(1521);
         else
             menu.setTextID(1646);
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void Destroy() override { delete this; }
@@ -49,7 +49,7 @@ public:
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
         menu.setTextID(1759);
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void Destroy() override { delete this; }

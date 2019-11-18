@@ -21,8 +21,8 @@ public:
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TIARE, 0);
-        menu.addItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE), 1);
-        menu.Send(Plr);
+        menu.addItem(GOSSIP_ICON_CHAT, GI_TELE_AMBER_LEDGE, 1);
+        menu.sendGossipPacket(Plr);
     }
 
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override

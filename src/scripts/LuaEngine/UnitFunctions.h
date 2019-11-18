@@ -83,7 +83,7 @@ public:
         LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
         if (autosend != 0)
-            LuaGlobal::instance()->m_menu->Send(plr);
+            LuaGlobal::instance()->m_menu->sendGossipPacket(plr);
 
         return 0;
     }
@@ -102,7 +102,7 @@ public:
             return 0;
         }
 
-        LuaGlobal::instance()->m_menu->addItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
+        LuaGlobal::instance()->m_menu->addItem(icon, 0, IntId, menu_text, boxmoney, boxmessage, coded);
 
         return 0;
     }
@@ -117,7 +117,7 @@ public:
         }
 
         if (plr != NULL)
-            LuaGlobal::instance()->m_menu->Send(plr);
+            LuaGlobal::instance()->m_menu->sendGossipPacket(plr);
 
         return 0;
     }

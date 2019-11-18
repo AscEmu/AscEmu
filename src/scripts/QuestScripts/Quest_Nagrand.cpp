@@ -316,8 +316,8 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 2, plr->GetSession()->language);
-        menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
-        menu.Send(plr);
+        menu.addItem(GOSSIP_ICON_CHAT, 469, 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
+        menu.sendGossipPacket(plr);
     };
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override

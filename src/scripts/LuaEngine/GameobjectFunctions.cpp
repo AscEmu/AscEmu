@@ -39,7 +39,7 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
     LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
     if (autosend)
-        LuaGlobal::instance()->m_menu->Send(target);
+        LuaGlobal::instance()->m_menu->sendGossipPacket(target);
 
     return 0;
 }
@@ -59,7 +59,7 @@ int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* /*ptr*/)
         return 0;
     }
 
-    LuaGlobal::instance()->m_menu->addItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
+    LuaGlobal::instance()->m_menu->addItem(icon, 0, IntId, menu_text, boxmoney, boxmessage, coded);
     return 0;
 }
 
@@ -75,7 +75,7 @@ int LuaGameObject::GossipSendMenu(lua_State* L, GameObject* /*ptr*/)
         return 0;
     }
 
-    LuaGlobal::instance()->m_menu->Send(target);
+    LuaGlobal::instance()->m_menu->sendGossipPacket(target);
 
     return 0;
 }

@@ -185,7 +185,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //        Arcemu::Gossip::Menu menu(pObject->getGuid(), EROZION_ON_HELLO, 0);
 //        if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
-//            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
+//            menu.addItem(GOSSIP_ICON_CHAT, EROZION_NEED_PACKET, 1);
 //
 //        // It should give another menu if instance is done id: 10474, NYI
 //        menu.Send(Plr);
@@ -212,7 +212,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
 //        Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
-//        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
+//        menu.addItem(GOSSIP_ICON_CHAT, BRAZAN_DURNHOLDE_KEEP, 1);
 //        menu.Send(Plr);
 //    }
 //
@@ -305,7 +305,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
 //        Arcemu::Gossip::Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);
-//        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
+//        menu.addItem(GOSSIP_ICON_CHAT, THRALL_START_ESCORT, 1);
 //        menu.Send(Plr);
 //    }
 //

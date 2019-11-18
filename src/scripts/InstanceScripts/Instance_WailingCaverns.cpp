@@ -230,20 +230,20 @@ public:
         if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 699, 0);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 442, 1);     // Let's go!
+            menu.sendGossipPacket(plr);
         }
         else
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 698, 0);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 443, 1);     // I will slay those Fanglords
+            menu.sendGossipPacket(plr);
         }
 
     }
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        Creature* pCreature = (pObject->isCreature()) ? static_cast<Creature*>(pObject) : nullptr;
+        Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
         if (pCreature == nullptr)
         {
             return;

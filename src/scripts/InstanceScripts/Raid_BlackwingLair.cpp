@@ -302,7 +302,7 @@ public:
     void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->getGuid(), 9903, 0);
-        menu.Send(Plr);
+        menu.sendGossipPacket(Plr);
     }
 };
 

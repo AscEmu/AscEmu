@@ -35,8 +35,8 @@ public:
         if (plr->HasQuest(558))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 505, 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
+            menu.sendGossipPacket(plr);
         }
     }
 
@@ -56,8 +56,8 @@ public:
         if (plr->HasQuest(925))
         {
             Arcemu::Gossip::Menu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
-            menu.Send(plr);
+            menu.addItem(GOSSIP_ICON_CHAT, 506, 1);     // Give me hoofprint.
+            menu.sendGossipPacket(plr);
         }
     }
 
@@ -83,9 +83,9 @@ public:
 
         if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->hasItem(39740))
         {
-            menu.addItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
+            menu.addItem(GOSSIP_ICON_CHAT, 514, 1);        // Teleport me to Dalaran.
         }
-        menu.Send(plr);
+        menu.sendGossipPacket(plr);
     }
 
     void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
