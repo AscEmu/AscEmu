@@ -58,7 +58,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 1794, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 1794, plr);
     }
 
     void Destroy() override { delete this; }

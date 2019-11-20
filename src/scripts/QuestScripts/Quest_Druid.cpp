@@ -69,7 +69,7 @@ public:
         {
             case 1: //Horde
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 4715, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
                 if (qle == nullptr)
@@ -89,7 +89,7 @@ public:
 
             case 2: //Ally
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 4715, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
  
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
                 if (qle == nullptr)
@@ -153,7 +153,7 @@ public:
             }
             case 4:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 4735, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
                 if (qle == nullptr)
@@ -190,7 +190,7 @@ public:
             }
             case 8:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 4735, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
                 if (qle == nullptr)

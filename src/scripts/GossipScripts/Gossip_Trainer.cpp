@@ -70,7 +70,7 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 
     void Destroy() override { delete this; }
@@ -137,7 +137,7 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 };
 
@@ -201,7 +201,7 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), textid, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 };
 

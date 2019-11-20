@@ -347,28 +347,28 @@ public:
                 menu.sendGossipPacket(plr);
             } break;
             case 5:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60018, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60018, plr);
                 break;
             case 6:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60019, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60019, plr);
                 break;
             case 7:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60020, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60020, plr);
                 break;
             case 8:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60021, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60021, plr);
                 break;
             case 9:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60022, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60022, plr);
                 break;
             case 10:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60023, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60023, plr);
                 break;
             case 11:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60024, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60024, plr);
                 break;
             case 12:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60025, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60025, plr);
                 break;
             default:
                 break;
@@ -629,10 +629,10 @@ public:
         switch (IntId)
         {
             case 1:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60036, plr);           // What can I purchase?
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60036, plr);           // What can I purchase?
                 break;
             case 2:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60037, plr);           // What are Darkmoon Faire Prize Tickets and how do I get them?
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60037, plr);           // What are Darkmoon Faire Prize Tickets and how do I get them?
                 break;
             case 3:
             {
@@ -648,13 +648,13 @@ public:
                 menu.sendGossipPacket(plr);
             }break;
             case 10:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60039, plr);            // What are Darkmoon Cards? <more>
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60039, plr);            // What are Darkmoon Cards? <more>
                 break;
             case 20:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60041, plr);           // What are these Tonk Control Consoles?
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60041, plr);           // What are these Tonk Control Consoles?
                 break;
             case 21:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60042, plr);           // Tell me about the cannon.
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 60042, plr);           // Tell me about the cannon.
                 break;
             default:
                 break;
@@ -675,7 +675,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7336, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 7336, plr);
     }
 };
 

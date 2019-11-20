@@ -8,6 +8,31 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include <string>
 
+struct GossipItem
+{
+    GossipItem(uint8_t _icon, std::string _text, uint32_t _textId, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
+        isCoded(_isCoded), icon(_icon), boxMoney(_boxMoney), boxMessage(_boxMessage), textId(_textId), text(_text) {}
+
+    bool isCoded;
+    uint8_t icon;
+    uint32_t boxMoney;
+    std::string boxMessage;
+    uint32_t textId;
+    std::string text;
+};
+
+struct GossipQuestItem
+{
+    GossipQuestItem(uint8_t icon, uint32_t level = 0, uint32_t flags = 0) :
+        icon(icon), level(level), flags(flags) {}
+
+    uint8_t icon;
+    // used for clients > tbc
+    uint32_t level;
+    uint32_t flags;
+};
+
+// used for db loading
 struct GossipMenuItem
 {
     uint32 Id;
@@ -289,3 +314,17 @@ enum MenuItemOptions
     GI_BOXMSG_DISABLE_XP_GAIN,          // "Are you certain you wish to stop gaining experience?"
     GI_BOXMSG_ENABLE_XP_GAIN,           // "Are you certain you wish to start gaining experience again?"
 };
+
+enum ws
+        {
+            SURE_TO_PURCHASE_DTS,               // ""
+            PURCHASE_DTS,                       // ""
+            NOT_ENOUGH_MONEY_DTS,               // ""
+        };
+
+        enum GossipText
+        {
+            TXTID_TALENTRESET = 5674,           // NT_  ? ""
+            TXTID_PETUNTRAIN = 7722,            // NT_  ? ""
+            TXTID_DUALSPECPURCHASE = 14136      // NT_  ? this is not correct.
+        };

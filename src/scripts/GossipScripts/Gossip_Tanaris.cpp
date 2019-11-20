@@ -42,7 +42,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
+        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override

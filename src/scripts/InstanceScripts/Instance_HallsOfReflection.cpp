@@ -132,7 +132,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
+        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
     }
 
     static void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/)

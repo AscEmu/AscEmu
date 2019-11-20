@@ -3693,6 +3693,36 @@ MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorld
     return nullptr;
 }
 
+std::string MySQLDataStore::getLocaleGossipMenuOptionOrElse(uint32_t entry, uint32_t sessionLocale)
+{
+    const auto wst = sMySQLStore.getGossipMenuOption(entry);
+    const auto lpi = (sessionLocale > 0) ? sMySQLStore.getLocalizedGossipMenuOption(entry, sessionLocale) : nullptr;
+    if (lpi != nullptr)
+        return lpi->name;
+
+    if (wst)
+        return wst->text;
+
+    std::stringstream errorMsg;
+    errorMsg << "GossipMenuItem ID " << entry << "not available in database";
+    return errorMsg.str();
+}
+
+std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale)
+{
+    const auto wst = sMySQLStore.getQuestProperties(entry);
+    const auto lpi = (sessionLocale > 0) ? sMySQLStore.getLocalizedQuest(entry, sessionLocale) : nullptr;
+    if (lpi != nullptr)
+        return lpi->title;
+
+    if (wst)
+        return wst->title;
+
+    std::stringstream errorMsg;
+    errorMsg << "Quest ID " << entry << "not available in database";
+    return errorMsg.str();
+}
+
 void MySQLDataStore::loadNpcMonstersayTable()
 {
     auto startTime = Util::TimeNow();

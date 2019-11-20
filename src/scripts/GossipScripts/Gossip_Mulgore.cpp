@@ -15,14 +15,14 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 522, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
+        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 522, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         if(!pObject->isCreature())
             return;
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 523, plr);
+        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 523, plr);
     }
 
     void Destroy() override { delete this; }

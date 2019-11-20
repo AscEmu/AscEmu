@@ -22,8 +22,10 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
+#include "Server/Packets/SmsgGossipMessage.h"
 
 using namespace Arcemu;
+using namespace AscEmu::Packets;
 
 Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language, uint32 gossip_id) : 
 textid_(Text_Id), guid_(Creature_Guid), language_(language), gossipId(gossip_id)
@@ -46,12 +48,13 @@ void Gossip::Menu::removeItem(uint32_t id)
 
 void Gossip::Menu::AddQuest(QuestProperties const* quest, uint8 icon)
 {
-    this->questlist_.insert(std::make_pair(quest, icon));
+    const GossipQuestItem questItem(icon, quest->min_level, quest->quest_flags);
+    this->questlist_.insert(std::make_pair(quest->id, questItem));
 }
 
-void Gossip::Menu::RemoveQuest(QuestProperties const* quest)
+void Gossip::Menu::RemoveQuest(uint32_t id)
 {
-    Gossip::QuestList::iterator itr = questlist_.find(quest);
+    const auto itr = questlist_.find(id);
     if (itr != questlist_.end())
         questlist_.erase(itr);
 }
@@ -59,99 +62,23 @@ void Gossip::Menu::RemoveQuest(QuestProperties const* quest)
 //MIT
 void Gossip::Menu::sendGossipPacket(Player* player) const
 {
-    WorldPacket packet(SMSG_GOSSIP_MESSAGE, 512);
-    packet << guid_;
-    packet << gossipId;
-    packet << textid_;
-    packet << uint32_t(itemlist_.size());
-
-    for (const auto& itemListItem : itemlist_)
-    {
-        packet << uint32_t(itemListItem.first);
-        packet << itemListItem.second.icon;
-        packet << itemListItem.second.isCoded;
-        packet << itemListItem.second.boxMoney;
-
-        if (!itemListItem.second.text.empty())
-            packet << itemListItem.second.text;
-        else
-            packet << player->GetSession()->LocalizedGossipOption(itemListItem.second.textId);
-
-        packet << itemListItem.second.boxMessage;
-    }
-
-    packet << uint32_t(questlist_.size());
-    {
-        for (const auto& questListItem : questlist_)
-        {
-            packet << questListItem.first->id;
-            packet << uint32_t(questListItem.second);
-#if VERSION_STRING < WotLK
-            switch (questListItem.second)
-            {
-            case QuestStatus::NotFinished:
-                packet << uint32_t(0);
-                break;
-            case QuestStatus::Finished:
-                packet << uint32_t(1);
-                break;
-            case QuestStatus::AvailableChat:
-                packet << uint32_t(0);
-                break;
-            default:
-                packet << uint32_t(0);
-                break;
-            }
-#else
-            packet << questListItem.first->min_level;
-            packet << questListItem.first->quest_flags;
-            packet << uint8_t(0);
-#endif
-
-            const auto lq = language_ > 0 ? sMySQLStore.getLocalizedQuest(questListItem.first->id, language_) : nullptr;
-            if (lq != nullptr)
-                packet << lq->title;
-            else
-                packet << questListItem.first->title;
-        }
-    }
-
-    player->GetSession()->SendPacket(&packet);
+    player->GetSession()->SendPacket(SmsgGossipMessage(guid_, gossipId, textid_, language_, itemlist_, questlist_).serialise().get());
 }
 
-void Gossip::Menu::SendSimpleMenu(uint64 guid, size_t txt_id, Player* plr)
+//MIT
+void Gossip::Menu::sendSimpleMenu(uint64_t guid, uint32_t txt_id, Player* plr)
 {
-    StackWorldPacket<32> packet(SMSG_GOSSIP_MESSAGE);
-    packet << guid;
-    packet << uint32(0);
-    packet << uint32(txt_id);
-    packet << uint32(0);
-    packet << uint32(0);
-    plr->GetSession()->SendPacket(&packet);
+    plr->GetSession()->SendPacket(SmsgGossipMessage(guid, 0, txt_id, 0, {}, {}).serialise().get());
 }
 
-void Gossip::Menu::SendQuickMenu(uint64 guid, size_t textid, Player* Plr, size_t itemid, uint8 itemicon, const char* itemtext, size_t requiredmoney/*=0*/, const char* moneytext/*=NULL*/, uint8 extra/*=0*/)
+//MIT
+void Gossip::Menu::sendQuickMenu(uint64_t guid, uint32_t textid, Player* Plr, uint32_t itemid, uint8_t itemicon, std::string itemtext, uint32_t requiredmoney/*=0*/, std::string moneytext/*=""*/, bool extra/*=false*/)
 {
-    StackWorldPacket<64> packet(SMSG_GOSSIP_MESSAGE);
-    std::string itemtexts = (itemtext != NULL) ? itemtext : "";
-    std::string moneytexts = (moneytext != NULL) ? moneytext : "";
-    packet << guid;
-    packet << uint32(0);
-    packet << uint32(textid);
-    packet << uint32(1);
-    packet << uint32(itemid);
-    packet << itemicon;
-    packet << extra;
-    packet << uint32(requiredmoney);
-    packet << itemtexts;
+    std::map<uint32_t, GossipItem> tempItemList;
+    const GossipItem tempItem(itemicon, itemtext, 0, extra, requiredmoney, moneytext);
+    tempItemList.insert(std::make_pair(itemid, tempItem));
 
-    if (moneytext != NULL)
-        packet << moneytexts;
-    else
-        packet << uint8(0);
-
-    packet << uint32(0);
-    Plr->GetSession()->SendPacket(&packet);
+    Plr->GetSession()->SendPacket(SmsgGossipMessage(guid, 0, textid, 0, tempItemList, {}).serialise().get());
 }
 
 void Gossip::Menu::Complete(Player* plr)
@@ -325,7 +252,7 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
     //auctioneers don't offer quests.
-    Gossip::Menu::SendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(AUCTIONEER));
+    Gossip::Menu::sendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(AUCTIONEER));
 }
 
 void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -401,9 +328,9 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     if (chartergiver->isTabardDesigner())
-        Gossip::Menu::SendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD));
+        Gossip::Menu::sendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD));
     else
-        Gossip::Menu::SendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+        Gossip::Menu::sendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
 }
 
 void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -459,9 +386,9 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
         Text = DefaultGossipTextId;
 
     if (Plr->getClass() == ::HUNTER)
-        Gossip::Menu::SendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
+        Gossip::Menu::sendQuickMenu(pObject->getGuid(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
     else
-        Gossip::Menu::SendSimpleMenu(pObject->getGuid(), Text, Plr);
+        Gossip::Menu::sendSimpleMenu(pObject->getGuid(), Text, Plr);
 }
 
 void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -492,7 +419,7 @@ void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, ui
     if (1 == Id)
         Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
     else if (2 == Id)
-        Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_PETUNTRAIN, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
+        Gossip::Menu::sendQuickMenu(pObject->getGuid(), TXTID_PETUNTRAIN, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
     else
     {
         Gossip::Menu::Complete(Plr);
@@ -593,21 +520,21 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             Plr->GetSession()->sendTrainerList(static_cast<Creature*>(pObject));
             break;
         case 2:
-            Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_TALENTRESET, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
+            Gossip::Menu::sendQuickMenu(pObject->getGuid(), TXTID_TALENTRESET, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
             break;
         case 3:
             Gossip::Menu::Complete(Plr);
             Plr->sendTalentResetConfirmPacket();
             break;
         case 4:
-            purchaseconfirm = Plr->GetSession()->LocalizedWorldSrv(Gossip::SURE_TO_PURCHASE_DTS);
-            Gossip::Menu::SendQuickMenu(pObject->getGuid(), TXTID_DUALSPECPURCHASE, Plr, 5, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedWorldSrv(Gossip::PURCHASE_DTS), 10000000, purchaseconfirm);
+            purchaseconfirm = Plr->GetSession()->LocalizedWorldSrv(SURE_TO_PURCHASE_DTS);
+            Gossip::Menu::sendQuickMenu(pObject->getGuid(), TXTID_DUALSPECPURCHASE, Plr, 5, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedWorldSrv(PURCHASE_DTS), 10000000, purchaseconfirm);
             break;
         case 5:
             if (!Plr->hasEnoughCoinage(10000000))
             {
                 Gossip::Menu::Complete(Plr);
-                Plr->GetSession()->SendNotification(Plr->GetSession()->LocalizedWorldSrv(Gossip::NOT_ENOUGH_MONEY_DTS)); // I know this is not correct
+                Plr->GetSession()->SendNotification(Plr->GetSession()->LocalizedWorldSrv(NOT_ENOUGH_MONEY_DTS)); // I know this is not correct
             }
             else
             {

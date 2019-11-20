@@ -91,7 +91,7 @@ public:
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 13614, plr);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 13614, plr);
 
                 plr->AddQuestKill(12864, 0, 0);
             } break;

@@ -200,6 +200,10 @@ public:
     MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldStringTable const* getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale);
 
+    // locales helper
+    std::string getLocaleGossipMenuOptionOrElse(uint32_t entry, uint32_t sessionLocale);
+    std::string getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale);
+
     MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
 

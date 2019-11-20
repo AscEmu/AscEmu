@@ -369,7 +369,7 @@ void WorldSession::handleStabledPetList(WorldPacket& recvPacket)
 
     if (_player->getClass() != HUNTER)
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(srlPacket.guid, 13584, _player);
+        Arcemu::Gossip::Menu::sendSimpleMenu(srlPacket.guid, 13584, _player);
         return;
     }
 
@@ -488,7 +488,7 @@ void WorldSession::sendTrainerList(Creature* creature)
 
     if (!_player->CanTrainAt(trainer))
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(creature->getGuid(), trainer->Cannot_Train_GossipTextId, _player);
+        Arcemu::Gossip::Menu::sendSimpleMenu(creature->getGuid(), trainer->Cannot_Train_GossipTextId, _player);
     }
     else
     {

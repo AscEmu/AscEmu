@@ -2012,7 +2012,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     if (_player->CanBuyAt(vendor))
         sendInventoryList(unit);
     else
-        Arcemu::Gossip::Menu::SendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
+        Arcemu::Gossip::Menu::sendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
 }
 
 void WorldSession::sendInventoryList(Creature* unit)

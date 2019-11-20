@@ -303,7 +303,7 @@ public:
             }break;
             case 9:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
+                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
             }break;
         }
     }

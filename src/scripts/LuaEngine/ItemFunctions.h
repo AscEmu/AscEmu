@@ -130,7 +130,7 @@ namespace luaItem
         if (player == NULL)
             return 0;
 
-        Arcemu::Gossip::Menu::SendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+        Arcemu::Gossip::Menu::sendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
         return 0;
     }

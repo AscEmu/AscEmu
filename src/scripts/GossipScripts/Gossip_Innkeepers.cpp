@@ -101,7 +101,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
         case 3:     // WHAT CAN I DO ?
         {
             // Prepare second menu
-            Arcemu::Gossip::Menu::SendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
+            Arcemu::Gossip::Menu::sendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
         } break;
         case 4:     // EVENT OF HALLOWEEN
         {

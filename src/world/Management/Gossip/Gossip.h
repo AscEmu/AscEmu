@@ -32,20 +32,6 @@ class Player;
 class Object;
 class GameObject;
 
-// MIT starts
-struct GossipItem
-{
-    GossipItem(uint8_t _icon, std::string _text, uint32_t _textId, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
-        isCoded(_isCoded), icon(_icon), boxMoney(_boxMoney), boxMessage(_boxMessage), textId(_textId), text(_text) {}
-
-    bool isCoded;
-    uint8_t icon;
-    uint32_t boxMoney;
-    std::string boxMessage;
-    uint32_t textId;
-    std::string text;
-};
-// MIT ends
 
 namespace Arcemu
 {
@@ -53,23 +39,8 @@ namespace Arcemu
     {
         using namespace Arcemu;
 
-        enum ws
-        {
-            SURE_TO_PURCHASE_DTS,               // ""
-            PURCHASE_DTS,                       // ""
-            NOT_ENOUGH_MONEY_DTS,               // ""
-        };
-
-        enum GossipText
-        {
-            TXTID_TALENTRESET = 5674,           // NT_  ? ""
-            TXTID_PETUNTRAIN = 7722,            // NT_  ? ""
-            TXTID_DUALSPECPURCHASE = 14136      // NT_  ? this is not correct.
-        };
-        
-
         typedef std::map<uint32_t, GossipItem> ItemList;
-        typedef std::map<QuestProperties const*, uint8> QuestList;
+        typedef std::map<uint32_t, GossipQuestItem> QuestList;
 
         class SERVER_DECL Menu
         {
@@ -96,7 +67,7 @@ namespace Arcemu
                 // \param Quest * - quest to remove.
                 // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
-                void RemoveQuest(QuestProperties const*);
+                void RemoveQuest(uint32_t id);
 
 
                 // MIT starts
@@ -107,29 +78,10 @@ namespace Arcemu
                 void setLanguage(uint32_t language) { language_ = language; }
 
                 void sendGossipPacket(Player* player) const;
+                static void sendSimpleMenu(uint64_t guid, uint32_t txt_id, Player* plr);
+                static void sendQuickMenu(uint64_t guid, uint32_t textid, Player* Plr, uint32_t itemid, uint8_t itemicon, std::string itemtext, uint32_t requiredmoney = 0, std::string moneytext = "" , bool extra = false);
+
                 // MIT ends
-
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Sends a menu with just the text id and no options.
-                // \param uint64 - the creature guid.
-                // \param size_t - the text id.
-                // \param Player*  - the player to send to.
-                //////////////////////////////////////////////////////////////////////////////////////////
-                static void SendSimpleMenu(uint64, size_t, Player*);
-
-                //////////////////////////////////////////////////////////////////////////////////////////
-                // Sends a menu with a given text id and menu item.
-                // \param uint32 - creature guid
-                // \param size_t - txt id
-                // \param Player* - player to send to.
-                // \param size_t - item id
-                // \param uint8 - icon
-                // \param const string * - item text
-                // \param size_t - required money
-                // \param const string * - money text
-                // \param uint8 extra
-                //////////////////////////////////////////////////////////////////////////////////////////
-                static void SendQuickMenu(uint64, size_t, Player*, size_t, uint8, const char*, size_t = 0, const char * = nullptr, uint8 = 0);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // Simply sends out an SMSG_GOSSIP_COMPLETE packet.

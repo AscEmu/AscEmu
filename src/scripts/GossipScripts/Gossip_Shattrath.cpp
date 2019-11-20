@@ -37,13 +37,13 @@ public:
                 OnHello(pObject, plr);
                 break;
             case 1:
-                Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 12303, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_1));
+                Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 12303, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_1));
                 break;
             case 2:
-                Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 12305, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_2));
+                Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 12305, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_2));
                 break;
             case 3:
-                Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 12623, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_3));
+                Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 12623, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_3));
                 break;
             default:
                 break;
@@ -58,7 +58,7 @@ public:
 
     void OnHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 1, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHATT_ZEPH_COT));
+        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 1, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHATT_ZEPH_COT));
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
