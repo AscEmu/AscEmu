@@ -27,20 +27,20 @@ enum
     GO_BREAD = 2562
 };
 
-class StrFever : public Arcemu::Gossip::Script
+class StrFever : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(348) && plr->getItemInterface()->GetItemCount(2799, 0) && !plr->getItemInterface()->GetItemCount(2797, 0))
             menu.addItem(GOSSIP_ICON_CHAT, 494, 1);     // I'm ready, Summon Him!
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* doctor = static_cast<Creature*>(pObject);
 

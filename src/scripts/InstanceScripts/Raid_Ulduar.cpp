@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Ulduar Teleporter
-class UlduarTeleporterGossip : public Arcemu::Gossip::Script
+class UlduarTeleporterGossip : public GossipScript
 {
 public:
 
@@ -18,7 +18,7 @@ public:
     //    if (!pInstance)
     //        return;
 
-    //    Arcemu::Gossip::Menu menu(object->getGuid(), 14424, player->GetSession()->language);
+    //    Menu menu(object->getGuid(), 14424, player->GetSession()->language);
     //    menu.addItem(GOSSIP_ICON_CHAT, 521, 0);          // Expedition Base Camp.
 
     //    // Unlock after engaging Flame Leviathan
@@ -50,7 +50,7 @@ public:
 
     //void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
     //{
-    //    Arcemu::Gossip::Menu::Complete(player);
+    //    Menu::senGossipComplete(player);
 
     //    if (Id >= 9)
     //        return;

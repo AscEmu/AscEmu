@@ -20,21 +20,21 @@
 
 #include "Setup.h"
 
-class SpiritScreeches : public Arcemu::Gossip::Script
+class SpiritScreeches : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(3520))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2039, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 2039, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 495, 1);     // Goodbye
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* spirit = static_cast<Creature*>(pObject);
         spirit->Despawn(1, 0);
@@ -65,21 +65,21 @@ class ScreecherSpirit : public CreatureAIScript
     }
 };
 
-class StewardOfTime : public Arcemu::Gossip::Script
+class StewardOfTime : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 496, 1);     // Please take me to the Master's Lair
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* creat = static_cast<Creature*>(pObject);
 

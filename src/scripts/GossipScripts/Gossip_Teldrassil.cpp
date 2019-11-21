@@ -5,25 +5,26 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/WorldSession.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
-class ErelasAmbersky_Gossip : public Arcemu::Gossip::Script
+class ErelasAmbersky_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 2153, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELDSASSIL_HIPPO));
+        GossipMenu::sendQuickMenu(pObject->getGuid(), 2153, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELDSASSIL_HIPPO));
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 2154, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), 2154, plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 };
 
 void SetupTeldrassilGossip(ScriptMgr* mgr)

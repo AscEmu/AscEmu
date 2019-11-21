@@ -23,7 +23,7 @@ namespace AscEmu::Packets
         }
 
         MsgAuctionHello(uint64_t guid, uint32_t auctionHouseId, uint8_t isAuctionHouseEnabled) :
-            ManagedPacket(MSG_AUCTION_HELLO, 12),
+            ManagedPacket(MSG_AUCTION_HELLO, 8),
             guid(guid),
             auctionHouseId(auctionHouseId),
             isAuctionHouseEnabled(isAuctionHouseEnabled)

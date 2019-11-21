@@ -20,21 +20,21 @@
 
 #include "Setup.h"
 
-class Veronia : public Arcemu::Gossip::Script
+class Veronia : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10652))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 470, 1);     // I'm ready
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* creat = static_cast<Creature*>(pObject);
         creat->castSpell(plr, sSpellMgr.getSpellInfo(34905), true);

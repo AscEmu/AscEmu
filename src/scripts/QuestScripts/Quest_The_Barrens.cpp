@@ -21,23 +21,23 @@
 
 #include "Setup.h"
 
-class BeatenCorpse : public Arcemu::Gossip::Script
+class BeatenCorpse : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(4921))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 3557, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 3557, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 498, 1);     // I inspect the body further.
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 3558, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), 3558, plr);
 
         QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
         if (qle == nullptr)

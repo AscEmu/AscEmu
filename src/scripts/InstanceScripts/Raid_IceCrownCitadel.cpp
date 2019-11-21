@@ -130,17 +130,17 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // IceCrown Teleporter
-class ICCTeleporterGossip : public Arcemu::Gossip::Script
+class ICCTeleporterGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* object, Player* player) override
+    void onHello(Object* object, Player* player) override
     {
         InstanceScript* pInstance = player->GetMapMgr()->GetScript();
         if (!pInstance)
             return;
 
-        Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), 15221, player->GetSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 515, 0);     // Teleport to Light's Hammer.
 
         if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)
@@ -161,7 +161,7 @@ public:
         menu.sendGossipPacket(player);
     }
 
-    void OnSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -184,7 +184,7 @@ public:
                 player->castSpell(player, 70861, true);     // Sindragosa's Lair
                 break;
         }
-        Arcemu::Gossip::Menu::Complete(player);
+        GossipMenu::senGossipComplete(player);
     }
 };
 
@@ -201,7 +201,7 @@ public:
     void OnActivate(Player* player) override
     {
         ICCTeleporterGossip gossip;
-        gossip.OnHello(_gameobject, player);
+        gossip.onHello(_gameobject, player);
     }
 };
 

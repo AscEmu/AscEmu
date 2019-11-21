@@ -8,16 +8,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Creature.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
-class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
+class ArchmageMalin_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 11469);
+        GossipMenu menu(pObject->getGuid(), 11469);
 
         if (plr->HasQuest(11223))
             menu.addItem(GOSSIP_ICON_CHAT, GI_SW_ARCHMAGE_JAINA, 1);
@@ -25,36 +26,36 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         static_cast<Creature*>(pObject)->castSpell(plr, sSpellMgr.getSpellInfo(42711), true);
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 };
 
 //This is when you talk to Thargold Ironwing...He will fly you through Stormwind Harbor to check it out.
-class SWHarborFlyAround : public Arcemu::Gossip::Script
+class SWHarborFlyAround : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 13454);
+        GossipMenu menu(pObject->getGuid(), 13454);
         menu.addItem(GOSSIP_ICON_CHAT, GI_SW_HARBOR_FLY_YES, 1);
         menu.addItem(GOSSIP_ICON_CHAT, GI_SW_HARBOR_FLY_NO, 2);
 
         menu.sendGossipPacket(Plr);
     }
-    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::Complete(Plr);
+        GossipMenu::senGossipComplete(Plr);
         if (1 == Id)
             Plr->TaxiStart(sTaxiMgr.GetTaxiPath(1041), 25679, 0);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 };
 
 void SetupStormwindGossip(ScriptMgr* mgr)

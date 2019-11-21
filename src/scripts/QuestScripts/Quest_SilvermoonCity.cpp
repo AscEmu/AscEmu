@@ -20,20 +20,20 @@
 
 #include "Setup.h"
 
-class PathoftheAdept : public Arcemu::Gossip::Script
+class PathoftheAdept : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9692))
             menu.addItem(GOSSIP_ICON_CHAT, 493, 1); // Take Insignia
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->getItemInterface()->AddItemById(24226, 1, 0);
     }

@@ -14,25 +14,25 @@ enum UnorderedEntry
     GI_TELE_AMBER_LEDGE = 350   // "Teleport me to Amber Ledge!"
 };
 
-class TiareGossipScript : public Arcemu::Gossip::Script
+class TiareGossipScript : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TIARE, 0);
+        GossipMenu menu(pObject->getGuid(), GT_TIARE, 0);
         menu.addItem(GOSSIP_ICON_CHAT, GI_TELE_AMBER_LEDGE, 1);
         menu.sendGossipPacket(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
             case 1:
             {
                 static_cast<Creature*>(pObject)->castSpell(Plr, sSpellMgr.getSpellInfo(50135), true);
-                Arcemu::Gossip::Menu::Complete(Plr);
+                GossipMenu::senGossipComplete(Plr);
             } break;
         }
     }

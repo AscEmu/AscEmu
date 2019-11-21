@@ -5,19 +5,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/WorldSession.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
 // XpEleminatorGossip
 //  GossipScript subclass for turning on/off Player experience gain
-class XpEliminatorGossip : public Arcemu::Gossip::Script
+class XpEliminatorGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 14736);
+        GossipMenu menu(pObject->getGuid(), 14736);
         if (plr->CanGainXp())
             menu.addItem(GOSSIP_ICON_CHAT, GI_DISABLE_XP_GAIN, 1, "", 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_DISABLE_XP_GAIN));
         else
@@ -26,7 +27,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         // turning xp gains on/off costs 10g each time
         if (plr->hasEnoughCoinage(100000))
@@ -34,10 +35,10 @@ public:
             plr->modCoinage(-100000);
             plr->ToggleXpGain();
         }
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 

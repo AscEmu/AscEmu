@@ -2507,7 +2507,7 @@ void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
     }
 }
 
-void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu & menu)
+void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, GossipMenu & menu)
 {
     uint32 status;
     uint8 icon;
@@ -2544,7 +2544,7 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu 
                         icon = (uint8)status;
                         break;
                 }
-                menu.AddQuest((*itr)->qst, icon);
+                menu.addQuest((*itr)->qst, icon);
             }
         }
     }

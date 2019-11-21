@@ -7,16 +7,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.h"
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Creature.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
-class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
+class SilvaFilnaveth_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
+        GossipMenu menu(pObject->getGuid(), 0);
         if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
         {
             menu.setTextID(4914);
@@ -30,7 +31,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
@@ -38,17 +39,17 @@ public:
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 
-class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
+class BunthenPlainswind_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
+        GossipMenu menu(pObject->getGuid(), 0);
         if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
         {
             menu.setTextID(4918);
@@ -62,7 +63,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
@@ -70,7 +71,7 @@ public:
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern
     }
 
-    void Destroy() { delete this; }
+    void destroy() { delete this; }
 
 };
 

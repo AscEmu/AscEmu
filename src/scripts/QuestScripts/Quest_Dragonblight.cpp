@@ -28,11 +28,11 @@ class WoodlandWalker : public CreatureAIScript
     }
 };
 
-class WoodlandWalkerGossip : public Arcemu::Gossip::Script
+class WoodlandWalkerGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
         if (pCreature == nullptr)

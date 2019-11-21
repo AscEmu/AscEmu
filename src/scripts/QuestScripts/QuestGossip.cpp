@@ -26,59 +26,59 @@ enum
     DALARAN_TELEPORT_SPELL = 68328
 };
 
-class Lady_Jaina : public Arcemu::Gossip::Script
+class Lady_Jaina : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(558))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 505, 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         plr->castSpell(plr, sSpellMgr.getSpellInfo(23122), true);
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     }
 };
 
-class Cairne : public Arcemu::Gossip::Script
+class Cairne : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(925))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 506, 1);     // Give me hoofprint.
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 7014, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), 7014, plr);
         plr->castSpell(plr, sSpellMgr.getSpellInfo(23123), true);
     }
 };
 
-class TeleportQ_Gossip : public Arcemu::Gossip::Script
+class TeleportQ_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), Text, plr->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
 
         if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->hasItem(39740))
@@ -88,7 +88,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         plr->castSpell(plr, DALARAN_TELEPORT_SPELL, true);
     }
@@ -100,7 +100,7 @@ void SetupQuestGossip(ScriptMgr* mgr)
     mgr->register_creature_gossip(3057, new Cairne());
 
     // Dalaran quests start
-    Arcemu::Gossip::Script* gs = new TeleportQ_Gossip();
+    GossipScript* gs = new TeleportQ_Gossip();
 
     // Horde
     mgr->register_creature_gossip(26471, gs);

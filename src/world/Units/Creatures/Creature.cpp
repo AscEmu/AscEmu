@@ -595,7 +595,7 @@ void Creature::SaveToDB()
 
 //MIT
 //! brief: used to generate gossip menu based on db values from table gossip_menu, gossip_menu_item and gossip_menu_option. WIP.
-class DatabaseGossip : public Arcemu::Gossip::Script
+class DatabaseGossip : public GossipScript
 {
     uint32_t m_gossipMenuId;
 
@@ -603,12 +603,12 @@ public:
 
     DatabaseGossip(uint32_t gossipId) : m_gossipMenuId(gossipId) {}
 
-    void OnHello(Object* object, Player* player) override
+    void onHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->getGuid(), m_gossipMenuId, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
+    void onSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
     {
         if (intId > 0)
         {

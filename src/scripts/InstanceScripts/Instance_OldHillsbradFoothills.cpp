@@ -173,7 +173,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //};
 //
 //
-//class ErozionGossip : public Arcemu::Gossip::Script
+//class ErozionGossip : public Script
 //{
 //public:
 //
@@ -183,7 +183,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        if (!pInstance)
 //            return;
 //
-//        Arcemu::Gossip::Menu menu(pObject->getGuid(), EROZION_ON_HELLO, 0);
+//        Menu menu(pObject->getGuid(), EROZION_ON_HELLO, 0);
 //        if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
 //            menu.addItem(GOSSIP_ICON_CHAT, EROZION_NEED_PACKET, 1);
 //
@@ -205,13 +205,13 @@ const uint32 MAX_THRALLWP1 = 27;
 //    }
 //};
 //
-//class BrazenGossip : public Arcemu::Gossip::Script
+//class BrazenGossip : public Script
 //{
 //public:
 //
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
-//        Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
+//        Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
 //        menu.addItem(GOSSIP_ICON_CHAT, BRAZAN_DURNHOLDE_KEEP, 1);
 //        menu.sendGossipPacket(Plr);
 //    }
@@ -224,7 +224,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            {
 //                if (!Plr->HasItemCount(25853, 1))
 //                {
-//                    Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_NEED_ITEM, 0);
+//                    Menu menu(pObject->getGuid(), BRAZAN_NEED_ITEM, 0);
 //                    menu.sendGossipPacket(Plr);
 //                }
 //                else
@@ -298,13 +298,13 @@ const uint32 MAX_THRALLWP1 = 27;
 //    uint32 m_currentWp;
 //};
 //
-//class ThrallGossip : public Arcemu::Gossip::Script
+//class ThrallGossip : public Script
 //{
 //public:
 //
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
-//        Arcemu::Gossip::Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);
+//        Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);
 //        menu.addItem(GOSSIP_ICON_CHAT, THRALL_START_ESCORT, 1);
 //        menu.sendGossipPacket(Plr);
 //    }
@@ -323,10 +323,10 @@ void SetupOldHillsbradFoothills(ScriptMgr* /*mgr*/)
     mgr->register_creature_script(CN_LIEUTENANT_DRAKE, &LieutenantDrakeAI::Create);
     mgr->register_creature_script(CN_THRALL, &ThrallAI::Create);
 
-    Arcemu::Gossip::Script* eGossip = new ErozionGossip();
+    Script* eGossip = new ErozionGossip();
     mgr->register_creature_gossip(CN_EROZION, eGossip);
-    Arcemu::Gossip::Script* bGossip = new BrazenGossip();
+    Script* bGossip = new BrazenGossip();
     mgr->register_creature_gossip(CN_BRAZEN, bGossip);
-    Arcemu::Gossip::Script* tGossip = new ThrallGossip();
+    Script* tGossip = new ThrallGossip();
     mgr->register_creature_gossip(CN_THRALL, tGossip);*/
 }

@@ -13,19 +13,19 @@ enum UnorderedEntrys
     GI_SEE_FALL_LICH_KING = 351        // "See the fall of the Lich King."
 };
 
-class DedicationOfHonorGossip : public Arcemu::Gossip::Script
+class DedicationOfHonorGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* object, Player* player) override
+    void onHello(Object* object, Player* player) override
     {
-        Arcemu::Gossip::Menu::sendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+        GossipMenu::sendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
     }
 
-    void OnSelectOption(Object* /*object*/, Player* player, uint32_t /*id*/, const char* /*enteredCode*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*object*/, Player* player, uint32_t /*id*/, const char* /*enteredCode*/, uint32_t /*gossipId*/) override
     {
         player->sendMovie(16);
-        Arcemu::Gossip::Menu::Complete(player);
+        GossipMenu::senGossipComplete(player);
     }
 };
 
@@ -39,7 +39,7 @@ public:
     void OnActivate(Player* player)
     {
         DedicationOfHonorGossip gossip;
-        gossip.OnHello(_gameobject, player);
+        gossip.onHello(_gameobject, player);
     }
 };
 

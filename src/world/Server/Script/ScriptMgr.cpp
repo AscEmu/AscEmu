@@ -177,7 +177,7 @@ void ScriptMgr::UnloadScripts()
         delete HookInterface::getSingletonPtr();
 
     for (CustomGossipScripts::iterator itr = _customgossipscripts.begin(); itr != _customgossipscripts.end(); ++itr)
-        (*itr)->Destroy();
+        (*itr)->destroy();
     _customgossipscripts.clear();
 
     for (QuestScripts::iterator itr = _questscripts.begin(); itr != _questscripts.end(); ++itr)
@@ -494,10 +494,10 @@ bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura
 
 bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 {
-    Arcemu::Gossip::Script* script = this->get_item_gossip(pItem->getEntry());
-    if (script != NULL)
+    auto script = this->get_item_gossip(pItem->getEntry());
+    if (script)
     {
-        script->OnHello(pItem, pPlayer);
+        script->onHello(pItem, pPlayer);
         return true;
     }
     return false;
@@ -1052,9 +1052,9 @@ bool ScriptMgr::has_quest_script(uint32 entry) const
     return (q == NULL || q->pQuestScript != NULL);
 }
 
-void ScriptMgr::register_creature_gossip(uint32 entry, Arcemu::Gossip::Script* script)
+void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
 {
-    GossipMap::iterator itr = creaturegossip_.find(entry);
+    const auto itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
         creaturegossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
@@ -1066,26 +1066,26 @@ bool ScriptMgr::has_creature_gossip(uint32 entry) const
     return creaturegossip_.find(entry) != creaturegossip_.end();
 }
 
-Arcemu::Gossip::Script* ScriptMgr::get_creature_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_creature_gossip(uint32 entry) const
 {
-    GossipMap::const_iterator itr = creaturegossip_.find(entry);
+    const auto itr = creaturegossip_.find(entry);
     if (itr != creaturegossip_.end())
         return itr->second;
-    return NULL;
+    return nullptr;
 }
 
-void ScriptMgr::register_item_gossip(uint32 entry, Arcemu::Gossip::Script* script)
+void ScriptMgr::register_item_gossip(uint32 entry, GossipScript* script)
 {
-    GossipMap::iterator itr = itemgossip_.find(entry);
+    const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
         itemgossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
 
-void ScriptMgr::register_go_gossip(uint32 entry, Arcemu::Gossip::Script* script)
+void ScriptMgr::register_go_gossip(uint32 entry, GossipScript* script)
 {
-    GossipMap::iterator itr = gogossip_.find(entry);
+    const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
         gogossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
@@ -1102,20 +1102,20 @@ bool ScriptMgr::has_go_gossip(uint32 entry) const
     return gogossip_.find(entry) != gogossip_.end();
 }
 
-Arcemu::Gossip::Script* ScriptMgr::get_go_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_go_gossip(uint32 entry) const
 {
-    GossipMap::const_iterator itr = gogossip_.find(entry);
+    const auto itr = gogossip_.find(entry);
     if (itr != gogossip_.end())
         return itr->second;
-    return NULL;
+    return nullptr;
 }
 
-Arcemu::Gossip::Script* ScriptMgr::get_item_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_item_gossip(uint32 entry) const
 {
-    GossipMap::const_iterator itr = itemgossip_.find(entry);
+    const auto itr = itemgossip_.find(entry);
     if (itr != itemgossip_.end())
         return itr->second;
-    return NULL;
+    return nullptr;
 }
 
 void ScriptMgr::ReloadScriptEngines()

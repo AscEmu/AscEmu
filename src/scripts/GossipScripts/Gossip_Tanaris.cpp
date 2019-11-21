@@ -5,26 +5,27 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/WorldSession.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
-class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
+class CurgleCranklehop_Gossip : public GossipScript
 {
 public:
 
     uint32_t definedGossipMenu = 1519;
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), definedGossipMenu);
+        GossipMenu menu(pObject->getGuid(), definedGossipMenu);
         menu.addItem(GOSSIP_ICON_CHAT, GI_TANARIS_CRANK_HIPPO, 1);
         menu.addItem(GOSSIP_ICON_CHAT, GI_TANARIS_CRANK_GORDUNNI, 2);
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
+        GossipMenu menu(pObject->getGuid(), 0);
         if (1 == Id)
             menu.setTextID(1521);
         else
@@ -32,27 +33,27 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 
-class TrentonLighthammer_Gossip : public Arcemu::Gossip::Script
+class TrentonLighthammer_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
+        GossipMenu::sendQuickMenu(pObject->getGuid(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
+        GossipMenu menu(pObject->getGuid(), 0);
         menu.setTextID(1759);
         menu.sendGossipPacket(plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 };
 
 void SetupTanarisGossip(ScriptMgr* mgr)

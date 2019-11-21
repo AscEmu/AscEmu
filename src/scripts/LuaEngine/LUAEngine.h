@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <Management/Gossip/Gossip.h>
+#include <Management/Gossip/GossipScript.h>
 #include <Server/EventMgr.h>
 #include <Server/Script/ScriptMgr.h>
 

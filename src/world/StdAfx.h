@@ -133,7 +133,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Management/Gossip/GossipDefines.hpp"
 
 #include "Management/Guild/GuildDefinitions.h"

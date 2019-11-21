@@ -34,58 +34,58 @@ public:
     }
 };
 
-class TheKesselRun1 : public Arcemu::Gossip::Script
+class TheKesselRun1 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
+        GossipMenu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 0, 0);
     }
 };
 
-class TheKesselRun2 : public Arcemu::Gossip::Script
+class TheKesselRun2 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
+        GossipMenu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 1, 0);
     }
 };
 
-class TheKesselRun3 : public Arcemu::Gossip::Script
+class TheKesselRun3 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
+        GossipMenu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 2, 0);
     }

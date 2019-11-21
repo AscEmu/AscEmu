@@ -8,20 +8,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
-class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
+class CassaCrimsonwing_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
+        GossipMenu menu(pObject->getGuid(), 11224);
         if (plr->HasQuest(11142))
             menu.addItem(GOSSIP_ICON_CHAT, GI_THERAMORE_CROMSONWING, 1);
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         auto quest_entry = plr->GetQuestLogForEntry(11142);
         if (quest_entry == nullptr)
@@ -30,25 +30,25 @@ public:
         quest_entry->SendQuestComplete();
 
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(724), 1147, 0);     // Gryph
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 
-class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
+class CaptainGarranVimes_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         // Send quests and gossip menu.
         uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), Text, plr->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
         if (plr->HasQuest(11123) || plr->GetQuestRewardStatus(11123) == 0)
             menu.addItem(GOSSIP_ICON_CHAT, GI_THERAMORE_SHADY_REST, 0);
@@ -56,12 +56,12 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 1794, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), 1794, plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 

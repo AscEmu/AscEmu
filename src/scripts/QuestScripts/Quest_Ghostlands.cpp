@@ -20,20 +20,20 @@
 
 #include "Setup.h"
 
-class Prisoner12 : public Arcemu::Gossip::Script
+class Prisoner12 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* Prisoner12 = static_cast<Creature*>(pObject);
 
@@ -44,20 +44,20 @@ public:
     }
 };
 
-class Prisoner22 : public Arcemu::Gossip::Script
+class Prisoner22 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
@@ -69,20 +69,20 @@ public:
     }
 };
 
-class Prisoner32 : public Arcemu::Gossip::Script
+class Prisoner32 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* Prisoner32 = static_cast<Creature*>(pObject);
 

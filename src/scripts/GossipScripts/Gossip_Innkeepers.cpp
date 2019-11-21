@@ -27,16 +27,16 @@ enum
     SPELL_TREAT = 24715,
 };
 
-class InnkeeperGossip : public Arcemu::Gossip::Script
+class InnkeeperGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override;
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
-    void Destroy() { delete this; }
+    void onHello(Object* pObject, Player* Plr) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
+    void destroy() { delete this; }
 };
 
-void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
+void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
 {
     Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
     if (pCreature == nullptr)
@@ -54,7 +54,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
             TextID = Text;
         }
     }
-    Arcemu::Gossip::Menu menu(pCreature->getGuid(), TextID, 0);
+    GossipMenu menu(pCreature->getGuid(), TextID, 0);
 
     // Halow's End started?
     auto _now = std::chrono::system_clock::now();
@@ -81,7 +81,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     menu.sendGossipPacket(Plr);
 }
 
-void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
     Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
 
@@ -101,7 +101,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
         case 3:     // WHAT CAN I DO ?
         {
             // Prepare second menu
-            Arcemu::Gossip::Menu::sendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
+            GossipMenu::sendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
         } break;
         case 4:     // EVENT OF HALLOWEEN
         {
@@ -172,14 +172,14 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                     pCreature->castSpell(Plr, trickspell, true);
                 }
             }
-            Arcemu::Gossip::Menu::Complete(Plr);
+            GossipMenu::senGossipComplete(Plr);
         } break;
     }
 }
 
 void SetupInnkeepers(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* gs = new InnkeeperGossip();
+    GossipScript* gs = new InnkeeperGossip();
 
     // Innkeeper List
     mgr->register_creature_gossip(15174, gs);     //Calandrath

@@ -2012,7 +2012,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     if (_player->CanBuyAt(vendor))
         sendInventoryList(unit);
     else
-        Arcemu::Gossip::Menu::sendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
+        GossipMenu::sendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
 }
 
 void WorldSession::sendInventoryList(Creature* unit)
@@ -2024,7 +2024,7 @@ void WorldSession::sendInventoryList(Creature* unit)
             unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
         LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.",
             _player->getName().c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
-        Arcemu::Gossip::Menu::Complete(_player);
+        GossipMenu::senGossipComplete(_player);
         return;
     }
 

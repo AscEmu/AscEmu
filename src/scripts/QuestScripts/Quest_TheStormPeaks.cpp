@@ -59,39 +59,39 @@ public:
     }
 };
 
-class MissingScout_Gossip : public Arcemu::Gossip::Script
+class MissingScout_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12864))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 499, 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 500, 2);     // I'm sorry that I didn't get here sooner. What happened?
                 menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 13613, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 13613, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 501, 3);     // I'll go get some help. Hang in there.
                 menu.sendGossipPacket(plr);
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 13614, plr);
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 13614, plr);
 
                 plr->AddQuestKill(12864, 0, 0);
             } break;

@@ -146,16 +146,16 @@ class JainaProudmooreAI : public CreatureAIScript
     }
 };
 
-class JainaProudmooreGS : public Arcemu::Gossip::Script
+class JainaProudmooreGS : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
+        GossipMenu menu(pObject->getGuid(), 2);
         switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_NOT_STARTED:
@@ -172,7 +172,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
@@ -198,16 +198,16 @@ class ThrallAI : public CreatureAIScript
     }
 };
 
-class ThrallGS : public Arcemu::Gossip::Script
+class ThrallGS : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
+        GossipMenu menu(pObject->getGuid(), 2);
         switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_ANETHERON_COMPLETE:
@@ -221,7 +221,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;

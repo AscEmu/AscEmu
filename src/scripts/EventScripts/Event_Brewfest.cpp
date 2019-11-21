@@ -26,21 +26,21 @@ enum
     DIREBREW_2 = 15859
 };
 
-class SCRIPT_DECL CorenDirebrewGossip : public Arcemu::Gossip::Script
+class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
 {
 public:
-    void OnHello(Object* pObject, Player* Plr);
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
+    void onHello(Object* pObject, Player* Plr);
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
 };
 
-void CorenDirebrewGossip::OnHello(Object* pObject, Player * Plr)
+void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)
 {
-    Arcemu::Gossip::Menu menu(pObject->getGuid(), DIREBREW_1, Plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), DIREBREW_1, Plr->GetSession()->language);
     menu.addItem(GOSSIP_ICON_CHAT, 439, 1);     // Insult Coren Direbrew's brew.
     menu.sendGossipPacket(Plr);
 }
 
-void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * /*Code*/, uint32 /*gossipId*/)
+void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * /*Code*/, uint32 /*gossipId*/)
 {
     Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -48,7 +48,7 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
     {
         case 1:
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), DIREBREW_2, Plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), DIREBREW_2, Plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 440, 1);     // Fight.
             menu.addItem(GOSSIP_ICON_CHAT, 441, 1);     // Apologize.
             menu.sendGossipPacket(Plr);
@@ -56,7 +56,7 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
         case 2:
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
-            Arcemu::Gossip::Menu::Complete(Plr);
+            GossipMenu::senGossipComplete(Plr);
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             pCreature->MoveToWaypoint(1);
         }break;

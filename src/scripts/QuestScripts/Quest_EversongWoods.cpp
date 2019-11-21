@@ -37,31 +37,31 @@ enum
 //Quest: The Drwarfen Spy
 //ID: 8486
 
-class ProspectorAnvilwardGossip : public Arcemu::Gossip::Script
+class ProspectorAnvilwardGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override;
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId) override;
-    void Destroy() override { delete this; }
+    void onHello(Object* pObject, Player* Plr) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId) override;
+    void destroy() override { delete this; }
 };
 
-void ProspectorAnvilwardGossip::OnHello(Object* pObject, Player * Plr)
+void ProspectorAnvilwardGossip::onHello(Object* pObject, Player * Plr)
 {
-    Arcemu::Gossip::Menu menu(pObject->getGuid(), ANVILWARD_1, Plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), ANVILWARD_1, Plr->GetSession()->language);
     if (Plr->HasQuest(8483))
         menu.addItem(GOSSIP_ICON_CHAT, 460, 1);     // I need a moment of your time, Sir.
 
     menu.sendGossipPacket(Plr);
 }
 
-void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
     switch (Id)
     {
         case 1:
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8240, Plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 8240, Plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 461, 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
             menu.sendGossipPacket(Plr);
         }break;
@@ -70,7 +70,7 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
             Creature* pCreature = static_cast<Creature*>(pObject);
 
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
-            Arcemu::Gossip::Menu::Complete(Plr);
+            GossipMenu::senGossipComplete(Plr);
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
 
             pCreature->GetAIInterface()->StopMovement(10);

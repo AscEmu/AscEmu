@@ -55,13 +55,13 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Ayren Cloudbreaker Gossip
-class AyrenCloudbreaker_Gossip : public Arcemu::Gossip::Script
+class AyrenCloudbreaker_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
             menu.addItem(GOSSIP_ICON_CHAT, 466, 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
@@ -71,7 +71,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -93,20 +93,20 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Unrestrained Dragonhawk Gossip
-class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public Arcemu::Gossip::Script
+class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
             menu.addItem(GOSSIP_ICON_CHAT, 468, 1); // <Ride the dragonhawk to Sun's Reach>
 
         menu.sendGossipPacket(pPlayer);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
         pPlayer->TaxiStart(pPath, 22840, 0);

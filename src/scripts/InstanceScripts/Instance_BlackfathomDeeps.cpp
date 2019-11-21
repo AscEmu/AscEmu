@@ -79,11 +79,11 @@ class AkumaiAI : public CreatureAIScript
     }
 };
 
-class MorriduneGossip : public Arcemu::Gossip::Script
+class MorriduneGossip : public GossipScript
 {
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
+        GossipMenu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
         if (pPlayer->isTeamAlliance())
             menu.addItem(GOSSIP_ICON_CHAT, MORRIDUNE_OPTION_1, 1);
         else
@@ -92,7 +92,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
         menu.sendGossipPacket(pPlayer);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -104,7 +104,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
                 break;
         }
 
-        Arcemu::Gossip::Menu::Complete(pPlayer);
+        GossipMenu::senGossipComplete(pPlayer);
     }
 };
 

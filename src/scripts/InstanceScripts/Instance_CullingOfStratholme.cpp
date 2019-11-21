@@ -506,20 +506,20 @@ protected:
 };
 
 
-class ArthasGossip : public Arcemu::Gossip::Script
+class ArthasGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, 0);
+        GossipMenu menu(pObject->getGuid(), 1, 0);
 
         menu.addItem(0, 0, 1, "We're ready to go!");  //find correct txt
 
         menu.sendGossipPacket(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -530,7 +530,7 @@ public:
             }
             break;
         }
-        Arcemu::Gossip::Menu::Complete(Plr);
+        GossipMenu::senGossipComplete(Plr);
     }
 };
 
@@ -557,6 +557,6 @@ void SetupCullingOfStratholme(ScriptMgr* mgr)
     mgr->register_quest_script(13149, Dispelling_Illusions);
     //mgr->register_creature_script(CN_UTHER, &UtherAI::Create);
     //mgr->register_creature_script(CN_ARTHAS, &ArthasAI::Create);
-    Arcemu::Gossip::Script* gs = new ArthasGossip();
+    GossipScript* gs = new ArthasGossip();
     mgr->register_creature_gossip(CN_ARTHAS, gs);
 }

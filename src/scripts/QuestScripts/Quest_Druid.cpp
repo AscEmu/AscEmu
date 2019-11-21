@@ -46,13 +46,13 @@ class Lunaclaw : public CreatureAIScript
     }
 };
 
-class MoonkinGhost_Gossip : public Arcemu::Gossip::Script
+class MoonkinGhost_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 4714, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 4714, plr->GetSession()->language);
         if (plr->HasQuest(6002))
             menu.addItem(GOSSIP_ICON_CHAT, 455, 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
         else if (plr->HasQuest(6001))
@@ -61,7 +61,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -69,7 +69,7 @@ public:
         {
             case 1: //Horde
             {
-                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
                 if (qle == nullptr)
@@ -89,7 +89,7 @@ public:
 
             case 2: //Ally
             {
-                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
  
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
                 if (qle == nullptr)
@@ -111,13 +111,13 @@ public:
     }
 };
 
-class SCRIPT_DECL BearGhost_Gossip : public Arcemu::Gossip::Script
+class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
         if (plr->HasQuest(5930)) // horde
             menu.addItem(GOSSIP_ICON_CHAT, 456, 1);     // What do you represent, spirit?
         else if (plr->HasQuest(5929)) // ally
@@ -126,34 +126,34 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 457, 2);     // I seek to understand the importance of strength of the body.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 458, 3);     // I seek to understand the importance of strength of the heart.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 459, 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 4:
             {
-                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
                 if (qle == nullptr)
@@ -169,28 +169,28 @@ public:
             }
             case 5:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 457, 6);     // I seek to understand the importance of strength of the body.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 6:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 458, 7);     // I seek to understand the importance of strength of the heart.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 7:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 459, 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 8:
             {
-                Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
                 if (qle == nullptr)

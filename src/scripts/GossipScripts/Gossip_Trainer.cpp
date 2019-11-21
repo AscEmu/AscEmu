@@ -6,23 +6,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Creature.h"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Management/Gossip/GossipMenu.h"
 
-class MasterHammersmith : public Arcemu::Gossip::Script
+class MasterHammersmith : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245);
+        GossipMenu menu(pObject->getGuid(), 7245);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_HAMMERSMITH_LEARN, 1);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_HAMMERSMITH_UNLEARN, 2);
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         uint32 textid;
         if (1 == Id)
@@ -70,26 +71,26 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 
-    void Destroy() override { delete this; }
+    void destroy() override { delete this; }
 
 };
 
-class MasterSwordsmith : public Arcemu::Gossip::Script
+class MasterSwordsmith : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7247);
+        GossipMenu menu(pObject->getGuid(), 7247);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_SWORDSMITH_LEARN, 1);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_SWORDSMITH_UNLEARN, 2);
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         uint32 textid;
         if (1 == Id)
@@ -137,23 +138,23 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 };
 
-class MasterAxesmith : public Arcemu::Gossip::Script
+class MasterAxesmith : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7243);
+        GossipMenu menu(pObject->getGuid(), 7243);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_AXESMITH_LEARN, 1);
         menu.addItem(GOSSIP_ICON_TRAINER, GI_T_AXESMITH_UNLEARN, 2);
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         uint32 textid;
         if (1 == Id)
@@ -201,7 +202,7 @@ public:
                 textid = 20009;
             }
         }
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), textid, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), textid, plr);
     }
 };
 

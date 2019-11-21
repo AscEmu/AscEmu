@@ -9,13 +9,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.h>
 
 // Partially by Plexor (I used a spell before, but changed to his method)
-class Berthold : public Arcemu::Gossip::Script
+class Berthold : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
+        GossipMenu menu(pObject->getGuid(), 11224);
         menu.addItem(GOSSIP_ICON_CHAT, 428, 1);     // What is this place?
         menu.addItem(GOSSIP_ICON_CHAT, 429, 2);     // Where is Medivh?
         menu.addItem(GOSSIP_ICON_CHAT, 430, 3);     // How do you navigate the tower?
@@ -28,7 +28,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -36,7 +36,7 @@ public:
                 Plr->SafeTeleport(Plr->GetMapId(), Plr->GetInstanceID(), -11165.123f, -1911.13f, 232.009f, 2.3255f);
                 break;
         }
-        Arcemu::Gossip::Menu::Complete(Plr);
+        GossipMenu::senGossipComplete(Plr);
     }
 
 };
@@ -429,32 +429,32 @@ class THEBIGBADWOLFAI : public CreatureAIScript
 
 
 uint32 WayStartBBW[1000000];
-class BarnesGS : public Arcemu::Gossip::Script
+class BarnesGS : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8975, 0);
+            GossipMenu menu(pObject->getGuid(), 8975, 0);
             menu.sendGossipPacket(Plr);
         }
         else
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8970, 0);
+            GossipMenu menu(pObject->getGuid(), 8970, 0);
             menu.addItem(GOSSIP_ICON_CHAT, 432, 1);     // I'm not an actor.
             menu.sendGossipPacket(Plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 8971, 0);
+                GossipMenu menu(pObject->getGuid(), 8971, 0);
                 menu.addItem(GOSSIP_ICON_CHAT, 433, 2);     // Ok, I'll give it a try, then.
                 menu.sendGossipPacket(Plr);
             }
@@ -471,25 +471,25 @@ public:
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->PlaySoundToSet(9357);
                 WayStartBBW[pCreature->GetInstanceID()] = 2;
-                Arcemu::Gossip::Menu::Complete(Plr);
+                GossipMenu::senGossipComplete(Plr);
             }
             break;
         }
     }
 };
 
-class GrandMother : public Arcemu::Gossip::Script
+class GrandMother : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
+        GossipMenu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
         menu.addItem(GOSSIP_ICON_CHAT, 434, 1);         // What phat lewts you have Grandmother!
         menu.sendGossipPacket(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -3320,7 +3320,7 @@ class JulianneAI : public CreatureAIScript
 
 void SetupKarazhan(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* KBerthold = new Berthold();
+    GossipScript* KBerthold = new Berthold();
     mgr->register_creature_gossip(16153, KBerthold);
 
     mgr->register_creature_script(CN_ATTUMEN, &AttumenTheHuntsmanAI::Create);
@@ -3334,8 +3334,8 @@ void SetupKarazhan(ScriptMgr* mgr)
     mgr->register_creature_script(CN_JULIANNE, &JulianneAI::Create);
     mgr->register_creature_script(19525, &StageLight::Create);
 
-    Arcemu::Gossip::Script* KGrandMother = new GrandMother;
-    Arcemu::Gossip::Script* KBarnes = new BarnesGS;
+    GossipScript* KGrandMother = new GrandMother;
+    GossipScript* KBarnes = new BarnesGS;
     mgr->register_creature_gossip(16812, KBarnes);
     mgr->register_creature_gossip(17603, KGrandMother);
 

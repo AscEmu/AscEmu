@@ -164,20 +164,20 @@ class AnImproperBurial : public CreatureAIScript
     }
 };
 
-class TheMomentofTruth : public Arcemu::Gossip::Script
+class TheMomentofTruth : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(10201) && plr->getItemInterface()->GetItemCount(28500, 0))
             menu.addItem(GOSSIP_ICON_CHAT, 497, 1);     // Try this
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->getItemInterface()->RemoveItemAmt(2799, 1);
 

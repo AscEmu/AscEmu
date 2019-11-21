@@ -40,15 +40,15 @@ public:
 
 };
 
-class Darrowshire_Spirit : public Arcemu::Gossip::Script
+class Darrowshire_Spirit : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void onHello(Object* pObject, Player* plr)
     {
         plr->AddQuestKill(5211, 0, 0);
 
-        Arcemu::Gossip::Menu::sendSimpleMenu(pObject->getGuid(), 3873, plr);
+        GossipMenu::sendSimpleMenu(pObject->getGuid(), 3873, plr);
 
         Creature* Spirit = static_cast<Creature*>(pObject);
 
@@ -75,7 +75,7 @@ class ArajTheSummoner : public CreatureAIScript
 
 void SetupEasternPlaguelands(ScriptMgr* mgr)
 {
-    Arcemu::Gossip::Script* gs = new Darrowshire_Spirit();
+    GossipScript* gs = new Darrowshire_Spirit();
     mgr->register_creature_gossip(11064, gs);
 
     mgr->register_creature_script(8532, &Flayer::Create);

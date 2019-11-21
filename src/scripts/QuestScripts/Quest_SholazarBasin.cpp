@@ -70,21 +70,21 @@ class ChickenEscapee : public CreatureAIScript
     }
 };
 
-class SCRIPT_DECL HemetTasteTest : public Arcemu::Gossip::Script
+class SCRIPT_DECL HemetTasteTest : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -108,21 +108,21 @@ public:
     }
 };
 
-class SCRIPT_DECL HadriusTasteTest : public Arcemu::Gossip::Script
+class SCRIPT_DECL HadriusTasteTest : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -145,21 +145,21 @@ public:
     }
 };
 
-class SCRIPT_DECL TamaraTasteTest : public Arcemu::Gossip::Script
+class SCRIPT_DECL TamaraTasteTest : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 

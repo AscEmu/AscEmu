@@ -60,13 +60,13 @@ class Baleheim : public CreatureAIScript
     }
 };
 
-class Plaguethis_Gossip : public Arcemu::Gossip::Script
+class Plaguethis_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 464, 2); // Where would you like to fly too ?
 
         if (plr->HasQuest(11332))
@@ -75,7 +75,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 

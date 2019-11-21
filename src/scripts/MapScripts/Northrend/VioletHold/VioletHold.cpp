@@ -78,11 +78,11 @@ public:
     }
 };
 
-class SinclariGossip : public Arcemu::Gossip::Script
+class SinclariGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
         if (!pInstance)
@@ -91,7 +91,7 @@ public:
         //Page 1: Textid and first menu item
         if (pInstance->getData(608) == PreProgress)
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 13853, 0);
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
             menu.addItem(GOSSIP_ICON_CHAT, (600), 1);
             menu.sendGossipPacket(pPlayer);
         }
@@ -99,13 +99,13 @@ public:
         //If VioletHold is started, Sinclari has this item for people who aould join.
         if (pInstance->getData(608) == InProgress)
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 13853, 0);
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
             menu.addItem(GOSSIP_ICON_CHAT, (602), 3);
             menu.sendGossipPacket(pPlayer);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
         if (!pInstance)
@@ -119,7 +119,7 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 13854, 0);
+                GossipMenu menu(pObject->getGuid(), 13854, 0);
                 menu.addItem(GOSSIP_ICON_CHAT, (601), 2);
                 menu.sendGossipPacket(pPlayer);
             } break;
@@ -130,7 +130,7 @@ public:
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu::Complete(pPlayer);
+                GossipMenu::senGossipComplete(pPlayer);
                 pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
             } break;
         }
@@ -157,6 +157,6 @@ void VioletHoldScripts(ScriptMgr* scriptMgr)
 
     scriptMgr->register_creature_script(30658, &SinclariAI::Create);
 
-    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
+    GossipScript* GSinclari = new SinclariGossip();
     scriptMgr->register_creature_gossip(30658, GSinclari);
 }

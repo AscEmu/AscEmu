@@ -586,6 +586,6 @@ void SetupTheVioletHold(ScriptMgr* /*mgr*/)
 //    //mgr->register_creature_script(CN_TURAMAT_THE_OBLITERATOR, &ZuramatTheObliteratorAI::Create);
 //    //mgr->register_creature_script(CN_CYANIGOSA, &CyanigosaAI::Create);
 //
-//    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
+//    Script* GSinclari = new SinclariGossip();
 //    mgr->register_creature_gossip(CN_LIEUTNANT_SINCLARI, GSinclari);
 }

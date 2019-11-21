@@ -31,17 +31,17 @@ enum eGossipItems
     GI_WYMREST_BOTTOM_TO_MIDDLE = 418   // "Can you spare a drake to take me to Lord Afrasastrasz in the middle of the temple?"
 };
 
-class WyrmrestTemple_Gossip : public Arcemu::Gossip::Script
+class WyrmrestTemple_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         switch (pObject->getEntry())
         {
             case CN_TORASTRASZA:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TORASTRASZA, 0);
+                GossipMenu menu(pObject->getGuid(), GT_TORASTRASZA, 0);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_TOP_TO_BOTTOM, 1);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_TOP_TO_MIDDLE, 2);
                 menu.sendGossipPacket(plr);
@@ -49,7 +49,7 @@ public:
             break;
             case CN_AFRASASTRASZ:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_AFRASASTRASZ, 0);
+                GossipMenu menu(pObject->getGuid(), GT_AFRASASTRASZ, 0);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_MIDDLE_TO_TOP, 3);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_MIDDLE_TO_BOTTOM, 4);
                 menu.sendGossipPacket(plr);
@@ -57,7 +57,7 @@ public:
             break;
             case CN_TARIOLSTRASZ:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TARIOLSTRASZ, 0);
+                GossipMenu menu(pObject->getGuid(), GT_TARIOLSTRASZ, 0);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_BOTTOM_TO_TOP, 5);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_WYMREST_BOTTOM_TO_MIDDLE, 6);
                 menu.sendGossipPacket(plr);
@@ -67,7 +67,7 @@ public:
 
     };
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -92,7 +92,7 @@ public:
             default:
                 break;
         }
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     };
 };
 

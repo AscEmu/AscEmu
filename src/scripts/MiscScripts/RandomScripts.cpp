@@ -69,13 +69,13 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
     }
 }
 
-class JeanPierrePoulain : public Arcemu::Gossip::Script
+class JeanPierrePoulain : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 14500);
+        GossipMenu menu(pObject->getGuid(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
         {
             menu.sendGossipPacket(plr);
@@ -87,22 +87,22 @@ public:
         }
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Plr->castSpell(Plr, 64795, true);
-        Arcemu::Gossip::Menu::Complete(Plr);
+        GossipMenu::senGossipComplete(Plr);
     }
 };
 
-class Wormhole : public Arcemu::Gossip::Script
+class Wormhole : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 14785);
+            GossipMenu menu(pObject->getGuid(), 14785);
             menu.addItem(GOSSIP_ICON_CHAT, 447, 1);     // Borean Tundra
             menu.addItem(GOSSIP_ICON_CHAT, 448, 2);     // Howling Fjord
             menu.addItem(GOSSIP_ICON_CHAT, 449, 3);     // Sholazar Basin
@@ -116,7 +116,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -139,7 +139,7 @@ public:
                 Plr->castSpell(Plr, 68081, true);
                 break;
         }
-        Arcemu::Gossip::Menu::Complete(Plr);
+        GossipMenu::senGossipComplete(Plr);
     }
 };
 
@@ -148,9 +148,9 @@ void SetupRandomScripts(ScriptMgr* mgr)
     // Register Hook Event here
     mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)&OnEmote);
 
-    Arcemu::Gossip::Script* jeanPierrePoulain = new JeanPierrePoulain();
+    GossipScript* jeanPierrePoulain = new JeanPierrePoulain();
     mgr->register_creature_gossip(34244, jeanPierrePoulain);
 
-    Arcemu::Gossip::Script* wormhole = new Wormhole();
+    GossipScript* wormhole = new Wormhole();
     mgr->register_creature_gossip(35646, wormhole);
 }

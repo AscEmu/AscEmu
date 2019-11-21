@@ -41,11 +41,11 @@ enum
     //////////////////////////////////////////////////////////////////////////////////////////
 };
 
-class GossipScourgeGryphon : public Arcemu::Gossip::Script
+class GossipScourgeGryphon : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
         {

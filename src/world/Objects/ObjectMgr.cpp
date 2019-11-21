@@ -1496,7 +1496,7 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
         textId = forcedTextId;
     }
 
-    Arcemu::Gossip::Menu menu(senderGuid, textId, player->GetSession()->language, gossipMenuId);
+    GossipMenu menu(senderGuid, textId, player->GetSession()->language, gossipMenuId);
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);

@@ -247,15 +247,15 @@ class WarbringerRazuunAI : public CreatureAIScript
     int32 mRazuunPhase;
 };
 
-class NeltharakusTale_Gossip : public Arcemu::Gossip::Script
+class NeltharakusTale_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10814))
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
             if (plr->HasQuest(10583))
                 menu.addItem(GOSSIP_ICON_CHAT, 471, 1);     // I am listening, Dragon
 
@@ -263,25 +263,25 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 472, 2);     // But you are Dragons! How could orcs do this to you?
                 menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 473, 3);     // Your mate?
                 menu.sendGossipPacket(plr);
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 474, 4);     // I have battled many beasts, Dragon. I will help you.
                 menu.sendGossipPacket(plr);
             } break;
@@ -335,24 +335,24 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Flanis Swiftwing
-class FlanisSwiftwing_Gossip : public Arcemu::Gossip::Script
+class FlanisSwiftwing_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override;
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
+    void onHello(Object* pObject, Player* Plr) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
 };
 
-void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
+void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
 {
-    Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
     if (plr->HasQuest(10583))
         menu.addItem(GOSSIP_ICON_CHAT, 475, 1);     // Examine the corpse
 
     menu.sendGossipPacket(plr);
 };
 
-void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)
+void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)
 {
     Item* item = objmgr.CreateItem(30658, Plr);
     if (item == nullptr)

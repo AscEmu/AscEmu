@@ -2861,11 +2861,11 @@ class ParasiticShadowfiendAI : public CreatureAIScript
     }
 };
 
-class SCRIPT_DECL AkamaGossip : public Arcemu::Gossip::Script
+class SCRIPT_DECL AkamaGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
         Creature* pAIOwner = static_cast<Creature*>(pObject);
         if (pAIOwner->GetScript() == NULL)
@@ -2875,19 +2875,19 @@ public:
 
         if (pAI->GetCurrentWaypoint() >= 10)
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
+            GossipMenu menu(pObject->getGuid(), 229902);
             menu.addItem(GOSSIP_ICON_CHAT, 444, 2);     // We're ready to face Illidan.
             menu.sendGossipPacket(pPlayer);
         }
         else
         {
-            Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
+            GossipMenu menu(pObject->getGuid(), 229901);
             menu.addItem(GOSSIP_ICON_CHAT, 445, 1);     // I'm ready, Akama.
             menu.sendGossipPacket(pPlayer);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* pAIOwner = static_cast<Creature*>(pObject);
         if (pAIOwner->GetScript() == NULL)
@@ -2906,7 +2906,7 @@ public:
                 pAI->_setWieldWeapon(false);
                 break;
         }
-        Arcemu::Gossip::Menu::Complete(pPlayer);
+        GossipMenu::senGossipComplete(pPlayer);
     }
 };
 
@@ -5349,7 +5349,7 @@ void SetupBlackTemple(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_SHADE_OF_AKAMA, &ShadeofakamaAI::Create); //test
 
     //Illidan Stormrage related
-    Arcemu::Gossip::Script* AG = new AkamaGossip();
+    GossipScript* AG = new AkamaGossip();
     mgr->register_creature_gossip(CN_AKAMA, AG);
 
     mgr->register_creature_script(CN_DOOR_EVENT_TRIGGER, &UnselectableTriggerAI::Create);

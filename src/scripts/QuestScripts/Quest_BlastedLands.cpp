@@ -46,11 +46,11 @@ public:
 };
 
 
-class HeroesofOld1 : public Arcemu::Gossip::Script
+class HeroesofOld1 : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
         if (!plr)
             return;
@@ -59,14 +59,14 @@ public:
         if (general == nullptr)
             return;
 
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1);
+        GossipMenu menu(pObject->getGuid(), 1);
         if (plr->HasQuest(2702) || plr->HasFinishedQuest(2702))
             menu.addItem(GOSSIP_ICON_CHAT, 453, 1);     // I need to speak with Corporal.
 
         menu.sendGossipPacket(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         if (!plr)
             return;
@@ -104,6 +104,6 @@ void SetupBlastedLands(ScriptMgr* mgr)
     QuestScript* HeroesoO = new HeroesofOld();
     mgr->register_quest_script(2702, HeroesoO);
 
-    Arcemu::Gossip::Script* gossip1 = new HeroesofOld1();
+    GossipScript* gossip1 = new HeroesofOld1();
     mgr->register_creature_gossip(7572, gossip1);
 }

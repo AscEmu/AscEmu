@@ -126,13 +126,13 @@ class JainaAI : public CreatureAIScript
 
 // Lady Jaina Proudmoore Gossip
 // \todo update this to new GossipHello
-class Jaina_Gossip : public Arcemu::Gossip::Script
+class Jaina_Gossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
+        GossipMenu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
     }
 
     static void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/)
@@ -141,7 +141,7 @@ public:
             pJaina->StartInstance();
 
         static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
-        Arcemu::Gossip::Menu::Complete(plr);
+        GossipMenu::senGossipComplete(plr);
     }
 };
 

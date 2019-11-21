@@ -36,7 +36,7 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
     if (LuaGlobal::instance()->m_menu != NULL)
         delete LuaGlobal::instance()->m_menu;
 
-    LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
+    LuaGlobal::instance()->m_menu = new GossipMenu(ptr->getGuid(), text_id);
 
     if (autosend)
         LuaGlobal::instance()->m_menu->sendGossipPacket(target);
@@ -92,7 +92,7 @@ int LuaGameObject::GossipComplete(lua_State* L, GameObject* /*ptr*/)
         return 0;
     }
 
-    LuaGlobal::instance()->m_menu->Complete(target);
+    LuaGlobal::instance()->m_menu->senGossipComplete(target);
 
     return 0;
 }
@@ -129,7 +129,7 @@ int LuaGameObject::GossipSendQuickMenu(lua_State* L, GameObject* ptr)
     if (player == NULL)
         return 0;
 
-    Arcemu::Gossip::Menu::sendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+    GossipMenu::sendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
     return 0;
 }

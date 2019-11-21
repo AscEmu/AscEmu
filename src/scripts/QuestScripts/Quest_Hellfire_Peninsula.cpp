@@ -149,11 +149,11 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Dreghood Elders
-class PrisonerGossip : public Arcemu::Gossip::Script
+class PrisonerGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
         int32 i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
@@ -178,14 +178,14 @@ public:
         {
             if (pPlayer->getItemInterface()->GetItemCount(29501) > 0)
             {
-                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 463, 1);     // Walk free, Elder. Bring the spirits back to your tribe.
                 menu.sendGossipPacket(pPlayer);
             }
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
 
         uint8 i = 66;

@@ -309,18 +309,18 @@ class NotOnMyWatch : public CreatureAIScript
 
 };
 
-class LumpGossipScript : public Arcemu::Gossip::Script
+class LumpGossipScript : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 2, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 2, plr->GetSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 469, 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
         menu.sendGossipPacket(plr);
     };
 
-    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9918, 0, 0);
     }

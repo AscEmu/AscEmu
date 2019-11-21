@@ -24,7 +24,7 @@
 #include "QuestDefines.hpp"
 #include "CommonTypes.hpp"
 #include "QuestLogEntry.hpp"
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipMenu.h"
 
 #include <vector>
 #include <unordered_map>
@@ -186,12 +186,12 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         ///
         /// \param Creature* quest giver
         /// \param Player*  player for whom quests are qualified
-        /// \param Arcemu::Gossip::Menu& - menu to fill with quests.
+        /// \param GossipMenu& - menu to fill with quests.
         ///
         /// \returns void
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        void FillQuestMenu(Creature*, Player*, Arcemu::Gossip::Menu &);
+        void FillQuestMenu(Creature*, Player*, GossipMenu &);
 
     private:
 

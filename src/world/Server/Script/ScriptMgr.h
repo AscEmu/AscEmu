@@ -22,7 +22,7 @@
 #pragma once
 
 #include <mutex>
-#include "Management/Gossip/Gossip.h"
+#include "Management/Gossip/GossipScript.h"
 #include "Management/GameEventMgr.h"
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
@@ -153,8 +153,8 @@ typedef std::unordered_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap;
 typedef std::unordered_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
 typedef std::unordered_map< uint32, exp_handle_script_effect > HandleScriptEffectMap;
 typedef std::unordered_map<uint32, exp_create_instance_ai> InstanceCreateMap;
-typedef std::set<Arcemu::Gossip::Script*> CustomGossipScripts;
-typedef std::unordered_map<uint32, Arcemu::Gossip::Script*> GossipMap;
+typedef std::set<GossipScript*> CustomGossipScripts;
+typedef std::unordered_map<uint32, GossipScript*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
 typedef std::set<void*> ServerHookList;
@@ -202,9 +202,9 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
         void register_event_script(uint32 entry, EventScript* es);
 
         // GOSSIP INTERFACE REGISTRATION
-        void register_creature_gossip(uint32, Arcemu::Gossip::Script*);
-        void register_item_gossip(uint32, Arcemu::Gossip::Script*);
-        void register_go_gossip(uint32, Arcemu::Gossip::Script*);
+        void register_creature_gossip(uint32, GossipScript*);
+        void register_item_gossip(uint32, GossipScript*);
+        void register_go_gossip(uint32, GossipScript*);
 
         // Mutliple Entry Registers
         void register_creature_script(uint32* entries, exp_create_creature_ai callback);
@@ -269,25 +269,25 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
         bool has_item_gossip(uint32) const;
         bool has_go_gossip(uint32) const;
 
-        Arcemu::Gossip::Script* get_creature_gossip(uint32) const;
-        Arcemu::Gossip::Script* get_go_gossip(uint32) const;
-        Arcemu::Gossip::Script* get_item_gossip(uint32) const;
+        GossipScript* get_creature_gossip(uint32) const;
+        GossipScript* get_go_gossip(uint32) const;
+        GossipScript* get_item_gossip(uint32) const;
 
         // Default Gossip Script Interfaces
-        Arcemu::Gossip::Trainer trainerScript_;
-        Arcemu::Gossip::SpiritHealer spirithealerScript_;
-        Arcemu::Gossip::Banker bankerScript_;
-        Arcemu::Gossip::Vendor vendorScript_;
-        Arcemu::Gossip::ClassTrainer classtrainerScript_;
-        Arcemu::Gossip::PetTrainer pettrainerScript_;
-        Arcemu::Gossip::FlightMaster flightmasterScript_;
-        Arcemu::Gossip::Auctioneer auctioneerScript_;
-        Arcemu::Gossip::InnKeeper innkeeperScript_;
-        Arcemu::Gossip::BattleMaster battlemasterScript_;
-        Arcemu::Gossip::CharterGiver chartergiverScript_;
-        Arcemu::Gossip::TabardDesigner tabardScript_;
-        Arcemu::Gossip::StableMaster stablemasterScript_;
-        Arcemu::Gossip::Generic genericScript_;
+        GossipTrainer trainerScript_;
+        GossipSpiritHealer spirithealerScript_;
+        GossipBanker bankerScript_;
+        GossipVendor vendorScript_;
+        GossipClassTrainer classtrainerScript_;
+        GossipPetTrainer pettrainerScript_;
+        GossipFlightMaster flightmasterScript_;
+        GossipAuctioneer auctioneerScript_;
+        GossipInnKeeper innkeeperScript_;
+        GossipBattleMaster battlemasterScript_;
+        GossipCharterGiver chartergiverScript_;
+        GossipTabardDesigner tabardScript_;
+        GossipStableMaster stablemasterScript_;
+        GossipGeneric genericScript_;
 
     protected:
 

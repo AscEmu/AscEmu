@@ -295,13 +295,13 @@ protected:
     CreatureAISpells* essenceOfTheRed;
 };
 
-class VaelastraszGossip : public Arcemu::Gossip::Script
+class VaelastraszGossip : public GossipScript
 {
 public:
 
-    void OnHello(Object* pObject, Player* Plr) override
+    void onHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->getGuid(), 9903, 0);
+        GossipMenu menu(pObject->getGuid(), 9903, 0);
         menu.sendGossipPacket(Plr);
     }
 };
