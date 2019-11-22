@@ -5,15 +5,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Spell.h"
 #include "SpellAuras.h"
+#include "SpellHelpers.h"
 #include "Definitions/AuraInterruptFlags.h"
 #include "Definitions/AuraStates.h"
+#include "Definitions/DispelType.h"
+#include "Definitions/PreventionType.h"
 #include "Definitions/SpellCastTargetFlags.h"
 #include "Definitions/SpellDamageType.h"
 #include "Definitions/SpellEffectTarget.h"
+#include "Definitions/SpellFamily.h"
 #include "Definitions/SpellInFrontStatus.h"
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/SpellRanged.h"
 
+#include "Data/Flags.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaStorage.hpp"
@@ -21,8 +26,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Units/Players/PlayerClasses.hpp"
 
-SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
+
+SpellCastResult Spell::canCast(bool secondCheck, uint32_t* parameter1, uint32_t* parameter2)
 {
     ////////////////////////////////////////////////////////
     // Caster checks
@@ -68,7 +79,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                 return SPELL_FAILED_DONT_REPORT;
         }
         else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_BG_ONLY)
+        {
             return SPELL_FAILED_ONLY_BATTLEGROUNDS;
+        }
 
         // Movement check
         if (p_caster->m_isMoving)
@@ -79,6 +92,10 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
             if (getSpellInfo()->isRangedAutoRepeat() || getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                 return SPELL_FAILED_MOVING;
         }
+
+        // Prevent casting while sitting unless the spell allows it
+        if (!m_triggeredSpell && p_caster->isSitting() && !(getSpellInfo()->getAttributes() & ATTRIBUTES_CASTABLE_WHILE_SITTING))
+            return SPELL_FAILED_NOT_STANDING;
     }
 
     if (u_caster != nullptr)
@@ -94,7 +111,7 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
         auto requireCombat = true;
         if (u_caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
         {
-            for (auto& aura : u_caster->m_auras)
+            for (const auto& aura : u_caster->m_auras)
             {
                 if (aura == nullptr)
                     continue;
@@ -137,7 +154,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                     return SPELL_FAILED_CASTER_AURASTATE;
             }
             else if (u_caster->HasAura(getSpellInfo()->getCasterAuraSpellNot()))
+            {
                 return SPELL_FAILED_CASTER_AURASTATE;
+            }
         }
 
         if (!m_triggeredSpell)
@@ -146,11 +165,11 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
             if (requireCombat && (getSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
                 return SPELL_FAILED_AFFECTING_COMBAT;
 
-            if (tolerate)
+            if (!secondCheck)
             {
                 // Shapeshift check
                 auto hasIgnoreShapeshiftAura = false;
-                for (auto& aura : u_caster->m_auras)
+                for (const auto& aura : u_caster->m_auras)
                 {
                     if (aura == nullptr)
                         continue;
@@ -167,7 +186,7 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
 
                 if (!hasIgnoreShapeshiftAura)
                 {
-                    SpellCastResult shapeError = getErrorAtShapeshiftedCast(getSpellInfo(), u_caster->getShapeShiftForm());
+                    SpellCastResult shapeError = checkShapeshift(getSpellInfo(), u_caster->getShapeShiftForm());
                     if (shapeError != SPELL_CANCAST_OK)
                         return shapeError;
 
@@ -217,7 +236,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                     return SPELL_FAILED_TARGET_AURASTATE;
             }
             else if (target->HasAura(getSpellInfo()->getTargetAuraSpellNot()))
+            {
                 return SPELL_FAILED_TARGET_AURASTATE;
+            }
         }
 
         if (target->isCorpse())
@@ -285,7 +306,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                                 return SPELL_FAILED_CANT_CAST_ON_TAPPED;
                         }
                         else
+                        {
                             return SPELL_FAILED_CANT_CAST_ON_TAPPED;
+                        }
                     }
                 }
 
@@ -319,7 +342,7 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
             {
                 // Target must be in front of caster
                 // Check for generic ranged spells as well
-                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
                 {
                     if (!u_caster->isInFront(target))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
@@ -339,20 +362,18 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                     if (getSpellInfo()->getId() != SPELL_RANGED_THROW
 #if VERSION_STRING >= TBC
                         // Druid - Pounce, "Patch 2.0.3 - Pounce no longer requires the druid to be behind the target."
-                        && !(getSpellInfo()->getSpellFamilyName() == 7 && getSpellInfo()->getSpellFamilyFlags(0) == 0x20000)
+                        && !(getSpellInfo()->getSpellFamilyName() == SPELLFAMILY_DRUID && getSpellInfo()->getSpellFamilyFlags(0) == 0x20000)
 #endif
 #if VERSION_STRING >= WotLK
                         // Rogue - Mutilate, "Patch 3.0.2 - Mutilate no longer requires you be behind the target."
-                        && !(getSpellInfo()->getSpellFamilyName() == 8 && getSpellInfo()->getSpellFamilyFlags(1) == 0x200000)
+                        && !(getSpellInfo()->getSpellFamilyName() == SPELLFAMILY_ROGUE && getSpellInfo()->getSpellFamilyFlags(1) == 0x200000)
 #endif
                         )
                         return SPELL_FAILED_NOT_BEHIND;
                 }
 
                 // Caster must be in front of target
-                // in 3.3.5a only rogue's and npcs' Gouge spell
-                if ((getSpellInfo()->getAttributes() == (ATTRIBUTES_ABILITY | ATTRIBUTES_NOT_SHAPESHIFT | ATTRIBUTES_UNK20 | ATTRIBUTES_STOP_ATTACK)
-                    || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET) && !target->isInFront(u_caster))
+                if (getSpellInfo()->getAttributes() == (ATTRIBUTES_ABILITY | ATTRIBUTES_NOT_SHAPESHIFT | ATTRIBUTES_UNK20 | ATTRIBUTES_STOP_ATTACK) && !target->isInFront(u_caster))
                     return SPELL_FAILED_NOT_INFRONT;
             }
 
@@ -374,6 +395,11 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
 
             if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS && !target->isPlayer())
                 return SPELL_FAILED_TARGET_NOT_PLAYER;
+
+            // Do not allow spell casts on players when they are on a taxi
+            // unless it's a summoning spell
+            if (target->isPlayer() && dynamic_cast<Player*>(target)->isOnTaxi() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
+                return SPELL_FAILED_BAD_TARGETS;
         }
     }
 
@@ -388,7 +414,14 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                 if (pet == nullptr)
                     return m_triggeredByAura ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NO_PET;
                 else if (!pet->isAlive())
-                    return SPELL_FAILED_TARGETS_DEAD;
+                    return m_triggeredByAura ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_TARGETS_DEAD;
+                // Check Line of Sight with pets as well
+                if (worldConfig.terrainCollision.isCollisionEnabled)
+                {
+                    if (m_caster->IsInWorld() && !(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
+                        (m_caster->GetMapId() != pet->GetMapId() || !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ())))
+                        return SPELL_FAILED_LINE_OF_SIGHT;
+                }
             }
         }
     }
@@ -435,7 +468,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
                         break;
                     }
                     else if (i != 0)
+                    {
                         *parameter1 = i;
+                    }
                 }
 
                 if (found || areaGroup->next_group == 0)
@@ -463,7 +498,9 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
         if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
             if (p_caster->isOnTaxi())
+            {
                 return SPELL_FAILED_NOT_ON_TAXI;
+            }
             else
             {
                 if (!(getSpellInfo()->getAttributes() & ATTRIBUTES_MOUNT_CASTABLE))
@@ -480,18 +517,34 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
     }
 
     ////////////////////////////////////////////////////////
-    // Item checks
+    // Item, state, range and power checks
 
     const SpellCastResult itemCastResult = checkItems(parameter1, parameter2);
     if (itemCastResult != SPELL_CANCAST_OK)
         return itemCastResult;
 
+    if (!m_triggeredSpell)
+    {
+        const SpellCastResult casterStateResult = checkCasterState();
+        if (casterStateResult != SPELL_CANCAST_OK)
+            return casterStateResult;
+
+        const SpellCastResult rangeResult = checkRange(secondCheck);
+        if (rangeResult != SPELL_CANCAST_OK)
+            return rangeResult;
+    }
+
+    const SpellCastResult powerResult = checkPower();
+    if (powerResult != SPELL_CANCAST_OK)
+        return powerResult;
+
     // Call legacy CanCast for yet unhandled cases
-    return m_triggeredSpell || ProcedOnSpell != nullptr ? SPELL_CANCAST_OK : SpellCastResult(CanCast(tolerate));
+    return m_triggeredSpell || ProcedOnSpell != nullptr ? SPELL_CANCAST_OK : SpellCastResult(CanCast(secondCheck));
 }
 
 SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) const
 {
+    // Skip for non-player casters
     if (p_caster == nullptr)
         return SPELL_CANCAST_OK;
 
@@ -627,7 +680,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 return SPELL_FAILED_NOT_TRADEABLE;
         }
         else
+        {
             targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+        }
 
         if (targetItem == nullptr)
             return SPELL_FAILED_ITEM_GONE;
@@ -743,7 +798,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         }
 
         // Temporary helper lambda
-        auto hasEquippableWeapon = [&](Item const* weapon) -> bool
+        const auto hasEquippableWeapon = [&](Item const* weapon) -> bool
         {
             if (weapon == nullptr)
                 return false;
@@ -791,7 +846,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         }
         // Reagents will always be checked for items in trade window
         else if (m_targets.m_itemTarget != 0 && m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+        {
             checkForReagents = true;
+        }
 
         if (checkForReagents)
         {
@@ -842,6 +899,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             }
         }
 
+#if VERSION_STRING > Classic
         // Check for totem category items
         for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
         {
@@ -851,6 +909,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 return SPELL_FAILED_TOTEM_CATEGORY;
             }
         }
+#endif
     }
 
     // Special checks for different spell effects
@@ -868,7 +927,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
                     if (itemProperties == nullptr)
                     {
-                        LOG_ERROR("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_CREATE_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        LogError("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_CREATE_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
                         return SPELL_FAILED_ERROR;
                     }
 
@@ -908,7 +967,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
                     if (itemProperties == nullptr)
                     {
-                        LOG_ERROR("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_ENCHANT_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        LogError("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_ENCHANT_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
                         return SPELL_FAILED_ERROR;
                     }
 
@@ -939,7 +998,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     // todo: implement this when trading is fixed
                 }
                 else
+                {
                     targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                }
 
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
@@ -964,7 +1025,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 const auto enchantEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
                 if (enchantEntry == nullptr)
                 {
-                    LOG_ERROR("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    LogError("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
                     return SPELL_FAILED_ERROR;
                 }
 
@@ -1011,7 +1072,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     // todo: implement this when trading is fixed
                 }
                 else
+                {
                     targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                }
 
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
@@ -1019,7 +1082,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 const auto enchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
                 if (enchantmentEntry == nullptr)
                 {
-                    LOG_ERROR("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    LogError("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
                     return SPELL_FAILED_ERROR;
                 }
 
@@ -1206,7 +1269,401 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
     return SPELL_CANCAST_OK;
 }
 
-SpellCastResult Spell::getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const
+SpellCastResult Spell::checkCasterState() const
+{
+    // Skip for non-unit casters
+    if (u_caster == nullptr)
+        return SPELL_CANCAST_OK;
+
+    // Spells with this attribute are casted regardless of caster's state or auras
+    if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_IGNORE_CASTER_STATE_AND_AURAS)
+        return SPELL_CANCAST_OK;
+
+    // Spells that have following attributes should be casted regardless of caster's state
+    // Includes tons of quest and achievement credit spells, and some battleground spells (flag drops, marks, honor spells)
+    if (getSpellInfo()->getAttributes() & ATTRIBUTES_DEAD_CASTABLE &&
+        getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT &&
+        getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_UNK30)
+        return SPELL_CANCAST_OK;
+
+    uint16_t schoolImmunityMask = 0, dispelImmunityMask = 0;
+    uint32_t mechanicImmunityMask = 0;
+    if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISPEL_AURAS_ON_IMMUNITY)
+    {
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            switch (getSpellInfo()->getEffectApplyAuraName(i))
+            {
+                case SPELL_AURA_SCHOOL_IMMUNITY:
+                    // This is already stored in bitmask
+                    schoolImmunityMask |= static_cast<uint16_t>(getSpellInfo()->getEffectMiscValue(i));
+                    break;
+                case SPELL_AURA_MECHANIC_IMMUNITY:
+                    mechanicImmunityMask |= 1 << static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i) - 1);
+                    break;
+                case SPELL_AURA_MECHANIC_IMMUNITY_MASK:
+                    mechanicImmunityMask |= static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i));
+                    break;
+                case SPELL_AURA_DISPEL_IMMUNITY:
+                {
+                    const uint16_t dispelMaskAll = (1 << DISPEL_MAGIC) | (1 << DISPEL_CURSE) | (1 << DISPEL_DISEASE) | (1 << DISPEL_POISON);
+                    dispelImmunityMask |= getSpellInfo()->getEffectMiscValue(i) == DISPEL_ALL ? dispelMaskAll : static_cast<uint16_t>(1 << getSpellInfo()->getEffectMiscValue(i));
+                } break;
+                default:
+                    break;
+            }
+        }
+
+        // Check if the spell is a pvp trinket alike spell (removes all movement impairement and loss of control effects)
+        if (getSpellInfo()->getEffectApplyAuraName(0) == SPELL_AURA_MECHANIC_IMMUNITY &&
+            getSpellInfo()->getEffectMiscValue(0) == 1 &&
+            getSpellInfo()->getEffectApplyAuraName(1) == 0 && getSpellInfo()->getEffectApplyAuraName(2) == 0)
+            mechanicImmunityMask = MOVEMENT_IMPAIRMENTS_AND_LOSS_OF_CONTROL_MASK;
+    }
+
+    // Helper lambda for checking if spell has a mechanic
+    const auto hasSpellMechanic = [](SpellInfo const* spellInfo, SpellMechanic mechanic) -> bool
+    {
+        if (spellInfo->getMechanicsType() == mechanic)
+            return true;
+
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (spellInfo->getEffectMechanic(i) == mechanic)
+                return true;
+        }
+
+        return false;
+    };
+
+    SpellCastResult errorMsg = SPELL_CANCAST_OK;
+    if (u_caster->hasUnitStateFlag(UNIT_STATE_STUN))
+    {
+        if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED)
+        {
+            // Spell is usable while stunned, but there are some spells with stun effect which are not classified as normal stun spells
+            for (const auto& stunAura : u_caster->m_auras)
+            {
+                if (stunAura == nullptr)
+                    continue;
+                if (!stunAura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_MOD_STUN))
+                    continue;
+
+                // Frozen mechanic acts like stunned mechanic
+                if (!hasSpellMechanic(stunAura->GetSpellInfo(), MECHANIC_STUNNED)
+                    && !hasSpellMechanic(stunAura->GetSpellInfo(), MECHANIC_FROZEN))
+                {
+                    // The stun aura has a stun effect but has no stun or frozen mechanic
+                    // This is not a normal stun aura
+                    errorMsg = SPELL_FAILED_STUNNED;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            errorMsg = SPELL_FAILED_STUNNED;
+        }
+    }
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_CONFUSE) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
+    {
+        errorMsg = SPELL_FAILED_CONFUSED;
+    }
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
+    {
+        errorMsg = SPELL_FAILED_FLEEING;
+    }
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_SILENCE) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
+    {
+        errorMsg = SPELL_FAILED_SILENCED;
+    }
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_PACIFY) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
+    {
+        errorMsg = SPELL_FAILED_PACIFIED;
+    }
+
+    if (errorMsg != SPELL_CANCAST_OK)
+    {
+        if (schoolImmunityMask > 0 || dispelImmunityMask > 0 || mechanicImmunityMask > 0)
+        {
+            // The spell cast is prevented by some state but check if the spell is unaffected by those states or grants immunity to those states
+            for (const auto& aur : u_caster->m_auras)
+            {
+                if (aur == nullptr)
+                    continue;
+
+                // Check if the spell, which is being casted, is unaffected by this aura due to school immunity
+                if (aur->GetSpellInfo()->getCustom_SchoolMask() & schoolImmunityMask && !(aur->GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE))
+                    continue;
+
+                // Check if the spell, which is being casted, is unaffected by this aura due to dispel immunity
+                if ((1 << aur->GetSpellInfo()->getDispelType()) & dispelImmunityMask)
+                    continue;
+
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    if (aur->GetSpellInfo()->getEffectApplyAuraName(i) == 0)
+                        continue;
+
+                    // Get aura's mechanics in one mask
+                    uint32_t mechanicMask = 0;
+                    if (aur->GetSpellInfo()->getMechanicsType() > 0)
+                        mechanicMask |= 1 << (aur->GetSpellInfo()->getMechanicsType() - 1);
+                    if (aur->GetSpellInfo()->getEffectMechanic(i) > 0)
+                        mechanicMask |= 1 << (aur->GetSpellInfo()->getEffectMechanic(i) - 1);
+
+                    // Check if the spell, which is being casted, is unaffected by this aura due to mechanic immunity
+                    if (mechanicMask & mechanicImmunityMask)
+                        continue;
+
+                    // Spell cast is prevented by this aura and by this effect index, return correct error message
+                    switch (aur->GetSpellInfo()->getEffectApplyAuraName(i))
+                    {
+                        case SPELL_AURA_MOD_STUN:
+                            if (!(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) || !hasSpellMechanic(getSpellInfo(), MECHANIC_STUNNED))
+                                return SPELL_FAILED_STUNNED;
+                            break;
+                        case SPELL_AURA_MOD_CONFUSE:
+                            if (!(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
+                                return SPELL_FAILED_CONFUSED;
+                            break;
+                        case SPELL_AURA_MOD_FEAR:
+                            if (!(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
+                                return SPELL_FAILED_FLEEING;
+                            break;
+                        case SPELL_AURA_MOD_SILENCE:
+                        case SPELL_AURA_MOD_PACIFY:
+                        case SPELL_AURA_MOD_PACIFY_SILENCE:
+                            if (getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
+                                return SPELL_FAILED_SILENCED;
+                            if (getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
+                                return SPELL_FAILED_PACIFIED;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Spell cast is prevented by some state and the spell does not grant immunity to that state
+            return errorMsg;
+        }
+    }
+
+    return SPELL_CANCAST_OK;
+}
+
+SpellCastResult Spell::checkRange(bool secondCheck) const
+{
+    const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+    if (rangeEntry == nullptr)
+        return SPELL_CANCAST_OK;
+
+    // Players can activate "on next attack" abilities before being at melee range
+    if (!secondCheck && getSpellInfo()->isOnNextMeleeAttack())
+        return SPELL_CANCAST_OK;
+
+    auto targetUnit = m_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+
+    // Self cast spells don't need range check
+    if (getSpellInfo()->getRangeIndex() == 1 || targetUnit == m_caster)
+        return SPELL_CANCAST_OK;
+
+    if (p_caster != nullptr)
+    {
+        // If pet is the effect target, check range to pet
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (getSpellInfo()->getEffectImplicitTargetA(i) != EFF_TARGET_PET)
+                continue;
+
+            if (p_caster->GetSummon() != nullptr)
+            {
+                targetUnit = p_caster->GetSummon();
+                break;
+            }
+        }
+    }
+
+    float_t minRange = 0.0f, maxRange = 0.0f, rangeMod = 0.0f;
+    if (rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_MELEE)
+    {
+        if (u_caster != nullptr)
+        {
+            // Use caster's combat reach if target is not found
+            const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
+            // Caster's combat reach + 1.333... + target's (or caster's again) combat reach
+            rangeMod = std::max(5.0f, u_caster->getCombatReach() + (4.0f / 3.0f) + combatReach);
+        }
+    }
+    else
+    {
+        if (u_caster != nullptr && rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_RANGED)
+        {
+            // Use caster's combat reach if target is not found
+            const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
+            // Caster's combat reach + 1.33f + target's (or caster's again) combat reach
+            minRange = std::max(5.0f, u_caster->getCombatReach() + (4.0f / 3.0f) + combatReach);
+        }
+
+        // Get minimum range
+#if VERSION_STRING < WotLK
+        minRange += rangeEntry->minRange;
+#else
+        if (targetUnit == nullptr)
+            minRange += rangeEntry->minRange;
+        else
+            minRange += isFriendly(m_caster, targetUnit) ? rangeEntry->minRangeFriendly : rangeEntry->minRange;
+#endif
+
+        // Get maximum range
+#if VERSION_STRING < WotLK
+        maxRange = rangeEntry->maxRange;
+#else
+        if (targetUnit == nullptr)
+            maxRange = rangeEntry->maxRange;
+        else
+            maxRange = isFriendly(m_caster, targetUnit) ? rangeEntry->maxRangeFriendly : rangeEntry->maxRange;
+#endif
+
+        // Player, creature or corpse target
+        if (u_caster != nullptr && (targetUnit != nullptr || m_targets.m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2)))
+        {
+            const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
+            rangeMod = u_caster->getCombatReach() + combatReach;
+            if (minRange > 0.0f && !(rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_RANGED))
+                minRange += rangeMod;
+        }
+    }
+
+    // Spell leeway - Client increases spell's range if the caster is moving (walking is not accounted)
+    ///\ todo: Needs retesting after movement system has been rewritten
+    if (u_caster != nullptr && u_caster->hasUnitMovementFlag(MOVEFLAG_MOVING_MASK) && !u_caster->hasUnitMovementFlag(MOVEFLAG_WALK))
+    {
+        // Leeway mechanic also depends on target - target also needs to be moving (again, walking is not accounted)
+        if (targetUnit != nullptr && targetUnit->hasUnitMovementFlag(MOVEFLAG_MOVING_MASK) && !targetUnit->hasUnitMovementFlag(MOVEFLAG_WALK)
+            && (rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_MELEE || targetUnit->isPlayer()))
+            rangeMod += 8.0f / 3.0f; // 2.6666... yards
+    }
+
+    // Add range from ranged weapon to max range
+    if (p_caster != nullptr && getSpellInfo()->getAttributes() & ATTRIBUTES_RANGED)
+    {
+        const auto rangedWeapon = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+        if (rangedWeapon != nullptr)
+            maxRange *= rangedWeapon->getItemProperties()->Range * 0.01f;
+    }
+
+    // Add 5 yards to range check for spell landing because some spells have a delay before landing
+    rangeMod += secondCheck ? (m_caster->isPlayer() ? 6.25f : 2.25f) : (m_caster->isPlayer() ? 1.25f : 0.0f);
+
+    // Apply spell modifiers to range
+    if (u_caster != nullptr)
+    {
+        spellModFlatFloatValue(u_caster->SM_FRange, &maxRange, getSpellInfo()->getSpellFamilyFlags());
+        spellModPercentageFloatValue(u_caster->SM_PRange, &maxRange, getSpellInfo()->getSpellFamilyFlags());
+    }
+
+    maxRange += rangeMod;
+
+    // Square values for range check
+    minRange *= minRange;
+    maxRange *= maxRange;
+
+    if (targetUnit != nullptr && targetUnit != m_caster)
+    {
+        const float_t distance = m_caster->getDistanceSq(targetUnit);
+        if (minRange > 0.0f && distance < minRange)
+            return SPELL_FAILED_TOO_CLOSE;
+        if (distance > maxRange)
+            return SPELL_FAILED_OUT_OF_RANGE;
+    }
+
+    // AoE spells on targeted location
+    if (m_targets.hasDestination())
+    {
+        const float_t distance = m_caster->getDistanceSq(m_targets.destination());
+        if (minRange > 0.0f && distance < minRange)
+            return SPELL_FAILED_TOO_CLOSE;
+        if (distance > maxRange)
+            return SPELL_FAILED_OUT_OF_RANGE;
+    }
+
+    return SPELL_CANCAST_OK;
+}
+
+SpellCastResult Spell::checkPower() const
+{
+    if (m_powerCost == 0)
+        return SPELL_CANCAST_OK;
+
+    if (p_caster != nullptr && p_caster->m_cheats.PowerCheat)
+        return SPELL_CANCAST_OK;
+
+    // Check if caster has enough health points if health is used for power
+    if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
+    {
+        if (u_caster != nullptr)
+        {
+            if (u_caster->getHealth() <= m_powerCost)
+                return SPELL_FAILED_FIZZLE;
+        }
+
+        // No need to do any further checking
+        return SPELL_CANCAST_OK;
+    }
+
+    // Invalid power types
+    if (!getSpellInfo()->hasValidPowerType())
+    {
+        LogError("Spell::checkPower : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
+        return SPELL_FAILED_ERROR;
+    }
+
+#if VERSION_STRING >= WotLK
+    // Check runes for spells which have runes in power type
+    if (getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
+    {
+        // Check only for DK casters and for spells which have rune cost
+        if (getSpellInfo()->getRuneCostID() > 0 && p_caster != nullptr && p_caster->getClass() == DEATHKNIGHT)
+        {
+            const auto spellRuneCost = sSpellRuneCostStore.LookupEntry(getSpellInfo()->getRuneCostID());
+            if (spellRuneCost != nullptr && (spellRuneCost->bloodRuneCost > 0 || spellRuneCost->frostRuneCost > 0 || spellRuneCost->unholyRuneCost > 0))
+            {
+                int32_t runeCost[3];
+                runeCost[RUNE_BLOOD] = spellRuneCost->bloodRuneCost;
+                runeCost[RUNE_FROST] = spellRuneCost->frostRuneCost;
+                runeCost[RUNE_UNHOLY] = spellRuneCost->unholyRuneCost;
+
+                // Apply modifers
+                for (uint8_t i = 0; i < RUNE_DEATH; ++i)
+                {
+                    spellModFlatIntValue(p_caster->SM_FCost, &runeCost[i], getSpellInfo()->getSpellFamilyFlags());
+                    spellModPercentageIntValue(p_caster->SM_FCost, &runeCost[i], getSpellInfo()->getSpellFamilyFlags());
+                }
+
+                const auto dkPlayer = dynamic_cast<DeathKnight*>(p_caster);
+                // Get available runes and subtract them from the power cost
+                // If the outcome is over zero, it means player doesn't have enough runes available
+                const auto missingRunes = dkPlayer->HasRunes(RUNE_BLOOD, runeCost[RUNE_BLOOD]) + dkPlayer->HasRunes(RUNE_FROST, runeCost[RUNE_FROST]) + dkPlayer->HasRunes(RUNE_UNHOLY, runeCost[RUNE_UNHOLY]);
+                // If there aren't enough normal runes available, try death runes
+                if (missingRunes > 0 && dkPlayer->HasRunes(RUNE_DEATH, missingRunes) > 0)
+                    return SPELL_FAILED_NO_POWER;
+            }
+        }
+    }
+#endif
+
+    // Normal case
+    if (u_caster != nullptr && u_caster->getPower(static_cast<uint16_t>(getSpellInfo()->getPowerType())) < m_powerCost)
+        return SPELL_FAILED_NO_POWER;
+
+    return SPELL_CANCAST_OK;
+}
+
+SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const
 {
     // No need to check requirements for talents that learn spells
     uint8_t talentRank = 0;
@@ -1240,7 +1697,7 @@ SpellCastResult Spell::getErrorAtShapeshiftedCast(SpellInfo const* spellInfo, co
         auto shapeShift = sSpellShapeshiftFormStore.LookupEntry(shapeshiftForm);
         if (shapeShift == nullptr)
         {
-            LOG_ERROR("Spell::getErrorAtShapeshiftedCast: Caster has unknown shapeshift form %u", shapeshiftForm);
+            LogError("Spell::checkShapeshift: Caster has unknown shapeshift form %u", shapeshiftForm);
             return SPELL_CANCAST_OK;
         }
 
@@ -1354,6 +1811,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
         case SPELL_FAILED_TOTEM_CATEGORY:
             if (parameter1 == 0)
             {
+#if VERSION_STRING > Classic
                 for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
                 {
                     if (getSpellInfo()->getTotemCategory(i) == 0)
@@ -1364,6 +1822,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
                         break;
                     }
                 }
+#endif
             } break;
         case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
             if (parameter1 == 0)
@@ -1374,6 +1833,103 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
     }
 
     caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2);
+}
+
+int32_t Spell::getFullCastTime() const
+{
+    return m_castTime;
+}
+
+int32_t Spell::getCastTimeLeft() const
+{
+    return m_timer;
+}
+
+uint32_t Spell::calculatePowerCost() const
+{
+    // Zero for non-unit casters
+    if (u_caster == nullptr)
+        return 0;
+
+    int32_t powerCost = 0;
+    if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DRAIN_WHOLE_POWER)
+    {
+        if (!getSpellInfo()->hasValidPowerType())
+        {
+            LogError("Spell::calculatePowerCost : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
+            return 0;
+        }
+
+        if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
+            powerCost = static_cast<int32_t>(u_caster->getHealth());
+        else
+            powerCost = static_cast<int32_t>(u_caster->getPower(static_cast<uint16_t>(getSpellInfo()->getPowerType())));
+    }
+    else
+    {
+        powerCost = getSpellInfo()->getManaCost();
+        // Check if spell costs percentage of caster's power
+        if (getSpellInfo()->getManaCostPercentage() > 0)
+        {
+            switch (getSpellInfo()->getPowerType())
+            {
+                case POWER_TYPE_HEALTH:
+                    powerCost += static_cast<int32_t>(u_caster->getBaseHealth() * getSpellInfo()->getManaCostPercentage() / 100);
+                    break;
+                case POWER_TYPE_MANA:
+                    powerCost += static_cast<int32_t>(u_caster->getBaseMana() * getSpellInfo()->getManaCostPercentage() / 100);
+                    break;
+                case POWER_TYPE_RAGE:
+                case POWER_TYPE_FOCUS:
+                case POWER_TYPE_ENERGY:
+                case POWER_TYPE_HAPPINESS:
+                    powerCost += static_cast<int32_t>(u_caster->getMaxPower(static_cast<uint16_t>(getSpellInfo()->getPowerType())) * getSpellInfo()->getManaCostPercentage() / 100);
+                    break;
+#if VERSION_STRING >= WotLK
+                case POWER_TYPE_RUNES:
+                case POWER_TYPE_RUNIC_POWER:
+                    // In 3.3.5a only obsolete spells use these and have a non-null getManaCostPercentage
+                    break;
+#endif
+                default:
+                    LogError("Spell::calculatePowerCost : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
+                    return 0;
+            }
+        }
+    }
+
+    // Use first school found from mask
+    uint8_t spellSchool = SCHOOL_NORMAL;
+    for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+    {
+        if (getSpellInfo()->getCustom_SchoolMask() & (1 << i))
+        {
+            spellSchool = i;
+            break;
+        }
+    }
+
+    // Include power cost modifiers from that school
+    powerCost += u_caster->getPowerCostModifier(spellSchool);
+
+    // Special case for rogue's Shiv - power cost depends on the speed of offhand weapon
+    if (getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_SHIV)
+    {
+        // Formula seems to be 20 + offhand weapon speed in seconds * 10
+        powerCost += u_caster->getBaseAttackTime(OFFHAND) / 100;
+    }
+
+    // Apply modifiers
+    spellModFlatIntValue(u_caster->SM_FCost, &powerCost, getSpellInfo()->getSpellFamilyFlags());
+    spellModPercentageIntValue(u_caster->SM_PCost, &powerCost, getSpellInfo()->getSpellFamilyFlags());
+
+    // Include power cost multipliers from that school
+    powerCost = static_cast<int32_t>(powerCost * (1.0f + u_caster->getPowerCostMultiplier(spellSchool)));
+
+    if (powerCost < 0)
+        powerCost = 0;
+
+    return static_cast<uint32_t>(powerCost);
 }
 
 bool Spell::canAttackCreatureType(Creature* target) const

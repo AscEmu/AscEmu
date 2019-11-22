@@ -137,7 +137,7 @@ struct CreatureProperties
     float RangedMinDamage;
     float RangedMaxDamage;
     uint32 RespawnTime;
-    uint32 Resistances[SCHOOL_COUNT];
+    uint32 Resistances[TOTAL_SPELL_SCHOOLS];
     float CombatReach;
     float BoundingRadius;
     std::string aura_string;

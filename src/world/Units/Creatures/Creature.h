@@ -182,16 +182,16 @@ public:
         void SetHealthFromSpell(uint32 value);
 
         int32 m_speedFromHaste;
-        int32 FlatResistanceMod[SCHOOL_COUNT];
-        int32 BaseResistanceModPct[SCHOOL_COUNT];
-        int32 ResistanceModPct[SCHOOL_COUNT];
+        int32 FlatResistanceMod[TOTAL_SPELL_SCHOOLS];
+        int32 BaseResistanceModPct[TOTAL_SPELL_SCHOOLS];
+        int32 ResistanceModPct[TOTAL_SPELL_SCHOOLS];
 
         int32 FlatStatMod[5];
         int32 StatModPct[5];
         int32 TotalStatModPct[5];
 
-        int32 ModDamageDone[SCHOOL_COUNT];
-        float ModDamageDonePct[SCHOOL_COUNT];
+        int32 ModDamageDone[TOTAL_SPELL_SCHOOLS];
+        float ModDamageDonePct[TOTAL_SPELL_SCHOOLS];
         void CalcResistance(uint8_t type);
         void CalcStat(uint8_t type);
 

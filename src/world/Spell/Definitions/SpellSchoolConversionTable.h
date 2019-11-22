@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "School.h"
 
 // converting schools for 2.4.0 client
-static const uint32 g_spellSchoolConversionTable[SCHOOL_COUNT] =
+static const uint32 g_spellSchoolConversionTable[TOTAL_SPELL_SCHOOLS] =
 {
     1,  // SCHOOL_NORMAL
     2,  // SCHOOL_HOLY

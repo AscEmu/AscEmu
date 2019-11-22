@@ -154,7 +154,7 @@ enum AuraEffect
     SPELL_AURA_SAFE_FALL = 144,                                         // Safe Fall
     SPELL_AURA_CHARISMA = 145,                                          // Charisma
     SPELL_AURA_PERSUADED = 146,                                         // Persuaded
-    SPELL_AURA_ADD_CREATURE_IMMUNITY = 147,                             // Add Creature Immunity
+    SPELL_AURA_MECHANIC_IMMUNITY_MASK = 147,                            // Mechanic Immunity Mask
     SPELL_AURA_RETAIN_COMBO_POINTS = 148,                               // Retain Combo Points
     SPELL_AURA_RESIST_PUSHBACK = 149,                                   // Resist Pushback
     SPELL_AURA_MOD_SHIELD_BLOCK_PCT = 150,                              // Mod Shield Block %

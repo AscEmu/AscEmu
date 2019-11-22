@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellMechanics
+enum SpellMechanic : uint8_t
 {
     MECHANIC_NONE          = 0,
     MECHANIC_CHARMED       = 1,
@@ -39,5 +39,13 @@ enum SpellMechanics
     MECHANIC_INVULNERABLE  = 29,
     MECHANIC_SAPPED        = 30,
     MECHANIC_ENRAGED       = 31,
-    MECHANIC_END
+    TOTAL_SPELL_MECHANICS
 };
+
+#define MOVEMENT_IMPAIRMENTS_AND_LOSS_OF_CONTROL_MASK (\
+(1 << (MECHANIC_CHARMED - 1)) | (1 << (MECHANIC_DISORIENTED - 1)) | (1 << (MECHANIC_FLEEING - 1)) | \
+(1 << (MECHANIC_ROOTED - 1)) | (1 << (MECHANIC_ASLEEP - 1)) | (1 << (MECHANIC_ENSNARED - 1)) | \
+(1 << (MECHANIC_STUNNED - 1)) | (1 << (MECHANIC_FROZEN - 1)) | (1 << (MECHANIC_INCAPACIPATED - 1)) | \
+(1 << (MECHANIC_POLYMORPHED - 1)) | (1 << (MECHANIC_BANISHED - 1)) | (1 << (MECHANIC_SHACKLED - 1)) | \
+(1 << (MECHANIC_TURNED - 1)) | (1 << (MECHANIC_HORRIFIED - 1)) | (1 << (MECHANIC_DAZED - 1)) | \
+(1 << (MECHANIC_SAPPED - 1)))

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellEffects
+enum SpellEffect
 {
     SPELL_EFFECT_NULL = 0,
     SPELL_EFFECT_INSTANT_KILL,              //    1

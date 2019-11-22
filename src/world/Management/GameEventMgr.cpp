@@ -303,7 +303,7 @@ GameEventMgr::GameEventMgrThread& GameEventMgr::GameEventMgrThread::getInstance(
 
 void GameEventMgr::GameEventMgrThread::initialize()
 {
-    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("UpdateGameEvents", [this](AscEmu::Threading::AEThread& thread) { this->Update(); }, std::chrono::seconds(1));
+    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("UpdateGameEvents", [this](AscEmu::Threading::AEThread& /*thread*/) { this->Update(); }, std::chrono::seconds(1));
 }
 
 void GameEventMgr::GameEventMgrThread::finalize()
