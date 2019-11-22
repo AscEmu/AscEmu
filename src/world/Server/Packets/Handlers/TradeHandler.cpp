@@ -81,7 +81,7 @@ void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
-    if (_player->CalcDistance(objmgr.GetPlayer(_player->mTradeTarget)) > 10.0f)
+    if (_player->CalcDistance(sObjectMgr.GetPlayer(_player->mTradeTarget)) > 10.0f)
     {
         SendPacket(SmsgTradeStatus(TRADE_STATUS_TOO_FAR_AWAY, 0).serialise().get());
         return;

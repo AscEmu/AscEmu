@@ -49,8 +49,8 @@ Group::Group(bool Assign)
 
     if (Assign)
     {
-        m_Id = objmgr.GenerateGroupId();
-        ObjectMgr::getSingleton().AddGroup(this);
+        m_Id = sObjectMgr.GenerateGroupId();
+        sObjectMgr.AddGroup(this);
         m_guid = MAKE_NEW_GUID(m_Id, 0, HIGHGUID_TYPE_GROUP);
     }
 
@@ -76,7 +76,7 @@ Group::~Group()
             delete sub;
     }
 
-    ObjectMgr::getSingleton().RemoveGroup(this);
+    sObjectMgr.RemoveGroup(this);
 }
 
 SubGroup::~SubGroup()
@@ -132,7 +132,7 @@ bool Group::AddMember(PlayerInfo* info, int32 subgroupid/* =-1 */)
     if (m_isqueued)
     {
         m_isqueued = false;
-        BattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.RemoveGroupFromQueues(this);
     }
 
     if (!IsFull())
@@ -370,7 +370,7 @@ void Group::Disband()
         SendPacketToAll(data);
         delete data;
 
-        BattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.RemoveGroupFromQueues(this);
     }
 
     uint8 i = 0;
@@ -464,7 +464,7 @@ void Group::RemovePlayer(PlayerInfo* info)
     if (m_isqueued)
     {
         m_isqueued = false;
-        BattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.RemoveGroupFromQueues(this);
     }
 
     SubGroup* sg = NULL;
@@ -585,7 +585,7 @@ void Group::ExpandToRaid()
         SendPacketToAll(data);
         delete data;
 
-        BattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.RemoveGroupFromQueues(this);
     }
 
     // Very simple ;)
@@ -753,7 +753,7 @@ void Group::SendNullUpdate(Player* pPlayer)
 
 void Group::LoadFromDB(Field* fields)
 {
-#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = objmgr.GetPlayerInfo(g); }
+#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = sObjectMgr.GetPlayerInfo(g); }
 
     m_groupLock.Acquire();
 
@@ -762,7 +762,7 @@ void Group::LoadFromDB(Field* fields)
 
     m_Id = fields[0].GetUInt32();
 
-    ObjectMgr::getSingleton().AddGroup(this);
+    sObjectMgr.AddGroup(this);
 
     m_GroupType = fields[1].GetUInt8();
     m_SubGroupCount = fields[2].GetUInt8();
@@ -788,7 +788,7 @@ void Group::LoadFromDB(Field* fields)
             if (guid == 0)
                 continue;
 
-            PlayerInfo* inf = objmgr.GetPlayerInfo(guid);
+            PlayerInfo* inf = sObjectMgr.GetPlayerInfo(guid);
             if (inf == NULL)
                 continue;
 

@@ -285,7 +285,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         }
         break;
         case CHAT_MSG_WHISPER:
-            if (const auto player_cache = objmgr.GetPlayerCache(srlPacket.destination.c_str(), false))
+            if (const auto player_cache = sObjectMgr.GetPlayerCache(srlPacket.destination.c_str(), false))
             {
                 const auto target_is_our_faction = _player->getInitialTeam() == player_cache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM);
                 const auto target_is_gm_flagged = player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM);
@@ -342,7 +342,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command)
                 break;
 
-            if (const auto channel = channelmgr.GetChannel(srlPacket.destination.c_str(), _player))
+            if (const auto channel = sChannelMgr.GetChannel(srlPacket.destination.c_str(), _player))
                 channel->Say(_player, srlPacket.message.c_str(), nullptr, false);
 
             break;
@@ -713,7 +713,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         break;
         case CHAT_MSG_WHISPER:
         {
-            PlayerCache* playercache = objmgr.GetPlayerCache(to.c_str(), false);
+            PlayerCache* playercache = sObjectMgr.GetPlayerCache(to.c_str(), false);
             if (playercache == nullptr)
             {
                 data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
@@ -787,7 +787,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         break;
         case CHAT_MSG_CHANNEL:
         {
-            chn = channelmgr.GetChannel(channel.c_str(), _player);
+            chn = sChannelMgr.GetChannel(channel.c_str(), _player);
             if (chn)
                 chn->Say(_player, msg.c_str(), nullptr, false);
         }
@@ -1030,7 +1030,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto player = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+    const auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr || player->GetSession() == nullptr)
         return;
 
@@ -1064,7 +1064,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(playerGuid[7]);
     recvPacket.ReadByteSeq(playerGuid[2]);
 
-    const auto player = objmgr.GetPlayer(static_cast<uint32_t>(playerGuid));
+    const auto player = sObjectMgr.GetPlayer(static_cast<uint32_t>(playerGuid));
     if (player == nullptr || player->GetSession() == nullptr)
         return;
 

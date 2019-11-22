@@ -38,15 +38,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GameMop/Management/GuildFinderMgr.h"
 #endif
 
-initialiseSingleton(World);
-
 std::unique_ptr<DayWatcherThread> dw = nullptr;
 
 std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
 extern void LoadGameObjectModelList(std::string const& dataPath);
 
-World::World()
+World& World::getInstance()
+{
+    static World mInstance;
+    return mInstance;
+}
+
+void World::initialize()
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uptime
@@ -82,42 +86,34 @@ World::World()
     mGmTicketSystemEnabled = true;
 }
 
-World::~World()
+void World::finalize()
 {
     LogNotice("WorldLog : ~WorldLog()");
-    delete WorldPacketLog::getSingletonPtr();
+    sWorldPacketLog.finalize();
 
     LogNotice("ObjectMgr : ~ObjectMgr()");
-    delete ObjectMgr::getSingletonPtr();
-
-    LogNotice("LootMgr : ~LootMgr()");
-    delete LootMgr::getSingletonPtr();
+    sObjectMgr.finalize();
 
     LogNotice("LfgMgr : ~LfgMgr()");
-    delete LfgMgr::getSingletonPtr();
+    sLfgMgr.finalize();
 
     LogNotice("ChannelMgr : ~ChannelMgr()");
-    delete ChannelMgr::getSingletonPtr();
+    sChannelMgr.finalize();
 
     LogNotice("QuestMgr : ~QuestMgr()");
-    delete QuestMgr::getSingletonPtr();
+    sQuestMgr.finalize();
 
     LogNotice("WeatherMgr : ~WeatherMgr()");
-    delete WeatherMgr::getSingletonPtr();
+    sWeatherMgr.finalize();
 
     LogNotice("TaxiMgr : ~TaxiMgr()");
-    delete TaxiMgr::getSingletonPtr();
+    sTaxiMgr.finalize();
 
 #if VERSION_STRING >= Cata
+    // todo: shouldn't this be deleted also on other versions?
     LogNotice("GuildMgr", "~GuildMgr()");
-    delete GuildMgr::getSingletonPtr();
-
-    LogNotice("GuildFinderMgr", "~GuildFinderMgr()");
-    delete GuildFinderMgr::getSingletonPtr();
+    sGuildMgr.finalize();
 #endif
-
-    LogNotice("BattlegroundMgr : ~BattlegroundMgr()");
-    delete CBattlegroundManager::getSingletonPtr();
 
     LogNotice("InstanceMgr : ~InstanceMgr()");
     sInstanceMgr.Shutdown();
@@ -125,14 +121,8 @@ World::~World()
     LogNotice("WordFilter : ~WordFilter()");
     delete g_chatFilter;
 
-    LogNotice("SpellProcMgr : ~SpellProcMgr()");
-    delete SpellProcMgr::getSingletonPtr();
-
-    LogNotice("SpellMgr : ~SpellMgr()");
-    delete SpellMgr::getSingletonPtr();
-
     LogNotice("MySQLDataStore : ~MySQLDataStore()");
-    delete MySQLDataStore::getSingletonPtr();
+    sMySQLStore.finalize();
 
     delete mEventableObjectHolder;
 
@@ -220,9 +210,9 @@ void World::updateAllTrafficTotals()
     mLastTotalTrafficInKB = mTotalTrafficInKB;
     mLastTotalTrafficOutKB = mTotalTrafficOutKB;
 
-    objmgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.AcquireReadLock();
 
-    for (auto playerStorage = objmgr._players.begin(); playerStorage != objmgr._players.end(); ++playerStorage)
+    for (auto playerStorage = sObjectMgr._players.begin(); playerStorage != sObjectMgr._players.end(); ++playerStorage)
     {
         WorldSocket* socket = playerStorage->second->GetSession()->GetSocket();
         if (!socket || !socket->IsConnected() || socket->IsDeleted())
@@ -237,7 +227,7 @@ void World::updateAllTrafficTotals()
     mTotalTrafficInKB += (trafficIn / 1024.0);
     mTotalTrafficOutKB += (trafficOut / 1024.0);
 
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 }
 
 void World::setTotalTraffic(double* totalin, double* totalout)
@@ -735,19 +725,14 @@ bool World::setInitialWorldSettings()
     if (!loadDbcDb2Stores())
         return false;
 
-    new TaxiMgr;
-#if VERSION_STRING >= Cata
-    new GuildFinderMgr;
-#endif
-    new GuildMgr;
-    new ChatHandler;
-    new SpellProcMgr;
+    sTaxiMgr.initialize();
+    sChatHandler.initialize();
+    sSpellProcMgr.initialize();
 
-    new WorldPacketLog;
+    sWorldPacketLog.initialize();
     sWorldPacketLog.initWorldPacketLog(worldConfig.log.enableWorldPacketLog);
 
     LogNotice("World : Loading SpellInfo data...");
-    new SpellMgr;
     sSpellMgr.startSpellMgr();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
@@ -762,22 +747,21 @@ bool World::setInitialWorldSettings()
 
 #if VERSION_STRING > TBC
     LogDetail("World : Starting Achievement System...");
-    objmgr.LoadAchievementCriteriaList();
+    sObjectMgr.LoadAchievementCriteriaList();
 #endif
 
     LogDetail("World : Starting Transport System...");
-    objmgr.LoadTransports();
+    sObjectMgr.LoadTransports();
 
     LogDetail("World : Starting Mail System...");
-    new MailSystem;
     sMailSystem.StartMailSystem();
 
     LogDetail("World : Starting Auction System...");
-    new AuctionMgr;
+    sAuctionMgr.initialize();
     sAuctionMgr.LoadAuctionHouses();
 
     LogDetail("World : Loading LFG rewards...");
-    new LfgMgr;
+    sLfgMgr.initialize();
     sLfgMgr.LoadRewards();
 
     sGuildMgr.loadGuildDataFromDB();
@@ -792,13 +776,13 @@ bool World::setInitialWorldSettings()
     mQueueUpdateTimer = settings.server.queueUpdateInterval;
 
     LogNotice("World : Loading loot data...");
-    new LootMgr;
-    lootmgr.LoadLoot();
+    sLootMgr.initialize();
+    sLootMgr.LoadLoot();
 
     Channel::LoadConfSettings();
 
-    LogDetail("World : Starting CBattlegroundManager...");
-    new CBattlegroundManager;
+    LogDetail("World : Starting CsBattlegroundManager...");
+    sBattlegroundManager.initialize();
 
     dw = std::move(std::make_unique<DayWatcherThread>());
 
@@ -834,8 +818,6 @@ bool World::loadDbcDb2Stores()
 
 void World::loadMySQLStores()
 {
-    new MySQLDataStore;
-
     sMySQLStore.loadAdditionalTableConfig();
 
     sMySQLStore.loadItemPagesTable();
@@ -913,14 +895,11 @@ void World::loadMySQLTablesByTask()
 {
     auto startTime = Util::TimeNow();
 
-    new ObjectMgr;
-    new QuestMgr;
-    new WeatherMgr;
-    new AddonMgr;
-    new GameEventMgr;
-    new CalendarMgr;
+    sObjectMgr.initialize();
+    sAddonMgr.initialize();
+    sGameEventMgr.initialize();
 
-#define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
+#define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(&sp::getInstance(), &sp::ptr)))
     // Fill the task list with jobs to do.
     TaskList tl;
 
@@ -973,7 +952,7 @@ void World::loadMySQLTablesByTask()
 
     tl.wait();
 
-    CommandTableStorage::getSingleton().Load();
+    sCommandTableStorage.Load();
     LogNotice("WordFilter : Loading...");
 
     g_chatFilter = new WordFilter();
@@ -1012,16 +991,13 @@ void World::Update(unsigned long timePassed)
 
 void World::saveAllPlayersToDb()
 {
-    if (!(ObjectMgr::getSingletonPtr()))
-        return;
-
     LogDefault("Saving all players to database...");
 
     uint32_t count = 0;
 
-    objmgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.AcquireReadLock();
 
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
@@ -1032,7 +1008,7 @@ void World::saveAllPlayersToDb()
         }
     }
 
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
     LogDetail("Saved %u players.", count);
 }
 

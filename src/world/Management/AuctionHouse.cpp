@@ -204,7 +204,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         {
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
-            Player* plr = objmgr.GetPlayer(auct->Owner);
+            Player* plr = sObjectMgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->hasEnoughCoinage(cut))
                 plr->modCoinage(-(int32)cut);
 
@@ -354,7 +354,7 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
 
 void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid)
 {
-    Player* bidder = objmgr.GetPlayer(auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer(auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
         uint32 outbid = (auct->HighestBid / 100) * 5;
@@ -376,7 +376,7 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
 
 void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
 {
-    Player* bidder = objmgr.GetPlayer((uint32)auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer((uint32)auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
         uint32 outbid = (auct->HighestBid / 100) * 5;
@@ -394,7 +394,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         bidder->GetSession()->SendPacket(&data);
     }
 
-    Player* owner = objmgr.GetPlayer((uint32)auct->Owner);
+    Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
     if (owner != NULL && owner->IsInWorld())
     {
         WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
@@ -413,7 +413,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 {
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player* owner = objmgr.GetPlayer((uint32)auct->Owner);
+    //Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
     //if (owner != NULL && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
@@ -551,7 +551,7 @@ void AuctionHouse::LoadAuctions()
         auct = new Auction;
         auct->Id = fields[0].GetUInt32();
 
-        Item* pItem = objmgr.LoadItem(fields[2].GetUInt32());
+        Item* pItem = sObjectMgr.LoadItem(fields[2].GetUInt32());
         if (!pItem)
         {
             CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auct->Id);
@@ -752,7 +752,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         {
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
             uint32 cut = float2int32(cut_percent * auct->HighestBid);
-            Player* plr = objmgr.GetPlayer(auct->Owner);
+            Player* plr = sObjectMgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->hasEnoughCoinage(cut))
                 plr->modCoinage(-(int32)cut);
 
@@ -901,7 +901,7 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
 
 void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid)
 {
-    Player* bidder = objmgr.GetPlayer(auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer(auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
         uint32 outbid = (auct->HighestBid / 100) * 5;
@@ -923,7 +923,7 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
 
 void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
 {
-    Player* bidder = objmgr.GetPlayer((uint32)auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer((uint32)auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
         uint32 outbid = (auct->HighestBid / 100) * 5;
@@ -941,7 +941,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
         bidder->GetSession()->SendPacket(&data);
     }
 
-    Player* owner = objmgr.GetPlayer((uint32)auct->Owner);
+    Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
     if (owner != NULL && owner->IsInWorld())
     {
         WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
@@ -961,7 +961,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //todo danko
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player* owner = objmgr.GetPlayer((uint32)auct->Owner);
+    //Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
     //if (owner != NULL && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
@@ -1121,7 +1121,7 @@ void AuctionHouse::LoadAuctions()
         auct = new Auction;
         auct->Id = fields[0].GetUInt32();
 
-        Item* pItem = objmgr.LoadItem(fields[2].GetUInt32());
+        Item* pItem = sObjectMgr.LoadItem(fields[2].GetUInt32());
         if (!pItem)
         {
             CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auct->Id);

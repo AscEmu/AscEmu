@@ -534,7 +534,7 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
 
     for (auto passengerGuid : m_passengers)
     {
-        auto passenger = objmgr.GetPlayer(passengerGuid);
+        auto passenger = sObjectMgr.GetPlayer(passengerGuid);
         if (passenger == nullptr)
             continue;
 
@@ -821,7 +821,7 @@ void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
 {
     for (auto playerGuid : m_passengers)
     {
-        if (auto player = objmgr.GetPlayer(playerGuid))
+        if (auto player = sObjectMgr.GetPlayer(playerGuid))
         {
 #if VERSION_STRING < Cata
             player->SetPosition(

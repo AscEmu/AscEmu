@@ -225,7 +225,7 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
     if (sscanf(args, "%s %s", playerName, location) != 2)
         return false;
 
-    Player* player = objmgr.GetPlayer(playerName, false);
+    Player* player = sObjectMgr.GetPlayer(playerName, false);
     if (!player)
         return false;
 

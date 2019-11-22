@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Server/WorldSession.h"
 
-#include "Singleton.h"
-
 //\TODO handle it, if possible, the same way in all versions
 #define STANDARD_ADDON_CRC 0x4C1C776D
 
@@ -110,13 +108,24 @@ typedef std::list<SavedAddon> SavedAddonsList;
 
 #endif
 
-class AddonMgr : public Singleton <AddonMgr>
+class AddonMgr
 {
 #if VERSION_STRING < Cata
+    private:
+
+        AddonMgr() = default;
+        ~AddonMgr() = default;
+
     public:
 
-        AddonMgr();
-        ~AddonMgr();
+        static AddonMgr& getInstance();
+        void initialize();
+        void finalize();
+
+        AddonMgr(AddonMgr&&) = delete;
+        AddonMgr(AddonMgr const&) = delete;
+        AddonMgr& operator=(AddonMgr&&) = delete;
+        AddonMgr& operator=(AddonMgr const&) = delete;
 
         void LoadFromDB();
         void SaveToDB();
@@ -134,10 +143,20 @@ class AddonMgr : public Singleton <AddonMgr>
         AddonData mAddonData;
 #else
 
+    private:
+    
+        AddonMgr() = default;
+        ~AddonMgr() = default;
+    
     public:
+    
+        static AddonMgr& getInstance();
+        void initialize();
 
-        AddonMgr() {};
-        ~AddonMgr() {};
+        AddonMgr(AddonMgr&&) = delete;
+        AddonMgr(AddonMgr const&) = delete;
+        AddonMgr& operator=(AddonMgr&&) = delete;
+        AddonMgr& operator=(AddonMgr const&) = delete;
 
         void LoadFromDB();
         void SaveAddon(AddonEntry const& addon);
@@ -151,4 +170,4 @@ class AddonMgr : public Singleton <AddonMgr>
 #endif
 };
 
-#define sAddonMgr AddonMgr::getSingleton()
+#define sAddonMgr AddonMgr::getInstance()

@@ -22,7 +22,6 @@
 #define LOOTMGR_H
 
 #include "Server/EventableObject.h"
-#include "Singleton.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Structures.h"
@@ -198,12 +197,23 @@ typedef std::map<uint32, StoreLootList> LootStore;
 #define PARTY_LOOT_GROUP 3
 
 
-class SERVER_DECL LootMgr : public Singleton <LootMgr>
+class SERVER_DECL LootMgr
 {
+    private:
+
+        LootMgr() = default;
+        ~LootMgr() = default;
+
     public:
 
-        LootMgr();
-        ~LootMgr();
+        static LootMgr& getInstance();
+        void initialize();
+        void finalize();
+
+        LootMgr(LootMgr&&) = delete;
+        LootMgr(LootMgr const&) = delete;
+        LootMgr& operator=(LootMgr&&) = delete;
+        LootMgr& operator=(LootMgr const&) = delete;
 
         void AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcount);
 
@@ -255,6 +265,6 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
         std::map<uint32, RandomSuffixVector> _randomsuffix;
 };
 
-#define lootmgr LootMgr::getSingleton()
+#define sLootMgr LootMgr::getInstance()
 
 #endif // LOOTMGR_H

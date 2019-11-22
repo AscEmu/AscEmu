@@ -24,9 +24,6 @@
 #include "Server/Packets/Opcode.h"
 #include "Units/Players/Player.h"
 
-initialiseSingleton(TaxiMgr);
-
-
 void TaxiPath::ComputeLen()
 {
     m_length1 = 0;

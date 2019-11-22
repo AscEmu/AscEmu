@@ -6,14 +6,21 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LogonConfig.h"
-#include "Singleton.h"
 #include "PerformanceCounter.hpp"
 
-class SERVER_DECL Logon : public Singleton<Logon>
+class SERVER_DECL Logon
 {
+    private:
+        Logon() = default;
+        ~Logon() = default;
+
     public:
-        Logon();
-        ~Logon();
+        static Logon& getInstance();
+
+        Logon(Logon&&) = delete;
+        Logon(Logon const&) = delete;
+        Logon& operator=(Logon&&) = delete;
+        Logon& operator=(Logon const&) = delete;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // LogonConfig
@@ -32,5 +39,5 @@ class SERVER_DECL Logon : public Singleton<Logon>
         float getRAMUsage();
 };
 
-#define sLogon Logon::getSingleton()
+#define sLogon Logon::getInstance()
 #define logonConfig sLogon.settings

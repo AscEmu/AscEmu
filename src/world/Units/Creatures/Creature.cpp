@@ -311,7 +311,7 @@ void Creature::OnRespawn(MapMgr* m)
     if (m_noRespawn)
         return;
 
-    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[m->GetMapId()];
+    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[m->GetMapId()];
     Instance* pInstance = m->pInstance;
     if (bossInfoMap != NULL && pInstance != NULL)
     {
@@ -398,9 +398,9 @@ void Creature::generateLoot()
         return;
 
     if (m_mapMgr != NULL)
-        lootmgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
+        sLootMgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
     else
-        lootmgr.FillCreatureLoot(&loot, getEntry(), 0);
+        sLootMgr.FillCreatureLoot(&loot, getEntry(), 0);
 
     loot.gold = creature_properties->money;
 
@@ -418,7 +418,7 @@ void Creature::generateLoot()
     // Master Looting Ninja Checker
     if (worldConfig.player.deactivateMasterLootNinja)
     {
-        Player* looter = objmgr.GetPlayer((uint32)this->TaggerGuid);
+        Player* looter = sObjectMgr.GetPlayer((uint32)this->TaggerGuid);
         if (looter && looter->GetGroup() && looter->GetGroup()->GetMethod() == PARTY_LOOT_MASTER)
         {
             uint16 lootThreshold = looter->GetGroup()->GetThreshold();
@@ -489,7 +489,7 @@ void Creature::SaveToDB()
         m_spawn = new MySQLStructure::CreatureSpawn;
         m_spawn->entry = getEntry();
         m_spawn->form = 0;
-        m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
+        m_spawn->id = spawnid = sObjectMgr.GenerateCreatureSpawnID();
         m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
         m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
@@ -605,7 +605,7 @@ public:
 
     void onHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), m_gossipMenuId, player);
+        sObjectMgr.createGuardGossipMenuForPlayer(object->getGuid(), m_gossipMenuId, player);
     }
 
     void onSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
@@ -613,9 +613,9 @@ public:
         if (intId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
+                sObjectMgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
+                sObjectMgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
         }
     }
 };
@@ -769,7 +769,7 @@ void Creature::setDeathState(DeathState s)
         }
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
-        if ((getCreatedByGuid() == 0) && (getSummonedByGuid() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
+        if ((getCreatedByGuid() == 0) && (getSummonedByGuid() == 0) && sLootMgr.IsSkinnable(creature_properties->Id))
             addUnitFlags(UNIT_FLAG_SKINNABLE);
 
 
@@ -851,7 +851,7 @@ void Creature::EnslaveExpire()
 
     uint64 charmer = getCharmedByGuid();
 
-    Player* caster = objmgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
+    Player* caster = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
     if (caster)
     {
         caster->setCharmGuid(0);
@@ -1183,7 +1183,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
     if (!m_SellItems)
     {
         m_SellItems = new std::vector < CreatureItem > ;
-        objmgr.SetVendorList(getEntry(), m_SellItems);
+        sObjectMgr.SetVendorList(getEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
 }
@@ -1410,7 +1410,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     m_aiInterface->setWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
     m_aiInterface->LoadWaypointMapFromDB(spawn->id);
 
-    m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
+    m_aiInterface->timed_emotes = sObjectMgr.GetTimedEmoteList(spawn->id);
 
     // not a neutral creature
     if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
@@ -1428,13 +1428,13 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(getEntry());
+        m_SellItems = sObjectMgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProfessionTrainer())
-        mTrainer = objmgr.GetTrainer(getEntry());
+        mTrainer = sObjectMgr.GetTrainer(getEntry());
 
     if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
@@ -1665,13 +1665,13 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = objmgr.GetVendorList(getEntry());
+        m_SellItems = sObjectMgr.GetVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
 
     if (isTrainer() | isProfessionTrainer())
-        mTrainer = objmgr.GetTrainer(getEntry());
+        mTrainer = sObjectMgr.GetTrainer(getEntry());
 
     if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());

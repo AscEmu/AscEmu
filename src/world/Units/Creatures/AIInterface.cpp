@@ -3882,7 +3882,7 @@ Creature* AIInterface::getFormationLinkTarget()
 
 void AIInterface::LoadWaypointMapFromDB(uint32 spawnid)
 {
-    mWayPointMap = objmgr.GetWayPointMap(spawnid);
+    mWayPointMap = sObjectMgr.GetWayPointMap(spawnid);
     if (mWayPointMap != nullptr && mWayPointMap->size() != 0)
         mWaypointMapIsLoadedFromDB = true;
 }
@@ -4778,7 +4778,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         || pInstance->m_mapInfo->type == INSTANCE_NONRAID
         || pInstance->m_mapInfo->type == INSTANCE_MULTIMODE))
     {
-        InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[m_Unit->GetMapMgr()->GetMapId()];
+        InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[m_Unit->GetMapMgr()->GetMapId()];
         Creature* pCreature = static_cast< Creature* >(m_Unit);
         bool found = false;
 

@@ -92,9 +92,9 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     data.SetOpcode(SMSG_WHO);
     data << uint64_t(0);
 
-    objmgr._playerslock.AcquireReadLock();
-    PlayerStorageMap::const_iterator iend = objmgr._players.end();
-    PlayerStorageMap::const_iterator itr = objmgr._players.begin();
+    sObjectMgr._playerslock.AcquireReadLock();
+    PlayerStorageMap::const_iterator iend = sObjectMgr._players.end();
+    PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin();
     while (itr != iend && sent_count < 49)
     {
         Player* plr = itr->second;
@@ -191,7 +191,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         data << uint32_t(plr->GetZoneId());
         ++sent_count;
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
     data.wpos(0);
     data << sent_count;
     data << sent_count;
@@ -645,7 +645,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     if (item->loot == nullptr)
     {
         item->loot = new Loot; //eeeeeek
-        lootmgr.FillItemLoot(item->loot, item->getEntry());
+        sLootMgr.FillItemLoot(item->loot, item->getEntry());
     }
     _player->SendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }
@@ -722,7 +722,7 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
 
     auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
-        player = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+        player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
 
     if (player == nullptr)
         return;
@@ -894,7 +894,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32(UNIXTIME);
-    uint32_t reportId = objmgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.GenerateReportID();
 
     std::stringstream ss;
 
@@ -928,7 +928,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
-    uint32_t reportId = objmgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.GenerateReportID();
 
     std::stringstream ss;
 
@@ -964,7 +964,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
-    uint32_t reportId = objmgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.GenerateReportID();
 
     std::stringstream ss;
 
@@ -1098,7 +1098,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid.GetOldGuid() == 0)
         return;
 
-    auto corpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow());
+    auto corpse = sObjectMgr.GetCorpse(srlPacket.guid.getGuidLow());
     if (corpse == nullptr)
         return;
 
@@ -1642,7 +1642,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     //////////////////////////////////////////////////////////////////////////////////////////
     //\brief: the following lines are handled in gobj class
 
-    objmgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
+    sObjectMgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
 
     CALL_GO_SCRIPT_EVENT(gameObject, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(gameObject, _player);

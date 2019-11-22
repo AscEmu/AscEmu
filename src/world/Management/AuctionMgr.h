@@ -24,22 +24,34 @@
 
 #include "AuctionHouse.h"
 
-class AuctionMgr : public Singleton <AuctionMgr>
+class AuctionMgr
 {
+    private:
+
+        AuctionMgr() = default;
+        ~AuctionMgr() = default;
+
     public:
 
-        AuctionMgr()
+        static AuctionMgr& getInstance();
+
+        void initialize()
         {
             loopcount = 0;
             maxId = 1;
         }
 
-        ~AuctionMgr()
+        void finalize()
         {
             std::vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
             for (; itr != auctionHouses.end(); ++itr)
                 delete(*itr);
         }
+
+        AuctionMgr(AuctionMgr&&) = delete;
+        AuctionMgr(AuctionMgr const&) = delete;
+        AuctionMgr& operator=(AuctionMgr&&) = delete;
+        AuctionMgr& operator=(AuctionMgr const&) = delete;
 
         void LoadAuctionHouses();
         void Update();
@@ -63,6 +75,6 @@ class AuctionMgr : public Singleton <AuctionMgr>
         uint32 loopcount;
 };
 
-#define sAuctionMgr AuctionMgr::getSingleton()
+#define sAuctionMgr AuctionMgr::getInstance()
 
 #endif // AUCTIONMGR_H

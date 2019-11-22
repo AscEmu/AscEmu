@@ -72,7 +72,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (_player->m_bgIsQueued)
-        BattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.RemovePlayerFromQueues(_player);
 
     CmsgBattlemasterJoinArena srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -98,7 +98,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (battlegroundType != 0)
-        BattlegroundManager.HandleArenaJoin(this, battlegroundType, srlPacket.asGroup, srlPacket.ratedMatch);
+        sBattlegroundManager.HandleArenaJoin(this, battlegroundType, srlPacket.asGroup, srlPacket.ratedMatch);
 }
 
 void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
@@ -114,7 +114,7 @@ void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        BattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.RemovePlayerFromQueues(_player);
     }
 }
 
@@ -132,7 +132,7 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_BATTLEFIELD_LIST: %u (bgType), %u (fromType)", srlPacket.bgType, srlPacket.fromType);
 
-    BattlegroundManager.HandleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
+    sBattlegroundManager.HandleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
 }
 
 void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
@@ -158,11 +158,11 @@ void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPa
 
     uint32_t flagHolders = 0;
 
-    const auto alliancePlayer = objmgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
+    const auto alliancePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
     if (alliancePlayer)
         ++flagHolders;
 
-    const auto hordePlayer = objmgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_HORDE)));
+    const auto hordePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_HORDE)));
     if (hordePlayer)
         ++flagHolders;
 
@@ -220,11 +220,11 @@ void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
     const auto cBattleground = _player->m_bg;
 
     if (cBattleground)
-        BattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), _player->GetMapId(), cBattleground->Rated());
+        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), _player->GetMapId(), cBattleground->Rated());
     else if (pendingBattleground)
-        BattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
+        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
     else
-        BattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
 }
 
 void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
@@ -244,10 +244,10 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (_player->m_bgIsQueued)
-        BattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.RemovePlayerFromQueues(_player);
 
     if (_player->IsInWorld())
-        BattlegroundManager.HandleBattlegroundJoin(this, recvPacket);
+        sBattlegroundManager.HandleBattlegroundJoin(this, recvPacket);
 }
 
 void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
@@ -273,7 +273,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
         battlegroundType = mapId;
     }
 
-    BattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
+    sBattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
 }
 
 #if VERSION_STRING >= Cata

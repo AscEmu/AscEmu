@@ -29,8 +29,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "MapScriptInterface.h"
 
-createFileSingleton(StructFactory);
-
 MapScriptInterface::MapScriptInterface(MapMgr & mgr) : mapMgr(mgr)
 {}
 
@@ -204,6 +202,12 @@ void MapScriptInterface::DeleteCreature(Creature* ptr)
 void MapScriptInterface::DeleteGameObject(GameObject* ptr)
 {
     delete ptr;
+}
+
+StructFactory& StructFactory::getInstance()
+{
+    static StructFactory mInstance;
+    return mInstance;
 }
 
 Movement::WayPoint* StructFactory::CreateWaypoint()

@@ -34,7 +34,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
     vector.x += (3 * (cosf(followangle + selected_player->GetOrientation())));
     vector.y += (3 * (sinf(followangle + selected_player->GetOrientation())));
 
-    Pet* pet = objmgr.CreatePet(entry);
+    Pet* pet = sObjectMgr.CreatePet(entry);
     if (!pet->CreateAsSummon(entry, creature_proto, nullptr, selected_player, nullptr, 1, 0, &vector, true))
     {
         pet->DeleteMe();

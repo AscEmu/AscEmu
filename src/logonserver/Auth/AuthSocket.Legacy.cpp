@@ -76,7 +76,7 @@ void AuthSocket::OnDisconnect()
 
     if (m_patchJob)
     {
-        PatchMgr::getSingleton().AbortPatchJob(m_patchJob);
+        PatchMgr::getInstance().AbortPatchJob(m_patchJob);
         m_patchJob = NULL;
     }
 }
@@ -146,7 +146,7 @@ void AuthSocket::HandleChallenge()
         flippedloc[2] = m_challenge.country[1];
         flippedloc[3] = m_challenge.country[0];
 
-        m_patch = PatchMgr::getSingleton().FindPatchForClient(build, flippedloc);
+        m_patch = PatchMgr::getInstance().FindPatchForClient(build, flippedloc);
         if(m_patch == NULL)
         {
             // could not find a valid patch
@@ -321,7 +321,7 @@ void AuthSocket::HandleProof()
         LOG_DEBUG("[AuthLogonProof] Intitiating PatchJob");
         uint8 bytes[2] = { 0x01, 0x0a };
         Send(bytes, 2);
-        PatchMgr::getSingleton().InitiatePatch(m_patch, this);
+        PatchMgr::getInstance().InitiatePatch(m_patch, this);
         return;
     }
 
@@ -750,7 +750,7 @@ void AuthSocket::HandleTransferAccept()
 
     //RemoveReadBufferBytes(1,false);
     readBuffer.Remove(1);
-    PatchMgr::getSingleton().BeginPatchJob(m_patch, this, 0);
+    PatchMgr::getInstance().BeginPatchJob(m_patch, this, 0);
 }
 
 void AuthSocket::HandleTransferResume()
@@ -767,7 +767,7 @@ void AuthSocket::HandleTransferResume()
     if (size >= m_patch->FileSize)
         return;
 
-    PatchMgr::getSingleton().BeginPatchJob(m_patch, this, (uint32)size);
+    PatchMgr::getInstance().BeginPatchJob(m_patch, this, (uint32)size);
 }
 
 void AuthSocket::HandleTransferCancel()

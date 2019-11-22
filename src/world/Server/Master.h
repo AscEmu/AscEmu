@@ -12,12 +12,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../shared/AscemuServerDefines.hpp"
 #include <iostream>
 
-class Master : public Singleton<Master>
+class SERVER_DECL Master
 {
+    private:
+
+        Master() = default;
+        ~Master() = default;
+
     public:
 
-        Master();
-        ~Master();
+        static Master& getInstance();
+        void initialize();
+
+        Master(Master&&) = delete;
+        Master(Master const&) = delete;
+        Master& operator=(Master&&) = delete;
+        Master& operator=(Master const&) = delete;
 
         bool Run(int argc, char** argv);
         void PrintBanner();
@@ -60,6 +70,6 @@ class Master : public Singleton<Master>
         static void _OnSignal(int s);
 };
 
-#define sMaster Master::getSingleton()
+#define sMaster Master::getInstance()
 
 #define DLLLogDetail(msg, ...) sMaster.libLog(msg, ##__VA_ARGS__)

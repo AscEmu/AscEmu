@@ -26,8 +26,13 @@
 #include <sys/stat.h>
 #endif
 
-initialiseSingleton(PatchMgr);
-PatchMgr::PatchMgr()
+PatchMgr& PatchMgr::getInstance()
+{
+    static PatchMgr mInstance;
+    return mInstance;
+}
+
+void PatchMgr::initialize()
 {
     // load patches
 #ifdef WIN32
@@ -189,11 +194,6 @@ PatchMgr::PatchMgr()
     }
     free(list);
 #endif
-}
-
-PatchMgr::~PatchMgr()
-{
-
 }
 
 Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)

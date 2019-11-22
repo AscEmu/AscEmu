@@ -601,7 +601,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     // Create spawn instance
     MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
     go_spawn->entry = gameobject->getEntry();
-    go_spawn->id = objmgr.GenerateGameObjectSpawnID();
+    go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
     go_spawn->map = gameobject->GetMapId();
     go_spawn->position_x = gameobject->GetPositionX();
     go_spawn->position_y = gameobject->GetPositionY();

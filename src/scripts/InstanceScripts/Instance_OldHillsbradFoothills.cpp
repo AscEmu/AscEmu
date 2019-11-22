@@ -196,7 +196,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        switch (Id)
 //        {
 //            case 1:
-//                Item* pBombs = objmgr.CreateItem(25853, Plr);
+//                Item* pBombs = sObjectMgr.CreateItem(25853, Plr);
 //                if (pBombs)
 //                    if (!Plr->getItemInterface()->AddItemToFreeSlot(pBombs))
 //                        pBombs->DeleteMe();

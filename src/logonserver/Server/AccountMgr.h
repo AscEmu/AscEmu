@@ -63,12 +63,21 @@ struct Account
 
 };
 
-class AccountMgr : public Singleton <AccountMgr>
+class AccountMgr
 {
-public:
+private:
+    AccountMgr() = default;
+    ~AccountMgr() = default;
 
-    AccountMgr(uint32_t reloadTime);
-    ~AccountMgr();
+public:
+    static AccountMgr& getInstance();
+    void initialize(uint32_t reloadTime);
+    void finalize();
+
+    AccountMgr(AccountMgr&&) = delete;
+    AccountMgr(AccountMgr const&) = delete;
+    AccountMgr& operator=(AccountMgr&&) = delete;
+    AccountMgr& operator=(AccountMgr const&) = delete;
 
     void addAccount(Field* field);
 
@@ -95,4 +104,4 @@ protected:
     Mutex accountMgrMutex;
 };
 
-#define sAccountMgr AccountMgr::getSingleton()
+#define sAccountMgr AccountMgr::getInstance()

@@ -33,7 +33,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    const auto info = objmgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+    const auto info = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
     if (!info)
         return;
 
@@ -95,7 +95,7 @@ void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto player = objmgr.GetPlayer(srlPacket.guid.getGuidLow());
+    auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         return;
 
@@ -169,7 +169,7 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto corpse = objmgr.GetCorpseByOwner(_player->getGuidLow());
+    const auto corpse = sObjectMgr.GetCorpseByOwner(_player->getGuidLow());
     if (corpse == nullptr)
         return;
 

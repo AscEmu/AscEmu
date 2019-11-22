@@ -282,7 +282,7 @@ Player::Player(uint32 guid)
 {
     m_cache = new PlayerCache;
     m_cache->SetUInt32Value(CACHE_PLAYER_LOWGUID, guid);
-    objmgr.AddPlayerCache(guid, m_cache);
+    sObjectMgr.AddPlayerCache(guid, m_cache);
     int i, j;
 
     m_H_regenTimer = 0;
@@ -572,7 +572,7 @@ void Player::OnLogin()
 
 Player::~Player()
 {
-    objmgr.RemovePlayerCache(getGuidLow());
+    sObjectMgr.RemovePlayerCache(getGuidLow());
     m_cache->DecRef();
     m_cache = nullptr;
 
@@ -581,7 +581,7 @@ Player::~Player()
         LOG_ERROR("Player deleted from non-logoutplayer!");
         printStackTrace(); // Win32 Debug
 
-        objmgr.RemovePlayer(this);
+        sObjectMgr.RemovePlayer(this);
     }
 
     if (m_session)
@@ -604,7 +604,7 @@ Player::~Player()
         cancelTrade(false);
 #endif
 
-    pTarget = objmgr.GetPlayer(GetInviter());
+    pTarget = sObjectMgr.GetPlayer(GetInviter());
     if (pTarget)
         pTarget->SetInviter(0);
 
@@ -1040,7 +1040,7 @@ bool Player::Create(CharCreate& charCreateContent)
                 continue;
             }
 
-            auto item = objmgr.CreateItem(itemId, this);
+            auto item = sObjectMgr.CreateItem(itemId, this);
             if (item)
             {
                 item->setStackCount(1);
@@ -1084,7 +1084,7 @@ bool Player::Create(CharCreate& charCreateContent)
     {
         if ((*is).protoid != 0)
         {
-            auto item = objmgr.CreateItem((*is).protoid, this);
+            auto item = sObjectMgr.CreateItem((*is).protoid, this);
             if (item)
             {
                 item->setStackCount((*is).amount);
@@ -1682,7 +1682,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     while (newxp >= nextlevelxp && newxp > 0)
     {
         ++level;
-        LevelInfo* li = objmgr.GetLevelInfo(getRace(), getClass(), level);
+        LevelInfo* li = sObjectMgr.GetLevelInfo(getRace(), getClass(), level);
         if (li == nullptr)
             return;
         newxp -= nextlevelxp;
@@ -1702,7 +1702,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
         setLevel(level);
         LevelInfo* oldlevel = lvlinfo;
-        lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), level);
+        lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), level);
         if (lvlinfo == nullptr)
             return;
         CalculateBaseStats();
@@ -2069,7 +2069,7 @@ void Player::SpawnPet(uint32 pet_number)
         LOG_ERROR("PET SYSTEM: " I64FMT " Tried to load invalid pet %d", getGuid(), pet_number);
         return;
     }
-    Pet* pPet = objmgr.CreatePet(itr->second->entry);
+    Pet* pPet = sObjectMgr.CreatePet(itr->second->entry);
     pPet->LoadFromDB(this, itr->second);
 
     if (this->isPvpFlagSet())
@@ -2173,7 +2173,7 @@ void Player::addSpell(uint32 spell_id)
         return;
 
     // Add the skill line for this spell if we don't already have it.
-    auto skill_line_ability = objmgr.GetSpellSkill(spell_id);
+    auto skill_line_ability = sObjectMgr.GetSpellSkill(spell_id);
     SpellInfo const* spell = sSpellMgr.getSpellInfo(spell_id);
     if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
@@ -2747,9 +2747,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     // GM Ticket
     //\todo Is this really necessary? Tickets will always be saved on creation, update and so on...
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(getGuid());
+    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(getGuid());
     if (ticket != nullptr)
-        objmgr.SaveGMTicket(ticket, buf);
+        sObjectMgr.SaveGMTicket(ticket, buf);
 
     // Cooldown Items
     _SavePlayerCooldowns(buf);
@@ -2989,7 +2989,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setLevel(get_next_field.GetUInt32());
 
     // obtain level/stats information
-    lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
+    lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), getLevel());
 
     if (!lvlinfo)
     {
@@ -3212,10 +3212,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_arenaPoints = worldConfig.limit.maxArenaPoints;
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
-        m_charters[z] = objmgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
+        m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
     for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
-        m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(getGuidLow(), z);
+        m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
         if (m_arenaTeams[z] != nullptr)
         {
 #if VERSION_STRING != Classic
@@ -3261,7 +3261,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        Transporter* t = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         obj_movement_info.transport_data.transportGuid = t ? t->getGuid() : 0;
     }
 
@@ -3578,7 +3578,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (!isAlive())
     {
-        Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+        Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
         if (myCorpse != nullptr)
         {
             myCorpseLocation = myCorpse->GetPosition();
@@ -3723,7 +3723,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setLevel(get_next_field.GetUInt32());
 
     // obtain level/stats information
-    lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
+    lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), getLevel());
 
     if (!lvlinfo)
     {
@@ -3964,10 +3964,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_arenaPoints = worldConfig.limit.maxArenaPoints;
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
-        m_charters[z] = objmgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
+        m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
     for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
-        m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(getGuidLow(), z);
+        m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
         if (m_arenaTeams[z] != nullptr)
         {
 #if VERSION_STRING != Classic
@@ -4014,7 +4014,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        Transporter* t = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         obj_movement_info.transport_data.transportGuid = t ? t->getGuid() : 0;
     }
 
@@ -4360,7 +4360,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (!isAlive())
     {
-        Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+        Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
         if (myCorpse != nullptr)
         {
             myCorpseLocation = myCorpse->GetPosition();
@@ -4664,7 +4664,7 @@ void Player::OnPushToWorld()
         start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
 
         sHookInterface.OnFirstEnterWorld(this);
-        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), start_level);
+        LevelInfo* Info = sObjectMgr.GetLevelInfo(getRace(), getClass(), start_level);
         ApplyLevelInfo(Info, start_level);
         setInitialTalentPoints();
         m_FirstLogin = false;
@@ -4807,7 +4807,7 @@ void Player::OnPushToWorld()
             startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
 
         sHookInterface.OnFirstEnterWorld(this);
-        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
+        LevelInfo* Info = sObjectMgr.GetLevelInfo(getRace(), getClass(), startlevel);
         ApplyLevelInfo(Info, startlevel);
         setInitialTalentPoints();
         SetHealthPct(100);
@@ -5399,7 +5399,7 @@ void Player::RepopRequestedPlayer()
     if (myCorpseInstanceId != 0)
     {
         // Cebernic: wOOo dead+dead = undead ? :D just resurrect player
-        Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+        Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
         if (myCorpse != nullptr)
             myCorpse->ResetDeathClock();
         ResurrectPlayer();
@@ -5475,7 +5475,7 @@ void Player::RepopRequestedPlayer()
 
         if (myCorpseInstanceId != 0)
         {
-            Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+            Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
             if (myCorpse != nullptr)
                 myCorpse->ResetDeathClock();
         }
@@ -5573,14 +5573,14 @@ void Player::KillPlayer()
 
 void Player::CreateCorpse()
 {
-    objmgr.DelinkPlayerCorpses(this);
+    sObjectMgr.DelinkPlayerCorpses(this);
     if (!bCorpseCreateable)
     {
         bCorpseCreateable = true;   // For next time
         return; // No corpse allowed!
     }
 
-    Corpse* pCorpse = objmgr.CreateCorpse();
+    Corpse* pCorpse = sObjectMgr.CreateCorpse();
     pCorpse->SetInstanceID(GetInstanceID());
     pCorpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
@@ -5639,7 +5639,7 @@ void Player::CreateCorpse()
 
 void Player::SpawnCorpseBody()
 {
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(this->getGuidLow());
+    Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow());
     if (pCorpse)
     {
         if (!pCorpse->IsInWorld())
@@ -5664,7 +5664,7 @@ void Player::SpawnCorpseBody()
 
 void Player::SpawnCorpseBones()
 {
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+    Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
     myCorpseLocation.ChangeCoords({ 0, 0, 0, 0 });
     myCorpseInstanceId = 0;
     if (pCorpse)
@@ -6324,14 +6324,14 @@ void Player::UpdateStats()
     setAttackPower(AP);
     setRangedAttackPower(RAP);
 
-    LevelInfo* levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
+    LevelInfo* levelInfo = sObjectMgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
     if (levelInfo != nullptr)
     {
         hpdelta = levelInfo->Stat[2] * 10;
         manadelta = levelInfo->Stat[3] * 15;
     }
 
-    levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
+    levelInfo = sObjectMgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
     if (levelInfo != nullptr)
     {
         hpdelta -= levelInfo->Stat[2] * 10;
@@ -6737,7 +6737,7 @@ bool Player::HasQuestForItem(uint32 itemid)
             QuestProperties const* qst = m_questlog[i]->GetQuest();
 
             // Check the item_quest_association table for an entry related to this item
-            QuestAssociationList* tempList = QuestMgr::getSingleton().GetQuestAssociationListForItemId(itemid);
+            QuestAssociationList* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemid);
             if (tempList != nullptr)
             {
                 QuestAssociationList::iterator it;
@@ -7853,7 +7853,7 @@ void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
         if ((*itr) == called_from)       // skip calling spell.. otherwise spammies! :D
             continue;
 
-        auto skill_line_ability = objmgr.GetSpellSkill((*itr));
+        auto skill_line_ability = sObjectMgr.GetSpellSkill((*itr));
         if (skill_line_ability && skill_line_ability->skilline == skill_line)
             ClearCooldownForSpell((*itr));
     }
@@ -8081,7 +8081,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
     // how the f*ck is this happening
     if (m_playerInfo == nullptr)
     {
-        m_playerInfo = objmgr.GetPlayerInfo(getGuidLow());
+        m_playerInfo = sObjectMgr.GetPlayerInfo(getGuidLow());
         if (m_playerInfo == nullptr)
         {
             m_session->Disconnect();
@@ -8151,7 +8151,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 #else
             snprintf(updatedName, 95, chat_channels->name_pattern, at->area_name);
 #endif
-            Channel* newChannel = channelmgr.GetCreateChannel(updatedName, nullptr, chn->m_id);
+            Channel* newChannel = sChannelMgr.GetCreateChannel(updatedName, nullptr, chn->m_id);
             if (newChannel == nullptr)
             {
                 LOG_ERROR("Could not create channel %s!", updatedName);
@@ -8237,7 +8237,7 @@ void Player::UpdateChannels(uint16 AreaID)
             channelname += AreaName;
         }
 
-        Channel* chn = channelmgr.GetCreateChannel(channelname.c_str(), this, c->m_id);
+        Channel* chn = sChannelMgr.GetCreateChannel(channelname.c_str(), this, c->m_id);
         if (chn != nullptr && !chn->HasMember(this))
         {
             c->Part(this);
@@ -8733,7 +8733,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* pTrans = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        Transporter* pTrans = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
@@ -8822,7 +8822,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.getTransportGuid())
     {
-        Transporter* pTrans = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.getTransportGuid()));
+        Transporter* pTrans = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.getTransportGuid()));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
@@ -9366,7 +9366,7 @@ void Player::CalculateBaseStats()
 
     memcpy(BaseStats, lvlinfo->Stat, sizeof(uint32) * 5);
 
-    LevelInfo* levelone = objmgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
+    LevelInfo* levelone = sObjectMgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
     if (levelone == nullptr)
     {
         LOG_ERROR("%s (%d): NULL pointer", __FUNCTION__, __LINE__);
@@ -9470,7 +9470,7 @@ void Player::CompleteLoading()
     else if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         // Check if we have an existing corpse.
-        Corpse* corpse = objmgr.GetCorpseByOwner(getGuidLow());
+        Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
         if (corpse == nullptr)
         {
             sEventMgr.AddEvent(this, &Player::RepopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -9488,7 +9488,7 @@ void Player::CompleteLoading()
         {
             // cebernic: tempfix. This send a counter for player with just logging in.
             //\todo counter will be follow with death time.
-            Corpse* myCorpse = objmgr.GetCorpseByOwner(getGuidLow());
+            Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
             if (myCorpse != nullptr)
                 myCorpse->ResetDeathClock();
 
@@ -11074,7 +11074,7 @@ void Player::CopyAndSendDelayedPacket(WorldPacket* data)
 
 void Player::PartLFGChannel()
 {
-    Channel* pChannel = channelmgr.GetChannel("LookingForGroup", this);
+    Channel* pChannel = sChannelMgr.GetChannel("LookingForGroup", this);
     if (pChannel == nullptr)
         return;
 
@@ -11484,8 +11484,8 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
 void Player::Social_AddFriend(const char* name, const char* note)
 {
     // lookup the player
-    PlayerInfo* playerInfo = objmgr.GetPlayerInfoByName(name);
-    PlayerCache* playerCache = objmgr.GetPlayerCache(name, false);
+    PlayerInfo* playerInfo = sObjectMgr.GetPlayerInfoByName(name);
+    PlayerCache* playerCache = sObjectMgr.GetPlayerCache(name, false);
 
     if (playerInfo == nullptr || (playerCache != nullptr && playerCache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
     {
@@ -11564,7 +11564,7 @@ void Player::Social_RemoveFriend(uint32 guid)
     m_cache->RemoveValue64(CACHE_SOCIAL_FRIENDLIST, guid);
     m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);
 
-    PlayerCache* cache = objmgr.GetPlayerCache((uint32)guid);
+    PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)guid);
     if (cache != nullptr)
     {
         cache->RemoveValue64(CACHE_SOCIAL_HASFRIENDLIST, getGuidLow());
@@ -11598,7 +11598,7 @@ void Player::Social_SetNote(uint32 guid, const char* note)
 void Player::Social_AddIgnore(const char* name)
 {
     // lookup the player
-    PlayerInfo* playerInfo = objmgr.GetPlayerInfoByName(name);
+    PlayerInfo* playerInfo = sObjectMgr.GetPlayerInfoByName(name);
     if (playerInfo == nullptr)
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
@@ -11660,7 +11660,7 @@ void Player::Social_TellFriendsOnline()
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
     {
-        PlayerCache* cache = objmgr.GetPlayerCache(uint32(itr->first));
+        PlayerCache* cache = sObjectMgr.GetPlayerCache(uint32(itr->first));
         if (cache != nullptr)
         {
             cache->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, GetAreaID(), getLevel(), getClass()).serialise().get());
@@ -11678,7 +11678,7 @@ void Player::Social_TellFriendsOffline()
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
     {
-        PlayerCache* cache = objmgr.GetPlayerCache(uint32(itr->first));
+        PlayerCache* cache = sObjectMgr.GetPlayerCache(uint32(itr->first));
         if (cache != nullptr)
         {
             cache->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
@@ -11720,8 +11720,8 @@ void Player::Social_SendFriendList(uint32 flag)
             data << uint8(0);
 
         // online/offline flag
-        Player* plr = objmgr.GetPlayer((uint32)itr->first);
-        PlayerCache* cache = objmgr.GetPlayerCache((uint32)itr->first);
+        Player* plr = sObjectMgr.GetPlayer((uint32)itr->first);
+        PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)itr->first);
         if (plr != nullptr)
         {
             data << uint8(1);
@@ -12103,7 +12103,7 @@ void Player::HandleSpellLoot(uint32 itemid)
 {
     Loot loot1;
 
-    lootmgr.FillItemLoot(&loot1, itemid);
+    sLootMgr.FillItemLoot(&loot1, itemid);
 
     for (std::vector<__LootItem>::iterator itr = loot1.items.begin(); itr != loot1.items.end(); ++itr)
     {
@@ -13123,7 +13123,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     {
         if (qst->receive_items[i])
         {
-            Item* item = objmgr.CreateItem(qst->receive_items[i], this);
+            Item* item = sObjectMgr.CreateItem(qst->receive_items[i], this);
             if (item == nullptr)
                 continue;
 
@@ -13142,7 +13142,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     {
         if (!qst_giver->isItem() || (qst_giver->getEntry() != qst->srcitem))
         {
-            Item *item = objmgr.CreateItem(qst->srcitem, this);
+            Item *item = sObjectMgr.CreateItem(qst->srcitem, this);
             if (item != nullptr)
             {
                 item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
@@ -13942,7 +13942,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     }
     else if (wowGuid.isCorpse())
     {
-        Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+        Corpse* pCorpse = sObjectMgr.GetCorpse((uint32)guid);
         if (!pCorpse)
             return;
 

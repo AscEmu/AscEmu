@@ -29,7 +29,7 @@ bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
     uint8_t slotId = fields[2].GetUInt8();
 
-    Item* pItem = objmgr.LoadItem(fields[3].GetUInt32());
+    Item* pItem = sObjectMgr.LoadItem(fields[3].GetUInt32());
     if (pItem == nullptr)
     {
         CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",

@@ -943,7 +943,7 @@ public:
         auto item_add = player->getItemInterface()->FindItemLessMax(id, count, false);
         if (item_add == nullptr)
         {
-            item_add = objmgr.CreateItem(id, player);
+            item_add = sObjectMgr.CreateItem(id, player);
             if (item_add == nullptr)
                 return 0;
 
@@ -1575,7 +1575,7 @@ public:
                         {
                             if (qst->receive_items[i])
                             {
-                                Item* item = objmgr.CreateItem(qst->receive_items[i], plr);
+                                Item* item = sObjectMgr.CreateItem(qst->receive_items[i], plr);
                                 if (item == NULL)
                                     return false;
 
@@ -1586,7 +1586,7 @@ public:
 
                         if (qst->srcitem && qst->srcitem != qst->receive_items[0])
                         {
-                            Item* item = objmgr.CreateItem(qst->srcitem, plr);
+                            Item* item = sObjectMgr.CreateItem(qst->srcitem, plr);
                             if (item)
                             {
                                 item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
@@ -3148,7 +3148,7 @@ public:
             else
             {
                 uint32 gId = pInstance->m_creatorGroup;
-                auto group_id = objmgr.GetGroupById(gId);
+                auto group_id = sObjectMgr.GetGroupById(gId);
 
                 if (group_id == nullptr)
                     return 0;
@@ -3721,7 +3721,7 @@ public:
         {
             if (ptr->isPlayer())
             {
-                LevelInfo* Info = objmgr.GetLevelInfo(ptr->getRace(), ptr->getClass(), level);
+                LevelInfo* Info = sObjectMgr.GetLevelInfo(ptr->getRace(), ptr->getClass(), level);
                 if (Info)
                     static_cast<Player*>(ptr)->ApplyLevelInfo(Info, level);
             }
@@ -4409,16 +4409,16 @@ public:
             switch (loot_type)
             {
                 default:
-                    lootmgr.FillCreatureLoot(&pUnit->loot, pUnit->getEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
+                    sLootMgr.FillCreatureLoot(&pUnit->loot, pUnit->getEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
                     pUnit->loot.gold = creature_properties ? creature_properties->money : 0;
                     loot_type2 = 1;
                     break;
                 case 2:
-                    lootmgr.FillSkinningLoot(&pUnit->loot, pUnit->getEntry());
+                    sLootMgr.FillSkinningLoot(&pUnit->loot, pUnit->getEntry());
                     loot_type2 = 2;
                     break;
                 case 3:
-                    lootmgr.FillPickpocketingLoot(&pUnit->loot, pUnit->getEntry());
+                    sLootMgr.FillPickpocketingLoot(&pUnit->loot, pUnit->getEntry());
                     loot_type2 = 2;
                     break;
             }
@@ -4432,11 +4432,11 @@ public:
                 switch (loot_type)
                 {
                     default:
-                        lootmgr.FillGOLoot(&lt->loot, pGO->getEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
+                        sLootMgr.FillGOLoot(&lt->loot, pGO->getEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
                         loot_type2 = 1;
                         break;
                     case 5:
-                        lootmgr.FillSkinningLoot(&lt->loot, pGO->getEntry());
+                        sLootMgr.FillSkinningLoot(&lt->loot, pGO->getEntry());
                         loot_type2 = 2;
                         break;
                 }
@@ -4448,7 +4448,7 @@ public:
             switch (loot_type)
             {
                 case 6:
-                    lootmgr.FillItemLoot(pItem->loot, pItem->getEntry());
+                    sLootMgr.FillItemLoot(pItem->loot, pItem->getEntry());
                     loot_type2 = 1;
                     break;
                 default:
@@ -4477,7 +4477,7 @@ public:
                 WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        lootmgr.AddLoot(&ptr->loot, itemid, mincount, maxcount);
+        sLootMgr.AddLoot(&ptr->loot, itemid, mincount, maxcount);
         return 0;
     }
 
@@ -5146,7 +5146,7 @@ public:
         Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
         if (pGuild != NULL)
         {
-            Player* plr = objmgr.GetPlayer(uint32_t(pGuild->getLeaderGUID()));
+            Player* plr = sObjectMgr.GetPlayer(uint32_t(pGuild->getLeaderGUID()));
             if (plr != NULL)
                 lua_pushstring(L, plr->getName().c_str());
             else
@@ -5185,7 +5185,7 @@ public:
         if (!ptr || !channel_name)
             return 0;
 
-        Channel* pChannel = channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
         if (pChannel->HasMember(static_cast<Player*>(ptr))) // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
             lua_pushboolean(L, 1);
         else
@@ -5197,7 +5197,7 @@ public:
     {
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
         const char* pw = luaL_optstring(L, 2, pChannel->m_password.c_str());
 
         if (!ptr || !channel_name || pChannel->HasMember(static_cast<Player*>(ptr)) || !pChannel)
@@ -5211,7 +5211,7 @@ public:
     {
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
         if (!ptr || !channel_name || !pChannel || !pChannel->HasMember(static_cast<Player*>(ptr)))
             return 0;
         else
@@ -5224,7 +5224,7 @@ public:
         TEST_PLAYER()
             const char* current_name = luaL_checkstring(L, 1);
         const char* new_name = luaL_checkstring(L, 2);
-        Channel* pChannel = channelmgr.GetChannel(current_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(current_name, static_cast<Player*>(ptr));
         if (!current_name || !new_name || !ptr || !pChannel || pChannel->m_name == new_name)
             return 0;
         pChannel->m_name = new_name;
@@ -5236,7 +5236,7 @@ public:
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
         const char* pass = luaL_checkstring(L, 2);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
         if (!pass || !ptr || pChannel->m_password == pass)
             return 0;
         pChannel->Password(static_cast<Player*>(ptr), pass);
@@ -5247,7 +5247,7 @@ public:
     {
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
         if (!ptr)
             return 0;
         lua_pushstring(L, pChannel->m_password.c_str());
@@ -5259,7 +5259,7 @@ public:
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, plr);
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
         if (!plr || !pChannel)
             return 0;
         pChannel->Kick(plr, plr, false);
@@ -5271,7 +5271,7 @@ public:
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, plr);
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
         if (!plr || !pChannel)
             return 0;
         pChannel->Kick(plr, plr, true);
@@ -5283,7 +5283,7 @@ public:
         TEST_PLAYER()
             const char* channel_name = luaL_checkstring(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, plr);
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
         if (!plr || !pChannel)
             return 0;
         pChannel->Unban(plr, plr->getPlayerInfo());
@@ -5296,7 +5296,7 @@ public:
             const char* channel_name = luaL_checkstring(L, 1);
         if (!ptr || !channel_name)
             return 0;
-        lua_pushnumber(L, static_cast<lua_Number>(channelmgr.GetChannel(channel_name, static_cast<Player*>(ptr))->GetNumMembers()));
+        lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr))->GetNumMembers()));
         return 1;
     }
 

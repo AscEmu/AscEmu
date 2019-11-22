@@ -36,7 +36,6 @@
 #include "Util.hpp"
 #include "DatabaseUpdater.h"
 
-createFileSingleton(Master);
 std::string LogFileName;
 bool bLogChat;
 
@@ -79,15 +78,18 @@ void Master::_OnSignal(int s)
     signal(s, _OnSignal);
 }
 
-Master::Master()
+Master& Master::getInstance()
+{
+    static Master mInstance;
+    return mInstance;
+}
+
+void Master::initialize()
 {
     m_ShutdownTimer = 0;
     m_ShutdownEvent = false;
     m_restartEvent = false;
 }
-
-Master::~Master()
-{}
 
 struct Addr
 {
@@ -187,8 +189,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
 
-    new EventMgr;
-    new World;
+    sWorld.initialize();
 
     if (!LoadWorldConfiguration(config_file))
     {
@@ -205,7 +206,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     if (!_StartDB())
     {
         Database::CleanupLibs();
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return false;
     }
 
@@ -223,19 +224,17 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     if (!_CheckDBVersion())
     {
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return false;
     }
 
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();
 
-    new ScriptMgr;
-
     if (!sWorld.setInitialWorldSettings())
     {
         LOG_ERROR("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return false;
     }
 
@@ -263,19 +262,16 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     LogDetail("Server : Ready for connections. Startup time: %u ms", Util::GetTimeDifferenceToNow(startTime));
 
-    new GameEventMgr::GameEventMgrThread;
+    sGameEventMgrThread.initialize();
 
     StartRemoteConsole();
 
     WritePidFile();
 
-    if (!ChannelMgr::getSingletonPtr())
-        new ChannelMgr;
+    sChannelMgr.initialize();
+    sChannelMgr.seperatechannels = !worldConfig.player.isInterfactionChannelEnabled;
 
-    channelmgr.seperatechannels = !worldConfig.player.isInterfactionChannelEnabled;
-
-    if (!MailSystem::getSingletonPtr())
-        new MailSystem;
+    sMailSystem.StartMailSystem();
 
     uint32_t mailFlags = 0;
 
@@ -302,7 +298,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     //ThreadPool.Gobble();
 
     /* Connect to realmlist servers / logon servers */
-    new LogonCommHandler();
+    sLogonCommHandler.initialize();
     sLogonCommHandler.startLogonCommHandler();
 
     // Create listener
@@ -354,41 +350,34 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.logoutAllPlayers();
 
-    delete LogonCommHandler::getSingletonPtr();
+    sLogonCommHandler.finalize();
 
-    LogNotice("AddonMgr : ~AddonMgr()");
 #if VERSION_STRING < Cata
+    LogNotice("AddonMgr : ~AddonMgr()");
     sAddonMgr.SaveToDB();
+    sAddonMgr.finalize();
 #endif
-    delete AddonMgr::getSingletonPtr();
 
     LogNotice("AuctionMgr : ~AuctionMgr()");
-    delete AuctionMgr::getSingletonPtr();
+    sAuctionMgr.finalize();
 
     LogNotice("LootMgr : ~LootMgr()");
-    delete LootMgr::getSingletonPtr();
-
-    LogNotice("MailSystem : ~MailSystem()");
-    delete MailSystem::getSingletonPtr();
+    sLootMgr.finalize();
 
     LogNotice("World : ~World()");
-    delete World::getSingletonPtr();
+    sWorld.finalize();
 
     sScriptMgr.UnloadScripts();
-    delete ScriptMgr::getSingletonPtr();
 
     LogNotice("ChatHandler : ~ChatHandler()");
-    delete ChatHandler::getSingletonPtr();
-
-    LogNotice("EventMgr : ~EventMgr()");
-    delete EventMgr::getSingletonPtr();
+    sChatHandler.finalize();
 
     LogNotice("Database : Closing Connections...");
     _StopDB();
 
     LogNotice("Network : Deleting Network Subsystem...");
-    delete SocketMgr::getSingletonPtr();
-    delete SocketGarbageCollector::getSingletonPtr();
+    sSocketMgr.finalize();
+    sSocketGarbageCollector.finalize();
 
     delete GMCommand_Log;
     delete Anticheat_Log;
@@ -405,7 +394,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     }
 
     LogDetail("Shutdown : Shutdown complete.");
-    AscLog.~AscEmuLog();
+    AscLog.finalize();
 
 #ifdef WIN32
     WSACleanup();
@@ -585,15 +574,12 @@ void OnCrash(bool Terminate)
 
     try
     {
-        if (World::getSingletonPtr() != 0)
-        {
-            LogNotice("sql : Waiting for all database queries to finish...");
-            WorldDatabase.EndThreads();
-            CharacterDatabase.EndThreads();
-            LogNotice("sql : All pending database operations cleared.");
-            sWorld.saveAllPlayersToDb();
-            LogNotice("sql : Data saved.");
-        }
+        LogNotice("sql : Waiting for all database queries to finish...");
+        WorldDatabase.EndThreads();
+        CharacterDatabase.EndThreads();
+        LogNotice("sql : All pending database operations cleared.");
+        sWorld.saveAllPlayersToDb();
+        LogNotice("sql : Data saved.");
     }
     catch (...)
     {
@@ -634,7 +620,7 @@ bool Master::LoadWorldConfiguration(char* config_file)
     else
     {
         LogError("Config : error occurred loading " CONFDIR "/world.conf");
-        AscLog.~AscEmuLog();
+        AscLog.finalize();
         return false;
     }
 
@@ -829,18 +815,17 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
 void Master::StartNetworkSubsystem()
 {
     LogNotice("Network : Starting subsystem...");
-    new SocketMgr;
-    new SocketGarbageCollector;
+    sSocketMgr.initialize();
 }
 
 void Master::ShutdownLootSystem()
 {
     LogNotice("Shutdown : Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
 
-    if (lootmgr.is_loading)
+    if (sLootMgr.is_loading)
     {
         LogNotice("Shutdown : Waiting for loot to finish loading...");
-        while (lootmgr.is_loading)
+        while (sLootMgr.is_loading)
             Arcemu::Sleep(100);
     }
 }

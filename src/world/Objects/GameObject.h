@@ -545,7 +545,7 @@ class GameObject_Lootable : public GameObject
             if (loot.items.empty() || !loot.looters.empty() || loot.HasRoll())
                 return;
 
-            lootmgr.FillGOLoot(&loot, gameobject_properties->raw.parameter_1, 0);
+            sLootMgr.FillGOLoot(&loot, gameobject_properties->raw.parameter_1, 0);
         }
 
         Loot loot;

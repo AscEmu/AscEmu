@@ -2803,7 +2803,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;//this should not occur unless we made a fuckup somewhere
 
                     //only trigger effect for specified spells
-                    auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->getId());
+                    auto skill_line_ability = sObjectMgr.GetSpellSkill(CastingSpell->getId());
                     if (!skill_line_ability)
                         continue;
 
@@ -13339,7 +13339,7 @@ bool Unit::isLootable()
     if (IsTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
     {
         auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
-        if (isCreature() && !lootmgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
+        if (isCreature() && !sLootMgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
         return true;

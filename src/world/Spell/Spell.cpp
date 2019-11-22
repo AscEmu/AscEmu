@@ -223,7 +223,7 @@ SpellCastResult Spell::canCast(bool tolerate, uint32_t* parameter1, uint32_t* pa
         if (target->isCorpse())
         {
             // Player can't cast spells on corpses with bones only left
-            const auto targetCorpse = objmgr.GetCorpseByOwner(target->getGuidLow());
+            const auto targetCorpse = sObjectMgr.GetCorpseByOwner(target->getGuidLow());
             if (targetCorpse == nullptr || !targetCorpse->IsInWorld() || targetCorpse->GetCorpseState() == CORPSE_STATE_BONES)
                 return SPELL_FAILED_BAD_TARGETS;
         }

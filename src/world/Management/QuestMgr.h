@@ -88,11 +88,22 @@ typedef std::list<QuestRelation*> QuestRelationList;
 typedef std::list<QuestAssociation*> QuestAssociationList;
 
 
-class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
+class SERVER_DECL QuestMgr
 {
+    private:
+
+        QuestMgr() = default;
+        ~QuestMgr() = default;
+
     public:
 
-        ~QuestMgr();
+        static QuestMgr& getInstance();
+        void finalize();
+
+        QuestMgr(QuestMgr&&) = delete;
+        QuestMgr(QuestMgr const&) = delete;
+        QuestMgr& operator=(QuestMgr&&) = delete;
+        QuestMgr& operator=(QuestMgr const&) = delete;
 
         uint32 PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool skiplevelcheck);
 
@@ -225,6 +236,6 @@ template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& Quest
 { return m_itm_quests; }
 
 
-#define sQuestMgr QuestMgr::getSingleton()
+#define sQuestMgr QuestMgr::getInstance()
 
 #endif // QUESTMGR_H

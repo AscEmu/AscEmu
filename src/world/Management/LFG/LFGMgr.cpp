@@ -28,14 +28,26 @@
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 
-initialiseSingleton(LfgMgr);
+LfgMgr& LfgMgr::getInstance()
+{
+    static LfgMgr mInstance;
+    return mInstance;
+}
 
-
-LfgMgr::LfgMgr() : m_update(true), m_QueueTimer(0), m_lfgProposalId(1),
-m_WaitTimeAvg(-1), m_WaitTimeTank(-1), m_WaitTimeHealer(-1), m_WaitTimeDps(-1),
-m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTimeDps(0)
+void LfgMgr::initialize()
 {
         m_update = true;
+        m_QueueTimer = 0;
+        m_lfgProposalId = 1;
+        m_WaitTimeAvg = -1;
+        m_WaitTimeTank = -1;
+        m_WaitTimeHealer = -1;
+        m_WaitTimeDps = -1;
+        m_NumWaitTimeAvg = 0;
+        m_NumWaitTimeTank = 0;
+        m_NumWaitTimeHealer = 0;
+        m_NumWaitTimeDps = 0;
+
         if (m_update)
         {
 #if VERSION_STRING < Cata
@@ -54,7 +66,7 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
         }
 }
 
-LfgMgr::~LfgMgr()
+void LfgMgr::finalize()
 {
     for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
     {
@@ -182,7 +194,7 @@ void LfgMgr::Update(uint32 diff)
             WoWGuid wowGuid;
             wowGuid.Init(guid);
 
-            if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+            if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
             {
                 player->GetSession()->sendLfgRoleCheckUpdate(roleCheck);
 
@@ -219,7 +231,7 @@ void LfgMgr::Update(uint32 diff)
                 WoWGuid wowGuid;
                 wowGuid.Init(itVotes->first);
 
-                if (Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+                if (Player* plrg = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     if (plrg->getGuid() != pBoot->victim)
                     {
@@ -268,7 +280,7 @@ void LfgMgr::Update(uint32 diff)
                     WoWGuid wowGuid;
                     wowGuid.Init(itPlayers->first);
 
-                    if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+                    if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                     {
                         Group* grp = player->GetGroup();
                         if (grp)
@@ -351,7 +363,7 @@ void LfgMgr::Update(uint32 diff)
                 WoWGuid wowGuid;
                 wowGuid.Init(itPlayer->first);
 
-                if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+                if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     player->GetSession()->sendLfgQueueStatus(dungeonId, waitTime, m_WaitTimeAvg, m_WaitTimeTank, m_WaitTimeHealer, m_WaitTimeDps, queuedTime, queue->tanks, queue->healers, queue->dps);
                 }
@@ -821,12 +833,12 @@ void LfgMgr::OfferContinue(Group* grp)
     if (grp)
     {
         uint64 gguid = grp->GetGUID();
-        if (Player* leader = objmgr.GetPlayer(grp->GetLeader()->guid))
+        if (Player* leader = sObjectMgr.GetPlayer(grp->GetLeader()->guid))
         {
             leader->GetSession()->sendLfgOfferContinue(GetDungeon(gguid, false));
         }
 
-        LOG_DEBUG("player %u ", objmgr.GetPlayer(grp->GetLeader()->guid));
+        LOG_DEBUG("player %u ", sObjectMgr.GetPlayer(grp->GetLeader()->guid));
     }
 }
 
@@ -925,7 +937,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         if (wowGuid.isGroup())
         {
             uint32 lowGuid = wowGuid.getGuidLowPart();
-            if (Group* grp = objmgr.GetGroupById(lowGuid))  //MAy Check these
+            if (Group* grp = sObjectMgr.GetGroupById(lowGuid))  //MAy Check these
             {
                 if (grp->isLFGGroup())
                 {
@@ -987,7 +999,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         WoWGuid wowGuid;
         wowGuid.Init(it->first);
 
-        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!player)
         {
             LOG_DEBUG("(%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
@@ -1081,7 +1093,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
                     WoWGuid wowGuid;
                     wowGuid.Init(itPlayer->first);
 
-                    if (*itPlayers == objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+                    if (*itPlayers == sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                     {
                         queue->tanks = Tanks_Needed;
                         queue->healers = Healers_Needed;
@@ -1190,7 +1202,7 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
         WoWGuid wowGuid;
         wowGuid.Init(it->first);
 
-        Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* plrg = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!plrg)
         {
             if (roleCheck->state == LFG_ROLECHECK_FINISHED)
@@ -1409,7 +1421,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         WoWGuid wowGuid;
         wowGuid.Init(itPlayers->first);
 
-        if (Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+        if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
         {
             if (itPlayers->first == pProposal->leader)
                 players.push_front(player);
@@ -1462,7 +1474,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
         // Create a new group (if needed)
         LfgUpdateData updateData = LfgUpdateData(LFG_UPDATETYPE_GROUP_FOUND);
-        Group* grp = pProposal->groupLowGuid ? objmgr.GetGroupById(pProposal->groupLowGuid) : NULL;
+        Group* grp = pProposal->groupLowGuid ? sObjectMgr.GetGroupById(pProposal->groupLowGuid) : NULL;
         for (LfgPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
         {
             Player* player = (*it);
@@ -1534,7 +1546,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             }
 
             m_teleport.push_back(pguid);
-            if(Player* plr = objmgr.GetPlayer(static_cast<uint32>(pguid)))
+            if(Player* plr = sObjectMgr.GetPlayer(static_cast<uint32>(pguid)))
                 plr->SetRoles(pProposal->players[pguid]->role);
             SetState(pguid, LFG_STATE_DUNGEON);
         }
@@ -1606,7 +1618,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         WoWGuid wowGuid;
         wowGuid.Init(it->first);
 
-        Player* player = objmgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         if (!player)
             continue;
 
@@ -1769,7 +1781,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
             if (pguid != pBoot->victim)
             {
                 SetState(pguid, LFG_STATE_DUNGEON);
-                if (Player* plrg = objmgr.GetPlayer(wowGuid.getGuidLowPart()))
+                if (Player* plrg = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                 {
                     plrg->GetSession()->sendLfgBootPlayer(pBoot);
                 }
@@ -1782,7 +1794,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
         {
             /* incomplete :D
             Player::RemoveFromGroup(grp, pBoot->victim);
-            if (Player* victim = objmgr.GetPlayer(GET_LOWGUID_PART(pBoot->victim)))
+            if (Player* victim = sObjectMgr.GetPlayer(GET_LOWGUID_PART(pBoot->victim)))
             {
             TeleportPlayer(victim, true, false);
             setState(pBoot->victim, LFG_STATE_NONE);
@@ -1987,7 +1999,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+                            auto item = sObjectMgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
@@ -2081,7 +2093,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+                            auto item = sObjectMgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));

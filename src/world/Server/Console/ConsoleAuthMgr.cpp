@@ -7,9 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ConsoleAuthMgr.h"
 
-initialiseSingleton(ConsoleAuthMgr);
+ConsoleAuthMgr& ConsoleAuthMgr::getInstance()
+{
+    static ConsoleAuthMgr mInstance;
+    return mInstance;
+}
 
-ConsoleAuthMgr::ConsoleAuthMgr()
+void ConsoleAuthMgr::initialize()
 {
     authRequestId = 1;
 }

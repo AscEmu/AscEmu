@@ -972,7 +972,7 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
     auto racemask = getRaceMask();
     auto classmask = getClassMask();
 
-    auto bounds = objmgr.GetSkillLineAbilityMapBounds(spell_id);
+    auto bounds = sObjectMgr.GetSkillLineAbilityMapBounds(spell_id);
     if (bounds.first == bounds.second)
     {
         return true;
@@ -1321,7 +1321,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo == nullptr)
         return;
 
-    if (objmgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
+    if (sObjectMgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
             sendCastFailedPacket(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
@@ -1997,9 +1997,9 @@ bool Player::logOntoTransport()
 #endif
     {
 #if VERSION_STRING < Cata
-        const auto transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
 #else
-        const auto transporter = objmgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(static_cast<uint32>(obj_movement_info.getTransportGuid())));
+        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(static_cast<uint32>(obj_movement_info.getTransportGuid())));
 #endif
         if (transporter)
         {
@@ -2065,7 +2065,7 @@ void Player::setLoginPosition()
 
 void Player::setPlayerInfoIfNeeded()
 {
-    auto playerInfo = objmgr.GetPlayerInfo(getGuidLow());
+    auto playerInfo = sObjectMgr.GetPlayerInfo(getGuidLow());
     if (playerInfo == nullptr)
     {
         playerInfo = new PlayerInfo;
@@ -2082,7 +2082,7 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
-        objmgr.AddPlayerInfo(playerInfo);
+        sObjectMgr.AddPlayerInfo(playerInfo);
     }
 
     playerInfo->m_loggedInPlayer = this;

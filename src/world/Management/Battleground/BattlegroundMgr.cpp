@@ -33,9 +33,13 @@
 
 using namespace AscEmu::Packets;
 
-initialiseSingleton(CBattlegroundManager);
+CBattlegroundManager& CBattlegroundManager::getInstance()
+{
+    static CBattlegroundManager mInstance;
+    return mInstance;
+}
 
-CBattlegroundManager::CBattlegroundManager() : EventableObject()
+void CBattlegroundManager::initialize()
 {
     // Yes we will be running from WorldRunnable
     m_holder = sEventMgr.GetEventHolder(WORLD_INSTANCE);
@@ -56,9 +60,6 @@ CBattlegroundManager::CBattlegroundManager() : EventableObject()
     avalibleInRandom.push_back(BATTLEGROUND_STRAND_OF_THE_ANCIENT);
     avalibleInRandom.push_back(BATTLEGROUND_ISLE_OF_CONQUEST);
 }
-
-CBattlegroundManager::~CBattlegroundManager()
-{}
 
 void CBattlegroundManager::RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method)
 {
@@ -398,7 +399,7 @@ void CBattlegroundManager::HandleGetBattlegroundQueueCommand(WorldSession* m_ses
                 for (it3 = m_queuedPlayers[i][j].begin(); it3 != m_queuedPlayers[i][j].end();)
                 {
                     it4 = it3++;
-                    plr = objmgr.GetPlayer(*it4);
+                    plr = sObjectMgr.GetPlayer(*it4);
 
                     if (!plr || GetLevelGrouping(plr->getLevel()) != j)
                     {
@@ -543,7 +544,7 @@ void CBattlegroundManager::AddPlayerToBg(CBattleground* bg, std::deque<uint32> *
     uint32 plrguid = *playerVec->begin();
     playerVec->pop_front();
 
-    Player* plr = objmgr.GetPlayer(plrguid);
+    Player* plr = sObjectMgr.GetPlayer(plrguid);
     if (plr)
     {
         if (bg->CanPlayerJoin(plr, bg->GetType()))
@@ -570,7 +571,7 @@ void CBattlegroundManager::AddPlayerToBgTeam(CBattleground* bg, std::deque<uint3
         uint32 plrguid = *playerVec->begin();
         playerVec->pop_front();
 
-        Player* plr = objmgr.GetPlayer(plrguid);
+        Player* plr = sObjectMgr.GetPlayer(plrguid);
         if (plr)
         {
             plr->setBgTeam(Team);
@@ -618,7 +619,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
             {
                 it4 = it3++;
                 plrguid = *it4;
-                plr = objmgr.GetPlayer(plrguid);
+                plr = sObjectMgr.GetPlayer(plrguid);
 
                 // Player has left the game or switched level group since queuing (by leveling for example)
                 if (!plr || GetLevelGrouping(plr->getLevel()) != j)
@@ -695,7 +696,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                         {
                             plrguid = *tempPlayerVec[factionMap[team]].begin();
                             tempPlayerVec[factionMap[team]].pop_front();
-                            plr = objmgr.GetPlayer(plrguid);
+                            plr = sObjectMgr.GetPlayer(plrguid);
                             if (plr)
                             {
                                 plr->setBgTeam(team);
@@ -732,7 +733,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
             if (isArena(i))
             {
                 // enough players to start a round?
-                uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(i);
+                uint32 minPlayers = sBattlegroundManager.GetMinimumPlayers(i);
                 if (!forceStart && ((tempPlayerVec[0].size() + tempPlayerVec[1].size()) < (minPlayers * 2)))
                     continue;
 
@@ -793,7 +794,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                         {
                             plrguid = teams[localeTeam].front();
                             teams[localeTeam].pop();
-                            plr = objmgr.GetPlayer(plrguid);
+                            plr = sObjectMgr.GetPlayer(plrguid);
                             if (plr == NULL)
                                 continue;
 
@@ -817,7 +818,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                         {
                             uint32 tmpJoinBgType = avalibleInRandom[bgIndex];
 
-                            uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(tmpJoinBgType);
+                            uint32 minPlayers = sBattlegroundManager.GetMinimumPlayers(tmpJoinBgType);
                             if ((tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers))
                             {
                                 bgPossible.push_back(tmpJoinBgType);
@@ -838,7 +839,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 }
 
 
-                uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(bgToStart);
+                uint32 minPlayers = sBattlegroundManager.GetMinimumPlayers(bgToStart);
                 if (forceStart || ((tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers) && bgToStart != BATTLEGROUND_RANDOM))
                 {
                     if (CanCreateInstance(bgToStart, j))
@@ -908,7 +909,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 return;
             }
 
-            group1 = objmgr.GetGroupById(*itz);
+            group1 = sObjectMgr.GetGroupById(*itz);
             if (group1 == NULL)
             {
                 continue;
@@ -926,7 +927,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
             std::list<uint32> possibleGroups;
             for (itz = m_queuedGroups[i].begin(); itz != m_queuedGroups[i].end(); ++itz)
             {
-                group2 = objmgr.GetGroupById(*itz);
+                group2 = sObjectMgr.GetGroupById(*itz);
                 if (group2)
                 {
                     teamids[1] = GetArenaGroupQInfo(group2, i, &avgRating[1]);
@@ -955,7 +956,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     return;
                 }
 
-                group2 = objmgr.GetGroupById(*itz);
+                group2 = sObjectMgr.GetGroupById(*itz);
                 if (group2)
                 {
                     if (CreateArenaType(i, group1, group2) == -1) return;
@@ -1247,7 +1248,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
         for (; itr != m_queuedPlayers[i][j].end();)
         {
             it2 = itr++;
-            plr = objmgr.GetPlayer(*it2);
+            plr = sObjectMgr.GetPlayer(*it2);
             if (!plr)
             {
                 m_queuedPlayers[i][j].erase(it2);

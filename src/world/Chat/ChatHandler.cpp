@@ -15,19 +15,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 
-initialiseSingleton(ChatHandler);
-
-ChatHandler::ChatHandler()
+ChatHandler& ChatHandler::getInstance()
 {
-    new CommandTableStorage;
-    sCommandTableStorag.Init();
+    static ChatHandler mInstance;
+    return mInstance;
+}
+
+void ChatHandler::initialize()
+{
+    sCommandTableStorage.Init();
     SkillNameManager = new SkillNameMgr;
 }
 
-ChatHandler::~ChatHandler()
+void ChatHandler::finalize()
 {
-    sCommandTableStorag.Dealloc();
-    delete CommandTableStorage::getSingletonPtr();
+    sCommandTableStorage.Dealloc();
     delete SkillNameManager;
 }
 
@@ -148,7 +150,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
 
     try
     {
-        bool success = ExecuteCommandInTable(sCommandTableStorag.Get(), text, session);
+        bool success = ExecuteCommandInTable(sCommandTableStorage.Get(), text, session);
         if (!success)
         {
             SystemMessage(session, "There is no such command, or you do not have access to it.");
@@ -569,7 +571,7 @@ bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
     if (!cmd)
         return false;
 
-    if (!ShowHelpForCommand(m_session, sCommandTableStorag.Get(), cmd))
+    if (!ShowHelpForCommand(m_session, sCommandTableStorage.Get(), cmd))
     {
         RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
     }
@@ -579,7 +581,7 @@ bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_session)
 {
-    ChatCommand* table = sCommandTableStorag.Get();
+    ChatCommand* table = sCommandTableStorage.Get();
 
     std::string output;
     uint32 count = 0;

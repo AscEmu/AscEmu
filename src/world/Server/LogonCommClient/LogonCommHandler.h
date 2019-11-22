@@ -46,7 +46,7 @@ enum RealmType
 };
 
 
-class LogonCommHandler : public Singleton<LogonCommHandler>
+class LogonCommHandler
 {
     typedef std::unordered_map<uint32_t, std::string> AccountPermissionMap;
     AccountPermissionMap accountPermissionsStore;
@@ -75,12 +75,23 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 
     float server_population;
 
+    private:
+
+        LogonCommHandler() = default;
+        ~LogonCommHandler() = default;
+
     public:
 
-        uint8_t sql_passhash[20];
+        static LogonCommHandler& getInstance();
+        void initialize();
+        void finalize();
 
-        LogonCommHandler();
-        ~LogonCommHandler();
+        LogonCommHandler(LogonCommHandler&&) = delete;
+        LogonCommHandler(LogonCommHandler const&) = delete;
+        LogonCommHandler& operator=(LogonCommHandler&&) = delete;
+        LogonCommHandler& operator=(LogonCommHandler const&) = delete;
+
+        uint8_t sql_passhash[20];
 
         void startLogonCommHandler();
         void loadRealmsConfiguration();
@@ -137,4 +148,4 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         std::string accountResult;
 };
 
-#define sLogonCommHandler LogonCommHandler::getSingleton()
+#define sLogonCommHandler LogonCommHandler::getInstance()

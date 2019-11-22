@@ -17,12 +17,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <vector>
 
-class SERVER_DECL World : public Singleton<World>, public EventableObject, public IUpdatable
+class SERVER_DECL World : public EventableObject, public IUpdatable
 {
+    private:
+
+        World() = default;
+        ~World() = default;
+
     public:
 
-        World();
-        ~World();
+        static World& getInstance();
+        void initialize();
+        void finalize();
+
+        World(World&&) = delete;
+        World(World const&) = delete;
+        World& operator=(World&&) = delete;
+        World& operator=(World const&) = delete;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WorldConfig
@@ -205,5 +216,5 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void toggleGmTicketStatus();
 };
 
-#define sWorld World::getSingleton()
+#define sWorld World::getInstance()
 #define worldConfig sWorld.settings

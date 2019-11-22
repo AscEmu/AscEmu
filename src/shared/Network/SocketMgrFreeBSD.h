@@ -25,7 +25,7 @@ class Socket;
 class SocketWorkerThread;
 class ListenSocketBase;
 
-class SocketMgr : public Singleton<SocketMgr>
+class SocketMgr
 {
         // kqueue handle
         int kq;
@@ -37,13 +37,23 @@ class SocketMgr : public Singleton<SocketMgr>
         /// socket counter
         int socket_count;
 
+    private:
+        SocketMgr() = default;
+        ~SocketMgr() = default;
+
     public:
 
         /// friend class of the worker thread -> it has to access our private resources
         friend class SocketWorkerThread;
 
+        static SocketMgr& getInstance()
+        {
+            static SocketMgr mInstance;
+            return mInstance;
+        }
+
         /// constructor > create epoll device handle + initialize event set
-        SocketMgr()
+        void initialize()
         {
             kq = kqueue();
             if(kq == -1)
@@ -58,11 +68,16 @@ class SocketMgr : public Singleton<SocketMgr>
         }
 
         /// destructor > destroy epoll handle
-        ~SocketMgr()
+        void finalize()
         {
             // close epoll handle
             close(kq);
         }
+
+        SocketMgr(SocketMgr&&) = delete;
+        SocketMgr(SocketMgr const&) = delete;
+        SocketMgr& operator=(SocketMgr&&) = delete;
+        SocketMgr& operator=(SocketMgr const&) = delete;
 
         /// add a new socket to the set and to the fd mapping
         void AddSocket(Socket* s);
@@ -101,7 +116,7 @@ class SocketWorkerThread : public ThreadBase
         }
 };
 
-#define sSocketMgr SocketMgr::getSingleton()
+#define sSocketMgr SocketMgr::getInstance()
 
 #endif
 

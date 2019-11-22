@@ -552,7 +552,7 @@ void WorldSession::sendTrainerList(Creature* creature)
                 if (maxReq == 2)
                     break;
 
-                SpellsRequiringSpellMapBounds spellsRequired = objmgr.GetSpellsRequiredForSpellBounds(pSpell->learnedSpell[i]);
+                SpellsRequiringSpellMapBounds spellsRequired = sObjectMgr.GetSpellsRequiredForSpellBounds(pSpell->learnedSpell[i]);
                 for (auto itr2 = spellsRequired.first; itr2 != spellsRequired.second && maxReq < 3; ++itr2)
                 {
                     data << uint32_t(itr2->second);
@@ -625,7 +625,7 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell
         if (!_player->isSpellFitByClassAndRace(spellId))
             return TRAINER_SPELL_RED;
 
-        SpellsRequiringSpellMapBounds spellsRequired = objmgr.GetSpellsRequiredForSpellBounds(spellId);
+        SpellsRequiringSpellMapBounds spellsRequired = sObjectMgr.GetSpellsRequiredForSpellBounds(spellId);
         for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
         {
             if (!_player->HasSpell(itr->second))

@@ -100,18 +100,30 @@ class SpellProc
         bool mDeleted;
 };
 
-class SpellProcMgr : public Singleton < SpellProcMgr >
+class SpellProcMgr
 {
+    private:
+
+        SpellProcMgr() = default;
+        ~SpellProcMgr() = default;
+
     public:
 
-        SpellProcMgr()
+        static SpellProcMgr& getInstance()
+        {
+            static SpellProcMgr mInstance;
+            return mInstance;
+        }
+
+        void initialize()
         {
             Setup();
         }
 
-        ~SpellProcMgr()
-        {
-        }
+        SpellProcMgr(SpellProcMgr&&) = delete;
+        SpellProcMgr(SpellProcMgr const&) = delete;
+        SpellProcMgr& operator=(SpellProcMgr&&) = delete;
+        SpellProcMgr& operator=(SpellProcMgr const&) = delete;
 
         SpellProc* NewSpellProc(Unit* target, uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj);
 
@@ -140,6 +152,6 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
         void SetupSpellProcClassScripts();
 };
 
-#define sSpellProcMgr SpellProcMgr::getSingleton()
+#define sSpellProcMgr SpellProcMgr::getInstance()
 
 #endif // _SPELL_PROC_H

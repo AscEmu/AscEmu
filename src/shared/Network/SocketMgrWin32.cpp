@@ -11,18 +11,17 @@
 
 #include "../CrashHandler.h"
 
-initialiseSingleton(SocketMgr);
-SocketMgr::SocketMgr()
+SocketMgr& SocketMgr::getInstance()
+{
+    static SocketMgr mInstance;
+    return mInstance;
+}
+
+void SocketMgr::initialize()
 {
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 0), &wsaData);
     m_completionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, (ULONG_PTR)0, 0);
-
-}
-
-SocketMgr::~SocketMgr()
-{
-
 }
 
 void SocketMgr::SpawnWorkerThreads()

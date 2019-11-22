@@ -4738,7 +4738,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
             if (aura->GetSpellInfo()->getSpellFamilyName() != 5)
                 continue;
 
-            auto skill_line_ability = objmgr.GetSpellSkill(aura->GetSpellId());
+            auto skill_line_ability = sObjectMgr.GetSpellSkill(aura->GetSpellId());
             if (skill_line_ability == nullptr || skill_line_ability->skilline != SKILL_AFFLICTION)
                 continue;
 
@@ -6041,7 +6041,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                 ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
                 if (pCaster->getItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
-                    Item* item = objmgr.CreateItem(itemid, pCaster);
+                    Item* item = sObjectMgr.CreateItem(itemid, pCaster);
                     if (!item)
                         return;
 

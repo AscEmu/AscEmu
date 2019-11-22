@@ -838,7 +838,7 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
         WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
-    lootmgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
+    sLootMgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
     return 0;
 }
 
@@ -871,7 +871,7 @@ int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
             return 0;
         }
 
-        auto get_group_id = objmgr.GetGroupById(group_id);
+        auto get_group_id = sObjectMgr.GetGroupById(group_id);
         if (get_group_id == nullptr)
             return 0;
 

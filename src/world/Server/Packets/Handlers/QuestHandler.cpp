@@ -298,7 +298,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 
     if (_player->GetQuestSharer())
     {
-        const auto questSharerPlayer = objmgr.GetPlayer(_player->GetQuestSharer());
+        const auto questSharerPlayer = sObjectMgr.GetPlayer(_player->GetQuestSharer());
         if (questSharerPlayer)
         {
             const uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : srlPacket.giverGuid;

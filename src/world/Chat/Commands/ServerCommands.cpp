@@ -16,8 +16,8 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     uint16 online_count = 0;
     float latency_avg = 0;
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
@@ -37,7 +37,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
             }
         }
     }
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     uint32 active_sessions = uint32(sWorld.getSessionCount());
 
@@ -90,7 +90,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
     }
     else
     {
-        player_target = objmgr.GetPlayer(args, false);
+        player_target = sObjectMgr.GetPlayer(args, false);
         if (player_target == nullptr)
         {
             RedSystemMessage(m_session, "A player with name %s is not online / does not exist!", args);
@@ -118,8 +118,8 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     auto start_time = Util::TimeNow();
     uint32 online_count = 0;
 
-    objmgr._playerslock.AcquireReadLock();
-    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    sObjectMgr._playerslock.AcquireReadLock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
@@ -128,7 +128,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
         }
     }
 
-    objmgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.ReleaseReadLock();
 
     std::stringstream teamAnnounce;
     teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[";
@@ -290,9 +290,9 @@ bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSes
 bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
-    sCommandTableStorag.Dealloc();
-    sCommandTableStorag.Init();
-    sCommandTableStorag.Load();
+    sCommandTableStorage.Dealloc();
+    sCommandTableStorage.Init();
+    sCommandTableStorage.Load();
     GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
     return true;
 }

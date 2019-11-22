@@ -23,8 +23,6 @@
 #include "SpellMgr.h"
 #include "Definitions/ProcFlags.h"
 
-initialiseSingleton(SpellProcMgr);
-
 bool SpellProc::CanProc(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
 {
     return true;

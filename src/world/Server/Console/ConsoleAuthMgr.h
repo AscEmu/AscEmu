@@ -8,20 +8,30 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <map>
 
-#include "Singleton.h"
 #include "Threading/Mutex.h"
 
 class ConsoleSocket;
 
-class ConsoleAuthMgr : public Singleton <ConsoleAuthMgr>
+class ConsoleAuthMgr
 {
     Mutex consoleAuthMgrLock;
     uint32_t authRequestId;
     std::map<uint32_t, ConsoleSocket*> consoleRequestMap;
 
+    private:
+        
+        ConsoleAuthMgr() = default;
+        ~ConsoleAuthMgr() = default;
+
     public:
 
-        ConsoleAuthMgr();
+        static ConsoleAuthMgr& getInstance();
+        void initialize();
+
+        ConsoleAuthMgr(ConsoleAuthMgr&&) = delete;
+        ConsoleAuthMgr(ConsoleAuthMgr const&) = delete;
+        ConsoleAuthMgr& operator=(ConsoleAuthMgr&&) = delete;
+        ConsoleAuthMgr& operator=(ConsoleAuthMgr const&) = delete;
 
         uint32_t getGeneratedId();
 
@@ -30,4 +40,4 @@ class ConsoleAuthMgr : public Singleton <ConsoleAuthMgr>
         ConsoleSocket* getSocketByRequestId(uint32_t id);
 };
 
-#define sConsoleAuthMgr ConsoleAuthMgr::getSingleton()
+#define sConsoleAuthMgr ConsoleAuthMgr::getInstance()

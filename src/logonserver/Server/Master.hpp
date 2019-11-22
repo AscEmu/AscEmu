@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "../shared/Singleton.h"
 #include "LogonServerDefines.hpp"
 #include "../shared/AscemuServerDefines.hpp"
 
@@ -15,9 +14,20 @@ extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
 
 class MasterLogon;
-class MasterLogon : public Singleton<MasterLogon>
+class MasterLogon
 {
+    private:
+        MasterLogon() = default;
+        ~MasterLogon() = default;
+
     public:
+
+        static MasterLogon& getInstance();
+
+        MasterLogon(MasterLogon&&) = delete;
+        MasterLogon(MasterLogon const&) = delete;
+        MasterLogon& operator=(MasterLogon&&) = delete;
+        MasterLogon& operator=(MasterLogon const&) = delete;
 
         bool LoadLogonConfiguration();
         void CheckForDeadSockets();
@@ -46,4 +56,4 @@ class MasterLogon : public Singleton<MasterLogon>
         bool m_stopEvent;
 };
 
-#define sMasterLogon MasterLogon::getSingleton()
+#define sMasterLogon MasterLogon::getInstance()

@@ -114,14 +114,25 @@ class SERVER_DECL MapScriptInterface
 };
 
 
-class SERVER_DECL StructFactory : public Singleton<StructFactory>
+class SERVER_DECL StructFactory
 {
+    private:
+
+        StructFactory() = default;
+        ~StructFactory() = default;
+
     public:
 
-        StructFactory() {}
+        static StructFactory& getInstance();
+
+        StructFactory(StructFactory&&) = delete;
+        StructFactory(StructFactory const&) = delete;
+        StructFactory& operator=(StructFactory&&) = delete;
+        StructFactory& operator=(StructFactory const&) = delete;
+
         Movement::WayPoint* CreateWaypoint();
 };
 
-#define sStructFactory StructFactory::getSingleton()
+#define sStructFactory StructFactory::getInstance()
 
 #endif // MAP_SCRIPT_INTERFACE_H

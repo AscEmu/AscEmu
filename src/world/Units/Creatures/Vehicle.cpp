@@ -562,7 +562,7 @@ void Vehicle::InstallAccessories()
     if (!installed_accessories.empty())
         return;
 
-    std::vector< VehicleAccessoryEntry* >* v = objmgr.GetVehicleAccessories(creature_entry);
+    std::vector< VehicleAccessoryEntry* >* v = sObjectMgr.GetVehicleAccessories(creature_entry);
     if (v == nullptr)
         return;
 

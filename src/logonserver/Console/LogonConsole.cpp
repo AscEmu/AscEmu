@@ -21,7 +21,11 @@
 #include "LogonConsole.h"
 #include "Server/Logon.h"
 
-initialiseSingleton(LogonConsole);
+LogonConsole& LogonConsole::getInstance()
+{
+    static LogonConsole mInstance;
+    return mInstance;
+}
 
 void LogonConsole::TranslateRehash(char* /*str*/)
 {
@@ -85,8 +89,6 @@ void LogonConsole::Kill()
 
 bool LogonConsoleThread::runThread()
 {
-    new LogonConsole;
-
     SetThreadName("Console Interpreter");
     sLogonConsole._thread = this;
     size_t i = 0, len = 0;

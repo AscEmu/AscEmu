@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.battleground forceinitqueue
 bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
-    BattlegroundManager.EventQueueUpdate(true);
+    sBattlegroundManager.EventQueueUpdate(true);
 
     SystemMessage(m_session, "Forcing initialization of all battlegrounds. Done.");
 
@@ -21,7 +21,7 @@ bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSessi
 //.battleground getqueue
 bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
-    BattlegroundManager.HandleGetBattlegroundQueueCommand(m_session);
+    sBattlegroundManager.HandleGetBattlegroundQueueCommand(m_session);
 
     SystemMessage(m_session, "Getting battleground queue. Done.");
 
@@ -64,7 +64,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    BattlegroundManager.HandleBattlegroundListPacket(selected_player->GetSession(), type);
+    sBattlegroundManager.HandleBattlegroundListPacket(selected_player->GetSession(), type);
 
     return true;
 }
@@ -100,7 +100,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
         return false;
 
     uint32 type = atoi(args);
-    BattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
+    sBattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
     return true;
 }
 

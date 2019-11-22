@@ -204,7 +204,7 @@ Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
 
     if (pProto->InventoryType == INVTYPE_BAG)
     {
-        pItem = static_cast<Item*>(new Container(HIGHGUID_TYPE_CONTAINER, objmgr.GenerateLowGuid(HIGHGUID_TYPE_CONTAINER)));
+        pItem = static_cast<Item*>(new Container(HIGHGUID_TYPE_CONTAINER, sObjectMgr.GenerateLowGuid(HIGHGUID_TYPE_CONTAINER)));
         static_cast<Container*>(pItem)->Create(ItemId, m_pOwner);
         if (m_AddItem(pItem, ContainerSlot, slot))
         {
@@ -219,7 +219,7 @@ Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
     else
     {
         pItem = new Item;
-        pItem->init(HIGHGUID_TYPE_ITEM, objmgr.GenerateLowGuid(HIGHGUID_TYPE_ITEM));
+        pItem->init(HIGHGUID_TYPE_ITEM, sObjectMgr.GenerateLowGuid(HIGHGUID_TYPE_ITEM));
         pItem->create(ItemId, m_pOwner);
         if (m_AddItem(pItem, ContainerSlot, slot))
         {
@@ -4057,7 +4057,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         }
 
         // create new item
-        Item* item = objmgr.CreateItem(itemid, chr);
+        Item* item = sObjectMgr.CreateItem(itemid, chr);
         if (item == nullptr)
             return false;
 
@@ -4080,7 +4080,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if (it->RandomPropId != 0)
             {
-                auto item_random_properties = lootmgr.GetRandomProperties(it);
+                auto item_random_properties = sLootMgr.GetRandomProperties(it);
 
                 if (item_random_properties != nullptr)
                 {
@@ -4094,7 +4094,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if (it->RandomSuffixId != 0)
             {
-                auto item_random_suffix = lootmgr.GetRandomSuffix(it);
+                auto item_random_suffix = sLootMgr.GetRandomSuffix(it);
 
                 if (item_random_suffix != nullptr)
                 {

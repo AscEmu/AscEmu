@@ -13,17 +13,27 @@
 #ifdef CONFIG_USE_IOCP
 
 class Socket;
-class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
+class SERVER_DECL SocketMgr
 {
     HANDLE m_completionPort;
     std::set<Socket*> _sockets;
     Mutex socketLock;
     std::atomic<unsigned long> socket_count;
 
-    public:
+    private:
+        SocketMgr() = default;
+        ~SocketMgr() = default;
 
-        SocketMgr();
-        ~SocketMgr();
+    public:
+        static SocketMgr& getInstance();
+        void initialize();
+        // todo: empty on windows, should it be?
+        void finalize() { };
+
+        SocketMgr(SocketMgr&&) = delete;
+        SocketMgr(SocketMgr const&) = delete;
+        SocketMgr& operator=(SocketMgr&&) = delete;
+        SocketMgr& operator=(SocketMgr const&) = delete;
 
         inline HANDLE GetCompletionPort() { return m_completionPort; }
         void SpawnWorkerThreads();
@@ -51,7 +61,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
 
 };
 
-#define sSocketMgr SocketMgr::getSingleton()
+#define sSocketMgr SocketMgr::getInstance()
 
 typedef void(*OperationHandler)(Socket* s, uint32 len);
 

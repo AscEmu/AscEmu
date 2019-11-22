@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <unordered_map>
 
-#include "Singleton.h"
+#include "CommonTypes.hpp"
 
 #define TAXI_TRAVEL_SPEED 32
 
@@ -92,16 +92,26 @@ protected:
     uint32_t m_price;
 };
 
-class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
+class SERVER_DECL TaxiMgr
 {
+private:
+    TaxiMgr() = default;
+    ~TaxiMgr() = default;
+
 public:
-    TaxiMgr()
+    static TaxiMgr& getInstance()
+    {
+        static TaxiMgr mInstance;
+        return mInstance;
+    }
+
+    void initialize()
     {
         _LoadTaxiNodes();
         _LoadTaxiPaths();
     }
 
-    ~TaxiMgr()
+    void finalize()
     {
         while(!m_taxiPaths.empty())
         {
@@ -116,6 +126,11 @@ public:
             delete n;
         }
     }
+
+    TaxiMgr(TaxiMgr&&) = delete;
+    TaxiMgr(TaxiMgr const&) = delete;
+    TaxiMgr& operator=(TaxiMgr&&) = delete;
+    TaxiMgr& operator=(TaxiMgr const&) = delete;
 
     TaxiPath* GetTaxiPath(uint32_t path);
     TaxiPath* GetTaxiPath(uint32_t from, uint32 to);
@@ -134,4 +149,4 @@ private:
     std::unordered_map<uint32_t, TaxiPath*> m_taxiPaths;
 };
 
-#define sTaxiMgr TaxiMgr::getSingleton()
+#define sTaxiMgr TaxiMgr::getInstance()

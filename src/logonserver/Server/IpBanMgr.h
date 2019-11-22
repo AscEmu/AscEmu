@@ -20,11 +20,21 @@ enum IpBanStatus
     BAN_STATUS_PERMANENT_BAN = 2,
 };
 
-class IpBanMgr : public Singleton<IpBanMgr>
+class IpBanMgr
 {
+private:
+    IpBanMgr() = default;
+    ~IpBanMgr() = default;
+
 public:
 
-    IpBanMgr();
+    static IpBanMgr& getInstance();
+    void initialize();
+
+    IpBanMgr(IpBanMgr&&) = delete;
+    IpBanMgr(IpBanMgr const&) = delete;
+    IpBanMgr& operator=(IpBanMgr&&) = delete;
+    IpBanMgr& operator=(IpBanMgr const&) = delete;
 
     void reload();
 
@@ -39,4 +49,4 @@ protected:
     std::list<IPBan> _ipBanList;
 };
 
-#define sIpBanMgr IpBanMgr::getSingleton()
+#define sIpBanMgr IpBanMgr::getInstance()

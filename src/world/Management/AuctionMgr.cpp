@@ -24,7 +24,11 @@
 #include "Server/MainServerDefines.h"
 #include "Log.hpp"
 
-initialiseSingleton(AuctionMgr);
+AuctionMgr& AuctionMgr::getInstance()
+{
+    static AuctionMgr mInstance;
+    return mInstance;
+}
 
 void AuctionMgr::LoadAuctionHouses()
 {

@@ -70,7 +70,6 @@ set(headers
     printStackTrace.h
     Database/DatabaseEnv.h
     RC4Engine.h
-    Singleton.h
     SysInfo.hpp
     StackBuffer.h
     StackTrace.h

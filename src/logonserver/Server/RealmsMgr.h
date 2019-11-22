@@ -32,7 +32,7 @@ struct Realms
 class AuthSocket;
 class LogonCommServerSocket;
 
-class RealmsMgr : public Singleton<RealmsMgr>
+class RealmsMgr
 {
     std::set<LogonCommServerSocket*> m_serverSockets;
     Mutex serverSocketLock;
@@ -43,10 +43,19 @@ class RealmsMgr : public Singleton<RealmsMgr>
     std::unique_ptr<AscEmu::Threading::AEThread> m_checkThread;
     uint32_t m_checkTime;
 
-public:
+private:
+    RealmsMgr() = default;
+    ~RealmsMgr() = default;
 
-    RealmsMgr(uint32_t checkTime);
-    ~RealmsMgr();
+public:
+    static RealmsMgr& getInstance();
+    void initialize(uint32_t checkTime);
+    void finalize();
+
+    RealmsMgr(RealmsMgr&&) = delete;
+    RealmsMgr(RealmsMgr const&) = delete;
+    RealmsMgr& operator=(RealmsMgr&&) = delete;
+    RealmsMgr& operator=(RealmsMgr const&) = delete;
 
     void LoadRealms();
     std::vector<std::shared_ptr<Realms>> _realmStore;
@@ -85,4 +94,4 @@ public:
     }
 };
 
-#define sRealmsMgr RealmsMgr::getSingleton()
+#define sRealmsMgr RealmsMgr::getInstance()

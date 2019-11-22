@@ -26,7 +26,7 @@ class Socket;
 class SocketWorkerThread;
 class ListenSocketBase;
 
-class SocketMgr : public Singleton<SocketMgr>
+class SocketMgr
 {
         /// /dev/epoll instance handle
         int epoll_fd;
@@ -40,13 +40,23 @@ class SocketMgr : public Singleton<SocketMgr>
 
         int max_fd;
 
+    private:
+        SocketMgr() = default;
+        ~SocketMgr() = default;
+
     public:
 
         /// friend class of the worker thread -> it has to access our private resources
         friend class SocketWorkerThread;
 
+        static SocketMgr& getInstance()
+        {
+            static SocketMgr mInstance;
+            return mInstance;
+        }
+
         /// constructor > create epoll device handle + initialize event set
-        SocketMgr()
+        void initialize()
         {
             epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
             if(epoll_fd == -1)
@@ -62,11 +72,16 @@ class SocketMgr : public Singleton<SocketMgr>
         }
 
         /// destructor > destroy epoll handle
-        ~SocketMgr()
+        void finalize()
         {
             // close epoll handle
             close(epoll_fd);
         }
+
+        SocketMgr(SocketMgr&&) = delete;
+        SocketMgr(SocketMgr const&) = delete;
+        SocketMgr& operator=(SocketMgr&&) = delete;
+        SocketMgr& operator=(SocketMgr const&) = delete;
 
         /// add a new socket to the epoll set and to the fd mapping
         void AddSocket(Socket* s);
@@ -103,7 +118,7 @@ class SocketWorkerThread : public ThreadBase
         }
 };
 
-#define sSocketMgr SocketMgr::getSingleton()
+#define sSocketMgr SocketMgr::getInstance()
 
 #endif
 

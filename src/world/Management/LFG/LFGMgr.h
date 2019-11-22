@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LFG.h"
 #include "Server/Definitions.h"
 #include <list>
-#include "../../shared/Singleton.h"
 #include "Server/EventableObject.h"
 
 #define MAX_LFG_QUEUE_ID 3
@@ -275,12 +274,23 @@ struct LfgPlayerBoot
 
 
 class LfgMatch;
-class LfgMgr : public Singleton < LfgMgr >, EventableObject
+class LfgMgr : EventableObject
 {
+    private:
+
+        LfgMgr() = default;
+        ~LfgMgr() = default;
+
     public:
 
-        LfgMgr();
-        ~LfgMgr();
+        static LfgMgr& getInstance();
+        void initialize();
+        void finalize();
+
+        LfgMgr(LfgMgr&&) = delete;
+        LfgMgr(LfgMgr const&) = delete;
+        LfgMgr& operator=(LfgMgr&&) = delete;
+        LfgMgr& operator=(LfgMgr const&) = delete;
 
         void Update(uint32 diff);
 
@@ -389,7 +399,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         Mutex m_lock;
 };
 
-#define sLfgMgr LfgMgr::getSingleton()
+#define sLfgMgr LfgMgr::getInstance()
 
 template <class C> typename C::value_type const& SelectRandomContainerElement(C const& container)
 {

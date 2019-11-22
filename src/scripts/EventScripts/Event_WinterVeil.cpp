@@ -86,7 +86,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         }
         else
         {
-            Item* item = objmgr.CreateItem(Winteritem, pPlayer);
+            Item* item = sObjectMgr.CreateItem(Winteritem, pPlayer);
             if (item == nullptr)
                 return;
 

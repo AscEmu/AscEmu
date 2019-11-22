@@ -20,10 +20,13 @@
  */
 
 #include "StdAfx.h"
-#include "Singleton.h"
 #include "EventMgr.h"
 
-initialiseSingleton(EventMgr);
+EventMgr& EventMgr::getInstance()
+{
+    static EventMgr mInstance;
+    return mInstance;
+}
 
 TimedEvent* TimedEvent::Allocate(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat)
 {

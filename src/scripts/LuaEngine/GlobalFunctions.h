@@ -125,7 +125,7 @@ namespace luaGlobalFunctions
     static int GetPlayer(lua_State* L)
     {
         const char* plName = luaL_checkstring(L, 1);
-        Player* plr = objmgr.GetPlayer(plName);
+        Player* plr = sObjectMgr.GetPlayer(plName);
         if (plr)
         {
             if (plr->IsInWorld())
@@ -225,19 +225,19 @@ namespace luaGlobalFunctions
         const char* TableName = luaL_checkstring(L, 1);
         if (!stricmp(TableName, "spell_disable"))
         {
-            objmgr.ReloadDisabledSpells();
+            sObjectMgr.ReloadDisabledSpells();
         }
         else if (!stricmp(TableName, "vendors"))
         {
-            objmgr.ReloadVendors();
+            sObjectMgr.ReloadVendors();
         }
         else
         {
             if (!stricmp(TableName, "command_overrides"))    // Command Overrides
             {
-                CommandTableStorage::getSingleton().Dealloc();
-                CommandTableStorage::getSingleton().Init();
-                CommandTableStorage::getSingleton().Load();
+                sCommandTableStorage.Dealloc();
+                sCommandTableStorage.Init();
+                sCommandTableStorage.Load();
             }
         }
         return 0;
@@ -273,10 +273,10 @@ namespace luaGlobalFunctions
         Player* ret = NULL;
         uint32 count = 0;
         lua_newtable(L);
-        objmgr._playerslock.AcquireReadLock();
+        sObjectMgr._playerslock.AcquireReadLock();
 
         std::unordered_map<uint32, Player*>::const_iterator itr;
-        for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+        for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
             count++,
                 ret = (*itr).second;
@@ -284,7 +284,7 @@ namespace luaGlobalFunctions
             PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
         }
-        objmgr._playerslock.ReleaseReadLock();
+        sObjectMgr._playerslock.ReleaseReadLock();
         return 1;
     }
 
@@ -361,9 +361,9 @@ namespace luaGlobalFunctions
         uint32 count = 0;
         lua_newtable(L);
         uint32 zoneid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        objmgr._playerslock.AcquireReadLock();
+        sObjectMgr._playerslock.AcquireReadLock();
         std::unordered_map<uint32, Player*>::const_iterator itr;
-        for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+        for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
             if ((*itr).second->GetZoneId() == zoneid)
             {
@@ -374,7 +374,7 @@ namespace luaGlobalFunctions
                 lua_rawset(L, -3);
             }
         }
-        objmgr._playerslock.ReleaseReadLock();
+        sObjectMgr._playerslock.ReleaseReadLock();
         return 1;
     }
 
@@ -626,7 +626,7 @@ namespace luaGlobalFunctions
         WorldPacket* pack = CHECK_PACKET(L, 1);
         const char* channel_name = luaL_checkstring(L, 2);
         uint32 team = CHECK_ULONG(L, 3);
-        Channel* pChannel = channelmgr.GetChannel(channel_name, team);
+        Channel* pChannel = sChannelMgr.GetChannel(channel_name, team);
         if (!pChannel || !pack)
             return 0;
         pChannel->SendToAll(pack);

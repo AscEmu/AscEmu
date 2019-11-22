@@ -58,7 +58,7 @@ int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victi
         return 0;
 
     float honor_points = -0.53177f + 0.59357f * exp((kLevel + 23.54042f) / 26.07859f);
-    honor_points *= World::getSingleton().settings.getFloatRate(RATE_HONOR);
+    honor_points *= sWorld.settings.getFloatRate(RATE_HONOR);
     return float2int32(honor_points);
 }
 
@@ -162,7 +162,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         for (GroupMembersSet::iterator itr2 = sg->GetGroupMembersBegin(); itr2 != sg->GetGroupMembersEnd(); ++itr2)
                         {
                             PlayerInfo* pi = (*itr2);
-                            Player* gm = objmgr.GetPlayer(pi->guid);
+                            Player* gm = sObjectMgr.GetPlayer(pi->guid);
                             if (!gm) continue;
 
                             if (gm->isInRange(pVictim, 100.0f))
@@ -200,7 +200,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     const auto PvPTokenID = worldConfig.player.pvpTokenId;
                     if (PvPTokenID > 0)
                     {
-                        Item* PvPTokenItem = objmgr.CreateItem(PvPTokenID, pAffectedPlayer);
+                        Item* PvPTokenItem = sObjectMgr.CreateItem(PvPTokenID, pAffectedPlayer);
                         if (PvPTokenItem)
                         {
                             PvPTokenItem->addFlags(ITEM_FLAG_SOULBOUND);

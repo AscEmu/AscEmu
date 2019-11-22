@@ -372,7 +372,7 @@ static int CreateLuaEvent(lua_State* L)
     {
         lua_settop(L, 1);
         int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-        TimedEvent* ev = TimedEvent::Allocate(World::getSingletonPtr(), new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
+        TimedEvent* ev = TimedEvent::Allocate(&sWorld, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
         ev->eventType = LUA_EVENTS_END + functionRef; //Create custom reference by adding the ref number to the max lua event type to get a unique reference for every function.
         sWorld.event_AddEvent(ev);
         LuaGlobal::instance()->luaEngine()->getFunctionRefs().insert(functionRef);
@@ -405,7 +405,7 @@ void LuaEngine::DestroyAllLuaEvents()
     //Clean up for all events.
     for (auto itr = m_functionRefs.begin(); itr != m_functionRefs.end(); ++itr)
     {
-        sEventMgr.RemoveEvents(World::getSingletonPtr(), (*itr) + LUA_EVENTS_END);
+        sEventMgr.RemoveEvents(&sWorld, (*itr) + LUA_EVENTS_END);
         luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
     }
     m_functionRefs.clear();
@@ -421,7 +421,7 @@ static int ModifyLuaEventInterval(lua_State* L)
     int newinterval = static_cast<int>(luaL_checkinteger(L, 2));
     ref += LUA_EVENTS_END;
     //Easy interval modification.
-    sEventMgr.ModifyEventTime(World::getSingletonPtr(), ref, newinterval);
+    sEventMgr.ModifyEventTime(&sWorld, ref, newinterval);
 
     RELEASE_LOCK
 
@@ -436,7 +436,7 @@ static int DestroyLuaEvent(lua_State* L)
     int ref = static_cast<int>(luaL_checkinteger(L, 1));
     luaL_unref(L, LUA_REGISTRYINDEX, ref);
     LuaGlobal::instance()->luaEngine()->getFunctionRefs().erase(ref);
-    sEventMgr.RemoveEvents(World::getSingletonPtr(), ref + LUA_EVENTS_END);
+    sEventMgr.RemoveEvents(&sWorld, ref + LUA_EVENTS_END);
 
     RELEASE_LOCK
 

@@ -163,7 +163,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
         }
 
         LogDebugFlag(LF_OPCODE, "AutoLootItem");
-        auto item = objmgr.CreateItem(itemId, _player);
+        auto item = sObjectMgr.CreateItem(itemId, _player);
         if (item == nullptr)
             return;
 
@@ -283,7 +283,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Corpse:
         {
-            if (auto corpse = objmgr.GetCorpse(wowGuid.getGuidLowPart()))
+            if (auto corpse = sObjectMgr.GetCorpse(wowGuid.getGuidLowPart()))
                 return &corpse->loot;
         }
         default:
@@ -491,7 +491,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 
             if (!creature->Skinned)
             {
-                if (lootmgr.IsSkinnable(creature->getEntry()))
+                if (sLootMgr.IsSkinnable(creature->getEntry()))
                 {
                     creature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
                 }
@@ -602,12 +602,12 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isCorpse())
     {
-        if (auto corpse = objmgr.GetCorpse(srlPacket.guid.getGuidLow()))
+        if (auto corpse = sObjectMgr.GetCorpse(srlPacket.guid.getGuidLow()))
             corpse->setDynamicFlags(0);
     }
     else if (srlPacket.guid.isPlayer())
     {
-        if (auto player = objmgr.GetPlayer(srlPacket.guid.getGuidLow()))
+        if (auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()))
         {
             player->bShouldHaveLootableOnCorpse = false;
             player->loot.items.clear();
@@ -728,7 +728,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto item = objmgr.CreateItem(itemEntry, player);
+    auto item = sObjectMgr.CreateItem(itemEntry, player);
     if (item == nullptr)
         return;
 

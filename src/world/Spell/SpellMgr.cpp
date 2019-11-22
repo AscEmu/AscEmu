@@ -17,8 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/DBC/DBCStores.h"
 
-initialiseSingleton(SpellMgr);
-
 bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const
 {
     if (gender != GENDER_NONE)
@@ -74,9 +72,11 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
     return true;
 }
 
-SpellMgr::SpellMgr() {}
-
-SpellMgr::~SpellMgr() {}
+SpellMgr& SpellMgr::getInstance()
+{
+    static SpellMgr mInstance;
+    return mInstance;
+}
 
 void SpellMgr::startSpellMgr()
 {

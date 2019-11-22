@@ -22,10 +22,11 @@
 #include "Log.hpp"
 #include "Database/Database.h"
 
-initialiseSingleton(CalendarMgr);
-
-CalendarMgr::CalendarMgr() {};
-CalendarMgr::~CalendarMgr() {};
+CalendarMgr& CalendarMgr::getInstance()
+{
+    static CalendarMgr mInstance;
+    return mInstance;
+}
 
 void CalendarMgr::LoadFromDB()
 {
