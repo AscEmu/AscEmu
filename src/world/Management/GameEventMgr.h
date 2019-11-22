@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <ctime>
 #include <string>
+#include "CommonTypes.hpp"
 
 class GameEvent;
 

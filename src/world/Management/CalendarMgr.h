@@ -24,6 +24,8 @@
 #include <map>
 #include <string>
 
+#include "CommonTypes.hpp"
+
 enum CalendarFlags
 {
     CALENDAR_FLAG_ALL_ALLOWED = 0x001,
