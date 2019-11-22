@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+
 enum PowerType : int16_t
 {
     POWER_TYPE_HEALTH      = -2,
